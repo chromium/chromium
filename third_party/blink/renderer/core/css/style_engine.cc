@@ -2642,6 +2642,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 void StyleEngine::RecalcStyle(StyleRecalcChange change,
                               const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().documentElement());
+  ScriptForbiddenScope forbid_script;
   HasMatchedCacheScope has_matched_cache_scope(&GetDocument());
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
