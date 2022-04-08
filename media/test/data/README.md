@@ -243,6 +243,10 @@ the media data doesn't start at time 0.
 #### bear-320x240_corrupted_after_init_segment.webm
 bear-320x240.webm's initialization segment followed by "CORRUPTED\n"
 
+#### mono_cpe.adts
+Technically not corrupt since ffmpeg explicitly allows this stereo track to say
+it's mono. First second of audio from test clip on https://crbug.com/1282058.
+
 ### Live
 
 #### bear-320x240-live.webm

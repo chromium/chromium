@@ -902,7 +902,29 @@ void AudioRendererImpl::DecodedAudioReady(
 
   bool need_another_buffer = true;
 
-  if (expecting_config_changes_) {
+  // FFmpeg allows "channel pair element" and "single channel element" type
+  // AAC streams to masquerade as mono and stereo respectively. Allow these
+  // specific exceptions to avoid playback errors.
+  bool allow_config_changes = expecting_config_changes_;
+  if (!expecting_config_changes_ && !buffer->end_of_stream() &&
+      current_decoder_config_.codec() == AudioCodec::kAAC &&
+      buffer->sample_rate() == audio_parameters_.sample_rate()) {
+    const bool is_mono_to_stereo =
+        buffer->channel_layout() == CHANNEL_LAYOUT_MONO &&
+        audio_parameters_.channel_layout() == CHANNEL_LAYOUT_STEREO;
+    const bool is_stereo_to_mono =
+        buffer->channel_layout() == CHANNEL_LAYOUT_STEREO &&
+        audio_parameters_.channel_layout() == CHANNEL_LAYOUT_MONO;
+    if (is_mono_to_stereo || is_stereo_to_mono) {
+      if (!buffer_converter_) {
+        buffer_converter_ =
+            std::make_unique<AudioBufferConverter>(audio_parameters_);
+      }
+      allow_config_changes = true;
+    }
+  }
+
+  if (allow_config_changes) {
     if (!buffer->end_of_stream()) {
       if (last_decoded_sample_rate_ &&
           buffer->sample_rate() != last_decoded_sample_rate_) {
