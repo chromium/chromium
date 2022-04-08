@@ -41,6 +41,7 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -202,8 +203,10 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                      LocalFrame& frame) {
   DCHECK(web_view_);
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
+  const gfx::Rect rect_adjusted_for_minimum =
+      AdjustWindowRectForMinimum(requested_rect);
   const gfx::Rect adjusted_rect =
-      CalculateWindowRectWithAdjustment(requested_rect, frame);
+      AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.
   // Permission state is not readily available, so adjusted bounds are clamped
   // to the same-screen, to retain legacy behavior of synchronous pending values
@@ -213,7 +216,8 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
   const bool request_unadjusted_rect =
       RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow());
   web_view_->MainFrameViewWidget()->SetWindowRect(
-      request_unadjusted_rect ? requested_rect : adjusted_rect, adjusted_rect);
+      request_unadjusted_rect ? rect_adjusted_for_minimum : adjusted_rect,
+      adjusted_rect);
 }
 
 gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
@@ -343,8 +347,10 @@ void ChromeClientImpl::Show(LocalFrame& frame,
                             const gfx::Rect& initial_rect,
                             bool user_gesture) {
   DCHECK(web_view_);
+  const gfx::Rect rect_adjusted_for_minimum =
+      AdjustWindowRectForMinimum(initial_rect);
   const gfx::Rect adjusted_rect =
-      CalculateWindowRectWithAdjustment(initial_rect, frame);
+      AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.
   // Permission state is not readily available, so adjusted bounds are clamped
   // to the same-screen, to retain legacy behavior of synchronous pending values
@@ -353,9 +359,10 @@ void ChromeClientImpl::Show(LocalFrame& frame,
   // store unadjusted pending window rects if that will not break many sites.
   const bool request_unadjusted_rect =
       RuntimeEnabledFeatures::WindowPlacementEnabled(opener_frame.DomWindow());
-  web_view_->Show(opener_frame.GetLocalFrameToken(), navigation_policy,
-                  request_unadjusted_rect ? initial_rect : adjusted_rect,
-                  adjusted_rect, user_gesture);
+  web_view_->Show(
+      opener_frame.GetLocalFrameToken(), navigation_policy,
+      request_unadjusted_rect ? rect_adjusted_for_minimum : adjusted_rect,
+      adjusted_rect, user_gesture);
 }
 
 bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
@@ -1297,26 +1304,38 @@ void ChromeClientImpl::PasswordFieldReset(HTMLInputElement& element) {
   }
 }
 
-gfx::Rect ChromeClientImpl::CalculateWindowRectWithAdjustment(
+gfx::Rect ChromeClientImpl::AdjustWindowRectForMinimum(
+    const gfx::Rect& pending_rect) {
+  gfx::Rect window = pending_rect;
+
+  // Let size 0 pass through, since that indicates default size, not minimum
+  // size.
+  if (window.width())
+    window.set_width(std::max(blink::kMinimumWindowSize, window.width()));
+  if (window.height())
+    window.set_height(std::max(blink::kMinimumWindowSize, window.height()));
+
+  return window;
+}
+
+gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(
     const gfx::Rect& pending_rect,
     LocalFrame& frame) {
+  DCHECK_EQ(pending_rect, AdjustWindowRectForMinimum(pending_rect))
+      << "Make sure to first use AdjustWindowRectForMinimum to adjust "
+         "pending_rect for minimum.";
   gfx::Rect screen = GetScreenInfo(frame).available_rect;
   gfx::Rect window = pending_rect;
 
-  gfx::Size minimum_size = MinimumWindowSize();
-  gfx::Size size_for_constraining_move = minimum_size;
+  gfx::Size size_for_constraining_move = MinimumWindowSize();
   // Let size 0 pass through, since that indicates default size, not minimum
   // size.
   if (window.width()) {
-    int width = std::max(minimum_size.width(), window.width());
-    width = std::min(width, screen.width());
-    window.set_width(width);
+    window.set_width(std::min(window.width(), screen.width()));
     size_for_constraining_move.set_width(window.width());
   }
   if (window.height()) {
-    int height = std::max(minimum_size.height(), window.height());
-    height = std::min(height, screen.height());
-    window.set_height(height);
+    window.set_height(std::min(window.height(), screen.height()));
     size_for_constraining_move.set_height(window.height());
   }
 
