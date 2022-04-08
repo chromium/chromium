@@ -851,7 +851,6 @@
 <translation id="1784849162047402014">Ο ελεύθερος χώρος στον δίσκο της συσκευής είναι περιορισμένος</translation>
 <translation id="1787350673646245458">Εικόνα χρήστη</translation>
 <translation id="1788329699711791226">Αποκτήστε πρόσβαση στο περιεχόμενό σας στο πρόγραμμα περιήγησης Chrome από τον λογαριασμό <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="1790194216133135334">Αποστολή συνδέσμου σε <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Κατάργηση πρόσβασης</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
 <translation id="1792619191750875668">Διευρυμένη οθόνη</translation>
@@ -1400,7 +1399,6 @@
 <translation id="2312219318583366810">URL σελίδας</translation>
 <translation id="2314165183524574721">Η τρέχουσα ρύθμιση ορατότητας είναι Κρυφή</translation>
 <translation id="2314774579020744484">Χρησιμοποιούμενη γλώσσα για τη μετάφραση σελίδων</translation>
-<translation id="2315587498123194634">Αποστολή συνδέσμου σε <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
 <translation id="2317842250900878657">Ολοκληρώθηκε<ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Μέγεθος χαρτιού</translation>
@@ -4442,7 +4440,6 @@
 <translation id="5307386115243749078">Σύζευξη διακόπτη Bluetooth</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5309418307557605830">Ο Βοηθός Google λειτουργεί και εδώ</translation>
-<translation id="5310281978693206542">Αποστολή συνδέσμου στις συσκευές σας</translation>
 <translation id="5311304534597152726">Σύνδεση ως</translation>
 <translation id="5311565231560644461">Να μην επιτρέπεται σε ιστοτόπους να χρησιμοποιούν τις συσκευές και τα δεδομένα εικονικής πραγματικότητας</translation>
 <translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
@@ -5185,7 +5182,6 @@
 <translation id="6057381398996433816">Έχει αποκλειστεί η χρήση των αισθητήρων κίνησης και φωτός από αυτόν τον ιστότοπο.</translation>
 <translation id="6059276912018042191">Πρόσφατες καρτέλες Chrome</translation>
 <translation id="6059652578941944813">Ιεραρχία πιστοποιητικού</translation>
-<translation id="6061882183774845124">Αποστολή συνδέσμου στις συσκευές σας</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Σημείωση:<ph name="END_BOLD" /> Μια παρόμοια φωνή ή εγγραφή μπορεί να αποκτήσει επίσης πρόσβαση στα προσωπικά αποτελέσματα του παιδιού <ph name="SUPERVISED_USER_NAME" />. Για εξοικονόμηση μπαταρίας, μπορείτε να επιλέξετε στις ρυθμίσεις του Βοηθού του χρήστη <ph name="SUPERVISED_USER_NAME" /> να γίνεται ενεργοποίηση της φράσης Ok Google μόνο όταν αυτή η συσκευή είναι συνδεδεμένη σε πηγή ενέργειας.</translation>
 <translation id="6064217302520318294">Κλείδωμα οθόνης</translation>
 <translation id="6065289257230303064">Χαρακτηριστικά καταλόγου υποκειμένου πιστοποιητικού</translation>
@@ -5324,7 +5320,6 @@
 <translation id="6201608810045805374">Κατάργηση αυτού του λογαριασμού;</translation>
 <translation id="6202304368170870640">Μπορείτε να χρησιμοποιήσετε το PIN σας για να συνδεθείτε ή να ξεκλειδώσετε τη συσκευή σας.</translation>
 <translation id="6206311232642889873">Αντι&amp;γραφή Εικόνας</translation>
-<translation id="6206378791187887398">Να επιτραπεί;</translation>
 <translation id="6207200176136643843">Επαναφορά στο προεπιλεγμένο επίπεδο εστίασης</translation>
 <translation id="6207937957461833379">Χώρα/Περιοχή</translation>
 <translation id="6208382900683142153">Τα διακριτικά αξιοπιστίας βελτιώνουν το απόρρητο στον ιστό και δεν μπορούν να χρησιμοποιηθούν για την ταυτοποίησή σας.</translation>
@@ -5731,7 +5726,6 @@
 <translation id="6592808042417736307">Το δακτυλικό σας αποτύπωμα καταγράφηκε.</translation>
 <translation id="6593881952206664229">Ενδέχεται να μην γίνεται αναπαραγωγή των μέσων που προστατεύονται από πνευματικά δικαιώματα</translation>
 <translation id="6594011207075825276">Εύρεση σειριακών συσκευών…</translation>
-<translation id="659498884637196217">Στον Διαχειριστή κωδικών πρόσβασης της Google σε αυτήν τη συσκευή</translation>
 <translation id="6595187330192059106">Να αποκλείεται πάντα ο πλήρης έλεγχος των συσκευών MIDI από το <ph name="HOST" />.</translation>
 <translation id="6595792813574514527">Σύρετε για αναζήτηση εικόνων με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Επιλογές κρυπτογράφησης</translation>
@@ -7161,7 +7155,6 @@
 <translation id="8002670234429879764">Ο εκτυπωτής <ph name="PRINTER_NAME" /> δεν είναι πλέον διαθέσιμος.</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
 <translation id="8005600846065423578">Να επιτρέπεται πάντα στο <ph name="HOST" /> να βλέπει το πρόχειρο</translation>
-<translation id="8005666035647241369">Στον Διαχειριστή κωδικών πρόσβασης της Google σε αυτήν τη συσκευή</translation>
 <translation id="8006630792898017994">Πλήκτρο διαστήματος ή Tab</translation>
 <translation id="8008356846765065031">Η σύνδεση στο διαδίκτυο διακόπηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="8009225694047762179">Διαχείριση Κωδικός πρόσβασης</translation>
@@ -7486,7 +7479,6 @@
 <translation id="8314381333424235892">Λείπει ή απεγκαταστάθηκε επέκταση</translation>
 <translation id="831440797644402910">Δεν είναι δυνατό το άνοιγμα αυτού του φακέλου</translation>
 <translation id="8314835274931377415">Έναρξη ρύθμισης Πρόσβασης με διακόπτη;</translation>
-<translation id="8316618172731049784">Αποστολή στη διεύθυνση <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Προσθήκη σύνδεσης δικτύου</translation>
 <translation id="8319414634934645341">Εκτεταμένη χρήση κλειδιού</translation>
 <translation id="8321837372750396788">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> θα γίνεται από τον τομέα <ph name="MANAGER" />.</translation>

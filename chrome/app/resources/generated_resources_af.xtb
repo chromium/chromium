@@ -851,7 +851,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1784849162047402014">Toestel het min skyfspasie beskikbaar</translation>
 <translation id="1787350673646245458">Gebruikerprent</translation>
 <translation id="1788329699711791226">Kry toegang tot jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
-<translation id="1790194216133135334">Stuur skakel na <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Verwyder toegang</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792619191750875668">Uitgebreide skerm</translation>
@@ -1400,7 +1399,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2312219318583366810">Bladsy-URL</translation>
 <translation id="2314165183524574721">Huidige sigbaarheidinstelling word versteek</translation>
 <translation id="2314774579020744484">Taal wat gebruik word wanneer bladsye vertaal word</translation>
-<translation id="2315587498123194634">Stuur skakel na <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% klaar</translation>
 <translation id="2318143611928805047">Papiergrootte</translation>
@@ -4442,7 +4440,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5307386115243749078">Bind Bluetooth-skakelaar saam</translation>
 <translation id="5308380583665731573">Koppel</translation>
 <translation id="5309418307557605830">Google Assistent werk ook hier</translation>
-<translation id="5310281978693206542">Stuur skakel na jou toestelle toe</translation>
 <translation id="5311304534597152726">Meld tans aan as</translation>
 <translation id="5311565231560644461">Moenie werwe toelaat om jou virtuelerealiteittoestelle en -data te gebruik nie</translation>
 <translation id="5313967007315987356">Voeg werf by</translation>
@@ -5185,7 +5182,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6057381398996433816">Hierdie werf word verhinder om beweging- en ligsensors te gebruik.</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6059652578941944813">Sertifikaathiërargie</translation>
-<translation id="6061882183774845124">Stuur skakel na jou toestelle toe</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Let wel:<ph name="END_BOLD" /> 'n Soortgelyke stem of opname kan dalk toegang tot <ph name="SUPERVISED_USER_NAME" /> se persoonlike resultate kry. As jy batterykrag wil bespaar, kan jy in <ph name="SUPERVISED_USER_NAME" /> se Assistent-instellings kies dat "Ok Google" net aan moet wees wanneer hierdie toestel aan 'n kragbron gekoppel is.</translation>
 <translation id="6064217302520318294">Skermslot</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
@@ -5324,7 +5320,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6201608810045805374">Verwyder hierdie rekening?</translation>
 <translation id="6202304368170870640">Jy kan jou PIN gebruik om aan te meld of jou toestel te ontsluit.</translation>
 <translation id="6206311232642889873">Kopieer prent</translation>
-<translation id="6206378791187887398">Laat toe?</translation>
 <translation id="6207200176136643843">Stel terug na verstek-zoemvlak</translation>
 <translation id="6207937957461833379">Land/Streek</translation>
 <translation id="6208382900683142153">Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit te vind wie jy is nie.</translation>
@@ -5731,7 +5726,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6592808042417736307">Jou vingerafdruk is vasgevang</translation>
 <translation id="6593881952206664229">Media met kopiereg op sal dalk nie speel nie</translation>
 <translation id="6594011207075825276">Soek tans reekstoestelle …</translation>
-<translation id="659498884637196217">In Google Wagwoordbestuurder op hierdie toestel</translation>
 <translation id="6595187330192059106">Keer <ph name="HOST" /> altyd om volle beheer oor MIDI-toestelle te hê.</translation>
 <translation id="6595792813574514527">Sleep om prente met <ph name="VISUAL_SEARCH_PROVIDER" /> te deursoek</translation>
 <translation id="6596325263575161958">Enkripsie-opsies</translation>
@@ -7161,7 +7155,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is nie meer beskikbaar nie</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8005600846065423578">Laat <ph name="HOST" /> altyd toe om die knipbord te sien</translation>
-<translation id="8005666035647241369">Na Google Wagwoordbestuurder op hierdie toestel</translation>
 <translation id="8006630792898017994">Spasie of Tab-spasie</translation>
 <translation id="8008356846765065031">Internet ontkoppel. Gaan asseblief jou internetverbinding na.</translation>
 <translation id="8009225694047762179">Bestuur wagwoorde</translation>
@@ -7485,7 +7478,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8314381333424235892">Uitbreiding ontbreek of is gedeïnstalleer</translation>
 <translation id="831440797644402910">Kan nie hierdie vouer oopmaak nie</translation>
 <translation id="8314835274931377415">Begin skakelaartoegangopstelling?</translation>
-<translation id="8316618172731049784">Stuur na <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Voeg netwerkverbinding by</translation>
 <translation id="8319414634934645341">Uitgebreide sleutelgebruik</translation>
 <translation id="8321837372750396788">Hierdie <ph name="DEVICE_TYPE" /> sal bestuur word deur <ph name="MANAGER" />.</translation>

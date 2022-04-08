@@ -209,6 +209,7 @@
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
+<translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="357889014807611375">Wi-Fi limitado</translation>
@@ -216,6 +217,7 @@
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3600339377155080675">Espelhar tela</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Mudar plano de fundo</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
 <translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
@@ -526,6 +528,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche-a e tente novamente.</translation>
 <translation id="6911383237894364323">Não foi possível se conectar aos servidores de mídia</translation>
 <translation id="6935486296377631201">Protetor de tela</translation>
+<translation id="6943893908656559156">Identidade remota (opcional)</translation>
 <translation id="6957231940976260713">Nome do serviço</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
 <translation id="6965382102122355670">OK</translation>

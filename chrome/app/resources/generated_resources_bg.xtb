@@ -847,7 +847,6 @@
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1787350673646245458">Изображение на потребител</translation>
 <translation id="1788329699711791226">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="1790194216133135334">Изпращане на връзката до <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
@@ -1396,7 +1395,6 @@
 <translation id="2312219318583366810">URL адрес на страницата</translation>
 <translation id="2314165183524574721">Текущата настройка за видимост е „Скрито“</translation>
 <translation id="2314774579020744484">Език, който се използва при превод на страници</translation>
-<translation id="2315587498123194634">Изпращане на връзката до <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Не, благодаря</translation>
 <translation id="2317842250900878657">Завършено: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Размер на хартията</translation>
@@ -2875,6 +2873,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3760460896538743390">Инспектиране на &amp;фоновата страница</translation>
 <translation id="37613671848467444">Отваряне на прозорец в режим „&amp;инкогнито“</translation>
 <translation id="3761556954875533505">Да се разреши ли на сайта да редактира файлове?</translation>
+<translation id="3763549179847864476">Бутон за връщане в ръководството за поверителност</translation>
 <translation id="3764314093345384080">Подробна информация за компилацията</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуникация с USB устройство}other{Комуникация с # USB устройства}}</translation>
 <translation id="3764753550716962406">Да се разреши ли на Google да използва кошницата ви, за да намира налични отстъпки?</translation>
@@ -3821,6 +3820,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4690091457710545971">&lt;Фърмуерът на Intel за Wi-Fi генерира четири файла: csr.lst, fh_regs.lst, radio_reg.lst и monitor.lst.sysmon. Първите три са двоични файлове с копия на данни от системния регистър и според Intel не съдържат лични данни или информация, идентифицираща устройството. Последният е файл за трасиране на изпълнението от фърмуера на Intel. Личните данни и идентифициращата устройството информация са премахнати от него, но той е твърде голям, за да бъде показан тук. Тези файлове са генерирани поради скорошните проблеми с Wi-Fi на устройството ви и ще бъдат споделени с Intel с цел по-лесното им отстраняване.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> ще може да преглежда <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
 <translation id="4692623383562244444">Търсещи машини</translation>
+<translation id="4692736633446859167">По-рано избрахте да не разрешавате разширенията на <ph name="SITE" /> Ако добавите този сайт тук, други разширения също могат да поискат да четат и променят данните от сайта на <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694024090038830733">Конфигурирането на принтери се управлява от администратора.</translation>
 <translation id="4694604912444486114">Маймуна</translation>
@@ -4437,7 +4437,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5307386115243749078">Сдвояване на превключвател с Bluetooth</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5309418307557605830">Google Асистент работи и тук</translation>
-<translation id="5310281978693206542">Изпращане на връзката до устройствата ви</translation>
 <translation id="5311304534597152726">Влизате като</translation>
 <translation id="5311565231560644461">Да не се разрешава на сайтовете да използват устройствата и данните ви за виртуална реалност</translation>
 <translation id="5313967007315987356">Добавяне на сайт</translation>
@@ -5180,7 +5179,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6057381398996433816">Сайтът бе блокиран, така че да не използва сензорите за движение и светлина.</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6059652578941944813">Йерархия на сертификатите</translation>
-<translation id="6061882183774845124">Изпращане на връзката до устройствата ви</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис. С цел икономия на батерията от настройките на Асистент в профила на <ph name="SUPERVISED_USER_NAME" /> можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>
 <translation id="6064217302520318294">Заключване на екрана</translation>
 <translation id="6065289257230303064">Атрибути за директорията на субекта на сертификата</translation>
@@ -5319,7 +5317,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6201608810045805374">Да се премахне ли този профил?</translation>
 <translation id="6202304368170870640">Можете да използвате ПИН кода си, за да влизате в устройството си и да го отключвате.</translation>
 <translation id="6206311232642889873">Копи&amp;ране на изображението</translation>
-<translation id="6206378791187887398">Да се предостави ли разрешение?</translation>
 <translation id="6207200176136643843">Възстановяване на стандартното ниво на мащаба</translation>
 <translation id="6207937957461833379">Държава/Регион</translation>
 <translation id="6208382900683142153">Означенията за доверие подобряват поверителността в мрежата и не могат да се използват за определяне на самоличността ви.</translation>
@@ -5726,7 +5723,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6592808042417736307">Отпечатъкът ви бе записан</translation>
 <translation id="6593881952206664229">Мултимедийното съдържание, защитено с авторски права, може да не се възпроизвежда</translation>
 <translation id="6594011207075825276">Търсят се серийни устройства...</translation>
-<translation id="659498884637196217">В мениджъра на паролите в Google на това устройство</translation>
 <translation id="6595187330192059106">Пълният контрол над MIDI устройствата да е блокиран винаги за <ph name="HOST" />.</translation>
 <translation id="6595792813574514527">Плъзгане с цел търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
@@ -7156,7 +7152,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8002670234429879764">Вече няма достъп до <ph name="PRINTER_NAME" /></translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8005600846065423578">Разрешаване винаги на <ph name="HOST" /> да преглежда буферната памет</translation>
-<translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
 <translation id="8006630792898017994">Интервал или Tab</translation>
 <translation id="8008356846765065031">Няма връзка с интернет. Моля, проверете връзката си.</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>
@@ -7481,7 +7476,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8314381333424235892">Разширението липсва или е деинсталирано</translation>
 <translation id="831440797644402910">Папката не може да се отвори</translation>
 <translation id="8314835274931377415">Да започне ли настройването на „Достъп с превключване“?</translation>
-<translation id="8316618172731049784">Изпращане до <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8319414634934645341">Удължена употреба на ключа</translation>
 <translation id="8321837372750396788">Това устройство <ph name="DEVICE_TYPE" /> ще се управлява от <ph name="MANAGER" />.</translation>
@@ -8350,6 +8344,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="919679265671373777">Преглед на скорошните снимки и мултимедийни файлове на телефона ви. Поточно предаване за приложенията за съобщения на телефона ви.</translation>
 <translation id="919686179725692564">Научете повече за създаването на резервно копие на приложенията си</translation>
 <translation id="9198090666959937775">Използване на телефона ви с Android като ключ за сигурност</translation>
+<translation id="9199503643457729322">Кликнете, за да излезете от ръководството за поверителност.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ще може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="920045321358709304">Търсене с/ъс <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Всички офлайн данни ще бъдат изчистени</translation>

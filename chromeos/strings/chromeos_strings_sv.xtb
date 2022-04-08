@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="3600339377155080675">Tangenten för att spegla skärmen</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
@@ -431,6 +432,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5866840822086176774">Mycket stark</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
 <translation id="5916084858004523819">Aldrig</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filerna har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
+<translation id="6112878310391905610">Den här inställningen hanteras av administratörerna</translation>
 <translation id="6113701710518389813">Uppåtpiltangenten</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> och <ph name="NUMBER" /> album till</translation>
 <translation id="6122191549521593678">Online</translation>

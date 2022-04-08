@@ -837,7 +837,6 @@
 <translation id="1784849162047402014">यन्त्रको डिस्कमा खाली ठाउँ कम छ</translation>
 <translation id="1787350673646245458">प्रयोगकर्ताको छवि</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> मार्फत Chrome ब्राउजरमा भएका आफ्ना कुराहरू हेर्नुहोस् र प्रयोग गर्नुहोस्</translation>
-<translation id="1790194216133135334"><ph name="DEVICE_NAME" /> मा लिंक पठाउनुहोस्</translation>
 <translation id="1790976235243700817">पहुँच हटाउनुहोस्</translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792619191750875668">विस्तारित प्रदर्शन</translation>
@@ -1382,7 +1381,6 @@
 <translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
 <translation id="2314774579020744484">पृष्ठहरू अनुवाद गर्दा प्रयोग हुने भाषा</translation>
-<translation id="2315587498123194634"><ph name="DEVICE_NAME" /> मा लिंक पठाउनुहोस्</translation>
 <translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% सम्पन्न भयो</translation>
 <translation id="2318143611928805047">कागज परिमाण</translation>
@@ -2862,6 +2860,7 @@
 <translation id="3760460896538743390">&amp;पृष्ठभूमि पृष्ठ निरीक्षण गर्नुहोस्</translation>
 <translation id="37613671848467444">&amp;इनकगनिटो विण्डोमा खोल्नुहोस्</translation>
 <translation id="3761556954875533505">साइटलाई फाइलहरू सम्पादन गर्न दिने हो?</translation>
+<translation id="3763549179847864476">गोपनीयतासम्बन्धी गाइडमा भएको "पछाडि" बटन</translation>
 <translation id="3764314093345384080">बिल्ड बारे विस्तृत जानकारी</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ एउटा USB यन्त्रमार्फत संचार गर्नुहोस्}other{ # USB यन्त्रहरूमार्फत संचार गर्नुहोस्}}</translation>
 <translation id="3764753550716962406">Google लाई उपलब्ध छुट खोज्नका लागि तपाईंको कार्ट प्रयोग गर्ने अनुमति दिने हो?</translation>
@@ -3805,6 +3804,7 @@
 <translation id="4690091457710545971">&lt;Intel को Wi-Fi फर्मवेयरले सिर्जना गरेका चारवटा फाइलहरू यस प्रकार छन्: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon। सुरुका तीनवटा फाइलहरू भनेका दर्ताका डम्पहरू समावेश गर्ने र Intel ले कुनै व्यक्तिगत डेटा वा यन्त्र पहिचान गर्ने जानकारी समावेश नभएको भनी दाबी गरिएका बाइनरी फाइलहरू हुन्। अन्तिम फाइल चाहिँ Intel फर्मवेयरको कार्यान्वयनको ट्रेस हो; यसले कुनै पनि व्यक्तिगत जानकारी वा यन्त्र पहिचान गर्ने जानकारी समावेश गरेको छ या छैन भनी छानबिन गरिएको छ। यी फाइल तपाईंको यन्त्रमा भएका हालसालैका Wi-Fi सम्बन्धी समस्याहरूको प्रतिक्रियास्वरूप सिर्जना गरिएका थिए र यी समस्याहरूको समाधान गर्न मद्दत गर्न ती फाइलहरूलाईIntel सँग आदान प्रदान गरिने छन्।&gt;</translation>
 <translation id="4691791363716065510">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्ने छ</translation>
 <translation id="4692623383562244444">खोज इन्धनहरू</translation>
+<translation id="4692736633446859167">तपाईंले यसअघि <ph name="SITE" /> मा कुनै पनि एक्स्टेन्सनलाई अनुमति दिनुभएको थिएन। तपाईंले यहाँ यो साइट हाल्नुभयो भने अन्य एक्स्टेन्सनहरूले पनि <ph name="SITE" /> मा भएको तपाईंको साइट डेटा रिड गर्ने र बदल्ने अनुमति माग्न सक्छन्।</translation>
 <translation id="4693155481716051732">सुसी</translation>
 <translation id="4694024090038830733">प्रशासकले प्रिन्टरको कन्फिगुरेसन ह्यान्डल गर्छन्।</translation>
 <translation id="4694604912444486114">बाँदर</translation>
@@ -4421,7 +4421,6 @@
 <translation id="5307386115243749078">ब्लुटुथको स्विचसँग कनेक्ट गर्नुहोस्</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5309418307557605830">Google सहायक यसमा पनि चल्छ</translation>
-<translation id="5310281978693206542">आफ्ना यन्त्रहरूमा लिंक पठाउनुहोस्</translation>
 <translation id="5311304534597152726">यस रूपमा साइन इन गर्दै</translation>
 <translation id="5311565231560644461">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंका डिभाइसहरू र तिनमा भएका डेटा प्रयोग गर्न नदिनुहोस्</translation>
 <translation id="5313967007315987356">साइट थप्नुहोस्</translation>
@@ -5162,7 +5161,6 @@
 <translation id="6057381398996433816">यो साइटलाई चाल तथा प्रकाशसम्बन्धी सेन्सरहरू प्रयोग गर्नबाट रोक लगाइएको छ।</translation>
 <translation id="6059276912018042191">Chrome का हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="6059652578941944813">प्रमाणपत्र स्थानक्रम</translation>
-<translation id="6061882183774845124">आफ्ना यन्त्रहरूमा लिंक पठाउनुहोस्</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" /> को आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि उनको व्यक्तिगत सामग्री हेर्न सकिने सम्भावना हुन्छ। ब्याट्री बचत गर्न सकियोस् भन्नाका लागि तपाईं <ph name="SUPERVISED_USER_NAME" /> को सहायकका सेटिङमा गई यो डिभाइस चार्जरमा जोडिएका बेला मात्र "Ok Google" अन हुने बनाउन सक्नुहुन्छ।</translation>
 <translation id="6064217302520318294">स्क्रिन लक</translation>
 <translation id="6065289257230303064">सर्टिफिकेट विषय निर्देशिका गुणहरू</translation>
@@ -5301,7 +5299,6 @@
 <translation id="6201608810045805374">यो खाता हटाउने हो?</translation>
 <translation id="6202304368170870640">तपाईं आफ्नो यन्त्रमा साइन इन गर्न वा त्यसलाई अनलक गर्न आफ्नो PIN प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6206311232642889873">छविको प्रतिलिपि गर्नुहोस्</translation>
-<translation id="6206378791187887398">अनुमति दिने हो?</translation>
 <translation id="6207200176136643843">डिफल्ट जुम स्तरमा रिसेट गर्नुहोस्</translation>
 <translation id="6207937957461833379">देश / क्षेत्र</translation>
 <translation id="6208382900683142153">ट्रस्ट टोकनहरूले वेबमा गोपनीयताको अवस्था सुधार्छन् र तपाईंको पहिचान पत्ता लगाउने प्रयोजनका लागि ती टोकन प्रयोग गर्न पाइँदैन।</translation>
@@ -5708,7 +5705,6 @@
 <translation id="6592808042417736307">तपाईंको फिंगरप्रिन्ट हालियो</translation>
 <translation id="6593881952206664229">प्रतिलिपि अधिकार भएका मिडिया प्ले नहुन सक्छन्</translation>
 <translation id="6594011207075825276">सिरियल यन्त्रहरू लोड गरिँदै छ...</translation>
-<translation id="659498884637196217">यो डिभाइसमा Google पासवर्ड म्यानेजरमा</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> लाई कहिल्यै पनि MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्न नदिनुहोस्।</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोहरू खोज्न ड्र्याग गर्नुहोस्</translation>
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
@@ -7138,7 +7134,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> अब उप्रान्त उपलब्ध छैन</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> लाई क्लिपबोर्ड हेर्न सधैँ अनुमति दिनुहोस्</translation>
-<translation id="8005666035647241369">यो डिभाइसमा Google पासवर्ड म्यानेजरमा</translation>
 <translation id="8006630792898017994">स्पेस वा ट्याब की</translation>
 <translation id="8008356846765065031">इन्टरनेट जडान विच्छेद भयो। कृपया तपाइँको इन्टरनेट जडान जाँच्नुहोस्।</translation>
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>
@@ -7462,7 +7457,6 @@
 <translation id="8314381333424235892">छुटेको वा स्थापना रद्द गरिएको विस्तार</translation>
 <translation id="831440797644402910">यो फोल्डर खोल्न सकिएन</translation>
 <translation id="8314835274931377415">"स्विच एक्सेस" सेटअप गर्न थाल्ने हो?</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" /> मा पठाउनुहोस्</translation>
 <translation id="8317671367883557781">नेटवर्क जडान थप्नुहोस्</translation>
 <translation id="8319414634934645341">विस्तारित कुञ्जी प्रयोग</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्ने छ।</translation>
@@ -8331,6 +8325,7 @@
 <translation id="919679265671373777">आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्। आफ्नो फोनमा भएका म्यासेजिङ एपहरू चलाउनुहोस्।</translation>
 <translation id="919686179725692564">आफ्नो डिभाइसमा भएका एपहरू ब्याकअप गर्ने तरिकाका बारेमा थप जान्नुहोस्</translation>
 <translation id="9198090666959937775">आफ्नो Android फोन सुरक्षा साँचोका रूपमा प्रयोग गर्नुहोस्</translation>
+<translation id="9199503643457729322">गोपनीयतासम्बन्धी गाइडबाट बाहिरिन क्लिक गर्नुहोस्।</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू परिवर्तन गर्न सक्ने छ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="9201023452444595544">सबै अफलाइन डेटा हटाइने छ</translation>

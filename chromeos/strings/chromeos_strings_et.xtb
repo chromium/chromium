@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="3600339377155080675">Ekraanikuva peegeldamine</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Taustapildi muutmine</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
@@ -431,6 +432,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5866840822086176774">Väga tugev</translation>
 <translation id="588258955323874662">Täisekraan</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
+<translation id="5903200662178656908">Seade on klaviatuuri ja hiire kombinatsioon.</translation>
 <translation id="5916084858004523819">Keelatud</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
+<translation id="6112878310391905610">Seda seadet haldavad administraatorid</translation>
 <translation id="6113701710518389813">Ülesnool</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + veel <ph name="NUMBER" /> albumit</translation>
 <translation id="6122191549521593678">Onlain</translation>

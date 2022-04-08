@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="3600339377155080675">Näytön peilaus</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
@@ -431,6 +432,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5866840822086176774">Hyvin vahva</translation>
 <translation id="588258955323874662">Koko ruutu</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
 <translation id="5916084858004523819">Kielletty</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tiedostosi skannaus onnistui. Se on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tiedostojesi skannaus onnistui. Ne on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6104112872696127344">Skannaus on peruttu</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
+<translation id="6112878310391905610">Järjestelmänvalvojasi ylläpitävät tätä asetusta</translation>
 <translation id="6113701710518389813">Ylänuoli</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" /> muuta albumia</translation>
 <translation id="6122191549521593678">Online</translation>

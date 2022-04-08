@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="3600339377155080675">Projecta la pantalla</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
@@ -431,6 +432,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5866840822086176774">Molt forta</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5903200662178656908">El dispositiu és un conjunt de teclat i ratolí.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6104112872696127344">L'escaneig s'ha cancel·lat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
+<translation id="6112878310391905610">Els teus administradors gestionen aquesta opció de configuració</translation>
 <translation id="6113701710518389813">Fletxa amunt</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> i <ph name="NUMBER" /> àlbums més</translation>
 <translation id="6122191549521593678">En línia</translation>

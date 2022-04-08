@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
@@ -431,6 +432,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5866840822086176774">Excellent</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5903200662178656908">L'appareil combine clavier et souris.</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été scannés et enregistrés dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6104112872696127344">Numérisation annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
+<translation id="6112878310391905610">Ce paramètre est géré par vos administrateurs</translation>
 <translation id="6113701710518389813">Flèche vers le haut</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + <ph name="NUMBER" /> autres albums</translation>
 <translation id="6122191549521593678">En ligne</translation>

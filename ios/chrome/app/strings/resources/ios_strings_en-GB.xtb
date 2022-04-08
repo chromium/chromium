@@ -352,7 +352,6 @@ Follow the steps below:</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4063300985191096908">Go to feed</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
-<translation id="4108314971463891922">Follow</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
@@ -656,6 +655,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6603393121510733479">Your organisation turned off private browsing.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Translate Options</translation>
+<translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6620279676667515405">Cancel</translation>
 <translation id="6624219055418309072">Block in Incognito</translation>
 <translation id="6628106477656132239">Invalid Expiry Date</translation>
@@ -715,6 +715,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
+<translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
 <translation id="7099761977003084116">Recent Tabs</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Hide</translation>
@@ -792,6 +793,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7884694604461143138">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
+<translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export Passwords…</translation>
 <translation id="794799177247607889">Stop logging</translation>

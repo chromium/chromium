@@ -181,7 +181,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8513093439376855948">Host de mensajes nativo para administración de host de forma remota</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="858006550102277544">Comentario</translation>
-<translation id="8743328882720071828">¿Quieres permitir que <ph name="CLIENT_USERNAME" /> vea y controle tu ordenador?</translation>
+<translation id="8743328882720071828">¿Permitir que <ph name="CLIENT_USERNAME" /> vea y controle tu ordenador?</translation>
 <translation id="8747048596626351634">La sesión ha fallado o no se ha podido iniciar. Si hay una secuencia de comandos ~/.chrome-remote-desktop-session en el ordenador remoto, esta debe iniciar un proceso largo en primer plano, como un entorno de escritorio o un administrador de ventanas.</translation>
 <translation id="8804164990146287819">Política de Privacidad</translation>
 <translation id="8906511416443321782">Se necesita acceso al micrófono para capturar audio y emitirlo en el cliente de Escritorio Remoto de Chrome.</translation>

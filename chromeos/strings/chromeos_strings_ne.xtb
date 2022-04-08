@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="3600339377155080675">स्क्रिन मिरर</translation>
 <translation id="3603829704940252505">अवतार</translation>
+<translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
@@ -430,6 +431,7 @@
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
+<translation id="5903200662178656908">यो डिभाइस किबोर्ड र माउसको कम्बो हो।</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तपाईंको फाइल स्क्यान गर्ने काम पूरा भएको छ र उक्त फाइल <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएको छ।}other{तपाईंका फाइलहरू स्क्यान गर्ने काम पूरा भएको छ र ती फाइलहरू <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएका छन्।}}</translation>
@@ -450,6 +452,7 @@
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
+<translation id="6112878310391905610">तपाईंका एड्मिन यो सेटिङ मिलाउनुहुन्छ</translation>
 <translation id="6113701710518389813">अप एरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, थप <ph name="NUMBER" /> एल्बमहरू</translation>
 <translation id="6122191549521593678">अनलाइन</translation>

@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="3600339377155080675">स्क्रीन शेयर करने वाला बटन</translation>
 <translation id="3603829704940252505">अवतार</translation>
+<translation id="3604713164406837697">वॉलपेपर बदलें</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
@@ -431,6 +432,7 @@
 <translation id="5866840822086176774">बहुत सशक्त</translation>
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
+<translation id="5903200662178656908">यह डिवाइस, कीबोर्ड और माउस का कॉम्बो है.</translation>
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>
@@ -451,6 +453,7 @@
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
+<translation id="6112878310391905610">इस सेटिंग को आपके एडमिन मैनेज करते हैं</translation>
 <translation id="6113701710518389813">अप ऐरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> के अलावा <ph name="NUMBER" /> और एल्बम</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>

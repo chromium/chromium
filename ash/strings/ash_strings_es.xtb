@@ -36,6 +36,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1175572348579024023">Desplazarse</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1183863904939664422">No me interesa esta sugerencia</translation>
 <translation id="118437560755358292">Escribe la contraseña o el PIN como medida de seguridad adicional</translation>
 <translation id="118532027333893379">Toca en cualquier sitio para hacer una captura de la pantalla completa</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
@@ -598,6 +599,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
+<translation id="4566144812051858745">No me interesa ninguna sugerencia</translation>
 <translation id="4570957409596482333">Botón Enunciar selección</translation>
 <translation id="4573176682887762361">"Escribir [palabra/frase]"</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
@@ -648,6 +650,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4868492592575313542">activado</translation>
 <translation id="4872237917498892622">Alt+tecla de búsqueda o Mayús</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4889868803215848840">Proporciona comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador ha inhabilitado el Asistente de Google.</translation>
 <translation id="4890408602550914571">Comprueba que tengas el teléfono cerca y que el Bluetooth esté activado.</translation>
 <translation id="4895488851634969361">La batería está llena.</translation>
@@ -835,6 +838,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6054305421211936131">Iniciar sesión con tarjeta inteligente</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">He terminado de usar el archivo</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6099678161144790572">Editado hace menos de un mes</translation>
 <translation id="6103838137565245112">sistema</translation>
@@ -1119,6 +1123,7 @@ Nueva instalación</translation>
 <translation id="7886169021410746335">Ajustar la configuración de privacidad</translation>
 <translation id="7886277072580235377">Tu sesión de Internet se borrará cuando la cierres. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo electrónico</translation>
+<translation id="7893503627044934815">No quiero que este archivo se muestre</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has pulsado la combinación de teclas que gira la pantalla. ¿Quieres girar la pantalla?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

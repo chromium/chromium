@@ -36,6 +36,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1175572348579024023">Desplaça</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
+<translation id="1183863904939664422">No m'interessa aquest suggeriment</translation>
 <translation id="118437560755358292">Introdueix la contrasenya o el PIN per augmentar la seguretat</translation>
 <translation id="118532027333893379">Toca en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
@@ -597,6 +598,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
+<translation id="4566144812051858745">No m'interessa cap suggeriment</translation>
 <translation id="4570957409596482333">Botó Escolta la selecció</translation>
 <translation id="4573176682887762361">"Escriu [paraula o frase]"</translation>
 <translation id="4577274620589681794">El temps s'ha esgotat · <ph name="LABEL" /></translation>
@@ -647,6 +649,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4881695831933465202">Obre</translation>
+<translation id="4889868803215848840">Proporciona comentaris opcionals per millorar els suggeriments:</translation>
 <translation id="4890187583552566966">L'administrador ha desactivat l'Assistent de Google.</translation>
 <translation id="4890408602550914571">Comprova que el telèfon sigui a prop teu i que tingui el Bluetooth activat.</translation>
 <translation id="4895488851634969361">La bateria està carregada.</translation>
@@ -834,6 +837,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Ja he acabat d'utilitzar el fitxer</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
@@ -1118,6 +1122,7 @@ Instal·lació nova</translation>
 <translation id="7886169021410746335">Ajustar la configuració de privadesa</translation>
 <translation id="7886277072580235377">Les dades de la sessió a Internet s'esborraran en tancar-la. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envia un correu electrònic</translation>
+<translation id="7893503627044934815">No vull que es mostri aquest fitxer</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has premut la tecla de drecera de la rotació de la pantalla. Vols girar la pantalla?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

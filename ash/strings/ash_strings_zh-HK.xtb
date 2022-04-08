@@ -36,7 +36,7 @@
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1183863904939664422">對這項建議不感興趣</translation>
+<translation id="1183863904939664422">對此建議不感興趣</translation>
 <translation id="118437560755358292">為安全起見，請輸入密碼或 PIN</translation>
 <translation id="118532027333893379">輕按任何一處即可擷取全螢幕畫面</translation>
 <translation id="1190609913194133056">通知中心</translation>
@@ -599,7 +599,7 @@
 <translation id="4560576029703263363">已開啟</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
-<translation id="4566144812051858745">對任何建議都不感興趣</translation>
+<translation id="4566144812051858745">對所有建議都不感興趣</translation>
 <translation id="4570957409596482333">「選取以朗讀」按鈕</translation>
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
@@ -650,7 +650,7 @@
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4881695831933465202">開啟</translation>
-<translation id="4889868803215848840">(選填) 請提供寶貴意見，協助我們改善建議內容：</translation>
+<translation id="4889868803215848840">您可選擇提供意見，協助我們改善建議：</translation>
 <translation id="4890187583552566966">您的管理員已停用「Google 助理」。</translation>
 <translation id="4890408602550914571">請確認您的手機在附近，且已開啟藍牙。</translation>
 <translation id="4895488851634969361">電池電量已滿。</translation>
@@ -837,7 +837,7 @@
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
-<translation id="6064463340679478396">不會再使用這個檔案</translation>
+<translation id="6064463340679478396">不會再使用檔案</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
@@ -864,6 +864,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>
 <translation id="6283712521836204486">「請勿騷擾」已關閉。</translation>
 <translation id="6284232397434400372">解像度已變更</translation>
+<translation id="6286007831750548130">搜尋記錄結果已刪除</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -1122,7 +1123,7 @@
 <translation id="7886169021410746335">調整私隱權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電郵</translation>
-<translation id="7893503627044934815">不想看到這個檔案</translation>
+<translation id="7893503627044934815">不想顯示此檔案</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您已按下螢幕旋轉的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

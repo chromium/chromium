@@ -36,6 +36,7 @@
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="1183863904939664422">اس تجویز میں کوئی دلچسپی نہیں</translation>
 <translation id="118437560755358292">‏مزید سیکیورٹی کے لیے پاس ورڈ یا PIN درج کریں</translation>
 <translation id="118532027333893379">فُل اسکرین کیپچر کرنے کیلئے کہیں پر بھی تھپتھپائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
@@ -597,6 +598,7 @@
 <translation id="4560576029703263363">آن</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
+<translation id="4566144812051858745">کسی بھی تجویز میں دلچسپی نہیں</translation>
 <translation id="4570957409596482333">سننے کیلئے منتخب کریں بٹن</translation>
 <translation id="4573176682887762361">"[لفظ / فقرہ] ٹائپ کریں"</translation>
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
@@ -647,6 +649,7 @@
 <translation id="4868492592575313542">فعال</translation>
 <translation id="4872237917498892622">‏Alt+تلاش یا Shift</translation>
 <translation id="4881695831933465202">کھولیں</translation>
+<translation id="4889868803215848840">تجاویز کو بہتر بنانے کے لیے اختیاری تاثرات فراہم کریں:</translation>
 <translation id="4890187583552566966">‏Google اسسٹنٹ کو آپ کے منتظم نے غیر فعال کر دیا ہے۔</translation>
 <translation id="4890408602550914571">یقینی بنائیں کہ آپ کا فون قریب میں ہے اور اس میں بلوٹوتھ آن ہے۔</translation>
 <translation id="4895488851634969361">بیٹری بھری ہوئی ہے۔</translation>
@@ -834,6 +837,7 @@
 <translation id="6054305421211936131">اپنے اسمارٹ کارڈ سے سائن ان کریں</translation>
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
+<translation id="6064463340679478396">فائل کا استعمال کرتے ہوئے ہو گیا</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
 <translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
 <translation id="6103838137565245112">سسٹم</translation>
@@ -1117,6 +1121,7 @@
 <translation id="7886169021410746335">رازداری کی ترتیبات کو ایڈجسٹ کریں</translation>
 <translation id="7886277072580235377">آپ کے سائن آؤٹ ہونے پر آپ کا انٹرنیٹ سیشن صاف ہو جائے گا۔ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ای میل بھیجیں</translation>
+<translation id="7893503627044934815">نہیں چاہتے کہ یہ فائل دکھائی جائے</translation>
 <translation id="7895348134893321514">ٹوٹ</translation>
 <translation id="7897375687985782769">آپ نے اسکرین کو گھمانے کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسکرین کو گھمانا چاہتے ہیں؟</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>

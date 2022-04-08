@@ -839,7 +839,6 @@
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1787350673646245458">ユーザー画像</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> から Chrome ブラウザのアイテムにアクセス</translation>
-<translation id="1790194216133135334"><ph name="DEVICE_NAME" /> にリンクを送信</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -1380,7 +1379,6 @@
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
-<translation id="2315587498123194634"><ph name="DEVICE_NAME" /> にリンクを送信</translation>
 <translation id="2316129865977710310">いいえ</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 完了</translation>
 <translation id="2318143611928805047">用紙サイズ</translation>
@@ -2497,7 +2495,7 @@
 <translation id="343115368966109153"><ph name="FILE_NAME" /> をダウンロードしますか？ファイルは、このデバイスを使用するすべてのユーザーに表示されます。</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
-<translation id="3433507769937235446">ロックオンの終了</translation>
+<translation id="3433507769937235446">退席時ロック</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。</translation>
@@ -4415,7 +4413,6 @@
 <translation id="5307386115243749078">Bluetooth スイッチのペア設定</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5309418307557605830">Google アシスタントはこのデバイスで使用できます</translation>
-<translation id="5310281978693206542">リンクをデバイスに送信</translation>
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
 <translation id="5311565231560644461">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
@@ -5153,7 +5150,6 @@
 <translation id="6057381398996433816">このサイトではモーション センサーと光センサーの使用がブロックされています。</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6059652578941944813">証明書の階層</translation>
-<translation id="6061882183774845124">リンクをデバイスに送信</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。バッテリー消費を抑えるには、<ph name="SUPERVISED_USER_NAME" /> さんの [アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
 <translation id="6064217302520318294">画面ロック</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
@@ -5292,7 +5288,6 @@
 <translation id="6201608810045805374">このアカウントを削除しますか？</translation>
 <translation id="6202304368170870640">デバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="6206311232642889873">画像をコピー(&amp;Y)</translation>
-<translation id="6206378791187887398">許可しますか？</translation>
 <translation id="6207200176136643843">リセットしてデフォルトのズームレベルに戻す</translation>
 <translation id="6207937957461833379">国/地域</translation>
 <translation id="6208382900683142153">トラスト トークンはウェブ上のプライバシーを改善するもので、ユーザーの特定に使用することはできません。</translation>
@@ -5698,7 +5693,6 @@
 <translation id="6592808042417736307">指紋を登録しました</translation>
 <translation id="6593881952206664229">著作権が設定されたメディアは再生できません</translation>
 <translation id="6594011207075825276">シリアル デバイスを検出しています...</translation>
-<translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> による MIDI デバイスのフル コントロールを常にブロックする</translation>
 <translation id="6595792813574514527">ドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
@@ -7125,7 +7119,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> によるクリップボードへのアクセスを常に許可する</translation>
-<translation id="8005666035647241369">このデバイスの Google パスワード マネージャーに移動</translation>
 <translation id="8006630792898017994">スペースキーまたは Tab キー</translation>
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
@@ -7450,7 +7443,6 @@
 <translation id="8314381333424235892">拡張機能がないか、インストールされていません</translation>
 <translation id="831440797644402910">このフォルダを開けません</translation>
 <translation id="8314835274931377415">スイッチ アクセスの設定を開始しますか？</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" /> に送信</translation>
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>

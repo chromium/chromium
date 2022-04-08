@@ -36,6 +36,7 @@
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="1183863904939664422">Այս առաջարկը ինձ չի հետաքրքրում</translation>
 <translation id="118437560755358292">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="118532027333893379">Լիաէկրան ռեժիմում լուսանկարելու համար հպեք էկրանի ցանկացած կետի</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
@@ -589,6 +590,7 @@
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
 <translation id="4505050298327493054">Ակտիվ աշխատանքային սեղան։</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
+<translation id="4516867700536986208">Բոլոր հավելվածները․ ձախ կամ ներքև սլաքի օգնությամբ կարող եք բացել բոլոր հավելվածների ցանկը</translation>
 <translation id="4518404433291145981">Ձեր Chromebook-ն ապակողպելու համար նախ ապակողպեք ձեր հեռախոսը</translation>
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="453661520163887813">Լրիվ կլիցքավորվի <ph name="TIME" />-ից</translation>
@@ -597,6 +599,7 @@
 <translation id="4560576029703263363">Միացված է</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
+<translation id="4566144812051858745">Ինձ ոչ մի առաջարկ չի հետաքրքրում</translation>
 <translation id="4570957409596482333">«Ընտրեք և լսեք» կոճակ</translation>
 <translation id="4573176682887762361">«Type [word/phrase]» (մուտքագրել բառ/արտահայտություն)</translation>
 <translation id="4577274620589681794">Ժամանակը սպառվել է · <ph name="LABEL" /></translation>
@@ -647,6 +650,7 @@
 <translation id="4868492592575313542">ակտիվացված է</translation>
 <translation id="4872237917498892622">Alt+Search կամ Shift</translation>
 <translation id="4881695831933465202">Բացել</translation>
+<translation id="4889868803215848840">Կարծիք հայտնեք, որպեսզի մենք կարողանանք բարելավել առաջարկները։</translation>
 <translation id="4890187583552566966">Google Օգնականն անջատված է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="4890408602550914571">Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված է, և որ Bluetooth-ը միացված է։</translation>
 <translation id="4895488851634969361">Մարտկոցը լիցքավորված է:</translation>
@@ -834,6 +838,7 @@
 <translation id="6054305421211936131">Մտնել հաշիվ խելացի քարտի օգնությամբ</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6062360702481658777">Դուք ավտոմատ դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />-ից:</translation>
+<translation id="6064463340679478396">Այլևս չեմ օգտագործում ֆայլը</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6099678161144790572">Անցած ամիս փոփոխել եք</translation>
 <translation id="6103838137565245112">համակարգ</translation>
@@ -1016,6 +1021,7 @@
 <translation id="7302889331339392448">«Կենդանի ենթագրեր» գործառույթը միացված է։</translation>
 <translation id="7303365578352795231">Օգնականն այլ սարքում է պատասխանում:</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Վերջերս օգտագործված հավելվածներ․ ձախ սլաքի օգնությամբ կարող եք բացել վերջերս օգտագործված հավելվածների ցանկը</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="731589979057211264">Shelf Party ռեժիմը միացված է։</translation>
 <translation id="7319740667687257810">Launcher՝ մասնակի տարբերակ</translation>
@@ -1118,6 +1124,7 @@
 <translation id="7886169021410746335">Փոփոխել գաղտնիության կարգավորումները</translation>
 <translation id="7886277072580235377">Հաշվից դուրս գալուց հետո համացանցում ձեր գործողությունների մասին տվյալները կջնջվեն: <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Ուղարկել նամակ</translation>
+<translation id="7893503627044934815">Չեմ ուզում, որ այս ֆայլը ցուցադրվի</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Դուք սեղմել եք էկրանի պտտման դյուրանցման ստեղները: Ուզում եք պտտե՞լ էկրանը:</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

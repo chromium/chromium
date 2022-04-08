@@ -845,7 +845,6 @@
 <translation id="1784849162047402014">ಸಾಧನದ ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="1787350673646245458">ಬಳಕೆದಾರರ ಚಿತ್ರ</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> ಬಳಸಿ ನಿಮ್ಮ Chrome ಬ್ರೌಸರ್‌ನ ವಿಷಯಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
-<translation id="1790194216133135334"><ph name="DEVICE_NAME" /> ಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
 <translation id="1790976235243700817">ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1791662854739702043">ಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="1792619191750875668">ವಿಸ್ತರಿಸಲಾದ ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -1393,7 +1392,6 @@
 <translation id="2312219318583366810">ಪುಟದ URL</translation>
 <translation id="2314165183524574721">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="2314774579020744484">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸುವಾಗ ಬಳಸುವ ಭಾಷೆ</translation>
-<translation id="2315587498123194634"><ph name="DEVICE_NAME" /> ಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
 <translation id="2316129865977710310">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % ಮುಗಿದಿದೆ</translation>
 <translation id="2318143611928805047">ಪೇಪರ್ ಗಾತ್ರ</translation>
@@ -4435,7 +4433,6 @@
 <translation id="5307386115243749078">ಬ್ಲೂಟೂತ್ ಸ್ವಿಚ್ ಅನ್ನು ಜೋಡಿಸಿ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5309418307557605830">Google Assistant ಇಲ್ಲಿಯೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ</translation>
-<translation id="5310281978693206542">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
 <translation id="5311304534597152726">ಇದರಂತೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5311565231560644461">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="5313967007315987356">ಸೈಟ್ ಸೇರಿಸಿ</translation>
@@ -5178,7 +5175,6 @@
 <translation id="6057381398996433816">ಈ ಸೈಟ್ ಅನ್ನು ಚಲನೆ ಅಥವಾ ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6059652578941944813">ಪ್ರಮಾಣಪತ್ರ ಶ್ರೇಣಿ ವ್ಯವಸ್ಥೆ</translation>
-<translation id="6061882183774845124">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ಗಮನಿಸಿ<ph name="END_BOLD" />: ಇದೇ ರೀತಿಯ ಧ್ವನಿ ಅಥವಾ ರೆಕಾರ್ಡಿಂಗ್ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ವೈಯಕ್ತಿಕ ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. ಬ್ಯಾಟರಿಯನ್ನು ಉಳಿಸಲು, ಈ ಸಾಧನವನ್ನು ವಿದ್ಯುತ್ ಮೂಲಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಮಾತ್ರ ನೀವು "Ok Google" ಅನ್ನು ಪತ್ತೆಮಾಡಲು ನೀವು <ph name="SUPERVISED_USER_NAME" /> ಅವರ Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಯ್ಕೆಮಾಡಬಹುದು.</translation>
 <translation id="6064217302520318294">ಸ್ಕ್ರೀನ್ ಲಾಕ್</translation>
 <translation id="6065289257230303064">ಪ್ರಮಾಣಪತ್ರ ವಿಷಯ ಡೈರೆಕ್ಟರಿ ಆಟ್ರಿಬ್ಯೂಟ್‌ಗಳು</translation>
@@ -5317,7 +5313,6 @@
 <translation id="6201608810045805374">ಈ ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?</translation>
 <translation id="6202304368170870640">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡುವುದಕ್ಕೆ ಅಥವಾ ಅದನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುವುದಕ್ಕೆ ನಿಮ್ಮ ಪಿನ್‌ ಅನ್ನು ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="6206311232642889873">ಇಮೇಜ್ ಅನ್ನು ನಕ&amp;ಲಿಸಿ</translation>
-<translation id="6206378791187887398">ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="6207200176136643843">ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಡೀಫಾಲ್ಟ್‌ಗೆ ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="6207937957461833379">ರಾಷ್ಟ್ರ/ಪ್ರದೇಶ</translation>
 <translation id="6208382900683142153">ಟ್ರಸ್ಟ್ ಟೋಕನ್‌ಗಳು ವೆಬ್‌ನಲ್ಲಿನ ಗೌಪ್ಯತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತವೆ ಮತ್ತು ನೀವು ಯಾರೆಂದು ಕಂಡುಹಿಡಿಯಲು ಅವುಗಳನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
@@ -5724,7 +5719,6 @@
 <translation id="6592808042417736307">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6593881952206664229">ಕೃತಿಸ್ವಾಮ್ಯ ಹೊಂದಿರುವ ಮಾಧ್ಯಮ ಪ್ಲೇ ಆಗದಿರಬಹುದು</translation>
 <translation id="6594011207075825276">ಸರಣಿ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="659498884637196217">ಈ ಸಾಧನದ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ</translation>
 <translation id="6595187330192059106">MIDI ಸಾಧನಗಳ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಫ್ಶನ್ ಆಯ್ಕೆಗಳು</translation>
@@ -7151,7 +7145,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ಪ್ರಿಂಟರ್ ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
 <translation id="8005600846065423578">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ನೋಡಲು <ph name="HOST" /> ಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿ ನೀಡಿ</translation>
-<translation id="8005666035647241369">ಈ ಸಾಧನದಲ್ಲಿ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕಕ್ಕೆ</translation>
 <translation id="8006630792898017994">ಸ್ಪೇಸ್ ಅಥವಾ ಟ್ಯಾಬ್</translation>
 <translation id="8008356846765065031">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="8009225694047762179">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -7476,7 +7469,6 @@
 <translation id="8314381333424235892">ವಿಸ್ತರಣೆ ಕಾಣೆಯಾಗಿದೆ ಅಥವಾ ಅದನ್ನು ಅನ್‍‍ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="831440797644402910">ಈ ಫೋಲ್ಡರ್ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8314835274931377415">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಸೆಟಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸುವುದೇ?</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8317671367883557781">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8319414634934645341">ವಿಸ್ತರಿತ ಕೀಲಿ ಬಳಕೆ</translation>
 <translation id="8321837372750396788">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು <ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>

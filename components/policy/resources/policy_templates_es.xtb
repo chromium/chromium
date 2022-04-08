@@ -852,6 +852,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
         |TIME_LIMITS| aplica un límite de uso diario y hace que la aplicación deje de estar disponible cuando se alcance ese límite durante el día determinado. El límite de uso se especifica en |daily_limit_mins| y se restablece diariamente a la hora UTC especificada en |reset_at|.
         Esta política solo se usa para usuarios infantiles.
         Esta política es complementaria a "UsageTimeLimit". Las restricciones especificadas en "UsageTimeLimit", como el tiempo de pantalla y la hora de dormir, se aplicarán independientemente de lo que se haya especificado en "PerAppTimeLimits".</translation>
+<translation id="1913629775420987861">Mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="1916266055944569995">Si se asigna un valor a esta política, se definirá el valor de retorno de la API Managed Configuration para un origen determinado.
 
       La API Managed Configuration es una configuración clave-valor a la que se puede acceder llamando a la función de JavaScript navigator.device.getManagedConfiguration(). Esta API solo está disponible para orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1599,6 +1600,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
+<translation id="270582584528242502">No mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
 <translation id="2707873794476722903">La función Navegación segura está activa en modo estándar.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
@@ -2472,6 +2474,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
 <translation id="3634125384445314047">Permite acceder a través de la función Mi teléfono a fotos y vídeos recientes hechos con el teléfono.</translation>
 <translation id="3643284063603988867">Habilitar la función "Recordar contraseña"</translation>
+<translation id="3644735978203799620">Habilita la selección automática para capturas de multipantalla</translation>
 <translation id="3646859102161347133">Establecer el tipo de lupa</translation>
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
 
@@ -4956,6 +4959,10 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="654303922206238013">Estrategia de migración para eCryptfs</translation>
 <translation id="6543277347547044538">Fin del intervalo, exclusivo.</translation>
 <translation id="6544601600794014309">Habilitar traducción de Respuestas rápidas</translation>
+<translation id="6544759513632821565">La API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite a las aplicaciones web capturar varias superficies a la vez.
+      Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicaciones web en orígenes definidos.
+      Si la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> se define en una solicitud <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, todas las superficies de la pantalla se capturarán automáticamente sin que se necesite permiso explícito del usuario.
+      Si la política no se establece, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> no estará disponible para ninguna aplicación web.</translation>
 <translation id="654546276700640113">Si se establece esta política, se aplicará la longitud máxima definida del PIN. Si el valor de esta opción es 0 o inferior, el usuario podrá establecer un PIN de cualquier longitud. Si el valor es inferior a <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> pero superior a 0, la longitud máxima será la misma que la mínima.
 
       Si no se establece la política, no se aplicará ninguna longitud máxima.</translation>
@@ -6622,6 +6629,11 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Si se configura la política, los usuarios no podrán cambiarla. Si no se configura, la política estará activada, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="8300992833374611099">Controla dónde se pueden usar las herramientas para desarrolladores</translation>
 <translation id="8301065459352777588">Los usuarios de sesiones de invitado gestionadas pueden almacenar ajustes de pantalla que se apliquen a todo el dispositivo</translation>
+<translation id="8303923135132440974">Controla el cuadro de diálogo Avisar antes de salir (⌘Q) cuando el usuario intenta salir del navegador.
+
+      Si esta política se habilita o no se establece, se mostrará un cuadro de diálogo de advertencia cuando el usuario intente salir.
+
+      Si esta política se inhabilita, no se mostrará un cuadro de diálogo de advertencia cuando el usuario intente salir.</translation>
 <translation id="830440838848984847">Permitir que los usuarios inicien sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Configuración de inicio de sesión</translation>
 <translation id="830819203330820450">Si se habilita o no se configura (opción predeterminada), una página web puede usar

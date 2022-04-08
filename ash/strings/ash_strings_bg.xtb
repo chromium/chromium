@@ -36,6 +36,7 @@
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
+<translation id="1183863904939664422">Това предложение не ме интересува</translation>
 <translation id="118437560755358292">За по-голяма сигурност въведете парола или ПИН</translation>
 <translation id="118532027333893379">Докоснете произволно място, за да се заснеме целият екран</translation>
 <translation id="1190609913194133056">Център за известия</translation>
@@ -597,6 +598,7 @@
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
+<translation id="4566144812051858745">Не ме интересуват никакви предложения</translation>
 <translation id="4570957409596482333">Бутон за функцията Прочитане на глас</translation>
 <translation id="4573176682887762361">„Type [word/phrase]“</translation>
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
@@ -647,6 +649,7 @@
 <translation id="4868492592575313542">активирана</translation>
 <translation id="4872237917498892622">„Alt + търсене“ или „Shift“</translation>
 <translation id="4881695831933465202">Отваряне</translation>
+<translation id="4889868803215848840">Оставете незадължителни отзиви, за да подобрите предложенията:</translation>
 <translation id="4890187583552566966">Администраторът ви е деактивирал Google Асистент.</translation>
 <translation id="4890408602550914571">Уверете се, че телефонът ви е наблизо и че сте включили Bluetooth.</translation>
 <translation id="4895488851634969361">Батерията е пълна.</translation>
@@ -834,6 +837,7 @@
 <translation id="6054305421211936131">Влизане със смарткарта</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6062360702481658777">Ще излезете автоматично след <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Приключих с използването на този файл</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="6099678161144790572">Редактирано през миналия месец</translation>
 <translation id="6103838137565245112">система</translation>
@@ -1118,6 +1122,7 @@
 <translation id="7886169021410746335">да коригира настройките за поверителност.</translation>
 <translation id="7886277072580235377">Сесията ви за интернет ще бъде изчистена, когато излезете от профила си. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">„Send an email“ („Изпрати имейл“)</translation>
+<translation id="7893503627044934815">Не искам този файл да се показва</translation>
 <translation id="7895348134893321514">Кутия</translation>
 <translation id="7897375687985782769">Използвахте клавишната комбинация за завъртане на екрана. Искате ли да промените ориентацията му?</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>

@@ -842,7 +842,6 @@
 <translation id="1784849162047402014">Սարքի սկավառակում ազատ տարածքը քիչ է</translation>
 <translation id="1787350673646245458">Օգտատիրոջ պատկեր</translation>
 <translation id="1788329699711791226">Բացեք Chrome դիտարկիչի ձեր տվյալները <ph name="ACCOUNT_EMAIL" /> հաշվից</translation>
-<translation id="1790194216133135334">Ուղարկել հղումը <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="1790976235243700817">Հեռացնել մուտքի թույլտվությունը</translation>
 <translation id="1791662854739702043">Տեղադրվեց</translation>
 <translation id="1792619191750875668">Ընդարձակված էկրան</translation>
@@ -1387,7 +1386,6 @@
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
 <translation id="2314774579020744484">Լեզուն, որն օգտագործվում է էջերը թարգմանելու համար</translation>
-<translation id="2315587498123194634">Ուղարկել հղումը <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="2316129865977710310">Ոչ</translation>
 <translation id="2317842250900878657">Կատարված է` <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Թղթի չափը</translation>
@@ -2159,7 +2157,7 @@
 <translation id="304747341537320566">Խոսքի սինթեզատորներ</translation>
 <translation id="3048336643003835855">HID սարքեր <ph name="VENDOR_ID" /> մատակարարից</translation>
 <translation id="3048917188684939573">Հեռարձակման և սարքի մատյանները</translation>
-<translation id="3051250416341590778">Ցուցադրման չափը</translation>
+<translation id="3051250416341590778">Ցուցադրման չափսը</translation>
 <translation id="3053013834507634016">Վկայագրի բանալու օգտագործումը</translation>
 <translation id="3053273573829329829">Միացնել օգտատիրոջ PIN կոդը</translation>
 <translation id="3054766768827382232">Եթե այն անջատեք, արտաքին սարքերը կարող են ավելի արդյունավետ աշխատել, սակայն ձեր անձնական տվյալների պաշտպանությունը կվտանգվի։</translation>
@@ -2865,6 +2863,7 @@
 <translation id="3760460896538743390">Հետազոտել &amp;հետնաշերտի էջը</translation>
 <translation id="37613671848467444">Բացել &amp;ինկոգնիտո պատուհանում</translation>
 <translation id="3761556954875533505">Թույլատրե՞լ կայքին փոփոխել ֆայլեր</translation>
+<translation id="3763549179847864476">«Հետ» կոճակ Գաղտնիության ուղեցույցի էջում</translation>
 <translation id="3764314093345384080">Կառուցվածքի մասին մանրամասն տվյալներ</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Կապակցվել USB սարքի հետ}one{Կապակցվել # USB սարքի հետ}other{Կապակցվել # USB սարքի հետ}}</translation>
 <translation id="3764753550716962406">Թույլատրե՞լ Google-ին օգտագործել զամբյուղը՝ հասանելի զեղչեր որոնելու համար։</translation>
@@ -3809,6 +3808,7 @@
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ներկառուցված ծրագիրը ստեղծել է չորս ֆայլ՝ csr.lst, fh_regs.lst, radio_reg.lst և monitor.lst.sysmon։ Առաջին երեքը բինարային ֆայլեր են, որոնք պարունակում են ռեեստրի հիշողության բեռնաթափման տվյալները, որոնց մեջ, ըստ Intel ընկերության, չկան անձնական տեղեկություններ և սարքի մասին տվյալներ։ Վերջին ֆայլը պարունակում է Intel–ի ներկառուցված ծրագրի աշխատանքի հետագծումը։ Ֆայլից հեռացված են բոլոր անձնական տեղեկություններն ու սարքի մասին տվյալները։ Քանի որ վերջին ֆայլի չափը շատ մեծ է, այն ամբողջությամբ չի ցուցադրվի այստեղ։ Նշյալ ֆայլերը կուղարկվեն Intel-ին՝ ձեր սարքում Wi-Fi-ի հետ կապված խնդիրները շտկելու համար։</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="4692623383562244444">Որոնիչներ</translation>
+<translation id="4692736633446859167">Դուք նախկինում արգելել եք ընդայնումները <ph name="SITE" /> կայքում։ Եթե այս կայքը տվյալ դաշտում ավելացնեք, այլ ընդլայնումներ կկարողանան <ph name="SITE" /> կայքում տվյալները կարդալու և փոփոխելու թույլտվություն հայցել։</translation>
 <translation id="4693155481716051732">Սուշի</translation>
 <translation id="4694024090038830733">Տպիչների կարգավարումները կարող է փոխել միայն ադմինիստրատորը:</translation>
 <translation id="4694604912444486114">Կապիկ</translation>
@@ -4428,7 +4428,6 @@
 <translation id="5307386115243749078">Զուգակցել Bluetooth փոխանջատիչը</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5309418307557605830">Google Օգնականն աշխատում է նաև այստեղ</translation>
-<translation id="5310281978693206542">Ուղարկել հղումը իմ սարքերին</translation>
 <translation id="5311304534597152726">Մուտք հաշիվ</translation>
 <translation id="5311565231560644461">Արգելել կայքերին օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="5313967007315987356">Ավելացնել կայք</translation>
@@ -5167,7 +5166,6 @@
 <translation id="6057381398996433816">Այս կայքին արգելվել է օգտագործել շարժման և լուսավորության տվիչները:</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6059652578941944813">Վկայագրերի աստիճանակարգություն</translation>
-<translation id="6061882183774845124">Ուղարկել հղումը իմ սարքերին</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Նկատի ունեցեք<ph name="END_BOLD" />, որ <ph name="SUPERVISED_USER_NAME" />-ի ձայնին նման ձայն կամ նրա ձայնի ձայնագրությունն ունեցող օգտատերերը հնարավոր է՝ նույնպես կարողանան օգտվել նրա անհատականացված արդյունքներից։ Մարտկոցի լիցքը տնտեսելու համար <ph name="SUPERVISED_USER_NAME" />-ի Օգնականի կարգավորումներում կարող եք ընտրել այնպիսի ռեժիմ, որի դեպքում «Ok Google» հրահանգը աշխատում է, միայն երբ սարքը միացված է հոսանքին։</translation>
 <translation id="6064217302520318294">Էկրանի կողպում</translation>
 <translation id="6065289257230303064">Վկայագրի սուբյեկտի գրացուցակի հատկանիշներ</translation>
@@ -5306,7 +5304,6 @@
 <translation id="6201608810045805374">Հեռացնե՞լ հաշիվը</translation>
 <translation id="6202304368170870640">Դուք կարող եք օգտագործել ձեր PIN կոդը՝ ձեր սարք մտնելու կամ այն ապակողպելու համար:</translation>
 <translation id="6206311232642889873">Պատ&amp;ճենել պատկերը</translation>
-<translation id="6206378791187887398">Թույլատրե՞լ</translation>
 <translation id="6207200176136643843">Վերակայել կանխադրված մասշտաբը</translation>
 <translation id="6207937957461833379">Երկիր/տարածաշրջան</translation>
 <translation id="6208382900683142153">Վստահության թոքենները բարձրացնում են ցանցում գաղտնիության մակարդակը և անհնար են դարձնում ձեր ինքնության բացահայտումը։</translation>
@@ -5713,7 +5710,6 @@
 <translation id="6592808042417736307">Մատնահետքն ավելացվեց</translation>
 <translation id="6593881952206664229">Հեղինակային իրավունքով պաշտպանված մեդիա ֆայլերը կարող են չնվագարկվել</translation>
 <translation id="6594011207075825276">Սերիական սարքերի որոնում…</translation>
-<translation id="659498884637196217">Այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
 <translation id="6595187330192059106">Արգելել <ph name="HOST" /> կայքին ամբողջությամբ վերահսկել MIDI սարքերը։</translation>
 <translation id="6595792813574514527">Քաշել պատկերները՝ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով որոնելու համար</translation>
 <translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
@@ -7141,7 +7137,6 @@
 <translation id="8002670234429879764">«<ph name="PRINTER_NAME" />» տպիչն այլևս հասանելի չէ</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8005600846065423578">Միշտ թույլատրել <ph name="HOST" /> կայքին տեսնել սեղմատախտակը</translation>
-<translation id="8005666035647241369">Այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
 <translation id="8006630792898017994">Բացատ կամ TAB</translation>
 <translation id="8008356846765065031">Համացանցն անջատված է: Ստուգեք ձեր կապակցումը:</translation>
 <translation id="8009225694047762179">Կառավարել գաղտնաբառերը</translation>
@@ -7465,7 +7460,6 @@
 <translation id="8314381333424235892">Բացակայող կամ չտեղադրված ընդլայնում</translation>
 <translation id="831440797644402910">Չհաջողվեց պանակը բացել</translation>
 <translation id="8314835274931377415">Սկսե՞լ Switch Access-ի կարգավորումը</translation>
-<translation id="8316618172731049784">Ուղարկել <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="8317671367883557781">Ավելացնել ցանցային կապ</translation>
 <translation id="8319414634934645341">Բանալու ընդարձակված օգտագործում</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> սարքը կկառավարվի <ph name="MANAGER" />-ի կողմից։</translation>
@@ -8335,6 +8329,7 @@
 <translation id="919679265671373777">Թույլ է տալիս դիտել հեռախոսում վերջերս ավելացված լուսանկարները և մեդիա ֆայլերը, ինչպես նաև հեռարձակել հեռախոսի հաղորդագրման հավելվածների բովանդակությունը։</translation>
 <translation id="919686179725692564">Իմանալ ավելին հավելվածների պահուստավորման մասին</translation>
 <translation id="9198090666959937775">Օգտագործեք ձեր Android հեռախոսը որպես անվտանգության բանալի</translation>
+<translation id="9199503643457729322">Սեղմեք՝ Գաղտնիության ուղեցույցից դուրս գալու համար։</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել «<ph name="FOLDERNAME" />» պանակի ֆայլերը</translation>
 <translation id="920045321358709304">Որոնել <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="9201023452444595544">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>

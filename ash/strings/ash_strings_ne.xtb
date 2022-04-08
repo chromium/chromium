@@ -36,6 +36,7 @@
 <translation id="1175572348579024023">स्क्रोल गर्नुहोस्</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1183863904939664422">मलाई यो सुझावमा रुचि छैन</translation>
 <translation id="118437560755358292">थप सुरक्षाका लागि पासवर्ड वा PIN हाल्नुहोस्</translation>
 <translation id="118532027333893379">फुल स्क्रिनको फोटो खिच्न कुनै ठाउँमा ट्याप गर्नुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
@@ -589,6 +590,7 @@
 <translation id="4481530544597605423">जोडा हटाइएका यन्त्रहरू</translation>
 <translation id="4505050298327493054">सक्रिय डेस्क।</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
+<translation id="4516867700536986208">सबै एपहरू, सबै एपहरू भएको एप ग्रिडमा जान लेफ्ट वा डाउन एरो बटन प्रयोग गर्नुहोस्</translation>
 <translation id="4518404433291145981">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो फोन अनलक गर्नुहोस्</translation>
 <translation id="4527045527269911712">ब्लुटूथ यन्त्र "<ph name="DEVICE_NAME" />" जोडिनको लागि अनुमति चाहन्छ।</translation>
 <translation id="453661520163887813">पूर्ण हुन <ph name="TIME" /> बॉंकी छ</translation>
@@ -597,6 +599,7 @@
 <translation id="4560576029703263363">अन</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
+<translation id="4566144812051858745">मलाई कुनै पनि सुझावमा रुचि छैन</translation>
 <translation id="4570957409596482333">सेलेक्ट टु स्पिक सेवासम्बन्धी बटन</translation>
 <translation id="4573176682887762361">"[word / phrase] टाइप गर"</translation>
 <translation id="4577274620589681794">समय सकियो · <ph name="LABEL" /></translation>
@@ -647,6 +650,7 @@
 <translation id="4868492592575313542">सक्रिय गरियो</translation>
 <translation id="4872237917498892622">Alt+खोज्नुहोस् वा Shift</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
+<translation id="4889868803215848840">सुझावको गुणस्तर सुधार गर्ने प्रयोजनका लागि प्रतिक्रिया दिनुहोस् (ऐच्छिक):</translation>
 <translation id="4890187583552566966">तपाईंको प्रशासकले Google सहायकलाई असक्षम पार्नुभएको छ।</translation>
 <translation id="4890408602550914571">तपाईंको फोन नजिकै छ त्यसको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4895488851634969361">ब्याटरी पूर्ण भयो।</translation>
@@ -834,6 +838,7 @@
 <translation id="6054305421211936131">स्मार्ट कार्डमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="6059276912018042191">Chrome का हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="6062360702481658777">तपाइँ <ph name="LOGOUT_TIME_LEFT" /> मा स्वचालित रूपमा साइन आउट हुनुहुनेछ।</translation>
+<translation id="6064463340679478396">यो फाइल प्रयोग गरिसकेँ</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
 <translation id="6099678161144790572">गत महिना सम्पादन गरिएको</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
@@ -1016,6 +1021,7 @@
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">हालैका एपहरू, हालैका सबै एपहरू भएको खण्डमा जान लेफ्ट एरो बटन प्रयोग गर्नुहोस्</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="731589979057211264">सेल्फ पार्टी अन छ।</translation>
 <translation id="7319740667687257810">लन्चर, आंशिक दृश्य</translation>
@@ -1118,6 +1124,7 @@
 <translation id="7886169021410746335">गोपनीयतासम्बन्धी सेटिङहरूको समायोजन गर्नुहोस्</translation>
 <translation id="7886277072580235377">तपाईं साइन आउट हुँदा तपाईंको इन्टरनेट सत्र खाली गरिने छ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">इमेल पठाउनुहोस्</translation>
+<translation id="7893503627044934815">मलाई यो फाइल नदेखाइयोस्</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">तपाईंले स्क्रिन घुमाउनेसम्बन्धी किबोर्ड सर्टकट थिच्नुभयो। तपाईं स्क्रिन घुमाउन चाहनुहुन्छ?</translation>
 <translation id="7901405293566323524">फोन हब</translation>

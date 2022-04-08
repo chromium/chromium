@@ -840,7 +840,6 @@
 <translation id="1784849162047402014">آلہ میں ڈسک کی جگہ کم ہے</translation>
 <translation id="1787350673646245458">صارف تصویر</translation>
 <translation id="1788329699711791226">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کی سہولیات تک رسائی حاصل کریں</translation>
-<translation id="1790194216133135334"><ph name="DEVICE_NAME" /> پر لنک بھیجیں</translation>
 <translation id="1790976235243700817">رسائی ہٹائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792619191750875668">توسیع کردہ ڈسپلے</translation>
@@ -1385,7 +1384,6 @@
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
 <translation id="2314165183524574721">موجودہ نظر آنے کی ترتیب پوشیدہ ہے</translation>
 <translation id="2314774579020744484">صفحات کا ترجمہ کرتے وقت استعمال کی جانے والی زبان</translation>
-<translation id="2315587498123194634"><ph name="DEVICE_NAME" /> پر لنک بھیجیں</translation>
 <translation id="2316129865977710310">نہیں، شکریہ</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% مکمل</translation>
 <translation id="2318143611928805047">کاغذ کا سائز</translation>
@@ -2864,6 +2862,7 @@
 <translation id="3760460896538743390">&amp;پس منظر کے صفحہ کا معائنہ کریں</translation>
 <translation id="37613671848467444">&amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3761556954875533505">سائٹ کو فائلز میں ترمیم کرنے دیں؟</translation>
+<translation id="3763549179847864476">رازداری کی گائیڈ پر واپس جانے کا بٹن</translation>
 <translation id="3764314093345384080">تفصیلی بلڈ معلومات</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏USB آلہ کے ساتھ مواصلت کریں}other{‏‎# USB آلات کے ساتھ مواصلت کریں}}</translation>
 <translation id="3764753550716962406">‏دستیاب رعایتیں تلاش کرنے کے لیے Google کو آپ کی کارٹ استعمال کرنے دیں؟</translation>
@@ -3808,6 +3807,7 @@
 <translation id="4690091457710545971">‏&lt;Intel Wi-Fi فرم ویئر کے ذریعے جنریٹ کردہ چار فائلیں: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon۔ پہلی تین رجسٹر ڈمپس کی حامل بائنری فائلیں ہیں، اور ان کی Intel کے ذریعے تصدیق کی جاتی ہے تاکہ ان میں کوئی ذاتی یا آلے کی شناخت کرنے والی معلومات شامل نہ ہو۔ آخری فائل Intel فرم ویئر کی کارروائی کا سراغ ہے، اسے کسی بھی ذاتی یا آلے کی شناخت کرنے والی معلومات سے پاک کر دیا جاتا ہے، لیکن یہ یہاں ڈسپلے کئے جانے کیلئے کافی بڑی ہے۔ ان فائلوں کو آپ کے آلے کے ساتھ پیش آنے والے حالیہ Wi-Fi مسائل کے جواب میں جنریٹ کیا گیا تھا اور ان مسائل کے حل میں مدد کیلئے Intel کے ساتھ ان کا اشتراک کیا جائے گا۔&gt;</translation>
 <translation id="4691791363716065510">اس سائٹ کے لیے آپ کے سبھی ٹیبز کو بند کرنے تک <ph name="ORIGIN" /> <ph name="FILENAME" /> کو دیکھ سکے گا</translation>
 <translation id="4692623383562244444">سرچ انجنز</translation>
+<translation id="4692736633446859167">آپ نے پہلے <ph name="SITE" /> پر کسی بھی ایکسٹینشن کو اجازت نہ دینے کا انتخاب کیا۔ اگر آپ اس سائٹ کو یہاں شامل کرتے ہیں تو دیگر ایکسٹینشنز بھی <ph name="SITE" /> پر آپ کی سائٹ کا ڈیٹا پڑھنے اور تبدیل کرنے کی درخواست کر سکتے ہیں۔</translation>
 <translation id="4693155481716051732">سشی</translation>
 <translation id="4694024090038830733">پرنٹر کنفیگریشن کو منتظم ہینڈل کرتا ہے۔</translation>
 <translation id="4694604912444486114">بندر</translation>
@@ -4425,7 +4425,6 @@
 <translation id="5307386115243749078">بلوٹوتھ سوئچ کا جوڑا بنائیں</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5309418307557605830">‏Google اسسٹنٹ یہاں بھی کام کرتی ہے</translation>
-<translation id="5310281978693206542">لنک اپنے آلات پر بھیجیں</translation>
 <translation id="5311304534597152726">اس کے بطور سائن ان کرنا</translation>
 <translation id="5311565231560644461">سائٹس کو اپنے ورچوئل رئیلٹی آلات اور ڈیٹا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="5313967007315987356">سائٹ شامل کریں</translation>
@@ -5166,7 +5165,6 @@
 <translation id="6057381398996433816">اس سائٹ کو موشن اور لائٹ سینسرز استعمال کرنے سے مسدود کر دیا گيا ہے۔</translation>
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6059652578941944813">سرٹیفکیٹ کے مراتب</translation>
-<translation id="6061882183774845124">لنک اپنے آلات پر بھیجیں</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے <ph name="SUPERVISED_USER_NAME" /> کے ذاتی نتائج تک رسائی حاصل کی جا سکتی ہے۔ بیٹری بچانے کے لیے، آپ <ph name="SUPERVISED_USER_NAME" /> کی اسسٹنٹ کی ترتیبات میں صرف اس آلے کے پاور کے ماخذ سے منسلک ہونے پر ہی "Ok Google" کے آن ہونے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="6064217302520318294">اسکرین لاک</translation>
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
@@ -5305,7 +5303,6 @@
 <translation id="6201608810045805374">اس اکاؤنٹ کو ہٹائیں؟</translation>
 <translation id="6202304368170870640">‏آپ اپنا آلہ غیر مقفل کرنے یا اس میں سائن ان ہونے کے لیے اپنا PIN استعمال کر سکتے ہیں۔</translation>
 <translation id="6206311232642889873">تصویر &amp;کاپی کریں</translation>
-<translation id="6206378791187887398">اجازت دیں؟</translation>
 <translation id="6207200176136643843">ڈیفالٹ زوم سطح پر ری سیٹ کریں</translation>
 <translation id="6207937957461833379">ملک/علاقہ</translation>
 <translation id="6208382900683142153">ٹرسٹ ٹوکنز ویب پر رازداری کو بہتر بناتے ہیں اور آپ کون ہیں یہ معلوم کرنے کے لیے استعمال نہیں کیے جا سکتے۔</translation>
@@ -5712,7 +5709,6 @@
 <translation id="6592808042417736307">آپ کا فنگر پرنٹ کیپچر ہو گیا تھا</translation>
 <translation id="6593881952206664229">ممکن ہے کہ کاپی رائٹ والا میڈیا نہ چل سکے</translation>
 <translation id="6594011207075825276">سیریل آلات تلاش کئے جا رہے ہیں...</translation>
-<translation id="659498884637196217">‏اس آلے پر Google پاس ورڈ مینیجر میں</translation>
 <translation id="6595187330192059106">‏MIDI آلات کا مکمل کنٹرول حاصل کرنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں۔</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصاویر تلاش کرنے کیلئے گھسیٹیں</translation>
 <translation id="6596325263575161958">مرموزکاری کے اختیارات</translation>
@@ -7141,7 +7137,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> مزید دستیاب نہیں ہے</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> کو کلپ بورڈ دیکھنے کی ہمیشہ اجازت دیں</translation>
-<translation id="8005666035647241369">‏اس آلے پر Google پاس ورڈ مینیجر میں</translation>
 <translation id="8006630792898017994">اسپیس یا ٹیب</translation>
 <translation id="8008356846765065031">انٹرنیٹ منقطع ہوگیا۔ براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں۔</translation>
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>
@@ -7465,7 +7460,6 @@
 <translation id="8314381333424235892">غائب یا غیر انسٹال کردہ ایکسٹینشن</translation>
 <translation id="831440797644402910">اس فولڈر کو نہیں کھول سکتے</translation>
 <translation id="8314835274931377415">سوئچ رسائی کا سیٹ اپ شروع کریں؟</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" /> پر بھیجیں</translation>
 <translation id="8317671367883557781">نیٹ ورک کنکشن شامل کریں</translation>
 <translation id="8319414634934645341">توسیعی کلید کا استعمال</translation>
 <translation id="8321837372750396788">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہوگا۔</translation>
@@ -8334,6 +8328,7 @@
 <translation id="919679265671373777">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھیں۔ اپنے فون کی پیغام رسانی ایپس کو اسٹریم کریں۔</translation>
 <translation id="919686179725692564">اپنی ایپس کا بیک اپ لینے کے بارے میں مزید جانیں</translation>
 <translation id="9198090666959937775">‏اپنے Android فون کو سیکورٹی کلید کے طور پر استعمال کریں</translation>
+<translation id="9199503643457729322">رازداری کی گائیڈ سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکے گا</translation>
 <translation id="920045321358709304">تلاش کریں <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">آف لائن تمام ڈيٹا صاف ہو جائے گا</translation>

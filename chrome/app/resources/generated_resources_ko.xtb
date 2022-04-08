@@ -851,7 +851,6 @@
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1787350673646245458">사용자 이미지</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능 액세스</translation>
-<translation id="1790194216133135334"><ph name="DEVICE_NAME" />(으)로 링크 보내기</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
@@ -1400,7 +1399,6 @@
 <translation id="2312219318583366810">페이지 URL</translation>
 <translation id="2314165183524574721">현재 공개 범위가 숨김으로 설정되어 있음</translation>
 <translation id="2314774579020744484">페이지 번역 시 사용하는 언어</translation>
-<translation id="2315587498123194634"><ph name="DEVICE_NAME" />(으)로 링크 보내기</translation>
 <translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 완료</translation>
 <translation id="2318143611928805047">용지 크기</translation>
@@ -4441,7 +4439,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5307386115243749078">블루투스 스위치 페어링</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5309418307557605830">Google 어시스턴트는 이런 기능도 제공합니다</translation>
-<translation id="5310281978693206542">기기로 링크 전송</translation>
 <translation id="5311304534597152726">다음으로 로그인</translation>
 <translation id="5311565231560644461">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하지 않음</translation>
 <translation id="5313967007315987356">사이트 추가</translation>
@@ -5183,7 +5180,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6057381398996433816">모션 센서 및 조도 센서 사용이 차단된 사이트입니다.</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6059652578941944813">인증서 계층</translation>
-<translation id="6061882183774845124">기기로 링크 전송</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다. <ph name="SUPERVISED_USER_NAME" />님의 어시스턴트 설정에서 기기가 전원에 연결되어 있을 때만 'Hey Google'을 인식하도록 설정하면 배터리를 절약할 수 있습니다.</translation>
 <translation id="6064217302520318294">화면 잠금</translation>
 <translation id="6065289257230303064">인증서 대상 디렉터리 속성</translation>
@@ -5322,7 +5318,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6201608810045805374">계정을 삭제하시겠습니까?</translation>
 <translation id="6202304368170870640">PIN을 사용하여 로그인하거나 기기를 잠금 해제할 수 있습니다.</translation>
 <translation id="6206311232642889873">이미지 복사(&amp;Y)</translation>
-<translation id="6206378791187887398">허용하시겠습니까?</translation>
 <translation id="6207200176136643843">기본 확대/축소 수준으로 재설정</translation>
 <translation id="6207937957461833379">국가/지역</translation>
 <translation id="6208382900683142153">신뢰 토큰은 웹의 개인 정보 보호를 개선하나, 나를 식별하는 데 사용될 수는 없습니다.</translation>
@@ -5729,7 +5724,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6592808042417736307">지문이 등록되었습니다.</translation>
 <translation id="6593881952206664229">저작권이 있는 미디어는 재생되지 않을 수 있습니다</translation>
 <translation id="6594011207075825276">직렬 기기를 찾는 중...</translation>
-<translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
 <translation id="6595187330192059106"><ph name="HOST" />의 MIDI 기기 전체 제어 항상 차단</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" />로 드래그하여 이미지 검색</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
@@ -7160,7 +7154,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />을(를) 더 이상 사용할 수 없습니다.</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8005600846065423578"><ph name="HOST" />에서 클립보드를 볼 수 있도록 항상 허용</translation>
-<translation id="8005666035647241369">이 기기의 Google 비밀번호 관리자에서</translation>
 <translation id="8006630792898017994">스페이스바 또는 Tab</translation>
 <translation id="8008356846765065031">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인하세요.</translation>
 <translation id="8009225694047762179">비밀번호 관리</translation>
@@ -7485,7 +7478,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8314381333424235892">확장 프로그램이 없거나 설치되지 않음</translation>
 <translation id="831440797644402910">이 폴더를 열 수 없음</translation>
 <translation id="8314835274931377415">스위치 제어 설정을 시작하시겠습니까?</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" />(으)로 보내기</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8319414634934645341">확장된 키 사용</translation>
 <translation id="8321837372750396788">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리할 예정입니다.</translation>

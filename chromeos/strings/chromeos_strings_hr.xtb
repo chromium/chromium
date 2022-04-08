@@ -209,6 +209,7 @@
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata pogreška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dopušteni IP-jevi</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
 <translation id="357889014807611375">Wi-Fi s ograničenim prometom</translation>
@@ -216,6 +217,7 @@
 <translation id="3595596368722241419">Baterija je puna</translation>
 <translation id="3600339377155080675">Zrcaljenje zaslona</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Promjena pozadinske slike</translation>
 <translation id="360565022852130722">Wi-Fi mreža zaštićena je slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latencija do HTTPS web-lokacija</translation>
 <translation id="3632579075709132555">Prekidač zaslona privatnosti</translation>
@@ -526,6 +528,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim poslužiteljima nije uspjelo</translation>
 <translation id="6935486296377631201">Čuvar zaslona</translation>
+<translation id="6943893908656559156">Udaljeni identitet (nije obavezno)</translation>
 <translation id="6957231940976260713">Naziv usluge</translation>
 <translation id="6961170852793647506">Da biste započeli, postavite dokument na skener</translation>
 <translation id="6965382102122355670">U redu</translation>

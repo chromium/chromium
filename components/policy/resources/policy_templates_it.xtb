@@ -848,6 +848,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
         |BLOCK| consente di non rendere disponibile l'app per l'utente. Se viene specificato un valore |daily_limit_mins| con il limite |BLOCK|, il valore |daily_limit_mins| viene ignorato.
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questo criterio viene usato soltanto per i bambini ed è complementare al criterio "UsageTimeLimit". I limiti specificati nel criterio "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dal criterio "PerAppTimeLimits".</translation>
+<translation id="1913629775420987861">Mostra una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="1916266055944569995">La configurazione del criterio consente di definire il valore restituito dell'API Managed Configuration per una determinata origine.
 
       L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.managed.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1594,6 +1595,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Questo criterio si applica alla schermata di accesso. Vedi anche il criterio <ph name="SITE_PER_PROCESS_POLICY_NAME" /> che viene applicato alla sessione utente. È consigliabile impostare lo stesso valore per entrambi i criteri. Se i valori non corrispondono, può verificarsi un ritardo quando si accede a una sessione utente mentre viene applicato il valore specificato dai criteri relativi agli utenti.
       </translation>
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
+<translation id="270582584528242502">Non mostrare una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
@@ -2460,6 +2462,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
 <translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
+<translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
 
@@ -3033,14 +3036,14 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il dispositivo non è gestito o se è presente un solo utente, il criterio viene ignorato e la notifica viene sempre visualizzata.
 
       Se sono presenti diversi account utente su un dispositivo gestito, la notifica viene visualizzata soltanto se il criterio è stato attivato.</translation>
-<translation id="4293593564662654474">Questo criterio consente di disattivare la funzionalità First-Party Sets.
+<translation id="4293593564662654474">Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
 
-                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità First-Party Sets viene attivata.
+                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità degli insiemi proprietari viene attivata.
 
-                  Se questo criterio viene impostato su Disattivato, la funzionalità First-Party Sets viene disattivata.
+                  Se questo criterio viene impostato su Disattivato, la funzionalità degli insiemi proprietari viene disattivata.
 
-                  Lo stato della funzionalità First-Party Sets stabilisce se Chrome recupera o meno l'elenco di First-Party Sets.
-                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate a First-Party Sets (ad esempio l'attributo per i cookie SameParty).</translation>
+                  Lo stato della funzionalità degli insiemi proprietari stabilisce se Chrome recupera o meno l'elenco di insiemi proprietari.
+                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate agli insiemi proprietari (ad esempio l'attributo per i cookie SameParty).</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -3780,35 +3783,35 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su False o non viene impostato, la modalità Desktop unificato viene disattivata e gli utenti non possono attivarla.</translation>
 <translation id="5255162913209987122">Può essere consigliata</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
-<translation id="5263649486910778308">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità di First-Party Sets.
+<translation id="5263649486910778308">Questo criterio consente di eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
 
-      Ogni insieme nell'elenco del browser di First-Party Sets deve soddisfare i requisiti di un insieme First-Party Sets.
-      Un insieme First-Party Sets è composto da un sito proprietario e da uno o più siti membri. Tutti i siti di un insieme First-Party Sets devono
-      avere un dominio registrabile pubblicato su HTTPS, a prescindere dal fatto che si tratti di un sito proprietario o membro.
-      Ciascun sito di un insieme First-Party Sets deve anche essere univoco, ovvero non può essere sia proprietario sia membro, né
-      può essere elencato più di una volta come membro di un insieme First-Party Sets.
-      Consulta la pagina https://github.com/privacycg/first-party-sets per maggiori informazioni su First-Party Sets.
+      Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
+      Un insieme proprietario è composto da un sito proprietario e da uno o più siti membri. Tutti i siti di un insieme proprietari devono
+      avere un dominio registrabile servito attraverso HTTPS, a prescindere dal fatto che si tratti di un sito proprietario o membro.
+      Ciascun sito di un insieme proprietario deve anche essere univoco, ovvero non può essere sia proprietario sia membro, né
+      può essere elencato più di una volta come membro di un insieme proprietario.
+      Consulta la pagina https://github.com/privacycg/first-party-sets per maggiori informazioni sugli insiemi proprietari.
 
-      Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di First-Party Sets.
+      Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
 
-      Per tutti i siti in un insieme First-Party Sets dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
-      in un insieme First-Party Sets nell'elenco del browser, quel sito verrà rimosso dall'insieme di First-Party Sets del browser.
-      Dopodiché, l'insieme First-Party Sets del criterio verrà aggiunto all'elenco del browser di First-Party Sets.
+      Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
+      in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
+      Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
 
-      Per tutti i siti in un insieme First-Party Sets dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
-      in un insieme First-Party Sets nell'elenco del browser, l'insieme First-Party Sets del browser verrà aggiornato in modo che il
-      nuovo insieme First-Party Sets possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
-      l'insieme First-Party Sets del criterio verrà aggiunto all'elenco del browser di First-Party Sets.
+      Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
+      in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il
+      nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+      l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
 
-      L'elenco del browser di First-Party Sets richiede che nessuno dei siti al suo interno
+      L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno
       sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" />
-      e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
-      <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+      e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente sia negli elenchi
+      <ph name="REPLACEMENTS" /> che negli elenchi <ph name="ADDITIONS" />.
 
-      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme First-Party Sets in questi elenchi.
+      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
 
-      Tutti gli insiemi forniti da questo criterio devono essere insiemi First-Party Sets validi. Qualora non lo fossero, verrà segnalato
-      un errore adeguato.</translation>
+      Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietari validi. Qualora non lo fossero, verrà restituito
+      un errore appropriato.</translation>
 <translation id="5266173014392157048">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Separa i nomi dei server con le virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
@@ -4913,6 +4916,10 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="654303922206238013">Strategia di migrazione per ecryptfs</translation>
 <translation id="6543277347547044538">Fine dell'intervallo (valore inserito escluso).</translation>
 <translation id="6544601600794014309">Attiva traduzioni di Risposte rapide</translation>
+<translation id="6544759513632821565">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> consente alle applicazioni web di acquisire più schermate contemporaneamente.
+      Questo criterio sblocca la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> per le applicazioni web di origini definite.
+      Se la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> viene definita in una richiesta <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, tutte le schermate vengono acquisite automaticamente senza chiedere esplicitamente l'autorizzazione dell'utente.
+      Se il criterio non viene configurato, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.</translation>
 <translation id="654546276700640113">Se il criterio viene impostato, viene applicata la lunghezza massima del PIN configurata. Se viene impostato un valore uguale o inferiore a 0, l'utente può impostare un PIN della lunghezza che preferisce. Se viene impostato un valore inferiore a quello del criterio <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, ma superiore a 0, la lunghezza massima viene impostata sullo stesso valore della lunghezza minima.
 
       Se il criterio non viene configurato non viene applicata una lunghezza massima.</translation>
@@ -6570,6 +6577,11 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il criterio è attivo, ma gli utenti possono modificare questa impostazione.</translation>
 <translation id="8300992833374611099">Stabilisci dove è possibile utilizzare gli Strumenti per sviluppatori</translation>
 <translation id="8301065459352777588">Gli utenti di sessioni Ospite gestite possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
+<translation id="8303923135132440974">Consente di controllare la finestra di dialogo "Avvisa prima di uscire (⌘Q)" quando l'utente sta tentando di uscire dal browser.
+
+      Se il criterio viene impostato su Attivato o se non viene configurato, viene mostrata una finestra di dialogo di avviso quando l'utente sta tentando di uscire.
+
+      Se viene impostato su Disattivato, non viene mostrata una finestra di dialogo di avviso quando l'utente sta tentando di uscire.</translation>
 <translation id="830440838848984847">Consenti agli utenti di accedere a <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Impostazioni di accesso</translation>
 <translation id="830819203330820450">Se il criterio è attivato o non configurato (impostazione predefinita), una pagina web può usare le API di condivisione schermo (ad esempio, getDisplayMedia() o l'API dell'estensione di acquisizione schermata desktop) per richiedere all'utente di selezionare una scheda, una finestra o una schermata desktop da acquisire.

@@ -826,6 +826,7 @@
         |TIME_LIMITS| 会应用每日使用限制；当在某一天达到此限制后，相应应用在当天的剩余时间内便会一直处于不可用的状态。使用限制应在 |daily_limit_mins| 中指定。系统每天都会在指定的 UTC 时间（通过 |reset_at| 传递）重置使用限制。
         此政策仅适用于未成年用户。
         此政策是对“UsageTimeLimit”的补充。无论“PerAppTimeLimits”是如何设置的，系统都会强制执行“UsageTimeLimit”中指定的限制（例如设备使用时间和就寝时间）。</translation>
+<translation id="1913629775420987861">在用户尝试退出时显示警告对话框</translation>
 <translation id="1916266055944569995">通过设置此政策，您可以指定 Managed Configuration API 应为给定来源返回的值。
 
       Managed configuration API 是一种键值对配置，可通过 navigator.managed.getManagedConfiguration() javascript 调用来使用。该 API 仅适用于通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 强制安装的 Web 应用所对应的来源。
@@ -1556,6 +1557,7 @@
       此政策适用于登录屏幕。另请参阅适用于用户会话的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。最好将这两项政策设为相同的值。如果这两项政策的值不一致，当进入用户会话时，系统便可能会因正在应用由用户政策指定的值而出现延迟。
       </translation>
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
+<translation id="270582584528242502">在用户尝试退出时不显示警告对话框</translation>
 <translation id="2706708761587205154">仅允许在有 PIN 码的情况下打印</translation>
 <translation id="2707873794476722903">“安全浏览”功能会处于开启状态且会在标准模式下运行。</translation>
 <translation id="2709516037105925701">自动填充</translation>
@@ -2413,6 +2415,7 @@
 <translation id="3628480121685794414">启用单面打印</translation>
 <translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
+<translation id="3644735978203799620">允许自动选择多个屏幕截图</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
 
@@ -4844,6 +4847,10 @@
 <translation id="654303922206238013">ecryptfs 迁移策略</translation>
 <translation id="6543277347547044538">间隔时段（含端点值）的结束时间。</translation>
 <translation id="6544601600794014309">启用快速解答翻译功能</translation>
+<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API 允许 Web 应用一次截取多个界面。
+      此政策用于针对指定源的 Web 应用解锁 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性。
+      如果 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性是在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 请求中定义的，系统会自动截取所有屏幕界面，而不要求用户明确许可。
+      如果此政策未设置，<ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 将不适用于任何 Web 应用。</translation>
 <translation id="654546276700640113">如果您设置了此政策，系统会强制实施所配置的 PIN 码长度上限。如果值小于或等于 0，即表示用户可以设置任意长度的 PIN 码。如果值小于 <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> 但大于 0，则表示长度上限与下限相同。
 
       如果您未设置此政策，系统将不会强制实施任何长度上限。</translation>
@@ -6499,6 +6506,11 @@
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，系统会开启它，但用户可以更改此设置。</translation>
 <translation id="8300992833374611099">控制可在哪些情况下使用开发者工具</translation>
 <translation id="8301065459352777588">受管理访客会话用户可以存储设备级显示设置</translation>
+<translation id="8303923135132440974">控制系统是否会在用户尝试退出浏览器时显示“退出前警告 (⌘Q)”对话框。
+
+      如果此政策已启用或未设置，当用户尝试退出时，系统会显示警告对话框。
+
+      如果此政策已停用，当用户尝试退出时，系统不会显示警告对话框。</translation>
 <translation id="830440838848984847">允许用户登录 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">登录设置</translation>
 <translation id="830819203330820450">如果此政策已启用或未配置（默认），网页可以使用屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）提示用户选择要截取的标签页、窗口或桌面。

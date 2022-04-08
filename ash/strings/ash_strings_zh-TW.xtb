@@ -587,6 +587,7 @@
 <translation id="4481530544597605423">解除配對的裝置</translation>
 <translation id="4505050298327493054">使用中的桌面。</translation>
 <translation id="4513946894732546136">意見回饋</translation>
+<translation id="4516867700536986208">所有應用程式，以向左鍵或向下鍵瀏覽即可存取所有應用程式</translation>
 <translation id="4518404433291145981">如要解鎖 Chromebook，請先解鎖手機</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
@@ -861,6 +862,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用...</translation>
 <translation id="6283712521836204486">零打擾模式已關閉。</translation>
 <translation id="6284232397434400372">解析度已變更</translation>
+<translation id="6286007831750548130">搜尋記錄結果已刪除</translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -1016,6 +1018,7 @@
 <translation id="7302889331339392448">即時字幕功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回答問題。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">最近使用的應用程式，以向左鍵瀏覽即可存取所有最近使用的應用程式</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="731589979057211264">Shelf Party 已開啟。</translation>
 <translation id="7319740667687257810">啟動器，部分檢視</translation>

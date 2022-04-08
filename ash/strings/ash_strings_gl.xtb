@@ -36,6 +36,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1175572348579024023">Desprazarse</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1183863904939664422">Non me interesa esta suxestión</translation>
 <translation id="118437560755358292">Escribe o contrasinal ou o PIN como medida de seguranza adicional</translation>
 <translation id="118532027333893379">Toca calquera parte para facer unha captura da pantalla completa</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
@@ -598,6 +599,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
+<translation id="4566144812051858745">Non me interesa recibir suxestións</translation>
 <translation id="4570957409596482333">Botón Escoitar selección</translation>
 <translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
@@ -648,6 +650,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4868492592575313542">activou</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4889868803215848840">Se queres, podes achegar máis comentarios para mellorar as suxestións:</translation>
 <translation id="4890187583552566966">O teu administrador desactivou o Asistente de Google.</translation>
 <translation id="4890408602550914571">Asegúrate de ter o teléfono preto e co Bluetooth activado.</translation>
 <translation id="4895488851634969361">A batería está completamente cargada.</translation>
@@ -835,6 +838,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6054305421211936131">Inicia sesión coa tarxeta intelixente</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Xa rematei de utilizar o ficheiro</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6099678161144790572">Editouse durante o último mes</translation>
 <translation id="6103838137565245112">sistema</translation>
@@ -1119,6 +1123,7 @@ Nova instalación</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
 <translation id="7886277072580235377">Cando saias da conta, borrarase a túa sesión de Internet. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo</translation>
+<translation id="7893503627044934815">Non quero que se mostre este ficheiro</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiches o atallo de teclado para xirar a pantalla. Queres realizar esta acción?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

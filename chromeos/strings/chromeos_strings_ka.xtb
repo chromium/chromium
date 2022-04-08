@@ -209,6 +209,7 @@
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
+<translation id="3557205324756024651">ადგილობრივი იდენტობა (არასავალდებულო)</translation>
 <translation id="3565064564551103223">დაშვებული IP-ები</translation>
 <translation id="3577473026931028326">წარმოიქმნა შეფერხება. ცადეთ ხელახლა.</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
@@ -216,6 +217,7 @@
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
 <translation id="3603829704940252505">ავატარი</translation>
+<translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
@@ -526,6 +528,7 @@
 <translation id="6910312834584889076">სკანერის თავსახური გახსნილია. დააფარეთ თავსახური და ცადეთ ხელახლა.</translation>
 <translation id="6911383237894364323">მედიასერვერებთან დაკავშირება ვერ მოხერხდა</translation>
 <translation id="6935486296377631201">ეკრანმზოგი</translation>
+<translation id="6943893908656559156">დისტანციური იდენტობა (არასავალდებულო)</translation>
 <translation id="6957231940976260713">სერვისის სახელი</translation>
 <translation id="6961170852793647506">დასაწყისისთვის მოათავსეთ თქვენი დოკუმენტი სკანერზე</translation>
 <translation id="6965382102122355670">კარგი</translation>

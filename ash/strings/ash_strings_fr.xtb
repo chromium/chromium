@@ -36,6 +36,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="118437560755358292">Veuillez saisir votre mot de passe ou votre code d'accès pour renforcer la sécurité</translation>
 <translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
@@ -597,6 +598,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
+<translation id="4566144812051858745">Aucune suggestion ne m'intéresse</translation>
 <translation id="4570957409596482333">Bouton "Sélectionner pour prononcer"</translation>
 <translation id="4573176682887762361">"Saisir [mot/expression]"</translation>
 <translation id="4577274620589681794">Temps écoulé · <ph name="LABEL" /></translation>
@@ -647,6 +649,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4868492592575313542">a activé</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
+<translation id="4889868803215848840">Ajoutez des commentaires pour améliorer les suggestions (facultatif) :</translation>
 <translation id="4890187583552566966">L'administrateur a désactivé l'Assistant Google.</translation>
 <translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
@@ -834,6 +837,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6054305421211936131">Se connecter avec une carte à puce</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">J'ai terminé d'utiliser le fichier</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6099678161144790572">Modifié le mois dernier</translation>
 <translation id="6103838137565245112">système</translation>
@@ -1118,6 +1122,7 @@ Nouvelle installation</translation>
 <translation id="7886169021410746335">Régler les paramètres de confidentialité</translation>
 <translation id="7886277072580235377">Votre session Internet est effacée lorsque vous vous déconnectez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoie un e-mail</translation>
+<translation id="7893503627044934815">Je ne souhaite pas que ce fichier soit affiché</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci clavier de rotation d'écran. Voulez-vous faire pivoter l'écran ?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

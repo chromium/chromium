@@ -851,6 +851,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
         |TIME_LIMITS| permet d'appliquer une durée d'utilisation maximale, et de bloquer l'accès à l'application une fois que l'utilisateur a atteint cette limite journalière. Vous pouvez indiquer une limite d'utilisation dans la propriété |daily_limit_mins|. Le compteur est remis à zéro à l'heure UTC que vous avez définie dans la propriété |reset_at|.
         Cette règle s'applique uniquement aux utilisateurs mineurs.
         Elle complète la règle "UsageTimeLimit". Les restrictions que vous indiquez dans la règle "UsageTimeLimit" telles que le temps d'utilisation et l'heure du coucher s'appliquent indépendamment de la règle "PerAppTimeLimits".</translation>
+<translation id="1913629775420987861">Afficher une boîte de dialogue d'avertissement quand l'utilisateur tente de quitter</translation>
 <translation id="1916266055944569995">Cette règle permet de définir la valeur de retour de l'API Managed Configuration pour l'origine donnée.
 
       L'API Managed Configuration est une configuration de type clé-valeur accessible via un appel JavaScript navigator.managed.getManagedConfiguration(). Cette API est uniquement disponible pour les origines qui correspondent aux appls Web installées d'office via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1592,6 +1593,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Cette règle s'applique à l'écran de connexion. Veuillez également consulter celle applicable à la session utilisateur (<ph name="SITE_PER_PROCESS_POLICY_NAME" />). Nous vous recommandons d'attribuer la même valeur à ces deux règles. Si les valeurs ne sont pas identiques, la règle relative aux utilisateurs s'applique. Cela peut ralentir l'ouverture de la session utilisateur.
       </translation>
 <translation id="2702023190395322609">Activer les recommandations de contenus multimédias</translation>
+<translation id="270582584528242502">Ne pas afficher de boîte de dialogue d'avertissement quand l'utilisateur tente de quitter</translation>
 <translation id="2706708761587205154">Autoriser l'impression avec code uniquement</translation>
 <translation id="2707873794476722903">La navigation sécurisée est active et en mode de protection standard.</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
@@ -2457,6 +2459,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3628480121685794414">Activer l'impression recto</translation>
 <translation id="3634125384445314047">Autoriser l'accès aux photos et vidéos récentes prises sur le téléphone via Phone Hub.</translation>
 <translation id="3643284063603988867">Activer la fonctionnalité "Mémoriser le mot de passe"</translation>
+<translation id="3644735978203799620">Activer la sélection automatique de captures d'écran multiples</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
 
@@ -4901,6 +4904,10 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="654303922206238013">Stratégie de migration pour eCryptfs</translation>
 <translation id="6543277347547044538">Heure de fin de l'intervalle (exclue).</translation>
 <translation id="6544601600794014309">Activer la traduction pour Réponses rapides</translation>
+<translation id="6544759513632821565">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
+      Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.
+      Si la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> est définie dans une requête <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, toutes les surfaces d'écran sont automatiquement capturées sans nécessiter l'autorisation explicite de l'utilisateur.
+      Si cette règle n'est pas configurée, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> n'est disponible pour aucune application Web.</translation>
 <translation id="654546276700640113">Cette règle permet de définir le nombre maximal de caractères que peut contenir un code. Une valeur égale ou inférieure à 0 signifie que l'utilisateur peut définir un code de n'importe quelle longueur. Si la valeur est inférieure à <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, mais supérieure à 0, la longueur maximale est définie sur la longueur minimale.
 
       Si cette règle n'est pas configurée, aucune longueur maximale n'est appliquée.</translation>
@@ -6567,6 +6574,11 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas définie, elle est activée par défaut. Toutefois, les utilisateurs peuvent la modifier.</translation>
 <translation id="8300992833374611099">Contrôler les cas d'utilisation des outils pour les développeurs</translation>
 <translation id="8301065459352777588">Les utilisateurs d'une session Invité gérée peuvent stocker les paramètres d'affichage au niveau de l'appareil</translation>
+<translation id="8303923135132440974">Contrôler la boîte de dialogue "Confirmer avant de quitter (⌘Q)" quand l'utilisateur tente de quitter le navigateur.
+
+      Si cette règle est activée ou n'est pas configurée, une boîte de dialogue d'avertissement s'affiche quand l'utilisateur tente de quitter.
+
+      Si elle est désactivée, aucune boîte de dialogue d'avertissement ne s'affiche quand l'utilisateur tente de quitter.</translation>
 <translation id="830440838848984847">Autoriser les utilisateurs à se connecter à <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Paramètres de connexion</translation>
 <translation id="830819203330820450">Si cette règle est activée ou qu'elle n'est pas configurée (par défaut), une page Web peut utiliser des API de partage d'écran (ex. : getDisplayMedia() ou Desktop Capture Extension) pour inviter l'utilisateur à sélectionner un onglet, une fenêtre ou un écran dont il veut prendre une capture.

@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="3600339377155080675">Pasqyrimi i ekranit</translation>
 <translation id="3603829704940252505">Simboli</translation>
+<translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
@@ -430,6 +431,7 @@
 <translation id="5866840822086176774">Shumë i fortë</translation>
 <translation id="588258955323874662">Ekrani i plotë</translation>
 <translation id="5895138241574237353">Rinis</translation>
+<translation id="5903200662178656908">Pajisja është një kombinim i tastierës dhe mausit.</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -450,6 +452,7 @@
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
+<translation id="6112878310391905610">Ky cilësim menaxhohet nga administratorët e tu</translation>
 <translation id="6113701710518389813">Shigjeta lart</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> dhe <ph name="NUMBER" /> albume të tjera</translation>
 <translation id="6122191549521593678">Në linjë</translation>

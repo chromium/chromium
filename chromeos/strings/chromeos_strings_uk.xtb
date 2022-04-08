@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="3600339377155080675">Дзеркалювання екрана</translation>
 <translation id="3603829704940252505">Аватар</translation>
+<translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
@@ -431,6 +432,7 @@
 <translation id="5866840822086176774">Дуже потужний</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="5903200662178656908">Пристрій – це набір із клавіатури й миші.</translation>
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@
 <translation id="6104112872696127344">Сканування скасовано</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
+<translation id="6112878310391905610">Цим налаштуванням керують адміністратори</translation>
 <translation id="6113701710518389813">Стрілка вгору</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> та інші альбоми (ще <ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Онлайн</translation>

@@ -835,7 +835,6 @@
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1787350673646245458">用户图片</translation>
 <translation id="1788329699711791226">从 <ph name="ACCOUNT_EMAIL" /> 访问您的 Chrome 浏览器信息</translation>
-<translation id="1790194216133135334">将链接发送到<ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -1378,7 +1377,6 @@
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
-<translation id="2315587498123194634">将链接发送到<ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2317842250900878657">已迁移 <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">纸张尺寸</translation>
@@ -2855,6 +2853,7 @@
 <translation id="3760460896538743390">检查背景页(&amp;B)</translation>
 <translation id="37613671848467444">在隐身窗口中打开(&amp;I)</translation>
 <translation id="3761556954875533505">允许此网站修改文件？</translation>
+<translation id="3763549179847864476">“隐私保护指南”返回按钮</translation>
 <translation id="3764314093345384080">详细版本信息</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{可与 1 部 USB 设备通信}other{可与 # 部 USB 设备通信}}</translation>
 <translation id="3764753550716962406">要让 Google 根据购物车中的商品查找可用折扣吗？</translation>
@@ -3796,6 +3795,7 @@
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 固件生成了四个文件：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三个文件是包含注册表转储的二进制文件，且 Intel 表示其中并未包含任何个人信息或设备标识信息。最后一个文件是 Intel 固件的执行跟踪记录，其中的个人信息和设备标识信息已全部清除，但由于文件过大而无法显示在这里。因为您的设备最近发生过 Wi-Fi 问题，所以系统生成了这些文件，且会将文件提供给 Intel 以协助排查相关问题。&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
+<translation id="4692736633446859167">您先前已选择禁止 <ph name="SITE" /> 上的所有扩展程序。如果您在此处添加该网站，其他扩展程序也可以请求读取和更改您在 <ph name="SITE" /> 上的网站数据。</translation>
 <translation id="4693155481716051732">寿司</translation>
 <translation id="4694024090038830733">打印机配置由管理员处理。</translation>
 <translation id="4694604912444486114">猴子</translation>
@@ -4412,7 +4412,6 @@
 <translation id="5307386115243749078">为蓝牙开关配对</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5309418307557605830">在此设备上也能使用 Google 助理</translation>
-<translation id="5310281978693206542">将链接发送到您的设备</translation>
 <translation id="5311304534597152726">正在使用以下身份登录：</translation>
 <translation id="5311565231560644461">不允许网站使用您的虚拟实境设备和数据</translation>
 <translation id="5313967007315987356">添加网站</translation>
@@ -5151,7 +5150,6 @@
 <translation id="6057381398996433816">此网站已被禁止使用动态传感器和光传感器。</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6059652578941944813">证书层次结构</translation>
-<translation id="6061882183774845124">将链接发送到您的设备</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，您可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
@@ -5290,7 +5288,6 @@
 <translation id="6201608810045805374">移除此帐号？</translation>
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
-<translation id="6206378791187887398">允许？</translation>
 <translation id="6207200176136643843">重置为默认缩放级别</translation>
 <translation id="6207937957461833379">国家/地区</translation>
 <translation id="6208382900683142153">信任令牌有助于加强网络隐私保护，而且不会泄露您的身份。</translation>
@@ -5697,7 +5694,6 @@
 <translation id="6592808042417736307">已捕获您的指纹</translation>
 <translation id="6593881952206664229">受版权保护的媒体可能无法播放</translation>
 <translation id="6594011207075825276">正在查找串行设备…</translation>
-<translation id="659498884637196217">在此设备上的 Google 密码管理器中</translation>
 <translation id="6595187330192059106">始终禁止 <ph name="HOST" /> 全面控制 MIDI 设备。</translation>
 <translation id="6595792813574514527">拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="6596325263575161958">加密选项</translation>
@@ -7126,7 +7122,6 @@
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8005600846065423578">始终允许 <ph name="HOST" /> 查看剪贴板</translation>
-<translation id="8005666035647241369">保存到此设备上的 Google 密码管理器中</translation>
 <translation id="8006630792898017994">空格键或 Tab 键</translation>
 <translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
 <translation id="8009225694047762179">管理密码</translation>
@@ -7451,7 +7446,6 @@
 <translation id="8314381333424235892">扩展程序缺失或已卸载</translation>
 <translation id="831440797644402910">无法打开此文件夹</translation>
 <translation id="8314835274931377415">开始进行开关控制设置？</translation>
-<translation id="8316618172731049784">发送到<ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
@@ -8320,6 +8314,7 @@
 <translation id="919679265671373777">查看手机中近期拍摄的照片和播放的媒体。实时同步手机中的即时通讯应用。</translation>
 <translation id="919686179725692564">详细了解如何备份您的应用</translation>
 <translation id="9198090666959937775">使用您的 Android 手机作为安全密钥</translation>
+<translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201023452444595544">所有离线数据都会被清除</translation>

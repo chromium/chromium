@@ -839,7 +839,6 @@
 <translation id="1784849162047402014">Уређају понестаје простора на диску</translation>
 <translation id="1787350673646245458">Слика корисника</translation>
 <translation id="1788329699711791226">Приступите садржају из Chrome прегледача преко <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="1790194216133135334">Пошаљи везу на уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Уклони приступ</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Проширени приказ</translation>
@@ -1384,7 +1383,6 @@
 <translation id="2312219318583366810">URL странице</translation>
 <translation id="2314165183524574721">Актуелно подешавање видљивости је: Скривено</translation>
 <translation id="2314774579020744484">Језик који се користи за превођење страница</translation>
-<translation id="2315587498123194634">Пошаљи везу на уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Не, хвала</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% је готово</translation>
 <translation id="2318143611928805047">Величина папира</translation>
@@ -4425,7 +4423,6 @@
 <translation id="5307386115243749078">Упарите Bluetooth прекидач</translation>
 <translation id="5308380583665731573">Повежи</translation>
 <translation id="5309418307557605830">Google помоћник ради и овде</translation>
-<translation id="5310281978693206542">Пошаљите линк на своје уређаје</translation>
 <translation id="5311304534597152726">Пријављујете се као</translation>
 <translation id="5311565231560644461">Не дозвољавај сајтовима да користе уређаје и податке виртуелне реалности</translation>
 <translation id="5313967007315987356">Додајте сајт</translation>
@@ -5167,7 +5164,6 @@
 <translation id="6057381398996433816">Овом сајту је забрањено да користи сензоре за покрет и светло.</translation>
 <translation id="6059276912018042191">Недавне Chrome картице</translation>
 <translation id="6059652578941944813">Хијерархија сертификата</translation>
-<translation id="6061882183774845124">Пошаљите линк на своје уређаје</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Напомена<ph name="END_BOLD" />: Неко са сличним гласом или снимком можда може да приступа личним резултатима детета <ph name="SUPERVISED_USER_NAME" />. Ради уштеде батерије у подешавањима Помоћника детета <ph name="SUPERVISED_USER_NAME" /> можете да изаберете да функција „Хеј Google“ буде активна само кад је уређај повезан са извором напајања.</translation>
 <translation id="6064217302520318294">Закључавање екрана</translation>
 <translation id="6065289257230303064">Атрибути каталога субјеката сертификата</translation>
@@ -5306,7 +5302,6 @@
 <translation id="6201608810045805374">Желите да уклоните овај налог?</translation>
 <translation id="6202304368170870640">Можете да користите PIN за пријављивање на уређај или за откључавање уређаја.</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слику</translation>
-<translation id="6206378791187887398">Желите да дозволите?</translation>
 <translation id="6207200176136643843">Ресетуј на подразумевани ниво зумирања</translation>
 <translation id="6207937957461833379">Земља/регија</translation>
 <translation id="6208382900683142153">Поуздани токени побољшавају приватност на вебу и не могу да се користе за откривање идентитета.</translation>
@@ -5713,7 +5708,6 @@
 <translation id="6592808042417736307">Отисак прста је снимљен</translation>
 <translation id="6593881952206664229">Медији са ауторским правима се можда неће пуштати</translation>
 <translation id="6594011207075825276">Траже се серијски уређаји…</translation>
-<translation id="659498884637196217">У Google менаџеру лозинки на овом уређају</translation>
 <translation id="6595187330192059106">Увек блокирај потпуну контролу над MIDI уређајима за <ph name="HOST" />.</translation>
 <translation id="6595792813574514527">Превлачи ради претраге слика помоћу: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опције шифровања</translation>
@@ -7142,7 +7136,6 @@
 <translation id="8002670234429879764">Штампач <ph name="PRINTER_NAME" /> више није доступан</translation>
 <translation id="8004582292198964060">Прегледач</translation>
 <translation id="8005600846065423578">Увек дозволи да <ph name="HOST" /> види привремену меморију</translation>
-<translation id="8005666035647241369">У Google менаџеру лозинки на овом уређају</translation>
 <translation id="8006630792898017994">Тастер за размак или Tab</translation>
 <translation id="8008356846765065031">Веза са интернетом је прекинута. Проверите интернет везу.</translation>
 <translation id="8009225694047762179">Управљај лозинкама</translation>
@@ -7467,7 +7460,6 @@
 <translation id="8314381333424235892">Додатак недостаје или је деинсталиран</translation>
 <translation id="831440797644402910">Отварање овог директоријума није успело</translation>
 <translation id="8314835274931377415">Желите да започнете подешавање Приступа помоћу прекидача?</translation>
-<translation id="8316618172731049784">Пошаљи на <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Додај мрежну везу</translation>
 <translation id="8319414634934645341">Употреба проширеног кључа</translation>
 <translation id="8321837372750396788">Овим <ph name="DEVICE_TYPE" /> ће управљати <ph name="MANAGER" />.</translation>

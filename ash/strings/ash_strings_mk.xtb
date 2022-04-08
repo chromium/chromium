@@ -112,7 +112,7 @@
 <translation id="1525508553941733066">ОТФРЛИ</translation>
 <translation id="1528259147807435347">Изменето во изминатата седмица</translation>
 <translation id="1536604384701784949">За да ја користите <ph name="USER_EMAIL_ADDRESS" />, прво треба да се одјавите од сите сметки. За да се одјавите, изберете „Откажи“ за да се вратите назад. Потоа, изберете го времето за да се отвори статусната област и изберете „Одјави се“. Потоа, повторно најавете се на <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
-<translation id="15373452373711364">Голем курсор на глувчето</translation>
+<translation id="15373452373711364">Голем покажувач на глувчето</translation>
 <translation id="1546492247443594934">Биро 2</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
@@ -591,6 +591,7 @@
 <translation id="4481530544597605423">Неспарени уреди</translation>
 <translation id="4505050298327493054">Активен работен простор.</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
+<translation id="4516867700536986208">Сите апликации, користете ги стрелките за налево и надолу за да пристапите до сите апликации</translation>
 <translation id="4518404433291145981">За да го отклучите вашиот Chromebook, прво отклучете го телефонот</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> додека да се наполни</translation>
@@ -1021,6 +1022,7 @@
 <translation id="7302889331339392448">„Автоматските титлови“ се исклучени.</translation>
 <translation id="7303365578352795231">Се одговара на друг уред.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Неодамнешни апликации, користете ја стрелката за налево за да пристапите до неодамнешните апликации</translation>
 <translation id="7313193732017069507">Прошири ја камерата</translation>
 <translation id="731589979057211264">Вклучена е група на полица.</translation>
 <translation id="7319740667687257810">Стартер, делумен приказ</translation>

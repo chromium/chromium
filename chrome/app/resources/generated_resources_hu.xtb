@@ -851,7 +851,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1784849162047402014">Az eszközön kevés a lemezterület</translation>
 <translation id="1787350673646245458">Felhasználó képe</translation>
 <translation id="1788329699711791226">Hozzáférhet a következő profilban tárolt, Chrome böngészővel kapcsolatos dolgaihoz: <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="1790194216133135334">Link küldése ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
@@ -1399,7 +1398,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2312219318583366810">Oldal URL-címe</translation>
 <translation id="2314165183524574721">Jelenlegi láthatósági beállítás: rejtett</translation>
 <translation id="2314774579020744484">Oldalak fordításánál használt nyelv</translation>
-<translation id="2315587498123194634">Link küldése ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% kész</translation>
 <translation id="2318143611928805047">Papírméret</translation>
@@ -4440,7 +4438,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5307386115243749078">Bluetooth-kapcsoló párosítása</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
 <translation id="5309418307557605830">A Google Segéd itt is működik</translation>
-<translation id="5310281978693206542">Link küldése az eszközeire</translation>
 <translation id="5311304534597152726">Bejelentkezés mint</translation>
 <translation id="5311565231560644461">A webhelyek nem használhatják a virtuálisvalóság-eszközöket és -adatokat</translation>
 <translation id="5313967007315987356">Webhely hozzáadása</translation>
@@ -5183,7 +5180,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6057381398996433816">Ennél a webhelynél le van tiltva a mozgás- és fényérzékelők használata.</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
 <translation id="6059652578941944813">Tanúsítvány-hierarchia</translation>
-<translation id="6061882183774845124">Link küldése az eszközeire</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Megjegyzés<ph name="END_BOLD" />: Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni <ph name="SUPERVISED_USER_NAME" /> személyes találataihoz. Az akkumulátor üzemidejének növelése érdekében <ph name="SUPERVISED_USER_NAME" /> Segédjének beállításaiban megadhatja, hogy csak akkor legyen bekapcsolva az „Ok Google” parancsszó, amikor az eszköz áramforrásra csatlakozik.</translation>
 <translation id="6064217302520318294">Képernyőzárolás</translation>
 <translation id="6065289257230303064">Tanúsítványtulajdonos könyvtárattribútumai</translation>
@@ -5322,7 +5318,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6201608810045805374">Eltávolítja a fiókot?</translation>
 <translation id="6202304368170870640">PIN-kódjával bejelentkezhet, és feloldhatja eszköze zárolását.</translation>
 <translation id="6206311232642889873">Ké&amp;p másolása</translation>
-<translation id="6206378791187887398">Engedélyezi?</translation>
 <translation id="6207200176136643843">Visszaállítás az alapértelmezett nagyítási szintre</translation>
 <translation id="6207937957461833379">Ország/Régió</translation>
 <translation id="6208382900683142153">A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interneten, és nem alkalmasak arra, hogy felfedjék az Ön személyazonosságát.</translation>
@@ -5729,7 +5724,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6592808042417736307">Sikerült az ujjlenyomat rögzítése</translation>
 <translation id="6593881952206664229">A szerzői joggal védett médiatartalmak nem játszhatók le</translation>
 <translation id="6594011207075825276">Soros eszközök keresése…</translation>
-<translation id="659498884637196217">A Google Jelszókezelőben ezen az eszközön</translation>
 <translation id="6595187330192059106">A(z) <ph name="HOST" /> soha nem férhet hozzá teljes körűen a MIDI-eszközökhöz</translation>
 <translation id="6595792813574514527">Húzás a(z) <ph name="VISUAL_SEARCH_PROVIDER" /> segítségével való kereséshez</translation>
 <translation id="6596325263575161958">Titkosítási lehetőségek</translation>
@@ -7158,7 +7152,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8002670234429879764">A nyomtató (<ph name="PRINTER_NAME" />) már nem áll rendelkezésre</translation>
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8005600846065423578">Annak engedélyezése, hogy a(z) <ph name="HOST" /> mindig láthassa a vágólapot</translation>
-<translation id="8005666035647241369">A Google Jelszókezelőbe ezen az eszközön</translation>
 <translation id="8006630792898017994">Szóköz vagy Tab</translation>
 <translation id="8008356846765065031">Az internetkapcsolat megszűnt. Kérjük, ellenőrizze az internetkapcsolatot.</translation>
 <translation id="8009225694047762179">Jelszó kezelése</translation>
@@ -7483,7 +7476,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8314381333424235892">Hiányzó vagy eltávolított bővítmény</translation>
 <translation id="831440797644402910">Nem lehet megnyitni ezt a mappát</translation>
 <translation id="8314835274931377415">Elkezdi a kapcsolóalapú hozzáférés beállítását?</translation>
-<translation id="8316618172731049784">Küldés: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Hálózati kapcsolat hozzáadása</translation>
 <translation id="8319414634934645341">Bővített kulcshasználat</translation>
 <translation id="8321837372750396788">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a következő kezeli majd: <ph name="MANAGER" />.</translation>

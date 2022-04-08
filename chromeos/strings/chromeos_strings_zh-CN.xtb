@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="3600339377155080675">屏幕镜像</translation>
 <translation id="3603829704940252505">头像</translation>
+<translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
@@ -431,6 +432,7 @@
 <translation id="5866840822086176774">非常强</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="5903200662178656908">设备是键盘和鼠标的组合。</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
@@ -451,6 +453,7 @@
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
+<translation id="6112878310391905610">此设置由您的管理员管理</translation>
 <translation id="6113701710518389813">向上</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />，以及另外 <ph name="NUMBER" /> 个影集</translation>
 <translation id="6122191549521593678">在线</translation>

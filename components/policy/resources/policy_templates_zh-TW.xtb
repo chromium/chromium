@@ -834,6 +834,7 @@
         |TIME_LIMITS| 會對應用程式套用每日用量上限，當使用者達到當日的用量上限後，就會無法繼續使用該應用程式。你可以在 |daily_limit_mins| 中指定用量上限。系統每天會在 |reset_at| 欄位指定的時間 (採用世界標準時間) 重新設定用量上限。
         這項政策只適用於兒童使用者。
         這項政策與「UsageTimeLimit」彼此互補。系統會強制執行在「UsageTimeLimit」中指定的限制 (例如裝置使用時間和就寢時間)，而忽略「PerAppTimeLimits」。</translation>
+<translation id="1913629775420987861">使用者嘗試關閉瀏覽器時，會顯示警告對話方塊</translation>
 <translation id="1916266055944569995">你可以透過這項政策定義 Managed Configuration API 針對指定來源傳回的值。
 
       Managed Configuration API 是一組鍵/值設定，可透過 navigator.managed.getManagedConfiguration() 這個 JavaScript 呼叫存取。這個 API 僅適用於透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 強制安裝的網頁應用程式所對應的來源。
@@ -1561,6 +1562,7 @@
       這項政策適用於登入畫面。另請查看適用於使用者工作階段的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。建議你為這兩項政策設定相同的值，如果兩者的值不相符，進入使用者工作階段時，系統可能會因為套用使用者政策指定的值而發生延遲。
       </translation>
 <translation id="2702023190395322609">啟用媒體推薦內容</translation>
+<translation id="270582584528242502">使用者嘗試關閉瀏覽器時，不會顯示警告對話方塊</translation>
 <translation id="2706708761587205154">只在 PIN 碼啟用時允許列印</translation>
 <translation id="2707873794476722903">已啟用標準模式中的安全瀏覽功能。</translation>
 <translation id="2709516037105925701">自動填入</translation>
@@ -2415,6 +2417,7 @@
 <translation id="3628480121685794414">啟用單面列印</translation>
 <translation id="3634125384445314047">允許他人透過 Phone Hub 存取手機上最近拍攝的相片和影片。</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
+<translation id="3644735978203799620">擷取多個螢幕畫面時啟用自動選取功能</translation>
 <translation id="3646859102161347133">設定螢幕放大鏡類型</translation>
 <translation id="3647212518036289905">你可以透過這項政策指定要用於 HTTP 驗證的 GSSAPI 程式庫。請將這項政策設為程式庫名稱或完整路徑。
 
@@ -4828,6 +4831,10 @@
 <translation id="654303922206238013">eCryptfs 遷移策略</translation>
 <translation id="6543277347547044538">限制時段的結束時間 (不包含在內)。</translation>
 <translation id="6544601600794014309">啟用快速解答的翻譯功能</translation>
+<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API 允許網頁應用程式一次擷取多個螢幕的畫面。
+      在已定義的來源上，這項政策會解除鎖定網頁應用程式的 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性。
+      如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 要求中定義了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性，系統會自動擷取所有螢幕的畫面，不必獲得使用者明確授權。
+      如果不設定這項政策，則 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 不適用於任何網頁應用程式。</translation>
 <translation id="654546276700640113">如果設定這項政策，系統會強制執行所設定的 PIN 碼長度上限。如果將值設為 0 以下的數字，表示使用者可設定任意長度的 PIN 碼。如果所設定的值小於 <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> 但大於 0，系統會將長度上限設為長度下限的值。
 
       如果不設定這項政策，系統將不會強制執行 PIN 碼長度上限。</translation>
@@ -6473,6 +6480,11 @@
       如果設定這項政策，使用者將無法變更。如果未設定，系統會啟用這項政策，但使用者可以變更這項設定。</translation>
 <translation id="8300992833374611099">控制是否能使用開發人員工具</translation>
 <translation id="8301065459352777588">受管理訪客工作階段的使用者可以儲存整部裝置的顯示設定</translation>
+<translation id="8303923135132440974">控管在使用者嘗試關閉瀏覽器時，是否要顯示「結束前顯示警告訊息 (⌘Q)」對話方塊。
+
+      如果將這項政策設為啟用或不設定，當使用者嘗試關閉瀏覽器時，系統會顯示警告對話方塊。
+
+      如果將這項政策設為停用，則使用者嘗試關閉瀏覽器時，系統不會顯示警告對話方塊。</translation>
 <translation id="830440838848984847">允許使用者登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">登入設定</translation>
 <translation id="830819203330820450">如果啟用或不設定這項政策 (預設值)，網頁就可以使用螢幕畫面分享 API (例如 getDisplayMedia() 或螢幕畫面擷取擴充功能 API)，提示使用者選取要擷取的分頁、視窗或螢幕畫面。

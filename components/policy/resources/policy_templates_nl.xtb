@@ -1793,6 +1793,9 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2957506574938329824">Niet toestaan dat sites toegang tot Bluetooth-apparaten vragen via de Web Bluetooth API</translation>
 <translation id="2957513448235202597">Accounttype voor <ph name="HTTP_NEGOTIATE" />-verificatie</translation>
 <translation id="2959469725686993410">Wifi-toegangspunten altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
+<translation id="2959527429632925933">Als dit beleid niet bestaat (bijv. voor niet-beheerde gebruikers), staat de functie voor uitgaande SSH-clientverbindingen (Secure SHell) aan in Terminal System App (standaard: True).
+      Als de gebruiker wordt beheerd en het beleid niet is ingesteld of niet wordt toegepast, staat de functie uit in Terminal.
+      Als je het beleid toepast, kunnen beheerde gebruikers uitgaande SSH-clientverbindingen maken in Terminal.</translation>
 <translation id="2959898425599642200">Regels voor proxyomzeiling</translation>
 <translation id="2960013482187484833">De laatst gebruikte printer gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
 <translation id="2960128438010718932">De gefaseerde planning voor het toepassen van nieuwe updates</translation>
@@ -3532,6 +3535,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4988291787868618635">Actie die wordt ondernomen wanneer de inactieve vertraging wordt bereikt</translation>
 <translation id="4996068111491152684">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden niet gebruikt voor netwerkverificatie.</translation>
 <translation id="4996086761250834365">Productanalyse van <ph name="PLUGIN_VM_NAME" /> toestaan</translation>
+<translation id="4996161752665479028">SSH aanzetten in Terminal System App</translation>
 <translation id="4997074784107449343">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard niet ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
 <translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
@@ -4722,6 +4726,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6368403635025849609">JavaScript toestaan op deze sites</translation>
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
+<translation id="6376540107659524656">SSH uitzetten in Terminal System App</translation>
 <translation id="6376659517206731212">Kan verplicht zijn</translation>
 <translation id="6377031865393559909">Toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6378076389057087301">Specificeer of audioactiviteit invloed heeft op stroombeheer</translation>
@@ -5812,6 +5817,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7529332889403151669">Geeft aan of de melding voor volledig scherm moet worden getoond als het apparaat uit de slaapstand wordt gehaald of het donkere scherm wordt uitgezet.
 
       Als je het beleid niet instelt of instelt op True, zien gebruikers een melding om ze eraan te herinneren dat ze het volledige scherm moeten verlaten voordat ze een wachtwoord opgeven. Als je het beleid instelt op False, zien gebruikers geen melding.</translation>
+<translation id="7531630046107845550">Uitgaande SSH-clientverbindingen toestaan in Terminal System App</translation>
 <translation id="7534199150025803530">Dit beleid is niet van invloed op de Google Drive-app voor Android. Als je wilt voorkomen dat Google Drive kan worden gebruikt via een mobiele verbinding, moet je de installatie van de Google Drive-app voor Android blokkeren.</translation>
 <translation id="7538583957913002726">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om de CPU-modelnaam, architectuur en maximale kloksnelheid (en CPU-gebruik en -temperatuur voor M96 en hoger) te rapporteren.
 

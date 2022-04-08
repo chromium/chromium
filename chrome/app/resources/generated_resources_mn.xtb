@@ -847,7 +847,6 @@
 <translation id="1784849162047402014">Төхөөрөмжийн дискний багтаамж бага байна</translation>
 <translation id="1787350673646245458">Хэрэглэгчийн зураг</translation>
 <translation id="1788329699711791226">Chrome хөтчийн зүйлсдээ <ph name="ACCOUNT_EMAIL" />-с хандана уу</translation>
-<translation id="1790194216133135334">Холбоосыг <ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="1790976235243700817">Хандалтын эрхийг хасах</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792619191750875668">Өргөтгөсөн дэлгэц</translation>
@@ -1396,7 +1395,6 @@
 <translation id="2312219318583366810">Хуудасны URL</translation>
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
-<translation id="2315587498123194634">Холбоосыг <ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />%-г татсан</translation>
 <translation id="2318143611928805047">Цаасны хэмжээ</translation>
@@ -4437,7 +4435,6 @@
 <translation id="5307386115243749078">Bluetooth сэлгэгчийг хослуулах</translation>
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5309418307557605830">Google Туслах энд ч бас ажиллана</translation>
-<translation id="5310281978693206542">Төхөөрөмжүүддээ холбоос илгээх</translation>
 <translation id="5311304534597152726">Дараахаар нэвтэрч байна</translation>
 <translation id="5311565231560644461">Сайтуудад таны виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглахыг үл зөвшөөрөх</translation>
 <translation id="5313967007315987356">Сайт нэмэх</translation>
@@ -5179,7 +5176,6 @@
 <translation id="6057381398996433816">Энэ сайтад хөдөлгөөн болон гэрлийн мэдрэгч ашиглахыг хориглосон байна.</translation>
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
 <translation id="6059652578941944813">Гэрчилгээний шатлал</translation>
-<translation id="6061882183774845124">Төхөөрөмжүүддээ холбоос илгээх</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр <ph name="SUPERVISED_USER_NAME" />-н хувийн илэрцэд хандах боломжтой байж магадгүй. Батарей хэмнэхийн тулд та <ph name="SUPERVISED_USER_NAME" />-н Туслахын тохиргоо хэсэгт энэ төхөөрөмжийг зөвхөн цэнэглэгчид холбогдсон үед “Ok Google”-г асаалттай байлгахаар сонгож болно.</translation>
 <translation id="6064217302520318294">Дэлгэцийн түгжээ</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
@@ -5318,7 +5314,6 @@
 <translation id="6201608810045805374">Энэ бүртгэлийг хасах уу?</translation>
 <translation id="6202304368170870640">Ta төхөөрөмждөө нэвтрэх эсвэл түгжээг нь тайлахын тулд ПИН кодоо ашиглаж болно.</translation>
 <translation id="6206311232642889873">Зургийг хуулах</translation>
-<translation id="6206378791187887398">Зөвшөөрөх үү?</translation>
 <translation id="6207200176136643843">Томруулах өгөгдмөл түвшинд тохируулах</translation>
 <translation id="6207937957461833379">Улс / бүс</translation>
 <translation id="6208382900683142153">Итгэмжлэгдсэн токен нь веб дээрх нууцлалыг сайжруулах бөгөөд үүнийг таныг хэн болохыг олж мэдэхэд ашиглах боломжгүй.</translation>
@@ -5725,7 +5720,6 @@
 <translation id="6592808042417736307">Таны хурууны хээг авлаа</translation>
 <translation id="6593881952206664229">Зохиогчийн эрхтэй медиаг тоглуулахгүй байж болзошгүй</translation>
 <translation id="6594011207075825276">Цуваа төхөөрөмжүүдийг хайж байна...</translation>
-<translation id="659498884637196217">Энэ төхөөрөмжийн Google-н Нууц үгний менежерт байна</translation>
 <translation id="6595187330192059106">MIDI төхөөрөмжүүдийг бүрэн удирдахыг <ph name="HOST" />-д үргэлж хориглох.</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайхын тулд чирэх</translation>
 <translation id="6596325263575161958">Шифрлэлтийн сонголтууд</translation>
@@ -7153,7 +7147,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> цаашид боломжгүй байна</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8005600846065423578"><ph name="HOST" />-д түр санах ойг харахыг тогтмол зөвшөөрөх</translation>
-<translation id="8005666035647241369">Энэ төхөөрөмж дээрх Google-н Нууц үгний менежерт</translation>
 <translation id="8006630792898017994">Зай авах товч эсвэл Tab</translation>
 <translation id="8008356846765065031">Интернэт салсан байна. Интернетийн холболтоо шалгана уу.</translation>
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>
@@ -7477,7 +7470,6 @@
 <translation id="8314381333424235892">Өргөтгөл байхгүй эсвэл устгагдсан</translation>
 <translation id="831440797644402910">Энэ фолдерыг нээх боломжгүй байна</translation>
 <translation id="8314835274931377415">Сэлгүүрийн тохируулгыг эхлүүлэх үү?</translation>
-<translation id="8316618172731049784"><ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="8317671367883557781">Сүлжээний холболт нэмэх</translation>
 <translation id="8319414634934645341">Өргөтгөсөн гол хэрэглээ</translation>
 <translation id="8321837372750396788">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирдана.</translation>

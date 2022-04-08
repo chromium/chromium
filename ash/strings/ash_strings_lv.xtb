@@ -36,6 +36,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1175572348579024023">Ritināt</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
+<translation id="1183863904939664422">Neinteresē šis ieteikums</translation>
 <translation id="118437560755358292">Papildu drošībai ievadiet paroli vai PIN</translation>
 <translation id="118532027333893379">Pieskarieties jebkurā vietā, lai tvertu visu ekrānu</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
@@ -597,6 +598,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4560576029703263363">Ieslēgts</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
+<translation id="4566144812051858745">Neinteresē nekādi ieteikumi</translation>
 <translation id="4570957409596482333">Poga “Atlasīt, lai izrunātu”</translation>
 <translation id="4573176682887762361">“Type [word / phrase]” (Ievadīt [vārds/frāze])</translation>
 <translation id="4577274620589681794">Laiks ir beidzies! · <ph name="LABEL" /></translation>
@@ -647,6 +649,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4868492592575313542">aktivizēts</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="4889868803215848840">Neobligāti — sniedziet atsauksmes, lai uzlabotu ieteikumus:</translation>
 <translation id="4890187583552566966">Jūsu administrators ir atspējojis Google asistentu.</translation>
 <translation id="4890408602550914571">Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="4895488851634969361">Akumulators ir pilnībā uzlādēts.</translation>
@@ -834,6 +837,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6054305421211936131">Pierakstīties ar viedkarti</translation>
 <translation id="6059276912018042191">Nesen atvērtās Chrome cilnes</translation>
 <translation id="6062360702481658777">Jūs tiksiet automātiski izrakstīts pēc šāda laika: <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Vairs neizmantošu šo failu</translation>
 <translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
 <translation id="6103838137565245112">sistēma</translation>
@@ -1118,6 +1122,7 @@ Jauna instalācija</translation>
 <translation id="7886169021410746335">Pielāgot konfidencialitātes iestatījumus</translation>
 <translation id="7886277072580235377">Pēc izrakstīšanās jūsu interneta sesija tiks notīrīta. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Sūtīt e-pasta ziņojumu</translation>
+<translation id="7893503627044934815">Nevēlos, lai šis fails tiktu rādīts</translation>
 <translation id="7895348134893321514">Starpliktuve</translation>
 <translation id="7897375687985782769">Jūs nospiedāt ekrāna pagriešanas īsinājumtaustiņu. Vai vēlaties pagriezt ekrānu?</translation>
 <translation id="7901405293566323524">Tālruņu centrāle</translation>

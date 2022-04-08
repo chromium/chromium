@@ -780,6 +780,7 @@
 <translation id="1736419249208073774">Подробнее</translation>
 <translation id="1737968601308870607">Сообщить об ошибке</translation>
 <translation id="1739684185846730053">Пробные функции Privacy Sandbox находятся на стадии разработки и доступны не во всех регионах. Пока сайты могут использовать Privacy Sandbox, не отказываясь от существующих веб-технологий, таких как сторонние файлы cookie.</translation>
+<translation id="1741190788710022490">Адаптивная зарядка</translation>
 <translation id="174123615272205933">Другое</translation>
 <translation id="1741314857973421784">Далее</translation>
 <translation id="1743970419083351269">Закрыть панель загрузок</translation>
@@ -839,7 +840,6 @@
 <translation id="1784849162047402014">Свободное пространство заканчивается</translation>
 <translation id="1787350673646245458">Фото профиля</translation>
 <translation id="1788329699711791226">Получите доступ к данным браузера Chrome, сохраненным в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
-<translation id="1790194216133135334">Отправить ссылку на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1790976235243700817">Запретить доступ</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792619191750875668">Дополнительный монитор</translation>
@@ -882,6 +882,7 @@
 <translation id="1823098433522728610">Этот документ содержит деликатный контент.</translation>
 <translation id="18245044880483936">Резервные копии не занимают места на Google Диске ребенка.</translation>
 <translation id="1825565032302550710">Номер порта должен быть в диапазоне 1024–65535.</translation>
+<translation id="18260074040409954">Вы можете использовать сохраненные пароли на любом устройстве. Место хранения для аккаунта <ph name="EMAIL" />: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1826192255355608658">Синхронизируйте закладки, пароли, историю и другие данные в браузере Chrome</translation>
 <translation id="1826516787628120939">Проверка</translation>
 <translation id="1827738518074806965">Галерея</translation>
@@ -1383,7 +1384,6 @@
 <translation id="2312219318583366810">URL страницы</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
-<translation id="2315587498123194634">Отправить ссылку на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2316129865977710310">Спасибо, не надо</translation>
 <translation id="2317842250900878657">Выполнено: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Размер бумаги</translation>
@@ -1620,6 +1620,7 @@
 <translation id="2530166226437958497">Устранение неполадок</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532144599248877204">Продлевает срок службы батареи, удерживая заряд на уровне 80 %. Полностью устройство заряжается только к тому времени, когда вы обычно отключаете его от источника питания.</translation>
 <translation id="2532198298278778531">Управление безопасным DNS-сервером в настройках Chrome OS Flex</translation>
 <translation id="2532589005999780174">Режим высокой контрастности</translation>
 <translation id="2533649878691950253">Этому сайту запрещен доступ к вашему точному местоположению, так как вы обычно задаете такие настройки.</translation>
@@ -4361,6 +4362,7 @@
 <translation id="5278823018825269962">Идентификатор состояния</translation>
 <translation id="5280064835262749532">Обновите учетные данные для <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Удалять файлы cookie и данные сайтов при закрытии всех окон</translation>
+<translation id="5280335021886535443">Чтобы перейти к всплывающей подсказке, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="5280426389926346830">Создать ярлык?</translation>
 <translation id="5281013262333731149">Открывается в браузере "<ph name="OPEN_BROWSER" />"</translation>
 <translation id="528208740344463258">Чтобы скачивать и использовать приложения Android, необходимо установить это обязательное обновление. Во время установки пользоваться устройством <ph name="DEVICE_TYPE" /> нельзя. После обновления устройство <ph name="DEVICE_TYPE" /> перезагрузится автоматически.</translation>
@@ -4415,7 +4417,6 @@
 <translation id="5307386115243749078">Подключить переключатель Bluetooth</translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5309418307557605830">Google Ассистент работает и на этом устройстве</translation>
-<translation id="5310281978693206542">Отправить ссылку на мои устройства</translation>
 <translation id="5311304534597152726">Вход в аккаунт</translation>
 <translation id="5311565231560644461">Запретить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="5313967007315987356">Добавить сайт</translation>
@@ -5153,7 +5154,6 @@
 <translation id="6057381398996433816">Этому сайту запрещено использовать датчики движения и освещенности</translation>
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6059652578941944813">Иерархия сертификатов</translation>
-<translation id="6061882183774845124">Отправить ссылку на мои устройства</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Человек с похожим голосом или записью голоса пользователя <ph name="SUPERVISED_USER_NAME" /> может получить доступ к его персональным результатам. Чтобы экономить заряд батареи, в настройках Ассистента в аккаунте пользователя <ph name="SUPERVISED_USER_NAME" /> можно выбрать режим, в котором функция "Окей, Google" работает, только когда устройство подключено к источнику питания.</translation>
 <translation id="6064217302520318294">Блокировка экрана</translation>
 <translation id="6065289257230303064">Атрибуты каталога субъекта сертификата</translation>
@@ -5292,7 +5292,6 @@
 <translation id="6201608810045805374">Удалить этот аккаунт?</translation>
 <translation id="6202304368170870640">Вы можете использовать PIN-код для входа в аккаунт или разблокировки устройства.</translation>
 <translation id="6206311232642889873">Копировать изображение</translation>
-<translation id="6206378791187887398">Разрешить</translation>
 <translation id="6207200176136643843">Восстановить масштаб по умолчанию</translation>
 <translation id="6207937957461833379">Страна/регион</translation>
 <translation id="6208382900683142153">Токены доверия повышают уровень конфиденциальности в интернете и не позволяют определять личность пользователей.</translation>
@@ -5316,6 +5315,7 @@
 <translation id="622537739776246443">Профиль будет удален</translation>
 <translation id="6225475702458870625">Интернет-подключение доступно через <ph name="PHONE_NAME" />.</translation>
 <translation id="6226777517901268232">Файл секретного ключа (необязательно)</translation>
+<translation id="6227002569366039565">Чтобы перейти к всплывающей подсказке, нажмите |<ph name="ACCELERATOR" />|. Повторное нажатие позволит перейти к элементу, на который указывает подсказка.</translation>
 <translation id="6227280783235722609">расширение</translation>
 <translation id="6229849828796482487">Отключить сеть Wi-Fi</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
@@ -5342,6 +5342,7 @@
 <translation id="6243774244933267674">Сервер недоступен</translation>
 <translation id="6244245036423700521">Импортировать файл ONC</translation>
 <translation id="6246790815526961700">Загрузить с устройства</translation>
+<translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6247620186971210352">Приложения не найдены.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -5696,7 +5697,6 @@
 <translation id="6592808042417736307">Отпечаток пальца сохранен</translation>
 <translation id="6593881952206664229">Медиафайлы, защищенные авторскими правами, могут не воспроизводиться</translation>
 <translation id="6594011207075825276">Поиск последовательных устройств…</translation>
-<translation id="659498884637196217">В Диспетчере паролей Google на этом устройстве</translation>
 <translation id="6595187330192059106">Запрещать сайту <ph name="HOST" /> контролировать устройства MIDI</translation>
 <translation id="6595792813574514527">Перетаскивать для поиска изображений с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6596325263575161958">Параметры шифрования</translation>
@@ -6337,6 +6337,8 @@
 <translation id="7251346854160851420">Обои по умолчанию</translation>
 <translation id="7251635775446614726">Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7251979364707973467">Сайт <ph name="WEBSITE" /> выпустил для вас ключ безопасности и теперь запрашивает его идентификатор, чтобы знать, какой именно ключ безопасности вы используете.</translation>
+<translation id="7252023374029588426">Вы увидите несколько всплывающих подсказок с инструкциями.
+          Чтобы перейти к всплывающей подсказке, нажмите |<ph name="ACCELERATOR" />|. Повторное нажатие позволит перейти к элементу, на который указывает подсказка.</translation>
 <translation id="7253521419891527137">&amp;Подробнее</translation>
 <translation id="7254951428499890870">Запустить приложение "<ph name="APP_NAME" />" в режиме диагностики?</translation>
 <translation id="725497546968438223">Кнопка папки с закладками</translation>
@@ -7119,7 +7121,6 @@
 <translation id="8002670234429879764">Принтер <ph name="PRINTER_NAME" /> больше не доступен.</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8005600846065423578">Всегда открывать сайту <ph name="HOST" /> доступ к буферу обмена</translation>
-<translation id="8005666035647241369">В Диспетчере паролей Google на этом устройстве</translation>
 <translation id="8006630792898017994">Пробел или Tab</translation>
 <translation id="8008356846765065031">Не удалось установить соединение. Проверьте подключение к Интернету.</translation>
 <translation id="8009225694047762179">Управление паролями</translation>
@@ -7442,7 +7443,6 @@
 <translation id="8314381333424235892">Расширение отсутствует или не установлено</translation>
 <translation id="831440797644402910">Не удалось открыть папку</translation>
 <translation id="8314835274931377415">Начать настройку функции Switch Access?</translation>
-<translation id="8316618172731049784">Отправить на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8317671367883557781">Добавить сетевое подключение</translation>
 <translation id="8319414634934645341">Расширенное использование ключа</translation>
 <translation id="8321837372750396788">Этим устройством <ph name="DEVICE_TYPE" /> будет управлять <ph name="MANAGER" />.</translation>
@@ -7456,6 +7456,7 @@
 <translation id="8330617762701840933">Список сайтов, которые открываются в альтернативном браузере.</translation>
 <translation id="8330689128072902965">Контакты рядом могут обмениваться с вами данными. Нажмите, чтобы изменить.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддерживается тип файлов: <ph name="FILE_TYPE1" />}=2{Поддерживаются типы файлов: <ph name="FILE_TYPE1" /> и <ph name="FILE_TYPE2" />}=3{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> и <ph name="FILE_TYPE3" />}=4{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> и <ph name="FILE_TYPE4" />}one{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331822764922665615">Укажите название группы, выберите цвет, затем нажмите Esc.</translation>
 <translation id="833256022891467078">Общие папки Crostini</translation>
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
 <translation id="8336407002559723354">Прекращение автоматического обновления: <ph name="MONTH_AND_YEAR" /></translation>
@@ -7530,6 +7531,7 @@
 <translation id="8412136526970428322">Предоставлено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
 <translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
+<translation id="8414685983518053656">Примечания</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
 <translation id="8418445294933751433">&amp;Показать как вкладку</translation>

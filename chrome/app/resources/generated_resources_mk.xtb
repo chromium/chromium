@@ -558,7 +558,7 @@
 <translation id="1535228823998016251">Гласно</translation>
 <translation id="1536754031901697553">Се исклучува…</translation>
 <translation id="1537254971476575106">Лупа за цел екран</translation>
-<translation id="15373452373711364">Голем курсор на глувчето</translation>
+<translation id="15373452373711364">Голем покажувач на глувчето</translation>
 <translation id="1540605929960647700">Демо-режим</translation>
 <translation id="1541346352678737112">Не е најдена мрежа</translation>
 <translation id="1542137295869176367">Не може да се ажурираат податоците за најавување</translation>
@@ -852,7 +852,6 @@
 <translation id="1784849162047402014">Уредот нема доволно простор на дискот</translation>
 <translation id="1787350673646245458">Слика на корисникот</translation>
 <translation id="1788329699711791226">Пристапете до работите на прелистувачот Chrome од <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="1790194216133135334">Испрати линк до <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
@@ -1401,7 +1400,6 @@
 <translation id="2312219318583366810">URL на страницата</translation>
 <translation id="2314165183524574721">Тековната поставка за видливост е „Сокриен“</translation>
 <translation id="2314774579020744484">Јазик што се користи за превод на страниците</translation>
-<translation id="2315587498123194634">Испрати линк до <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Не, фала</translation>
 <translation id="2317842250900878657">Завршено: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Големина на хартија</translation>
@@ -4443,7 +4441,6 @@
 <translation id="5307386115243749078">Спари Bluetooth-прекинувач</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5309418307557605830">„Помошникот на Google“ функционира и тука</translation>
-<translation id="5310281978693206542">Испратете линк до вашите уреди</translation>
 <translation id="5311304534597152726">Се најавувате како</translation>
 <translation id="5311565231560644461">Не дозволувај сајтовите да ги користат уредите и податоците за виртуелна реалност</translation>
 <translation id="5313967007315987356">Додај локација</translation>
@@ -5185,7 +5182,6 @@
 <translation id="6057381398996433816">Користењето на сензорите за движење и светлина е блокирано за сајтов.</translation>
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6059652578941944813">Хиерархија на сертификат</translation>
-<translation id="6061882183774845124">Испратете линк до вашите уреди</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до личните резултати на <ph name="SUPERVISED_USER_NAME" />. За да заштедите батерија, во поставките за „Помошникот“ на <ph name="SUPERVISED_USER_NAME" /> може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
 <translation id="6064217302520318294">Заклучување екран</translation>
 <translation id="6065289257230303064">Одлики на директориум за субјект на сертификат</translation>
@@ -5324,7 +5320,6 @@
 <translation id="6201608810045805374">Да се отстрани сметкава?</translation>
 <translation id="6202304368170870640">PIN-кодот може да го користите за да се најавите или да го отклучите уредот.</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слика</translation>
-<translation id="6206378791187887398">Да се дозволи?</translation>
 <translation id="6207200176136643843">Ресетирај на стандардно ниво на зумирање</translation>
 <translation id="6207937957461833379">Држава/Регион</translation>
 <translation id="6208382900683142153">Токените за доверба ја подобруваат приватноста на интернет и не може да се користат за ваша идентификација.</translation>
@@ -5731,7 +5726,6 @@
 <translation id="6592808042417736307">Вашиот отпечаток е снимен</translation>
 <translation id="6593881952206664229">Содржините со авторски права можеби нема да се пуштаат</translation>
 <translation id="6594011207075825276">Се бараат сериски уреди…</translation>
-<translation id="659498884637196217">Во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6595187330192059106">Не дозволувај <ph name="HOST" /> да има целосна контрола врз MIDI-уредите.</translation>
 <translation id="6595792813574514527">Повлечете за да пребарате слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
@@ -7161,7 +7155,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> веќе не е достапен</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8005600846065423578">Секогаш дозволувај <ph name="HOST" /> да ја гледа привремената меморија</translation>
-<translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="8006630792898017994">Празно место или Tab</translation>
 <translation id="8008356846765065031">Исклучен интернет. Проверете го поврзувањето на интернет.</translation>
 <translation id="8009225694047762179">Управување со лозинки</translation>
@@ -7488,7 +7481,6 @@
 <translation id="8314381333424235892">Недостасува екстензија или не е инсталирана</translation>
 <translation id="831440797644402910">Папкава не може да се отвори</translation>
 <translation id="8314835274931377415">Да се стартува поставувањето на „Пристап со прекинувачи“?</translation>
-<translation id="8316618172731049784">Испрати до <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Додај мрежна врска</translation>
 <translation id="8319414634934645341">Користење продолжен клуч</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ќе управува со овој <ph name="DEVICE_TYPE" />.</translation>

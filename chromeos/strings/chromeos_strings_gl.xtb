@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="3600339377155080675">Proxectar pantalla</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
@@ -431,6 +432,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5866840822086176774">Moi forte</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5903200662178656908">O dispositivo é unha combinación de teclado e rato.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6104112872696127344">Cancelouse o escaneo</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
+<translation id="6112878310391905610">Os teus administradores xestionan esta opción de configuración</translation>
 <translation id="6113701710518389813">Frecha arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> e <ph name="NUMBER" /> álbums máis</translation>
 <translation id="6122191549521593678">Online</translation>

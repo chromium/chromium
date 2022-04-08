@@ -842,7 +842,6 @@
 <translation id="1784849162047402014">مساحة القرص الموجودة على الجهاز منخفضة.</translation>
 <translation id="1787350673646245458">صورة المستخدم</translation>
 <translation id="1788329699711791226">‏يمكنك الاطّلاع على بياناتك في متصفّح Chrome من <ph name="ACCOUNT_EMAIL" />.</translation>
-<translation id="1790194216133135334">إرسال الرابط إلى <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">إزالة إمكانية الوصول</translation>
 <translation id="1791662854739702043">تم التثبيت</translation>
 <translation id="1792619191750875668">شاشة تم توسيعها</translation>
@@ -1387,7 +1386,6 @@
 <translation id="2312219318583366810">‏عنوان URL للصفحة</translation>
 <translation id="2314165183524574721">الإعداد الحالي لمستوى ظهور الجهاز هو "مخفي".</translation>
 <translation id="2314774579020744484">اللغة المستخدمة عند ترجمة الصفحات</translation>
-<translation id="2315587498123194634">إرسال الرابط إلى <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">لا، شكرًا</translation>
 <translation id="2317842250900878657">تم إكمال <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">حجم الورق</translation>
@@ -2161,7 +2159,7 @@
 <translation id="304747341537320566">محركات الكلام</translation>
 <translation id="3048336643003835855">‏أجهزة HID من المورِّد <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">سجلات الجهاز والإرسال</translation>
-<translation id="3051250416341590778">حجم العرض</translation>
+<translation id="3051250416341590778">حجم شاشة العرض</translation>
 <translation id="3053013834507634016">استخدام مفتاح الشهادة</translation>
 <translation id="3053273573829329829">تفعيل رقم التعريف الشخصي للمستخدم</translation>
 <translation id="3054766768827382232">إنّ إيقاف هذه الميزة يمكن أن يساعد على تحسين مستوى أداء الأجهزة الملحقة، ولكنّه قد يتسبب في الوصول إليها بشكل غير مصرّح به٬ ما قد يؤدي إلى الكشف عن بياناتك الشخصية.</translation>
@@ -4427,7 +4425,6 @@
 <translation id="5307386115243749078">إقران مفتاح تبديل يعمل باستخدام بلوتوث</translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5309418307557605830">‏يمكن استخدام "مساعد Google" أيضًا على هذا الجهاز</translation>
-<translation id="5310281978693206542">إرسال الرابط إلى الأجهزة</translation>
 <translation id="5311304534597152726">تسجيل الدخول باسم</translation>
 <translation id="5311565231560644461">عدم السماح للمواقع الإلكترونية باستخدام أجهزة الواقع الافتراضي وبياناتها</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
@@ -5169,7 +5166,6 @@
 <translation id="6057381398996433816">تم حظر هذا الموقع من استخدام أجهزة استشعار الإضاءة والحركة.</translation>
 <translation id="6059276912018042191">‏علامات تبويب Chrome الأخيرة</translation>
 <translation id="6059652578941944813">التسلسل الهرمي للشهادة</translation>
-<translation id="6061882183774845124">إرسال الرابط إلى الأجهزة</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> يمكن الوصول إلى نتائج <ph name="SUPERVISED_USER_NAME" /> الشخصية باستخدام صوت مشابه لصوت طفلك أو تسجيل لصوته. لتوفير طاقة البطارية، انتقِل إلى إعدادات "مساعد Google" لدى <ph name="SUPERVISED_USER_NAME" /> واختَر تفعيل عبارة Ok Google فقط عندما يكون هذا الجهاز متصلاً بمصدر للطاقة.</translation>
 <translation id="6064217302520318294">قفل الشاشة</translation>
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
@@ -5308,7 +5304,6 @@
 <translation id="6201608810045805374">هل تريد إزالة هذا الحساب؟</translation>
 <translation id="6202304368170870640">يمكنك استخدام رقم تعريفك الشخصي لتسجيل الدخول أو فتح قفل جهازك.</translation>
 <translation id="6206311232642889873">نس&amp;خ صورة</translation>
-<translation id="6206378791187887398">هل تريد السماح؟</translation>
 <translation id="6207200176136643843">إعادة الضبط على مستوى التكبير أو التصغير التلقائي</translation>
 <translation id="6207937957461833379">البلد/المنطقة</translation>
 <translation id="6208382900683142153">‏تعمل الرموز المميّزة Trust Tokens على زيادة مستوى الخصوصية على الويب ولا يمكن استخدامها لمعرفة هويتك.</translation>
@@ -5715,7 +5710,6 @@
 <translation id="6592808042417736307">تم حِفظ بصمة الإصبع.</translation>
 <translation id="6593881952206664229">قد لا يتم تشغيل الوسائط المحمية بموجب حقوق الطبع والنشر.</translation>
 <translation id="6594011207075825276">جارٍ البحث عن أجهزة تسلسلية...</translation>
-<translation id="659498884637196217">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
 <translation id="6595187330192059106">‏حظر <ph name="HOST" /> دائمًا من التحكُّم الكامل بأجهزة MIDI</translation>
 <translation id="6595792813574514527">سحب الماوس للبحث عن الصور باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6596325263575161958">خيارات التشفير</translation>
@@ -7146,7 +7140,6 @@
 <translation id="8002670234429879764">لم تَعد <ph name="PRINTER_NAME" /> متوفرة.</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8005600846065423578">السماح دائمًا لـ <ph name="HOST" /> بالاطلاع على الحافظة</translation>
-<translation id="8005666035647241369">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
 <translation id="8006630792898017994">‏مفتاح المسافة أو مفتاح التبويب (Tab)</translation>
 <translation id="8008356846765065031">تم قطع الاتصال بالإنترنت. يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="8009225694047762179">إدارة كلمات المرور</translation>
@@ -7472,7 +7465,6 @@
 <translation id="8314381333424235892">إضافة مفقودة أو غير مُثبتة</translation>
 <translation id="831440797644402910">يتعذّر فتح هذا المجلد</translation>
 <translation id="8314835274931377415">هل تريد بدء عملية إعداد ميزة "الوصول عبر مفتاح تحكّم"؟</translation>
-<translation id="8316618172731049784">إرسال إلى <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">إضافة اتصال شبكة</translation>
 <translation id="8319414634934645341">استخدام المفتاح الموسع</translation>
 <translation id="8321837372750396788">ستتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>

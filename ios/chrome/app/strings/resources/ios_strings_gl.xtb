@@ -214,11 +214,13 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2848086008667475748">Definir como aplicación predeterminada na configuración</translation>
 <translation id="2858204748079866344">Para protexer a túa privacidade, Chrome non autocompletará o teu contrasinal neste campo.</translation>
 <translation id="285960592395650245">Reintentar a descarga</translation>
+<translation id="2866378026651742652">Agora mostraránseche historias desta canle cando abras unha pestana nova.</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871695793448672541">Contrasinal oculto</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
 <translation id="2883151425485251736">Consulta e edita temas que ocultaches na túa conta</translation>
 <translation id="288655811176831528">Pechar pestana</translation>
+<translation id="2890171748217283516">Os sitios que segues gárdanse na túa conta de Google. Podes xestionalos na configuración de Discover.</translation>
 <translation id="2893180576842394309">Google pode utilizar o teu historial para personalizar a Busca e outros servizos de Google</translation>
 <translation id="2898963176829412617">Cartafol novo...</translation>
 <translation id="2916171785467530738">Completar buscas e URL automaticamente</translation>
@@ -348,8 +350,8 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
+<translation id="4063300985191096908">Ir ao feed</translation>
 <translation id="408404951701638773">Agora é máis fácil acceder á barra de busca</translation>
-<translation id="4108314971463891922">Seguir</translation>
 <translation id="411254640334432676">Erro na descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
@@ -653,6 +655,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6603393121510733479">A túa organización desactivou a navegación privada.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcións de tradución</translation>
+<translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6624219055418309072">Bloquear no modo de incógnito</translation>
 <translation id="6628106477656132239">A data de vencemento non é válida</translation>
@@ -712,6 +715,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar e cambiar de conta</translation>
+<translation id="7080806333218412752">Envía enderezos URL á función Navegación segura para comprobalos. Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas. Vincula temporalmente estes datos coa túa Conta de Google cando inicies sesión para protexerte nas aplicacións de Google.</translation>
 <translation id="7099761977003084116">Pestanas recentes</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -789,6 +793,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7884694604461143138">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
+<translation id="7930998711684428189">Móstrache unha advertencia se os teus contrasinais están en risco debido a unha violación da seguranza dos datos.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
 <translation id="794799177247607889">Deter rexistro</translation>
@@ -936,6 +941,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Enviouse o informe de erros.</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="959066944189734975">Segues a <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas.</translation>
 <translation id="984509647832111802">A sincronización non funciona.</translation>
 <translation id="988141524645182168">Outros dispositivos</translation>

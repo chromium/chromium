@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="3600339377155080675">Spejling af skærm</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
@@ -430,6 +431,7 @@
 <translation id="5866840822086176774">Meget stærk</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5895138241574237353">Genstart</translation>
+<translation id="5903200662178656908">Enheden er en kombination af et tastatur og en mus</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -450,6 +452,7 @@
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
+<translation id="6112878310391905610">Denne indstilling administreres af dine administratorer</translation>
 <translation id="6113701710518389813">Pil op</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> flere album</translation>
 <translation id="6122191549521593678">Online</translation>

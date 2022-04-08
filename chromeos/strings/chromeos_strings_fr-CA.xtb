@@ -216,6 +216,7 @@
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3603829704940252505">Avatar</translation>
+<translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
@@ -431,6 +432,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5866840822086176774">Très fort</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5903200662178656908">L'appareil est un ensemble clavier et souris.</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -451,6 +453,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
+<translation id="6112878310391905610">Ce paramètre est géré par vos administrateurs</translation>
 <translation id="6113701710518389813">Flèche vers le haut</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> autres albums</translation>
 <translation id="6122191549521593678">En ligne</translation>
