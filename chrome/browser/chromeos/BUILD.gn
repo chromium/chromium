@@ -1519,6 +1519,8 @@ source_set("chromeos") {
     "../ash/file_manager/extract_io_task.h",
     "../ash/file_manager/file_browser_handlers.cc",
     "../ash/file_manager/file_browser_handlers.h",
+    "../ash/file_manager/file_manager_copy_or_move_hook_delegate.cc",
+    "../ash/file_manager/file_manager_copy_or_move_hook_delegate.h",
     "../ash/file_manager/file_manager_string_util.cc",
     "../ash/file_manager/file_manager_string_util.h",
     "../ash/file_manager/file_tasks.cc",

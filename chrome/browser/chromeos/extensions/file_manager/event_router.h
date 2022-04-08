@@ -19,6 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -117,7 +118,7 @@ class EventRouter
 
   // Called when a copy task progress is updated.
   void OnCopyProgress(int copy_id,
-                      storage::FileSystemOperation::CopyOrMoveProgressType type,
+                      FileManagerCopyOrMoveHookDelegate::ProgressType type,
                       const GURL& source_url,
                       const GURL& destination_url,
                       int64_t size);

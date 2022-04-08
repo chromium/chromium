@@ -10,9 +10,12 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 
 namespace net {
@@ -31,8 +34,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
     : public RecursiveOperationDelegate {
  public:
   class CopyOrMoveImpl;
-  using CopyOrMoveProgressCallback =
-      FileSystemOperation::CopyOrMoveProgressCallback;
+
   using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using ErrorBehavior = FileSystemOperation::ErrorBehavior;
 
@@ -95,7 +97,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
       OperationType operation_type,
       CopyOrMoveOptionSet options,
       ErrorBehavior error_behavior,
-      const CopyOrMoveProgressCallback& progress_callback,
+      std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
       StatusCallback callback);
 
   CopyOrMoveOperationDelegate(const CopyOrMoveOperationDelegate&) = delete;
@@ -118,17 +120,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
     error_url_for_test_ = url;
   }
 
+  void PostTask(base::OnceClosure closure);
+
  protected:
   void OnCancel() override;
 
  private:
+  void DoProcessFile(const FileSystemURL& url,
+                     FileSystemURL dest,
+                     StatusCallback callback,
+                     base::File::Error error);
   void DidCopyOrMoveFile(StatusCallback callback,
                          CopyOrMoveImpl* impl,
                          base::File::Error error);
   void DidTryRemoveDestRoot(StatusCallback callback, base::File::Error error);
   void ProcessDirectoryInternal(const FileSystemURL& src_url,
                                 const FileSystemURL& dest_url,
-                                StatusCallback callback);
+                                StatusCallback callback,
+                                base::File::Error error);
   void DidCreateDirectory(const FileSystemURL& src_url,
                           const FileSystemURL& dest_url,
                           StatusCallback callback,
@@ -144,6 +153,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
                               StatusCallback callback,
                               base::File::Error error);
 
+  void FinishOperation(base::File::Error error);
+
   FileSystemURL CreateDestURL(const FileSystemURL& src_url) const;
 
 #if DCHECK_IS_ON()
@@ -156,7 +167,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
   const OperationType operation_type_;
   const CopyOrMoveOptionSet options_;
   const ErrorBehavior error_behavior_;
-  const CopyOrMoveProgressCallback progress_callback_;
+  std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate_;
   StatusCallback callback_;
   FileSystemURL error_url_for_test_;
 

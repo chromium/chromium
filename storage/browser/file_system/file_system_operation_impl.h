@@ -58,13 +58,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
             const FileSystemURL& dest_url,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void Move(const FileSystemURL& src_url,
             const FileSystemURL& dest_url,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void DirectoryExists(const FileSystemURL& url,
                        StatusCallback callback) override;

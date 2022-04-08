@@ -31,6 +31,7 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -617,7 +618,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
           storage::FileSystemOperation::CopyOrMoveOption::
               kPreserveLastModified),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyOrMoveProgressCallback());
+      std::make_unique<storage::CopyOrMoveHookDelegate>());
 }
 
 void FileSystemAccessFileHandleImpl::DidCopySwapFile(

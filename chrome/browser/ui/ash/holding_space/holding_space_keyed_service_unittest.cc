@@ -159,7 +159,8 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
 
 class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
  public:
-  explicit ItemUpdatedWaiter(HoldingSpaceModel* model) {
+  ItemUpdatedWaiter(HoldingSpaceModel* model, const HoldingSpaceItem* item)
+      : wait_item_(item) {
     model_observer_.Observe(model);
   }
 
@@ -167,29 +168,38 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
   ItemUpdatedWaiter& operator=(const ItemUpdatedWaiter&) = delete;
   ~ItemUpdatedWaiter() override = default;
 
-  void Wait(const HoldingSpaceItem* item) {
-    ASSERT_FALSE(wait_item_);
+  void Wait() {
+    ASSERT_TRUE(wait_item_);
     ASSERT_FALSE(wait_loop_);
-
-    wait_item_ = item;
+    if (wait_item_updated_) {
+      // The item has already been updated, no waiting necessary.
+      wait_item_updated_ = false;
+      return;
+    }
 
     wait_loop_ = std::make_unique<base::RunLoop>();
     wait_loop_->Run();
     wait_loop_.reset();
-
-    wait_item_ = nullptr;
   }
 
  private:
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
                                  uint32_t updated_fields) override {
+    if (!wait_loop_) {
+      // `wait_loop_` is nullptr, if wait has not yet been called.
+      if (item == wait_item_) {
+        wait_item_updated_ = true;
+      }
+      return;
+    }
     if (item == wait_item_)
       wait_loop_->Quit();
   }
 
   const HoldingSpaceItem* wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
+  bool wait_item_updated_ = false;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};
@@ -836,14 +846,18 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     base::FilePath new_file_path = file_path.InsertBeforeExtension(" (Moved)");
     GURL file_path_url = GetFileSystemUrl(GetProfile(), file_path);
     GURL new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
-    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context, context->CrackURLInFirstPartyContext(file_path_url),
-                  context->CrackURLInFirstPartyContext(new_file_path_url)),
-              base::File::FILE_OK);
+    {
+      ItemUpdatedWaiter waiter(primary_holding_space_model, holding_space_item);
+      ASSERT_EQ(
+          storage::AsyncFileTestHelper::Move(
+              context, context->CrackURLInFirstPartyContext(file_path_url),
+              context->CrackURLInFirstPartyContext(new_file_path_url)),
+          base::File::FILE_OK);
 
-    // File changes must be posted to the UI thread, wait for the update to
-    // reach the holding space model.
-    ItemUpdatedWaiter(primary_holding_space_model).Wait(holding_space_item);
+      // File changes must be posted to the UI thread, wait for the update to
+      // reach the holding space model.
+      waiter.Wait();
+    }
 
     // Verify that the holding space item has been updated in place.
     ASSERT_EQ(holding_space_item->file_path(), new_file_path);
@@ -867,14 +881,18 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     new_file_path = file_path.InsertBeforeExtension(" (Moved)");
     file_path_url = GetFileSystemUrl(GetProfile(), file_path);
     new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
-    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context, context->CrackURLInFirstPartyContext(file_path_url),
-                  context->CrackURLInFirstPartyContext(new_file_path_url)),
-              base::File::FILE_OK);
+    {
+      ItemUpdatedWaiter waiter(primary_holding_space_model, holding_space_item);
+      ASSERT_EQ(
+          storage::AsyncFileTestHelper::Move(
+              context, context->CrackURLInFirstPartyContext(file_path_url),
+              context->CrackURLInFirstPartyContext(new_file_path_url)),
+          base::File::FILE_OK);
 
-    // File changes must be posted to the UI thread, wait for the update to
-    // reach the holding space model.
-    ItemUpdatedWaiter(primary_holding_space_model).Wait(holding_space_item);
+      // File changes must be posted to the UI thread, wait for the update to
+      // reach the holding space model.
+      waiter.Wait();
+    }
 
     // The file backing the holding space item is expected to have re-parented.
     new_file_path = new_file_path.Append(base_name);
@@ -1003,21 +1021,25 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
     ASSERT_EQ(src_item->file_path(), test_case.src.path);
     ASSERT_EQ(src_item->file_system_url(), test_case.src.file_system_url);
 
-    // Move the file at the source item path to the destination item path.
-    // Verify that, given that both paths are represented in the holding space,
-    // the item initially associated with the destination path is removed from
-    // the holding space (to avoid two items with the same backing file).
-    ASSERT_EQ(
-        storage::AsyncFileTestHelper::Move(
-            context,
-            context->CrackURLInFirstPartyContext(test_case.src.file_system_url),
-            context->CrackURLInFirstPartyContext(
-                test_case.dst.file_system_url)),
-        base::File::FILE_OK);
+    {
+      ItemUpdatedWaiter waiter(primary_holding_space_model, src_item);
+      // Move the file at the source item path to the destination item path.
+      // Verify that, given that both paths are represented in the holding
+      // space, the item initially associated with the destination path is
+      // removed from the holding space (to avoid two items with the same
+      // backing file).
+      ASSERT_EQ(storage::AsyncFileTestHelper::Move(
+                    context,
+                    context->CrackURLInFirstPartyContext(
+                        test_case.src.file_system_url),
+                    context->CrackURLInFirstPartyContext(
+                        test_case.dst.file_system_url)),
+                base::File::FILE_OK);
 
-    // File changes must be posted to the UI thread, wait for the update to
-    // reach the holding space model.
-    ItemUpdatedWaiter(primary_holding_space_model).Wait(src_item);
+      // File changes must be posted to the UI thread, wait for the update to
+      // reach the holding space model.
+      waiter.Wait();
+    }
 
     const HoldingSpaceItem* item =
         primary_holding_space_model->GetItem(test_case.src.item_id);

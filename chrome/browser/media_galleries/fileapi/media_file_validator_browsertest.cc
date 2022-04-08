@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -228,7 +229,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
         move_src_, move_dest_,
         storage::FileSystemOperation::CopyOrMoveOptionSet(),
         storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+        std::make_unique<storage::CopyOrMoveHookDelegate>(),
         base::BindOnce(&MediaFileValidatorTest::OnMoveResult,
                        base::Unretained(this), expected_result));
   }

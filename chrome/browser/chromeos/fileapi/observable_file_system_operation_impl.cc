@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 
 namespace chromeos {
 
@@ -137,10 +138,10 @@ void ObservableFileSystemOperationImpl::Copy(
     const storage::FileSystemURL& dst,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Copy(
-      src, dst, options, error_behavior, progress_callback,
+      src, dst, options, error_behavior, std::move(copy_or_move_hook_delegate),
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileCopiedOnUiThread, account_id_, src, dst)),
@@ -166,10 +167,10 @@ void ObservableFileSystemOperationImpl::Move(
     const storage::FileSystemURL& dst,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Move(
-      src, dst, options, error_behavior, progress_callback,
+      src, dst, options, error_behavior, std::move(copy_or_move_hook_delegate),
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileMovedOnUiThread, account_id_, src, dst)),

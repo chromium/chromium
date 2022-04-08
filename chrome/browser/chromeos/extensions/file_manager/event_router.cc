@@ -201,20 +201,20 @@ MountErrorToMountCompletedStatus(chromeos::MountError error) {
 
 file_manager_private::CopyOrMoveProgressStatusType
 CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
-    storage::FileSystemOperation::CopyOrMoveProgressType type) {
+    FileManagerCopyOrMoveHookDelegate::ProgressType type) {
   switch (type) {
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kBegin:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kBegin:
       return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kProgress:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress:
       return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndCopy:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndCopy:
       return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_COPY;
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndMove:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndMove:
       return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_MOVE;
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndRemoveSource:
       return file_manager_private::
           COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_REMOVE_SOURCE;
-    case storage::FileSystemOperation::CopyOrMoveProgressType::kError:
+    case FileManagerCopyOrMoveHookDelegate::ProgressType::kError:
       return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
   }
   NOTREACHED();
@@ -778,7 +778,7 @@ void EventRouter::OnCopyCompleted(int copy_id,
 
 void EventRouter::OnCopyProgress(
     int copy_id,
-    storage::FileSystemOperation::CopyOrMoveProgressType type,
+    FileManagerCopyOrMoveHookDelegate::ProgressType type,
     const GURL& source_url,
     const GURL& destination_url,
     int64_t size) {
@@ -787,27 +787,27 @@ void EventRouter::OnCopyProgress(
   file_manager_private::CopyOrMoveProgressStatus status;
   status.type = CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(type);
   status.source_url = std::make_unique<std::string>(source_url.spec());
-  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError) {
+  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError) {
     // For cross-filesystems moves, no destination_url is provided when an error
     // occurs. This translates into to a non-valid destination GURL.
     // status.destination_url should never be used in this case.
     status.destination_url =
         std::make_unique<std::string>(destination_url.possibly_invalid_spec());
-  } else if (type != storage::FileSystemOperation::CopyOrMoveProgressType::
+  } else if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::
                          kEndRemoveSource) {
     status.destination_url =
         std::make_unique<std::string>(destination_url.spec());
   }
 
-  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
+  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError)
     status.error = std::make_unique<std::string>(
         FileErrorToErrorName(base::File::FILE_ERROR_FAILED));
-  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kProgress)
+  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
     status.size = std::make_unique<double>(size);
 
   // Discard error progress since current JS code cannot handle this properly.
   // TODO(yawano): Remove this after JS side is implemented correctly.
-  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
+  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError)
     return;
 
   // Should not skip events other than TYPE_PROGRESS.

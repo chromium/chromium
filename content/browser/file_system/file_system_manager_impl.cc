@@ -34,6 +34,7 @@
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -345,7 +346,7 @@ void FileSystemManagerImpl::ContinueMove(const storage::FileSystemURL& src_url,
   fs_op_runner->Move(src_url, dest_url,
                      storage::FileSystemOperation::CopyOrMoveOptionSet(),
                      FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                     storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+                     std::make_unique<storage::CopyOrMoveHookDelegate>(),
                      base::BindOnce(&FileSystemManagerImpl::DidFinish,
                                     GetWeakPtr(), std::move(callback)));
 }
@@ -398,7 +399,7 @@ void FileSystemManagerImpl::ContinueCopy(const storage::FileSystemURL& src_url,
   fs_op_runner->Copy(src_url, dest_url,
                      storage::FileSystemOperation::CopyOrMoveOptionSet(),
                      FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                     storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+                     std::make_unique<storage::CopyOrMoveHookDelegate>(),
                      base::BindOnce(&FileSystemManagerImpl::DidFinish,
                                     GetWeakPtr(), std::move(callback)));
 }

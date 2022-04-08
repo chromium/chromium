@@ -18,9 +18,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/url_request/url_request_context.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_writer_delegate.h"
 
 namespace storage {
@@ -94,8 +96,9 @@ OperationID FileSystemOperationRunner::Copy(
     const FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
+  DCHECK(copy_or_move_hook_delegate);
   base::File::Error error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =
       file_system_context_->CreateFileSystemOperation(dest_url, &error);
@@ -108,14 +111,10 @@ OperationID FileSystemOperationRunner::Copy(
   }
   PrepareForWrite(id, dest_url);
   PrepareForRead(id, src_url);
-  operation_raw->Copy(
-      src_url, dest_url, options, error_behavior,
-      progress_callback.is_null()
-          ? CopyOrMoveProgressCallback()
-          : base::BindRepeating(&FileSystemOperationRunner::OnCopyProgress,
-                                weak_ptr_, id, progress_callback),
-      base::BindOnce(&FileSystemOperationRunner::DidFinish, weak_ptr_, id,
-                     std::move(callback)));
+  operation_raw->Copy(src_url, dest_url, options, error_behavior,
+                      std::move(copy_or_move_hook_delegate),
+                      base::BindOnce(&FileSystemOperationRunner::DidFinish,
+                                     weak_ptr_, id, std::move(callback)));
   return id;
 }
 
@@ -124,8 +123,9 @@ OperationID FileSystemOperationRunner::Move(
     const FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
+  DCHECK(copy_or_move_hook_delegate);
   base::File::Error error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =
       file_system_context_->CreateFileSystemOperation(dest_url, &error);
@@ -138,14 +138,10 @@ OperationID FileSystemOperationRunner::Move(
   }
   PrepareForWrite(id, dest_url);
   PrepareForWrite(id, src_url);
-  operation_raw->Move(
-      src_url, dest_url, options, error_behavior,
-      progress_callback.is_null()
-          ? CopyOrMoveProgressCallback()
-          : base::BindRepeating(&FileSystemOperationRunner::OnCopyProgress,
-                                weak_ptr_, id, progress_callback),
-      base::BindOnce(&FileSystemOperationRunner::DidFinish, weak_ptr_, id,
-                     std::move(callback)));
+  operation_raw->Move(src_url, dest_url, options, error_behavior,
+                      std::move(copy_or_move_hook_delegate),
+                      base::BindOnce(&FileSystemOperationRunner::DidFinish,
+                                     weak_ptr_, id, std::move(callback)));
   return id;
 }
 
@@ -695,23 +691,6 @@ void FileSystemOperationRunner::DidCreateSnapshot(
   }
   std::move(callback).Run(rv, file_info, platform_path, std::move(file_ref));
   FinishOperation(id);
-}
-
-void FileSystemOperationRunner::OnCopyProgress(
-    const OperationID id,
-    const CopyOrMoveProgressCallback& callback,
-    FileSystemOperation::CopyOrMoveProgressType type,
-    const FileSystemURL& source_url,
-    const FileSystemURL& dest_url,
-    int64_t size) {
-  if (is_beginning_operation_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FileSystemOperationRunner::OnCopyProgress, weak_ptr_,
-                       id, callback, type, source_url, dest_url, size));
-    return;
-  }
-  callback.Run(type, source_url, dest_url, size);
 }
 
 void FileSystemOperationRunner::PrepareForWrite(OperationID id,

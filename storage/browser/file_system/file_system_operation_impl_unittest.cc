@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -286,8 +287,8 @@ class FileSystemOperationImplTest : public testing::Test {
     base::RunLoop run_loop;
     update_observer_.Enable();
     operation_runner()->Move(
-        src, dest, options, storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+        src, dest, options, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+        std::make_unique<CopyOrMoveHookDelegate>(),
         RecordStatusCallback(run_loop.QuitClosure(), &status));
     run_loop.Run();
     update_observer_.Disable();
@@ -302,7 +303,7 @@ class FileSystemOperationImplTest : public testing::Test {
     update_observer_.Enable();
     operation_runner()->Copy(
         src, dest, options, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        FileSystemOperation::CopyOrMoveProgressCallback(),
+        std::make_unique<CopyOrMoveHookDelegate>(),
         RecordStatusCallback(run_loop.QuitClosure(), &status));
     run_loop.Run();
     update_observer_.Disable();

@@ -34,7 +34,8 @@ class ObservableFileSystemOperationImpl
             const storage::FileSystemURL& dst,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<storage::CopyOrMoveHookDelegate>
+                copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void CopyFileLocal(const storage::FileSystemURL& src,
                      const storage::FileSystemURL& dst,
@@ -45,7 +46,8 @@ class ObservableFileSystemOperationImpl
             const storage::FileSystemURL& dst,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<storage::CopyOrMoveHookDelegate>
+                copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void MoveFileLocal(const storage::FileSystemURL& src,
                      const storage::FileSystemURL& dst,

@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,7 +63,7 @@ class CopyOrMoveIOTask : public IOTask {
       size_t idx,
       base::FileErrorOr<storage::FileSystemURL> destination_result);
   void OnCopyOrMoveProgress(
-      storage::FileSystemOperation::CopyOrMoveProgressType type,
+      FileManagerCopyOrMoveHookDelegate::ProgressType type,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       int64_t size);

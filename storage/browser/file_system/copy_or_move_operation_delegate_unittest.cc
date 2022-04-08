@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,6 +28,7 @@
 #include "base/time/time.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/copy_or_move_operation_delegate.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -119,26 +121,102 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
   };
 };
 
-// Records CopyOrMoveProgressCallback invocations.
-struct ProgressRecord {
-  FileSystemOperation::CopyOrMoveProgressType type;
-  FileSystemURL source_url;
-  FileSystemURL dest_url;
-  int64_t size;
-};
+class CopyOrMoveRecordDelegate : public CopyOrMoveHookDelegate {
+ public:
+  // Records method invocations.
+  struct ProgressRecord {
+    enum class Type {
+      kBeginFile = 0,
+      kBeginDirectory,
+      kProgress,
+      kEndCopy,
+      kEndMove,
+      kEndRemoveSource,
+      kError,
+    } type;
+    FileSystemURL source_url;
+    FileSystemURL dest_url;
+    int64_t size;
+    base::File::Error error;
+  };
 
-void RecordProgressCallback(std::vector<ProgressRecord>* records,
-                            FileSystemOperation::CopyOrMoveProgressType type,
-                            const FileSystemURL& source_url,
-                            const FileSystemURL& dest_url,
-                            int64_t size) {
-  ProgressRecord record;
-  record.type = type;
-  record.source_url = source_url;
-  record.dest_url = dest_url;
-  record.size = size;
-  records->push_back(record);
-}
+  using StatusCallback = FileSystemOperation::StatusCallback;
+
+  explicit CopyOrMoveRecordDelegate(std::vector<ProgressRecord>* records)
+      : records_(records) {
+    DCHECK(records_);
+  }
+
+  ~CopyOrMoveRecordDelegate() override = default;
+
+  void OnBeginProcessFile(const FileSystemURL& source_url,
+                          const FileSystemURL& destination_url,
+                          StatusCallback callback) override {
+    AddRecord(ProgressRecord::Type::kBeginFile, source_url, destination_url, 0,
+              base::File::FILE_OK);
+
+    std::move(callback).Run(base::File::FILE_OK);
+  }
+
+  void OnBeginProcessDirectory(const FileSystemURL& source_url,
+                               const FileSystemURL& destination_url,
+                               StatusCallback callback) override {
+    AddRecord(ProgressRecord::Type::kBeginDirectory, source_url,
+              destination_url, 0, base::File::FILE_OK);
+
+    std::move(callback).Run(base::File::FILE_OK);
+  }
+
+  void OnProgress(const FileSystemURL& source_url,
+                  const FileSystemURL& destination_url,
+                  int64_t size) override {
+    AddRecord(ProgressRecord::Type::kProgress, source_url, destination_url,
+              size, base::File::FILE_OK);
+  }
+
+  void OnError(const FileSystemURL& source_url,
+               const FileSystemURL& destination_url,
+               base::File::Error error) override {
+    AddRecord(ProgressRecord::Type::kError, source_url, destination_url, 0,
+              error);
+  }
+
+  void OnEndCopy(const FileSystemURL& source_url,
+                 const FileSystemURL& destination_url) override {
+    AddRecord(ProgressRecord::Type::kEndCopy, source_url, destination_url, 0,
+              base::File::FILE_OK);
+  }
+
+  void OnEndMove(const FileSystemURL& source_url,
+                 const FileSystemURL& destination_url) override {
+    AddRecord(ProgressRecord::Type::kEndMove, source_url, destination_url, 0,
+              base::File::FILE_OK);
+  }
+
+  void OnEndRemoveSource(const FileSystemURL& source_url) override {
+    AddRecord(ProgressRecord::Type::kEndRemoveSource, source_url,
+              FileSystemURL(), 0, base::File::FILE_OK);
+  }
+
+ private:
+  void AddRecord(ProgressRecord::Type type,
+                 const FileSystemURL& source_url,
+                 const FileSystemURL& dest_url,
+                 int64_t size,
+                 base::File::Error error) {
+    ProgressRecord record;
+    record.type = type;
+    record.source_url = source_url;
+    record.dest_url = dest_url;
+    record.size = size;
+    record.error = error;
+    records_->push_back(record);
+  }
+
+  // Raw ptr safe here, because the records will be destructed at end of test,
+  // i.e., after the CopyOrMove operation has finished.
+  base::raw_ptr<std::vector<ProgressRecord>> records_;
+};
 
 void RecordFileProgressCallback(std::vector<int64_t>* records,
                                 int64_t progress) {
@@ -278,26 +356,28 @@ class CopyOrMoveOperationTestHelper {
     return AsyncFileTestHelper::Copy(file_system_context_.get(), src, dest);
   }
 
-  base::File::Error CopyWithProgress(
+  base::File::Error CopyWithHookDelegate(
       const FileSystemURL& src,
       const FileSystemURL& dest,
-      const AsyncFileTestHelper::CopyOrMoveProgressCallback&
-          progress_callback) {
-    return AsyncFileTestHelper::CopyWithProgress(file_system_context_.get(),
-                                                 src, dest, progress_callback);
+      std::unique_ptr<storage::CopyOrMoveHookDelegate>
+          copy_or_move_hook_delegate) {
+    return AsyncFileTestHelper::CopyWithHookDelegate(
+        file_system_context_.get(), src, dest,
+        std::move(copy_or_move_hook_delegate));
   }
 
   base::File::Error Move(const FileSystemURL& src, const FileSystemURL& dest) {
     return AsyncFileTestHelper::Move(file_system_context_.get(), src, dest);
   }
 
-  base::File::Error MoveWithProgress(
+  base::File::Error MoveWithHookDelegate(
       const FileSystemURL& src,
       const FileSystemURL& dest,
-      const AsyncFileTestHelper::CopyOrMoveProgressCallback&
-          progress_callback) {
-    return AsyncFileTestHelper::MoveWithProgress(file_system_context_.get(),
-                                                 src, dest, progress_callback);
+      std::unique_ptr<storage::CopyOrMoveHookDelegate>
+          copy_or_move_hook_delegate) {
+    return AsyncFileTestHelper::MoveWithHookDelegate(
+        file_system_context_.get(), src, dest,
+        std::move(copy_or_move_hook_delegate));
   }
 
   base::File::Error SetUpTestCaseFiles(
@@ -584,8 +664,8 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyDirectory) {
 
   // Copy it.
   ASSERT_EQ(base::File::FILE_OK,
-            helper.CopyWithProgress(
-                src, dest, AsyncFileTestHelper::CopyOrMoveProgressCallback()));
+            helper.CopyWithHookDelegate(
+                src, dest, std::make_unique<CopyOrMoveHookDelegate>()));
 
   // Verify.
   ASSERT_TRUE(helper.DirectoryExists(src));
@@ -685,7 +765,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFileNoValidator) {
   ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.Copy(src, dest));
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgressCallback) {
+TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgress) {
   CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
                                        kFileSystemTypePersistent);
   helper.SetUp();
@@ -699,14 +779,22 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgressCallback) {
             helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
                                       kRegularFileSystemTestCaseSize));
 
-  std::vector<ProgressRecord> records;
+  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
   ASSERT_EQ(
       base::File::FILE_OK,
-      helper.CopyWithProgress(src, dest,
-                              base::BindRepeating(&RecordProgressCallback,
-                                                  base::Unretained(&records))));
+      helper.CopyWithHookDelegate(
+          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
 
-  // Verify progress callback.
+  // Verify that for `src` kBeginFile is called.
+  // This behavior is expected, because for the src entry, ProcessFile is always
+  // called independent of whether it is a directory or not.
+  // Note: This might change if the behavior of RecursiveOperationDelegate is
+  // changed.
+  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
+            records[0].type);
+  EXPECT_EQ(dest, records[0].dest_url);
+
+  // Verify progress records.
   for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
     const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
 
@@ -731,10 +819,15 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgressCallback) {
     ASSERT_NE(end_index, records.size());
     ASSERT_NE(begin_index, end_index);
 
-    EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
-              records[begin_index].type);
+    if (test_case.is_directory) {
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginDirectory,
+                records[begin_index].type);
+    } else {
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
+                records[begin_index].type);
+    }
     EXPECT_EQ(dest_url, records[begin_index].dest_url);
-    EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndCopy,
+    EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
               records[end_index].type);
     EXPECT_EQ(dest_url, records[end_index].dest_url);
 
@@ -746,7 +839,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgressCallback) {
       int64_t current_size = 0;
       for (size_t j = begin_index + 1; j < end_index; ++j) {
         if (records[j].source_url == src_url) {
-          EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kProgress,
+          EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kProgress,
                     records[j].type);
           EXPECT_EQ(dest_url, records[j].dest_url);
           EXPECT_GE(records[j].size, current_size);
@@ -757,7 +850,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgressCallback) {
   }
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgressCallback) {
+TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgress) {
   CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
                                        kFileSystemTypePersistent);
   helper.SetUp();
@@ -771,14 +864,13 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgressCallback) {
             helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
                                       kRegularFileSystemTestCaseSize));
 
-  std::vector<ProgressRecord> records;
+  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
   ASSERT_EQ(
       base::File::FILE_OK,
-      helper.MoveWithProgress(src, dest,
-                              base::BindRepeating(&RecordProgressCallback,
-                                                  base::Unretained(&records))));
+      helper.MoveWithHookDelegate(
+          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
 
-  // Verify progress callback.
+  // Verify progress records.
   for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
     const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
 
@@ -805,27 +897,28 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgressCallback) {
 
     if (test_case.is_directory) {
       // A directory move starts with kBegin and kEndCopy.
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginDirectory,
                 records[begin_index].type);
       EXPECT_EQ(dest_url, records[begin_index].dest_url);
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndCopy,
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
                 records[begin_index + 1].type);
       EXPECT_EQ(dest_url, records[begin_index + 1].dest_url);
       // A directory move ends with kEndRemoveSource, after the contents of the
       // directory has been copied.
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource,
-                records[end_index].type);
+      EXPECT_EQ(
+          CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndRemoveSource,
+          records[end_index].type);
       EXPECT_FALSE(records[end_index].dest_url.is_valid());
     } else {
-      // A file move starts with kBegin.
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
+      // A file move starts with kBeginFile.
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
                 records[begin_index].type);
       EXPECT_EQ(dest_url, records[begin_index].dest_url);
       // PROGRESS event's size should be ascending order.
       int64_t current_size = 0;
       for (size_t j = begin_index + 1; j < end_index - 1; ++j) {
         if (records[j].source_url == src_url) {
-          EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kProgress,
+          EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kProgress,
                     records[j].type);
           EXPECT_EQ(dest_url, records[j].dest_url);
           EXPECT_GE(records[j].size, current_size);
@@ -833,17 +926,18 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgressCallback) {
         }
       }
       // A file move ends with kEndCopy and kEndRemoveSource.
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndCopy,
+      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
                 records[end_index - 1].type);
       EXPECT_EQ(dest_url, records[end_index - 1].dest_url);
-      EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource,
-                records[end_index].type);
+      EXPECT_EQ(
+          CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndRemoveSource,
+          records[end_index].type);
       EXPECT_FALSE(records[end_index].dest_url.is_valid());
     }
   }
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveFileLocalProgressCallback) {
+TEST(LocalFileSystemCopyOrMoveOperationTest, MoveFileLocalProgress) {
   CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypePersistent,
                                        kFileSystemTypePersistent);
   helper.SetUp();
@@ -854,22 +948,20 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, MoveFileLocalProgressCallback) {
   // Set up a source file.
   ASSERT_EQ(base::File::FILE_OK, helper.CreateFile(src, 10));
 
-  std::vector<ProgressRecord> records;
+  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
   ASSERT_EQ(
       base::File::FILE_OK,
-      helper.MoveWithProgress(src, dest,
-                              base::BindRepeating(&RecordProgressCallback,
-                                                  base::Unretained(&records))));
+      helper.MoveWithHookDelegate(
+          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
+  // There should be 2 records, for kBeginFile and kEndMove. No progress should
+  // be reported.
+  EXPECT_EQ(records.size(), 2u);
 
-  // There should be 2 records, for kBegin and kEndMove. No progress should be
-  // reported.
-  EXPECT_EQ(records.size(), (uint64_t)2);
-
-  EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
+  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
             records[0].type);
   EXPECT_EQ(src, records[0].source_url);
   EXPECT_EQ(dest, records[0].dest_url);
-  EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndMove,
+  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndMove,
             records[1].type);
   EXPECT_EQ(src, records[1].source_url);
   EXPECT_EQ(dest, records[1].dest_url);
@@ -1122,7 +1214,7 @@ class CopyOrMoveOperationDelegateTestHelper {
         file_system_context_.get(), src, dest,
         CopyOrMoveOperationDelegate::OPERATION_COPY, options_,
         FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        FileSystemOperation::CopyOrMoveProgressCallback(),
+        std::make_unique<storage::CopyOrMoveHookDelegate>(),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
       copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);
@@ -1140,7 +1232,7 @@ class CopyOrMoveOperationDelegateTestHelper {
         file_system_context_.get(), src, dest,
         CopyOrMoveOperationDelegate::OPERATION_MOVE, options_,
         FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        FileSystemOperation::CopyOrMoveProgressCallback(),
+        std::make_unique<storage::CopyOrMoveHookDelegate>(),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
       copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);

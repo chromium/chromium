@@ -9,15 +9,18 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
+#include "base/files/file_path.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -28,7 +31,9 @@
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
@@ -54,13 +59,16 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     storage::FileSystemOperation::CopyOrMoveOptionSet options,
-    const storage::FileSystemOperation::CopyOrMoveProgressCallback&
+    const FileManagerCopyOrMoveHookDelegate::ProgressCallback&
         progress_callback,
     storage::FileSystemOperation::StatusCallback complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // TODO(crbug.com/1312336): Replace FileManagerCopyOrMoveHookDelegate with new
+  // class.
   return file_system_context->operation_runner()->Copy(
       source_url, destination_url, options,
-      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback),
       std::move(complete_callback));
 }
 
@@ -70,13 +78,14 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     storage::FileSystemOperation::CopyOrMoveOptionSet options,
-    const storage::FileSystemOperation::CopyOrMoveProgressCallback&
+    const FileManagerCopyOrMoveHookDelegate::ProgressCallback&
         progress_callback,
     storage::FileSystemOperation::StatusCallback complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return file_system_context->operation_runner()->Move(
       source_url, destination_url, options,
-      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback),
       std::move(complete_callback));
 }
 
@@ -350,12 +359,12 @@ void CopyOrMoveIOTask::CopyOrMoveFile(
 }
 
 void CopyOrMoveIOTask::OnCopyOrMoveProgress(
-    storage::FileSystemOperation::CopyOrMoveProgressType type,
+    FileManagerCopyOrMoveHookDelegate::ProgressType type,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     int64_t size) {
   // |size| is only valid for kProgress.
-  if (type != storage::FileSystemOperation::CopyOrMoveProgressType::kProgress)
+  if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
     return;
 
   progress_.bytes_transferred += size - last_progress_size_;

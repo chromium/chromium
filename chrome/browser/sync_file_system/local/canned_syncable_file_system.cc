@@ -27,6 +27,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -553,8 +554,7 @@ void CannedSyncableFileSystem::DoCopy(const FileSystemURL& src_url,
   operation_runner()->Copy(
       src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
-      std::move(callback));
+      std::make_unique<storage::CopyOrMoveHookDelegate>(), std::move(callback));
 }
 
 void CannedSyncableFileSystem::DoMove(const FileSystemURL& src_url,
@@ -565,8 +565,7 @@ void CannedSyncableFileSystem::DoMove(const FileSystemURL& src_url,
   operation_runner()->Move(
       src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
-      std::move(callback));
+      std::make_unique<storage::CopyOrMoveHookDelegate>(), std::move(callback));
 }
 
 void CannedSyncableFileSystem::DoTruncateFile(const FileSystemURL& url,

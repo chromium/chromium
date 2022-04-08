@@ -198,16 +198,18 @@ TEST_P(CopyOrMoveIOTaskTest, FolderTransfer) {
                               foo_contents));
   ASSERT_TRUE(base::WriteFile(temp_dir_.GetPath().Append("folder/bar.txt"),
                               bar_contents));
-  ASSERT_TRUE(base::CreateDirectory(temp_dir_.GetPath().Append("folder2")));
+  ASSERT_TRUE(
+      base::CreateDirectory(temp_dir_.GetPath().Append("folder/folder2")));
+  ASSERT_TRUE(base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder")));
 
   base::RunLoop run_loop;
   std::vector<storage::FileSystemURL> source_urls = {
       CreateFileSystemURL("folder"),
   };
   std::vector<storage::FileSystemURL> expected_output_urls = {
-      CreateFileSystemURL("folder2/folder"),
+      CreateFileSystemURL("dest_folder/folder"),
   };
-  auto dest = CreateFileSystemURL("folder2");
+  auto dest = CreateFileSystemURL("dest_folder");
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, GetParam()),
             Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
@@ -232,9 +234,13 @@ TEST_P(CopyOrMoveIOTaskTest, FolderTransfer) {
   task.Execute(base::DoNothing(), complete_callback.Get());
   run_loop.Run();
 
-  ExpectFileContents(temp_dir_.GetPath().Append("folder2/folder/foo.txt"),
+  ASSERT_TRUE(
+      base::DirectoryExists(temp_dir_.GetPath().Append("dest_folder/folder")));
+  ASSERT_TRUE(base::DirectoryExists(
+      temp_dir_.GetPath().Append("dest_folder/folder/folder2")));
+  ExpectFileContents(temp_dir_.GetPath().Append("dest_folder/folder/foo.txt"),
                      foo_contents);
-  ExpectFileContents(temp_dir_.GetPath().Append("folder2/folder/bar.txt"),
+  ExpectFileContents(temp_dir_.GetPath().Append("dest_folder/folder/bar.txt"),
                      bar_contents);
   if (GetParam() == OperationType::kCopy) {
     ExpectFileContents(temp_dir_.GetPath().Append("folder/foo.txt"),

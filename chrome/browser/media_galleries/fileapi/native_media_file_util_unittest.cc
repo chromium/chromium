@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,9 +27,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -302,7 +305,7 @@ TEST_F(NativeMediaFileUtilTest, CopySourceFiltering) {
       operation_runner()->Copy(
           url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-          storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+          std::make_unique<storage::CopyOrMoveHookDelegate>(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }
@@ -365,7 +368,7 @@ TEST_F(NativeMediaFileUtilTest, CopyDestFiltering) {
       operation_runner()->Copy(
           src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-          storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+          std::make_unique<storage::CopyOrMoveHookDelegate>(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }
@@ -404,7 +407,7 @@ TEST_F(NativeMediaFileUtilTest, MoveSourceFiltering) {
       operation_runner()->Move(
           url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-          storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+          std::make_unique<storage::CopyOrMoveHookDelegate>(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }
@@ -468,7 +471,7 @@ TEST_F(NativeMediaFileUtilTest, MoveDestFiltering) {
       operation_runner()->Move(
           src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-          storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+          std::make_unique<storage::CopyOrMoveHookDelegate>(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }

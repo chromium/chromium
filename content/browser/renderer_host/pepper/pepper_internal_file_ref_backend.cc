@@ -38,6 +38,7 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_file_ref_api.h"
 #include "ppapi/thunk/ppb_file_system_api.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -100,8 +101,7 @@ void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
   file_system_context->operation_runner()->Move(
       src_path, dest_path, options,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
-      std::move(callback));
+      std::make_unique<storage::CopyOrMoveHookDelegate>(), std::move(callback));
 }
 
 void CallGetMetadata(
@@ -353,8 +353,8 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
     base::File::Error error,
     storage::FileSystemOperation::FileEntryList file_list,
     bool has_more) {
-  accumulated_file_list->insert(
-      accumulated_file_list->end(), file_list.begin(), file_list.end());
+  accumulated_file_list->insert(accumulated_file_list->end(), file_list.begin(),
+                                file_list.end());
   if (has_more)
     return;
 
@@ -383,9 +383,8 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
     }
   }
 
-  host_->SendReply(
-      context,
-      PpapiPluginMsg_FileRef_ReadDirectoryEntriesReply(infos, file_types));
+  host_->SendReply(context, PpapiPluginMsg_FileRef_ReadDirectoryEntriesReply(
+                                infos, file_types));
 }
 
 int32_t PepperInternalFileRefBackend::GetAbsolutePath(

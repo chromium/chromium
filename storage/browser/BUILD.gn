@@ -75,6 +75,8 @@ component("browser") {
     "file_system/async_file_util_adapter.cc",
     "file_system/async_file_util_adapter.h",
     "file_system/copy_or_move_file_validator.h",
+    "file_system/copy_or_move_hook_delegate.cc",
+    "file_system/copy_or_move_hook_delegate.h",
     "file_system/copy_or_move_operation_delegate.cc",
     "file_system/copy_or_move_operation_delegate.h",
     "file_system/dragged_file_util.cc",

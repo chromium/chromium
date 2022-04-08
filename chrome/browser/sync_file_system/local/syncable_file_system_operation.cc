@@ -15,6 +15,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -123,7 +124,7 @@ void SyncableFileSystemOperation::Copy(
     const FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
@@ -137,7 +138,8 @@ void SyncableFileSystemOperation::Copy(
       weak_factory_.GetWeakPtr(),
       base::BindOnce(
           &FileSystemOperation::Copy, base::Unretained(impl_.get()), src_url,
-          dest_url, options, error_behavior, progress_callback,
+          dest_url, options, error_behavior,
+          std::move(copy_or_move_hook_delegate),
           base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }
@@ -147,7 +149,7 @@ void SyncableFileSystemOperation::Move(
     const FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyOrMoveProgressCallback& progress_callback,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
@@ -162,7 +164,8 @@ void SyncableFileSystemOperation::Move(
       weak_factory_.GetWeakPtr(),
       base::BindOnce(
           &FileSystemOperation::Move, base::Unretained(impl_.get()), src_url,
-          dest_url, options, error_behavior, progress_callback,
+          dest_url, options, error_behavior,
+          std::move(copy_or_move_hook_delegate),
           base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }

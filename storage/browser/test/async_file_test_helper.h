@@ -28,8 +28,6 @@ namespace storage {
 class AsyncFileTestHelper {
  public:
   using FileEntryList = FileSystemOperation::FileEntryList;
-  using CopyOrMoveProgressCallback =
-      FileSystemOperation::CopyOrMoveProgressCallback;
 
   static const int64_t kDontCheckSize;
 
@@ -38,12 +36,12 @@ class AsyncFileTestHelper {
                                 const FileSystemURL& src,
                                 const FileSystemURL& dest);
 
-  // Same as Copy, but this supports |progress_callback|.
-  static base::File::Error CopyWithProgress(
+  // Same as Copy, but this supports |copy_or_move_hook_delegate|.
+  static base::File::Error CopyWithHookDelegate(
       FileSystemContext* context,
       const FileSystemURL& src,
       const FileSystemURL& dest,
-      const CopyOrMoveProgressCallback& progress_callback);
+      std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate);
 
   // Performs CopyFileLocal from |src| to |dest| and returns the status code.
   static base::File::Error CopyFileLocal(FileSystemContext* context,
@@ -55,12 +53,12 @@ class AsyncFileTestHelper {
                                 const FileSystemURL& src,
                                 const FileSystemURL& dest);
 
-  // Same as Move, but this supports |progress_callback|.
-  static base::File::Error MoveWithProgress(
+  // Same as Move, but this supports |copy_or_move_hook_delegate|.
+  static base::File::Error MoveWithHookDelegate(
       FileSystemContext* context,
       const FileSystemURL& src,
       const FileSystemURL& dest,
-      const CopyOrMoveProgressCallback& progress_callback);
+      std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate);
 
   // Performs MoveFileLocal from |src| to |dest| and returns the status code.
   static base::File::Error MoveFileLocal(FileSystemContext* context,
