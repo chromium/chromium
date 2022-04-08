@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -80,6 +81,10 @@ std::u16string SharingHubBubbleViewImpl::GetAccessibleWindowTitle() const {
 
 void SharingHubBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {
   views::BubbleDialogDelegateView::OnPaint(canvas);
+  if (show_time_) {
+    share::RecordSharingHubTimeToShow(base::Time::Now() - *show_time_);
+    show_time_ = absl::nullopt;
+  }
 }
 
 void SharingHubBubbleViewImpl::OnThemeChanged() {
@@ -94,6 +99,7 @@ void SharingHubBubbleViewImpl::OnThemeChanged() {
 }
 
 void SharingHubBubbleViewImpl::Show(DisplayReason reason) {
+  show_time_ = base::Time::Now();
   ShowForReason(reason);
 }
 

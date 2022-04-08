@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
@@ -86,6 +87,11 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // The "Share link to" annotation text, which indicates to the user what
   // the 3P target options do.
   raw_ptr<views::Label> share_link_label_ = nullptr;
+
+  // The time that Show() was called. This is reset after the first time the
+  // sharing hub is painted to avoid repeatedly collecting the metric it is used
+  // for.
+  absl::optional<base::Time> show_time_;
 
   base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };
