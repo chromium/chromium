@@ -68,7 +68,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   absl::optional<LoginState> login_state;
 };
 
-struct ClientIdData {
+struct CONTENT_EXPORT ClientIdData {
   ClientIdData(const GURL& tos_url, const GURL& privacy_policy_url);
 
   GURL terms_of_service_url;

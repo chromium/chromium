@@ -11,8 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/view.h"
 #include "url/gurl.h"
 
 using Account = content::IdentityRequestAccount;
@@ -23,11 +25,15 @@ class AccountSelectionView {
  public:
   class Delegate {
    public:
+    virtual ~Delegate() = default;
     // Informs the controller that the user has made a selection.
     virtual void OnAccountSelected(const Account& account) = 0;
     // Informs the controller that the user has dismissed the sheet.
     virtual void OnDismiss() = 0;
+    // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
+    // The WebContents for the page.
+    virtual content::WebContents* GetWebContents() = 0;
   };
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);

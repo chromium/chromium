@@ -329,8 +329,8 @@ Refer to README.md for content description and update process.
  <item id="family_info" added_in_milestone="98" content_hash_code="01831b1a" os_list="android" file_path="chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc" />
  <item id="permission_request_creator" added_in_milestone="98" content_hash_code="04629d73" os_list="android" file_path="chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc" />
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="06b848f5" os_list="android" file_path="chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.cc" />
- <item id="gstatic_onboarding_definition" added_in_milestone="98" content_hash_code="07b20d53" os_list="android" file_path="components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.cc" />
- <item id="autofill_service" added_in_milestone="98" content_hash_code="080a4c8d" os_list="android" file_path="components/autofill_assistant/browser/service/service_request_sender_impl.cc" />
+ <item id="gstatic_onboarding_definition" added_in_milestone="98" content_hash_code="07b20d53" os_list="android,chromeos,linux,windows" file_path="components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.cc" />
+ <item id="autofill_service" added_in_milestone="98" content_hash_code="080a4c8d" os_list="android,chromeos,linux,windows" file_path="components/autofill_assistant/browser/service/service_request_sender_impl.cc" />
  <item id="publish_note_request" added_in_milestone="98" content_hash_code="01e9f0b8" os_list="android" file_path="components/content_creation/notes/core/server/notes_server_saver.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
  <item id="gstatic_change_password_scripts" added_in_milestone="98" content_hash_code="04d28714" os_list="android" file_path="components/password_manager/core/browser/password_scripts_fetcher_impl.cc" />
@@ -370,4 +370,5 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_download_google_photo" added_in_milestone="102" content_hash_code="034be7b5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_controller_impl.cc" />
  <item id="quick_answers_spellchecker" added_in_milestone="102" content_hash_code="06e81b7f" os_list="chromeos" file_path="chromeos/components/quick_answers/utils/spell_checker.cc" />
  <item id="printing_oauth2_token_exchange_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="059df373" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc" />
+ <item id="fedcm_account_profile_image_fetcher" added_in_milestone="102" content_hash_code="07d6a3e2" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/webid/account_selection_bubble_view.cc" />
 </annotations>

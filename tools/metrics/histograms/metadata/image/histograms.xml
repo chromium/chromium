@@ -59,6 +59,8 @@ chromium-metrics-reviews@google.com.
       summary="Profile image fetcher for EDU account login flow"/>
   <variant name=".EntitySuggestions"
       summary="Showing cache patterns only for EntitySuggestions."/>
+  <variant name=".FedCMAccountChooser"
+      summary="Profile image fetcher for FedCM Account chooser."/>
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
   <variant name=".Internal"
       summary="Showing cache patterns only for Internal."/>

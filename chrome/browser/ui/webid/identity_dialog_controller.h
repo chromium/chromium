@@ -49,12 +49,10 @@ class IdentityDialogController
       AccountSelectionCallback on_selected) override;
 
   // AccountSelectionView::Delegate:
-
   void OnAccountSelected(const Account& account) override;
   void OnDismiss() override;
-
-  // The web page view containing the focused field.
   gfx::NativeView GetNativeView() override;
+  content::WebContents* GetWebContents() override;
 
  private:
   void OnViewClosed();

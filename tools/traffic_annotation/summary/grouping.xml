@@ -322,6 +322,7 @@ hidden="true" so that these annotations don't show up in the document.
     </sender>
     <sender name="OAuth 2.0 and FedCM">
       <traffic_annotation unique_id="fedcm"/>
+      <traffic_annotation unique_id="fedcm_account_profile_image_fetcher"/>
       <traffic_annotation unique_id="gaia_auth_check_connection_info"/>
       <traffic_annotation unique_id="gaia_auth_exchange_device_id"/>
       <traffic_annotation unique_id="gaia_auth_fetch_for_uber"/>

@@ -6876,6 +6876,7 @@ test("unit_tests") {
       "../browser/ui/views/passwords/password_save_unsynced_credentials_locally_view_unittest.cc",
       "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
+      "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
     ]
 

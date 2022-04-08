@@ -37,12 +37,6 @@ void IdentityDialogController::ShowAccountsDialog(
     AccountSelectionCallback on_selected) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
-#if !BUILDFLAG(IS_ANDROID)
-  std::move(on_selected)
-      .Run(accounts[0].id,
-           accounts[0].login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn);
-#else
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
   std::string rp_etld_plus_one =
@@ -58,7 +52,6 @@ void IdentityDialogController::ShowAccountsDialog(
     account_view_ = AccountSelectionView::Create(this);
   account_view_->Show(rp_etld_plus_one, idp_etld_plus_one, accounts,
                       idp_metadata, client_data, sign_in_mode);
-#endif
 }
 
 void IdentityDialogController::OnAccountSelected(const Account& account) {
@@ -77,4 +70,9 @@ void IdentityDialogController::OnDismiss() {
 
 gfx::NativeView IdentityDialogController::GetNativeView() {
   return rp_web_contents_->GetNativeView();
+}
+
+content::WebContents* IdentityDialogController::GetWebContents() {
+  return rp_web_contents_;
+  ;
 }
