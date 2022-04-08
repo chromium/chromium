@@ -15,11 +15,10 @@ namespace {
 // UI specs.
 constexpr int kWidthPadding = 10;
 constexpr int kMinHeight = 32;
-constexpr int kSpaceToActionView = 15;
-constexpr int kCornerRadius = 6;
+constexpr int kSpaceToActionView = 8;
 constexpr char kFontSytle[] = "Google Sans";
-constexpr int kFontSize = 16;
-constexpr SkColor kBgColor = SK_ColorWHITE;
+constexpr int kFontSize = 14;
+constexpr SkColor kTextColor = gfx::kGoogleRed300;
 
 }  // namespace
 
@@ -31,9 +30,11 @@ ErrorView::ErrorView(DisplayOverlayController* controller,
   DCHECK(display_overlay_controller_);
   if (display_overlay_controller_)
     display_overlay_controller_->RemoveEditErrorMsg();
-  SetBackground(views::CreateRoundedRectBackground(kBgColor, kCornerRadius));
+  SetBackground(nullptr);
   SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
-                            gfx::Font::Weight::NORMAL));
+                            gfx::Font::Weight::MEDIUM));
+  SetAutoColorReadabilityEnabled(false);
+  SetEnabledColor(kTextColor);
 
   auto preferred_size = GetPreferredSize();
   auto content_bounds = view->parent()->bounds();

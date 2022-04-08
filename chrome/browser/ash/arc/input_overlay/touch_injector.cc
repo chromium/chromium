@@ -151,6 +151,7 @@ void TouchInjector::UnRegisterEventRewriter() {
 void TouchInjector::OnBindingChange(
     Action* target_action,
     std::unique_ptr<InputElement> input_element) {
+  display_overlay_controller_->RemoveEditErrorMsg();
   Action* overlapped_action = nullptr;
   for (auto& action : actions_) {
     if (action.get() == target_action)
