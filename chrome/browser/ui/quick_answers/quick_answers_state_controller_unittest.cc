@@ -72,13 +72,20 @@ class QuickAnswersStateControllerTest : public ChromeQuickAnswersTestBase {
 
 TEST_F(QuickAnswersStateControllerTest, InitObserver) {
   EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
+  EXPECT_EQ(QuickAnswersState::Get()->application_locale(), std::string());
+
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
+  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
+  EXPECT_EQ(QuickAnswersState::Get()->application_locale(), application_locale);
 
   // The observer class should get an instant notification about the current
   // pref value.
   QuickAnswersState::Get()->AddObserver(observer());
-  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_TRUE(observer()->settings_enabled());
+  EXPECT_EQ(observer()->application_locale(), application_locale);
 
   QuickAnswersState::Get()->RemoveObserver(observer());
 }

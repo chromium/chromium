@@ -213,8 +213,10 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
 
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
-  if (prefs_initialized_)
+  if (prefs_initialized_) {
     observer->OnSettingsEnabled(settings_enabled_);
+    observer->OnApplicationLocaleReady(resolved_application_locale_);
+  }
 }
 
 void QuickAnswersState::UpdateSettingsEnabled() {
@@ -296,10 +298,10 @@ void QuickAnswersState::OnApplicationLocaleReady() {
                                        /*perform_io=*/false);
   DCHECK(resolve_success);
 
-  if (resolved_application_loacle_ == resolved_locale) {
+  if (resolved_application_locale_ == resolved_locale) {
     return;
   }
-  resolved_application_loacle_ = resolved_locale;
+  resolved_application_locale_ = resolved_locale;
 
   for (auto& observer : observers_) {
     observer.OnApplicationLocaleReady(resolved_locale);
@@ -321,9 +323,9 @@ void QuickAnswersState::UpdateEligibility() {
   if (!pref_change_registrar_)
     return;
 
-  if (resolved_application_loacle_.empty())
+  if (resolved_application_locale_.empty())
     return;
 
   is_eligible_ = IsQuickAnswersAllowedForLocale(
-      resolved_application_loacle_, icu::Locale::getDefault().getName());
+      resolved_application_locale_, icu::Locale::getDefault().getName());
 }

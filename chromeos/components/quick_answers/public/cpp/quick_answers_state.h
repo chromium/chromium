@@ -69,7 +69,7 @@ class QuickAnswersState {
   bool translation_enabled() const { return translation_enabled_; }
   bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
   const std::string& application_locale() const {
-    return resolved_application_loacle_;
+    return resolved_application_locale_;
   }
   const std::string& preferred_languages() const {
     return preferred_languages_;
@@ -101,7 +101,7 @@ class QuickAnswersState {
   bool unit_conversion_enabled_ = true;
 
   // The resolved application locale.
-  std::string resolved_application_loacle_;
+  std::string resolved_application_locale_;
 
   // The list of preferred languages, separated by comma.
   // (ex. "en-US,zh,fr").
