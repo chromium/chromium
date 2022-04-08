@@ -206,14 +206,6 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters) {
   return webrtc::StreamConfig(rate, channels);
 }
 
-bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio) {
-  if (audio.channels() <= 1) {
-    return true;
-  }
-  return std::equal(audio.channel(0), audio.channel(0) + audio.frames(),
-                    audio.channel(1));
-}
-
 void StartEchoCancellationDump(webrtc::AudioProcessing* audio_processing,
                                base::File aec_dump_file,
                                rtc::TaskQueue* worker_queue) {

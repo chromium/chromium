@@ -28,12 +28,6 @@ constexpr int MaxWebRtcAnalogGainLevel() {
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 
-// Tests whether the audio bus data can be treated as upmixed mono audio:
-// Returns true if there is at most one channel or if each sample is identical
-// in the first two channels.
-COMPONENT_EXPORT(MEDIA_WEBRTC)
-bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio);
-
 // Creates and configures a `webrtc::AudioProcessing` audio processing module
 // (APM), based on the provided parameters and on features and field trials.
 // Returns nullptr if settings.NeedWebrtcAudioProcessing() is false.

@@ -252,10 +252,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // The sample rate of incoming playout audio.
   absl::optional<int> playout_sample_rate_hz_ = absl::nullopt;
 
-  // Indicates whether the audio processor playout signal has ever had
-  // asymmetric left and right channel content.
-  bool assume_upmixed_mono_playout_ = true;
-
   // Counters to avoid excessively logging errors on a real-time thread.
   size_t apm_playout_error_code_log_count_ = 0;
   size_t large_delay_log_count_ = 0;

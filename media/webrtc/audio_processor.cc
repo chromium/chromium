@@ -383,17 +383,8 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
 
   webrtc::StreamConfig input_stream_config(*playout_sample_rate_hz_,
                                            audio_bus.channels());
-  // If the input audio appears to contain upmixed mono audio, then APM is only
-  // given the left channel. This reduces computational complexity and improves
-  // convergence of audio processing algorithms.
-  assume_upmixed_mono_playout_ = assume_upmixed_mono_playout_ &&
-                                 LeftAndRightChannelsAreSymmetric(audio_bus);
-  if (assume_upmixed_mono_playout_) {
-    input_stream_config.set_num_channels(1);
-  }
-
   std::array<const float*, media::limits::kMaxChannels> input_ptrs;
-  for (int i = 0; i < static_cast<int>(input_stream_config.num_channels()); ++i)
+  for (int i = 0; i < audio_bus.channels(); ++i)
     input_ptrs[i] = audio_bus.channel(i);
 
   const int apm_error = webrtc_audio_processing_->AnalyzeReverseStream(
