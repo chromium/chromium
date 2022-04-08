@@ -242,6 +242,41 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   EXPECT_EQ(user1_schedule_type, GetScheduleType());
 }
 
+// Tests that the scheduler type is initiallized from user prefs and observes
+// geoposition when the scheduler is enabled.
+TEST_F(ScheduledFeatureTest, InitScheduleTypeFromUserPrefs) {
+  // Start with user1 logged in with the default disabled scheduler, `kNone`.
+  const std::string kScheduleTypePrefString = prefs::kNightLightScheduleType;
+  const ScheduledFeature::ScheduleType user1_schedule_type =
+      ScheduledFeature::ScheduleType::kNone;
+  EXPECT_EQ(user1_schedule_type, GetScheduleType());
+  // Check that the geolocation controller does not fire a geoposition request
+  // timer when the schedule type is `kNone`.
+  EXPECT_FALSE(mock_timer_ptr()->IsRunning());
+
+  // Update user2's schedule type pref to sunset-to-sunrise.
+  const ScheduledFeature::ScheduleType user2_schedule_type =
+      ScheduledFeature::ScheduleType::kSunsetToSunrise;
+  user2_pref_service()->SetInteger(kScheduleTypePrefString,
+                                   user2_schedule_type);
+  // Switching to user2 should update the schedule type to sunset-to-sunrise.
+  SwitchActiveUser(kUser2Email);
+  EXPECT_EQ(user2_schedule_type, GetScheduleType());
+  // Check that the geolocation controller fires a geoposition request timer
+  // when the schedule type is `kSunsetToSunrise`.
+  EXPECT_TRUE(mock_timer_ptr()->IsRunning());
+
+  // Set custom schedule to test that once we switch to the user1 with `kNone`
+  // schedule type, the feature should remove itself from a geolocation
+  // observer.
+  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  // Make sure that switching back to user1 remove itself from geolocation
+  // observer which results in geolocation controller timer stops running.
+  SwitchActiveUser(kUser1Email);
+  EXPECT_EQ(user1_schedule_type, GetScheduleType());
+  EXPECT_FALSE(mock_timer_ptr()->IsRunning());
+}
+
 // Tests transitioning from kNone to kCustom and back to kNone schedule
 // types.
 TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {

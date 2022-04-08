@@ -116,8 +116,11 @@ class ASH_EXPORT ScheduledFeature
   // changed.
   void OnEnabledPrefChanged();
 
-  // Called when the user pref for the schedule type is changed.
-  void OnScheduleTypePrefChanged();
+  // Called when the user pref for the schedule type is changed or initialized.
+  // During initialization, `keep_manual_toggles_during_schedules` is set to
+  // true, so the load user pref override any user current toggled setting. For
+  // more detail about `keep_manual_toggles_during_schedules`, see `Refresh()`.
+  void OnScheduleTypePrefChanged(bool keep_manual_toggles_during_schedules);
 
   // Called when either of the custom schedule prefs (custom start or end times)
   // are changed.

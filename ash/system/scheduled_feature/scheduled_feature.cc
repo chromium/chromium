@@ -209,7 +209,8 @@ void ScheduledFeature::StartWatchingPrefsChanges() {
   pref_change_registrar_->Add(
       prefs_path_schedule_type_,
       base::BindRepeating(&ScheduledFeature::OnScheduleTypePrefChanged,
-                          base::Unretained(this)));
+                          base::Unretained(this),
+                          /*keep_manual_toggles_during_schedules=*/false));
 
   if (!prefs_path_custom_start_time_.empty()) {
     pref_change_registrar_->Add(
@@ -227,8 +228,7 @@ void ScheduledFeature::StartWatchingPrefsChanges() {
 
 void ScheduledFeature::InitFromUserPrefs() {
   StartWatchingPrefsChanges();
-  Refresh(/*did_schedule_change=*/true,
-          /*keep_manual_toggles_during_schedules=*/true);
+  OnScheduleTypePrefChanged(/*keep_manual_toggles_during_schedules=*/true);
   is_first_user_init_ = false;
 }
 
@@ -240,7 +240,8 @@ void ScheduledFeature::OnEnabledPrefChanged() {
           /*keep_manual_toggles_during_schedules=*/false);
 }
 
-void ScheduledFeature::OnScheduleTypePrefChanged() {
+void ScheduledFeature::OnScheduleTypePrefChanged(
+    bool keep_manual_toggles_during_schedules) {
   const ScheduledFeature::ScheduleType schedule_type = GetScheduleType();
   // To prevent adding (or removing) an observer twice in a row when switching
   // between different users, we need to check `is_observing_geolocation_`.
@@ -253,8 +254,7 @@ void ScheduledFeature::OnScheduleTypePrefChanged() {
     geolocation_controller_->AddObserver(this);
     is_observing_geolocation_ = true;
   }
-  Refresh(/*did_schedule_change=*/true,
-          /*keep_manual_toggles_during_schedules=*/false);
+  Refresh(/*did_schedule_change=*/true, keep_manual_toggles_during_schedules);
 }
 
 void ScheduledFeature::OnCustomSchedulePrefsChanged() {
