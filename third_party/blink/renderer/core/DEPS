@@ -170,6 +170,9 @@ specific_include_rules = {
     "media_query_evaluator.cc": [
         "+ui/base/pointer/pointer_device.h",
     ],
+    "media_query_evaluator_test.cc": [
+        "+ui/gfx/display_color_spaces.h",
+    ],
     "media_values.h": [
         "+ui/base/pointer/pointer_device.h",
     ],

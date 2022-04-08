@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_trail_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"

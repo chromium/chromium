@@ -21,9 +21,11 @@ class TickClock;
 
 namespace blink {
 
+class AnimationClock;
 class BrowserInterfaceBrokerProxy;
 class Document;
 class FrameSelection;
+class LayoutObject;
 class LocalFrame;
 class PendingAnimations;
 class StyleEngine;

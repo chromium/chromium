@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 

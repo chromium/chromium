@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"

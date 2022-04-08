@@ -19,6 +19,7 @@
 #include "sanitizer.h"
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
