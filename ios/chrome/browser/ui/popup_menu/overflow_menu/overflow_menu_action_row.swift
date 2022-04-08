@@ -16,7 +16,7 @@ struct OverflowMenuActionRow: View {
       action: action.handler,
       label: {
         HStack {
-          Text(action.name)
+          Text(action.name).lineLimit(1)
           Spacer()
           action.image
             // Without explicitly removing the image from accessibility,
