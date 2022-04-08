@@ -176,6 +176,27 @@ TEST_P(X509CertificateModel, PunyCodeCert) {
             model.GetSubjectName());
 }
 
+TEST_P(X509CertificateModel, SubjectAltNameSanityTest) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "subjectAltName_sanity_check.pem");
+  ASSERT_TRUE(cert);
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(2U, extensions.size());
+  EXPECT_EQ("Certificate Subject Alternative Name", extensions[1].name);
+  EXPECT_EQ(
+      "notcrit\n"
+      "OID.1.2.3.4: 0C 09 69 67 6E 6F 72 65 20 6D 65\n"
+      "Email Address: test@test.example\n"
+      "DNS Name: test.example\n"
+      "X.500 Name: CN = 127.0.0.3\n"
+      "\n"
+      "IP Address: 127.0.0.2\nIP Address: fe80::1\n",
+      extensions[1].value);
+}
+
 TEST_P(X509CertificateModel, GlobalsignComCert) {
   auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "2029_globalsign_com_cert.pem");

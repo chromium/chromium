@@ -406,6 +406,109 @@ absl::optional<std::string> ProcessExtKeyUsage(net::der::Input extension_data) {
   return rv;
 }
 
+OptionalStringOrError ProcessNameValue(net::der::Input name_value) {
+  net::RDNSequence rdns;
+  if (!net::ParseNameValue(name_value, &rdns))
+    return Error();
+  return RDNSequenceToStringMultiLine(rdns);
+}
+
+std::string FormatGeneralName(std::u16string key, base::StringPiece value) {
+  return l10n_util::GetStringFUTF8(IDS_CERT_UNKNOWN_OID_INFO_FORMAT, key,
+                                   base::UTF8ToUTF16(value)) +
+         '\n';
+}
+
+std::string FormatGeneralName(int key_string_id, base::StringPiece value) {
+  return FormatGeneralName(l10n_util::GetStringUTF16(key_string_id), value);
+}
+
+bool ParseOtherName(net::der::Input other_name,
+                    net::der::Input* type,
+                    net::der::Input* value) {
+  // OtherName ::= SEQUENCE {
+  //      type-id    OBJECT IDENTIFIER,
+  //      value      [0] EXPLICIT ANY DEFINED BY type-id }
+  net::der::Parser sequence_parser(other_name);
+  return sequence_parser.ReadTag(net::der::kOid, type) &&
+         sequence_parser.ReadTag(net::der::ContextSpecificConstructed(0),
+                                 value) &&
+         !sequence_parser.HasMore();
+}
+
+absl::optional<std::string> ProcessGeneralNames(
+    const net::GeneralNames& names) {
+  // Note: The old x509_certificate_model_nss impl would process names in the
+  // order they appeared in the certificate, whereas this impl parses names
+  // into different lists by each type and then processes those in order.
+  // Probably doesn't matter.
+  std::string rv;
+  for (const auto& other_name : names.other_names) {
+    net::der::Input type;
+    net::der::Input value;
+    if (!ParseOtherName(other_name, &type, &value)) {
+      return absl::nullopt;
+    }
+    // x509_certificate_model_nss went a bit further in parsing certain
+    // otherName types, but it probably isn't worth bothering.
+    rv += FormatGeneralName(base::UTF8ToUTF16(GetOidTextOrNumeric(type)),
+                            ProcessRawBytes(value));
+  }
+  for (const auto& rfc822_name : names.rfc822_names) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_RFC822_NAME, rfc822_name);
+  }
+  for (const auto& dns_name : names.dns_names) {
+    // TODO(mattm): Should probably do ProcessIDN on dnsNames from
+    // subjectAltName like we do on subject commonName?
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DNS_NAME, dns_name);
+  }
+  for (const auto& x400_address : names.x400_addresses) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_X400_ADDRESS,
+                            ProcessRawBytes(x400_address));
+  }
+  for (const auto& directory_name : names.directory_names) {
+    OptionalStringOrError name = ProcessNameValue(directory_name);
+    if (!absl::holds_alternative<std::string>(name))
+      return absl::nullopt;
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DIRECTORY_NAME,
+                            absl::get<std::string>(name));
+  }
+  for (const auto& edi_party_name : names.edi_party_names) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_EDI_PARTY_NAME,
+                            ProcessRawBytes(edi_party_name));
+  }
+  for (const auto& uniform_resource_identifier :
+       names.uniform_resource_identifiers) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_URI,
+                            uniform_resource_identifier);
+  }
+  for (const auto& ip_address : names.ip_addresses) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_IP_ADDRESS,
+                            ip_address.ToString());
+  }
+  for (const auto& ip_address_range : names.ip_address_ranges) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_IP_ADDRESS,
+                            ip_address_range.first.ToString() + '/' +
+                                base::NumberToString(ip_address_range.second));
+  }
+  for (const auto& registered_id : names.registered_ids) {
+    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_REGISTERED_ID,
+                            GetOidTextOrNumeric(registered_id));
+  }
+
+  return rv;
+}
+
+absl::optional<std::string> ProcessGeneralNamesTlv(
+    net::der::Input extension_data) {
+  net::CertErrors unused_errors;
+  std::unique_ptr<net::GeneralNames> alt_names =
+      net::GeneralNames::Create(extension_data, &unused_errors);
+  if (!alt_names)
+    return absl::nullopt;
+  return ProcessGeneralNames(*alt_names);
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -650,6 +753,14 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessBasicConstraints(extension.value);
   if (extension.oid == net::der::Input(net::kExtKeyUsageOid))
     return ProcessExtKeyUsage(extension.value);
+  if (extension.oid == net::der::Input(net::kSubjectAltNameOid)) {
+    // The subjectAltName extension was already parsed in the constructor, use
+    // that rather than parse it again.
+    DCHECK(subject_alt_names_);
+    return ProcessGeneralNames(*subject_alt_names_);
+  }
+  if (extension.oid == net::der::Input(kIssuerAltNameOid))
+    return ProcessGeneralNamesTlv(extension.value);
   return ProcessRawBytes(extension.value);
 }
 
