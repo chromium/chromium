@@ -274,7 +274,7 @@ void GetBrowserUrl(GetBrowserUrlCallback callback) {
 }
 
 void ReturnEnabledSuggestions(
-    AssistiveSuggesterSwitch::GetEnabledSuggestionsCallback callback,
+    AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     const absl::optional<GURL>& current_url) {
   if (!current_url.has_value()) {
     std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{});
@@ -317,8 +317,8 @@ bool AssistiveSuggesterClientFilter::IsPersonalInfoSuggestionAllowed() {
   return IsAllowedUrlOrAppForPersonalInfoSuggestion();
 }
 
-void AssistiveSuggesterClientFilter::GetEnabledSuggestions(
-    GetEnabledSuggestionsCallback callback) {
+void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
+    FetchEnabledSuggestionsCallback callback) {
   GetBrowserUrl(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));
 }
 

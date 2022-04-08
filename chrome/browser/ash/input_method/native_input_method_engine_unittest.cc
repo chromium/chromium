@@ -71,7 +71,8 @@ class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
     return enabled_suggestions_.personal_info_suggestions;
   }
 
-  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
+  void FetchEnabledSuggestionsThen(
+      FetchEnabledSuggestionsCallback callback) override {
     std::move(callback).Run(enabled_suggestions_);
   }
 

@@ -20,7 +20,8 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
   bool IsEmojiSuggestionAllowed() override;
   bool IsMultiWordSuggestionAllowed() override;
   bool IsPersonalInfoSuggestionAllowed() override;
-  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override;
+  void FetchEnabledSuggestionsThen(
+      FetchEnabledSuggestionsCallback callback) override;
 
  private:
   base::WeakPtrFactory<AssistiveSuggesterClientFilter> weak_ptr_factory_{this};

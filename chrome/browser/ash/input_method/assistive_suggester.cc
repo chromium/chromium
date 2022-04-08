@@ -388,7 +388,7 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
   if (!IsMultiWordSuggestEnabled())
     return;
 
-  suggester_switch_->GetEnabledSuggestions(
+  suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::ProcessExternalSuggestions,
                      weak_ptr_factory_.GetWeakPtr(), suggestions));
 }
@@ -484,7 +484,7 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
 void AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
-  suggester_switch_->GetEnabledSuggestions(base::BindOnce(
+  suggester_switch_->FetchEnabledSuggestionsThen(base::BindOnce(
       &AssistiveSuggester::ProcessOnSurroundingTextChanged,
       weak_ptr_factory_.GetWeakPtr(), text, cursor_pos, anchor_pos));
 }
