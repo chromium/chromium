@@ -81,6 +81,8 @@ blink_modules_sources("webaudio") {
     "channel_splitter_handler.h",
     "channel_splitter_node.cc",
     "channel_splitter_node.h",
+    "constant_source_handler.cc",
+    "constant_source_handler.h",
     "constant_source_node.cc",
     "constant_source_node.h",
     "convolver_node.cc",

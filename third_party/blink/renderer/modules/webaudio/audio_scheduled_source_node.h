@@ -30,14 +30,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_SCHEDULED_SOURCE_NODE_H_
 
 #include <atomic>
+
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
 
 namespace blink {
 
