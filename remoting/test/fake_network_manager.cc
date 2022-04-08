@@ -35,11 +35,6 @@ void FakeNetworkManager::StopUpdating() {
   started_ = false;
 }
 
-void FakeNetworkManager::GetNetworks(NetworkList* networks) const {
-  networks->clear();
-  networks->push_back(network_.get());
-}
-
 std::vector<const rtc::Network*> FakeNetworkManager::GetNetworks() const {
   return {network_.get()};
 }

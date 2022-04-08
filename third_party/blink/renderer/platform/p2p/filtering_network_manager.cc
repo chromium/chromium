@@ -96,13 +96,6 @@ void FilteringNetworkManager::StopUpdating() {
   --start_count_;
 }
 
-void FilteringNetworkManager::GetNetworks(NetworkList* networks) const {
-  networks->clear();
-  for (const rtc::Network* network : GetNetworks()) {
-    networks->push_back(const_cast<rtc::Network*>(network));
-  }
-}
-
 std::vector<const rtc::Network*> FilteringNetworkManager::GetNetworks() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<const rtc::Network*> networks;

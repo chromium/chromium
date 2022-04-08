@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/p2p/empty_network_manager.h"
 #include "third_party/webrtc/rtc_base/ip_address.h"
 
-using NetworkList = rtc::NetworkManager::NetworkList;
 using ::testing::SizeIs;
 
 namespace {
@@ -79,9 +78,7 @@ class MockNetworkManager : public rtc::NetworkManagerBase {
       SignalNetworksChanged();
   }
   void StopUpdating() override {}
-  void GetNetworks(NetworkList* networks) const override {
-    networks->push_back(network_.get());
-  }
+
   std::vector<const rtc::Network*> GetNetworks() const override {
     return {network_.get()};
   }

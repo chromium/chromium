@@ -22,7 +22,6 @@ class FakeNetworkManager : public rtc::NetworkManager {
   // rtc::NetworkManager interface.
   void StartUpdating() override;
   void StopUpdating() override;
-  void GetNetworks(NetworkList* networks) const override;
   std::vector<const rtc::Network*> GetNetworks() const override;
   std::vector<const rtc::Network*> GetAnyAddressNetworks() override;
 
