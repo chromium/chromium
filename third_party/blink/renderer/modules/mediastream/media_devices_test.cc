@@ -347,7 +347,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
 
 TEST_F(MediaDevicesTest, EnumerateDevices) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   ScriptPromise promise = media_devices->enumerateDevices(
@@ -422,7 +422,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
@@ -444,7 +444,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   media_devices->SetConnectionErrorCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::OnDispatcherHostConnectionError,
@@ -466,7 +466,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
@@ -488,7 +488,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetDeviceChangeCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::OnDevicesChanged, WTF::Unretained(this)));
   EXPECT_FALSE(listener());
@@ -518,7 +518,7 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigEmpty) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
 
@@ -540,7 +540,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigEmpty) {
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigWithExposeOrigin) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setExposeOrigin(true);
@@ -563,7 +563,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigWithExposeOrigin) {
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithHandle) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setHandle("0xabcdef0123456789");
@@ -586,7 +586,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithHandle) {
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithMaxHandle) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   const String maxHandle = MaxLengthCaptureHandle();
 
@@ -612,7 +612,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithMaxHandle) {
 TEST_F(MediaDevicesTest,
        SetCaptureHandleConfigCaptureWithOverMaxHandleRejected) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setHandle(MaxLengthCaptureHandle() + "a");  // Over max length.
@@ -632,7 +632,7 @@ TEST_F(MediaDevicesTest,
 TEST_F(MediaDevicesTest,
        SetCaptureHandleConfigCaptureWithPermittedOriginsWildcard) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setPermittedOrigins({"*"});
@@ -655,7 +655,7 @@ TEST_F(MediaDevicesTest,
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithPermittedOrigins) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setPermittedOrigins(
@@ -682,7 +682,7 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithPermittedOrigins) {
 TEST_F(MediaDevicesTest,
        SetCaptureHandleConfigCaptureWithWildcardAndSomethingElseRejected) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setPermittedOrigins({"*", "https://chromium.org"});
@@ -702,7 +702,7 @@ TEST_F(MediaDevicesTest,
 TEST_F(MediaDevicesTest,
        SetCaptureHandleConfigCaptureWithMalformedOriginRejected) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   CaptureHandleConfig input_config;
   input_config.setPermittedOrigins({"https://chromium.org:99999"});  // Invalid.
@@ -723,7 +723,7 @@ TEST_F(MediaDevicesTest,
 // itself is sane. (Rather than, for example, an exception always being thrown.)
 TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
   SetBodyContent(R"HTML(
@@ -748,7 +748,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
   SetBodyContent(R"HTML(
@@ -775,9 +775,35 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
 
+TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
+  V8TestingScope scope;
+  // Intentionally sets up a MediaDevices object in a different window.
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+    <iframe id='test-iframe' src="about:blank" />
+  )HTML");
+
+  Document& document = GetDocument();
+  auto element = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise element_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &element, scope.GetExceptionState());
+  platform()->RunUntilIdle();
+  EXPECT_TRUE(element_promise.IsEmpty());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotSupportedError);
+  EXPECT_EQ(
+      scope.GetExceptionState().Message(),
+      String("The Element and the MediaDevices object must be same-window."));
+}
+
 TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
   dispatcher_host().SetNextCropId(
       String(base::GUID::GenerateRandomV4().AsLowercaseString()));
@@ -812,7 +838,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
 
 TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
   SetBodyContent(R"HTML(

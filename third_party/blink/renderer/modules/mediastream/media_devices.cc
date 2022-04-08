@@ -130,7 +130,8 @@ enum class ProduceCropTargetFunctionResult {
   kInvalidContext = 2,
   kDuplicateCallBeforePromiseResolution = 3,
   kDuplicateCallAfterPromiseResolution = 4,
-  kMaxValue = kDuplicateCallAfterPromiseResolution
+  kElementAndMediaDevicesNotInSameExecutionContext = 5,
+  kMaxValue = kElementAndMediaDevicesNotInSameExecutionContext
 };
 
 void RecordUma(ProduceCropTargetFunctionResult result) {
@@ -421,6 +422,16 @@ ScriptPromise MediaDevices::produceCropId(
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
           : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
+  DCHECK(element);
+
+  if (GetExecutionContext() != element->GetExecutionContext()) {
+    RecordUma(ProduceCropTargetFunctionResult::
+                  kElementAndMediaDevicesNotInSameExecutionContext);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The Element and the MediaDevices object must be same-window.");
+    return ScriptPromise();
+  }
 
   const RegionCaptureCropId* const old_crop_id =
       element->GetRegionCaptureCropId();
