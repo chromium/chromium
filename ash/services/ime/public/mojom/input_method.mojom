@@ -278,9 +278,9 @@ enum KoreanLayout {
   kSebeolsikFinal = 3,
   kSebeolsikNoShift = 4,
   kSebeolsikOldHangeul = 5,
-  kSebeolsikDubeol = 6,
-  kRomaja = 7,
-  kAhnmatae = 8,
+  kDeprecatedSebeolsikDubeol = 6,
+  kDeprecatedRomaja = 7,
+  kDeprecatedAhnmatae = 8,
 };
 
 // Next ordinal: 2
