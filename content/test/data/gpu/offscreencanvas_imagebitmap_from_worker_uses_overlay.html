@@ -10,7 +10,7 @@
     ctx.fillStyle = event.data.color;
     ctx.fillRect(0, 0, 100, 100);
     let img = offscreenCanvas.transferToImageBitmap();
-    self.postMessage(img, img);
+    self.postMessage(img, [img]);
   }
 </script>
 
