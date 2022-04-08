@@ -7,7 +7,7 @@
 // #import 'chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.m.js';
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // clang-format on

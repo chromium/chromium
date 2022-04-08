@@ -10,7 +10,6 @@ group("modulize") {
     "cellular_setup:modulize",
     "multidevice_setup:modulize",
     "network:modulize",
-    "//chrome/test/data/webui/chromeos:modulize",
   ]
 }
 

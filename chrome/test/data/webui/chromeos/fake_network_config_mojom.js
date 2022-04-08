@@ -6,18 +6,16 @@
  * @fileoverview Fake implementation of CrosNetworkConfig for testing.
  */
 
-// clang-format off
- // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
- // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
- // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 // Default cellular pin, used when locking/unlocking cellular profiles.
-/* #export */ const DEFAULT_CELLULAR_PIN = '1111';
+export const DEFAULT_CELLULAR_PIN = '1111';
 
 // TODO(stevenjb): Include cros_network_config.mojom.js and extend
 // CrosNetworkConfigInterface
-/* #export */ class FakeNetworkConfig {
+export class FakeNetworkConfig {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();

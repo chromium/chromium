@@ -18,7 +18,7 @@ js_type_check("closure_compile") {
 js_library("traffic_counters_test") {
   deps = [
     "../../..:chai_assert",
-    "//chrome/test/data/webui/chromeos:fake_network_config_mojom.m",
+    "//chrome/test/data/webui/chromeos:fake_network_config_mojom",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

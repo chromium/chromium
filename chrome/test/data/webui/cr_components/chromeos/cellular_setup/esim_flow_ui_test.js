@@ -14,7 +14,7 @@
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {MockMetricsPrivate} from './mock_metrics_private.m.js';

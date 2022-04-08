@@ -173,7 +173,7 @@ js_library("onboarding_update_page_test") {
 
 js_library("onboarding_network_page_test") {
   deps = [
-    "..:fake_network_config_mojom.m",
+    "..:fake_network_config_mojom",
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:fake_data",
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",

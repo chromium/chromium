@@ -10,7 +10,7 @@ import {OnboardingNetworkPage} from 'chrome://shimless-rma/onboarding_network_pa
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
-import {FakeNetworkConfig} from '../fake_network_config_mojom.m.js';
+import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 export function onboardingNetworkPageTest() {
   /** @type {?OnboardingNetworkPage} */
