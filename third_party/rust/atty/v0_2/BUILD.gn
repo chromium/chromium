@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "0.2.14"
+  cargo_pkg_authors = "softprops <d.tangren@gmail.com>"
   deps = []
   if (!is_win) {
     deps += [ "//third_party/rust/libc/v0_2:lib" ]

@@ -9,6 +9,8 @@ cargo_crate("autocxx_bindgen") {
   crate_root = "crate/src/main.rs"
   sources = [ "crate/src/main.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.59.14"
+  cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers, Adrian Taylor <ade@hohum.me.uk>"
   deps = [
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/cexpr/v0_6:lib",
@@ -39,7 +41,6 @@ cargo_crate("autocxx_bindgen") {
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
   build_script_outputs = [ "host-target.txt" ]
-  rustenv = [ "CARGO_PKG_VERSION=0.59" ]
 }
 cargo_crate("lib") {
   crate_name = "autocxx_bindgen"
@@ -51,6 +52,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.59.14"
+  cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers, Adrian Taylor <ade@hohum.me.uk>"
   deps = [
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/cexpr/v0_6:lib",
@@ -81,5 +84,4 @@ cargo_crate("lib") {
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
   build_script_outputs = [ "host-target.txt" ]
-  rustenv = [ "CARGO_PKG_VERSION=0.59" ]
 }

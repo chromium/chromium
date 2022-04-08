@@ -9,6 +9,8 @@ cargo_crate("cxxbridge") {
   crate_root = "crate/src/main.rs"
   sources = [ "crate/src/main.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.57"
+  cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   deps = [
     "//third_party/rust/clap/v2:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",
@@ -27,6 +29,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.57"
+  cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   deps = [
     "//third_party/rust/clap/v2:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",

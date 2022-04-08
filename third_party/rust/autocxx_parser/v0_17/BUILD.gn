@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2021"
+  cargo_pkg_version = "0.17.4"
+  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
   deps = [
     "//third_party/rust/log/v0_4:lib",
     "//third_party/rust/proc_macro2/v1:lib",

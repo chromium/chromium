@@ -18,4 +18,6 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "0.8.0"
+  cargo_pkg_authors = "Danny Guo <dannyguo91@gmail.com>"
 }

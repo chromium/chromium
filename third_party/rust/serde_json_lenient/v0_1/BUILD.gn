@@ -14,6 +14,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.1.4"
+  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   deps = [
     "//third_party/rust/itoa/v0_4:lib",
     "//third_party/rust/ryu/v1:lib",

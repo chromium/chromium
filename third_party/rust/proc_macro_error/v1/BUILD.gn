@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.4"
+  cargo_pkg_authors = "CreepySkeleton <creepy-skeleton@yandex.ru>"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/proc_macro_error_attr/v1:lib",

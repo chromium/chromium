@@ -19,6 +19,8 @@ if (is_win) {
     build_native_rust_unit_tests = false
     sources = [ "crate/src/lib.rs" ]
     edition = "2015"
+    cargo_pkg_version = "0.3.9"
+    cargo_pkg_authors = "Peter Atashian <retep998@gmail.com>"
     features = [
       "consoleapi",
       "errhandlingapi",

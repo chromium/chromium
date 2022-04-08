@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.11.1"
+  cargo_pkg_authors = "Brendan Zabarauskas <bjzaba@yahoo.com.au>"
   deps = [
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/unicode_width/v0_1:lib",

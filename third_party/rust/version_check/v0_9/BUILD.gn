@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "0.9.4"
+  cargo_pkg_authors = "Sergio Benitez <sb@sergio.bz>"
 }
 cargo_crate("buildrs_support") {
   crate_name = "version_check"
@@ -31,4 +33,6 @@ cargo_crate("buildrs_support") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "0.9.4"
+  cargo_pkg_authors = "Sergio Benitez <sb@sergio.bz>"
 }

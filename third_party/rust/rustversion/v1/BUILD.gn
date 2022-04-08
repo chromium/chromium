@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.6"
+  cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   build_root = "crate/build/build.rs"
   build_sources = [ "crate/build/build.rs" ]
   build_script_outputs = [ "version.rs" ]

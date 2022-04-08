@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "2.33.3"
+  cargo_pkg_authors = "Kevin K. <kbknapp@gmail.com>"
   deps = [
     "//third_party/rust/atty/v0_2:lib",
     "//third_party/rust/bitflags/v1:lib",

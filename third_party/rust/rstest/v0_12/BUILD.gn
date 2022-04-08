@@ -13,6 +13,8 @@ cargo_crate("test_support") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.12.0"
+  cargo_pkg_authors = "Michele d'Amico <michele.damico@gmail.com>"
   deps = [
     "//third_party/rust/cfg_if/v1:lib",
     "//third_party/rust/proc_macro2/v1:lib",

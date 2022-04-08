@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "0.4.14"
+  cargo_pkg_authors = "The Rust Project Developers"
   deps = [ "//third_party/rust/cfg_if/v1:lib" ]
   features = [ "std" ]
   build_root = "crate/build.rs"

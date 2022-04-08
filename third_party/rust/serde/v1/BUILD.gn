@@ -20,6 +20,8 @@ cargo_crate("lib") {
     "serde_derive",
     "std",
   ]
+  cargo_pkg_version = "1.0.130"
+  cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
 }

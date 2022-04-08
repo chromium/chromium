@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
+  cargo_pkg_version = "1.3.0"
+  cargo_pkg_authors = "Kyle Mayes <kyle@mayeses.com>"
   deps = [
     "//third_party/rust/glob/v0_3:lib",
     "//third_party/rust/libc/v0_2:lib",

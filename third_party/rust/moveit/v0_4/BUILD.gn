@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.4.0"
+  cargo_pkg_authors = "Miguel Young de la Sota <mcyoung@google.com>"
   deps = [ "//third_party/rust/cxx/v1:lib" ]
   features = [
     "alloc",

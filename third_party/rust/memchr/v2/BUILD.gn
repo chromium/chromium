@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "2.4.1"
+  cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

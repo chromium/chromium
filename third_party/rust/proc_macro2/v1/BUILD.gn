@@ -18,6 +18,9 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.32"
+  cargo_pkg_authors =
+      "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
   deps = [ "//third_party/rust/unicode_xid/v0_2:lib" ]
   features = [
     "proc-macro",

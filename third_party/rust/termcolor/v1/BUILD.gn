@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.1.2"
+  cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/winapi_util/v0_1:lib" ]

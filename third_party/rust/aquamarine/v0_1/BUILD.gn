@@ -18,6 +18,8 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "0.1.11"
+  cargo_pkg_authors = "Mike Lubinets <git@mkl.dev>"
   deps = [
     "//third_party/rust/itertools/v0_9:lib",
     "//third_party/rust/proc_macro2/v1:lib",

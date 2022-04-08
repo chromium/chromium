@@ -19,6 +19,8 @@ if (!is_win) {
     build_native_rust_unit_tests = false
     sources = [ "crate/src/lib.rs" ]
     edition = "2015"
+    cargo_pkg_version = "0.2.105"
+    cargo_pkg_authors = "The Rust Project Developers"
     features = [ "std" ]
     build_root = "crate/build.rs"
     build_sources = [ "crate/build.rs" ]

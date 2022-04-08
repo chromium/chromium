@@ -64,6 +64,13 @@ import("//build/rust/rust_target.gni")
 #  crate_type "bin", "proc-macro" or "rlib" (optional)
 #    Whether to build an executable. The default is "rlib".
 #    At present others are not supported.
+#
+#  cargo_pkg_authors
+#  cargo_pkg_version
+#    Strings as found within 'version' and 'authors' within Cargo.toml.
+#    Converted to environment variables passed to rustc, in case the crate
+#    uses `crate_version!` or `crate_authors!` macros (fairly common in command
+#    line tool help)
 
 template("cargo_crate") {
   orig_target_name = target_name
@@ -84,6 +91,25 @@ template("cargo_crate") {
         "${_crate_name}_${target_name}_${_epochlabel}_build_script"
   }
 
+  _rustenv = []
+  if (defined(invoker.rustenv)) {
+    _rustenv = invoker.rustenv
+  }
+  if (defined(invoker.cargo_pkg_authors)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_AUTHORS",
+                                invoker.cargo_pkg_authors,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_version)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_VERSION",
+                                invoker.cargo_pkg_version,
+                              ]) ]
+  }
+
   # The main target, either a Rust source set or an executable
   rust_target(target_name) {
     # Work out what we're building
@@ -94,6 +120,7 @@ template("cargo_crate") {
     if (!defined(rustflags)) {
       rustflags = []
     }
+    rustenv = _rustenv
     if (crate_type == "bin") {
       target_type = "executable"
       assert(!defined(invoker.epoch))
@@ -231,9 +258,9 @@ template("cargo_crate") {
           outputs += [ "$_build_script_out_dir/$generated_file" ]
         }
       }
-      if (defined(invoker.rustenv)) {
+      if (_rustenv != []) {
         args += [ "--env" ]
-        args += invoker.rustenv
+        args += _rustenv
       }
       if (defined(invoker.build_script_inputs)) {
         inputs += invoker.build_script_inputs

@@ -1021,6 +1021,11 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
     # Cargo defaults to 2015 for backward compatibility if it's not specified.
     build_rule.edition = cargo_toml["package"].get("edition", "2015")
 
+    # Gather some cargo metadata which we will want to pass to rustc using
+    # environment variables in case the crates use 'crate_authors!' or similar.
+    build_rule.cargo_pkg_authors = cargo_toml["package"].get("authors")
+    build_rule.cargo_pkg_version = cargo_toml["package"].get("version")
+
     # Prefix from the BUILD.gn file to the crate's source files.
     path_prefix = ("/".join(consts.CRATE_INNER_DIR) +
                    "/") if consts.CRATE_INNER_DIR else ""
