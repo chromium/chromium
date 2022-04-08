@@ -49,6 +49,10 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     fetch_google_photos_photo_fails_ = fails;
   }
 
+  void set_google_photo_has_been_deleted(bool deleted) {
+    google_photo_has_been_deleted_ = deleted;
+  }
+
   void set_fake_files_id_for_account_id(const AccountId& account_id,
                                         std::string fake_files_id) {
     fake_files_ids_[account_id] = fake_files_id;
@@ -101,6 +105,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   bool wallpaper_sync_enabled_ = true;
   bool fetch_images_for_collection_fails_ = false;
   bool fetch_google_photos_photo_fails_ = false;
+  bool google_photo_has_been_deleted_ = false;
 };
 
 }  // namespace ash

@@ -437,7 +437,7 @@ class WallpaperControllerTestBase : public AshTestBase {
     // tests, they are destroyed in tear down (See |AshTestHelper|). We don't
     // want this timer to run a task after tear down, since it relies on a pref
     // service being around.
-    controller_->GetDailyRefreshTimerForTesting().Stop();
+    controller_->GetUpdateWallpaperTimerForTesting().Stop();
 
     AshTestBase::TearDown();
   }
@@ -3766,7 +3766,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
       GetProfilePrefService(account_id_1));
 
   Time run_time =
-      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delta = run_time.ToDeltaSinceWindowsEpoch();
 
   base::TimeDelta update_time =
@@ -3791,7 +3791,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   controller_->UpdateDailyRefreshWallpaperForTesting();
   Time run_time =
-      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delay = run_time - Time::Now();
 
   base::TimeDelta one_hour = base::Hours(1);
@@ -3818,7 +3818,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   RunAllTasksUntilIdle();
 
   Time run_time =
-      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delay = run_time - Time::Now();
 
   base::TimeDelta one_hour = base::Hours(1);
@@ -4389,6 +4389,59 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
   WallpaperInfo expected_wallpaper_info(online_params);
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       RetryTimerTriggersOnFailedFetchPhotoForStalenessCheck) {
+  using base::Time;
+
+  SimulateUserLogin(account_id_1);
+
+  WallpaperInfo info = {"fake_google_photos_id", WALLPAPER_LAYOUT_CENTER,
+                        WallpaperType::kGooglePhotos, DayBeforeYesterdayish()};
+  controller_->SetUserWallpaperInfo(account_id_1, info);
+
+  Time run_time =
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+  base::TimeDelta delay = run_time - Time::Now();
+
+  base::TimeDelta one_day = base::Days(1);
+  // Leave a little wiggle room, as well as account for the hour fuzzing that
+  // we do.
+  EXPECT_GE(delay, one_day - base::Minutes(1));
+  EXPECT_LE(delay, one_day + base::Minutes(61));
+
+  client_.set_fetch_google_photos_photo_fails(true);
+
+  // Trigger Google Photos wallpaper cache check.
+  controller_->OnActiveUserSessionChanged(account_id_1);
+
+  run_time =
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+  delay = run_time - Time::Now();
+
+  base::TimeDelta one_hour = base::Hours(1);
+  // Leave a little wiggle room.
+  EXPECT_GE(delay, one_hour - base::Minutes(1));
+  EXPECT_LE(delay, one_hour + base::Minutes(1));
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       ResetToDefaultForDeletedPhotoOnStalenessCheck) {
+  SimulateUserLogin(account_id_1);
+
+  WallpaperInfo info = {"fake_google_photos_id", WALLPAPER_LAYOUT_CENTER,
+                        WallpaperType::kGooglePhotos, DayBeforeYesterdayish()};
+  controller_->SetUserWallpaperInfo(account_id_1, info);
+
+  client_.set_google_photo_has_been_deleted(true);
+  // Trigger Google Photos wallpaper cache check.
+  controller_->OnActiveUserSessionChanged(account_id_1);
+  if (GooglePhotosEnabled())
+    WaitForWallpaperCount(1);
+
+  EXPECT_EQ(GooglePhotosEnabled(),
+            controller_->GetWallpaperType() == WallpaperType::kDefault);
 }
 
 }  // namespace ash

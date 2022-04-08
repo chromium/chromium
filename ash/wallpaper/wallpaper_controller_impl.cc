@@ -741,6 +741,14 @@ void DeleteGooglePhotosCache() {
   base::DeletePathRecursively(GlobalChromeOSGooglePhotosWallpapersDir());
 }
 
+// Fuzzes a timedelta by up to one hour into the future to prevent hotspotting.
+base::TimeDelta FuzzTimeDelta(base::TimeDelta delta) {
+  auto random_delay = base::Milliseconds(base::RandDouble() *
+                                         base::Time::kMillisecondsPerSecond *
+                                         base::Time::kSecondsPerHour);
+  return delta + random_delay;
+}
+
 }  // namespace
 
 const char WallpaperControllerImpl::kSmallWallpaperSubDir[] = "small";
@@ -1030,8 +1038,13 @@ bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
 
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info) {
-  if (info.type != WallpaperType::kDaily)
-    daily_refresh_timer_.Stop();
+  if (info.type != WallpaperType::kDaily &&
+      info.type != WallpaperType::kGooglePhotos) {
+    update_wallpaper_timer_.Stop();
+  }
+
+  if (info.type == WallpaperType::kGooglePhotos)
+    StartGooglePhotosStalenessTimer();
 
   if (IsEphemeralUser(account_id)) {
     ephemeral_users_wallpaper_info_[account_id] = info;
@@ -1313,6 +1326,8 @@ void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
                                                   bool show_wallpaper) {
   if (!CanSetUserWallpaper(account_id))
     return;
+
+  update_wallpaper_timer_.Stop();
 
   RemoveUserWallpaper(account_id);
   if (!SetDefaultWallpaperInfo(account_id, base::Time::Now())) {
@@ -1744,6 +1759,14 @@ void WallpaperControllerImpl::OnActiveUserSessionChanged(
   // It is possible to switch to another user when preview is on. In this case,
   // we should close the preview and show the user's actual wallpaper.
   MaybeClosePreviewWallpaper();
+
+  // We check to make sure the user's Google Photos wallpapers are still valid
+  // here, otherwise switching back and forth between users constantly would
+  // prevent us from ever checking.
+  WallpaperInfo info;
+  GetLocalWallpaperInfo(account_id, &info);
+  if (info.type == WallpaperType::kGooglePhotos)
+    CheckGooglePhotosStaleness(account_id, info);
 }
 
 void WallpaperControllerImpl::OnSessionStateChanged(
@@ -1859,6 +1882,8 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 
   if (IsDailyRefreshEnabled())
     StartDailyRefreshTimer();
+  if (IsGooglePhotosWallpaperSet())
+    StartGooglePhotosStalenessTimer();
 }
 
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
@@ -1885,8 +1910,8 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaperForTesting() {
 }
 
 base::WallClockTimer&
-WallpaperControllerImpl::GetDailyRefreshTimerForTesting() {
-  return daily_refresh_timer_;
+WallpaperControllerImpl::GetUpdateWallpaperTimerForTesting() {
+  return update_wallpaper_timer_;
 }
 
 void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
@@ -2244,10 +2269,11 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
     const base::FilePath& cached_path,
     bool cached_path_exists) {
   if (cached_path_exists) {
+    WallpaperInfo info(params);
     ReadAndDecodeWallpaper(
         base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded,
-                       set_wallpaper_weak_factory_.GetWeakPtr(),
-                       std::move(params), cached_path, std::move(callback)),
+                       set_wallpaper_weak_factory_.GetWeakPtr(), info,
+                       params.account_id, cached_path, std::move(callback)),
         cached_path);
   } else {
     // We need to add a string to the URL to make sure we get back the correct
@@ -2267,7 +2293,8 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
 }
 
 void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
-    const GooglePhotosWallpaperParams& params,
+    const WallpaperInfo& info,
+    const AccountId& account_id,
     const base::FilePath& path,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
@@ -2276,7 +2303,11 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
     return;
   }
   std::move(callback).Run(true);
-  WallpaperInfo info(params);
+
+  if (!SetUserWallpaperInfo(account_id, info)) {
+    LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
+                  "except in tests.";
+  }
   ShowWallpaperImage(image, info, /*preview_mode=*/false,
                      /*always_on_top=*/false);
 }
@@ -2388,9 +2419,9 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
   } else if (info.type == WallpaperType::kGooglePhotos) {
     auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(info.location);
     ReadAndDecodeWallpaper(
-        base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
-                       set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                       path, info, show_wallpaper),
+        base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded,
+                       set_wallpaper_weak_factory_.GetWeakPtr(), info,
+                       account_id, path, base::DoNothing()),
         path);
     return;
   } else {
@@ -2988,12 +3019,18 @@ bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
          !GetDailyRefreshCollectionId(GetActiveAccountId()).empty();
 }
 
+bool WallpaperControllerImpl::IsGooglePhotosWallpaperSet() const {
+  WallpaperInfo info;
+  GetUserWallpaperInfo(GetActiveAccountId(), &info);
+  return info.type == WallpaperType::kGooglePhotos;
+}
+
 void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
     RefreshWallpaperCallback callback) {
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   if (!IsDailyRefreshEnabled()) {
-    daily_refresh_timer_.Stop();
+    update_wallpaper_timer_.Stop();
     std::move(callback).Run(false);
     return;
   }
@@ -3054,30 +3091,26 @@ void WallpaperControllerImpl::OnSetDailyWallpaper(
 }
 
 void WallpaperControllerImpl::StartDailyRefreshTimer() {
-  using base::Time;
+  base::TimeDelta timer_delay =
+      FuzzTimeDelta(GetTimeToNextDailyRefreshUpdate());
+  StartUpdateWallpaperTimer(timer_delay);
+}
 
-  base::TimeDelta daily_refresh_delay = GetTimeToNextDailyRefreshUpdate();
-
-  // Add random delay within 1 hour, to prevent hot spotting, and reduce
-  // multiple wallpaper transitions for sync users with multiple devices
-  auto random_delay =
-      base::Milliseconds(base::RandDouble() * Time::kMillisecondsPerSecond *
-                         Time::kSecondsPerHour);
-  daily_refresh_delay += random_delay;
-
-  StartDailyRefreshTimer(daily_refresh_delay);
+void WallpaperControllerImpl::StartGooglePhotosStalenessTimer() {
+  base::TimeDelta timer_delay = FuzzTimeDelta(base::Days(1));
+  StartUpdateWallpaperTimer(timer_delay);
 }
 
 void WallpaperControllerImpl::OnFetchDailyWallpaperFailed() {
-  StartDailyRefreshTimer(base::Hours(1));
+  StartUpdateWallpaperTimer(base::Hours(1));
 }
 
-void WallpaperControllerImpl::StartDailyRefreshTimer(base::TimeDelta delay) {
+void WallpaperControllerImpl::StartUpdateWallpaperTimer(base::TimeDelta delay) {
   base::Time desired_run_time = base::Time::Now() + delay;
-  daily_refresh_timer_.Start(
+  update_wallpaper_timer_.Start(
       FROM_HERE, desired_run_time,
-      base::BindOnce(&WallpaperControllerImpl::UpdateDailyRefreshWallpaper,
-                     weak_factory_.GetWeakPtr(), base::DoNothing()));
+      base::BindOnce(&WallpaperControllerImpl::OnUpdateWallpaperTimerExpired,
+                     weak_factory_.GetWeakPtr()));
 }
 
 base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
@@ -3087,6 +3120,63 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
     return base::TimeDelta();
   return info.date.ToDeltaSinceWindowsEpoch() -
          base::Time::Now().ToDeltaSinceWindowsEpoch() + base::Days(1);
+}
+
+void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
+  WallpaperInfo info;
+  auto account_id = GetActiveAccountId();
+  GetLocalWallpaperInfo(account_id, &info);
+  switch (info.type) {
+    case WallpaperType::kDaily:
+      UpdateDailyRefreshWallpaper();
+      return;
+    case WallpaperType::kGooglePhotos:
+      CheckGooglePhotosStaleness(account_id, info);
+      return;
+    case WallpaperType::kOnline:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      LOG(ERROR) << "Timer to update wallpaper expired, but the current "
+                 << "wallpaper type doesn't support/require updating.";
+      return;
+  }
+}
+
+void WallpaperControllerImpl::CheckGooglePhotosStaleness(
+    const AccountId& account_id,
+    const WallpaperInfo& info) {
+  DCHECK(info.type == WallpaperType::kGooglePhotos);
+  wallpaper_controller_client_->FetchGooglePhotosPhoto(
+      account_id, info.location,
+      base::BindOnce(&WallpaperControllerImpl::HandleGooglePhotosStalenessCheck,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id));
+  // Start a recheck timer in case our weak ptr above is invalidated, or other
+  // confusing conditions happen before the API call returns.
+  StartUpdateWallpaperTimer(base::Hours(1));
+}
+
+void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
+    const AccountId& account_id,
+    ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+    bool success) {
+  // If `success` is false, then we failed to connect to the Google Photos API
+  // for some reason. We're already set to try again later, since the timer was
+  // reset to one hour in `CheckGooglePhotosStaleness`.
+  if (!success)
+    return;
+
+  if (!photo) {
+    sequenced_task_runner_->PostTask(FROM_HERE,
+                                     base::BindOnce(&DeleteGooglePhotosCache));
+    SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
+  } else {
+    StartGooglePhotosStalenessTimer();
+  }
 }
 
 void WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo(

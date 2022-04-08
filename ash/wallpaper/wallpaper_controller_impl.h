@@ -371,7 +371,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Exposed for testing.
   void UpdateDailyRefreshWallpaperForTesting();
-  base::WallClockTimer& GetDailyRefreshTimerForTesting();
+  base::WallClockTimer& GetUpdateWallpaperTimerForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
@@ -479,7 +479,8 @@ class ASH_EXPORT WallpaperControllerImpl
       const base::FilePath& cached_path,
       bool cached_path_exists);
 
-  void OnGooglePhotosWallpaperDecoded(const GooglePhotosWallpaperParams& params,
+  void OnGooglePhotosWallpaperDecoded(const WallpaperInfo& info,
+                                      const AccountId& account_id,
                                       const base::FilePath& path,
                                       SetWallpaperCallback callback,
                                       const gfx::ImageSkia& image);
@@ -665,6 +666,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
 
+  // If the user has a Google Photos wallpaper set.
+  bool IsGooglePhotosWallpaperSet() const;
+
   // Callback from the client providing a url to a wallpaper from the user
   // specified collection when daily refresh is enabled. If |success| is
   // false, fetching the |image| failed, and should be tried again soon.
@@ -683,15 +687,32 @@ class ASH_EXPORT WallpaperControllerImpl
   // wallpaper was set.
   void StartDailyRefreshTimer();
 
+  // Starts a wall clock timer, to confirm that the current Google Photos
+  // photo set as the wallpaper still exists in the user's library.
+  void StartGooglePhotosStalenessTimer();
+
   // Starts a wall clock timer to retry fetching a daily refresh wallpaper.
   void OnFetchDailyWallpaperFailed();
 
   // Starts a wall clock timer with the specified |delay|.
-  void StartDailyRefreshTimer(base::TimeDelta delay);
+  void StartUpdateWallpaperTimer(base::TimeDelta delay);
 
   // Time to next wallpaper update for daily refresh; 24 hours since last
   // wallpaper set.
   base::TimeDelta GetTimeToNextDailyRefreshUpdate() const;
+
+  // Called when `update_wallpaper_timer_` expires to take the appropriate
+  // action for whatever type of wallpaper is currently set.
+  void OnUpdateWallpaperTimerExpired();
+
+  // Checks to make sure the currently selected Google Photos wallpaper still
+  // exists in the user's Google Photos library.
+  void CheckGooglePhotosStaleness(const AccountId& account_id,
+                                  const WallpaperInfo& info);
+  void HandleGooglePhotosStalenessCheck(
+      const AccountId& account_id,
+      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+      bool success);
 
   void SaveWallpaperToDriveFsAndSyncInfo(const AccountId& account_id,
                                          const base::FilePath& origin_path);
@@ -843,7 +864,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // May be null in tests.
   PrefService* local_state_ = nullptr;
 
-  base::WallClockTimer daily_refresh_timer_;
+  base::WallClockTimer update_wallpaper_timer_;
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 
