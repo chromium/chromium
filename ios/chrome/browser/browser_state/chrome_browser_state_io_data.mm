@@ -106,12 +106,10 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
   IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
                                                       pref_service);
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
-      web::GetIOThreadTaskRunner({});
-
+  accept_language_pref_watcher_.Init(pref_service);
   chrome_http_user_agent_settings_ =
-      std::make_unique<IOSChromeHttpUserAgentSettings>(pref_service);
-  raw_chrome_http_user_agent_settings_ = chrome_http_user_agent_settings_.get();
+      std::make_unique<IOSChromeHttpUserAgentSettings>(
+          accept_language_pref_watcher_.GetHandle());
 }
 
 ChromeBrowserStateIOData::ProfileParams::ProfileParams()
@@ -276,8 +274,7 @@ void ChromeBrowserStateIOData::ShutdownOnUIThread(
   enable_referrers_.Destroy();
   enable_do_not_track_.Destroy();
   enable_metrics_.Destroy();
-  if (raw_chrome_http_user_agent_settings_)
-    raw_chrome_http_user_agent_settings_->CleanupOnUIThread();
+  accept_language_pref_watcher_.Destroy();
 
   if (!context_getters->empty()) {
     if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {

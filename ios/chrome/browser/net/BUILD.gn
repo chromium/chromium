@@ -5,6 +5,8 @@
 source_set("net") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "accept_language_pref_watcher.h",
+    "accept_language_pref_watcher.mm",
     "chrome_cookie_store_ios_client.h",
     "chrome_cookie_store_ios_client.mm",
     "connection_type_observer_bridge.h",

@@ -12,10 +12,12 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_member.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
+#include "ios/chrome/browser/net/accept_language_pref_watcher.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
@@ -168,6 +170,7 @@ class ChromeBrowserStateIOData {
   mutable BooleanPrefMember enable_do_not_track_;
 
   BooleanPrefMember enable_metrics_;
+  AcceptLanguagePrefWatcher accept_language_pref_watcher_;
 
   mutable std::unique_ptr<net::ReportSender> certificate_report_sender_;
 
@@ -181,7 +184,6 @@ class ChromeBrowserStateIOData {
 
   mutable std::unique_ptr<IOSChromeHttpUserAgentSettings>
       chrome_http_user_agent_settings_;
-  raw_ptr<IOSChromeHttpUserAgentSettings> raw_chrome_http_user_agent_settings_;
 
   const ChromeBrowserStateType browser_state_type_;
 };
