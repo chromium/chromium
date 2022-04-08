@@ -136,17 +136,17 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a
-  // fragmentainer break before the first child in a row. |child| and
-  // |layout_result| should be those associated with the first child in the row.
-  // |row|, |row_break_between|, |row_index| and |has_container_separation| are
-  // specific to the row itself. See |::blink::BreakBeforeChildIfNeeded()| for
-  // more documentation.
+  // fragmentainer break before the first child in a row. |child| should be
+  // those associated with the first child in the row. |row|,
+  // |row_break_between|, |row_index|, |has_container_separation| and
+  // |is_first_for_row| are specific to the row itself. See
+  // |::blink::BreakBeforeChildIfNeeded()| for more documentation.
   NGBreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
                                        EBreakBetween row_break_between,
                                        wtf_size_t row_index,
                                        NGLayoutInputNode child,
-                                       const NGLayoutResult& layout_result,
-                                       bool has_container_separation);
+                                       bool has_container_separation,
+                                       bool is_first_for_row);
 
   // Move past the breakpoint before the row, if possible, and return true. Also
   // update the appeal of breaking before the row (if we're not going

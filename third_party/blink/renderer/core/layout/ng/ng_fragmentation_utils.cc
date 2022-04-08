@@ -121,14 +121,19 @@ bool IsBreakableAtStartOfResumedContainer(
     const NGBoxFragmentBuilder& builder) {
   if (child_layout_result.Status() != NGLayoutResult::kSuccess)
     return false;
-  if (space.MinBreakAppeal() != kBreakAppealLastResort &&
-      IsResumingLayout(builder.PreviousBreakToken())) {
-    if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
-            child_layout_result.PhysicalFragment()))
-      return box_fragment->IsFirstForNode();
-    return true;
-  }
-  return false;
+  bool is_first_for_node = true;
+  if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
+          child_layout_result.PhysicalFragment()))
+    is_first_for_node = box_fragment->IsFirstForNode();
+  return IsBreakableAtStartOfResumedContainer(space, builder,
+                                              is_first_for_node);
+}
+
+bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
+                                          const NGBoxFragmentBuilder& builder,
+                                          bool is_first_for_node) {
+  return space.MinBreakAppeal() != kBreakAppealLastResort &&
+         IsResumingLayout(builder.PreviousBreakToken()) && is_first_for_node;
 }
 
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,

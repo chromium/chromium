@@ -96,6 +96,10 @@ bool IsBreakableAtStartOfResumedContainer(
     const NGLayoutResult& child_layout_result,
     const NGBoxFragmentBuilder& builder);
 
+bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
+                                          const NGBoxFragmentBuilder& builder,
+                                          bool is_first_for_node);
+
 // Calculate the appeal of breaking before this child.
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
                                          NGLayoutInputNode child,
