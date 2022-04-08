@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -51,6 +52,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordSettingsTest {
+    private static final String OFFER_TO_SAVE_PASSWORDS_HISTOGRAM =
+            "PasswordManager.Settings.ToggleOfferToSavePasswords";
+    private static final String AUTO_SIGNIN_HISTOGRAM = "PasswordManager.Settings.ToggleAutoSignIn";
+
     @Rule
     public SettingsActivityTestRule<PlaceholderSettingsForTest>
             mPlaceholderSettingsActivityTestRule =
@@ -133,8 +138,15 @@ public class PasswordSettingsTest {
 
             onOffSwitch.performClick();
             Assert.assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 0));
+
             onOffSwitch.performClick();
             Assert.assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 1));
 
             settingsActivity.finish();
 
@@ -256,8 +268,13 @@ public class PasswordSettingsTest {
 
             onOffSwitch.performClick();
             Assert.assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
+            Assert.assertEquals(
+                    1, RecordHistogram.getHistogramValueCountForTesting(AUTO_SIGNIN_HISTOGRAM, 0));
+
             onOffSwitch.performClick();
             Assert.assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
+            Assert.assertEquals(
+                    1, RecordHistogram.getHistogramValueCountForTesting(AUTO_SIGNIN_HISTOGRAM, 1));
 
             settingsActivity.finish();
 

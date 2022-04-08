@@ -28,6 +28,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -513,6 +514,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mSavePasswordsSwitch.setSummaryOff(R.string.text_off);
         mSavePasswordsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
+            RecordHistogram.recordBooleanHistogram(
+                    "PasswordManager.Settings.ToggleOfferToSavePasswords", (boolean) newValue);
             return true;
         });
         mSavePasswordsSwitch.setManagedPreferenceDelegate(
@@ -539,6 +542,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mAutoSignInSwitch.setSummary(R.string.passwords_auto_signin_description);
         mAutoSignInSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, (boolean) newValue);
+            RecordHistogram.recordBooleanHistogram(
+                    "PasswordManager.Settings.ToggleAutoSignIn", (boolean) newValue);
             return true;
         });
         mAutoSignInSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference

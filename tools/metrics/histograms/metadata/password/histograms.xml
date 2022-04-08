@@ -2467,6 +2467,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.Settings.ToggleAutoSignIn"
+    enum="BooleanEnabled" expires_after="2022-10-15">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Records user action to enable or disable automatic sign-in in password
+    settings. Recorded when user interacts with the toggle. This metric is only
+    logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Settings.ToggleOfferToSavePasswords"
+    enum="BooleanEnabled" expires_after="2022-10-15">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Records user action to enable or disable password saving in password
+    settings. Recorded when user interacts with the toggle. This metric is only
+    logged on Android.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.StoreDecryptionResult"
     enum="PasswordDecryptionResult" expires_after="2022-09-11">
   <owner>cfroussios@chromium.org</owner>
