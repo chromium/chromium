@@ -200,6 +200,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableDesksTrackpadSwipeImprovements;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableDnsProxy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableExternalKeyboardsInDiagnostics;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableFilesAppCopyImage;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableHostnameSetting;
@@ -598,6 +600,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheCustomWidgetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWADebugModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsExtendedOpenVpnSettingsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsExternalKeyboardInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();

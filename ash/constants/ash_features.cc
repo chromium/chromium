@@ -492,6 +492,11 @@ const base::Feature kEnableDesksTrackpadSwipeImprovements{
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables external keyboard testers in the diagnostics app.
+const base::Feature kEnableExternalKeyboardsInDiagnostics{
+    "EnableExternalKeyboardsInDiagnosticsApp",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables displaying additional OpenVPN configuration values on the network
 // details page.
 const base::Feature kExtendedOpenVpnSettings{"ExtendedOpenVpnSettings",
@@ -1629,6 +1634,10 @@ bool IsESimPolicyEnabled() {
 
 bool IsExtendedOpenVpnSettingsEnabled() {
   return base::FeatureList::IsEnabled(kExtendedOpenVpnSettings);
+}
+
+bool IsExternalKeyboardInDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
 }
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {

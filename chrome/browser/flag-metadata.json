@@ -2060,6 +2060,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-external-keyboards-in-diagnostics-app",
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
       "name": "enable-favicon-passwords",
       "owners": [ "veronguyen", "gambard" ],
       "expiry_milestone": 105

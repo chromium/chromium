@@ -4503,6 +4503,12 @@ const char kDnsProxyEnableDOHDescription[] =
     "When enabled, the DNS proxy will perform DNS-over-HTTPS in accordance "
     "with the Chrome OS SecureDNS settings.";
 
+const char kEnableExternalKeyboardsInDiagnosticsAppName[] =
+    "Enable external keyboards in the Diagnostics App";
+const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =
+    "Shows external keyboards in the Diagnostics App's input section. Requires "
+    "#enable-input-in-diagnostics-app to be enabled.";
+
 const char kEnableHostnameSettingName[] = "Enable setting the device hostname";
 const char kEnableHostnameSettingDescription[] =
     "Enables the ability to set the Chrome OS hostname, the name of the device "

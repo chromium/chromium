@@ -52975,6 +52975,8 @@ from previous Chrome versions.
   <int value="-1441340278" label="NewTabPageIcons:enabled"/>
   <int value="-1440440375" label="WebVrAutopresent:enabled"/>
   <int value="-1440152291" label="disable-gesture-typing"/>
+  <int value="-1439701253"
+      label="EnableExternalKeyboardsInDiagnosticsApp:enabled"/>
   <int value="-1438279809" label="GamepadExtensions:disabled"/>
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
@@ -53467,6 +53469,8 @@ from previous Chrome versions.
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
   <int value="-1122899696" label="PluginVmShowMicrophonePermissions:disabled"/>
+  <int value="-1122895401"
+      label="EnableExternalKeyboardsInDiagnosticsApp:disabled"/>
   <int value="-1122853453" label="LazyImageLoading:enabled"/>
   <int value="-1122458028" label="UnifiedMediaView:enabled"/>
   <int value="-1121931029" label="DownloadsForeground:enabled"/>

@@ -86,6 +86,7 @@ source_set("unit_tests") {
     ":backend",
     "//ash",
     "//ash:test_support",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/cpp/holding_space:test_support",
     "//ash/webui/diagnostics_ui/mojom",

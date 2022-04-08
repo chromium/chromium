@@ -8387,6 +8387,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTouchscreensInDiagnosticsAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kEnableTouchscreensInDiagnosticsApp)},
+    {"enable-external-keyboards-in-diagnostics-app",
+     flag_descriptions::kEnableExternalKeyboardsInDiagnosticsAppName,
+     flag_descriptions::kEnableExternalKeyboardsInDiagnosticsAppDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kEnableExternalKeyboardsInDiagnostics)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enforce-delays-in-strike-database",

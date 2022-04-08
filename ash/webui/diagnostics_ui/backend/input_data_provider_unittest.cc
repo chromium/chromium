@@ -8,12 +8,14 @@
 #include <map>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -485,6 +487,10 @@ class InputDataProviderTest : public views::ViewsTestBase {
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(
+        features::kEnableExternalKeyboardsInDiagnostics);
+
     // Note: some init for creating widgets is performed in base SetUp
     // instead of the constructor, so our init must also be delayed until SetUp,
     // so we can safely invoke CreateTestWidget().
@@ -596,6 +602,9 @@ class InputDataProviderTest : public views::ViewsTestBase {
   // All evdev watchers in use by provider_.
   watchers_t watchers_;
   std::unique_ptr<TestInputDataProvider> provider_;
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(InputDataProviderTest, GetConnectedDevices_DeviceInfoMapping) {
@@ -769,6 +778,35 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
     EXPECT_EQ(0ul, keyboards.size());
     EXPECT_EQ(0ul, touch_devices.size());
   }
+}
+
+TEST_F(InputDataProviderTest, GetConnectedDevices_NoExternalKeyboards) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kEnableExternalKeyboardsInDiagnostics);
+
+  ui::DeviceEvent add_internal_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event0"));
+  ui::DeviceEvent add_external_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(add_internal_event);
+  provider_->OnDeviceEvent(add_external_event);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& internal_kbd = keyboards[0];
+  EXPECT_EQ(0u, internal_kbd->id);
+  EXPECT_EQ(mojom::ConnectionType::kInternal, internal_kbd->connection_type);
 }
 
 TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
@@ -1097,6 +1135,30 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1ul, fake_observer.touch_devices_disconnected.size());
   EXPECT_EQ(1u, fake_observer.touch_devices_disconnected[0]);
+}
+
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_NoExternalKeyboards) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kEnableExternalKeyboardsInDiagnostics);
+
+  FakeConnectedDevicesObserver fake_observer;
+  provider_->ObserveConnectedDevices(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  ui::DeviceEvent add_external_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(add_external_event);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(0ul, fake_observer.keyboards_connected.size());
+
+  ui::DeviceEvent remove_external_event(ui::DeviceEvent::DeviceType::INPUT,
+                                        ui::DeviceEvent::ActionType::REMOVE,
+                                        base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(remove_external_event);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(0ul, fake_observer.keyboards_disconnected.size());
 }
 
 TEST_F(InputDataProviderTest, ChangeDeviceDoesNotCrash) {

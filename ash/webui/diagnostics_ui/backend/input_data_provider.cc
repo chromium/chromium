@@ -8,6 +8,7 @@
 #include <linux/input.h>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/ranges/algorithm.h"
@@ -540,8 +541,13 @@ void InputDataProvider::AddTouchDevice(
 void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
   auto aux_data = std::make_unique<InputDataProviderKeyboard::AuxData>();
 
-  keyboards_[device_info->evdev_id] =
+  mojom::KeyboardInfoPtr keyboard =
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
+  if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
+      keyboard->connection_type != mojom::ConnectionType::kInternal) {
+    return;
+  }
+  keyboards_[device_info->evdev_id] = std::move(keyboard);
   if (device_info->connection_type == mojom::ConnectionType::kInternal &&
       keyboards_[device_info->evdev_id]->top_right_key ==
           mojom::TopRightKey::kUnknown) {

@@ -2574,6 +2574,9 @@ extern const char kEnableDnsProxyDescription[];
 extern const char kDnsProxyEnableDOHName[];
 extern const char kDnsProxyEnableDOHDescription[];
 
+extern const char kEnableExternalKeyboardsInDiagnosticsAppName[];
+extern const char kEnableExternalKeyboardsInDiagnosticsAppDescription[];
+
 extern const char kEnableHostnameSettingName[];
 extern const char kEnableHostnameSettingDescription[];
 
