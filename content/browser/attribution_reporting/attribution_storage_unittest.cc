@@ -1744,9 +1744,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportTimeIs(original_report_time),
-                          ReportTimeIs(original_report_time)));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(ReportTimeIs(original_report_time),
+                  AllOf(ReportTimeIs(original_report_time),
+                        AggregatableAttributionDataIs(
+                            InitialReportTimeIs(original_report_time)))));
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1754,9 +1757,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
 
   // The report time should not be changed as it is equal to now, not strictly
   // less than it.
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportTimeIs(original_report_time),
-                          ReportTimeIs(original_report_time)));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(ReportTimeIs(original_report_time),
+                  AllOf(ReportTimeIs(original_report_time),
+                        AggregatableAttributionDataIs(
+                            InitialReportTimeIs(original_report_time)))));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -1765,9 +1771,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
   EXPECT_EQ(storage()->AdjustOfflineReportTimes(), new_report_time);
 
   // The report time should be changed as it is strictly less than now.
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportTimeIs(new_report_time),
-                          ReportTimeIs(new_report_time)));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(ReportTimeIs(new_report_time),
+                  AllOf(ReportTimeIs(new_report_time),
+                        AggregatableAttributionDataIs(
+                            InitialReportTimeIs(original_report_time)))));
 }
 
 TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
@@ -1791,9 +1800,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportTimeIs(original_report_time),
-                          ReportTimeIs(original_report_time)));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(ReportTimeIs(original_report_time),
+                  AllOf(ReportTimeIs(original_report_time),
+                        AggregatableAttributionDataIs(
+                            InitialReportTimeIs(original_report_time)))));
 
   task_environment_.FastForwardBy(kReportDelay + base::Milliseconds(1));
 
@@ -1801,10 +1813,13 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
-      ElementsAre(ReportTimeIs(AllOf(Ge(base::Time::Now() + base::Hours(1)),
-                                     Le(base::Time::Now() + base::Hours(3)))),
-                  ReportTimeIs(AllOf(Ge(base::Time::Now() + base::Hours(1)),
-                                     Le(base::Time::Now() + base::Hours(3))))));
+      ElementsAre(
+          ReportTimeIs(AllOf(Ge(base::Time::Now() + base::Hours(1)),
+                             Le(base::Time::Now() + base::Hours(3)))),
+          AllOf(ReportTimeIs(AllOf(Ge(base::Time::Now() + base::Hours(1)),
+                                   Le(base::Time::Now() + base::Hours(3)))),
+                AggregatableAttributionDataIs(
+                    InitialReportTimeIs(original_report_time)))));
 }
 
 TEST_F(AttributionStorageTest, GetNextEventReportTime) {
@@ -2537,6 +2552,11 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Now()),
       ElementsAre(expected_event_level_report, expected_aggregatable_report));
+
+  EXPECT_EQ(expected_aggregatable_report.report_time(),
+            absl::get<AttributionReport::AggregatableAttributionData>(
+                expected_aggregatable_report.data())
+                .initial_report_time);
 }
 
 TEST_F(

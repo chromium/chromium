@@ -815,7 +815,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
               std::move(contributions),
               AggregationServicePayloadContents::AggregationMode::kDefault),
           AggregatableReportSharedInfo(
-              report.report_time(), report.PrivacyBudgetKey(),
+              aggregate_data->initial_report_time, report.PrivacyBudgetKey(),
               report.external_report_id(),
               attribution_info.source.common_info().reporting_origin(),
               debug_mode));

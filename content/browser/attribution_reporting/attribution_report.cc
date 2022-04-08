@@ -65,8 +65,11 @@ AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     std::vector<AggregatableHistogramContribution> contributions,
-    absl::optional<Id> id)
-    : contributions(std::move(contributions)), id(id) {}
+    absl::optional<Id> id,
+    base::Time initial_report_time)
+    : contributions(std::move(contributions)),
+      id(id),
+      initial_report_time(initial_report_time) {}
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     const AggregatableAttributionData&) = default;

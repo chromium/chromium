@@ -83,7 +83,8 @@ class CONTENT_EXPORT AttributionReport {
 
     AggregatableAttributionData(
         std::vector<AggregatableHistogramContribution> contributions,
-        absl::optional<Id> id);
+        absl::optional<Id> id,
+        base::Time initial_report_time);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -103,6 +104,9 @@ class CONTENT_EXPORT AttributionReport {
     // The report assembled by the aggregation service. If null, the report has
     // not been assembled yet.
     absl::optional<AggregatableReport> assembled_report;
+
+    // The initial report time scheduled by the browser.
+    base::Time initial_report_time;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.

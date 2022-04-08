@@ -913,6 +913,10 @@ MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.contributions, result_listener);
 }
 
+MATCHER_P(InitialReportTimeIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.initial_report_time, result_listener);
+}
+
 // `CreateReportResult` matchers
 
 MATCHER_P(CreateReportEventLevelStatusIs, matcher, "") {

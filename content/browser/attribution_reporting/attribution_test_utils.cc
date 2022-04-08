@@ -702,7 +702,7 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
   return AttributionReport(
       attribution_info_, report_time_, external_report_id_,
       AttributionReport::AggregatableAttributionData(
-          contributions_, aggregatable_attribution_report_id_));
+          contributions_, aggregatable_attribution_report_id_, report_time_));
 }
 
 AggregatableKeyProtoBuilder::AggregatableKeyProtoBuilder() = default;
@@ -858,7 +858,11 @@ bool operator==(const AttributionReport::EventLevelData& a,
 // aggregation service from all the other data.
 bool operator==(const AttributionReport::AggregatableAttributionData& a,
                 const AttributionReport::AggregatableAttributionData& b) {
-  return a.contributions == b.contributions;
+  const auto tie =
+      [](const AttributionReport::AggregatableAttributionData& data) {
+        return std::make_tuple(data.contributions, data.initial_report_time);
+      };
+  return tie(a) == tie(b);
 }
 
 // Does not compare source or report IDs, as they are set by the underlying
@@ -1181,7 +1185,7 @@ std::ostream& operator<<(
   }
 
   return out << "],id=" << (data.id ? base::NumberToString(**data.id) : "null")
-             << "}";
+             << ",initial_report_time=" << data.initial_report_time << "}";
 }
 
 namespace {

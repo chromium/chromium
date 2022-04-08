@@ -58,11 +58,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 33;
+const int AttributionStorageSql::kCurrentVersionNumber = 34;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 33;
+const int AttributionStorageSql::kCompatibleVersionNumber = 34;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -137,13 +137,13 @@ const base::FilePath::CharType kDatabasePath[] =
   "FROM event_level_reports C "                                                      \
   "JOIN sources I ON C.source_id = I.source_id "
 
-#define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL \
-  "SELECT "                                                           \
+#define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL  \
+  "SELECT "                                                            \
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.") \
-  ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"       \
-  "A.external_report_id,A.failed_send_attempts "                      \
-  "FROM aggregatable_report_metadata A "                              \
-  DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                  \
+  ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"        \
+  "A.external_report_id,A.failed_send_attempts,A.initial_report_time " \
+  "FROM aggregatable_report_metadata A "                               \
+  DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                   \
   "JOIN sources I ON A.source_id = I.source_id "
 
 // clang-format on
@@ -2185,6 +2185,8 @@ bool AttributionStorageSql::CreateSchema() {
   // `external_report_id` is used for deduplicating reports received by the
   // reporting origin.
   // `report_time` is the time the aggregatable report should be reported.
+  // `initial_report_time` is the report time initially scheduled by the
+  // browser.
   static constexpr char kAggregatableReportMetadataTableSql[] =
       "CREATE TABLE IF NOT EXISTS aggregatable_report_metadata("
       "aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -2193,7 +2195,8 @@ bool AttributionStorageSql::CreateSchema() {
       "debug_key INTEGER,"
       "external_report_id TEXT NOT NULL,"
       "report_time INTEGER NOT NULL,"
-      "failed_send_attempts INTEGER NOT NULL)";
+      "failed_send_attempts INTEGER NOT NULL,"
+      "initial_report_time INTEGER NOT NULL)";
   if (!db_->Execute(kAggregatableReportMetadataTableSql))
     return false;
 
@@ -2640,7 +2643,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   report = AttributionReport(
       std::move(attribution_info), report_time, delegate_->NewReportID(),
       AttributionReport::AggregatableAttributionData(std::move(contributions),
-                                                     /*id=*/absl::nullopt));
+                                                     /*id=*/absl::nullopt,
+                                                     report_time));
 
   if (!top_level_filters_match)
     return AggregatableResult::kNoMatchingSourceFilterData;
@@ -2664,8 +2668,8 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   static constexpr char kInsertMetadataSql[] =
       "INSERT INTO aggregatable_report_metadata"
       "(source_id,trigger_time,debug_key,external_report_id,report_time,"
-      "failed_send_attempts)"
-      "VALUES(?,?,?,?,?,0)";
+      "failed_send_attempts,initial_report_time)"
+      "VALUES(?,?,?,?,?,0,?)";
   sql::Statement insert_metadata_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
   insert_metadata_statement.BindInt64(0, *attribution_info.source.source_id());
@@ -2674,6 +2678,8 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   insert_metadata_statement.BindString(
       3, report.external_report_id().AsLowercaseString());
   insert_metadata_statement.BindTime(4, report.report_time());
+  insert_metadata_statement.BindTime(
+      5, aggregatable_attribution->initial_report_time);
   if (!insert_metadata_statement.Run())
     return false;
 
@@ -2751,7 +2757,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
 absl::optional<AttributionReport>
 AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
     sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 6);
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 7);
 
   absl::optional<StoredSourceData> source_data =
       ReadSourceFromStatement(statement);
@@ -2768,6 +2774,7 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
   base::GUID external_report_id =
       base::GUID::ParseLowercase(statement.ColumnString(col++));
   int failed_send_attempts = statement.ColumnInt(col++);
+  base::Time initial_report_time = statement.ColumnTime(col++);
 
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
@@ -2780,11 +2787,12 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
   if (contributions.empty())
     return absl::nullopt;
 
-  AttributionReport report(AttributionInfo(std::move(source_data->source),
-                                           trigger_time, trigger_debug_key),
-                           report_time, std::move(external_report_id),
-                           AttributionReport::AggregatableAttributionData(
-                               std::move(contributions), report_id));
+  AttributionReport report(
+      AttributionInfo(std::move(source_data->source), trigger_time,
+                      trigger_debug_key),
+      report_time, std::move(external_report_id),
+      AttributionReport::AggregatableAttributionData(
+          std::move(contributions), report_id, initial_report_time));
   report.set_failed_send_attempts(failed_send_attempts);
   return report;
 }
