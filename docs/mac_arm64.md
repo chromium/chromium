@@ -1,6 +1,7 @@
 # Chromium for Arm Macs
 
 This document describes the state of Chromium on Apple Silicon Macs.
+The short summary is that almost everything works, without needing Rosetta.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
@@ -8,11 +9,15 @@ that builds for Arm. It cross-builds on an Intel machine.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel)
-that builds for Arm on an Arm bot as well.
+that builds for Arm on an Arm bot as well. This bot does not have Rosetta
+installed.
 
 There's also a [tester
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac11-arm64-rel-tests)
-that continuously runs tests. Most tests pass.
+that continuously runs tests. Most tests pass. The tester bots don't
+have Rosetta installed.
+
+ASan builds do not yet work ([tracking bug](https://crbug.com/1271140))
 
 ## Building _for_ Arm Macs
 
@@ -91,9 +96,4 @@ You should be able to run `fetch chromium` normally, and then build, using
 Building Chrome/Mac/Intel on an arm Mac currently needs a small local tweak
 to work, see [tracking bug](https://crbug.com/1280968).
 
-All tests should build, run, and mostly pass. We're in the process of removing
-Rosetta on our Mac arm tester bots.
-
-Web tests don't work on macOS 12+ due to lack of a hermetic Arm Apache binary
-with PHP support (system Apache dropped PHP support in macOS 12).)
-([tracking bug](https://crbug.com/1190885)).
+All tests should build, run, and mostly pass.
