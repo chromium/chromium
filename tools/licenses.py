@@ -176,6 +176,12 @@ SPECIAL_CASES = {
         # Absolute path here is resolved as relative to the source root.
         "License File": "/LICENSE.chromium_os",
     },
+    os.path.join('third_party', 'ipcz'): {
+        "Name": "ipcz",
+        "URL" : "https://chromium.googlesource.com/chromium/src/third_party/ipcz",
+        "License": "BSD",
+        "License File": "/third_party/ipcz/LICENSE",
+    },
     os.path.join('third_party', 'lss'): {
         "Name": "linux-syscall-support",
         "URL": "http://code.google.com/p/linux-syscall-support/",
