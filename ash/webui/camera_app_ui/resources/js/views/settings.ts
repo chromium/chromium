@@ -300,7 +300,7 @@ export class ResolutionSettings extends BaseSettings {
         this.cameraAvailable = false;
         this.updateOptionAvailability();
       },
-      onCameraAvailble: () => {
+      onCameraAvailable: () => {
         if (state.get(state.State.NO_RESOLUTION_SETTINGS)) {
           return;
         }

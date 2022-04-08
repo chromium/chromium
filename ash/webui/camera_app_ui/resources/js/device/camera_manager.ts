@@ -419,7 +419,7 @@ export class CameraManager implements EventListener {
     this.cameraAvailable = available;
     for (const ui of this.cameraUIs) {
       if (this.cameraAvailable) {
-        ui.onCameraAvailble?.();
+        ui.onCameraAvailable?.();
       } else {
         ui.onCameraUnavailable?.();
       }

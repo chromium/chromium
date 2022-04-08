@@ -232,7 +232,7 @@ export class Camera extends View implements CameraViewUI {
       onCameraUnavailable: () => {
         this.cameraReady = new WaitableEvent();
       },
-      onCameraAvailble: () => {
+      onCameraAvailable: () => {
         this.cameraReady.signal();
       },
     });

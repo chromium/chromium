@@ -55,7 +55,7 @@ export class Options implements CameraUI {
    */
   private audioTrack: MediaStreamTrack|null = null;
 
-  private cameraAvailble = false;
+  private cameraAvailable = false;
 
   /**
    * @param cameraManager Camera manager instance.
@@ -63,7 +63,7 @@ export class Options implements CameraUI {
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
     this.switchDeviceButton.addEventListener('click', () => {
-      if (state.get(state.State.TAKING) || !this.cameraAvailble) {
+      if (state.get(state.State.TAKING) || !this.cameraAvailable) {
         return;
       }
       const switching = this.cameraManager.switchCamera();
@@ -95,7 +95,7 @@ export class Options implements CameraUI {
       this.updateOptionAvailability();
     });
     this.toggleFps.addEventListener('click', (e) => {
-      if (state.get(state.State.TAKING) || !this.cameraAvailble) {
+      if (state.get(state.State.TAKING) || !this.cameraAvailable) {
         e.preventDefault();
         return;
       }
@@ -210,20 +210,20 @@ export class Options implements CameraUI {
     }
   }
 
-  onCameraAvailble(): void {
-    this.cameraAvailble = true;
+  onCameraAvailable(): void {
+    this.cameraAvailable = true;
     this.updateOptionAvailability();
   }
 
   onCameraUnavailable(): void {
-    this.cameraAvailble = false;
+    this.cameraAvailable = false;
     this.updateOptionAvailability();
   }
 
   private updateOptionAvailability(): void {
     this.toggleMirror.disabled = !this.allowModifyMirrorState();
     this.toggleFps.disabled =
-        !this.cameraAvailble || state.get(state.State.TAKING);
+        !this.cameraAvailable || state.get(state.State.TAKING);
   }
 
   /**
