@@ -738,7 +738,9 @@
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:self.headerController.view.bottomAnchor
-                       constant:-content_suggestions::headerBottomPadding()],
+                       constant:-(content_suggestions::headerBottomPadding() +
+                                  [self.feedHeaderViewController
+                                          customSearchEngineViewHeight])],
     [self.collectionView.topAnchor
         constraintEqualToAnchor:[self contentSuggestionsViewController]
                                     .view.bottomAnchor],
@@ -963,7 +965,8 @@
 // Height of the feed header, returns 0 if it is not visible.
 - (CGFloat)feedHeaderHeight {
   return self.feedHeaderViewController
-             ? self.feedHeaderViewController.view.frame.size.height
+             ? [self.feedHeaderViewController feedHeaderHeight] +
+                   [self.feedHeaderViewController customSearchEngineViewHeight]
              : 0;
 }
 
@@ -972,14 +975,17 @@
 - (CGFloat)offsetWhenScrolledIntoFeed {
   return -(self.headerController.view.frame.size.height -
            [self stickyOmniboxHeight] -
+           [self.feedHeaderViewController customSearchEngineViewHeight] -
            content_suggestions::headerBottomPadding());
 }
 
 // The y-position content offset for when the fake omnibox
 // should stick to the top of the NTP.
 - (CGFloat)offsetToStickOmnibox {
-  CGFloat offset = -(self.headerController.view.frame.size.height -
-                     [self stickyOmniboxHeight]);
+  CGFloat offset =
+      -(self.headerController.view.frame.size.height -
+        [self stickyOmniboxHeight] -
+        [self.feedHeaderViewController customSearchEngineViewHeight]);
   if (IsSplitToolbarMode(self) &&
       IsContentSuggestionsHeaderMigrationEnabled()) {
     return offset - [self contentSuggestionsContentHeight];

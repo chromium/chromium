@@ -891,6 +891,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>
+      <message name="IDS_IOS_FEED_CUSTOM_SEARCH_ENGINE_LABEL" desc="Message informing users with custom search engines that the feed is provided by Google.">
+        Provided by Google
+      </message>
       <message name="IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL" desc="The explanation of the 'Activity' row in the feed management UI.">
         Control your Google Account data
       </message>

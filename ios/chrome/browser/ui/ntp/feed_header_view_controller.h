@@ -28,12 +28,16 @@
 // Whether the Following segment dot should currently be visible.
 @property(nonatomic, assign) BOOL followingSegmentDotVisible;
 
+// Whether Google is the user's default search engine.
+@property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
+
 // Initializes the header with the currently selected feed and the Following
 // feed's sort type.
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
                followingFeedSortType:
                    (FollowingFeedSortType)followingFeedSortType
           followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
+         isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -44,6 +48,13 @@
 // Toggles the feed header's background blur. Animates the transition if
 // |animated| is YES.
 - (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated;
+
+// Returns the height of the feed header.
+- (CGFloat)feedHeaderHeight;
+
+// Returns the height of the custom search engine view. Returns 0 if it is not
+// visible.
+- (CGFloat)customSearchEngineViewHeight;
 
 @end
 

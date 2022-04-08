@@ -182,15 +182,8 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  const TemplateURL* defaultURL =
-      templateURLService->GetDefaultSearchProvider();
   BOOL isGoogleDefaultSearchProvider =
-      defaultURL &&
-      defaultURL->GetEngineType(templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE;
+      [self.ntpDelegate isGoogleDefaultSearchEngine];
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
            initWithLargeIconService:largeIconService
@@ -351,7 +344,7 @@
 }
 
 - (void)returnToRecentTabWasAdded {
-  [self.ntpDelegate updateDiscoverFeedLayout];
+  [self.ntpDelegate updateFeedLayout];
   [self.ntpDelegate setContentOffsetToTop];
 }
 
@@ -375,7 +368,7 @@
 #pragma mark - ContentSuggestionsHeaderCommands
 
 - (void)updateForHeaderSizeChange {
-  [self.ntpDelegate updateDiscoverFeedLayout];
+  [self.ntpDelegate updateFeedLayout];
 }
 
 #pragma mark - Public methods

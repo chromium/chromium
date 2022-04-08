@@ -28,6 +28,8 @@ const CGFloat kTitleHorizontalMargin = 19;
 const CGFloat kButtonHorizontalMargin = 14;
 // Font size for label text in header.
 const CGFloat kDiscoverFeedTitleFontSize = 16;
+// Font size for the custom search engine label.
+const CGFloat kCustomSearchEngineLabelFontSize = 13;
 // Insets for header menu button.
 const CGFloat kHeaderMenuButtonInsetTopAndBottom = 2;
 const CGFloat kHeaderMenuButtonInsetSides = 2;
@@ -38,6 +40,7 @@ const CGFloat kDiscoverFeedContentWith = 430;
 // TODO(crbug.com/1277504): Only keep the WC header after launch.
 const CGFloat kWebChannelsHeaderHeight = 52;
 const CGFloat kDiscoverFeedHeaderHeight = 40;
+const CGFloat kCustomSearchEngineLabelHeight = 18;
 // * Values below are exclusive to Web Channels.
 // The width of the segmented control to toggle between feeds.
 // TODO(crbug.com/1277974): See how segments react to longer words.
@@ -88,6 +91,14 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // The blurred background of the feed header.
 @property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
 
+// The view informing the user that the feed is powered by Google if they don't
+// have Google as their default search engine.
+@property(nonatomic, strong) UILabel* customSearchEngineView;
+
+// The constraints for the currently visible components of the header.
+@property(nonatomic, strong)
+    NSMutableArray<NSLayoutConstraint*>* feedHeaderConstraints;
+
 @end
 
 @implementation FeedHeaderViewController
@@ -95,12 +106,14 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
                followingFeedSortType:
                    (FollowingFeedSortType)followingFeedSortType
-          followingSegmentDotVisible:(BOOL)followingSegmentDotVisible {
+          followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
+         isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _selectedFeed = selectedFeed;
     _followingFeedSortType = followingFeedSortType;
     _followingSegmentDotVisible = followingSegmentDotVisible;
+    _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
 
     // The menu button is created early so that it can be assigned a tap action
     // before the view loads.
@@ -112,16 +125,10 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // Adds a minor background to the blur so that it doesn't blend too much with
-  // the feed content. If Reduce Trasparency is enabled, then we just use
-  // translucent opacity instead.
-  if (UIAccessibilityIsReduceTransparencyEnabled()) {
-    self.view.backgroundColor =
-        [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
-  } else {
-    self.view.backgroundColor =
-        [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.1];
-  }
+  // Applies an opacity to the background. If ReduceTransparency is enabled,
+  // then this replaces the blur effect.
+  self.view.backgroundColor =
+      [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
 
   self.container = [[UIView alloc] init];
 
@@ -150,6 +157,10 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
       // background when scrolled into the feed.
       self.blurBackgroundView.hidden = YES;
     }
+
+    if (!self.isGoogleDefaultSearchEngine) {
+      [self addCustomSearchEngineView];
+    }
   } else {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
@@ -166,17 +177,37 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   }
   DCHECK(self.blurBackgroundView);
 
+  // Applies blur to header background. Also reduces opacity when blur is
+  // applied so that the blur is still transluscent.
   if (!animated) {
     self.blurBackgroundView.hidden = !blurred;
+    self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+        colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
     return;
   }
   [UIView transitionWithView:self.blurBackgroundView
-                    duration:0.3
-                     options:UIViewAnimationOptionTransitionCrossDissolve
-                  animations:^{
-                    self.blurBackgroundView.hidden = !blurred;
-                  }
-                  completion:nil];
+      duration:0.3
+      options:UIViewAnimationOptionTransitionCrossDissolve
+      animations:^{
+        self.blurBackgroundView.hidden = !blurred;
+      }
+      completion:^(BOOL finished) {
+        // Only reduce opacity after the animation is complete to avoid showing
+        // content suggestions tiles momentarily.
+        self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+            colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
+      }];
+}
+
+- (CGFloat)feedHeaderHeight {
+  return IsWebChannelsEnabled() ? kWebChannelsHeaderHeight
+                                : kDiscoverFeedHeaderHeight;
+}
+
+- (CGFloat)customSearchEngineViewHeight {
+  return self.isGoogleDefaultSearchEngine || !IsWebChannelsEnabled()
+             ? 0
+             : kCustomSearchEngineLabelHeight;
 }
 
 #pragma mark - Setters
@@ -209,6 +240,19 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
                      self.followingSegmentDot.alpha =
                          followingSegmentDotVisible ? 1 : 0;
                    }];
+}
+
+// Sets whether Google is the default search engine and adds a view to inform
+// the users if needed.
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+  DCHECK(IsWebChannelsEnabled());
+  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+  if (isGoogleDefaultSearchEngine) {
+    [self removeCustomSearchEngineView];
+  } else {
+    [self addCustomSearchEngineView];
+  }
+  [self applyHeaderConstraints];
 }
 
 #pragma mark - Private
@@ -361,11 +405,43 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   return blurBackgroundView;
 }
 
+- (void)addCustomSearchEngineView {
+  if (self.customSearchEngineView) {
+    [self removeCustomSearchEngineView];
+  }
+  self.customSearchEngineView = [[UILabel alloc] init];
+  self.customSearchEngineView.text =
+      l10n_util::GetNSString(IDS_IOS_FEED_CUSTOM_SEARCH_ENGINE_LABEL);
+  self.customSearchEngineView.font =
+      [UIFont systemFontOfSize:kCustomSearchEngineLabelFontSize];
+  self.customSearchEngineView.textColor = [UIColor colorNamed:kGrey500Color];
+  self.customSearchEngineView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.customSearchEngineView.textAlignment = NSTextAlignmentCenter;
+  [self.view addSubview:self.customSearchEngineView];
+}
+
+- (void)removeCustomSearchEngineView {
+  [self.customSearchEngineView removeFromSuperview];
+  self.customSearchEngineView = nil;
+}
+
 // Applies constraints for the feed header elements' positioning.
 - (void)applyHeaderConstraints {
-  // Anchor container and menu button.
-  [NSLayoutConstraint activateConstraints:@[
-    [self.container.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+  // Remove previous constraints if they were already set.
+  if (self.feedHeaderConstraints) {
+    [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
+    self.feedHeaderConstraints = nil;
+  }
+
+  self.feedHeaderConstraints = [[NSMutableArray alloc] init];
+
+  [self.feedHeaderConstraints addObjectsFromArray:@[
+    // Anchor container and menu button.
+    [self.view.heightAnchor
+        constraintEqualToConstant:([self feedHeaderHeight] +
+                                   [self customSearchEngineViewHeight])],
+    [self.container.heightAnchor
+        constraintEqualToConstant:kWebChannelsHeaderHeight],
     [self.container.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
     [self.container.centerXAnchor
@@ -379,10 +455,9 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     [self.menuButton.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
   ]];
+
   if (IsWebChannelsEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [self.view.heightAnchor
-          constraintEqualToConstant:kWebChannelsHeaderHeight],
+    [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchor segmented control.
       [self.segmentedControl.centerXAnchor
           constraintEqualToAnchor:self.container.centerXAnchor],
@@ -427,7 +502,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     // If the label was found, anchor the dot to it. Otherwise, anchor the dot
     // to the top corner of the segmented control.
     if (followingLabel) {
-      [NSLayoutConstraint activateConstraints:@[
+      [self.feedHeaderConstraints addObjectsFromArray:@[
         // Anchor Following segment dot to label text.
         [self.followingSegmentDot.leftAnchor
             constraintEqualToAnchor:followingLabel.rightAnchor
@@ -437,7 +512,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
                            constant:kFollowingSegmentDotMargin],
       ]];
     } else {
-      [NSLayoutConstraint activateConstraints:@[
+      [self.feedHeaderConstraints addObjectsFromArray:@[
         // Anchor Following segment dot to top corner.
         [self.followingSegmentDot.rightAnchor
             constraintEqualToAnchor:self.segmentedControl.rightAnchor
@@ -449,11 +524,32 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     }
 
     if (self.blurBackgroundView) {
-      AddSameConstraints(self.blurBackgroundView, self.view);
+      [self.feedHeaderConstraints addObjectsFromArray:@[
+        // Anchor blur background view.
+        [self.blurBackgroundView.trailingAnchor
+            constraintEqualToAnchor:self.container.trailingAnchor],
+        [self.blurBackgroundView.leadingAnchor
+            constraintEqualToAnchor:self.container.leadingAnchor],
+        [self.blurBackgroundView.topAnchor
+            constraintEqualToAnchor:self.container.topAnchor],
+        [self.blurBackgroundView.bottomAnchor
+            constraintEqualToAnchor:self.container.bottomAnchor],
+      ]];
+    }
+    if (!self.isGoogleDefaultSearchEngine) {
+      [self.feedHeaderConstraints addObjectsFromArray:@[
+        // Anchors custom search engine view.
+        [self.customSearchEngineView.widthAnchor
+            constraintEqualToAnchor:self.view.widthAnchor],
+        [self.customSearchEngineView.heightAnchor
+            constraintEqualToConstant:kCustomSearchEngineLabelHeight],
+        [self.customSearchEngineView.bottomAnchor
+            constraintEqualToAnchor:self.container.topAnchor],
+      ]];
     }
   } else {
-    // Anchors title label.
-    [NSLayoutConstraint activateConstraints:@[
+    [self.feedHeaderConstraints addObjectsFromArray:@[
+      // Anchors title label.
       [self.view.heightAnchor
           constraintEqualToConstant:kDiscoverFeedHeaderHeight],
       [self.titleLabel.leadingAnchor
@@ -465,6 +561,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
           constraintEqualToAnchor:self.container.centerYAnchor],
     ]];
   }
+  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
 
 // Handles a new feed being selected from the header.

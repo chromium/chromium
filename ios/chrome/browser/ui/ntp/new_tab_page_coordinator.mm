@@ -685,12 +685,12 @@ namespace {
 #pragma mark - ContentSuggestionsHeaderCommands
 
 - (void)updateForHeaderSizeChange {
-  [self updateDiscoverFeedLayout];
+  [self updateFeedLayout];
 }
 
 #pragma mark - NewTabPageDelegate
 
-- (void)updateDiscoverFeedLayout {
+- (void)updateFeedLayout {
   // If this coordinator has not finished [self start], the below will start
   // viewDidLoad before the UI is ready, failing DCHECKS.
   if (!self.started) {
@@ -703,6 +703,16 @@ namespace {
 
 - (void)setContentOffsetToTop {
   [self.ntpViewController setContentOffsetToTop];
+}
+
+- (BOOL)isGoogleDefaultSearchEngine {
+  const TemplateURL* defaultURL =
+      self.templateURLService->GetDefaultSearchProvider();
+  BOOL isGoogleDefaultSearchProvider =
+      defaultURL &&
+      defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE;
+  return isGoogleDefaultSearchProvider;
 }
 
 #pragma mark - AppStateObserver
@@ -743,12 +753,12 @@ namespace {
 #pragma mark - DiscoverFeedDelegate
 
 - (void)contentSuggestionsWasUpdated {
-  [self updateDiscoverFeedLayout];
+  [self updateFeedLayout];
   [self setContentOffsetToTop];
 }
 
 - (void)returnToRecentTabWasAdded {
-  [self updateDiscoverFeedLayout];
+  [self updateFeedLayout];
   [self setContentOffsetToTop];
 }
 
@@ -1040,17 +1050,18 @@ namespace {
   return viewControllerConfig;
 }
 
-// Handles how the NTP should react when the default search engine setting is
-// changed.
+// Handles how the NTP reacts when the default search engine is changed.
 - (void)defaultSearchEngineDidChange {
   [self updateFeedHeaderLabelText:self.feedHeaderViewController];
-  BOOL isScrolledToTop = [self.ntpViewController isNTPScrolledToTop];
-  [self updateDiscoverFeedLayout];
-  // Ensures doodle is visible if content suggestions height changes when
-  // scrolled to top. Otherwise, maintain scroll position.
-  if (isScrolledToTop) {
-    [self.ntpViewController setContentOffsetToTop];
+  if (IsWebChannelsEnabled()) {
+    self.feedHeaderViewController.isGoogleDefaultSearchEngine =
+        [self isGoogleDefaultSearchEngine];
+    [self.feedHeaderViewController.view setNeedsLayout];
+    [self.feedHeaderViewController.view layoutIfNeeded];
   }
+  [self.ntpViewController updateNTPLayout];
+  [self updateFeedLayout];
+  [self.ntpViewController setContentOffsetToTop];
 }
 
 // Toggles feed visibility between hidden or expanded using the feed header
@@ -1109,14 +1120,8 @@ namespace {
   if (!self.templateURLService) {
     return;
   }
-  const TemplateURL* defaultURL =
-      self.templateURLService->GetDefaultSearchProvider();
-  BOOL isGoogleDefaultSearchProvider =
-      defaultURL &&
-      defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE;
   NSString* feedHeaderTitleText =
-      isGoogleDefaultSearchProvider
+      [self isGoogleDefaultSearchEngine]
           ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
           : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
   feedHeaderTitleText =
@@ -1148,12 +1153,13 @@ namespace {
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
-              initWithSelectedFeed:self.selectedFeed
-             followingFeedSortType:(FollowingFeedSortType)
-                                       self.prefService->GetInteger(
-                                           prefs::kNTPFollowingFeedSortType)
-        followingSegmentDotVisible:self.discoverFeedService
-                                       ->GetFollowingFeedHasUnseenContent()];
+               initWithSelectedFeed:self.selectedFeed
+              followingFeedSortType:(FollowingFeedSortType)
+                                        self.prefService->GetInteger(
+                                            prefs::kNTPFollowingFeedSortType)
+         followingSegmentDotVisible:self.discoverFeedService
+                                        ->GetFollowingFeedHasUnseenContent()
+        isGoogleDefaultSearchEngine:[self isGoogleDefaultSearchEngine]];
     _feedHeaderViewController.feedControlDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self

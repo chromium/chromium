@@ -8,14 +8,17 @@
 // Delegate to communicate back to the NewTabPageCoordinator
 @protocol NewTabPageDelegate
 
-// Called when the Discover Feed layout needs updating. e.g. An inner view like
+// Called when the feed layout needs updating. e.g. An inner view like
 // ContentSuggestions height might have changed and the Feed needs to update its
 // layout to reflect this.
-- (void)updateDiscoverFeedLayout;
+- (void)updateFeedLayout;
 
 // Called when the NTP's content offset needs to be set to return to the top of
 // the page.
 - (void)setContentOffsetToTop;
+
+// Returns whether Google is the user's default search engine.
+- (BOOL)isGoogleDefaultSearchEngine;
 
 @end
 
