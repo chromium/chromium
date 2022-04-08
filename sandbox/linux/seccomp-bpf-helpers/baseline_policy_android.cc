@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <linux/android/binder.h>
 #include <linux/ashmem.h>
+#include <linux/nbd.h>
 #include <linux/net.h>
 #include <linux/userfaultfd.h>
 #include <sys/socket.h>
@@ -109,8 +110,13 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
                  UFFDIO_ZEROPAGE, UFFDIO_CONTINUE),
              If(BoolConst(allow_userfaultfd_ioctls), Allow())
                  .Else(RestrictIoctl()))
-      .CASES((kAndroidAlarmGetTimeElapsedRealtime32,
-              kAndroidAlarmGetTimeElapsedRealtime64),
+      .CASES((
+                 // Deprecated Android /dev/alarm interface.
+                 kAndroidAlarmGetTimeElapsedRealtime32,
+                 kAndroidAlarmGetTimeElapsedRealtime64,
+                 // Linux Network Block Device requests observed in the field
+                 // https://crbug.com/1314105.
+                 NBD_CLEAR_SOCK, NBD_SET_BLKSIZE),
              Error(EINVAL))
       .Default(RestrictIoctl());
 }

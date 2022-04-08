@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <linux/android/binder.h>
 #include <linux/ashmem.h>
+#include <linux/nbd.h>
 #include <linux/userfaultfd.h>
 #include <sched.h>
 #include <sys/ioctl.h>
@@ -78,7 +79,7 @@ BPF_TEST_C(BaselinePolicyAndroid,
   BPF_ASSERT_NE(-1, sched_setaffinity(0, sizeof(set), &set));
 }
 
-BPF_TEST_C(BaselinePolicyAndroid, Ioctl, BaselinePolicyAndroid) {
+BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Allowed, BaselinePolicyAndroid) {
   base::ScopedFD fd(HANDLE_EINTR(open("/dev/null", O_RDWR)));
   BPF_ASSERT(fd.is_valid());
 
@@ -100,6 +101,15 @@ BPF_TEST_C(BaselinePolicyAndroid, Ioctl, BaselinePolicyAndroid) {
   errno = 0;
   BPF_ASSERT_EQ(-1, ioctl(fd.get(), TCGETS));
   BPF_ASSERT_EQ(ENOTTY, errno);
+}
+
+BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Blocked, BaselinePolicyAndroid) {
+  base::ScopedFD fd(HANDLE_EINTR(open("/dev/null", O_RDWR)));
+  BPF_ASSERT(fd.is_valid());
+
+  errno = 0;
+  BPF_ASSERT_EQ(-1, ioctl(fd.get(), NBD_CLEAR_SOCK));
+  BPF_ASSERT_EQ(EINVAL, errno);
 }
 
 BPF_DEATH_TEST_C(BaselinePolicyAndroid,
