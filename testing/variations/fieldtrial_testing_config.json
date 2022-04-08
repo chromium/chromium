@@ -3760,8 +3760,15 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:desktop_version_requested;comparator:>=3;window:60;storage:60",
+                        "event_used": "name:default_site_view_shown;comparator:==0;window:720;storage:720",
+                        "session_rate": "<2"
+                    },
                     "enable_features": [
-                        "DefaultRequestedMode"
+                        "DefaultRequestedMode",
+                        "IPH_DefaultSiteView"
                     ]
                 }
             ]
