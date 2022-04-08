@@ -148,7 +148,7 @@ ContentSettingsType PermissionTypeToContentSettingSafe(
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
     case PermissionType::WINDOW_PLACEMENT:
       return ContentSettingsType::WINDOW_PLACEMENT;
-    case PermissionType::FONT_ACCESS:
+    case PermissionType::LOCAL_FONTS:
       return ContentSettingsType::FONT_ACCESS;
     case PermissionType::DISPLAY_CAPTURE:
       return ContentSettingsType::DISPLAY_CAPTURE;

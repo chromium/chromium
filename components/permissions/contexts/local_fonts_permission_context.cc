@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/contexts/font_access_permission_context.h"
+#include "components/permissions/contexts/local_fonts_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-FontAccessPermissionContext::FontAccessPermissionContext(
+LocalFontsPermissionContext::LocalFontsPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::FONT_ACCESS,
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
-FontAccessPermissionContext::~FontAccessPermissionContext() = default;
+LocalFontsPermissionContext::~LocalFontsPermissionContext() = default;
 
-bool FontAccessPermissionContext::IsRestrictedToSecureOrigins() const {
+bool LocalFontsPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }

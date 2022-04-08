@@ -100,7 +100,7 @@ void FontAccessManager::EnumerateLocalFonts(
   DCHECK(permission_controller);
 
   auto status = permission_controller->GetPermissionStatusForCurrentDocument(
-      PermissionType::FONT_ACCESS, rfh);
+      PermissionType::LOCAL_FONTS, rfh);
 
   if (status != blink::mojom::PermissionStatus::ASK) {
     // Permission has been requested before.
@@ -121,7 +121,7 @@ void FontAccessManager::EnumerateLocalFonts(
       blink::mojom::UserActivationNotificationType::kNone);
 
   permission_controller->RequestPermissionFromCurrentDocument(
-      PermissionType::FONT_ACCESS, rfh,
+      PermissionType::LOCAL_FONTS, rfh,
       /*user_gesture=*/true,
       base::BindOnce(&FontAccessManager::DidRequestPermission,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

@@ -35,7 +35,7 @@ enum PermissionName {
     "system-wake-lock",
     "storage-access",
     "window-placement",
-    "font-access",
+    "local-fonts",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

@@ -76,7 +76,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kContentPasteIcon;
     case RequestType::kDiskQuota:
       return vector_icons::kFolderIcon;
-    case RequestType::kFontAccess:
+    case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadIcon;
     case RequestType::kGeolocation:
       return vector_icons::kLocationOnIcon;
@@ -155,7 +155,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kClipboard;
 #if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::FONT_ACCESS:
-      return RequestType::kFontAccess;
+      return RequestType::kLocalFonts;
 #endif
     case ContentSettingsType::GEOLOCATION:
       return RequestType::kGeolocation;
@@ -218,7 +218,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kClipboard:
       return ContentSettingsType::CLIPBOARD_READ_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
-    case RequestType::kFontAccess:
+    case RequestType::kLocalFonts:
       return ContentSettingsType::FONT_ACCESS;
 #endif
     case RequestType::kGeolocation:
@@ -289,8 +289,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kDiskQuota:
       return "disk_quota";
 #if !BUILDFLAG(IS_ANDROID)
-    case permissions::RequestType::kFontAccess:
-      return "font_access";
+    case permissions::RequestType::kLocalFonts:
+      return "local_fonts";
 #endif
     case permissions::RequestType::kGeolocation:
       return "geolocation";

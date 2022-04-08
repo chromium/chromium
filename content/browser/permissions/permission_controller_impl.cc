@@ -61,7 +61,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::VR:
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
     case PermissionType::WINDOW_PLACEMENT:
-    case PermissionType::FONT_ACCESS:
+    case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::GEOLOCATION:
       return absl::nullopt;

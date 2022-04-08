@@ -71,8 +71,9 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kDiskQuota:
       return RequestTypeForUma::QUOTA;
 #if !BUILDFLAG(IS_ANDROID)
-    case RequestType::kFontAccess:
-      return RequestTypeForUma::PERMISSION_FONT_ACCESS;
+    // TODO(crbug.com/1296792): Enable on Android
+    case RequestType::kLocalFonts:
+      return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
@@ -155,8 +156,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "CameraPanTiltZoom";
     case RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT:
       return "WindowPlacement";
-    case RequestTypeForUma::PERMISSION_FONT_ACCESS:
-      return "FontAccess";
+    case RequestTypeForUma::PERMISSION_LOCAL_FONTS:
+      return "LocalFonts";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
     case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
@@ -951,7 +952,7 @@ void PermissionUmaUtil::RecordPermissionAction(
                                     action, PermissionAction::NUM);
       break;
     case ContentSettingsType::FONT_ACCESS:
-      base::UmaHistogramEnumeration("Permissions.Action.FontAccess", action,
+      base::UmaHistogramEnumeration("Permissions.Action.LocalFonts", action,
                                     PermissionAction::NUM);
       break;
     case ContentSettingsType::IDLE_DETECTION:

@@ -29,7 +29,7 @@ enum class RequestType {
   kClipboard,
   kDiskQuota,
 #if !BUILDFLAG(IS_ANDROID)
-  kFontAccess,
+  kLocalFonts,
 #endif
   kGeolocation,
   kIdleDetection,

@@ -49,7 +49,7 @@ enum class PermissionType {
   STORAGE_ACCESS_GRANT = 27,
   CAMERA_PAN_TILT_ZOOM = 28,
   WINDOW_PLACEMENT = 29,
-  FONT_ACCESS = 30,
+  LOCAL_FONTS = 30,
   DISPLAY_CAPTURE = 31,
   // FILE_HANDLING = 32,  // Removed in M98.
 

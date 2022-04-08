@@ -96,8 +96,8 @@ String PermissionNameToString(mojom::blink::PermissionName name) {
       return "storage_access";
     case mojom::blink::PermissionName::WINDOW_PLACEMENT:
       return "window_placement";
-    case mojom::blink::PermissionName::FONT_ACCESS:
-      return "font_access";
+    case mojom::blink::PermissionName::LOCAL_FONTS:
+      return "local_fonts";
     case mojom::blink::PermissionName::DISPLAY_CAPTURE:
       return "display_capture";
   }
@@ -279,13 +279,13 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreatePermissionDescriptor(PermissionName::WINDOW_PLACEMENT);
   }
-  if (name == "font-access") {
+  if (name == "local-fonts") {
     if (!RuntimeEnabledFeatures::FontAccessEnabled(
             ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Font Access is not enabled.");
+      exception_state.ThrowTypeError("Local Fonts Access API is not enabled.");
       return nullptr;
     }
-    return CreatePermissionDescriptor(PermissionName::FONT_ACCESS);
+    return CreatePermissionDescriptor(PermissionName::LOCAL_FONTS);
   }
   if (name == "display-capture") {
     return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);

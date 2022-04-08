@@ -28,7 +28,7 @@ enum PermissionName {
   NFC,
   STORAGE_ACCESS,
   WINDOW_PLACEMENT,
-  FONT_ACCESS,
+  LOCAL_FONTS,
   DISPLAY_CAPTURE,
 };
 
