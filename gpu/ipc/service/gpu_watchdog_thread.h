@@ -299,7 +299,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   std::string watched_thread_name_str_uma_;
 
   // The thread id string of the watched thread.
-  const std::string watched_thread_id_str_;
+  std::string watched_thread_id_str_;
 
   // For gpu testing only.
   const bool is_test_mode_;

@@ -72,8 +72,6 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_timeout_(timeout),
       watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
-      watched_thread_id_str_(
-          base::NumberToString(base::PlatformThread::CurrentId())),
       is_test_mode_(is_test_mode) {
   base::CurrentThread::Get()->AddTaskObserver(this);
   DETACH_FROM_SEQUENCE(watchdog_thread_sequence_checker_);
@@ -84,6 +82,18 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
     watched_thread_name_str_uma_ = "compositor";
   else
     watched_thread_name_str_uma_ = "main";
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1223033): Remove this once macOS uses system-wide ids.
+  // On macOS the thread ids used by CrashPad are not the same as the ones
+  // provided by PlatformThread
+  uint64_t watched_thread_id;
+  pthread_threadid_np(pthread_self(), &watched_thread_id);
+  watched_thread_id_str_ = base::NumberToString(watched_thread_id);
+#else
+  watched_thread_id_str_ =
+      base::NumberToString(base::PlatformThread::CurrentId());
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread
