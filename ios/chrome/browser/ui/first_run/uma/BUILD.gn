@@ -34,6 +34,7 @@ source_set("uma_ui") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
