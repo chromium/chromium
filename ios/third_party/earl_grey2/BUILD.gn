@@ -280,7 +280,6 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Action/GREYActionBlock+Private.h",
     "src/AppFramework/Action/GREYActionBlock.h",
     "src/AppFramework/Action/GREYActionBlock.m",
-    "src/AppFramework/Action/GREYActions+Private.h",
     "src/AppFramework/Action/GREYActions.m",
     "src/AppFramework/Action/GREYActionsShorthand.m",
     "src/AppFramework/Action/GREYBaseAction.h",
