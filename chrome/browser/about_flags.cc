@@ -6254,15 +6254,6 @@ const FeatureEntry kFeatureEntries[] = {
          "AutofillUseMobileLabelDisambiguation")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"enable-policy-blocklist-throttle-requires-policies-loaded",
-     flag_descriptions::
-         kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName,
-     flag_descriptions::
-         kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"auto-screen-brightness", flag_descriptions::kAutoScreenBrightnessName,
      flag_descriptions::kAutoScreenBrightnessDescription, kOsCrOS,

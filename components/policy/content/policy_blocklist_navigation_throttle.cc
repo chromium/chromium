@@ -6,14 +6,10 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -29,8 +25,7 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 // which runs the callback from within the object.
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationHandle* navigation_handle,
-    content::BrowserContext* context,
-    policy::PolicyService* policy_service)
+    content::BrowserContext* context)
     : content::NavigationThrottle(navigation_handle),
       safe_sites_navigation_throttle_(
           navigation_handle,
@@ -39,20 +34,12 @@ PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
               &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
               base::Unretained(this))),
       blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
-      policy_service_(nullptr),
       prefs_(user_prefs::UserPrefs::Get(context)) {
-  if (base::FeatureList::IsEnabled(
-          policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded)) {
-    DCHECK(policy_service);
-    policy_service_ = policy_service;
-  }
   DCHECK(prefs_);
 }
 
-PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
-  if (policy_service_)
-    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-}
+PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() =
+    default;
 
 bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
   content::NavigationEntry* nav_entry =
@@ -75,34 +62,6 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   // to the renderer process.
   if (url.SchemeIs(url::kBlobScheme))
     return PROCEED;
-
-  // Wait for policies to be loaded before checking for blocklists.
-  if (policy_service_) {
-    // Defer until policies are loaded if there are no pref defines neither
-    // UrlBlocklist nor UrlAllowlist and the policies from the Chrome domain
-    // have not been loaded yet. Otherwise we assume that we have all the
-    // necessary info.
-    if (!prefs_->HasPrefPath(policy::policy_prefs::kUrlBlocklist) &&
-        !prefs_->HasPrefPath(policy::policy_prefs::kUrlAllowlist) &&
-        !policy_service_->IsFirstPolicyLoadComplete(
-            policy::POLICY_DOMAIN_CHROME)) {
-      // Defer the navigation until policies are loaded. The navigation shall
-      // continue after |OnFirstPoliciesLoaded| is called.
-      policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
-      policy_load_throttle_start_time_ = base::TimeTicks::Now();
-      wait_for_policy_timer_.Start(
-          FROM_HERE,
-          policy::features::kPolicyBlocklistThrottlePolicyLoadTimeout.Get(),
-          base::BindOnce(
-              &PolicyBlocklistNavigationThrottle::OnFirstPoliciesLoadedTimeout,
-              base::Unretained(this)));
-      return DEFER;
-    }
-    // There is no more need to keep a reference the the |policy_service_| since
-    // there is no need to wait for policies to load.
-    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-    policy_service_ = nullptr;
-  }
 
   URLBlocklistState blocklist_state =
       blocklist_service_->GetURLBlocklistState(url);
@@ -144,46 +103,6 @@ PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
 
 const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
   return "PolicyBlocklistNavigationThrottle";
-}
-
-void PolicyBlocklistNavigationThrottle::OnFirstPoliciesLoaded(
-    policy::PolicyDomain domain) {
-  DCHECK(domain == policy::POLICY_DOMAIN_CHROME);
-  // Cancel the timeout timer.
-  wait_for_policy_timer_.AbandonAndStop();
-  OnFirstPoliciesLoadedImpl(/*timeout=*/false);
-}
-
-void PolicyBlocklistNavigationThrottle::OnFirstPoliciesLoadedTimeout() {
-  OnFirstPoliciesLoadedImpl(/*timeout=*/true);
-}
-
-void PolicyBlocklistNavigationThrottle::OnFirstPoliciesLoadedImpl(
-    bool timeout) {
-  policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-  policy_service_ = nullptr;
-
-  const GURL& url = navigation_handle()->GetURL();
-  URLBlocklistState blocklist_state =
-      blocklist_service_->GetURLBlocklistState(url);
-  base::UmaHistogramBoolean(
-      "Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadTimeout",
-      timeout);
-  base::UmaHistogramMediumTimes(
-      "Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadDelay",
-      base::TimeTicks::Now() - policy_load_throttle_start_time_);
-  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
-    return CancelDeferredNavigation(
-        ThrottleCheckResult(BLOCK_REQUEST, net::ERR_BLOCKED_BY_ADMINISTRATOR));
-  }
-
-  if (IsBlockedViewSourceNavigation()) {
-    return CancelDeferredNavigation(
-        ThrottleCheckResult(BLOCK_REQUEST, net::ERR_BLOCKED_BY_ADMINISTRATOR));
-  }
-
-  if (CheckSafeSitesFilter(url).action() == PROCEED)
-    Resume();
 }
 
 void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(

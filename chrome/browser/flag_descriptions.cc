@@ -173,12 +173,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[] =
-    "Url blocklist throttle wait for policies to be loaded";
-const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[] =
-    "Enables behaviour for Url blocklist throttle to wait for all policies to "
-    "load";
-
 const char kU2FPermissionPromptName[] =
     "Enable a permission prompt for the U2F Security Key API";
 const char kU2FPermissionPromptDescription[] =

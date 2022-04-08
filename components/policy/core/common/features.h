@@ -20,14 +20,6 @@ POLICY_EXPORT extern const base::Feature kChromeManagementPageAndroid;
 // Enable force installed Chrome apps policy migration.
 POLICY_EXPORT extern const base::Feature kDefaultChromeAppsMigration;
 
-// PolicyBlocklistThrottle defers navigations until policies are loaded.
-POLICY_EXPORT extern const base::Feature
-    kPolicyBlocklistThrottleRequiresPoliciesLoaded;
-
-// Max time to defer the navigation while waiting for policies to load.
-POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kPolicyBlocklistThrottlePolicyLoadTimeout;
-
 // Update browser device identifier during enrollment and fetching policies.
 POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
 

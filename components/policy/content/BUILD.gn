@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//base",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
-    "//components/policy/core/common:test_support",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
     "//components/safe_search_api:test_support",

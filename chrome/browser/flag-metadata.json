@@ -2516,11 +2516,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-policy-blocklist-throttle-requires-policies-loaded",
-    "owners": ["ydago"],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-portals",
     "owners": [ "jbroman", "//third_party/blink/renderer/core/html/portal/OWNERS" ],
     "expiry_milestone": 110
