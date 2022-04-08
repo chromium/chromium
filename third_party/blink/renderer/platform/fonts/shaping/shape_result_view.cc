@@ -30,9 +30,7 @@ struct ShapeResultView::RunInfoPart {
         start_index_(start_index),
         offset_(offset),
         num_characters_(num_characters),
-        width_(width) {
-    CHECK_GT(num_characters, 0u);
-  }
+        width_(width) {}
 
   using const_iterator = const HarfBuzzRunGlyphData*;
   const_iterator begin() const { return range_.begin; }
@@ -121,6 +119,8 @@ struct ShapeResultView::RunInfoPart {
     const unsigned part_start = ComputeStart(run, result);
     if (segment.end_index <= part_start)
       return absl::nullopt;
+    if (!run.num_characters_)
+      return {{part_start, part_start}};
     const unsigned part_end = part_start + run.num_characters_;
     if (segment.start_index >= part_end)
       return absl::nullopt;
