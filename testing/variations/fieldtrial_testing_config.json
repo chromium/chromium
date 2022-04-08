@@ -2427,6 +2427,22 @@
             ]
         }
     ],
+    "ContentSuggestionsUIViewControllerMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "ContentSuggestionsUIViewControllerMigration",
+                    "enable_features": [
+                        "ContentSuggestionsHeaderMigration",
+                        "ContentSuggestionsUIViewControllerMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [
