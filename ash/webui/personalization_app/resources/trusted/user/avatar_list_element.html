@@ -1,10 +1,15 @@
 <style>
-  #container {
-    align-items: flex-start;
-    display: grid;
-    gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-    padding: 16px 0;
+  iron-list {
+    height: 100%;
+    width: 100%;
+  }
+  .hidden {
+    display: none;
+  }
+  .option-container {
+    height: 80px;
+    padding: 8px;
+    width: 80px;
   }
   .image-container {
     cursor: pointer;
@@ -20,9 +25,6 @@
     border-radius: 50%;
     height: 62px;
     width: 62px;
-  }
-  .image-container img:focus-visible {
-    outline: 2px solid var(--cros-focus-ring-color);
   }
   paper-ripple {
     color: rgba(var(--cros-ripple-color-rgb), 1);
@@ -63,6 +65,10 @@
     --iron-icon-width: 20px;
     --iron-icon-fill-color: var(--cros-link-color);
   }
+  .image-container:focus-visible {
+    border-radius: 50%;
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
   .image-container iron-icon[icon='personalization:checkmark'] {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
@@ -75,55 +81,22 @@
     display: none;
   }
 </style>
-<div id="container">
-  <template is="dom-if" if="[[isCameraPresent_]]">
-    <div id="openCamera" class="avatar-button-container" on-click="openCamera_"
-        on-keypress="openCamera_">
-      <paper-ripple class="circle"></paper-ripple>
-      <iron-icon icon="personalization:camera"></iron-icon>
-    </div>
-    <div id="openVideo" class="avatar-button-container" on-click="openVideo_"
-        on-keypress="openVideo_">
-      <paper-ripple class="circle"></paper-ripple>
-      <iron-icon icon="personalization:loop"></iron-icon>
-    </div>
-  </template>
-  <div class="avatar-button-container"
-       on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
-    <paper-ripple class="circle"></paper-ripple>
-    <iron-icon icon="personalization:folder">
-    </iron-icon>
+<iron-list items="[[options_]]" grid>
+  <template>
+    <div class="option-container">
+      <div id$="[[item.id]]" class$="[[item.class]]"
+          on-click="onOptionSelected_" on-keypress="onOptionSelected_"
+          tabindex$="[[tabIndex]]"
+          aria-selected$="[[item.selected]]"
+          data-id$="[[item.defaultImageIndex]]">
+        <paper-ripple class="circle"></paper-ripple>
+        <img class$="[[getImageClassForOption_(item)]]"
+            src="[[item.imgSrc]]">
+        <iron-icon icon$="[[item.icon]]"></iron-icon>
+      </div>
   </div>
-  <template is="dom-if" if="[[lastExternalUserImageUrl_]]">
-    <div class="image-container"
-        aria-selected$="[[getExternalImageAriaSelected_(image_, lastExternalUserImageUrl_)]]">
-      <paper-ripple class="circle"></paper-ripple>
-      <img id="lastExternalImage" src="[[lastExternalUserImageUrl_.url]]"
-          on-click="onSelectLastExternalUserImage_"
-          on-keypress="onSelectLastExternalUserImage_">
-      <iron-icon icon="personalization:checkmark"></iron-icon>
-    </div>
   </template>
-  <template is="dom-if" if="[[profileImage_]]">
-    <div class="image-container"
-        aria-selected$="[[getProfileImageAriaSelected_(profileImage_, image_)]]">
-      <paper-ripple class="circle"></paper-ripple>
-      <img id="profileImage" src="[[profileImage_.url]]"
-          on-click="onSelectProfileImage_"
-          on-keypress="onSelectProfileImage_">
-      <iron-icon icon="personalization:checkmark"></iron-icon>
-    </div>
-  </template>
-  <template is="dom-repeat" items="[[defaultUserImages_]]">
-    <div class="image-container"
-        aria-selected$="[[getDefaultUserImageAriaSelected_(item, image_)]]">
-      <paper-ripple class="circle"></paper-ripple>
-      <img src="[[item.url.url]]" data-id$="[[item.index]]"
-          on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
-      <iron-icon icon="personalization:checkmark"></iron-icon>
-    </div>
-  </template>
-</div>
+</iron-list>
 <template is="dom-if" if="[[cameraMode_]]" restamp>
   <avatar-camera on-close="onCameraClosed_" mode="[[cameraMode_]]">
   </avatar-camera>

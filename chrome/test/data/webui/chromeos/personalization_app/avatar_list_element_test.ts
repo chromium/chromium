@@ -56,8 +56,8 @@ suite('AvatarListTest', function() {
 
     const image =
         avatarListElement.shadowRoot!.querySelector(
-            `img[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`) as
-        HTMLImageElement;
+            `div[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`) as
+        HTMLDivElement;
 
     image.click();
     const index = await testUserProvider.whenCalled('selectDefaultImage');
