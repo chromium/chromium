@@ -78,6 +78,10 @@ class DownloadBubbleUIController
   void ProcessDownloadWarningButtonPress(DownloadUIModel* model,
                                          DownloadCommands::Command command);
 
+  // Notify when a new download is ready to be shown on UI, and if the window
+  // this controller belongs to should show the partial view.
+  void OnNewItem(download::DownloadItem* item, bool show_details);
+
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;
   }
@@ -89,8 +93,6 @@ class DownloadBubbleUIController
  private:
   friend class DownloadBubbleUIControllerTest;
   // AllDownloadItemNotifier::Observer
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override;
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
   void OnDownloadRemoved(content::DownloadManager* manager,

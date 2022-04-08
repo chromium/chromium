@@ -123,7 +123,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
                         DownloadState state,
                         std::string& id,
                         bool is_transient = false,
-                        base::Time start_time = base::Time::Now()) {
+                        base::Time start_time = base::Time::Now(),
+                        bool show_details = true) {
     size_t index = items_.size();
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
@@ -152,7 +153,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
-    controller().OnDownloadCreated(&manager(), &item(index));
+    controller().OnNewItem(&item(index), show_details);
   }
 
   void UpdateDownloadItem(int item_index,
@@ -203,7 +204,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
 };
 
 TEST_F(DownloadBubbleUIControllerTest, ProcessesNewItems) {
-  std::vector<std::string> ids = {"Download 1", "Download 2", "Offline 1"};
+  std::vector<std::string> ids = {"Download 1", "Download 2", "Offline 1",
+                                  "Download 3"};
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
@@ -212,6 +214,11 @@ TEST_F(DownloadBubbleUIControllerTest, ProcessesNewItems) {
                    download::DownloadItem::COMPLETE, ids[1]);
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[2]);
+  EXPECT_CALL(display_controller(), OnNewItem(false)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS, ids[3],
+                   /*is_transient=*/false, base::Time::Now(),
+                   /*show_details=*/false);
 }
 
 TEST_F(DownloadBubbleUIControllerTest, ProcessesUpdatedItems) {

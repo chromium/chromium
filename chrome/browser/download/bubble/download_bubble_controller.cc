@@ -158,18 +158,14 @@ void DownloadBubbleUIController::OnItemsAdded(
   }
 }
 
-void DownloadBubbleUIController::OnDownloadCreated(
-    content::DownloadManager* manager,
-    download::DownloadItem* item) {
+void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
+                                           bool show_details) {
   DownloadUIModelPtr model = DownloadItemModel::Wrap(
       item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
-  if (item && model->ShouldShowInBubble() &&
-      model->download()->GetDownloadCreationType() !=
-          DownloadCreationType::TYPE_HISTORY_IMPORT) {
-    partial_view_ids_.insert(model->GetContentId());
-    display_controller_->OnNewItem(item->GetState() ==
-                                   download::DownloadItem::IN_PROGRESS);
-  }
+  partial_view_ids_.insert(model->GetContentId());
+  display_controller_->OnNewItem(
+      (item->GetState() == download::DownloadItem::IN_PROGRESS) &&
+      show_details);
 }
 
 void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {

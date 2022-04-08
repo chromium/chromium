@@ -62,6 +62,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void CloseDialog() override;
   void ResizeDialog() override;
 
+  DownloadBubbleUIController* bubble_controller() {
+    return bubble_controller_.get();
+  }
+
  private:
   // views::Button overrides:
   void PaintButtonContents(gfx::Canvas* canvas) override;

@@ -303,6 +303,10 @@ DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
   return &download_shelf_;
 }
 
+DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
+  return nullptr;
+}
+
 std::unique_ptr<FindBar> TestBrowserWindow::CreateFindBar() {
   return NULL;
 }

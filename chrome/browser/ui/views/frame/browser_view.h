@@ -536,6 +536,7 @@ class BrowserView : public BrowserWindow,
   void SetDownloadShelfVisible(bool visible);
   bool IsDownloadShelfVisible() const override;
   DownloadShelf* GetDownloadShelf() override;
+  DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
       Browser::DownloadCloseType dialog_type,

@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_web_view.h"
@@ -2492,6 +2493,12 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
     GetBrowserViewLayout()->set_download_shelf(download_shelf_->GetView());
   }
   return download_shelf_;
+}
+
+DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
+  return (toolbar() && toolbar()->download_button())
+             ? toolbar()->download_button()->bubble_controller()
+             : nullptr;
 }
 
 void BrowserView::ConfirmBrowserCloseWithPendingDownloads(

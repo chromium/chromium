@@ -148,7 +148,8 @@ class DownloadDisplayControllerTest : public testing::Test {
   Profile* profile() { return profile_; }
 
   void InitDownloadItem(const base::FilePath::CharType* path,
-                        DownloadState state) {
+                        DownloadState state,
+                        bool show_details = true) {
     size_t index = items_.size();
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
@@ -175,7 +176,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
         .WillRepeatedly(SetArgPointee<0>(items));
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
-    controller().OnNewItem(state == download::DownloadItem::IN_PROGRESS);
+    controller().OnNewItem((state == download::DownloadItem::IN_PROGRESS) &&
+                           show_details);
   }
 
   void InitOfflineItem(OfflineItemState state) {
@@ -306,12 +308,20 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {
                                  /*is_active=*/false));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS,
+                   /*show_details=*/false);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  UpdateDownloadItem(/*item_index=*/1, DownloadState::COMPLETE);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));

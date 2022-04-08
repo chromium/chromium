@@ -44,10 +44,9 @@ DownloadDisplayController::DownloadDisplayController(
 
 DownloadDisplayController::~DownloadDisplayController() = default;
 
-void DownloadDisplayController::OnNewItem(bool in_progress) {
+void DownloadDisplayController::OnNewItem(bool show_details) {
   UpdateToolbarButtonState();
-  // Only show details if the created download is in progress.
-  if (in_progress) {
+  if (show_details) {
     display_->ShowDetails();
   }
 }
