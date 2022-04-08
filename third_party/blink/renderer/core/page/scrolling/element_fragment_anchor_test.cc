@@ -31,6 +31,7 @@ class ElementFragmentAnchorTest : public SimTest {
     SimTest::SetUp();
 
     // Focus handlers aren't run unless the page is focused.
+    GetDocument().GetPage()->GetFocusController().SetActive(true);
     GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));

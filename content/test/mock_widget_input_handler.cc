@@ -35,9 +35,9 @@ MockWidgetInputHandler::~MockWidgetInputHandler() {
   receiver_.reset();
 }
 
-void MockWidgetInputHandler::SetFocus(bool focused) {
-  dispatched_messages_.emplace_back(
-      std::make_unique<DispatchedFocusMessage>(focused));
+void MockWidgetInputHandler::SetFocus(blink::mojom::FocusState focus_state) {
+  dispatched_messages_.emplace_back(std::make_unique<DispatchedFocusMessage>(
+      focus_state == blink::mojom::FocusState::kFocused));
 }
 
 void MockWidgetInputHandler::MouseCaptureLost() {

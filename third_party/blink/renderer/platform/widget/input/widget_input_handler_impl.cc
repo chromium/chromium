@@ -57,8 +57,8 @@ void WidgetInputHandlerImpl::SetReceiver(
       base::BindOnce(&WidgetInputHandlerImpl::Release, base::Unretained(this)));
 }
 
-void WidgetInputHandlerImpl::SetFocus(bool focused) {
-  RunOnMainThread(base::BindOnce(&WidgetBase::SetFocus, widget_, focused));
+void WidgetInputHandlerImpl::SetFocus(mojom::blink::FocusState focus_state) {
+  RunOnMainThread(base::BindOnce(&WidgetBase::SetFocus, widget_, focus_state));
 }
 
 void WidgetInputHandlerImpl::MouseCaptureLost() {

@@ -582,6 +582,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   void UpdateSystemCursorSize(const gfx::Size& cursor_size);
 
+  // Updates the active state by replicating it to the renderer.
+  void UpdateActiveState(bool active);
+
   // Each platform should override this to call RenderWidgetHostImpl::WasShown
   // and DelegatedFrameHost::WasShown, and do any platform-specific bookkeeping
   // needed.  The given `visible_time_request`, if any, should be passed to

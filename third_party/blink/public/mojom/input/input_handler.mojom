@@ -358,12 +358,25 @@ interface FrameWidgetInputHandler {
   MoveCaret(gfx.mojom.Point point);
 };
 
+// An enumeration describing the active and focus states. If a widget is
+// focused then it must also be active, therefore there is no focused and
+// not active value in this enumeration. All widgets in a tab will have
+// the same active state. Active state is tab specific, and focus state is
+// frame specific. See
+// https://www.chromium.org/developers/design-documents/aura/focus-and-activation/
+enum FocusState
+{
+  kFocused,
+  kNotFocusedAndActive,
+  kNotFocusedAndNotActive
+};
+
 // Interface exposed by the renderer to the browser. This class represents
 // an input interface for an associated Widget object. See FrameWidgetInputHandler
 // for an interface at the frame level.
 interface WidgetInputHandler {
   // Tells widget focus has been changed.
-  SetFocus(bool focused);
+  SetFocus(FocusState state);
 
   // Tells widget mouse capture has been lost.
   MouseCaptureLost();

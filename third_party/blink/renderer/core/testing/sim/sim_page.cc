@@ -18,6 +18,8 @@ void SimPage::SetPage(Page* page) {
 }
 
 void SimPage::SetFocused(bool value) {
+  if (value)
+    page_->GetFocusController().SetActive(true);
   page_->GetFocusController().SetFocused(value);
 }
 

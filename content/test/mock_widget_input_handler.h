@@ -238,7 +238,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   };
 
   // blink::mojom::WidgetInputHandler override.
-  void SetFocus(bool focused) override;
+  void SetFocus(blink::mojom::FocusState focus_state) override;
   void MouseCaptureLost() override;
   void SetEditCommandsForNextKeyEvent(
       std::vector<blink::mojom::EditCommandPtr> commands) override;

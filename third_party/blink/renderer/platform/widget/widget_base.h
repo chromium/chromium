@@ -221,7 +221,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ForceTextInputStateUpdate();
   void RequestCompositionUpdates(bool immediate_request, bool monitor_updates);
   void UpdateCompositionInfo(bool immediate_request);
-  void SetFocus(bool enable);
+  void SetFocus(mojom::blink::FocusState focus_state);
   bool has_focus() const { return has_focus_; }
   void MouseCaptureLost();
   void CursorVisibilityChange(bool is_visible);

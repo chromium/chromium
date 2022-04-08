@@ -1846,8 +1846,6 @@ bool WebViewImpl::HasVerticalScrollbar() {
 }
 
 void WebViewImpl::SetPageFocus(bool enable) {
-  if (enable)
-    page_->GetFocusController().SetActive(true);
   page_->GetFocusController().SetFocused(enable);
   if (enable) {
     LocalFrame* focused_frame = page_->GetFocusController().FocusedFrame();

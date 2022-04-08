@@ -897,6 +897,8 @@ void FocusController::FocusHasChanged() {
 }
 
 void FocusController::SetFocused(bool focused) {
+  // If we are setting focus, we should be active.
+  DCHECK(!focused || is_active_);
   if (is_focused_ == focused)
     return;
   is_focused_ = focused;

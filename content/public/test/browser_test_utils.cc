@@ -802,8 +802,10 @@ BindFakeFrameWidgetInterfaces(RenderFrameHost* frame) {
 }
 
 void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active) {
-  static_cast<RenderFrameHostImpl*>(frame)->GetRenderWidgetHost()->SetActive(
-      active);
+  static_cast<RenderFrameHostImpl*>(frame)
+      ->GetRenderWidgetHost()
+      ->delegate()
+      ->SendActiveState(active);
 }
 
 void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {

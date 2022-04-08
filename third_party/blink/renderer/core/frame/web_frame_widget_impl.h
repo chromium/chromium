@@ -692,7 +692,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebTextInputType GetTextInputType() override;
   void SetCursorVisibilityState(bool is_visible) override;
   blink::FrameWidget* FrameWidget() override { return this; }
-  void FocusChanged(bool enable) override;
+  void FocusChanged(mojom::blink::FocusState focus_state) override;
   bool ShouldAckSyntheticInputImmediately() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;

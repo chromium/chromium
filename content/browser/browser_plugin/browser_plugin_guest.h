@@ -126,9 +126,6 @@ class BrowserPluginGuest : public GuestHost, public WebContentsObserver {
  private:
   void InitInternal(WebContentsImpl* owner_web_contents);
 
-  // Sets the focus state of the current RenderWidgetHostView.
-  void SetFocus(bool focused, blink::mojom::FocusType focus_type);
-
   void SendTextInputTypeChangedToView(RenderWidgetHostViewBase* guest_rwhv);
 
   raw_ptr<WebContentsImpl> owner_web_contents_;

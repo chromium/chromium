@@ -1428,7 +1428,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
-  GetWidgetInputHandler()->SetFocus(true);
+  GetWidgetInputHandler()->SetFocus(blink::mojom::FocusState::kFocused);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(
@@ -1472,7 +1472,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
-  GetWidgetInputHandler()->SetFocus(true);
+  GetWidgetInputHandler()->SetFocus(blink::mojom::FocusState::kFocused);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(
@@ -1516,7 +1516,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
-  GetWidgetInputHandler()->SetFocus(true);
+  GetWidgetInputHandler()->SetFocus(blink::mojom::FocusState::kFocused);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(
@@ -1938,7 +1938,10 @@ TEST_F(RenderViewImplTest, ImeComposition) {
 
       case IME_SETFOCUS:
         // Update the window focus.
-        GetWidgetInputHandler()->SetFocus(ime_message->enable);
+        GetWidgetInputHandler()->SetFocus(
+            ime_message->enable
+                ? blink::mojom::FocusState::kFocused
+                : blink::mojom::FocusState::kNotFocusedAndActive);
         break;
 
       case IME_SETCOMPOSITION:
@@ -2220,7 +2223,7 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   const std::u16string empty_string;
   const std::vector<ui::ImeTextSpan> empty_ime_text_span;
   std::vector<gfx::Rect> bounds;
-  widget_input_handler->SetFocus(true);
+  widget_input_handler->SetFocus(blink::mojom::FocusState::kFocused);
 
   // ASCII composition
   const std::u16string ascii_composition = u"aiueo";
@@ -3143,7 +3146,7 @@ TEST_F(RenderViewImplScaleFactorTest,
   const std::u16string empty_string;
   const std::vector<ui::ImeTextSpan> empty_ime_text_span;
   std::vector<gfx::Rect> bounds_at_1x;
-  widget_input_handler->SetFocus(true);
+  widget_input_handler->SetFocus(blink::mojom::FocusState::kFocused);
 
   // ASCII composition
   const std::u16string ascii_composition = u"aiueo";

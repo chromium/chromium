@@ -1453,7 +1453,7 @@ void RenderWidgetHostViewMac::ShutdownHost() {
 
 void RenderWidgetHostViewMac::SetActive(bool active) {
   if (host()) {
-    host()->SetActive(active);
+    UpdateActiveState(active);
     if (active) {
       if (HasFocus())
         host()->Focus();

@@ -246,6 +246,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Update the renderer's cache of the screen rect of the view and window.
   virtual void SendScreenRects() {}
 
+  // Update the renderer's active focus state. This will replicate it for
+  // all descendants (including inner frame trees) of the primary page's
+  // frame tree.
+  virtual void SendActiveState(bool active) {}
+
   // Returns the TextInputManager tracking text input state.
   virtual TextInputManager* GetTextInputManager();
 

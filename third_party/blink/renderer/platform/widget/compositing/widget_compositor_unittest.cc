@@ -38,7 +38,7 @@ class StubWidgetBaseClient : public WidgetBaseClient {
                                     const gfx::Vector2dF&,
                                     const cc::OverscrollBehavior&,
                                     bool) override {}
-  void FocusChanged(bool) override {}
+  void FocusChanged(mojom::blink::FocusState) override {}
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override {}
   const display::ScreenInfos& GetOriginalScreenInfos() override {

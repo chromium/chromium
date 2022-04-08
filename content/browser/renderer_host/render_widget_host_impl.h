@@ -462,6 +462,15 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Focus()/Blur().
   void SetPageFocus(bool focused);
 
+  // Returns true if the RenderWidgetHost thinks it is active. This
+  // is different than `is_focused` but must always be true if `is_focused`
+  // is true. All RenderWidgetHosts in an active tab are considered active,
+  // but only one FrameTree can have page focus (e.g., an inner frame
+  // tree (fenced frame or portals) will not have focus if the primary frame
+  // tree has focus. See
+  // https://www.chromium.org/developers/design-documents/aura/focus-and-activation.
+  bool is_active() const { return is_active_; }
+
   // Called to notify the RenderWidget that it has lost the mouse lock.
   void LostMouseLock();
 
@@ -1340,6 +1349,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderWidgetHostView::HasFocus in that in that the focus request may fail,
   // causing HasFocus to return false when is_focused_ is true.
   bool is_focused_ = false;
+
+  // Indicates whether what the last focus active state that was sent to the
+  // renderer.
+  bool is_active_ = false;
 
   // This value indicates how long to wait before we consider a renderer hung.
   base::TimeDelta hung_renderer_delay_;

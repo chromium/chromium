@@ -480,7 +480,9 @@ void WebPagePopupImpl::ShowVirtualKeyboard() {
 }
 
 void WebPagePopupImpl::SetFocus(bool focus) {
-  widget_base_->SetFocus(focus);
+  widget_base_->SetFocus(focus
+                             ? mojom::blink::FocusState::kFocused
+                             : mojom::blink::FocusState::kNotFocusedAndActive);
 }
 
 bool WebPagePopupImpl::HasFocus() {
@@ -868,12 +870,14 @@ WebInputEventResult WebPagePopupImpl::HandleInputEvent(
   return PageWidgetDelegate::HandleInputEvent(*this, event, &MainFrame());
 }
 
-void WebPagePopupImpl::FocusChanged(bool enable) {
+void WebPagePopupImpl::FocusChanged(mojom::blink::FocusState focus_state) {
   if (!page_)
     return;
-  if (enable)
-    page_->GetFocusController().SetActive(true);
-  page_->GetFocusController().SetFocused(enable);
+  page_->GetFocusController().SetActive(
+      focus_state == mojom::blink::FocusState::kFocused ||
+      focus_state == mojom::blink::FocusState::kNotFocusedAndActive);
+  page_->GetFocusController().SetFocused(focus_state ==
+                                         mojom::blink::FocusState::kFocused);
 }
 
 void WebPagePopupImpl::ScheduleAnimation() {

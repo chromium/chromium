@@ -39,7 +39,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
   void SetReceiver(mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
                        interface_receiver);
 
-  void SetFocus(bool focused) override;
+  void SetFocus(mojom::blink::FocusState focus_state) override;
   void MouseCaptureLost() override;
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> commands) override;

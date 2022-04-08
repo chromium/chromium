@@ -4491,6 +4491,19 @@ void WebContentsImpl::SendScreenRects() {
       }));
 }
 
+void WebContentsImpl::SendActiveState(bool active) {
+  DCHECK(!IsBeingDestroyed());
+
+  // Replicate the active state to all LocalRoots.
+  GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](bool active, RenderFrameHostImpl* render_frame_host) {
+        if (render_frame_host->is_local_root()) {
+          render_frame_host->GetRenderWidgetHost()->SetActive(active);
+        }
+      },
+      active));
+}
+
 TextInputManager* WebContentsImpl::GetTextInputManager() {
   if (GetOuterWebContents())
     return GetOuterWebContents()->GetTextInputManager();
