@@ -7767,3 +7767,12 @@ crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-1.html [ F
 crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-2.html [ Failure Pass ]
 crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
 crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-gradient.html [ Failure Pass ]
+
+# Temp disable tests to merge DevTools CSS Sync formatting fix
+crbug.com/1309588 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/elements/styles-4/disable-last-property-without-semicolon.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/elements/styles-4/styles-formatting.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/elements/styles-4/undo-add-property.js [ Skip ]
+crbug.com/1309588 http/tests/devtools/modify-cross-domain-rule.js [ Skip ]
