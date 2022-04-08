@@ -27,6 +27,8 @@ class ArcEnterpriseReportingService
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcEnterpriseReportingService* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcEnterpriseReportingService* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcEnterpriseReportingService(content::BrowserContext* context,
                                 ArcBridgeService* arc_bridge_service);

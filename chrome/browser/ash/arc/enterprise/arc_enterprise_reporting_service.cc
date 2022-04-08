@@ -87,6 +87,14 @@ ArcEnterpriseReportingService::GetForBrowserContext(
   return ArcEnterpriseReportingServiceFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcEnterpriseReportingService*
+ArcEnterpriseReportingService::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcEnterpriseReportingServiceFactory::GetForBrowserContextForTesting(
+      context);
+}
+
 ArcEnterpriseReportingService::ArcEnterpriseReportingService(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)
