@@ -106,7 +106,7 @@ RtpContributingSourceCache::getSynchronizationSources(
                                       "Window is detached");
     return HeapVector<Member<RTCRtpSynchronizationSource>>();
   }
-  MaybeUpdateRtpSources(receiver->kind());
+  MaybeUpdateRtpSources(receiver);
   return RTCRtpSynchronizationSourcesFromRTCRtpSources(script_state,
                                                        GetRtpSources(receiver));
 }
@@ -121,41 +121,51 @@ RtpContributingSourceCache::getContributingSources(
                                       "Window is detached");
     return HeapVector<Member<RTCRtpContributingSource>>();
   }
-  MaybeUpdateRtpSources(receiver->kind());
+  MaybeUpdateRtpSources(receiver);
   return RTCRtpContributingSourcesFromRTCRtpSources(script_state,
                                                     GetRtpSources(receiver));
 }
 
 void RtpContributingSourceCache::MaybeUpdateRtpSources(
-    RTCRtpReceiver::MediaKind kind) {
-  bool* cache_is_obsolete;
+    RTCRtpReceiver* requesting_receiver) {
+  if (!pc_) {
+    return;
+  }
   HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>* cached_sources_by_receiver;
-  switch (kind) {
+  switch (requesting_receiver->kind()) {
     case RTCRtpReceiver::MediaKind::kAudio:
-      cache_is_obsolete = &audio_cache_is_obsolete_;
       cached_sources_by_receiver = &cached_sources_by_audio_receiver_;
       break;
     case RTCRtpReceiver::MediaKind::kVideo:
-      cache_is_obsolete = &video_cache_is_obsolete_;
       cached_sources_by_receiver = &cached_sources_by_video_receiver_;
       break;
   }
-  if (!*cache_is_obsolete || !pc_) {
+  if (cached_sources_by_receiver->find(
+          requesting_receiver->platform_receiver()) !=
+      cached_sources_by_receiver->end()) {
+    // The sources are already cached for this receiver, no action needed.
     return;
   }
 
-  // Clear and refresh the cache for all RTCRtpReceiver objects in a single
-  // block-invoke to the WebRTC worker thread. This increases the overhead of a
-  // single getSynchronizationSources/getContributingSources call, but we expect
-  // an application that calls these methods on one RTCRtpReceiver to do it on
-  // every RTCRtpReceiver of the same kind. In that case, this heuristic brings
-  // down the number of block-invokes from 1 per receiver to 1 per kind.
-  cached_sources_by_receiver->clear();
+  // Receivers whose cache to update.
   Vector<RTCRtpReceiverPlatform*> receivers;
-  for (const Member<RTCRtpReceiver>& receiver : pc_->getReceivers()) {
-    if (receiver->kind() != kind)
-      continue;
-    receivers.push_back(receiver->platform_receiver());
+  if (cached_sources_by_receiver->IsEmpty()) {
+    // If the cache is empty then we only update the cache for this one
+    // receiver. This avoids updating the cache for all receivers in cases where
+    // the app is only interested in a single receiver per kind.
+    receivers.push_back(requesting_receiver->platform_receiver());
+  } else {
+    // If the cache is not empty, the app is interested in multiple
+    // RTCRtpReceiver objects. In this case, pay the cost up-front to update the
+    // cache for all receivers of this kind under the assumption that the app
+    // will be interested in all receivers of this kind. This heuristic limits
+    // the number of block-invoke in common use cases, but may increase overhead
+    // in edge cases where a subset of receivers are polled per microtask.
+    for (const Member<RTCRtpReceiver>& receiver : pc_->getReceivers()) {
+      if (receiver->kind() != requesting_receiver->kind())
+        continue;
+      receivers.push_back(receiver->platform_receiver());
+    }
   }
   base::WaitableEvent event;
   // Unretained is safe because we're waiting for the operation to complete.
@@ -169,10 +179,8 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
           WTF::CrossThreadUnretained(&event)));
   event.Wait();
 
-  *cache_is_obsolete = false;
-  Microtask::EnqueueMicrotask(
-      WTF::Bind(&RtpContributingSourceCache::MakeCacheObsolete,
-                weak_factory_.GetWeakPtr()));
+  Microtask::EnqueueMicrotask(WTF::Bind(&RtpContributingSourceCache::ClearCache,
+                                        weak_factory_.GetWeakPtr()));
 }
 
 void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(
@@ -182,14 +190,17 @@ void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(
   // Calling GetSources() while on the worker thread avoids a per-receiver
   // block-invoke inside the webrtc::RtpReceiverInterface PROXY.
   for (RTCRtpReceiverPlatform* receiver : *receivers) {
-    cached_sources_by_receiver->insert(receiver, receiver->GetSources());
+    if (cached_sources_by_receiver->find(receiver) ==
+        cached_sources_by_receiver->end()) {
+      cached_sources_by_receiver->insert(receiver, receiver->GetSources());
+    }
   }
   event->Signal();
 }
 
-void RtpContributingSourceCache::MakeCacheObsolete() {
-  audio_cache_is_obsolete_ = true;
-  video_cache_is_obsolete_ = true;
+void RtpContributingSourceCache::ClearCache() {
+  cached_sources_by_audio_receiver_.clear();
+  cached_sources_by_video_receiver_.clear();
 }
 
 const RtpContributingSourceCache::RTCRtpSources*

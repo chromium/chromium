@@ -32,9 +32,9 @@ class RTCPeerConnection;
 //    execution cycle must return the same values. The cache is cleared in the
 //    next microtask.
 // 2. Getting the SSRC/CSRC values involves a block-invoke to the WebRTC worker
-//    thread. This class updates the cache for all RTCRtpReceiver objects inside
-//    the same block-invoke, reducing the total number of block-invokes if the
-//    getters are called on every RTCRtpReceiver.
+//    thread. This class uses a heuristic to maybe-update the cache for all
+//    RTCRtpReceiver objects inside the same block-invoke, reducing the total
+//    number of block-invokes if the getters are called on every RTCRtpReceiver.
 class RtpContributingSourceCache {
  public:
   typedef Vector<std::unique_ptr<RTCRtpSource>> RTCRtpSources;
@@ -53,13 +53,16 @@ class RtpContributingSourceCache {
       RTCRtpReceiver* receiver);
 
  private:
-  void MaybeUpdateRtpSources(RTCRtpReceiver::MediaKind kind);
+  // Ensures the cache for `requesting_receiver` is up-to-date. Based on a
+  // heuristic, this method may update the cache for all other receivers while
+  // it is at it.
+  void MaybeUpdateRtpSources(RTCRtpReceiver* requesting_receiver);
   void UpdateRtpSourcesOnWorkerThread(
       Vector<RTCRtpReceiverPlatform*>* receivers,
       HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>*
           cached_sources_by_receiver,
       base::WaitableEvent* event);
-  void MakeCacheObsolete();
+  void ClearCache();
   const RTCRtpSources* GetRtpSources(RTCRtpReceiver* receiver) const;
 
   // Owner of all RTCRtpReceiver objects that this cache is concerned with.
@@ -73,8 +76,6 @@ class RtpContributingSourceCache {
       cached_sources_by_audio_receiver_;
   HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>
       cached_sources_by_video_receiver_;
-  bool audio_cache_is_obsolete_ = true;
-  bool video_cache_is_obsolete_ = true;
 
   base::WeakPtrFactory<RtpContributingSourceCache> weak_factory_{this};
 };
