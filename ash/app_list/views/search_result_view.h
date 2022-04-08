@@ -163,7 +163,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       views::FlexLayoutView* parent,
       const std::vector<SearchResult::TextItem>& text_vector,
       LabelType label_type,
-      bool has_keyboard_shortcut_contents);
+      bool has_keyboard_shortcut_contents,
+      bool is_multi_line);
   void UpdateBadgeIcon();
   void UpdateBigTitleContainer();
   void UpdateBigTitleSuperscriptContainer();
@@ -270,6 +271,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   // Search result view can have one non-elided label.
   absl::optional<views::Label*> non_elided_label_;
+
+  // Search result view can have one multi-line label.
+  absl::optional<views::Label*> multi_line_label_;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
 };

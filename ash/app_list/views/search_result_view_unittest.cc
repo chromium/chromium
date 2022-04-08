@@ -34,27 +34,27 @@ TEST_F(SearchResultViewTest, FlexWeightCalculation) {
                      .title_preferred_width = 100,
                      .details_preferred_width = 100,
                      .expected_title_weight = 1,
-                     .expected_title_order = 2,
+                     .expected_title_order = 1,
                      .expected_details_weight = 1,
-                     .expected_details_order = 3},
+                     .expected_details_order = 2},
                     {.total_width = 200,
                      .separator_width = 10,
                      .details_no_elide_width = 30,
                      .title_preferred_width = 100,
                      .details_preferred_width = 30,
                      .expected_title_weight = 1,
-                     .expected_title_order = 2,
+                     .expected_title_order = 1,
                      .expected_details_weight = 1,
-                     .expected_details_order = 2},
+                     .expected_details_order = 1},
                     {.total_width = 200,
                      .separator_width = 10,
                      .details_no_elide_width = 100,
                      .title_preferred_width = 200,
                      .details_preferred_width = 200,
                      .expected_title_weight = 110,
-                     .expected_title_order = 3,
+                     .expected_title_order = 2,
                      .expected_details_weight = 100,
-                     .expected_details_order = 3}};
+                     .expected_details_order = 2}};
   for (auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message()
                  << "Test case: {total_width: " << test_case.total_width
