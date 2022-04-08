@@ -591,9 +591,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kTabSwitchMetrics2;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
 
-// https://blog.whatwg.org/newline-normalizations-in-form-submission
-BLINK_COMMON_EXPORT extern const base::Feature kLateFormNewlineNormalization;
-
 // TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
 // and released to stable with no issues.
 BLINK_COMMON_EXPORT extern const base::Feature kAutoExpandDetailsElement;

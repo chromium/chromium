@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -48,28 +47,15 @@ TEST(FormDataTest, AppendFromElement) {
   fd->AppendFromElement(lone_surrogate_string, lone_surrogate_string);
 
   const FormData::Entry& entry1 = *fd->Entries()[0];
-  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-    EXPECT_EQ("Atomic\nNumber", entry1.name());
-  } else {
-    EXPECT_EQ("Atomic\r\nNumber", entry1.name());
-  }
+  EXPECT_EQ("Atomic\nNumber", entry1.name());
   EXPECT_EQ("1", entry1.Value());
 
   const FormData::Entry& entry2 = *fd->Entries()[1];
-  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-    EXPECT_EQ("Periodic\nTable", entry2.name());
-  } else {
-    EXPECT_EQ("Periodic\r\nTable", entry2.name());
-  }
+  EXPECT_EQ("Periodic\nTable", entry2.name());
 
   const FormData::Entry& entry3 = *fd->Entries()[2];
-  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-    EXPECT_EQ("Noble\nGas", entry3.name());
-    EXPECT_EQ("He\rNe\nAr\r\nKr", entry3.Value());
-  } else {
-    EXPECT_EQ("Noble\r\nGas", entry3.name());
-    EXPECT_EQ("He\r\nNe\r\nAr\r\nKr", entry3.Value());
-  }
+  EXPECT_EQ("Noble\nGas", entry3.name());
+  EXPECT_EQ("He\rNe\nAr\r\nKr", entry3.Value());
 
   // Names and values which come from an element should have any lone surrogates
   // in them substituted with the replacement character.

@@ -1264,10 +1264,6 @@ const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
 const base::Feature kLCPAnimatedImagesReporting{
     "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// https://blog.whatwg.org/newline-normalizations-in-form-submission
-const base::Feature kLateFormNewlineNormalization{
-    "LateFormNewlineNormalization", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
 // and released to stable with no issues.
 const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",

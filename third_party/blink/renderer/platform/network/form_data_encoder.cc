@@ -159,14 +159,13 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
 
 void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
                                            const std::string& boundary,
-                                           const std::string& name,
-                                           Mode mode) {
+                                           const std::string& name) {
   AddBoundaryToMultiPartHeader(buffer, boundary);
 
   // FIXME: This loses data irreversibly if the input name includes characters
   // you can't encode in the website's character set.
   Append(buffer, "Content-Disposition: form-data; name=\"");
-  AppendQuotedString(buffer, name, mode);
+  AppendQuotedString(buffer, name, kNormalizeCRLF);
   Append(buffer, '"');
 }
 
@@ -237,15 +236,10 @@ void FormDataEncoder::AddKeyValuePairAsFormData(
     EncodedFormData::EncodingType encoding_type,
     Mode mode) {
   if (encoding_type == EncodedFormData::kTextPlain) {
-    if (mode == kNormalizeCRLF) {
-      AppendNormalized(buffer, key);
-      Append(buffer, '=');
-      AppendNormalized(buffer, value);
-    } else {
-      Append(buffer, key);
-      Append(buffer, '=');
-      Append(buffer, value);
-    }
+    DCHECK_EQ(mode, kNormalizeCRLF);
+    AppendNormalized(buffer, key);
+    Append(buffer, '=');
+    AppendNormalized(buffer, value);
     Append(buffer, "\r\n");
   } else {
     if (!buffer.IsEmpty())
