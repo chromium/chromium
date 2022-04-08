@@ -9,56 +9,77 @@
  * Event 'reload' will be fired when the user click the retry button.
  */
 
-const UIState = {
+/* #js_imports_placeholder */
+
+const AssistantLoadingUIState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'assistant-loading',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const AssistantLoadingBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior], Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior],
+/**
+ * @polymer
+ */
+class AssistantLoading extends AssistantLoadingBase {
+  static get is() {
+    return 'assistant-loading';
+  }
 
-  properties: {
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Buttons are disabled when the page content is loading.
+       */
+      buttonsDisabled: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    this.UI_STEPS = AssistantLoadingUIState;
+
     /**
-     * Buttons are disabled when the page content is loading.
+     * Whether an error occurs while the page is loading.
+     * @type {boolean}
+     * @private
      */
-    buttonsDisabled: {
-      type: Boolean,
-      value: true,
-    },
-  },
+    this.loadingError_ = false;
 
-  /**
-   * Whether an error occurs while the page is loading.
-   * @type {boolean}
-   * @private
-   */
-  loadingError_: false,
+    /**
+     * Timeout ID for loading animation.
+     * @type {number}
+     * @private
+     */
+    this.animationTimeout_ = null;
 
-  /**
-   * Timeout ID for loading animation.
-   * @type {number}
-   * @private
-   */
-  animationTimeout_: null,
+    /**
+     * Timeout ID for loading (will fire an error).
+     * @type {number}
+     * @private
+     */
+    this.loadingTimeout_ = null;
 
-  /**
-   * Timeout ID for loading (will fire an error).
-   * @type {number}
-   * @private
-   */
-  loadingTimeout_: null,
-
-  /** @private {?assistant.BrowserProxy} */
-  browserProxy_: null,
+    /** @private {?assistant.BrowserProxy} */
+    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+  }
 
   defaultUIStep() {
-    return UIState.LOADED;
-  },
+    return AssistantLoadingUIState.LOADED;
+  }
 
-  UI_STEPS: UIState,
 
   /**
    * On-tap event handler for retry button.
@@ -66,8 +87,9 @@ Polymer({
    * @private
    */
   onRetryTap_() {
-    this.fire('reload');
-  },
+    this.dispatchEvent(
+        new CustomEvent('reload', {bubbles: true, composed: true}));
+  }
 
   /**
    * On-tap event handler for skip button.
@@ -80,12 +102,7 @@ Polymer({
     }
     this.buttonsDisabled = true;
     this.browserProxy_.flowFinished();
-  },
-
-  /** @override */
-  created() {
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * Reloads the page.
@@ -93,15 +110,13 @@ Polymer({
   reloadPage() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.setUIStep(UIState.LOADED);
+    this.setUIStep(AssistantLoadingUIState.LOADED);
     this.buttonsDisabled = true;
-    this.animationTimeout_ = window.setTimeout(function() {
-      this.setUIStep(UIState.LOADING);
-    }.bind(this), 500);
-    this.loadingTimeout_ = window.setTimeout(function() {
-      this.onLoadingTimeout();
-    }.bind(this), 15000);
-  },
+    this.animationTimeout_ = window.setTimeout(
+        () => this.setUIStep(AssistantLoadingUIState.LOADING), 500);
+    this.loadingTimeout_ =
+        window.setTimeout(() => this.onLoadingTimeout(), 15000);
+  }
 
   /**
    * Handles event when page content cannot be loaded.
@@ -110,11 +125,11 @@ Polymer({
     this.loadingError_ = true;
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.setUIStep(UIState.ERROR);
+    this.setUIStep(AssistantLoadingUIState.ERROR);
 
     this.buttonsDisabled = false;
     this.$['retry-button'].focus();
-  },
+  }
 
   /**
    * Handles event when all the page content has been loaded.
@@ -122,8 +137,8 @@ Polymer({
   onPageLoaded() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.setUIStep(UIState.LOADED);
-  },
+    this.setUIStep(AssistantLoadingUIState.LOADED);
+  }
 
   /**
    * Called when the loading timeout is triggered.
@@ -131,7 +146,7 @@ Polymer({
   onLoadingTimeout() {
     this.browserProxy_.timeout();
     this.onErrorOccurred();
-  },
+  }
 
   /**
    * Signal from host to show the screen.
@@ -140,5 +155,7 @@ Polymer({
     this.reloadPage();
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['loading-dialog'].focus());
-  },
-});
+  }
+}
+
+customElements.define(AssistantLoading.is, AssistantLoading);

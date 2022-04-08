@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="utils.js">
-// <include src="assistant_loading.js">
-
 /**
  * @fileoverview Polymer element for displaying material design assistant
  * ready screen.
