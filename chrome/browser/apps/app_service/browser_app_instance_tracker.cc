@@ -135,12 +135,8 @@ class BrowserAppInstanceTracker::WebContentsObserver
   ~WebContentsObserver() override = default;
 
   // content::WebContentsObserver
-  void DidFinishNavigation(content::NavigationHandle* handle) override {
-    // TODO(crbug.com/1229189): Replace this callback with
-    // WebContentObserver::PrimaryPageChanged() when fixed.
-    if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
-      owner_->OnWebContentsUpdated(web_contents());
-    }
+  void PrimaryPageChanged(content::Page& page) override {
+    owner_->OnWebContentsUpdated(web_contents());
   }
 
   void TitleWasSet(content::NavigationEntry* entry) override {
