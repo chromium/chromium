@@ -38,6 +38,9 @@
   // crash when the scrollbar is dynamically deleted while an auto
   // scroll task is scheduled.
   promise_test (async () => {
+    if (!hasScrollbarArrows())
+      return;
+
     await waitForCompositorCommit();
     resetScroller();
     assert_equals(document.documentElement.style.overflowY, "visible",
@@ -52,6 +55,9 @@
   },"Test same-axis autoscroll when vertical scrollbar deleted.");
 
   promise_test (async () => {
+    if (!hasScrollbarArrows())
+      return;
+
     await waitForCompositorCommit();
     resetScroller();
     assert_equals(document.documentElement.style.overflowY, "visible",

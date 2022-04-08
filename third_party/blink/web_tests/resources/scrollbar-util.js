@@ -91,15 +91,25 @@ const SCROLLBAR_SCROLL_PERCENTAGE = 0.125;
 // scrolling is not enabled.
 const SCROLLBAR_SCROLL_PIXELS = 40;
 
-// TODO(arakeri): Add helpers for arrow widths.
+function hasScrollbarArrows() {
+  if (internals.overlayScrollbarsEnabled)
+    return false;
 
+  // Mac scrollbars do not have arrow keys.
+  if (navigator.platform.toUpperCase().indexOf('MAC') >= 0)
+    return false;
+
+  return true;
+}
+
+// TODO(arakeri): Add helpers for arrow widths.
 /*
   Getters for the center point in a scroller's scrollbar buttons (CSS visual
   coordinates). An empty argument requests the point for the main frame's
   scrollbars.
 */
 function downArrow(scroller) {
-  assert_true(!internals.overlayScrollbarsEnabled);
+  assert_true(hasScrollbarArrows());
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
@@ -119,7 +129,7 @@ function downArrow(scroller) {
 }
 
 function upArrow(scroller) {
-  assert_true(!internals.overlayScrollbarsEnabled);
+  assert_true(hasScrollbarArrows());
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   if (typeof(scroller) == 'undefined') {
@@ -138,7 +148,7 @@ function upArrow(scroller) {
 }
 
 function leftArrow(scroller) {
-  assert_true(!internals.overlayScrollbarsEnabled);
+  assert_true(hasScrollbarArrows());
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   if (typeof(scroller) == 'undefined') {
@@ -157,7 +167,7 @@ function leftArrow(scroller) {
 }
 
 function rightArrow(scroller) {
-  assert_true(!internals.overlayScrollbarsEnabled);
+  assert_true(hasScrollbarArrows());
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
