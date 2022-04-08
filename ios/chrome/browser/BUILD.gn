@@ -285,10 +285,7 @@ tweak_info_plist("experimental_info_plist") {
   if (ios_enable_sandbox_dump) {
     info_plists += [ "resources/Settings.bundle/ExperimentalSandboxDump.plist" ]
   }
-  info_plists += [
-    "resources/Settings.bundle/ExperimentalFlags.plist",
-    "resources/Settings.bundle/ExperimentalBlank.plist",
-  ]
+  info_plists += [ "resources/Settings.bundle/ExperimentalFlags.plist" ]
 }
 
 bundle_data("settings_experimental_synctypeslist_plist") {
