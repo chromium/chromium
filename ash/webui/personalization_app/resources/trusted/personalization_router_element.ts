@@ -35,6 +35,22 @@ export function isAmbientModeAllowed(): boolean {
   return loadTimeData.getBoolean('isAmbientModeAllowed');
 }
 
+export function isPathValid(path: string|null): boolean {
+  return !!path && Object.values(Paths).includes(path as Paths);
+}
+
+export function isAmbientPath(path: string|null): boolean {
+  return !!path && path.startsWith(Paths.Ambient);
+}
+
+export function isAmbientPathAllowed(path: string|null): boolean {
+  return isAmbientPath(path) && isAmbientModeAllowed();
+}
+
+export function isAmbientPathNotAllowed(path: string|null): boolean {
+  return isAmbientPath(path) && !isAmbientModeAllowed();
+}
+
 export class PersonalizationRouter extends PolymerElement {
   static get is() {
     return 'personalization-router';
@@ -132,18 +148,15 @@ export class PersonalizationRouter extends PolymerElement {
 
     // If the ambient mode is not allowed, will not show Ambient/AmbientAlbums
     // subpages.
-    return (path === Paths.Root) ||
-        (!!path && path.startsWith(Paths.Ambient) && !isAmbientModeAllowed());
+    return (path === Paths.Root) || (isAmbientPathNotAllowed(path));
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && !!path &&
-        path.startsWith(Paths.Ambient) && isAmbientModeAllowed();
+    return isPersonalizationHubEnabled() && isAmbientPathAllowed(path);
   }
 
   private shouldShowUserSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && !!path &&
-        path.startsWith(Paths.User);
+    return isPersonalizationHubEnabled() && path === Paths.User;
   }
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {
@@ -155,12 +168,11 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   /**
-   * When navigating to Ambient/AmbientAlbums subpages, but the ambient mode is
-   * not allowed, will not show Ambient/AmbientAlbums subpages. Reset path to
-   * root in this case.
+   * When entering a wrong path or navigating to Ambient/AmbientAlbums
+   * subpages, but the ambient mode is not allowed, reset path to root.
    */
   private onPathChanged_(path: string|null) {
-    if (!!path && path.startsWith(Paths.Ambient) && !isAmbientModeAllowed()) {
+    if (!isPathValid(path) || isAmbientPathNotAllowed(path)) {
       // Reset the path to root.
       this.setProperties({path_: Paths.Root, queryParams_: {}});
     }

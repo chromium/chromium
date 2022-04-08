@@ -20,7 +20,7 @@ import {isNonEmptyArray} from '../common/utils.js';
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
-import {isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {isPathValid, isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyString} from './utils.js';
 
@@ -186,7 +186,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     if (index < this.breadcrumbs_.length - 1) {
       const pathElements = this.path.split('/');
       const newPath = pathElements.slice(0, index + 2).join('/');
-      if (Object.values(Paths).includes(newPath as Paths)) {
+      if (isPathValid(newPath)) {
         PersonalizationRouter.instance().goToRoute(newPath as Paths);
       }
     }
