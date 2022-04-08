@@ -10,7 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/time/date_formatter.h"
+#include "ash/system/time/date_helper.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -74,52 +74,57 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date) {
 
 std::u16string FormatDate(const icu::SimpleDateFormat& formatter,
                           const base::Time date) {
-  return DateFormatter::GetInstance()->GetFormattedTime(&formatter, date);
+  return DateHelper::GetInstance()->GetFormattedTime(&formatter, date);
 }
 
 std::u16string GetMonthDayYear(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->month_day_year_formatter(), date);
+      DateHelper::GetInstance()->month_day_year_formatter(), date);
 }
 
 std::u16string GetMonthName(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->month_name_formatter(), date);
+      DateHelper::GetInstance()->month_name_formatter(), date);
 }
 
 std::u16string GetDayOfMonth(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->day_of_month_formatter(), date);
+      DateHelper::GetInstance()->day_of_month_formatter(), date);
+}
+
+std::u16string GetDayIntOfMonth(const base::Time local_date) {
+  return base::UTF8ToUTF16(base::NumberToString(
+      calendar_utils::GetExplodedUTC(local_date).day_of_month));
 }
 
 std::u16string GetMonthNameAndDayOfMonth(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->month_day_formatter(), date);
+      DateHelper::GetInstance()->month_day_formatter(), date);
 }
 
 std::u16string GetTwelveHourClockTime(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->twelve_hour_clock_formatter(), date);
+      DateHelper::GetInstance()->twelve_hour_clock_formatter(), date);
 }
 
 std::u16string GetTwentyFourHourClockTime(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->twenty_four_hour_clock_formatter(), date);
+      DateHelper::GetInstance()->twenty_four_hour_clock_formatter(), date);
 }
 
 std::u16string GetTimeZone(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->time_zone_formatter(), date);
+      DateHelper::GetInstance()->time_zone_formatter(), date);
 }
 
 std::u16string GetYear(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->year_formatter(), date);
+  return calendar_utils::FormatDate(DateHelper::GetInstance()->year_formatter(),
+                                    date);
 }
 
 std::u16string GetMonthNameAndYear(const base::Time date) {
   return calendar_utils::FormatDate(
-      DateFormatter::GetInstance()->month_name_year_formatter(), date);
+      DateHelper::GetInstance()->month_name_year_formatter(), date);
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {
@@ -182,37 +187,7 @@ bool IsActiveUser() {
 }
 
 int GetTimeDifferenceInMinutes(base::Time date) {
-  const icu::TimeZone& time_zone =
-      system::TimezoneSettings::GetInstance()->GetTimezone();
-  const int raw_time_diff = time_zone.getRawOffset() / kMillisecondsPerMinute;
-
-  // Calculates the time difference adjust by the possible daylight savings
-  // offset. If the status of any step fails, returns the default time
-  // difference without considering daylight savings.
-
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::GregorianCalendar> gregorian_calendar =
-      std::make_unique<icu::GregorianCalendar>(time_zone, status);
-  if (U_FAILURE(status))
-    return raw_time_diff;
-
-  UDate current_date =
-      static_cast<UDate>(date.ToDoubleT() * base::Time::kMillisecondsPerSecond);
-  status = U_ZERO_ERROR;
-  gregorian_calendar->setTime(current_date, status);
-  if (U_FAILURE(status))
-    return raw_time_diff;
-
-  status = U_ZERO_ERROR;
-  UBool day_light = gregorian_calendar->inDaylightTime(status);
-  if (U_FAILURE(status))
-    return raw_time_diff;
-
-  int gmt_offset = time_zone.getRawOffset();
-  if (day_light)
-    gmt_offset += time_zone.getDSTSavings();
-
-  return gmt_offset / kMillisecondsPerMinute;
+  return DateHelper::GetInstance()->GetTimeDifferenceInMinutes(date);
 }
 
 }  // namespace calendar_utils

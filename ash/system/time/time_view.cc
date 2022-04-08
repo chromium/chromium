@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
@@ -106,8 +107,10 @@ void VerticalDateView::OnThemeChanged() {
 }
 
 void VerticalDateView::UpdateText() {
-  const std::u16string new_text =
-      base::TimeFormatWithPattern(base::Time::Now(), "dd");
+  const std::u16string new_text = calendar_utils::GetDayIntOfMonth(
+      base::Time::Now() +
+      base::Minutes(
+          calendar_utils::GetTimeDifferenceInMinutes(base::Time::Now())));
   if (text_label_->GetText() == new_text)
     return;
   text_label_->SetText(new_text);

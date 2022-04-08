@@ -70,11 +70,14 @@ CalendarDateCellView::CalendarDateCellView(
     base::Time date,
     bool is_grayed_out_date,
     int row_index)
-    : views::LabelButton(views::Button::PressedCallback(base::BindRepeating(
-                             &CalendarDateCellView::OnDateCellActivated,
-                             base::Unretained(this))),
-                         calendar_utils::GetDayOfMonth(date),
-                         CONTEXT_CALENDAR_DATE),
+    : views::LabelButton(
+          views::Button::PressedCallback(
+              base::BindRepeating(&CalendarDateCellView::OnDateCellActivated,
+                                  base::Unretained(this))),
+          calendar_utils::GetDayIntOfMonth(
+              date + base::Minutes(
+                         calendar_view_controller->time_difference_minutes())),
+          CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),

@@ -78,9 +78,14 @@ ASH_EXPORT std::u16string GetMonthDayYear(const base::Time date);
 // (e.g. March)
 ASH_EXPORT std::u16string GetMonthName(const base::Time date);
 
+// Gets the `date`'s day of month in local format. For some languages, the
+// formatter adds some words/characters which means `day` in that language to
+// the digital day of month (e.g. 10日).
+ASH_EXPORT std::u16string GetDayOfMonth(const base::Time date);
+
 // Gets the `date`'s numeric day of month.
 // (e.g. 10)
-ASH_EXPORT std::u16string GetDayOfMonth(const base::Time date);
+ASH_EXPORT std::u16string GetDayIntOfMonth(const base::Time local_date);
 
 // Gets the `date`'s month name and the numeric day of month.
 // (e.g. March 10)
