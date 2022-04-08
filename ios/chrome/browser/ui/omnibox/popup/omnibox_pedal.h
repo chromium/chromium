@@ -9,7 +9,7 @@
 
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) NSString* subtitle;
-@property(nonatomic, readonly) void (^action)();
+@property(nonatomic, readonly) void (^action)(void);
 
 @end
 

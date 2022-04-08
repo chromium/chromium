@@ -5,97 +5,6 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
-/// GradientOverlayRight applies a fading effect as an overlay from left to right.
-struct GradientOverlayRight: ViewModifier {
-  func body(content: Content) -> some View {
-    content
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .overlay(
-        LinearGradient(
-          gradient: Gradient(stops: [
-            Gradient.Stop(color: .white.opacity((0)), location: 0.9),
-            Gradient.Stop(color: .white, location: 1),
-          ]),
-          startPoint: .leading, endPoint: .trailing)
-      )
-  }
-}
-
-/// GradientOverlayRight applies a fading effect as an overlay from right to left.
-struct GradientOverlayLeft: ViewModifier {
-  func body(content: Content) -> some View {
-    content
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .overlay(
-        LinearGradient(
-          gradient: Gradient(stops: [
-            Gradient.Stop(color: .white.opacity((0)), location: 0.1),
-            Gradient.Stop(color: .white, location: 0),
-          ]),
-          startPoint: .leading, endPoint: .trailing)
-      )
-  }
-}
-
-/// PreferenceKey to listen to changes of a view's size.
-struct SizePreferenceKey: PreferenceKey {
-  static var defaultValue = CGSize.zero
-  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-    value = nextValue()
-  }
-}
-
-/// A view modifier that applies a transparent gradient effect when the content
-/// is too wide to fit in its container. The content is clipped on the trailing
-/// edge.
-struct TruncatedWithGradient: ViewModifier {
-
-  // Child view size (width,height)
-  @State var childSize = CGSize.zero
-
-  // Widths comparison tracker
-  @State var truncated = false
-
-  func body(content: Content) -> some View {
-    let rawContent = GeometryReader { outerGeo in
-      content
-        .fixedSize(horizontal: true, vertical: true)
-        .overlay(
-          GeometryReader { innerGeo in
-            Rectangle()
-              .hidden()
-              .preference(key: SizePreferenceKey.self, value: innerGeo.size)
-              .onPreferenceChange(SizePreferenceKey.self) {
-                newSize in
-                childSize = newSize
-                truncated = childSize.width > outerGeo.size.width
-              }
-          }
-        )
-    }
-    .frame(height: childSize.height)
-    .clipped()
-
-    if truncated {
-      rawContent.gradientOverlayRight()
-    } else {
-      rawContent
-    }
-  }
-}
-
-extension View {
-  func truncatedWithGradient() -> some View {
-    self.modifier(TruncatedWithGradient())
-  }
-  func gradientOverlayLeft() -> some View {
-    self.modifier(GradientOverlayLeft())
-  }
-  func gradientOverlayRight() -> some View {
-    self.modifier(GradientOverlayRight())
-  }
-}
-
 struct PopupMatchRowView: View {
 
   enum Dimensions {
@@ -118,6 +27,8 @@ struct PopupMatchRowView: View {
 
   var body: some View {
     ZStack {
+      // TODO(crbug.com/1311615): This next line should be `backgroundColor`,
+      // but for some reason, that causes the tests to fail on the bots only.
       if self.isPressed || self.isHighlighted { Color.cr_tableRowViewHighlight }
 
       Button(action: selectionHandler) { Color.clear.contentShape(Rectangle()) }
@@ -131,7 +42,8 @@ struct PopupMatchRowView: View {
         .accessibilityAction(
           named: match.isTabMatch
             ? L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB)
-            : L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_APPEND), trailingButtonHandler)
+            : L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_APPEND), trailingButtonHandler
+        )
         .accessibilityRemoveTraits(.isButton)
 
       // The content is in front of the button, for proper hit testing.
@@ -148,7 +60,7 @@ struct PopupMatchRowView: View {
           VStack(alignment: .leading, spacing: 0) {
             Text(match.text)
               .lineLimit(1)
-              .truncatedWithGradient()
+              .truncatedWithGradient(colored: backgroundColor)
               .accessibilityHidden(true)
 
             if let subtitle = match.detailText, !subtitle.isEmpty {
@@ -156,7 +68,7 @@ struct PopupMatchRowView: View {
                 .font(.footnote)
                 .foregroundColor(Color.gray)
                 .lineLimit(1)
-                .truncatedWithGradient()
+                .truncatedWithGradient(colored: backgroundColor)
                 .accessibilityHidden(true)
             }
           }
@@ -178,6 +90,14 @@ struct PopupMatchRowView: View {
       .padding(Dimensions.padding)
     }
     .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight, maxHeight: Dimensions.maxHeight)
+  }
+
+  var backgroundColor: Color {
+    if self.isPressed || self.isHighlighted {
+      return .cr_tableRowViewHighlight
+    } else {
+      return .cr_groupedSecondaryBackground
+    }
   }
 }
 

@@ -10,6 +10,7 @@ swift_source_set("popup_swift") {
     "omnibox_popup_view_provider.swift",
     "shared/blurred_background.swift",
     "shared/fake_omnibox_icon.swift",
+    "shared/gradient_view_modifier.swift",
     "shared/omnibox_pedal.swift",
     "shared/popup_empty_space_view.swift",
     "shared/popup_image.swift",
