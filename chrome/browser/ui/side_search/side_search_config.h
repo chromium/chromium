@@ -78,6 +78,13 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // changes.
   void ResetStateAndNotifyConfigChanged();
 
+  bool should_show_page_action_label() const {
+    return should_show_page_action_label_;
+  }
+  void set_should_show_page_action_label(bool should_show_page_action_label) {
+    should_show_page_action_label_ = should_show_page_action_label;
+  }
+
   // TODO(crbug.com/1304513): Allow tests to specify the Google Search
   // configuration on all supported platforms until tests are fully migrated.
   void ApplyGoogleSearchConfigurationForTesting();
@@ -86,6 +93,10 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // Whether or not the service providing the SRP for the side panel is
   // available or not.
   bool is_side_panel_srp_available_ = false;
+
+  // Tracks whether the page action icon has animated-in its label text. Track
+  // this to ensure we only show this at most once per profile per session.
+  bool should_show_page_action_label_ = true;
 
   raw_ptr<Profile> const profile_;
 
