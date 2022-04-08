@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
@@ -23,7 +24,8 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-class AccessCodeCastDialog : public ui::WebDialogDelegate {
+class AccessCodeCastDialog : public ui::WebDialogDelegate,
+                             public views::WidgetObserver {
  public:
   AccessCodeCastDialog(content::BrowserContext* context,
                        const media_router::CastModeSet& cast_mode_set,
@@ -40,6 +42,9 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
                        start_presentation_context);
   // Show the access code dialog box for desktop mirroring.
   static void ShowForDesktopMirroring();
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
  private:
   ui::ModalType GetDialogModalType() const override;
@@ -71,6 +76,12 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
                    std::unique_ptr<media_router::StartPresentationContext>
                        start_presentation_context);
 
+  // ObserveWidget must be called during dialog initialization so that we can
+  // observe the dialog for activation state changes and close the dialog when
+  // it loses focus.
+  void ObserveWidget(views::Widget*);
+
+  views::Widget* dialog_widget_ = nullptr;
   raw_ptr<content::WebUI> webui_ = nullptr;
   const raw_ptr<content::BrowserContext> context_;
   // Cast modes that should be attempted.

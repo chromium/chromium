@@ -90,10 +90,6 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
       this.qrScannerEnabled = available;
     });
 
-    window.onblur = () => {
-      this.close();
-    };
-
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
         this.handleEnterPressed();
