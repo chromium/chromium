@@ -106,6 +106,7 @@ using blink::MediaStreamDevices;
 using blink::MediaStreamRequestType;
 using blink::StreamControls;
 using blink::TrackControls;
+using blink::mojom::GetOpenDeviceResponse;
 using blink::mojom::MediaStreamRequestResult;
 using blink::mojom::MediaStreamType;
 using blink::mojom::StreamSelectionInfo;
@@ -2152,19 +2153,12 @@ void MediaStreamManager::FinalizeGenerateStream(const std::string& label,
 
   // Subscribe to follow permission changes in order to close streams when the
   // user denies mic/camera.
-  // It is safe to bind base::Unretained(this) because MediaStreamManager is
-  // owned by BrowserMainLoop.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MediaStreamManager::SubscribeToPermissionControllerOnUIThread,
-          base::Unretained(this), label, request->requesting_process_id,
-          request->requesting_frame_id, request->requester_id,
-          request->page_request_id, audio_devices.size() > 0,
-          video_devices.size() > 0, request->salt_and_origin.origin.GetURL()));
+  SubscribeToPermissionController(label, request);
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.
+  // TODO(crbug.com/1314741): Avoid using PTZ permission checks for non-gUM
+  // tracks.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&MediaDevicesPermissionChecker::
@@ -2172,14 +2166,66 @@ void MediaStreamManager::FinalizeGenerateStream(const std::string& label,
                      request->requesting_process_id,
                      request->requesting_frame_id),
       base::BindOnce(&MediaStreamManager::PanTiltZoomPermissionChecked,
-                     base::Unretained(this), label, audio_devices,
-                     video_devices));
+                     base::Unretained(this), label, video_devices,
+                     base::BindOnce(std::move(request->generate_stream_cb),
+                                    MediaStreamRequestResult::OK, label,
+                                    audio_devices, video_devices)));
 }
 
+void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
+                                               DeviceRequest* request) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request);
+  DCHECK(request->get_open_device_cb);
+  // GetOpenDevice should return exactly one device, which can be of either
+  // audio or video type.
+  DCHECK_EQ(request->devices.size(), 1ul);
+  SendLogMessage(
+      base::StringPrintf("FinalizeGetOpenDevice({label=%s}, {requester_id="
+                         "%d}, {request_type=%s})",
+                         label.c_str(), request->requester_id,
+                         RequestTypeToString(request->request_type())));
+
+  MediaStreamDevices video_devices;
+  if (blink::IsVideoInputMediaType(request->video_type()))
+    video_devices.push_back(request->devices[0]);
+
+  // Subscribe to follow permission changes in order to close streams when the
+  // user denies mic/camera.
+  SubscribeToPermissionController(label, request);
+
+  base::OnceCallback<void(bool)> ptz_callback = base::BindOnce(
+      [](const std::string& label, GetOpenDeviceCallback callback,
+         MediaStreamDevice device, bool pan_tilt_zoom_allowed) {
+        std::move(callback).Run(
+            MediaStreamRequestResult::OK,
+            GetOpenDeviceResponse(label, device, pan_tilt_zoom_allowed));
+      },
+      label, std::move(request->get_open_device_cb), request->devices[0]);
+
+  // It is safe to bind base::Unretained(this) because MediaStreamManager is
+  // owned by BrowserMainLoop and so outlives the IO thread.
+  // TODO(crbug.com/1314743): Avoid this check once you have this permission
+  // value from original context.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&MediaDevicesPermissionChecker::
+                         HasPanTiltZoomPermissionGrantedOnUIThread,
+                     request->requesting_process_id,
+                     request->requesting_frame_id),
+      base::BindOnce(&MediaStreamManager::PanTiltZoomPermissionChecked,
+                     base::Unretained(this), label, video_devices,
+                     std::move(ptz_callback)));
+}
+
+// TODO(https://crbug.com/1288839): Ensure CaptureHandle works for transferred
+// MediaStreamTracks and add tests for the same.
+// TODO(https://crbug.com/1314634): Ensure track transfer does not initiate
+// focus-change with Conditional focus enabled.
 void MediaStreamManager::PanTiltZoomPermissionChecked(
     const std::string& label,
-    MediaStreamDevices audio_devices,
-    MediaStreamDevices video_devices,
+    const MediaStreamDevices& video_devices,
+    base::OnceCallback<void(bool)> callback,
     bool pan_tilt_zoom_allowed) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DeviceRequest* request = FindRequest(label);
@@ -2192,9 +2238,7 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
       label.c_str(), request->requester_id,
       RequestTypeToString(request->request_type()), pan_tilt_zoom_allowed));
 
-  std::move(request->generate_stream_cb)
-      .Run(MediaStreamRequestResult::OK, label, audio_devices, video_devices,
-           pan_tilt_zoom_allowed);
+  std::move(callback).Run(pan_tilt_zoom_allowed);
 
 #if !BUILDFLAG(IS_ANDROID)
   // 1. Only the first call to SetCapturedDisplaySurfaceFocus() has an
@@ -2467,12 +2511,7 @@ void MediaStreamManager::HandleRequestDone(const std::string& label,
       break;
     }
     case blink::MEDIA_GET_OPEN_DEVICE: {
-      // TODO(https://crbug.com/1288839): Add a new function
-      // FinalizeGetOpenDevice to handle the cloned MediaStreamDevice from
-      // GetOpenDevice.
-      DCHECK(request->get_open_device_cb);
-      std::move(request->get_open_device_cb)
-          .Run(MediaStreamRequestResult::NOT_SUPPORTED, absl::nullopt);
+      FinalizeGetOpenDevice(label, request);
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE:
@@ -3193,6 +3232,26 @@ PermissionControllerImpl* MediaStreamManager::GetPermissionController(
     return nullptr;
 
   return PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+}
+
+void MediaStreamManager::SubscribeToPermissionController(
+    const std::string& label,
+    const DeviceRequest* request) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request);
+
+  // It is safe to bind base::Unretained(this) because MediaStreamManager is
+  // owned by BrowserMainLoop.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaStreamManager::SubscribeToPermissionControllerOnUIThread,
+          base::Unretained(this), label, request->requesting_process_id,
+          request->requesting_frame_id, request->requester_id,
+          request->page_request_id,
+          blink::IsAudioInputMediaType(request->audio_type()),
+          blink::IsVideoInputMediaType(request->video_type()),
+          request->salt_and_origin.origin.GetURL()));
 }
 
 void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(

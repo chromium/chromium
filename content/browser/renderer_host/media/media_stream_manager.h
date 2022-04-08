@@ -573,10 +573,12 @@ class CONTENT_EXPORT MediaStreamManager
       MediaRequestState* existing_request_state) const;
 
   void FinalizeGenerateStream(const std::string& label, DeviceRequest* request);
-  void PanTiltZoomPermissionChecked(const std::string& label,
-                                    blink::MediaStreamDevices audio_devices,
-                                    blink::MediaStreamDevices video_devices,
-                                    bool pan_tilt_zoom_allowed);
+  void FinalizeGetOpenDevice(const std::string& label, DeviceRequest* request);
+  void PanTiltZoomPermissionChecked(
+      const std::string& label,
+      const blink::MediaStreamDevices& video_devices,
+      base::OnceCallback<void(bool)> callback,
+      bool pan_tilt_zoom_allowed);
   void FinalizeRequestFailed(const std::string& label,
                              DeviceRequest* request,
                              blink::mojom::MediaStreamRequestResult result);
@@ -644,6 +646,8 @@ class CONTENT_EXPORT MediaStreamManager
       int requesting_process_id,
       int requesting_frame_id);
 
+  void SubscribeToPermissionController(const std::string& label,
+                                       const DeviceRequest* request);
   // Subscribe to the permission controller in order to monitor camera/mic
   // permission updates for a particular DeviceRequest. All the additional
   // information is needed because `FindRequest` can't be called on the UI

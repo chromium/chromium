@@ -899,8 +899,39 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
                                           video_device.session_id());
 }
 
-// TODO(crbug.com/1288839): Add test that uses GetOpenDevice to successfully
-// return a cloned device.
+TEST_F(MediaStreamManagerTest, GetOpenDeviceForExistingDeviceReturnsDevice) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kMediaStreamTrackTransfer);
+  media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
+    return std::make_unique<FakeMediaStreamUIProxy>(
+        /*tests_use_fake_render_frame_hosts=*/true);
+  }));
+
+  blink::MediaStreamDevice original_device = CreateOrSearchAudioDeviceStream(
+      blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM, absl::nullopt);
+
+  blink::MediaStreamDevice transferred_device;
+  auto result =
+      blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+  EXPECT_EQ(original_device.id, "default");
+  EXPECT_NE(transferred_device.id, original_device.id);
+
+  MediaStreamManager::GetOpenDeviceCallback get_open_device_cb =
+      base::BindOnce(GetOpenDeviceCallback, &transferred_device, &result)
+          .Then(run_loop_.QuitClosure());
+
+  media_stream_manager_->GetOpenDevice(
+      original_device.session_id(), /*render_process_id=*/1,
+      /*render_frame_id=*/1, /*requester_id=*/1, /*page_request_id=*/1,
+      MediaDeviceSaltAndOrigin(), std::move(get_open_device_cb),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
+
+  run_loop_.Run();
+  EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+  EXPECT_EQ(transferred_device.id, original_device.id);
+  EXPECT_NE(transferred_device.session_id(), original_device.session_id());
+}
 
 TEST_F(MediaStreamManagerTest,
        GetOpenDeviceForNonExistentDeviceReturnsInvalidState) {
