@@ -88,7 +88,7 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1114938")
+    @DisabledTest(message = "Flaky - https://crbug.com/1115695")
     public void testRemoveLanguage() {
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();

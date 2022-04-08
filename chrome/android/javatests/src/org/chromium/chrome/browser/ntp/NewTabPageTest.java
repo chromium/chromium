@@ -318,10 +318,10 @@ public class NewTabPageTest {
      * Tests opening a most visited item in a new tab.
      */
     @Test
-    @DisabledTest // Flaked on the try bot. http://crbug.com/543138
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    @DisabledTest(message = "Flaky - crbug.com/543138")
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
