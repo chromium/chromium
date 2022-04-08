@@ -1225,11 +1225,13 @@ TEST_F(AutofillTableTest,
 }
 
 // This test is an adaption of |AutofillTableTest.AutofillProfile| to structured
-// names.
+// names. Like |AutofillTableTest.AutofillProfile|, it tests reading/writing
+// name, email, company, address, phone number and birthdate information.
 TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
-  // Enable the structured names.
+  // Enable the structured names and birthdates.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInNames},
+      {features::kAutofillEnableSupportForMoreStructureInNames,
+       features::kAutofillEnableCompatibilitySupportForBirthdates},
       {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   AutofillProfile home_profile;
@@ -1279,6 +1281,9 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   home_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"MAGIC ###");
   home_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  home_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  home_profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1997);
   home_profile.set_disallow_settings_visible_updates(true);
   home_profile.set_language_code("en");
   Time pre_creation_time = AutofillClock::Now();
@@ -1373,6 +1378,9 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   billing_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"123456");
   billing_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   billing_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181230000");
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 4);
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 5);
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1977);
 
   Time pre_modification_time_2 = AutofillClock::Now();
   EXPECT_TRUE(table_->UpdateAutofillProfile(billing_profile));
@@ -1404,8 +1412,9 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   // Disable the structured names since this test is only applicable if
   // structured names are not used.
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kAutofillEnableSupportForMoreStructureInAddresses,
-           features::kAutofillEnableSupportForMoreStructureInNames});
+      {features::kAutofillEnableCompatibilitySupportForBirthdates},
+      {features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInNames});
 
   // Add a 'Home' profile with non-default data. The specific values are not
   // important.
@@ -1425,6 +1434,9 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   home_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"MAGIC ###");
   home_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  home_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  home_profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1997);
   home_profile.set_language_code("en");
 
   Time pre_creation_time = AutofillClock::Now();
@@ -1504,6 +1516,9 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   billing_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"123456");
   billing_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   billing_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181230000");
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 4);
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 5);
+  billing_profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1977);
 
   Time pre_modification_time_2 = AutofillClock::Now();
   EXPECT_TRUE(table_->UpdateAutofillProfile(billing_profile));
@@ -1631,6 +1646,9 @@ TEST_F(AutofillTableTest, AddFullServerCreditCard) {
 }
 
 TEST_F(AutofillTableTest, UpdateAutofillProfile) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAutofillEnableCompatibilitySupportForBirthdates}, {});
+
   // Add a profile to the db.
   AutofillProfile profile;
   profile.SetRawInfo(NAME_FIRST, u"John");
@@ -1645,6 +1663,9 @@ TEST_F(AutofillTableTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1997);
   profile.set_language_code("en");
   profile.FinalizeAfterImport();
   table_->AddAutofillProfile(profile);

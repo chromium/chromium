@@ -125,7 +125,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 101;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 102;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -2308,5 +2308,40 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion100ToCurrent) {
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
 
     EXPECT_FALSE(connection.DoesTableExist("credit_card_art_images"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion101ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_101.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(101, VersionFromConnection(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 101, 99));
+
+    // The birthdate table should not exist.
+    EXPECT_FALSE(connection.DoesTableExist("autofill_profile_birthdates"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The birthdate table should exist.
+    EXPECT_TRUE(connection.DoesTableExist("autofill_profile_birthdates"));
   }
 }

@@ -39,6 +39,7 @@ bundle_data("unit_tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/web_database/version_100.sql",
+    "//components/test/data/web_database/version_101.sql",
     "//components/test/data/web_database/version_50.sql",
     "//components/test/data/web_database/version_52.sql",
     "//components/test/data/web_database/version_53.sql",

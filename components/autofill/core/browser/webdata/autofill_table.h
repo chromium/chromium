@@ -204,6 +204,16 @@ struct PaymentsCustomerData;
 //                      phone number belongs.
 //   number
 //
+// autofill_profile_birthdates
+//                      This table contains the multi-valued birthdate fields
+//                      associated with a profile.
+//
+//   guid               The guid string that identifies the profile to which the
+//                      birthdate number belongs.
+//   day                As an integer between 1 and 31 inclusive, or 0 if unset.
+//   month              As an integer between 1 and 12 inclusive, or 0 if unset.
+//   year               As a 4 digit integer, or 0 if unset.
+//
 // credit_cards         This table contains credit card data added by the user
 //                      with the Autofill dialog.  Most of the columns are
 //                      standard entries in a credit card form.
@@ -705,6 +715,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion99RemoveAutofillProfilesTrashTable();
   bool MigrateToVersion100RemoveProfileValidityBitfieldColumn();
   bool MigrateToVersion101RemoveCreditCardArtImageTable();
+  bool MigrateToVersion102AddAutofillBirthdatesTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -797,6 +808,7 @@ class AutofillTable : public WebDatabaseTable,
   bool InitProfileNamesTable();
   bool InitProfileEmailsTable();
   bool InitProfilePhonesTable();
+  bool InitProfileBirthdatesTable();
   bool InitMaskedCreditCardsTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();

@@ -519,6 +519,31 @@ bool AddAutofillProfilePhonesToProfile(sql::Database* db,
   }
   return s.Succeeded();
 }
+
+bool AddAutofillProfileBirthdateToProfile(sql::Database* db,
+                                          AutofillProfile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    return true;
+  }
+
+  sql::Statement s(db->GetUniqueStatement(
+      "SELECT guid, day, month, year FROM autofill_profile_birthdates WHERE "
+      "guid=? LIMIT 1"));
+  s.BindString(0, profile->guid());
+
+  if (!s.is_valid())
+    return false;
+
+  if (s.Step()) {
+    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    profile->SetRawInfoAsInt(BIRTHDATE_DAY, s.ColumnInt(1));
+    profile->SetRawInfoAsInt(BIRTHDATE_MONTH, s.ColumnInt(2));
+    profile->SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, s.ColumnInt(3));
+  }
+  return s.Succeeded();
+}
+
 bool AddAutofillProfileEmails(const AutofillProfile& profile,
                               sql::Database* db) {
   // Add the new email.
@@ -541,6 +566,25 @@ bool AddAutofillProfilePhones(const AutofillProfile& profile,
   return s.Run();
 }
 
+bool AddAutofillProfileBirthdate(const AutofillProfile& profile,
+                                 sql::Database* db) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    return true;
+  }
+
+  // Add the new birthdate.
+  sql::Statement s(
+      db->GetUniqueStatement("INSERT INTO autofill_profile_birthdates (guid, "
+                             "day, month, year) VALUES (?,?,?,?)"));
+  s.BindString(0, profile.guid());
+  s.BindInt(1, profile.GetRawInfoAsInt(BIRTHDATE_DAY));
+  s.BindInt(2, profile.GetRawInfoAsInt(BIRTHDATE_MONTH));
+  s.BindInt(3, profile.GetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS));
+
+  return s.Run();
+}
+
 bool AddAutofillProfilePieces(const AutofillProfile& profile,
                               sql::Database* db) {
   if (!AddAutofillProfileNames(profile, db))
@@ -553,6 +597,9 @@ bool AddAutofillProfilePieces(const AutofillProfile& profile,
     return false;
 
   if (!AddAutofillProfileAddresses(profile, db))
+    return false;
+
+  if (!AddAutofillProfileBirthdate(profile, db))
     return false;
 
   return true;
@@ -584,7 +631,14 @@ bool RemoveAutofillProfilePieces(const std::string& guid, sql::Database* db) {
       "DELETE FROM autofill_profile_addresses WHERE guid = ?"));
   s4.BindString(0, guid);
 
-  return s4.Run();
+  if (!s4.Run())
+    return false;
+
+  sql::Statement s5(db->GetUniqueStatement(
+      "DELETE FROM autofill_profile_birthdates WHERE guid = ?"));
+  s5.BindString(0, guid);
+
+  return s5.Run();
 }
 
 WebDatabaseTable::TypeKey GetKey() {
@@ -648,11 +702,11 @@ bool AutofillTable::CreateTablesIfNecessary() {
   return (InitMainTable() && InitCreditCardsTable() && InitProfilesTable() &&
           InitProfileAddressesTable() && InitProfileNamesTable() &&
           InitProfileEmailsTable() && InitProfilePhonesTable() &&
-          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
-          InitServerCardMetadataTable() && InitServerAddressesTable() &&
-          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
-          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
-          InitPaymentsUPIVPATable() &&
+          InitProfileBirthdatesTable() && InitMaskedCreditCardsTable() &&
+          InitUnmaskedCreditCardsTable() && InitServerCardMetadataTable() &&
+          InitServerAddressesTable() && InitServerAddressMetadataTable() &&
+          InitAutofillSyncMetadataTable() && InitModelTypeStateTable() &&
+          InitPaymentsCustomerDataTable() && InitPaymentsUPIVPATable() &&
           InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
           InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable());
 }
@@ -784,6 +838,9 @@ bool AutofillTable::MigrateToVersion(int version,
       // used since M99.
       *update_compatible_version = false;
       return MigrateToVersion101RemoveCreditCardArtImageTable();
+    case 102:
+      *update_compatible_version = false;
+      return MigrateToVersion102AddAutofillBirthdatesTable();
   }
   return true;
 }
@@ -1205,6 +1262,9 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 
   // Get associated phone info using guid.
   AddAutofillProfilePhonesToProfile(db_, profile.get());
+
+  // Get associated birthdate info using guid.
+  AddAutofillProfileBirthdateToProfile(db_, profile.get());
 
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
@@ -2420,7 +2480,13 @@ bool AutofillTable::ClearAutofillProfiles() {
   sql::Statement s5(
       db_->GetUniqueStatement("DELETE FROM autofill_profile_phones"));
 
-  return s5.Run();
+  if (!s5.Run())
+    return false;
+
+  sql::Statement s6(
+      db_->GetUniqueStatement("DELETE FROM autofill_profile_birthdates"));
+
+  return s6.Run();
 }
 
 bool AutofillTable::ClearCreditCards() {
@@ -2511,7 +2577,8 @@ bool AutofillTable::RemoveOrphanAutofillTableRows() {
       "SELECT guid FROM (SELECT guid FROM autofill_profile_names UNION SELECT "
       "guid FROM autofill_profile_emails UNION SELECT guid FROM "
       "autofill_profile_phones UNION SELECT guid FROM "
-      "autofill_profile_addresses) "
+      "autofill_profile_addresses UNION SELECT guid FROM "
+      "autofill_profile_birthdates) "
       "WHERE guid NOT IN (SELECT guid FROM "
       "autofill_profiles)"));
 
@@ -3548,6 +3615,18 @@ bool AutofillTable::MigrateToVersion101RemoveCreditCardArtImageTable() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         db_->Execute(
+             "CREATE TABLE autofill_profile_birthdates ( "
+             "guid VARCHAR, "
+             "day INTEGER DEFAULT 0, "
+             "month INTEGER DEFAULT 0, "
+             "year INTEGER DEFAULT 0)") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3924,6 +4003,20 @@ bool AutofillTable::InitProfilePhonesTable() {
     if (!db_->Execute("CREATE TABLE autofill_profile_phones ( "
                       "guid VARCHAR, "
                       "number VARCHAR)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::InitProfileBirthdatesTable() {
+  if (!db_->DoesTableExist("autofill_profile_birthdates")) {
+    if (!db_->Execute("CREATE TABLE autofill_profile_birthdates ( "
+                      "guid VARCHAR, "
+                      "day INTEGER DEFAULT 0, "
+                      "month INTEGER DEFAULT 0, "
+                      "year INTEGER DEFAULT 0)")) {
       NOTREACHED();
       return false;
     }
