@@ -122,7 +122,7 @@ class PrintJobWorker {
 #endif
 
   // Renders the document to the printer.
-  virtual void SpoolJob();
+  virtual void SpoolDocument();
 
   // Internal state verification that spooling of the document is complete.
   void CheckDocumentSpoolingComplete();

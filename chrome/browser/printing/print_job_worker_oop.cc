@@ -236,7 +236,7 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void PrintJobWorkerOop::SpoolJob() {
+void PrintJobWorkerOop::SpoolDocument() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
   const MetafilePlayer* metafile = document()->GetMetafile();

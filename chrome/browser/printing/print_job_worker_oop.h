@@ -62,7 +62,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #if BUILDFLAG(IS_WIN)
   void SpoolPage(PrintedPage* page) override;
 #endif
-  void SpoolJob() override;
+  void SpoolDocument() override;
   void OnDocumentDone() override;
   void InvokeUseDefaultSettings(SettingsCallback callback) override;
   void InvokeGetSettingsWithUI(uint32_t document_page_count,
