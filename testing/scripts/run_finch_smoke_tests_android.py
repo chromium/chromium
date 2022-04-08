@@ -12,6 +12,7 @@ import posixpath
 import re
 import shutil
 import sys
+import tempfile
 import time
 
 from collections import OrderedDict
@@ -66,6 +67,8 @@ from devil.utils import logging_common
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
+from skia_gold_infra import finch_skia_gold_session_manager
+from skia_gold_infra import finch_skia_gold_utils
 from wpt_android_lib import add_emulator_args, get_device
 
 LOGCAT_FILTERS = [
@@ -96,6 +99,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     if self.options.webview_provider_apk:
       self.webview_provider_package_name = (
           apk_helper.GetPackageName(self.options.webview_provider_apk))
+
+    # Initialize the Skia Gold session manager
+    self._skia_gold_corpus = 'finch-smoke-tests'
+    self._skia_gold_tmp_dir = None
+    self._skia_gold_session_manager = None
 
   @classmethod
   def app_user_sub_dir(cls):
@@ -149,9 +157,17 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
               '%s_finch_smoke_tests_logcat.txt' % self.product_name()),
           filter_specs=LOGCAT_FILTERS)
     self.log_mon.Start()
+    self._skia_gold_tmp_dir = tempfile.mkdtemp()
+    self._skia_gold_session_manager = (
+        finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
+            self._skia_gold_tmp_dir, FinchSkiaGoldProperties(self.options)))
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
+    self._skia_gold_session_manager = None
+    if self._skia_gold_tmp_dir:
+      shutil.rmtree(self._skia_gold_tmp_dir)
+      self._skia_gold_tmp_dir = None
     self.log_mon.Stop()
 
   @property
@@ -168,6 +184,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       '--package-name',
       self.browser_package_name,
       '--keep-app-data-directory',
+      '--reftest-screenshot=always',
     ])
 
     for binary_arg in self.browser_command_line_args():
@@ -220,6 +237,56 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     super(FinchTestCase, self).add_extra_arguments(parser)
     self.add_common_arguments(parser)
 
+  def _compare_screenshots_with_baselines(self, results_dict):
+    """Compare screenshots with baselines stored in skia gold
+
+    Args:
+      results_dict: WPT results dictionary
+
+    Returns:
+      1 if there was an error comparing images otherwise 0
+    """
+    skia_gold_session = (
+        self._skia_gold_session_manager.GetSkiaGoldSession(
+            {'platform': 'android'}, self._skia_gold_corpus))
+
+    def _process_test_leaf(test_result_dict):
+      if ('artifacts' not in test_result_dict or
+          'actual_image' not in test_result_dict['artifacts']):
+        return 0
+
+      return_code = 0
+      artifacts_dict = test_result_dict['artifacts']
+      curr_artifacts = list(artifacts_dict.keys())
+      for artifact_name in curr_artifacts:
+        artifact_path = artifacts_dict[artifact_name][0]
+        # Compare screenshots to baselines stored in Skia Gold
+        status, error = skia_gold_session.RunComparison(
+            artifact_path,
+            os.path.join(os.path.dirname(self.wpt_output), artifact_path))
+
+        if status:
+          results_dict['num_failures_by_type'][test_result_dict['actual']] -= 1
+          test_result_dict['actual'] = 'FAIL'
+          results_dict['num_failures_by_type'].setdefault('FAIL', 0)
+          results_dict['num_failures_by_type']['FAIL'] += 1
+          triage_link = finch_skia_gold_utils.log_skia_gold_status_code(
+              skia_gold_session, artifact_path, status, error)
+          if triage_link:
+            artifacts_dict['%s_triage_link' % artifact_name] = [triage_link]
+          return_code = 1
+      return return_code
+
+    def _process_test_leaves(node):
+      return_code = 0
+      if 'actual' in node:
+        return _process_test_leaf(node)
+      for next_node in node.values():
+        return_code |= _process_test_leaves(next_node)
+      return return_code
+
+    return _process_test_leaves(results_dict['tests'])
+
   @contextlib.contextmanager
   def _install_apks(self):
     yield
@@ -243,10 +310,13 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     """Run browser test on test device
 
     Args:
-      test_suffix: Suffix for log output
+      test_run_variation: Test run variation.
+      results_dict: Main results dictionary containing results
+        for all test variations.
+      extra_browser_args: Extra browser arguments.
 
     Returns:
-      True if browser did not crash or False if the browser crashed
+      True if browser did not crash or False if the browser crashed.
     """
     self.layout_test_results_subdir = ('%s_smoke_test_artifacts' %
                                        test_run_variation)
@@ -260,6 +330,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     with open(self.wpt_output, 'r') as curr_test_results:
       curr_results_dict = json.loads(curr_test_results.read())
       results_dict['tests'][test_run_variation] = curr_results_dict['tests']
+      # Compare screenshots with baselines stored in Skia Gold
+      ret |= self._compare_screenshots_with_baselines(curr_results_dict)
 
       for result, count in curr_results_dict['num_failures_by_type'].items():
         results_dict['num_failures_by_type'].setdefault(result, 0)

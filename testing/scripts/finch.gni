@@ -38,6 +38,7 @@ template("android_wpt_finch_smoke_tests") {
       "//testing:wpt_android_lib",
       "//third_party/blink/tools:wpt_tests_android_isolate",
       "//third_party/catapult/devil:devil",
+      "//ui/base:goldctl",
     ]
 
     if (defined(invoker.data)) {
