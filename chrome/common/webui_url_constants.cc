@@ -443,6 +443,7 @@ const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 const char kOsUIAboutURL[] = "os://about";
 const char kOsUIComponentsURL[] = "os://components";
 const char kOsUIFlagsURL[] = "os://flags";
+const char kOsUIHelpAppURL[] = "os://help-app";
 const char kOsUIVersionURL[] = "os://version";
 #endif
 

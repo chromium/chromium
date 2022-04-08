@@ -192,6 +192,7 @@ source_set("crosapi") {
     "//ash/components/settings:settings",
     "//ash/components/tpm",
     "//ash/constants",
+    "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/chromeos:print_job_info_proto",

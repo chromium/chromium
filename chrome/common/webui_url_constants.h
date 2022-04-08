@@ -378,6 +378,7 @@ extern const char kChromeUIOSSettingsURL[];
 extern const char kOsUIAboutURL[];
 extern const char kOsUIComponentsURL[];
 extern const char kOsUIFlagsURL[];
+extern const char kOsUIHelpAppURL[];
 extern const char kOsUIVersionURL[];
 #endif
 

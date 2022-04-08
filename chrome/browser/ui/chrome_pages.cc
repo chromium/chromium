@@ -136,6 +136,10 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP, params);
 #else
   GURL url;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If this is Lacros, forward the request to Ash.
+  url = GURL(kOsUIHelpAppURL);
+#else
   switch (source) {
     case HELP_SOURCE_KEYBOARD:
       url = GURL(kChromeHelpViaKeyboardURL);
@@ -154,17 +158,18 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
       NOTREACHED() << "Unhandled help source " << source;
   }
+#endif  // BUILDFLAG_IS_CHROMEOS_LACROS)
   std::unique_ptr<ScopedTabbedBrowserDisplayer> displayer;
   if (!browser) {
     displayer = std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
     browser = displayer->browser();
   }
   ShowSingletonTab(browser, url);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
