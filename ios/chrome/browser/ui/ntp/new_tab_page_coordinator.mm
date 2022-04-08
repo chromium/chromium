@@ -887,18 +887,15 @@ namespace {
 #pragma mark - FeedManagementNavigationDelegate
 
 - (void)handleNavigateToActivity {
-  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
   [self.ntpMediator handleFeedManageActivityTapped];
 }
 
 - (void)handleNavigateToInterests {
-  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
   [self.ntpMediator handleFeedManageInterestsTapped];
 }
 
 - (void)handleNavigateToHidden {
-  // TODO(crbug.com/1296745): Implement.
-  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
+  [self.ntpMediator handleFeedManageHiddenTapped];
 }
 
 #pragma mark - Private

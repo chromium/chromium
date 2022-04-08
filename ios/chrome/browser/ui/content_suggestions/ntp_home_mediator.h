@@ -101,6 +101,10 @@ class VoiceSearchAvailability;
 // Discover feed menu.
 - (void)handleFeedManageInterestsTapped;
 
+// Handles the actions following a tap on the "Manage Hidden" item in the
+// Discover feed menu.
+- (void)handleFeedManageHiddenTapped;
+
 // Handles the actions following a tap on the "Learn More" item in the Discover
 // feed menu.
 - (void)handleFeedLearnMoreTapped;

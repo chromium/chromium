@@ -67,6 +67,9 @@ const char kFeedManageActivityURL[] =
 // URL for 'Manage Interests' item in the Discover feed menu.
 const char kFeedManageInterestsURL[] =
     "https://google.com/preferences/interests";
+// URL for 'Manage Hidden' item in the Discover feed menu.
+const char kFeedManageHiddenURL[] =
+    "https://google.com/preferences/interests/hidden";
 // URL for 'Learn More' item in the Discover feed menu;
 const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
@@ -254,6 +257,11 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)handleFeedManageInterestsTapped {
   [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
   [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
+}
+
+- (void)handleFeedManageHiddenTapped {
+  [self openMenuItemWebPage:GURL(kFeedManageHiddenURL)];
+  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
 }
 
 - (void)handleFeedLearnMoreTapped {
