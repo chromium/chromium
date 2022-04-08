@@ -39,6 +39,15 @@ ProcessingAudioFifo::~ProcessingAudioFifo() {
   StopProcessingLoop();
 }
 
+void ProcessingAudioFifo::AttachOnProcessedCallbackForTesting(
+    base::RepeatingClosure on_processed_callback) {
+  // This should only be called before Start().
+  DCHECK(!audio_processing_thread_.IsRunning());
+
+  processing_callback_ =
+      processing_callback_.Then(std::move(on_processed_callback));
+}
+
 void ProcessingAudioFifo::StopProcessingLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_checker_);
 

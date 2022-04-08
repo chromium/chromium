@@ -59,6 +59,11 @@ class ProcessingAudioFifo {
   // ProcessAudioLoop().
   void StartForTesting(base::WaitableEvent* fake_new_data_captured);
 
+  // Adds a callback that will be run immediately after |processing_callback_|,
+  // on the same sequences as |processing_callback_|.
+  void AttachOnProcessedCallbackForTesting(
+      base::RepeatingClosure on_processed_callback);
+
  private:
   friend class ProcessingAudioFifoTest;
 
@@ -95,7 +100,7 @@ class ProcessingAudioFifo {
   base::Thread audio_processing_thread_;
 
   // Processes captured audio data. Only run on |audio_processing_thread_|.
-  const ProcessAudioCallback processing_callback_;
+  ProcessAudioCallback processing_callback_;
 
   base::AtomicFlag fifo_stopping_;
 
