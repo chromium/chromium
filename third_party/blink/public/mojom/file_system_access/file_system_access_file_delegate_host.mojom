@@ -37,6 +37,7 @@ interface FileSystemAccessFileDelegateHost {
 
   // Truncates a file to `length`. If `length` is larger than the file size, the
   // file will be extended with null bytes.
-  // Returns whether the operation completed successfully.
-  SetLength(uint64 length) => (bool success);
+  // Returns a file error, which is `base::File::Error::FILE_OK` if the
+  // operation completed successfully.
+  SetLength(uint64 length) => (mojo_base.mojom.FileError error);
 };

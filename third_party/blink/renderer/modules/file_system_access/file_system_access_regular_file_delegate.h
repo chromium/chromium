@@ -68,7 +68,7 @@ class FileSystemAccessRegularFileDelegate final
   void GetLength(
       base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) override;
   void SetLength(int64_t new_length,
-                 base::OnceCallback<void(bool)> callback) override;
+                 base::OnceCallback<void(base::File::Error)> callback) override;
 
   void Flush(base::OnceCallback<void(bool)> callback) override;
   void Close(base::OnceClosure callback) override;
@@ -96,15 +96,15 @@ class FileSystemAccessRegularFileDelegate final
   // Performs the file I/O part of truncate(), off the main thread.
   static void DoSetLength(
       CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
-      CrossThreadOnceFunction<void(bool)> callback,
+      CrossThreadOnceFunction<void(base::File::Error)> callback,
       base::File file,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       int64_t length);
   // Performs the post file I/O part of truncate(), on the main thread.
-  void DidSetLength(CrossThreadOnceFunction<void(bool)> callback,
+  void DidSetLength(CrossThreadOnceFunction<void(base::File::Error)> callback,
                     int64_t new_length,
                     base::File file,
-                    bool success);
+                    base::File::Error error);
 
   // Performs the file I/O part of flush(), off the main thread.
   static void DoFlush(
@@ -130,9 +130,10 @@ class FileSystemAccessRegularFileDelegate final
   // additional capacity (if needed), have been performed.
   // If `request_capacity_result` is false, requesting capacity for the
   // operation failed.
-  void DidCheckSetLengthCapacity(base::OnceCallback<void(bool)> callback,
-                                 int64_t new_length,
-                                 bool request_capacity_result);
+  void DidCheckSetLengthCapacity(
+      base::OnceCallback<void(base::File::Error)> callback,
+      int64_t new_length,
+      bool request_capacity_result);
 
 #if BUILDFLAG(IS_MAC)
   // We need the FileUtilitiesHost only on Mac, where we have to execute

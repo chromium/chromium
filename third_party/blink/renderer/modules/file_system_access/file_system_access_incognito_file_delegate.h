@@ -42,7 +42,8 @@ class FileSystemAccessIncognitoFileDelegate final
 
   void GetLength(
       base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) override;
-  void SetLength(int64_t length, base::OnceCallback<void(bool)>) override;
+  void SetLength(int64_t length,
+                 base::OnceCallback<void(base::File::Error)> callback) override;
 
   void Flush(base::OnceCallback<void(bool)> callback) override;
   void Close(base::OnceClosure callback) override;

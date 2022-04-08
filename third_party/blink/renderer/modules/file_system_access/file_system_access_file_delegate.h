@@ -54,9 +54,9 @@ class FileSystemAccessFileDelegate
 
   // Asynchronously truncates the file to the given length. If `length` is
   // greater than the current size of the file, the file is extended with zeros.
-  // If the file doesn't exist, `false` is returned.
-  virtual void SetLength(int64_t length,
-                         base::OnceCallback<void(bool)> callback) = 0;
+  virtual void SetLength(
+      int64_t length,
+      base::OnceCallback<void(base::File::Error)> callback) = 0;
 
   // Asynchronously instructs the filesystem to flush the file to disk.
   virtual void Flush(base::OnceCallback<void(bool)> callback) = 0;

@@ -166,7 +166,7 @@ void FileSystemAccessIncognitoFileDelegate::GetLength(
 
 void FileSystemAccessIncognitoFileDelegate::SetLength(
     int64_t length,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(base::File::Error)> callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (length < 0) {
     // This method is expected to finish asynchronously, so post a task to the

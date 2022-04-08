@@ -210,20 +210,28 @@ ScriptPromise FileSystemSyncAccessHandle::truncate(
       base::checked_cast<int64_t>(size),
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
-             FileSystemSyncAccessHandle* access_handle, bool success) {
+             FileSystemSyncAccessHandle* access_handle,
+             base::File::Error file_error) {
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state->ContextIsValid())
               return;
             ScriptState::Scope scope(script_state);
 
             access_handle->ExitOperation();
-            if (!success) {
+            if (file_error == base::File::FILE_ERROR_NO_SPACE) {
+              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                  script_state->GetIsolate(),
+                  DOMExceptionCode::kQuotaExceededError,
+                  "No space available for this operation"));
+              return;
+            }
+            if (file_error != base::File::FILE_OK) {
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   script_state->GetIsolate(),
                   DOMExceptionCode::kInvalidStateError, "truncate failed"));
               return;
             }
-            resolver->Resolve(success);
+            resolver->Resolve(true);
           },
           WrapPersistent(resolver), WrapPersistent(this)));
 

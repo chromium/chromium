@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_regular_file_delegate.h"
 
+#include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -156,7 +157,7 @@ void FileSystemAccessRegularFileDelegate::DidGetLength(
 
 void FileSystemAccessRegularFileDelegate::SetLength(
     int64_t new_length,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(base::File::Error)> callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (new_length < 0) {
     // This method is expected to finish asynchronously, so post a task to the
@@ -173,17 +174,19 @@ void FileSystemAccessRegularFileDelegate::SetLength(
 }
 
 void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(base::File::Error)> callback,
     int64_t new_length,
     bool request_capacity_success) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!request_capacity_success) {
-    task_runner_->PostTask(FROM_HERE, WTF::Bind(std::move(callback), false));
+    task_runner_->PostTask(
+        FROM_HERE,
+        WTF::Bind(std::move(callback), base::File::Error::FILE_ERROR_NO_SPACE));
     return;
   }
 
   auto wrapped_callback =
-      CrossThreadOnceFunction<void(bool)>(std::move(callback));
+      CrossThreadOnceFunction<void(base::File::Error)>(std::move(callback));
 
 #if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
@@ -197,9 +200,20 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
     }
     file_utilities_host_->SetLength(
         std::move(backing_file_), new_length,
-        WTF::Bind(&FileSystemAccessRegularFileDelegate::DidSetLength,
-                  WrapPersistent(this), std::move(wrapped_callback),
-                  new_length));
+        WTF::Bind(
+            [](base::OnceCallback<void(base::File, base::File::Error)> callback,
+               base::File file, bool success) {
+              // Unfortunately we don't have access to the error code when using
+              // the FileUtilitiesHost, so we can say the operation failed but
+              // not why (ex: out of quota).
+              std::move(callback).Run(
+                  std::move(file), success
+                                       ? base::File::Error::FILE_OK
+                                       : base::File::Error::FILE_ERROR_FAILED);
+            },
+            WTF::Bind(&FileSystemAccessRegularFileDelegate::DidSetLength,
+                      WrapPersistent(this), std::move(wrapped_callback),
+                      new_length)));
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -216,26 +230,29 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
 // static
 void FileSystemAccessRegularFileDelegate::DoSetLength(
     CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
-    CrossThreadOnceFunction<void(bool)> callback,
+    CrossThreadOnceFunction<void(base::File::Error)> callback,
     base::File file,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int64_t length) {
   DCHECK(!IsMainThread());
 
+  base::File::Error error = base::File::Error::FILE_OK;
   bool success = file.SetLength(length);
+  if (!success)
+    error = base::File::GetLastFileError();
 
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DidSetLength,
                           std::move(delegate), std::move(callback), length,
-                          std::move(file), success));
+                          std::move(file), error));
 }
 
 void FileSystemAccessRegularFileDelegate::DidSetLength(
-    CrossThreadOnceFunction<void(bool)> callback,
+    CrossThreadOnceFunction<void(base::File::Error)> callback,
     int64_t new_length,
     base::File file,
-    bool success) {
+    base::File::Error error) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   backing_file_ = std::move(file);
 
@@ -243,10 +260,10 @@ void FileSystemAccessRegularFileDelegate::DidSetLength(
   // that setLength operations either succeed or do not change the file's
   // length, which is consistent with the way other file operations are
   // implemented in File System Access.
-  if (success)
+  if (error == base::File::FILE_OK)
     capacity_tracker_->CommitFileSizeChange(new_length);
 
-  std::move(callback).Run(success);
+  std::move(callback).Run(error);
 }
 
 void FileSystemAccessRegularFileDelegate::Flush(

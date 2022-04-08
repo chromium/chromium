@@ -191,12 +191,7 @@ void FileSystemAccessFileDelegateHostImpl::SetLength(
 
   manager()->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Truncate,
-      base::BindOnce(
-          [](SetLengthCallback callback, base::File::Error result) {
-            std::move(callback).Run(result == base::File::Error::FILE_OK);
-          },
-          std::move(callback)),
-      url(), length);
+      std::move(callback), url(), length);
 }
 
 void FileSystemAccessFileDelegateHostImpl::OnDisconnect() {
