@@ -22,44 +22,52 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/dcheck_is_on.h"
 
-namespace base {
+namespace partition_alloc {
 
 void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   // This is from page_allocator_constants.h and doesn't really fit here, but
   // there isn't a centralized initialization function in page_allocator.cc, so
   // there's no good place in that file to do a STATIC_ASSERT_OR_PA_CHECK.
-  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & SystemPageOffsetMask()) == 0,
-                            "SystemPageSize() must be power of 2");
+  STATIC_ASSERT_OR_PA_CHECK(
+      (internal::SystemPageSize() & internal::SystemPageOffsetMask()) == 0,
+      "SystemPageSize() must be power of 2");
 
   // Two partition pages are used as guard / metadata page so make sure the
   // super page size is bigger.
-  STATIC_ASSERT_OR_PA_CHECK(PartitionPageSize() * 4 <= kSuperPageSize,
-                            "ok super page size");
-  STATIC_ASSERT_OR_PA_CHECK((kSuperPageSize & SystemPageOffsetMask()) == 0,
-                            "ok super page multiple");
+  STATIC_ASSERT_OR_PA_CHECK(
+      internal::PartitionPageSize() * 4 <= internal::kSuperPageSize,
+      "ok super page size");
+  STATIC_ASSERT_OR_PA_CHECK(
+      (internal::kSuperPageSize & internal::SystemPageOffsetMask()) == 0,
+      "ok super page multiple");
   // Four system pages gives us room to hack out a still-guard-paged piece
   // of metadata in the middle of a guard partition page.
-  STATIC_ASSERT_OR_PA_CHECK(SystemPageSize() * 4 <= PartitionPageSize(),
-                            "ok partition page size");
-  STATIC_ASSERT_OR_PA_CHECK((PartitionPageSize() & SystemPageOffsetMask()) == 0,
-                            "ok partition page multiple");
+  STATIC_ASSERT_OR_PA_CHECK(
+      internal::SystemPageSize() * 4 <= internal::PartitionPageSize(),
+      "ok partition page size");
+  STATIC_ASSERT_OR_PA_CHECK(
+      (internal::PartitionPageSize() & internal::SystemPageOffsetMask()) == 0,
+      "ok partition page multiple");
   static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
-                    kPageMetadataSize,
+                    internal::kPageMetadataSize,
                 "PartitionPage should not be too big");
   STATIC_ASSERT_OR_PA_CHECK(
-      kPageMetadataSize * NumPartitionPagesPerSuperPage() <= SystemPageSize(),
+      internal::kPageMetadataSize * internal::NumPartitionPagesPerSuperPage() <=
+          internal::SystemPageSize(),
       "page metadata fits in hole");
 
   // Limit to prevent callers accidentally overflowing an int size.
   STATIC_ASSERT_OR_PA_CHECK(
-      MaxDirectMapped() <= (1UL << 31) + DirectMapAllocationGranularity(),
+      internal::MaxDirectMapped() <=
+          (1UL << 31) + internal::DirectMapAllocationGranularity(),
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.
-  static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
-  static_assert(kMaxBucketed == 917504, "generic max bucketed");
+  static_assert(internal::kSmallestBucket == internal::kAlignment,
+                "generic smallest bucket");
+  static_assert(internal::kMaxBucketed == 917504, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
-      MaxSystemPagesPerRegularSlotSpan() <= 16,
+      internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");
 
   PA_DCHECK(on_out_of_memory);
@@ -110,4 +118,4 @@ void CheckThatSlotOffsetIsZero(uintptr_t address) {
 
 }  // namespace internal
 
-}  // namespace base
+}  // namespace partition_alloc

@@ -44,6 +44,11 @@ constexpr bool ThreadSafe = true;
 template <bool thread_safe>
 struct SlotSpanMetadata;
 
+#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+    BUILDFLAG(USE_BACKUP_REF_PTR)
+void CheckThatSlotOffsetIsZero(uintptr_t address);
+#endif
+
 }  // namespace internal
 
 class PartitionStatsDumper;
@@ -64,7 +69,7 @@ using ::partition_alloc::internal::ThreadSafe;
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-BASE_EXPORT void CheckThatSlotOffsetIsZero(uintptr_t address);
+using ::partition_alloc::internal::CheckThatSlotOffsetIsZero;
 #endif
 
 }  // namespace internal
@@ -81,15 +86,6 @@ namespace partition_alloc {
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
 using ::base::PartitionRoot;
-
-namespace internal {
-
-#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(USE_BACKUP_REF_PTR)
-using ::base::internal::CheckThatSlotOffsetIsZero;
-#endif
-
-}  // namespace internal
 
 }  // namespace partition_alloc
 

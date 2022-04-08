@@ -1996,6 +1996,12 @@ namespace internal {
 // the migration to the new namespaces gets done.
 using ::base::internal::ScopedSyscallTimer;
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+using ::base::internal::PartitionAllocFreeForRefCounting;
+using ::base::internal::PartitionAllocGetSlotStartInBRPPool;
+using ::base::internal::PartitionAllocIsValidPtrDelta;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
 }  // namespace internal
 
 }  // namespace partition_alloc

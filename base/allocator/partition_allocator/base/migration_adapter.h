@@ -52,6 +52,13 @@ void BASE_EXPORT Alias(const void* var);
 
 }  // namespace debug
 
+namespace internal {
+
+template <typename T>
+class CheckedNumeric;
+
+}
+
 #if BUILDFLAG(IS_MAC)
 
 namespace internal {
@@ -72,6 +79,7 @@ template <typename T>
 T CFCastStrict(const CFTypeRef& cf_val);
 
 bool IsAtLeastOS10_14();
+bool IsOS10_11();
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)
@@ -98,6 +106,7 @@ using ::base::Seconds;
 using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
+using ::base::internal::CheckedNumeric;
 
 #if BUILDFLAG(IS_MAC)
 template <typename CFT>
@@ -116,6 +125,7 @@ namespace mac {
 
 using ::base::mac::CFCast;
 using ::base::mac::IsAtLeastOS10_14;
+using ::base::mac::IsOS10_11;
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)
