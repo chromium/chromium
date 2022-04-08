@@ -365,7 +365,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            const std::string& message) override;
   void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                const std::u16string& method_name,
-                               base::Value arguments,
+                               base::Value::List arguments,
                                JavaScriptResultCallback callback) override;
   void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;

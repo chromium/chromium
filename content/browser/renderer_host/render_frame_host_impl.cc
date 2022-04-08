@@ -2444,16 +2444,15 @@ void RenderFrameHostImpl::AddMessageToConsole(
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
     const std::u16string& object_name,
     const std::u16string& method_name,
-    base::Value arguments,
+    base::Value::List arguments,
     JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(arguments.is_list());
   CHECK(CanExecuteJavaScript());
   AssertNonSpeculativeFrame();
 
   const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptMethodExecuteRequest(
-      object_name, method_name, std::move(arguments.GetList()), wants_result,
+      object_name, method_name, std::move(arguments), wants_result,
       std::move(callback));
 }
 

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -47,7 +48,6 @@ class JavaRef;
 
 class TimeDelta;
 class UnguessableToken;
-class Value;
 }  // namespace base
 
 namespace blink {
@@ -552,7 +552,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
   virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                        const std::u16string& method_name,
-                                       base::Value arguments,
+                                       base::Value::List arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only

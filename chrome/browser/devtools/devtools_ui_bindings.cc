@@ -1660,7 +1660,7 @@ void DevToolsUIBindings::CallClientMethod(
   // inspector and client being destroyed), the message can not be sent.
   if (!web_contents_->GetMainFrame()->IsRenderFrameCreated())
     return;
-  base::Value arguments(base::Value::Type::LIST);
+  base::Value::List arguments;
   if (!arg1.is_none()) {
     arguments.Append(std::move(arg1));
     if (!arg2.is_none()) {
