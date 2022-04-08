@@ -14,6 +14,41 @@
 
 namespace optimization_guide {
 
+// Enumerates the statuses possible when creating an entity annotator.
+//
+// Keep this in sync with
+// OptimizationGuidePageEntitiesModelExecutorCreationStatus in enums.xml.
+enum class EntityAnnotatorCreationStatus {
+  kUnknown = 0,
+  // The entity annotator was created successfully.
+  kSuccess = 1,
+  // The native library was loaded but invalid. Should not happen in the real
+  // world.
+  kLibraryInvalid = 2,
+  // The entity annotator was requested to be created but no metadata for how to
+  // create it was present.
+  kMissingModelMetadata = 3,
+  // The entity annotator was requested to be created but the metadata specific
+  // to this model was not present.
+  kMissingEntitiesModelMetadata = 4,
+  // The entity annotator was requested to be created but no slices were
+  // specified in the model metadata.
+  kMissingEntitiesModelMetadataSliceSpecification = 5,
+  // Expected files are missing.
+  kMissingAdditionalEntitiesModelMetadataPath = 6,
+  kMissingAdditionalWordEmbeddingsPath = 7,
+  kMissingAdditionalNameFilterPath = 8,
+  kMissingAdditionalNameTablePath = 9,
+  kMissingAdditionalPrefixFilterPath = 10,
+  kMissingAdditionalMetadataTablePath = 11,
+  // All required files were present, but the creation failed for a different
+  // reason.
+  kInitializationFailure = 12,
+
+  // New values go above here.
+  kMaxValue = kInitializationFailure,
+};
+
 // Handles interactions with the native library that contains logic for the
 // entity annotator.
 class EntityAnnotatorNativeLibrary {
@@ -61,9 +96,12 @@ class EntityAnnotatorNativeLibrary {
   void LoadFunctions();
 
   // Populates |options| based on |model_info|. Returns false if |model_info|
-  // cannot construct a valid options object.
-  bool PopulateEntityAnnotatorOptionsFromModelInfo(void* options,
-                                                   const ModelInfo& model_info);
+  // cannot construct a valid options object. Populates |status| with the
+  // correct failure reason if a valid options object could not be constructed.
+  bool PopulateEntityAnnotatorOptionsFromModelInfo(
+      void* options,
+      const ModelInfo& model_info,
+      EntityAnnotatorCreationStatus* status);
 
   // Returns an entity metadata from the C-API representation.
   EntityMetadata GetEntityMetadataFromOptimizationGuideEntityMetadata(

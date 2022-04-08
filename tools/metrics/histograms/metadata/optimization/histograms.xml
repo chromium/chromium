@@ -736,6 +736,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageEntitiesModelExecutor.CreationStatus"
+    enum="OptimizationGuideEntityAnnotatorCreationStatus" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status for the page entities model executor's creation. Recorded
+    each time it was attempted, which can be multiple times a session if a model
+    update was received during the session.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageTextDump.AbandonedRequests"
     units="count" expires_after="M106">
   <owner>robertogden@chromium.org</owner>

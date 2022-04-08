@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/entity_annotator_native_library.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -170,6 +171,9 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      EntityAnnotatorCreationStatus::kMissingModelMetadata, 1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
@@ -196,6 +200,9 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      EntityAnnotatorCreationStatus::kMissingEntitiesModelMetadata, 1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
@@ -222,6 +229,11 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      EntityAnnotatorCreationStatus::
+          kMissingEntitiesModelMetadataSliceSpecification,
+      1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
@@ -232,30 +244,42 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
   metadata.SerializeToString(any.mutable_value());
 
   base::FilePath dir_path = GetModelTestDataDir();
-  base::flat_set<std::string> expected_additional_files = {
-      FilePathToString(dir_path.AppendASCII("model_metadata.pb")),
-      FilePathToString(dir_path.AppendASCII("word_embeddings")),
-      FilePathToString(dir_path.AppendASCII("global-entities_names")),
-      FilePathToString(dir_path.AppendASCII("global-entities_metadata")),
-      FilePathToString(dir_path.AppendASCII("global-entities_names_filter")),
-      FilePathToString(dir_path.AppendASCII("global-entities_prefixes_filter")),
-  };
+  // A map from the additional file and the creation status if the file was
+  // missing.
+  base::flat_map<std::string, EntityAnnotatorCreationStatus>
+      expected_additional_files = {
+          {FilePathToString(dir_path.AppendASCII("model_metadata.pb")),
+           EntityAnnotatorCreationStatus::
+               kMissingAdditionalEntitiesModelMetadataPath},
+          {FilePathToString(dir_path.AppendASCII("word_embeddings")),
+           EntityAnnotatorCreationStatus::kMissingAdditionalWordEmbeddingsPath},
+          {FilePathToString(dir_path.AppendASCII("global-entities_names")),
+           EntityAnnotatorCreationStatus::kMissingAdditionalNameTablePath},
+          {FilePathToString(dir_path.AppendASCII("global-entities_metadata")),
+           EntityAnnotatorCreationStatus::kMissingAdditionalMetadataTablePath},
+          {FilePathToString(
+               dir_path.AppendASCII("global-entities_names_filter")),
+           EntityAnnotatorCreationStatus::kMissingAdditionalNameFilterPath},
+          {FilePathToString(
+               dir_path.AppendASCII("global-entities_prefixes_filter")),
+           EntityAnnotatorCreationStatus::kMissingAdditionalPrefixFilterPath},
+      };
   // Remove one file for each iteration and make sure it fails.
-  for (const auto& missing_file_name : expected_additional_files) {
+  for (const auto& missing_file_and_status : expected_additional_files) {
     base::HistogramTester histogram_tester;
-
-    // Make a copy of the expected files and remove the one file from the set.
-    base::flat_set<std::string> additional_files = expected_additional_files;
-    additional_files.erase(missing_file_name);
 
     proto::PredictionModel model;
     model.mutable_model()->set_download_url(
         FilePathToString(dir_path.AppendASCII("model.tflite")));
     model.mutable_model_info()->set_version(123);
     *model.mutable_model_info()->mutable_model_metadata() = any;
-    for (const auto& additional_file : additional_files) {
+    for (const auto& additional_file : expected_additional_files) {
+      if (additional_file.first == missing_file_and_status.first) {
+        // Don't add the file if it's supposed to be missing.
+        continue;
+      }
       model.mutable_model_info()->add_additional_files()->set_file_path(
-          additional_file);
+          additional_file.first);
     }
     std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
     ASSERT_TRUE(model_info);
@@ -268,6 +292,10 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
         false, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+        missing_file_and_status.second, 1);
   }
 }
 
