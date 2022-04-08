@@ -576,10 +576,6 @@ void WebSettingsImpl::SetPictureInPictureEnabled(bool enabled) {
   settings_->SetPictureInPictureEnabled(enabled);
 }
 
-void WebSettingsImpl::SetDataSaverHoldbackWebApi(bool enabled) {
-  settings_->SetDataSaverHoldbackWebApi(enabled);
-}
-
 void WebSettingsImpl::SetWebAppScope(const WebString& scope) {
   settings_->SetWebAppScope(scope);
 }

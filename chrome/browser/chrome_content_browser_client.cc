@@ -3468,10 +3468,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
   web_prefs->data_saver_enabled = IsDataSaverEnabled(profile);
 
-  web_prefs->data_saver_holdback_web_api_enabled =
-      base::GetFieldTrialParamByFeatureAsBool(features::kDataSaverHoldback,
-                                              "holdback_web", false);
-
   if (web_contents) {
 #if BUILDFLAG(IS_ANDROID)
     auto* delegate = TabAndroid::FromWebContents(web_contents)

@@ -238,11 +238,6 @@ const base::Feature kCrashReporting{"CrashReporting",
 const base::Feature kCriticalClientHint{"CriticalClientHint",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Puts save-data header in the holdback mode. This disables sending of
-// save-data header to origins, and to the renderer processes within Chrome.
-const base::Feature kDataSaverHoldback{"DataSaverHoldback",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable debugging the issue crbug.com/1201355
 const base::Feature kDebugHistoryInterventionNoUserActivation{
     "DebugHistoryInterventionNoUserActivation",

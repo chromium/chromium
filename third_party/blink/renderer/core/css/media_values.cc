@@ -402,8 +402,7 @@ bool MediaValues::CalculatePrefersReducedData(LocalFrame* frame) {
     if (value.IsValid())
       return value.Id() == CSSValueID::kReduce;
   }
-  return (GetNetworkStateNotifier().SaveDataEnabled() &&
-          !frame->GetSettings()->GetDataSaverHoldbackWebApi());
+  return GetNetworkStateNotifier().SaveDataEnabled();
 }
 
 ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {

@@ -701,6 +701,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmCursive;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmFantasy;
 #endif
 
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsSaveData;
+
 }  // namespace features
 }  // namespace blink
 

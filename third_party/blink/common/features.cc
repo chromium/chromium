@@ -1410,5 +1410,9 @@ const base::FeatureParam<bool> kPrewarmFantasy = {&kPrewarmDefaultFontFamilies,
                                                   "prewarm_fantasy", true};
 #endif
 
+// Enable `save-data` client hint.
+const base::Feature kClientHintsSaveData{"ClientHintsSaveData",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

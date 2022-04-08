@@ -5,18 +5,18 @@
 #include "content/browser/loader/browser_initiated_resource_request.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "net/http/http_request_headers.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
@@ -41,8 +41,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
   // Set the Save-Data header if appropriate.
   // https://tools.ietf.org/html/draft-grigorik-http-client-hints-03#section-7
   if (GetContentClient()->browser()->IsDataSaverEnabled(browser_context) &&
-      !base::GetFieldTrialParamByFeatureAsBool(features::kDataSaverHoldback,
-                                               "holdback_web", false)) {
+      base::FeatureList::IsEnabled(blink::features::kClientHintsSaveData)) {
     if (should_update_existing_headers) {
       headers->RemoveHeader("Save-Data");
     }

@@ -264,9 +264,7 @@ FrameFetchContext::FrameFetchContext(
     : BaseFetchContext(properties),
       document_loader_(document_loader),
       document_(document),
-      save_data_enabled_(
-          GetNetworkStateNotifier().SaveDataEnabled() &&
-          !GetFrame()->GetSettings()->GetDataSaverHoldbackWebApi()) {}
+      save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()) {}
 
 net::SiteForCookies FrameFetchContext::GetSiteForCookies() const {
   if (GetResourceFetcherProperties().IsDetached())
@@ -307,7 +305,8 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   if (IsReloadLoadType(document_loader_->LoadType()))
     request.ClearHttpHeaderField(http_names::kSaveData);
 
-  if (save_data_enabled_)
+  if (save_data_enabled_ &&
+      base::FeatureList::IsEnabled(features::kClientHintsSaveData))
     request.SetHttpHeaderField(http_names::kSaveData, "on");
 
   AddBackForwardCacheExperimentHTTPHeaderIfNeeded(request);

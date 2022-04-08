@@ -818,13 +818,6 @@
       initial: false,
     },
 
-    // Whether data saver holdback for Web APIs is enabled. If enabled, data saver appears
-    // as disabled to the web consumers even if it has been actually enabled by the user.
-    {
-      name: "dataSaverHoldbackWebApi",
-      initial: false,
-    },
-
     // Whether to invalidate device-dependent media queries and restore scroll positions
     // on frame resize assuming device rotation.
     {

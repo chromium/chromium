@@ -1700,9 +1700,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       GetVideoSurfaceLayerMode() !=
           blink::WebMediaPlayer::SurfaceLayerMode::kNever);
 
-  settings->SetDataSaverHoldbackWebApi(
-      prefs.data_saver_holdback_web_api_enabled);
-
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
   settings->SetPreferredColorScheme(prefs.preferred_color_scheme);
   settings->SetPreferredContrast(prefs.preferred_contrast);

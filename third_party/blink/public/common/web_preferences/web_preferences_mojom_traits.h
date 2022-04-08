@@ -137,11 +137,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.data_saver_enabled;
   }
 
-  static bool data_saver_holdback_web_api_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.data_saver_holdback_web_api_enabled;
-  }
-
   static bool local_storage_enabled(const blink::web_pref::WebPreferences& r) {
     return r.local_storage_enabled;
   }

@@ -130,10 +130,6 @@ struct WebPreferences {
   // Preference to save data. When enabled, requests will contain the header
   // 'Save-Data: on'.
   bool data_saver_enabled;
-  // Whether data saver holdback for Web APIs is enabled. If enabled, data saver
-  // appears as disabled to the web consumers even if it has been actually
-  // enabled by the user.
-  bool data_saver_holdback_web_api_enabled;
   bool local_storage_enabled;
   bool databases_enabled;
   bool tabs_to_links;
