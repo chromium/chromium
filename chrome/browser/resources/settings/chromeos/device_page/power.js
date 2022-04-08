@@ -163,6 +163,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kPowerSource,
         chromeos.settings.mojom.Setting.kSleepWhenLaptopLidClosed,
         chromeos.settings.mojom.Setting.kPowerIdleBehaviorWhileOnBattery,
+        chromeos.settings.mojom.Setting.kAdaptiveCharging,
       ]),
     },
   },
@@ -307,11 +308,14 @@ Polymer({
 
   /** @private */
   onAdaptiveChargingToggleChange_() {
-    this.browserProxy_.setAdaptiveCharging(
-        this.$.adaptiveChargingToggle.checked);
-    // TODO(b/216035280): use two-arg version of this function once the adaptive
-    // charging setting has been defined.
-    recordSettingChange();
+    const /** @type {boolean} */ enabled =
+        this.$.adaptiveChargingToggle.checked;
+    this.browserProxy_.setAdaptiveCharging(enabled);
+    recordSettingChange(
+        chromeos.settings.mojom.Setting.kAdaptiveCharging,
+        /** @type {!chromeos.settings.mojom.SettingChangeValue} */ ({
+          boolValue: enabled
+        }));
   },
 
   /**

@@ -523,6 +523,9 @@
   <message name="IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set the idle (i.e., sleep) behavior while on the device is being powered by its battery. Alternate phrase for: 'Idle power on battery'">
     Sleep while on battery
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable adaptive charging.">
+    Adaptive charging
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to touchpad settings. Alternate phrase for: 'Trackpad'">
     Touchpad
   </message>

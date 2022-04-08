@@ -68623,6 +68623,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="437" label="Pointing Stick: Swap Primary Buttons"/>
   <int value="438" label="Touchpad: Haptic Feedback"/>
   <int value="439" label="Touchpad: Haptic Click Sensitivity"/>
+  <int value="440" label="Power: Adaptive Charging"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>

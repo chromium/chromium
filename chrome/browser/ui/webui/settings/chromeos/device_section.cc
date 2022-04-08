@@ -500,6 +500,19 @@ const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING,
+       mojom::kPowerSubpagePath,
+       mojom::SearchResultIcon::kPower,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kAdaptiveCharging},
+       {}},
+  });
+  return *tags;
+}
+
 bool AreScrollSettingsAllowed() {
   return base::FeatureList::IsEnabled(
       ::chromeos::features::kAllowScrollSettings);
@@ -816,6 +829,10 @@ DeviceSection::DeviceSection(Profile* profile,
     // Determine whether to show laptop lid power settings.
     power_manager_client->GetSwitchStates(base::BindOnce(
         &DeviceSection::OnGotSwitchStates, weak_ptr_factory_.GetWeakPtr()));
+
+    // Surface adaptive charging setting in search if the feature is enabled.
+    if (ash::features::IsAdaptiveChargingEnabled())
+      updater.AddSearchTags(GetPowerWithAdaptiveChargingSearchConcepts());
   }
 
   // Keyboard/mouse search tags are added/removed dynamically.
@@ -1026,6 +1043,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kPowerIdleBehaviorWhileOnBattery,
       mojom::Setting::kPowerSource,
       mojom::Setting::kSleepWhenLaptopLidClosed,
+      mojom::Setting::kAdaptiveCharging,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPower, kPowerSettings, generator);
 }
