@@ -354,7 +354,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
@@ -406,7 +406,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
@@ -449,7 +449,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_ltr =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -504,7 +504,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_pending =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -563,7 +563,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_none =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -616,7 +616,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   BrowserAccessibilityManagerAndroid* android_manager =
       manager->ToBrowserAccessibilityManagerAndroid();
-  android_manager->set_allow_image_descriptions(true);
+  android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_succeeded =
       static_cast<BrowserAccessibilityAndroid*>(
