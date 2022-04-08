@@ -8,11 +8,15 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/process_type.h"
 
 namespace performance_monitor {
@@ -35,7 +39,9 @@ struct ProcessMetadata {
 // ProcessMonitor is a tool which periodically monitors performance metrics
 // of all the Chrome processes for histogram logging and possibly taking action
 // upon noticing serious performance degradation.
-class ProcessMonitor {
+class ProcessMonitor : public content::BrowserChildProcessObserver,
+                       public content::RenderProcessHostCreationObserver,
+                       public content::RenderProcessHostObserver {
  public:
   // The interval at which ProcessMonitor performs its timed collections.
   static constexpr base::TimeDelta kGatherInterval = base::Minutes(2);
@@ -96,7 +102,7 @@ class ProcessMonitor {
   ProcessMonitor(const ProcessMonitor&) = delete;
   ProcessMonitor& operator=(const ProcessMonitor&) = delete;
 
-  virtual ~ProcessMonitor();
+  ~ProcessMonitor() override;
 
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
@@ -113,32 +119,46 @@ class ProcessMonitor {
   }
 
  private:
-  // Mark the given process as alive in the current update iteration.
-  // This means adding an entry to the map of watched processes if it's not
-  // already present.
-  void MarkProcessAsAlive(const ProcessMetadata& process_data,
-                          int current_update_sequence);
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(
+      content::RenderProcessHost* render_process_host) override;
 
-  // Returns the ProcessMetadata for renderer processes.
-  static std::vector<ProcessMetadata> GatherRendererProcesses();
+  // content::RenderProcessHostObserver:
+  void RenderProcessReady(
+      content::RenderProcessHost* render_process_host) override;
+  void RenderProcessExited(
+      content::RenderProcessHost* render_process_host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(
+      content::RenderProcessHost* render_process_host) override;
 
-  // Returns the ProcessMetadata for non renderers.
-  static std::vector<ProcessMetadata> GatherNonRendererProcesses();
+  // content::BrowserChildProcessObserver:
+  void BrowserChildProcessLaunchedAndConnected(
+      const content::ChildProcessData& data) override;
+  void BrowserChildProcessHostDisconnected(
+      const content::ChildProcessData& data) override;
 
-  // Gather all the processes and updates the ProcessMetrics map with the
-  // current list of processes and gathers metrics from each entry.
-  void GatherProcesses();
+  // Gather the metrics for all the child processes.
+  void SampleAllProcesses();
 
-  // A map of currently running ProcessHandles to ProcessMetrics.
-  std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>
-      metrics_map_;
+  void SampleProcess();
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      render_process_host_observations_{this};
+
+  std::unique_ptr<ProcessMetricsHistory> browser_process_metrics_;
+
+  std::map<content::RenderProcessHost*, std::unique_ptr<ProcessMetricsHistory>>
+      render_process_metrics_;
+
+  std::map<int, std::unique_ptr<ProcessMetricsHistory>>
+      browser_child_process_metrics_;
 
   // The timer to signal ProcessMonitor to perform its timed collections.
   base::RepeatingTimer repeating_timer_;
 
   base::ObserverList<Observer> observer_list_;
-
-  base::WeakPtrFactory<ProcessMonitor> weak_ptr_factory_{this};
 };
 
 }  // namespace performance_monitor

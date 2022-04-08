@@ -25,26 +25,16 @@ class ProcessMetricsHistory {
   ~ProcessMetricsHistory();
 
   // Configure this to monitor a specific process.
-  void Initialize(const ProcessMetadata& process_data,
-                  int initial_update_sequence);
+  void Initialize(const ProcessMetadata& process_data);
 
   // Gather metrics for the process and accumulate with past data.
   ProcessMonitor::Metrics SampleMetrics();
 
-  // Used to mark when this object was last updated, so we can cull
-  // dead ones.
-  void set_last_update_sequence(int new_update_sequence) {
-    last_update_sequence_ = new_update_sequence;
-  }
-
   const ProcessMetadata& metadata() const { return process_data_; }
-
-  int last_update_sequence() const { return last_update_sequence_; }
 
  private:
   ProcessMetadata process_data_;
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
-  int last_update_sequence_ = 0;
 };
 
 }  // namespace performance_monitor

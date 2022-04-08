@@ -20,11 +20,9 @@ ProcessMetricsHistory::ProcessMetricsHistory() = default;
 
 ProcessMetricsHistory::~ProcessMetricsHistory() = default;
 
-void ProcessMetricsHistory::Initialize(const ProcessMetadata& process_data,
-                                       int initial_update_sequence) {
+void ProcessMetricsHistory::Initialize(const ProcessMetadata& process_data) {
   DCHECK_EQ(base::kNullProcessHandle, process_data_.handle);
   process_data_ = process_data;
-  last_update_sequence_ = initial_update_sequence;
 
 #if BUILDFLAG(IS_MAC)
   process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(
