@@ -9,8 +9,12 @@
 #include <string>
 
 #include "components/policy/policy_export.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/channel.h"
+
+namespace enterprise_management {
+class BrowserDeviceIdentifier;
+enum Channel : int;
+}  // namespace enterprise_management
 
 namespace policy {
 
