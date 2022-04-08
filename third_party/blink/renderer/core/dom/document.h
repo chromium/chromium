@@ -1790,9 +1790,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool RenderingHasBegun() const { return rendering_has_begun_; }
 
-  void IncrementAsyncScriptCount() { async_script_count_++; }
-  void RecordAsyncScriptCount();
-
   enum class DeclarativeShadowRootAllowState : uint8_t {
     kNotSet,
     kAllow,

@@ -3137,6 +3137,9 @@ be describing additional metrics about the same event.
     recorded when the HTML parsing of a mainframe has completed.
   </summary>
   <metric name="AsyncScriptCount">
+    <obsolete>
+      Deprecated 04/2022.
+    </obsolete>
     <summary>
       The total number of async scripts associated with a document at the time
       parsing has finished.
