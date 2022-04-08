@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/compat_mode/arc_window_property_util.h"
+#include "ash/components/arc/compat_mode/compat_mode_button.h"
 #include "ash/components/arc/compat_mode/resize_util.h"
 #include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -76,7 +77,8 @@ void CompatModeButtonController::Update(
   if (!compat_mode_button) {
     // The ownership is transferred implicitly with AddChildView in HeaderView,
     // but ideally we want to explicitly manage the lifecycle of this resource.
-    compat_mode_button = new chromeos::FrameCenterButton(
+    compat_mode_button = new CompatModeButton(
+        this,
         base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
                             GetWeakPtr(), window, pref_delegate));
     compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
@@ -118,6 +120,11 @@ void CompatModeButtonController::Update(
   }
 
   UpdateAshAccelerator(pref_delegate, window);
+}
+
+void CompatModeButtonController::OnButtonPressed() {
+  visible_when_button_pressed_ =
+      resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown();
 }
 
 base::WeakPtr<CompatModeButtonController>
@@ -168,7 +175,7 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
   if (!compat_mode_button || !compat_mode_button->GetEnabled())
     return;
-  if (resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown())
+  if (visible_when_button_pressed_)
     return;
   resize_toggle_menu_.reset();
   resize_toggle_menu_ =
