@@ -159,6 +159,9 @@ enum OptimizationType {
   MERCHANT_TRUST_SIGNALS_V2 = 21;
   // Provides the entities that are present on the page.
   PAGE_ENTITIES = 22;
+  // This optimization provides information for whether a page should be
+  // included in a history cluster.
+  HISTORY_CLUSTERS = 23;
 }
 
 // Presents semantics for how page load URLs should be matched.
