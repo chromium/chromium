@@ -345,6 +345,8 @@ const FeatureEntry::FeatureVariation
         {"new FRE with 2 steps", kNewMICEFREWithTwoSteps,
          std::size(kNewMICEFREWithTwoSteps), nullptr}};
 
+const FeatureEntry::FeatureParam kBubbleRichIPHTargetHighlight[] = {
+    {kBubbleRichIPHParameterName, kBubbleRichIPHParameterTargetHighlight}};
 const FeatureEntry::FeatureParam kBubbleRichIPHExplicitDismissal[] = {
     {kBubbleRichIPHParameterName, kBubbleRichIPHParameterExplicitDismissal}};
 const FeatureEntry::FeatureParam kBubbleRichIPHRich[] = {
@@ -352,11 +354,13 @@ const FeatureEntry::FeatureParam kBubbleRichIPHRich[] = {
 const FeatureEntry::FeatureParam kBubbleRichIPHRichWithSnooze[] = {
     {kBubbleRichIPHParameterName, kBubbleRichIPHParameterRichWithSnooze}};
 const FeatureEntry::FeatureVariation kBubbleRichIPHVariations[] = {
+    {"Target Highlight", kBubbleRichIPHTargetHighlight,
+     std::size(kBubbleRichIPHTargetHighlight), nullptr},
     {"Explicit dismissal", kBubbleRichIPHExplicitDismissal,
      std::size(kBubbleRichIPHExplicitDismissal), nullptr},
     {"Dismissal and rich content", kBubbleRichIPHRich,
      std::size(kBubbleRichIPHRich), nullptr},
-    {"Dismissal, rich content and snooze", kBubbleRichIPHRichWithSnooze,
+    {"Dismissal, rich content, and snooze", kBubbleRichIPHRichWithSnooze,
      std::size(kBubbleRichIPHRichWithSnooze), nullptr},
 };
 

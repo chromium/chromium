@@ -9,8 +9,12 @@
 
 // Feature flag to enable rich IPH on bubbles.
 extern const base::Feature kBubbleRichIPH;
+
 // Feature parameters for rich IPH on bubbles.
 extern const char kBubbleRichIPHParameterName[];
+
+// Wide bubble view with explicit dismissal.
+extern const char kBubbleRichIPHParameterTargetHighlight[];
 // Wide bubble view with explicit dismissal.
 extern const char kBubbleRichIPHParameterExplicitDismissal[];
 // Wide bubble view with explicit dismissal and rich content (title, image,

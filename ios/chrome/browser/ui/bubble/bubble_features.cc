@@ -8,6 +8,8 @@ const base::Feature kBubbleRichIPH{"BubbleRichIPH",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kBubbleRichIPHParameterName[] = "BubbleVariant";
+
+const char kBubbleRichIPHParameterTargetHighlight[] = "TargetHighlight";
 const char kBubbleRichIPHParameterExplicitDismissal[] = "ExplicitDismissal";
 const char kBubbleRichIPHParameterRich[] = "RichContentWithDismissal";
 const char kBubbleRichIPHParameterRichWithSnooze[] =
