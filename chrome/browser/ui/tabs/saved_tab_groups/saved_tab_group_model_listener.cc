@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -32,6 +33,17 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
     observed_browsers_.erase(browser);
     browser->tab_strip_model()->RemoveObserver(this);
   }
+}
+
+TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
+    tab_groups::TabGroupId group_id) {
+  auto contains_tab_group = [&](TabStripModel* model) {
+    return model->group_model()->ContainsTabGroup(group_id);
+  };
+  base::flat_set<raw_ptr<Browser>>::iterator it = base::ranges::find_if(
+      observed_browsers_, contains_tab_group, &Browser::tab_strip_model);
+  return it != observed_browsers_.end() ? it->get()->tab_strip_model()
+                                        : nullptr;
 }
 
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {

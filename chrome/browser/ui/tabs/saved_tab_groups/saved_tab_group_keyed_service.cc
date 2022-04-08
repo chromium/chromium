@@ -14,11 +14,3 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
     : model_(profile), listener_(&model_), profile_(profile) {}
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() = default;
-
-SavedTabGroupModel* SavedTabGroupKeyedService::model() {
-  return &model_;
-}
-
-Profile* SavedTabGroupKeyedService::profile() {
-  return profile_;
-}

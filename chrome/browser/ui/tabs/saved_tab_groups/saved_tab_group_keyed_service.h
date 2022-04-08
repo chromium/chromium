@@ -19,8 +19,9 @@ class SavedTabGroupKeyedService : public KeyedService {
       delete;
   ~SavedTabGroupKeyedService() override;
 
-  SavedTabGroupModel* model();
-  Profile* profile();
+  SavedTabGroupModelListener* listener() { return &listener_; }
+  SavedTabGroupModel* model() { return &model_; }
+  Profile* profile() { return profile_; }
 
  private:
   SavedTabGroupModel model_;

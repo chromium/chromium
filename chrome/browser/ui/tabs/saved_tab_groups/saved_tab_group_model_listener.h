@@ -9,9 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tab_groups/tab_group_id.h"
 
 class Browser;
 class SavedTabGroupModel;
+class TabStripModel;
 
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
@@ -25,6 +27,9 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   SavedTabGroupModelListener& operator=(
       const SavedTabGroupModelListener& other) = delete;
   ~SavedTabGroupModelListener() override;
+
+  TabStripModel* GetTabStripModelWithTabGroupId(
+      tab_groups::TabGroupId group_id);
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
