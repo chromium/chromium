@@ -133,16 +133,58 @@
   RecordMetricsReportingDefaultState();
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (!success)
-      return;
-    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                                     addedAccount:weakSelf.addedAccount
-                            advancedSettingsShown:NO];
-    if (completion)
+  ProceduralBlock startSignInCompletion = ^() {
+    [authenticationFlow startSignInWithCompletion:^(BOOL success) {
+      [weakSelf.consumer setUIEnabled:YES];
+      if (!success)
+        return;
+      [weakSelf.logger
+          logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                          addedAccount:weakSelf.addedAccount
+                 advancedSettingsShown:NO];
+      if (completion)
+        completion();
+    }];
+  };
+  ChromeIdentity* primaryIdentity =
+      self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+  if (primaryIdentity && ![primaryIdentity isEqual:self.selectedIdentity]) {
+    // This case is possible if the user signs in with the FRE, and quits Chrome
+    // without completed the FRE. And the user starts Chrome again.
+    // See crbug.com/1312449.
+    // TODO(crbug.com/1314012): Need test for this case.
+    self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                        /*force_clear_browsing_data=*/true,
+                                        startSignInCompletion);
+    return;
+  }
+  startSignInCompletion();
+}
+
+- (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
+  if (!self.authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    if (completion) {
       completion();
-  }];
+    }
+    return;
+  }
+  [self.consumer setUIEnabled:NO];
+  // This case is possible if the user signs in with the FRE, and quits Chrome
+  // without completed the FRE. And the user starts Chrome again.
+  // See crbug.com/1312449.
+  // TODO(crbug.com/1314012): Need test for this case.
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock signOutCompletion = ^() {
+    [weakSelf.consumer setUIEnabled:YES];
+    if (completion) {
+      completion();
+    }
+  };
+  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                      /*force_clear_browsing_data=*/true,
+                                      signOutCompletion);
 }
 
 - (void)userAttemptedToSignin {

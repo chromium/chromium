@@ -241,7 +241,10 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  [self finishPresentingWithSignIn:NO];
+  __weak __typeof(self) weakSelf = self;
+  [self.mediator cancelSignInScreenWithCompletion:^{
+    [weakSelf finishPresentingWithSignIn:NO];
+  }];
 }
 
 #pragma mark - SigninScreenViewControllerDelegate

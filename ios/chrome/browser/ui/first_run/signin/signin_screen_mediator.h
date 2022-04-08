@@ -63,6 +63,9 @@ class SyncService;
             (AuthenticationFlow*)authenticationFlow
                                completion:(ProceduralBlock)completion;
 
+// Signs out the user if needed.
+- (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion;
+
 // User attempted to sign-in by either add an account or by tapping on sing-in
 // button.
 - (void)userAttemptedToSignin;
