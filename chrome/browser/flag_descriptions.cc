@@ -4306,6 +4306,11 @@ const char kSystemExtensionsName[] = "Chrome OS System Extensions";
 const char kSystemExtensionsDescription[] =
     "Enable the Chrome OS System Extension platform.";
 
+const char kEnableServiceWorkersForChromeUntrustedName[] =
+    "Enable chrome-untrusted:// Service Workers";
+const char kEnableServiceWorkersForChromeUntrustedDescription[] =
+    "When enabled, allows chrome-untrusted:// WebUIs to use service workers.";
+
 const char kCrostiniBullseyeUpgradeName[] = "Upgrade Crostini to Bullseye";
 const char kCrostiniBullseyeUpgradeDescription[] =
     "Offer to upgrade Crostini containers on older versions to bullseye.";

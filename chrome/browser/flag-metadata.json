@@ -2631,6 +2631,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "enable-service-workers-for-chrome-untrusted",
+    "owners": [ "ortuno", "dominicschulz" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-sharesheet-copy-to-clipboard",
     "owners": [ "melzhang", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 105

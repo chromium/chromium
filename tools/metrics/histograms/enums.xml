@@ -53569,6 +53569,8 @@ from previous Chrome versions.
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
   <int value="-1052115254" label="TextfieldFocusOnTapUp:disabled"/>
   <int value="-1051509976" label="ServiceWorkerOnUI:disabled"/>
+  <int value="-1050121997"
+      label="EnableServiceWorkersForChromeUntrusted:enabled"/>
   <int value="-1050006327" label="FirmwareUpdaterApp:disabled"/>
   <int value="-1048901516" label="ChromeMemex:enabled"/>
   <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
@@ -54880,6 +54882,8 @@ from previous Chrome versions.
   <int value="-143382681" label="InstantTethering:enabled"/>
   <int value="-143121333" label="WebXRIncubations:enabled"/>
   <int value="-141516902" label="UseModernMediaControls:enabled"/>
+  <int value="-140763100"
+      label="EnableServiceWorkersForChromeUntrusted:disabled"/>
   <int value="-138983372" label="DesktopPWAWindowing:disabled"/>
   <int value="-138820512" label="DesktopPWAsTabStrip:enabled"/>
   <int value="-138773929" label="PassiveDocumentEventListeners:enabled"/>
