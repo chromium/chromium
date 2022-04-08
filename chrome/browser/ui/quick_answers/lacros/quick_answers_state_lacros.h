@@ -17,9 +17,13 @@ class QuickAnswersStateLacros : public QuickAnswersState {
   QuickAnswersStateLacros(const QuickAnswersStateLacros&) = delete;
   QuickAnswersStateLacros& operator=(const QuickAnswersStateLacros&) = delete;
 
-  ~QuickAnswersStateLacros();
+  ~QuickAnswersStateLacros() override;
 
  private:
+  // TODO(b/186743778): Implement consent logics for Lacros.
+  void StartConsent() override {}
+  void OnConsentResult(ConsentResultType result) override {}
+
   void OnSettingsEnabledChanged(base::Value value);
   void OnConsentStatusChanged(base::Value value);
   void OnDefinitionEnabledChanged(base::Value value);

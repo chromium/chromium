@@ -14,6 +14,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/quick_answers/lacros/quick_answers_state_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 using ::quick_answers::Context;
@@ -67,7 +75,13 @@ QuickAnswersControllerImpl::QuickAnswersControllerImpl()
     : quick_answers_ui_controller_(
           std::make_unique<QuickAnswersUiController>(this)),
       quick_answers_access_token_fetcher_(
-          std::make_unique<QuickAnswersAccessTokenFetcher>()) {}
+          std::make_unique<QuickAnswersAccessTokenFetcher>()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  quick_answers_state_ = std::make_unique<QuickAnswersStateAsh>();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  quick_answers_state_ = std::make_unique<QuickAnswersStateLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
 

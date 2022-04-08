@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "components/language/core/browser/pref_names.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+
+namespace {
+
+constexpr char kTestUser[] = "user@gmail.com";
+
+}  // namespace
 
 class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
  public:
@@ -37,14 +43,12 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
   std::string application_locale_;
 };
 
-class QuickAnswersStateControllerTest : public ChromeQuickAnswersTestBase {
+class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
  protected:
-  QuickAnswersStateControllerTest() = default;
-  QuickAnswersStateControllerTest(const QuickAnswersStateControllerTest&) =
-      delete;
-  QuickAnswersStateControllerTest& operator=(
-      const QuickAnswersStateControllerTest&) = delete;
-  ~QuickAnswersStateControllerTest() override = default;
+  QuickAnswersStateAshTest() = default;
+  QuickAnswersStateAshTest(const QuickAnswersStateAshTest&) = delete;
+  QuickAnswersStateAshTest& operator=(const QuickAnswersStateAshTest&) = delete;
+  ~QuickAnswersStateAshTest() override = default;
 
   // ChromeQuickAnswersTestBase:
   void SetUp() override {
@@ -61,16 +65,12 @@ class QuickAnswersStateControllerTest : public ChromeQuickAnswersTestBase {
 
   TestQuickAnswersStateObserver* observer() { return observer_.get(); }
 
-  void SimulateSessionStart() {
-    QuickAnswersState::Get()->RegisterPrefChanges(prefs_);
-  }
-
  private:
   PrefService* prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 
-TEST_F(QuickAnswersStateControllerTest, InitObserver) {
+TEST_F(QuickAnswersStateAshTest, InitObserver) {
   EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), std::string());
 
@@ -90,7 +90,7 @@ TEST_F(QuickAnswersStateControllerTest, InitObserver) {
   QuickAnswersState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(QuickAnswersStateControllerTest, NotifySettingsEnabled) {
+TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
   QuickAnswersState::Get()->AddObserver(observer());
 
   EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
@@ -104,7 +104,7 @@ TEST_F(QuickAnswersStateControllerTest, NotifySettingsEnabled) {
   QuickAnswersState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(QuickAnswersStateControllerTest, NotifyApplicationLocaleReady) {
+TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {
   QuickAnswersState::Get()->AddObserver(observer());
 
   EXPECT_TRUE(QuickAnswersState::Get()->application_locale().empty());
@@ -120,20 +120,20 @@ TEST_F(QuickAnswersStateControllerTest, NotifyApplicationLocaleReady) {
   QuickAnswersState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(QuickAnswersStateControllerTest, LocaleEligible) {
+TEST_F(QuickAnswersStateAshTest, LocaleEligible) {
   UErrorCode error_code = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale(ULOC_US), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "en");
 
-  SimulateSessionStart();
+  SimulateUserLogin(kTestUser);
   EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
 }
 
-TEST_F(QuickAnswersStateControllerTest, LocaleIneligible) {
+TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
   UErrorCode error_code = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale(ULOC_CHINESE), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
 
-  SimulateSessionStart();
+  SimulateUserLogin(kTestUser);
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
 }

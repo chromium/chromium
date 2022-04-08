@@ -29,8 +29,8 @@ source_set("quick_answers") {
     sources += [
       "quick_answers_controller_impl.cc",
       "quick_answers_controller_impl.h",
-      "quick_answers_state_controller.cc",
-      "quick_answers_state_controller.h",
+      "quick_answers_state_ash.cc",
+      "quick_answers_state_ash.h",
       "quick_answers_ui_controller.cc",
       "quick_answers_ui_controller.h",
       "ui/quick_answers_view.cc",
@@ -42,6 +42,7 @@ source_set("quick_answers") {
       "//ash",
       "//chrome/browser/chromeos",
       "//chrome/browser/ui/color:color_headers",
+      "//components/language/core/browser:browser",
     ]
   }
 

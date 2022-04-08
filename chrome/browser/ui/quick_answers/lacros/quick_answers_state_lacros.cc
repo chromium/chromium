@@ -10,6 +10,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -56,6 +57,10 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
       crosapi::mojom::PrefPath::kPreferredLanguages,
       base::BindRepeating(&QuickAnswersStateLacros::OnPreferredLanguagesChanged,
                           base::Unretained(this)));
+
+  prefs_initialized_ = true;
+
+  UpdateEligibility();
 }
 
 QuickAnswersStateLacros::~QuickAnswersStateLacros() = default;
@@ -124,12 +129,29 @@ void QuickAnswersStateLacros::OnUnitConversionEnabledChanged(
 
 void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
   DCHECK(value.is_string());
-  auto application_locale = value.GetString();
+  auto locale = value.GetString();
 
-  if (application_locale_ == application_locale) {
+  if (locale.empty())
+    return;
+
+  // We should not directly use the pref locale, resolve the generic locale name
+  // to one of the locally defined ones first.
+  std::string resolved_locale;
+  bool resolve_success =
+      l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+                                       /*perform_io=*/false);
+  DCHECK(resolve_success);
+
+  if (resolved_application_locale_ == resolved_locale) {
     return;
   }
-  application_locale_ = application_locale;
+  resolved_application_locale_ = resolved_locale;
+
+  for (auto& observer : observers_) {
+    observer.OnApplicationLocaleReady(resolved_locale);
+  }
+
+  UpdateEligibility();
 }
 
 void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {

@@ -7184,7 +7184,7 @@ test("unit_tests") {
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
       "../browser/ui/ash/window_pin_util_unittest.cc",
       "../browser/ui/quick_answers/quick_answers_controller_unittest.cc",
-      "../browser/ui/quick_answers/quick_answers_state_controller_unittest.cc",
+      "../browser/ui/quick_answers/quick_answers_state_ash_unittest.cc",
       "../browser/ui/quick_answers/quick_answers_ui_controller_unittest.cc",
       "../browser/ui/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.cc",

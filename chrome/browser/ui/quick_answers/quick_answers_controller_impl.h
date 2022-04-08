@@ -9,12 +9,12 @@
 #include <string>
 
 #include "chrome/browser/ui/quick_answers/quick_answers_access_token_fetcher.h"
-#include "chrome/browser/ui/quick_answers/quick_answers_state_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 
+class QuickAnswersState;
 class QuickAnswersUiController;
 
 // Implementation of QuickAnswerController. It fetches quick answers
@@ -104,7 +104,7 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
 
   std::unique_ptr<quick_answers::QuickAnswersClient> quick_answers_client_;
 
-  QuickAnswersStateController quick_answers_state_controller_;
+  std::unique_ptr<QuickAnswersState> quick_answers_state_;
 
   std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
 

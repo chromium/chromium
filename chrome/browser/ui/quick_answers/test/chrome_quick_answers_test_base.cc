@@ -22,8 +22,7 @@ void ChromeQuickAnswersTestBase::SetUp() {
   if (!QuickAnswersController::Get())
     quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
 
-  QuickAnswersState::Get()->RegisterPrefChanges(
-      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+  CreateUserSessions(/*session_count=*/1);
 }
 
 void ChromeQuickAnswersTestBase::TearDown() {

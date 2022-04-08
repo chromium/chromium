@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
-#include "components/prefs/testing_pref_service.h"
+#include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Helper class for Quick Answers related tests.
@@ -25,12 +25,12 @@ class QuickAnswersTestBase : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  PrefService* prefs() { return test_pref_service_.get(); }
+  FakeQuickAnswersState* fake_quick_answers_state() {
+    return fake_quick_answers_state_.get();
+  }
 
  private:
-  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
-
-  std::unique_ptr<QuickAnswersState> quick_answers_state_;
+  std::unique_ptr<FakeQuickAnswersState> fake_quick_answers_state_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_
