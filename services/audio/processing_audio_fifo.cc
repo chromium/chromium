@@ -4,9 +4,67 @@
 
 #include "services/audio/processing_audio_fifo.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 
 namespace audio {
+
+class ProcessingAudioFifo::StatsReporter {
+ public:
+  // Log once every 10s, assuming 10ms buffers.
+  constexpr static int kCallbacksPerLogPeriod = 1000;
+
+  // Capped at 10% of callbacks.
+  constexpr static int kMaxLoggedOverrunCount = kCallbacksPerLogPeriod / 10;
+
+  constexpr static int kMaxFifoSize = 200;
+
+  StatsReporter(int fifo_size, ProcessingAudioFifo::LogCallback log_callback)
+      : fifo_size_(fifo_size), log_callback_(std::move(log_callback)) {}
+
+  ~StatsReporter() {
+    log_callback_.Run(base::StringPrintf(
+        "AIC::~ProcessingFifo() => (total_callbacks=%d, total_overruns=%d)",
+        total_callback_count_, total_overrun_count_));
+  }
+
+  void LogPush(int fifo_space_available) {
+    if (!fifo_space_available)
+      ++total_overrun_count_;
+
+    int fifo_space_used = fifo_size_ - fifo_space_available;
+    if (max_fifo_space_used_during_log_period_ < fifo_space_used)
+      max_fifo_space_used_during_log_period_ = fifo_space_used;
+
+    ++total_callback_count_;
+
+    if (total_callback_count_ % kCallbacksPerLogPeriod)
+      return;
+
+    base::UmaHistogramCustomCounts(
+        "Media.Audio.Capture.ProcessingAudioFifo.MaxUsage",
+        max_fifo_space_used_during_log_period_,
+        /*min*/ 1,
+        /*max*/ kMaxFifoSize + 1,
+        /*buckets*/ 50);
+
+    base::UmaHistogramCounts100(
+        "Media.Audio.Capture.ProcessingAudioFifo.Overruns",
+        total_overrun_count_ - last_logged_overrun_count_);
+    max_fifo_space_used_during_log_period_ = 0;
+    last_logged_overrun_count_ = total_overrun_count_;
+  }
+
+ private:
+  const int fifo_size_;
+  const ProcessingAudioFifo::LogCallback log_callback_;
+  int total_callback_count_ = 0;
+  int total_overrun_count_ = 0;
+  int max_fifo_space_used_during_log_period_ = 0;
+  int last_logged_overrun_count_ = 0;
+};
 
 struct ProcessingAudioFifo::CaptureData {
   std::unique_ptr<media::AudioBus> audio_bus;
@@ -18,13 +76,17 @@ struct ProcessingAudioFifo::CaptureData {
 ProcessingAudioFifo::ProcessingAudioFifo(
     const media::AudioParameters& input_params,
     int fifo_size,
-    ProcessAudioCallback processing_callback)
+    ProcessAudioCallback processing_callback,
+    LogCallback log_callback)
     : fifo_size_(fifo_size),
       fifo_(fifo_size_),
       input_params_(input_params),
       audio_processing_thread_("AudioProcessingThread"),
       processing_callback_(std::move(processing_callback)),
-      new_data_captured_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {
+      new_data_captured_(base::WaitableEvent::ResetPolicy::AUTOMATIC),
+      stats_reporter_(
+          std::make_unique<StatsReporter>(fifo_size_,
+                                          std::move(log_callback))) {
   DCHECK(processing_callback_);
 
   // Pre-allocate FIFO memory.
@@ -93,18 +155,28 @@ void ProcessingAudioFifo::PushData(const media::AudioBus* audio_bus,
                                    bool key_pressed) {
   DCHECK_EQ(audio_bus->frames(), input_params_.frames_per_buffer());
 
-  CaptureData* data;
+  CaptureData* data = nullptr;
+  int fifo_space = fifo_size_;
   {
     base::AutoLock locker(fifo_index_lock_);
 
     DCHECK_GE(write_count_, read_count_);
+    const int unread_buffers = write_count_ - read_count_;
+    fifo_space -= unread_buffers;
 
-    if (write_count_ - read_count_ == fifo_size_) {
-      // TODO(crbug.com/1296149): Log dropped frames.
-      return;
-    }
+    if (fifo_space)
+      data = GetDataAtIndex(write_count_);
+  }
 
-    data = GetDataAtIndex(write_count_);
+  stats_reporter_->LogPush(fifo_space);
+
+  TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"),
+                    "ProcessingAudioFifo space available", this, fifo_space);
+
+  if (!data) {
+    TRACE_EVENT_INSTANT0("audio", "ProcessingAudioFifo::Overrun",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return;  // Overrun.
   }
 
   // Write to the FIFO (lock-free).

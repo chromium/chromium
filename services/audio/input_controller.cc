@@ -270,13 +270,14 @@ void InputController::MaybeSetUpAudioProcessing(
 
   // Only use the FIFO/new thread if its size is explicitly set.
   if (fifo_size) {
-    // base::Unretained() is safe here since |this| owns
-    // |audio_processor_handler_|, and it gets destroyed after
-    // |processing_fifo_|.
+    // base::Unretained() is safe since both |audio_processor_handler_| and
+    // |event_handler_| outlive |processing_fifo_|.
     processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
         *processing_input_params, fifo_size,
         base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
-                            base::Unretained(audio_processor_handler_.get())));
+                            base::Unretained(audio_processor_handler_.get())),
+        base::BindRepeating(&EventHandler::OnLog,
+                            base::Unretained(event_handler_.get())));
   }
 
   // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.

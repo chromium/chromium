@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -32,10 +33,13 @@ class ProcessingAudioFifo {
   using ProcessAudioCallback = base::RepeatingCallback<
       void(const media::AudioBus&, base::TimeTicks, double, bool)>;
 
+  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
+
   // |processing_callback| will only be called back on the processing thread.
   ProcessingAudioFifo(const media::AudioParameters& input_params,
                       int fifo_size,
-                      ProcessAudioCallback processing_callback);
+                      ProcessAudioCallback processing_callback,
+                      LogCallback log_callback);
 
   // Note: This synchronously waits for |audio_processing_thread_.Stop()|.
   ~ProcessingAudioFifo();
@@ -67,6 +71,7 @@ class ProcessingAudioFifo {
  private:
   friend class ProcessingAudioFifoTest;
 
+  class StatsReporter;
   struct CaptureData;
 
   void StartInternal(base::WaitableEvent* new_data_captured);
@@ -107,6 +112,8 @@ class ProcessingAudioFifo {
   // Event signaling that there is new audio data to process. Called from the
   // capture thread, and waited for on the processing thread.
   base::WaitableEvent new_data_captured_;
+
+  std::unique_ptr<StatsReporter> stats_reporter_;
 
   SEQUENCE_CHECKER(owning_sequence_checker_);
 };

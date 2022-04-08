@@ -370,6 +370,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.ProcessingAudioFifo.MaxUsage"
+    units="buffers" expires_after="2023-04-04">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Maximum size (in buffers) of the unprocessed data queue, reached over a
+    sampling interval (1000 callbacks). Not logged for streams received less
+    than 1000 callbacks.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.ProcessingAudioFifo.Overruns"
+    units="count" expires_after="2023-04-04">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Number of times over a sampling interval (1000 callbacks) a
+    ProcessingAudioFifo has overflowed and dropped buffers. Capped at 100 (1/10
+    of all callbacks). Not logged for streams received less than 1000 callbacks.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.StreamCallbackError2"
     enum="AudioCaptureDeviceError" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->

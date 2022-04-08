@@ -91,15 +91,15 @@ class ProcessingAudioFifoTest : public testing::Test {
   ProcessingAudioFifo* fifo() { return fifo_.get(); }
 
   void SetupFifo(ProcessingAudioFifo::ProcessAudioCallback callback) {
-    fifo_ = std::make_unique<ProcessingAudioFifo>(params_, kTestFifoSize,
-                                                  std::move(callback));
+    fifo_ = std::make_unique<ProcessingAudioFifo>(
+        params_, kTestFifoSize, std::move(callback), base::DoNothing());
     fifo_->Start();
   }
 
   void SetupFifoWithFakeEvent(
       ProcessingAudioFifo::ProcessAudioCallback callback) {
-    fifo_ = std::make_unique<ProcessingAudioFifo>(params_, kTestFifoSize,
-                                                  std::move(callback));
+    fifo_ = std::make_unique<ProcessingAudioFifo>(
+        params_, kTestFifoSize, std::move(callback), base::DoNothing());
     using_fake_event_ = true;
     fifo_->StartForTesting(&fake_new_capture_event_);
   }
@@ -157,14 +157,14 @@ class ProcessingAudioFifoTest : public testing::Test {
 };
 
 TEST_F(ProcessingAudioFifoTest, ConstructDestroy) {
-  auto fifo = std::make_unique<ProcessingAudioFifo>(params_, kTestFifoSize,
-                                                    base::DoNothing());
+  auto fifo = std::make_unique<ProcessingAudioFifo>(
+      params_, kTestFifoSize, base::DoNothing(), base::DoNothing());
   fifo.reset();
 }
 
 TEST_F(ProcessingAudioFifoTest, ConstructStartDestroy) {
-  auto fifo = std::make_unique<ProcessingAudioFifo>(params_, kTestFifoSize,
-                                                    base::DoNothing());
+  auto fifo = std::make_unique<ProcessingAudioFifo>(
+      params_, kTestFifoSize, base::DoNothing(), base::DoNothing());
   fifo->Start();
   fifo.reset();
 }
