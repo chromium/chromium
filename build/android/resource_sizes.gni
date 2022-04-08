@@ -75,18 +75,15 @@ template("android_resource_sizes_test") {
 # relative to $root_build_dir. The resulting JSON file is written to
 # "$root_build_dir/config/${invoker.name}_size_config.json".
 #
-# Variables:
-#   name: The name of the path to the generated size config JSON file.
-#   mapping_files: List of mapping files.
-#   to_resource_sizes_py: Scope containing data to pass to resource_sizes.py,
-#     processed by generate_commit_size_analysis.py.
-#   supersize_input_file: Main input for SuperSize.
+# Refer to tools/binary_size/generate_commit_size_analysis.py for JSON schema.
+#
 template("android_size_bot_config") {
   _full_target_name = get_label_info(target_name, "label_no_toolchain")
   _out_json = {
     _HEADER = "Written by build target '${_full_target_name}'"
     forward_variables_from(invoker,
                            [
+                             "archive_files",
                              "mapping_files",
                              "to_resource_sizes_py",
                              "supersize_input_file",
