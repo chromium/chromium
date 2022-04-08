@@ -139,13 +139,13 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles profiles;
   const bool rv = CreateCompressionSession(
       gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
-  DestroyCompressionSession();
   if (!rv) {
     VLOG(1)
         << "Hardware encode acceleration is not available on this platform.";
     return profiles;
   }
 
+  DestroyCompressionSession();
   SupportedProfile profile;
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
@@ -578,10 +578,8 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
   DestroyCompressionSession();
 
   bool session_rv = CreateCompressionSession(input_visible_size_);
-  if (!session_rv) {
-    DestroyCompressionSession();
+  if (!session_rv)
     return false;
-  }
 
   const bool configure_rv = ConfigureCompressionSession();
   if (configure_rv)
@@ -625,6 +623,12 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
       &VTVideoEncodeAccelerator::CompressionCallback,
       reinterpret_cast<void*>(this), compression_session_.InitializeInto());
   if (status != noErr) {
+    // IMPORTANT: ScopedCFTypeRef::release() doesn't call CFRelease().
+    // In case of an error VTCompressionSessionCreate() is not supposed to
+    // write a non-null value into compression_session_, but just in case,
+    // we'll clear it without calling CFRelease() because it can be unsafe
+    // to call on a not fully created session.
+    (void)compression_session_.release();
     DLOG(ERROR) << " VTCompressionSessionCreate failed: " << status;
     return false;
   }
