@@ -3,14 +3,14 @@
 // (https://github.com/w3c/webref)
 // Source: Region Capture (https://w3c.github.io/mediacapture-region/)
 
-[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker), Serializable]
 interface CropTarget {
   // Intentionally empty; just an opaque identifier.
 };
 
 partial interface MediaDevices {
   Promise<CropTarget>
-  produceCropTarget(HTMLElement element);
+  produceCropTarget(Element element);
 };
 
 [Exposed = Window]

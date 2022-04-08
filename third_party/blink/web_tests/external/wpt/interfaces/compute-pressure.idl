@@ -1,40 +1,40 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Compute Pressure API Level 1 (https://wicg.github.io/compute-pressure/)
+// Source: Compute Pressure Level 1 (https://wicg.github.io/compute-pressure/)
 
-enum ComputePressureState { "nominal", "fair", "serious", "critical" };
+enum PressureState { "nominal", "fair", "serious", "critical" };
 
-enum ComputePressureFactor { "thermal", "power-supply" };
+enum PressureFactor { "thermal", "power-supply" };
 
-callback ComputePressureUpdateCallback = undefined (
-  sequence<ComputePressureRecord> changes,
-  ComputePressureObserver observer
+callback PressureUpdateCallback = undefined (
+  sequence<PressureRecord> changes,
+  PressureObserver observer
 );
 
-enum ComputePressureSource { "cpu" };
+enum PressureSource { "cpu" };
 
 [Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
-interface ComputePressureObserver {
-  constructor(ComputePressureUpdateCallback callback, optional ComputePressureObserverOptions options = {});
+interface PressureObserver {
+  constructor(PressureUpdateCallback callback, optional PressureObserverOptions options = {});
 
-  undefined observe(ComputePressureSource source);
-  undefined unobserve(ComputePressureSource source);
+  undefined observe(PressureSource source);
+  undefined unobserve(PressureSource source);
   undefined disconnect();
-  sequence<ComputePressureRecord> takeRecords();
+  sequence<PressureRecord> takeRecords();
 
-  [SameObject] static readonly attribute FrozenArray<ComputePressureSource> supportedSources;
+  [SameObject] static readonly attribute FrozenArray<PressureSource> supportedSources;
 
   [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
 
-dictionary ComputePressureRecord {
-  ComputePressureSource source;
-  ComputePressureState state;
-  sequence<ComputePressureFactor> factors;
+dictionary PressureRecord {
+  PressureSource source;
+  PressureState state;
+  sequence<PressureFactor> factors;
   DOMHighResTimeStamp time;
 };
 
-dictionary ComputePressureObserverOptions {
+dictionary PressureObserverOptions {
   double frequency;
 };

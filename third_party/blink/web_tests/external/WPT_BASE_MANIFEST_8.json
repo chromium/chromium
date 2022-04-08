@@ -149235,6 +149235,19 @@
        {}
       ]
      ],
+     "target-text-008.html": [
+      "2f854f16b00c51f2adc3b8d2f422f5c1b062f55c",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "target-text-dynamic-001.html": [
       "63cbaa52b257674993afab1e22be3c5ed0927406",
       [
@@ -278883,6 +278896,10 @@
        []
       ]
      },
+     "target-text-008-ref.html": [
+      "d9082b822fe719263189ed8e0c87c66ca35d5d55",
+      []
+     ],
      "target-text-dynamic-001-ref.html": [
       "ab3fcdf58ddadd2bd42de34d49555b6631bfd772",
       []
@@ -319169,7 +319186,7 @@
      []
     ],
     "compute-pressure.idl": [
-     "ea8af76bead0a2106bbf0b17d1e13db6e40a8545",
+     "5eb78cdf5120936e70102057d32a4e9c3b572cb2",
      []
     ],
     "console.idl": [
@@ -319497,7 +319514,7 @@
      []
     ],
     "local-font-access.idl": [
-     "5594acfba19d0417d3f920f5d06c15767d73090e",
+     "10e2e1f012e92139a1f6cdfe3bf4f4d7e52474d1",
      []
     ],
     "longtasks.idl": [
@@ -319517,7 +319534,7 @@
      []
     ],
     "media-capabilities.idl": [
-     "128d01020a1f4c222146ada2aaf831981fa16ec9",
+     "f80ba9747d3e65e02ef7ff701a53406f47ab2e28",
      []
     ],
     "media-playback-quality.idl": [
@@ -319545,7 +319562,7 @@
      []
     ],
     "mediacapture-region.idl": [
-     "e1266a2612301822827a2196b6f76eb70005903d",
+     "402daa7ff76cc88010e4e9186faf3537d87275e9",
      []
     ],
     "mediacapture-streams.idl": [
@@ -319569,7 +319586,7 @@
      []
     ],
     "navigation-api.idl": [
-     "7680d98a0b9669d41ccb180c5e2ef3f832d7c018",
+     "f192c8fd47810bda1c6b8a1795fca9f4792247b4",
      []
     ],
     "navigation-timing.idl": [
@@ -319693,7 +319710,7 @@
      []
     ],
     "reporting.idl": [
-     "150f30d03bf89d1ee557fe395e23ebb443f91493",
+     "c0a400a999e98f904345f94bf4b6ae0e377b18ec",
      []
     ],
     "requestidlecallback.idl": [
@@ -319917,7 +319934,7 @@
      []
     ],
     "webgpu.idl": [
-     "16eeee4660532635f2d95dc10d2a3dbb2da40322",
+     "2780559ac3378818a2814bee5b5cc56c30c9f3c4",
      []
     ],
     "webhid.idl": [
@@ -319969,7 +319986,7 @@
      []
     ],
     "webtransport.idl": [
-     "a894f8b8be4fb3269dafd04639df9770b72f8fdf",
+     "cb02cdd05d49f260b77a761d2e0d9b35743b9c02",
      []
     ],
     "webusb.idl": [

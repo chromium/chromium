@@ -62,18 +62,18 @@ enum NavigationHistoryBehavior {
 interface NavigationCurrentEntryChangeEvent : Event {
   constructor(DOMString type, NavigationCurrentEntryChangeEventInit eventInit);
 
-  readonly attribute NavigationNavigationType? navigationType;
+  readonly attribute NavigationType? navigationType;
   readonly attribute NavigationHistoryEntry from;
 };
 
 dictionary NavigationCurrentEntryChangeEventInit : EventInit {
-  NavigationNavigationType? navigationType = null;
+  NavigationType? navigationType = null;
   required NavigationHistoryEntry destination;
 };
 
 [Exposed=Window]
 interface NavigationTransition {
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
@@ -84,7 +84,7 @@ interface NavigationTransition {
 interface NavigateEvent : Event {
   constructor(DOMString type, NavigateEventInit eventInit);
 
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
   readonly attribute boolean canTransition;
   readonly attribute boolean userInitiated;
@@ -94,11 +94,13 @@ interface NavigateEvent : Event {
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
-  undefined transitionWhile(Promise<undefined> newNavigationAction);
+  undefined transitionWhile(Promise<undefined> newNavigationAction,
+                            optional NavigationTransitionWhileOptions options = {});
+  undefined restoreScroll();
 };
 
 dictionary NavigateEventInit : EventInit {
-  NavigationNavigationType navigationType = "push";
+  NavigationType navigationType = "push";
   required NavigationDestination destination;
   boolean canTransition = false;
   boolean userInitiated = false;
@@ -109,8 +111,22 @@ dictionary NavigateEventInit : EventInit {
   any info;
 };
 
-// TODO: rename to NavigationType after https://github.com/w3c/navigation-timing/pull/172 lands.
-enum NavigationNavigationType {
+dictionary NavigationTransitionWhileOptions {
+  NavigationFocusReset focusReset;
+  NavigationScrollRestoration scrollRestoration;
+};
+
+enum NavigationFocusReset {
+  "after-transition",
+  "manual"
+};
+
+enum NavigationScrollRestoration {
+  "after-transition",
+  "manual"
+};
+
+enum NavigationType {
   "reload",
   "push",
   "replace",
