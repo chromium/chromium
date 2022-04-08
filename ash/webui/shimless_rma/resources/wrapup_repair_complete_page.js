@@ -30,6 +30,15 @@ import {executeThenTransitionState} from './shimless_rma_util.js';
 const WrapupRepairCompletePageBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
+/**
+ * Supported options for finishing RMA.
+ * @enum {string}
+ */
+const FinishRmaOption = {
+  SHUTDOWN: 'shutdown',
+  REBOOT: 'reboot',
+};
+
 /** @polymer */
 export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   static get is() {
@@ -62,7 +71,13 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
         reflectToAttribute: true,
         type: Boolean,
         value: true,
-      }
+      },
+
+      /** @protected */
+      selectedFinishRmaOption_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -87,6 +102,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   /** @protected */
   onShutDownButtonClick_(e) {
     e.preventDefault();
+    this.selectedFinishRmaOption_ = FinishRmaOption.SHUTDOWN;
     this.shimlessRmaService_.getPowerwashRequired().then((result) => {
       this.handlePowerwash_(result.powerwashRequired);
     });
@@ -104,7 +120,16 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
         dialog.showModal();
       }
     } else {
+      this.shutDownOrReboot_();
+    }
+  }
+
+  /** @private */
+  shutDownOrReboot_() {
+    if (this.selectedFinishRmaOption_ === FinishRmaOption.SHUTDOWN) {
       this.endRmaAndShutdown_();
+    } else {
+      this.endRmaAndReboot_();
     }
   }
 
@@ -117,15 +142,36 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
         this, () => this.shimlessRmaService_.endRmaAndShutdown());
   }
 
+  /**
+   * @return {string}
+   * @protected
+   */
+  getPowerwashDescriptionString_() {
+    return this.selectedFinishRmaOption_ === FinishRmaOption.SHUTDOWN ?
+        this.i18n('repairCompletedPowerwashShutdownDescription') :
+        this.i18n('repairCompletedPowerwashRebootDescription');
+  }
+
   /** @protected */
   onPowerwashButtonClick_(e) {
     e.preventDefault();
-    this.endRmaAndShutdown_();
+    this.shutDownOrReboot_();
   }
 
   /** @protected */
   onRebootButtonClick_(e) {
     e.preventDefault();
+    this.selectedFinishRmaOption_ = FinishRmaOption.REBOOT;
+    this.shimlessRmaService_.getPowerwashRequired().then((result) => {
+      this.handlePowerwash_(result.powerwashRequired);
+    });
+  }
+
+  /**
+   * Sends a reboot request to the backend.
+   * @private
+   */
+  endRmaAndReboot_() {
     executeThenTransitionState(
         this, () => this.shimlessRmaService_.endRmaAndReboot());
   }

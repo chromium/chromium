@@ -235,6 +235,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_TITLE},
       {"repairCompletedPowerwashShutdownDescription",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_SHUTDOWN_DESCRIPTION},
+      {"repairCompletedPowerwashRebootDescription",
+       IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_REBOOT_DESCRIPTION},
       {"repairCompletedPowerwashButton",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_BUTTON},
 

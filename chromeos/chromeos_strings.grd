@@ -2766,6 +2766,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_SHUTDOWN_DESCRIPTION" translateable="false" desc="Contents of the powerwash dialog displayed on repair complete page when trying to shut down">
         Device will be powerwashed before shutting down. Wait until it completes before closing the lid. This may take up to a minute.
       </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_REBOOT_DESCRIPTION" translateable="false" desc="Contents of the powerwash dialog displayed on repair complete page when trying to reboot">
+        Device will be powerwashed before rebooting to the login screen. Wait until it completes before closing the lid. This may take up to a minute.
+      </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_BUTTON" translateable="false" desc="Label for the button that starts a powerwash">
         Powerwash
       </message>

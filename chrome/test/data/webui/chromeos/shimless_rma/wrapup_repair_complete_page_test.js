@@ -126,26 +126,53 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(powerwashDialog.open);
   });
 
-  test('PowerwashButtonTriggersShutDown', async () => {
+  test(
+      'PowerwashButtonTriggersShutDownIfOpenedWithShutdownButton', async () => {
+        const resolver = new PromiseResolver();
+        await initializeRepairCompletePage();
+
+        service.setGetPowerwashRequiredResult(true);
+
+        let callCount = 0;
+        service.endRmaAndShutdown = () => {
+          callCount++;
+          return resolver.promise;
+        };
+        await flushTasks();
+
+        await clickButton('#shutDownButton');
+        await clickButton('#powerwashButton');
+        await flushTasks();
+
+        assertEquals(1, callCount);
+      });
+
+  test('PowerwashButtonTriggersRebootIfOpenedWithRebootButton', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
 
+    service.setGetPowerwashRequiredResult(true);
+
     let callCount = 0;
-    service.endRmaAndShutdown = () => {
+    service.endRmaAndReboot = () => {
       callCount++;
       return resolver.promise;
     };
     await flushTasks();
 
+    await clickButton('#rebootButton');
     await clickButton('#powerwashButton');
     await flushTasks();
 
     assertEquals(1, callCount);
   });
 
-  test('CanReboot', async () => {
+  test('RebootButtonTriggersRebootIfNoPowerwashRequired', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(false);
+
     let callCount = 0;
     service.endRmaAndReboot = () => {
       callCount++;
@@ -157,6 +184,31 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+  });
+
+  test('RebootButtonOpensPowerwashDialogIfPowerwashRequired', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(true);
+
+    let callCount = 0;
+    service.endRmaAndReboot = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#rebootButton');
+    await flushTasks();
+
+    // Don't reboot immediately.
+    assertEquals(0, callCount);
+    // Show the dialog instead.
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+    assertTrue(powerwashDialog.open);
   });
 
   test('CanCutOffBattery', async () => {

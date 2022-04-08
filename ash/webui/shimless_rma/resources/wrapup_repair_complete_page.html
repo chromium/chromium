@@ -223,7 +223,7 @@
     [[i18n('repairCompletedPowerwashTitle')]]
   </div>
   <div slot="body">
-    [[i18n('repairCompletedPowerwashShutdownDescription')]]
+    [[getPowerwashDescriptionString_(selectedFinishRmaOption_)]]
   </div>
   <div class="dialog-footer" slot="button-container">
     <cr-button id="closePowerwashDialogButton" on-click="onCancelClick_">
