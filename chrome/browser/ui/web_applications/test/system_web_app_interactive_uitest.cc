@@ -17,6 +17,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -1040,7 +1041,25 @@ class SystemWebAppNewWindowMenuItemTest
         ash::ShelfID(maybe_installation_->GetAppId()));
   }
 
-  std::unique_ptr<ui::MenuModel> GetContextMenu(
+  std::unique_ptr<AppServiceAppItem> GetAppServiceAppItem() {
+    Profile* profile = browser()->profile();
+    std::unique_ptr<AppServiceAppItem> item;
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .ForOneApp(
+            maybe_installation_->GetAppId(),
+            [profile, &item](const apps::AppUpdate& update) {
+              item = std::make_unique<AppServiceAppItem>(
+                  profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr,
+                  update);
+
+              // Because model updater is null, set position manually.
+              item->SetChromePosition(item->CalculateDefaultPositionForTest());
+            });
+    return item;
+  }
+
+  std::unique_ptr<ui::MenuModel> GetShelfContextMenu(
       ash::ShelfItemDelegate* item_delegate,
       int64_t display_id) {
     base::RunLoop run_loop;
@@ -1055,47 +1074,83 @@ class SystemWebAppNewWindowMenuItemTest
     return menu;
   }
 
+  std::unique_ptr<ui::SimpleMenuModel> GetAppListContextMenu(
+      ChromeAppListItem* item) {
+    base::RunLoop run_loop;
+    std::unique_ptr<ui::SimpleMenuModel> menu;
+    item->GetContextMenuModel(
+        /*add_sort_options=*/false,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
+              menu = std::move(created_menu);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return menu;
+  }
+
+  size_t GetSystemWebAppBrowserCount(SystemAppType type) {
+    auto* browser_list = BrowserList::GetInstance();
+    return std::count_if(
+        browser_list->begin(), browser_list->end(), [&](Browser* browser) {
+          return web_app::IsBrowserForSystemWebApp(browser, type);
+        });
+  }
+
+  void ExpectMenuCommandLaunchesSystemWebApp(
+      std::unique_ptr<ui::MenuModel> menu,
+      int command_id,
+      const GURL& app_url) {
+    ASSERT_TRUE(menu);
+    ui::MenuModel* model = menu.get();
+
+    int command_index;
+    ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
+                                                &command_index);
+    EXPECT_TRUE(menu->IsEnabledAt(command_index));
+
+    content::TestNavigationObserver observer(app_url);
+    observer.StartWatchingNewWebContents();
+    menu->ActivatedAt(command_index);
+    observer.Wait();
+  }
+
   int64_t GetDisplayId() {
     return display::Screen::GetScreen()->GetPrimaryDisplay().id();
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest, OpensNewWindow) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest,
+                       ShelfContextMenuOpensNewWindow) {
   WaitForTestSystemAppInstall();
 
   // Launch the app so it shows up in shelf.
   LaunchApp(maybe_installation_->GetType());
 
-  // Verify the menu item shows up.
   auto* shelf_item_delegate = GetAppShelfItemDelegate();
   ASSERT_TRUE(shelf_item_delegate);
 
-  // Check the context menu option shows up.
-  auto display_id = GetDisplayId();
-  std::unique_ptr<ui::MenuModel> menu =
-      GetContextMenu(shelf_item_delegate, display_id);
-  ASSERT_TRUE(menu);
-  ui::MenuModel* model = menu.get();
-  int command_index;
-  ui::MenuModel::GetModelAndIndexForCommandId(ash::MENU_OPEN_NEW, &model,
-                                              &command_index);
-  EXPECT_TRUE(menu->IsEnabledAt(command_index));
+  ExpectMenuCommandLaunchesSystemWebApp(
+      GetShelfContextMenu(shelf_item_delegate, GetDisplayId()),
+      ash::MENU_OPEN_NEW, maybe_installation_->GetAppUrl());
 
-  // Try to launch the app into a new window.
-  content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
-  observer.StartWatchingNewWebContents();
-  menu->ActivatedAt(command_index);
-  observer.Wait();
+  EXPECT_EQ(2U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
+}
 
-  // After launch, we should have two SWA windows.
-  auto* browser_list = BrowserList::GetInstance();
-  size_t system_app_browser_count = std::count_if(
-      browser_list->begin(), browser_list->end(), [&](Browser* browser) {
-        return web_app::IsBrowserForSystemWebApp(
-            browser, maybe_installation_->GetType());
-      });
+IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest,
+                       AppListContextMenuLaunchNew) {
+  WaitForTestSystemAppInstall();
 
-  EXPECT_EQ(system_app_browser_count, 2U);
+  LaunchApp(maybe_installation_->GetType());
+
+  auto item = GetAppServiceAppItem();
+  ASSERT_TRUE(item);
+
+  ExpectMenuCommandLaunchesSystemWebApp(GetAppListContextMenu(item.get()),
+                                        ash::LAUNCH_NEW,
+                                        maybe_installation_->GetAppUrl());
+
+  EXPECT_EQ(2U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }
 #endif
 

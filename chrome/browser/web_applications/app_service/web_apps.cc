@@ -409,7 +409,9 @@ void WebApps::GetMenuModel(const std::string& app_id,
                            ->system_web_app_manager()
                            .GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
-      apps::AddCommandItem(ash::MENU_OPEN_NEW,
+      apps::AddCommandItem(menu_type == apps::mojom::MenuType::kAppList
+                               ? ash::LAUNCH_NEW
+                               : ash::MENU_OPEN_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
     }
   } else {
