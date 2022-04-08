@@ -123,6 +123,11 @@ AutofillProfile ConstructCompleteProfile() {
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kFormatted);
   profile.set_language_code("en");
 
+  // Set testing values for the birthdate.
+  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  profile.SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, 1997);
+
   return profile;
 }
 
@@ -255,6 +260,11 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 
   specifics.set_address_home_language_code("en");
 
+  // Set values for the birthdate.
+  specifics.set_birthdate_day(14);
+  specifics.set_birthdate_month(3);
+  specifics.set_birthdate_year(1997);
+
   return specifics;
 }
 
@@ -274,7 +284,7 @@ class AutofillProfileSyncUtilTest : public testing::Test {
 // the server.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList structured_names_feature;
-  // With those three features enabled, the AutofillProfile supports all tokens
+  // With those four features enabled, the AutofillProfile supports all tokens
   // and statuses assignable in the specifics. If one of those features is
   // disabled, for some tokens
   // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
@@ -282,7 +292,8 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   structured_names_feature.InitWithFeatures(
       {features::kAutofillEnableSupportForMoreStructureInAddresses,
        features::kAutofillEnableSupportForMoreStructureInNames,
-       features::kAutofillEnableSupportForHonorificPrefixes},
+       features::kAutofillEnableSupportForHonorificPrefixes,
+       features::kAutofillEnableCompatibilitySupportForBirthdates},
       {});
 
   AutofillProfile profile = ConstructCompleteProfile();

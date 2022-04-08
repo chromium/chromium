@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;
@@ -234,6 +235,15 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_thoroughfare_number_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER)));
+
+  // Set birthdate-related values.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    specifics->set_birthdate_day(entry.GetRawInfoAsInt(BIRTHDATE_DAY));
+    specifics->set_birthdate_month(entry.GetRawInfoAsInt(BIRTHDATE_MONTH));
+    specifics->set_birthdate_year(
+        entry.GetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS));
+  }
 
   return entity_data;
 }
@@ -456,6 +466,15 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       UTF8ToUTF16(specifics.address_home_subpremise_name()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
+
+  // Set birthdate-related fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
+    profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
+    profile->SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS,
+                             specifics.birthdate_year());
+  }
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|
   // * The profile is migrated if the name structure is in legacy state.

@@ -147,6 +147,11 @@ message AutofillProfileSpecifics {
   // involve user interactions.
   optional bool disallow_settings_visible_updates = 63;
 
+  // Birthdate fields.
+  optional int32 birthdate_day = 64;
+  optional int32 birthdate_month = 65;
+  optional int32 birthdate_year = 66;  // 4 digits.
+
   // Deprecated.
   optional string deprecated_label = 1 [deprecated = true];
   optional string phone_fax_whole_number = 14 [deprecated = true];
