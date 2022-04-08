@@ -32,3 +32,22 @@ class BrowsingContext(BidiModule):
         assert isinstance(result["contexts"], list)
 
         return result["contexts"]
+
+    @command
+    def navigate(
+        self, context: str, url: str, wait: Optional[str] = None
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context, "url": url}
+        if wait is not None:
+            params["wait"] = wait
+        return params
+
+    @navigate.result
+    def _navigate(self, result: Mapping[str, Any]) -> Any:
+        if result["navigation"] is not None:
+            assert isinstance(result["navigation"], str)
+
+        assert result["url"] is not None
+        assert isinstance(result["url"], str)
+
+        return result

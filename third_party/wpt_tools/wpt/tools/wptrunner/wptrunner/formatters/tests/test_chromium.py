@@ -67,13 +67,19 @@ def test_time_per_test(logger, capfd):
     output = StringIO()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
-    # output a bunch of stuff
     logger.suite_start(["test-id-1", "test-id-2"], run_info={}, time=50)
     logger.test_start("test-id-1", time=100)
     logger.test_start("test-id-2", time=200)
     logger.test_end("test-id-1", status="PASS", expected="PASS", time=300)
     logger.test_end("test-id-2", status="PASS", expected="PASS", time=199)
     logger.suite_end()
+
+    logger.suite_start(["test-id-1"], run_info={}, time=400)
+    logger.test_start("test-id-1", time=500)
+    logger.test_end("test-id-1", status="PASS", expected="PASS", time=600)
+    logger.suite_end()
+
+    # Write the final results.
     logger.shutdown()
 
     # check nothing got output to stdout/stderr
@@ -88,8 +94,14 @@ def test_time_per_test(logger, capfd):
 
     test1_obj = output_obj["tests"]["test-id-1"]
     test2_obj = output_obj["tests"]["test-id-2"]
-    assert pytest.approx(test1_obj["time"]) == 0.2  # 300ms - 100ms = 0.2s
+    # Test 1 run 1: 300ms - 100ms = 0.2s
+    # Test 1 run 2: 600ms - 500ms = 0.1s
+    assert test1_obj["time"] == pytest.approx(0.2)
+    assert len(test1_obj["times"]) == 2
+    assert test1_obj["times"][0] == pytest.approx(0.2)
+    assert test1_obj["times"][1] == pytest.approx(0.1)
     assert "time" not in test2_obj
+    assert "times" not in test2_obj
 
 
 def test_chromium_test_name_trie(logger, capfd):
@@ -570,8 +582,8 @@ def test_precondition_failed(logger, capfd):
     assert test_obj["is_unexpected"] is True
 
 
-def test_repeated_runs(logger, capfd):
-    # Check that the logger outputs one report after multiple test suite runs.
+def test_repeated_test_statuses(logger, capfd):
+    # Check that the logger outputs all statuses from multiple runs of a test.
 
     # Set up the handler.
     output = StringIO()
@@ -589,6 +601,7 @@ def test_repeated_runs(logger, capfd):
     logger.test_end("t1", status="FAIL", expected="PASS", known_intermittent=[])
     logger.suite_end()
 
+    # Write the final results.
     logger.shutdown()
 
     # check nothing got output to stdout/stderr
@@ -601,10 +614,57 @@ def test_repeated_runs(logger, capfd):
     output.seek(0)
     output_json = json.load(output)
 
-    # The latest status (FAIL) replaces the earlier one (PASS).
+    status_totals = output_json["num_failures_by_type"]
+    assert status_totals["PASS"] == 1
+    # A missing result type is the same as being present and set to zero (0).
+    assert status_totals.get("FAIL", 0) == 0
+
+    # The actual statuses are accumulated in a ordered space-separated list.
     test_obj = output_json["tests"]["t1"]
-    assert test_obj["actual"] == "FAIL"
+    assert test_obj["actual"] == "PASS FAIL"
     assert test_obj["expected"] == "PASS"
+
+
+def test_flaky_test_detection(logger, capfd):
+    # Check that the logger detects flakiness for a test run multiple times.
+
+    # Set up the handler.
+    output = StringIO()
+    logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
+
+    logger.suite_start(["t1", "t2"], run_info={})
+    logger.test_start("t1")
+    logger.test_start("t2")
+    logger.test_end("t1", status="FAIL", expected="PASS")
+    logger.test_end("t2", status="FAIL", expected="FAIL")
+    logger.suite_end()
+
+    logger.suite_start(["t1", "t2"], run_info={})
+    logger.test_start("t1")
+    logger.test_start("t2")
+    logger.test_end("t1", status="PASS", expected="PASS")
+    logger.test_end("t2", status="FAIL", expected="FAIL")
+    logger.suite_end()
+
+    # Write the final results.
+    logger.shutdown()
+
+    # check nothing got output to stdout/stderr
+    # (note that mozlog outputs exceptions during handling to stderr!)
+    captured = capfd.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+    # check the actual output of the formatter
+    output.seek(0)
+    output_json = json.load(output)
+
+    # We consider a test flaky if it runs multiple times and produces more than
+    # one kind of result.
+    test1_obj = output_json["tests"]["t1"]
+    test2_obj = output_json["tests"]["t2"]
+    assert test1_obj["is_flaky"] is True
+    assert "is_flaky" not in test2_obj
 
 
 def test_known_intermittent_empty(logger, capfd):

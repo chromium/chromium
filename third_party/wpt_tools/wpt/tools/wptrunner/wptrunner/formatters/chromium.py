@@ -121,10 +121,19 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         cur_dict = self.tests
         for name_part in name_parts:
             cur_dict = cur_dict.setdefault(name_part, {})
-        cur_dict["actual"] = actual
+        # Splitting and joining the list of statuses here avoids the need for
+        # recursively postprocessing the |tests| trie at shutdown. We assume the
+        # number of repetitions is typically small enough for the quadratic
+        # runtime to not matter.
+        statuses = cur_dict.get("actual", "").split()
+        statuses.append(actual)
+        cur_dict["actual"] = " ".join(statuses)
         cur_dict["expected"] = expected
         if duration is not None:
-            cur_dict["time"] = duration
+            # Record the time to run the first invocation only.
+            cur_dict.setdefault("time", duration)
+            durations = cur_dict.setdefault("times", [])
+            durations.append(duration)
         if subtest_failure:
             self._append_artifact(cur_dict, "wpt_subtest_failure", "true")
         if wpt_actual != actual:
@@ -145,13 +154,20 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
             data = "%s: %s" % (item["url"], item["screenshot"])
             self._append_artifact(cur_dict, "screenshots", data)
 
-        # Figure out if there was a regression or unexpected status. This only
-        # happens for tests that were run
+        # Figure out if there was a regression, unexpected status, or flake.
+        # This only happens for tests that were run
         if actual != "SKIP":
             if actual not in expected:
                 cur_dict["is_unexpected"] = True
                 if actual != "PASS":
                     cur_dict["is_regression"] = True
+            if len(set(statuses)) > 1:
+                cur_dict["is_flaky"] = True
+
+        # Update the count of how many tests ran with each status. Only includes
+        # the first invocation's result in the totals.
+        if len(statuses) == 1:
+            self.num_failures_by_status[actual] += 1
 
     def _map_status_name(self, status):
         """
@@ -287,9 +303,6 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         # Remove the test from dicts to avoid accumulating too many.
         self.actual_metadata.pop(test_name)
         self.messages.pop(test_name)
-
-        # Update the count of how many tests ran with each status.
-        self.num_failures_by_status[actual_status] += 1
 
         # New test, new browser logs.
         self.browser_log = []
