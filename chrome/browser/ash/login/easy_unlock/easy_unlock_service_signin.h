@@ -96,7 +96,6 @@ class EasyUnlockServiceSignin : public EasyUnlockService {
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;
-  bool IsEligible() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
   SmartLockState GetInitialSmartLockState() const override;

@@ -10,6 +10,10 @@
 
 namespace ash {
 
+namespace multidevice_setup {
+class MultiDeviceSetupClient;
+}  // namespace multidevice_setup
+
 // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
 class SmartLockFeatureUsageMetrics
@@ -17,8 +21,7 @@ class SmartLockFeatureUsageMetrics
       public SmartLockMetricsRecorder::UsageRecorder {
  public:
   SmartLockFeatureUsageMetrics(
-      base::RepeatingCallback<bool()> is_eligible_callback,
-      base::RepeatingCallback<bool()> is_enabled_callback);
+      multidevice_setup::MultiDeviceSetupClient* multi_device_setup_client);
 
   SmartLockFeatureUsageMetrics(SmartLockFeatureUsageMetrics&) = delete;
   SmartLockFeatureUsageMetrics& operator=(SmartLockFeatureUsageMetrics&) =
@@ -33,8 +36,7 @@ class SmartLockFeatureUsageMetrics
   bool IsEligible() const override;
   bool IsEnabled() const override;
 
-  base::RepeatingCallback<bool()> is_eligible_callback_;
-  base::RepeatingCallback<bool()> is_enabled_callback_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   feature_usage::FeatureUsageMetrics feature_usage_metrics_;
 };
 

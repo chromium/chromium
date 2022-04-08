@@ -117,6 +117,11 @@ class SmartLockMetricsRecorder {
  private:
   static void RecordAuthResultSuccess(bool success);
 
+  // TODO(b/227674947): After deleting EasyUnlockServiceSignIn and combining
+  // EasyUnlockService and EasyUnlockServiceRegular into one class, delete
+  // g_usage_recorder and simplify our SFUL implementation. We can call
+  // SmartLockFeatureUsageMetrics::RecordUsage() on our SFUL instance directly
+  // within that combined class.
   static UsageRecorder* g_usage_recorder;
 };
 

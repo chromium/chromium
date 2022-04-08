@@ -317,7 +317,6 @@ void EasyUnlockServiceSignin::ShutdownInternal() {
   remote_device_cache_.reset();
   challenge_wrapper_.reset();
   pref_manager_.reset();
-  StopFeatureUsageMetrics();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   user_data_.clear();
@@ -328,10 +327,6 @@ bool EasyUnlockServiceSignin::IsAllowedInternal() const {
          !LoginState::Get()->IsUserLoggedIn() &&
          (pref_manager_ && pref_manager_->IsEasyUnlockAllowed() &&
           pref_manager_->IsChromeOSLoginAllowed());
-}
-
-bool EasyUnlockServiceSignin::IsEligible() const {
-  return pref_manager_ && pref_manager_->IsSmartLockEligible();
 }
 
 bool EasyUnlockServiceSignin::IsEnabled() const {
@@ -411,7 +406,6 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
   SetProximityAuthDevices(account_id_, multidevice::RemoteDeviceRefList(),
                           absl::nullopt /* local_device */);
   ResetSmartLockState();
-  StartFeatureUsageMetrics();
 
   // Changing the "Active User" above changes the return values of IsAllowed()
   // and IsEnabled() below.
