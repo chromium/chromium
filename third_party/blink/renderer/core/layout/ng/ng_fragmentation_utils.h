@@ -105,8 +105,7 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
                                          NGLayoutInputNode child,
                                          const NGLayoutResult&,
                                          const NGBoxFragmentBuilder&,
-                                         bool has_container_separation,
-                                         bool is_row_item = false);
+                                         bool has_container_separation);
 NGBreakAppeal CalculateBreakAppealBefore(
     const NGConstraintSpace&,
     NGLayoutResult::EStatus layout_result_status,

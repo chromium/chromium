@@ -140,12 +140,8 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
                                          NGLayoutInputNode child,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder,
-                                         bool has_container_separation,
-                                         bool is_row_item) {
-  // Break-before and break-after for items in a row are handled at the row
-  // level, so |breakable_at_start_of_container| should be false for such items.
+                                         bool has_container_separation) {
   bool breakable_at_start_of_container =
-      !is_row_item &&
       IsBreakableAtStartOfResumedContainer(space, layout_result, builder);
   EBreakBetween break_between =
       CalculateBreakBetweenValue(child, layout_result, builder);
@@ -635,9 +631,8 @@ NGBreakStatus BreakBeforeChildIfNeeded(
     }
   }
 
-  NGBreakAppeal appeal_before =
-      CalculateBreakAppealBefore(space, child, layout_result, *builder,
-                                 has_container_separation, is_row_item);
+  NGBreakAppeal appeal_before = CalculateBreakAppealBefore(
+      space, child, layout_result, *builder, has_container_separation);
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.

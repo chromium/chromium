@@ -1530,12 +1530,13 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       if (!is_column_) {
         has_container_separation =
             offset.block_offset > row_block_offset &&
-            (!item_break_token || (broke_before_row && flex_item_idx == 0 &&
+            (!item_break_token || (*broke_before_row && flex_item_idx == 0 &&
                                    item_break_token->IsBreakBefore()));
         // Don't attempt to break before a row if the fist item is resuming
         // layout. In which case, the row should be resuming layout, as well.
         if (flex_item_idx == 0 &&
-            (!item_break_token || !IsResumingLayout(item_break_token))) {
+            (!item_break_token ||
+             (item_break_token->IsBreakBefore() && *broke_before_row))) {
           // Rows have no layout result, so if the row breaks before, we
           // will break before the first item in the row instead.
           bool row_container_separation = has_processed_first_line_;
