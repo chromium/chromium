@@ -17,7 +17,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
+import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
@@ -27,8 +27,32 @@ import {getTemplate} from './google_photos_photos_element.html.js';
 import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
-/** A list of |GooglePhotosPhoto|'s to be rendered in a row. */
-export type GooglePhotosPhotosRow = GooglePhotosPhoto[];
+const PLACEHOLDER_ID = 'placeholder';
+
+/** Returns placeholders to show while Google Photos photos are loading. */
+function getPlaceholders(): GooglePhotosPhotosRow[] {
+  const placeholdersPerRow = getNumberOfGridItemsPerRow();
+  const placeholders: GooglePhotosPhotosRow[] = [];
+  getLoadingPlaceholders(() => {
+    const photo = new GooglePhotosPhoto();
+    photo.id = PLACEHOLDER_ID;
+    return photo;
+  }).forEach((placeholder, i) => {
+    let row = placeholders[placeholders.length - 1];
+    if (!row || row.length === placeholdersPerRow) {
+      row = [];
+      placeholders.push(row);
+    }
+    row.push({...placeholder, index: i});
+  });
+  return placeholders;
+}
+
+/** A single |GooglePhotosPhoto| coupled with its numerical index. */
+export type GooglePhotosPhotoWithIndex = GooglePhotosPhoto&{index: number};
+
+/** A list of |GooglePhotosPhotoWithIndex|'s to be rendered in a row. */
+export type GooglePhotosPhotosRow = GooglePhotosPhotoWithIndex[];
 
 /** A titled list of |GooglePhotosPhotosRow|'s to be rendered in a section. */
 export type GooglePhotosPhotosSection = {
@@ -70,7 +94,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       photosByRow_: {
         type: Array,
-        value: [],
+        value: getPlaceholders,
       },
 
       photosBySection_: {
@@ -120,7 +144,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
    * and grouped into sections so as to be rendered in a grid.
    */
-  private photosBySection_: GooglePhotosPhotosSection[]|null;
+  private photosBySection_: GooglePhotosPhotosSection[]|null|undefined;
 
   /** Whether the list of photos is currently loading. */
   private photosLoading_: boolean;
@@ -241,7 +265,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Invoked on selection of a photo. */
   private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
     assert(e.model.photo);
-    if (isSelectionEvent(e)) {
+    if (!this.isPhotoPlaceholder_(e.model.photo) && isSelectionEvent(e)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
       recordWallpaperGooglePhotosSourceUMA(WallpaperGooglePhotosSource.Photos);
     }
@@ -279,14 +303,21 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   private computePhotosBySection_(
       photos: GooglePhotosPhotos['photos_'],
       photosPerRow: GooglePhotosPhotos['photosPerRow_']):
-      GooglePhotosPhotosSection[]|null {
+      GooglePhotosPhotosSection[]|null|undefined {
+    // If |photos| is undefined, this computation is occurring during
+    // initialization. In such cases, defer defining |photosBySection_| until
+    // actual data has loaded or failed to load.
+    if (photos === undefined) {
+      return undefined;
+    }
+
     if (!isNonEmptyArray(photos) || !photosPerRow) {
       return null;
     }
 
     const sections: GooglePhotosPhotosSection[] = [];
 
-    photos.forEach(photo => {
+    photos.forEach((photo, i) => {
       const title = photo.date.data.map(c => String.fromCodePoint(c)).join('');
 
       // Find/create the appropriate |section| in which to insert |photo|.
@@ -303,7 +334,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         section.rows.push(row);
       }
 
-      row.push(photo);
+      row.push({...photo, index: i});
     });
 
     return sections;
@@ -326,6 +357,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): boolean {
     return !!this.getGridRowTitle_(row, photosBySection);
+  }
+
+  /** Returns whether the specified |photo| is a placeholder. */
+  private isPhotoPlaceholder_(photo: GooglePhotosPhoto|null): boolean {
+    return !!photo && photo.id === PLACEHOLDER_ID;
   }
 
   // Returns whether the specified |photo| is currently selected.

@@ -57,8 +57,10 @@
               class="photo"
               colindex$="[[index]]"
               image-src="[[photo.url.url]]"
+              index="[[photo.index]]"
               on-click="onPhotoSelected_"
               on-keypress="onPhotoSelected_"
+              placeholder$="[[isPhotoPlaceholder_(photo)]]"
               selected="[[isPhotoSelected_(
                 photo, currentSelected_, pendingSelected_)]]"
               tabindex="-1">
