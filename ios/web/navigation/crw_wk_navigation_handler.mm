@@ -1782,6 +1782,11 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
     if (itemURL != failingURL)
       item->SetVirtualURL(failingURL);
 
+    // Saves original context before, as the original context can be deleted
+    // before the callback is called.
+    __block std::unique_ptr<web::NavigationContextImpl> originalContext =
+        [self.navigationStates removeNavigation:navigation];
+
     web::GetWebClient()->PrepareErrorPage(
         self.webStateImpl, failingURL, contextError,
         navigationContext->IsPost(),
@@ -1812,8 +1817,6 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
                                            responseHTMLString:@""];
             }
 
-            std::unique_ptr<web::NavigationContextImpl> originalContext =
-                [self.navigationStates removeNavigation:navigation];
             originalContext->SetLoadingErrorPage(true);
             [self.navigationStates setContext:std::move(originalContext)
                                 forNavigation:errorNavigation];
