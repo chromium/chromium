@@ -199,6 +199,29 @@ suite('<crostini-upgrader-app>', () => {
         app.$$('#error-log').innerHTML, single + '\n' + single + '\n' + single);
   });
 
+  test('upgradeFlowPrecheckRetry', async () => {
+    // Uncheck backup box
+    app.$$('#backup-checkbox > cr-checkbox').click();
+    await clickAction();
+
+    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
+    fakeBrowserProxy.page.precheckStatus(
+        chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE);
+    await clickAction();
+
+    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 2);
+    fakeBrowserProxy.page.precheckStatus(
+        chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER);
+    await clickAction();
+
+    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 3);
+    fakeBrowserProxy.page.precheckStatus(
+        chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+    await clickAction();
+
+    expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
+  });
+
   test('upgradeFlowFailureOffersRestore', async () => {
     expectFalse(getProgressMessage().hidden);
     expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);

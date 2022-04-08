@@ -159,11 +159,12 @@ Polymer({
         this.state_ = State.BACKUP_ERROR;
       }),
       callbackRouter.precheckStatus.addListener((status) => {
-        this.precheckStatus_ = status;
         if (status ===
             chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK) {
           this.precheckSuccessCallback_();
+          this.precheckStatus_ = status;
         } else {
+          this.precheckStatus_ = status;
           this.state_ = State.PRECHECKS_FAILED;
           this.precheckFailureCallback_();
         }
