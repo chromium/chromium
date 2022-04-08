@@ -87,6 +87,11 @@ MEDIA_EXPORT gfx::Rect ComputeLetterboxRegion(const gfx::Rect& bounds,
 MEDIA_EXPORT gfx::Rect ComputeLetterboxRegionForI420(const gfx::Rect& bounds,
                                                      const gfx::Size& content);
 
+// Shrinks the given |rect| by the minimum amount necessary to align its corners
+// to even-numbered coordinates. |rect| is assumed to have bounded limit values,
+// and may have negative bounds.
+MEDIA_EXPORT gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect);
+
 // Return a scaled |size| whose area is less than or equal to |target|, where
 // one of its dimensions is equal to |target|'s.  The aspect ratio of |size| is
 // preserved as closely as possible.  If |size| is empty, the result will be

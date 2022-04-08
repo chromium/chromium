@@ -168,7 +168,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<AggregatedRenderPassId> ids,
       std::vector<std::unique_ptr<ImageContextImpl>> image_contexts);
   void CopyOutput(AggregatedRenderPassId id,
-                  copy_output::RenderPassGeometry geometry,
+                  const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox);

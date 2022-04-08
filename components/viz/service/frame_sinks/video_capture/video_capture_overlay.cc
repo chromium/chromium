@@ -16,6 +16,7 @@
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/base/video_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -106,23 +107,6 @@ gfx::Rect ToAbsoluteBoundsForI420(const gfx::RectF& relative,
                    std::max(0, snapped_bottom - snapped_top));
 }
 
-// Shrinks the given |rect| by the minimum amount necessary to align its corners
-// to even-numbered coordinates. |rect| is assumed to have bounded limit values,
-// and may have negative bounds.
-gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect) {
-  constexpr int kMinDimension = -1 * media::limits::kMaxDimension;
-  DCHECK(gfx::Rect(kMinDimension, kMinDimension,
-                   media::limits::kMaxDimension * 2,
-                   media::limits::kMaxDimension * 2)
-             .Contains(rect));
-  const int left = rect.x() + (rect.x() % 2);
-  const int top = rect.y() + (rect.y() % 2);
-  const int right = rect.right() - (rect.right() % 2);
-  const int bottom = rect.bottom() - (rect.bottom() % 2);
-  return gfx::Rect(left, top, std::max(0, right - left),
-                   std::max(0, bottom - top));
-}
-
 // Uses the mapping of a region R that exists in coordinate system A
 // as |from_region| and in coordinate system B as |to_region|. The |source|
 // rectangle is in coordinate system A and mapped to coordinate system B
@@ -151,7 +135,7 @@ gfx::Rect Transform(const gfx::Rect& source,
       gfx::Rect(scaled.x() + to_region.x(), scaled.y() + to_region.y(),
                 scaled.width(), scaled.height());
 
-  return MinimallyShrinkRectForI420(new_translated);
+  return media::MinimallyShrinkRectForI420(new_translated);
 }
 
 }  // namespace

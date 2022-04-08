@@ -17,8 +17,10 @@
 #include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
+#include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -62,7 +64,7 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
   }
 }
 
-VideoPixelFormat ReadbackFormat(const media::VideoFrame& frame) {
+VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
   switch (frame.format()) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
@@ -95,8 +97,8 @@ SkColorType SkColorTypeForPlane(VideoPixelFormat format, size_t plane) {
       // kGray_8_SkColorType would make more sense but doesn't work on Windows.
       return kAlpha_8_SkColorType;
     case PIXEL_FORMAT_NV12:
-      return plane == media::VideoFrame::kYPlane ? kAlpha_8_SkColorType
-                                                 : kR8G8_unorm_SkColorType;
+      return plane == VideoFrame::kYPlane ? kAlpha_8_SkColorType
+                                          : kR8G8_unorm_SkColorType;
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_ABGR:
       return kRGBA_8888_SkColorType;
@@ -542,6 +544,23 @@ gfx::Rect ComputeLetterboxRegionForI420(const gfx::Rect& bounds,
   return result;
 }
 
+gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect) {
+  constexpr int kMinDimension = -1 * limits::kMaxDimension;
+  DCHECK(gfx::Rect(kMinDimension, kMinDimension, limits::kMaxDimension * 2,
+                   limits::kMaxDimension * 2)
+             .Contains(rect));
+
+  const auto positive_mod = [](int a, int b) { return (a % b + b) % b; };
+
+  const int left = rect.x() + positive_mod(rect.x(), 2);
+  const int top = rect.y() + positive_mod(rect.y(), 2);
+  const int right = rect.right() - (rect.right() % 2);
+  const int bottom = rect.bottom() - (rect.bottom() % 2);
+
+  return gfx::Rect(left, top, std::max(0, right - left),
+                   std::max(0, bottom - top));
+}
+
 gfx::Size ScaleSizeToFitWithinTarget(const gfx::Size& size,
                                      const gfx::Size& target) {
   return ScaleSizeToTarget(size, target, true);
@@ -829,14 +848,13 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       (src_frame.format() == PIXEL_FORMAT_I420 ||
        src_frame.format() == PIXEL_FORMAT_I420A)) {
     if (dst_frame.format() == PIXEL_FORMAT_I420A) {
-      libyuv::ScalePlane(src_frame.visible_data(media::VideoFrame::kAPlane),
-                         src_frame.stride(media::VideoFrame::kAPlane),
-                         src_frame.visible_rect().width(),
-                         src_frame.visible_rect().height(),
-                         dst_frame.data(media::VideoFrame::kAPlane),
-                         dst_frame.stride(media::VideoFrame::kAPlane),
-                         dst_frame.coded_size().width(),
-                         dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(
+          src_frame.visible_data(VideoFrame::kAPlane),
+          src_frame.stride(VideoFrame::kAPlane),
+          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+          dst_frame.data(VideoFrame::kAPlane),
+          dst_frame.stride(VideoFrame::kAPlane), dst_frame.coded_size().width(),
+          dst_frame.coded_size().height(), kDefaultFiltering);
     }
     int error = libyuv::I420Scale(
         src_frame.visible_data(VideoFrame::kYPlane),
@@ -1006,12 +1024,12 @@ MEDIA_EXPORT VideoPixelFormat
 VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
   switch (sk_color_type) {
     case kRGBA_8888_SkColorType:
-      return is_opaque ? media::PIXEL_FORMAT_XBGR : media::PIXEL_FORMAT_ABGR;
+      return is_opaque ? PIXEL_FORMAT_XBGR : PIXEL_FORMAT_ABGR;
     case kBGRA_8888_SkColorType:
-      return is_opaque ? media::PIXEL_FORMAT_XRGB : media::PIXEL_FORMAT_ARGB;
+      return is_opaque ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_ARGB;
     default:
       // TODO(crbug.com/1073995): Add F16 support.
-      return media::PIXEL_FORMAT_UNKNOWN;
+      return PIXEL_FORMAT_UNKNOWN;
   }
 }
 
