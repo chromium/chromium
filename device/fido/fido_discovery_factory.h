@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // Android AOA devices. The |aoa_request_description| is a string that is sent
   // to the device to describe the type of request and may appears in
   // permissions UI on the device.
-  void set_android_accessory_params(
+  virtual void set_android_accessory_params(
       mojo::Remote<device::mojom::UsbDeviceManager>,
       std::string aoa_request_description);
 

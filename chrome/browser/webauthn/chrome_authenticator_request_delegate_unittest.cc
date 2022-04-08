@@ -21,7 +21,9 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -38,6 +40,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+namespace {
 
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {};
@@ -130,6 +134,156 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
                   test.rp_id),
               test.expected)
         << test.name;
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
+  class DiscoveryFactory : public device::FidoDiscoveryFactory {
+   public:
+    void set_cable_data(
+        device::FidoRequestType request_type,
+        std::vector<device::CableDiscoveryData> cable_data,
+        const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+            qr_generator_key,
+        std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings)
+        override {
+      this->cable_data = std::move(cable_data);
+      this->qr_key = qr_generator_key;
+      this->v2_pairings = std::move(v2_pairings);
+    }
+
+    void set_android_accessory_params(
+        mojo::Remote<device::mojom::UsbDeviceManager>,
+        std::string aoa_request_description) override {
+      this->aoa_configured = true;
+    }
+
+    std::vector<device::CableDiscoveryData> cable_data;
+    absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
+    std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings;
+    bool aoa_configured = false;
+  };
+
+  const std::array<uint8_t, 16> eid = {1, 2, 3, 4};
+  const std::array<uint8_t, 32> prekey = {5, 6, 7, 8};
+  const device::CableDiscoveryData v1_extension(
+      device::CableDiscoveryData::Version::V1, eid, eid, prekey);
+
+  device::CableDiscoveryData v2_extension;
+  v2_extension.version = device::CableDiscoveryData::Version::V2;
+  v2_extension.v2.emplace(prekey.begin(), prekey.end());
+
+  enum class Result {
+    kNone,
+    kV1,
+    kServerLink,
+    k3rdParty,
+  };
+
+  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+  // switch of lacros-chrome is complete. If updating this, also update
+  // ChromeAuthenticatorRequestDelegate.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  // On Linux, some configurations aren't supported because of bluez
+  // limitations. This macro maps the expected result in that case.
+
+  // This is crbug.com/1314459. It should be `Result::kNone` but, due to that
+  // bug, 3rd-party mode actually triggers.
+#define NONE_ON_LINUX(r) (Result::k3rdParty)
+#else
+#define NONE_ON_LINUX(r) (r)
+#endif
+
+  const struct {
+    const char* origin;
+    std::vector<device::CableDiscoveryData> extensions;
+    Result expected_result;
+  } kTests[] = {
+      {
+          "https://example.com",
+          {},
+          Result::k3rdParty,
+      },
+      {
+          // Extensions should be ignored on a 3rd-party site.
+          "https://example.com",
+          {v1_extension},
+          Result::k3rdParty,
+      },
+      {
+          // Extensions should be ignored on a 3rd-party site.
+          "https://example.com",
+          {v2_extension},
+          Result::k3rdParty,
+      },
+      {
+          // a.g.c should not get caBLE without an extension
+          "https://accounts.google.com",
+          {},
+          NONE_ON_LINUX(Result::kNone),
+      },
+      {
+          "https://accounts.google.com",
+          {v1_extension},
+          NONE_ON_LINUX(Result::kV1),
+      },
+      {
+          "https://accounts.google.com",
+          {v2_extension},
+          NONE_ON_LINUX(Result::kServerLink),
+      },
+  };
+
+  unsigned test_case = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test_case);
+    test_case++;
+
+    DiscoveryFactory discovery_factory;
+    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
+    delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
+    delegate.ConfigureCable(url::Origin::Create(GURL(test.origin)),
+                            device::FidoRequestType::kGetAssertion,
+                            test.extensions, &discovery_factory);
+
+    switch (test.expected_result) {
+      case Result::kNone:
+        EXPECT_FALSE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.v2_pairings.empty());
+        EXPECT_TRUE(discovery_factory.cable_data.empty());
+        EXPECT_TRUE(discovery_factory.aoa_configured);
+        break;
+
+      case Result::kV1:
+        EXPECT_FALSE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.v2_pairings.empty());
+        EXPECT_FALSE(discovery_factory.cable_data.empty());
+        EXPECT_TRUE(discovery_factory.aoa_configured);
+        EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
+                  AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
+        break;
+
+      case Result::kServerLink:
+        EXPECT_TRUE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.v2_pairings.empty());
+        EXPECT_FALSE(discovery_factory.cable_data.empty());
+        EXPECT_TRUE(discovery_factory.aoa_configured);
+        EXPECT_EQ(
+            delegate.dialog_model()->cable_ui_type(),
+            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK);
+        break;
+
+      case Result::k3rdParty:
+        EXPECT_TRUE(discovery_factory.qr_key.has_value());
+        EXPECT_TRUE(discovery_factory.v2_pairings.empty());
+        EXPECT_TRUE(discovery_factory.cable_data.empty());
+        EXPECT_TRUE(discovery_factory.aoa_configured);
+        EXPECT_EQ(
+            delegate.dialog_model()->cable_ui_type(),
+            AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR);
+        break;
+    }
   }
 }
 
@@ -427,3 +581,5 @@ TEST_F(CorpCrdOverrideOriginAndRpIdValidationTest, Test) {
               test.expected);
   }
 }
+
+}  // namespace

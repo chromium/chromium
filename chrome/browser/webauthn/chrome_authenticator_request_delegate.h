@@ -186,7 +186,14 @@ class ChromeAuthenticatorRequestDelegate
   // A non-const version of dialog_model().
   raw_ptr<AuthenticatorRequestDialogModel> GetDialogModelForTesting();
 
- private:
+  // SetPassEmptyUsbDeviceManagerForTesting controls whether the
+  // `DiscoveryFactory` will be given an empty USB device manager. This is
+  // needed in tests because creating a real `device::mojom::UsbDeviceManager`
+  // can create objects on thread-pool threads. Those objects aren't scheduled
+  // for deletion until after the thread-pool is shutdown when testing, causing
+  // "leaks" to be reported.
+  void SetPassEmptyUsbDeviceManagerForTesting(bool value);
+
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
                            TestTransportPrefType);
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
@@ -234,6 +241,10 @@ class ChromeAuthenticatorRequestDelegate
   // credentials on the device.
   bool is_conditional_ = false;
 
+  // See `SetPassEmptyUsbDeviceManagerForTesting`.
+  bool pass_empty_usb_device_manager_ = false;
+
+ private:
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
 };

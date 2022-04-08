@@ -636,14 +636,18 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
         base::BindRepeating(
             &ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing,
             weak_ptr_factory_.GetWeakPtr()));
-    discovery_factory->set_network_context(
-        SystemNetworkContextManager::GetInstance()->GetContext());
+    if (SystemNetworkContextManager::GetInstance()) {
+      discovery_factory->set_network_context(
+          SystemNetworkContextManager::GetInstance()->GetContext());
+    }
   }
 
   if (android_accessory_possible) {
     mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
-    content::GetDeviceService().BindUsbDeviceManager(
-        usb_device_manager.BindNewPipeAndPassReceiver());
+    if (!pass_empty_usb_device_manager_) {
+      content::GetDeviceService().BindUsbDeviceManager(
+          usb_device_manager.BindNewPipeAndPassReceiver());
+    }
     discovery_factory->set_android_accessory_params(
         std::move(usb_device_manager),
         l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
@@ -860,6 +864,11 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
 raw_ptr<AuthenticatorRequestDialogModel>
 ChromeAuthenticatorRequestDelegate::GetDialogModelForTesting() {
   return weak_dialog_model_;
+}
+
+void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
+    bool value) {
+  pass_empty_usb_device_manager_ = value;
 }
 
 content::RenderFrameHost*
