@@ -574,6 +574,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.CWP.ParseLacrosPath" enum="ChromeOSParseLacrosPath"
+    expires_after="2023-04-06">
+  <owner>shantuo@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of various locations gotten from parsing a Lacros binary path. This
+    is used to monitor any change to the Lacros path. Recorded when a Lacros
+    binary path was found when CWP collects browser processes.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CWP.ParsePSICPU" enum="ChromeOSParsePSICPUStatus"
     expires_after="2023-05-01">
   <owner>shantuo@google.com</owner>

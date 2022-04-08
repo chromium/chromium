@@ -26,6 +26,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace metrics {
 
@@ -45,6 +46,10 @@ const char kParseFrequenciesHistogramName[] =
 // for parsing PSI CPU data.
 const char kParsePSICPUHistogramName[] = "ChromeOS.CWP.ParsePSICPU";
 
+// Name of the histogram that represents the success and various failure modes
+// for parsing a stateful Lacros path to get its version and channel.
+const char kParseLacrosPathHistogramName[] = "ChromeOS.CWP.ParseLacrosPath";
+
 // Limit the total size of protobufs that can be cached, so they don't take up
 // too much memory. If the size of cached protobufs exceeds this value, stop
 // collecting further perf data. The current value is 4 MB.
@@ -56,6 +61,17 @@ const char kPerfCollectorName[] = "Perf";
 
 // File path that stores PSI CPU data.
 const char kPSICPUPath[] = "/proc/pressure/cpu";
+
+// The rootfs Lacros binary path prefix.
+// TODO(b/210001558): remove this logic and use the BrowserManager API
+// if that is implemented.
+const char kRootfsLacrosPrefix[] = "/run/lacros/chrome";
+
+// Matches Lacros version and channel from the stateful Lacros path.
+// The stateful paths are defined at
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/crosapi/browser_util.cc;l=215-224;drc=a7f9d69da4cbe7d796753bce5229f5f8e562b153
+const LazyRE2 kLacrosChannelVersionMatcher = {
+    R"(/run/imageloader/lacros-dogfood-(\w+)/([\d.]+)/chrome)"};
 
 // Gets parameter named by |key| from the map. If it is present and is an
 // integer, stores the result in |out| and return true. Otherwise return false.
@@ -279,31 +295,13 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   // Other 64-bit x86. We collect LLC misses for other Intel CPUs, but not for
   // non-Intel CPUs such as AMD, since the event code provided for LLC is
   // Intel specific.
-  if (cpuid.vendor=="GenuineIntel"){
+  if (cpuid.vendor == "GenuineIntel") {
     cmds.emplace_back(WeightAndValue(25.0, cycles_cmd));
     cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesCmd));
   } else {
     cmds.emplace_back(WeightAndValue(30.0, cycles_cmd));
   }
   return cmds;
-}
-
-void CollectProcessTypes(SampledProfile* sampled_profile) {
-  std::vector<uint32_t> lacros_pids;
-  std::map<uint32_t, Process> process_types =
-      ProcessTypeCollector::ChromeProcessTypes(lacros_pids);
-  std::map<uint32_t, Thread> thread_types =
-      ProcessTypeCollector::ChromeThreadTypes();
-  if (!process_types.empty() && !thread_types.empty()) {
-    sampled_profile->mutable_process_types()->insert(process_types.begin(),
-                                                     process_types.end());
-    sampled_profile->mutable_thread_types()->insert(thread_types.begin(),
-                                                    thread_types.end());
-  }
-  if (!lacros_pids.empty()) {
-    sampled_profile->mutable_lacros_pids()->Add(lacros_pids.begin(),
-                                                lacros_pids.end());
-  }
 }
 
 }  // namespace
@@ -551,6 +549,34 @@ void PerfCollector::PostCollectionProfileAnnotation(
 }
 
 // static.
+void PerfCollector::CollectProcessTypes(SampledProfile* sampled_profile) {
+  std::vector<uint32_t> lacros_pids;
+  std::string lacros_path;
+  std::map<uint32_t, Process> process_types =
+      ProcessTypeCollector::ChromeProcessTypes(lacros_pids, lacros_path);
+  std::map<uint32_t, Thread> thread_types =
+      ProcessTypeCollector::ChromeThreadTypes();
+  if (!process_types.empty() && !thread_types.empty()) {
+    sampled_profile->mutable_process_types()->insert(process_types.begin(),
+                                                     process_types.end());
+    sampled_profile->mutable_thread_types()->insert(thread_types.begin(),
+                                                    thread_types.end());
+  }
+  if (!lacros_pids.empty()) {
+    sampled_profile->mutable_lacros_pids()->Add(lacros_pids.begin(),
+                                                lacros_pids.end());
+  }
+  if (!lacros_path.empty()) {
+    metrics::SystemProfileProto_Channel channel;
+    std::string version;
+    if (PerfCollector::LacrosChannelAndVersion(lacros_path, channel, version)) {
+      sampled_profile->set_lacros_channel(channel);
+      sampled_profile->set_lacros_version(version);
+    }
+  }
+}
+
+// static.
 void PerfCollector::CollectPSICPU(SampledProfile* sampled_profile,
                                   const std::string& psi_cpu_path) {
   // Example file content: some avg10=0.00 avg60=0.00 avg300=0.00 total=0
@@ -702,6 +728,42 @@ void PerfCollector::SaveCPUFrequencies(
     const std::vector<uint32_t>& frequencies) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   max_frequencies_mhz_ = frequencies;
+}
+
+// static.
+bool PerfCollector::LacrosChannelAndVersion(
+    re2::StringPiece lacros_path,
+    metrics::SystemProfileProto_Channel& lacros_channel,
+    std::string& lacros_version) {
+  std::string channel;
+  if (lacros_path == kRootfsLacrosPrefix) {
+    base::UmaHistogramEnumeration(kParseLacrosPathHistogramName,
+                                  ParseLacrosPath::kRootfs);
+    return false;
+  }
+  if (!RE2::Consume(&lacros_path, *kLacrosChannelVersionMatcher, &channel,
+                    &lacros_version)) {
+    base::UmaHistogramEnumeration(kParseLacrosPathHistogramName,
+                                  ParseLacrosPath::kUnrecognized);
+    return false;
+  }
+
+  // We could also use the included parse helper, but it requires <channel>
+  // converted to "CHANNEL_<CHANNEL>".
+  if (channel == "stable")
+    lacros_channel = SystemProfileProto_Channel_CHANNEL_STABLE;
+  else if (channel == "beta")
+    lacros_channel = SystemProfileProto_Channel_CHANNEL_BETA;
+  else if (channel == "dev")
+    lacros_channel = SystemProfileProto_Channel_CHANNEL_DEV;
+  else if (channel == "canary")
+    lacros_channel = SystemProfileProto_Channel_CHANNEL_CANARY;
+  else
+    lacros_channel = SystemProfileProto_Channel_CHANNEL_UNKNOWN;
+
+  base::UmaHistogramEnumeration(kParseLacrosPathHistogramName,
+                                ParseLacrosPath::kStateful);
+  return true;
 }
 
 void PerfCollector::StopCollection() {

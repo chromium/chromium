@@ -13,7 +13,8 @@ namespace {
 
 void GetExampleProcessTypeDataset(std::string* ps_output,
                                   std::map<uint32_t, Process>* process_types,
-                                  std::vector<uint32_t>* lacros_pids) {
+                                  std::vector<uint32_t>* lacros_pids,
+                                  std::string* lacros_path) {
   *ps_output = R"(PID   CMD
     1000 /opt/google/chrome/chrome --type=
     1500 /opt/google/chrome/chrome --type= --some-flag
@@ -38,7 +39,6 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
                R"(--log-level=1 --type=utility
    25000 /run/imageloader/lacros-dogfood-dev/95.0.4623.2/chrome --type=zygote
   129000 /opt/google/chrome/chrome --ppapi-flash-path=..../libpepflashplayer.so"
-  131000 /run/imageloader/lacros-beta/non-numeric/chrome
   180000 [kswapd0])";
   process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
       1000, Process::BROWSER_PROCESS));
@@ -91,6 +91,8 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
   lacros_pids->emplace_back(23000);
   lacros_pids->emplace_back(24000);
   lacros_pids->emplace_back(25000);
+
+  *lacros_path = "/run/lacros/chrome";
 }
 
 void GetExampleThreadTypeDataset(std::string* ps_output,
@@ -216,21 +218,27 @@ TEST(ProcessTypeCollectorTest, ValidProcessTypeInput) {
   std::map<uint32_t, Process> want_process_types;
   std::string input;
   std::vector<uint32_t> want_lacros_pids;
-  GetExampleProcessTypeDataset(&input, &want_process_types, &want_lacros_pids);
+  std::string want_lacros_path;
+  GetExampleProcessTypeDataset(&input, &want_process_types, &want_lacros_pids,
+                               &want_lacros_path);
   EXPECT_FALSE(input.empty());
   EXPECT_FALSE(want_process_types.empty());
   EXPECT_FALSE(want_lacros_pids.empty());
+  EXPECT_FALSE(want_lacros_path.empty());
 
   base::HistogramTester histogram_tester;
   std::vector<uint32_t> got_lacros_pids;
+  std::string got_lacros_path;
   std::map<uint32_t, Process> got_process_types =
-      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids);
+      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids,
+                                                  got_lacros_path);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CWP.CollectProcessTypes",
       TestProcessTypeCollector::CollectionAttemptStatus::kProcessTypeSuccess,
       1);
   EXPECT_EQ(got_process_types, want_process_types);
   EXPECT_EQ(got_lacros_pids, want_lacros_pids);
+  EXPECT_EQ(got_lacros_path, want_lacros_path);
 }
 
 TEST(ProcessTypeCollectorTest, ProcessTypeInputWithCorruptedLine) {
@@ -243,17 +251,22 @@ TEST(ProcessTypeCollectorTest, ProcessTypeInputWithCorruptedLine) {
   want_process_types.emplace(1000, Process::BROWSER_PROCESS);
   want_process_types.emplace(2000, Process::BROWSER_PROCESS);
   std::vector<uint32_t> want_lacros_pids(1, 2000);
+  std::string want_lacros_path = "/run/lacros/chrome";
 
   base::HistogramTester histogram_tester;
   std::vector<uint32_t> got_lacros_pids;
+  std::string got_lacros_path;
   std::map<uint32_t, Process> got_process_types =
-      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids);
+      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids,
+                                                  got_lacros_path);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CWP.CollectProcessTypes",
       TestProcessTypeCollector::CollectionAttemptStatus::kProcessTypeTruncated,
       1);
   EXPECT_EQ(got_process_types, want_process_types);
   EXPECT_EQ(got_lacros_pids, want_lacros_pids);
+  EXPECT_FALSE(got_lacros_path.empty());
+  EXPECT_EQ(got_lacros_path, want_lacros_path);
 }
 
 TEST(ProcessTypeCollectorTest, ProcessTypeInputWithDuplicatePIDs) {
@@ -266,17 +279,22 @@ TEST(ProcessTypeCollectorTest, ProcessTypeInputWithDuplicatePIDs) {
   want_process_types.emplace(1000, Process::BROWSER_PROCESS);
   want_process_types.emplace(2000, Process::BROWSER_PROCESS);
   std::vector<uint32_t> want_lacros_pids(1, 2000);
+  std::string want_lacros_path = "/run/lacros/chrome";
 
   base::HistogramTester histogram_tester;
   std::vector<uint32_t> got_lacros_pids;
+  std::string got_lacros_path;
   std::map<uint32_t, Process> got_process_types =
-      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids);
+      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids,
+                                                  got_lacros_path);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CWP.CollectProcessTypes",
       TestProcessTypeCollector::CollectionAttemptStatus::kProcessTypeTruncated,
       1);
   EXPECT_EQ(got_process_types, want_process_types);
   EXPECT_EQ(got_lacros_pids, want_lacros_pids);
+  EXPECT_FALSE(got_lacros_path.empty());
+  EXPECT_EQ(got_lacros_path, want_lacros_path);
 }
 
 TEST(ProcessTypeCollectorTest, ProcessTypeInputWithEmptyLine) {
@@ -289,14 +307,17 @@ TEST(ProcessTypeCollectorTest, ProcessTypeInputWithEmptyLine) {
 
   base::HistogramTester histogram_tester;
   std::vector<uint32_t> got_lacros_pids;
+  std::string got_lacros_path;
   std::map<uint32_t, Process> got_process_types =
-      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids);
+      TestProcessTypeCollector::ParseProcessTypes(input, got_lacros_pids,
+                                                  got_lacros_path);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CWP.CollectProcessTypes",
       TestProcessTypeCollector::CollectionAttemptStatus::kProcessTypeTruncated,
       1);
   EXPECT_EQ(got_process_types, want_process_types);
   EXPECT_EQ(got_lacros_pids, want_lacros_pids);
+  EXPECT_TRUE(got_lacros_path.empty());
 }
 
 TEST(ProcessTypeCollectorTest, ValidThreadTypeInput) {

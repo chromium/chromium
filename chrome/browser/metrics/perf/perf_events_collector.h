@@ -14,6 +14,8 @@
 #include "chrome/browser/metrics/perf/perf_output.h"
 #include "chrome/browser/metrics/perf/random_selector.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/re2/src/re2/stringpiece.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -75,6 +77,9 @@ class PerfCollector : public internal::MetricCollector {
 
   const RandomSelector& command_selector() const { return command_selector_; }
 
+  // Collects both Ash and Lacros Chrome process and thread types.
+  static void CollectProcessTypes(SampledProfile* sampled_profile);
+
   // Executes asynchronously on another thread pool. When it finishes, posts a
   // task on the given task_runner.
   static void ParseCPUFrequencies(
@@ -97,6 +102,22 @@ class PerfCollector : public internal::MetricCollector {
     kAllZeroCPUFrequencies,
     // Magic constant used by the histogram macros.
     kMaxValue = kAllZeroCPUFrequencies,
+  };
+
+  // Extracts the |lacros_channel| and |lacros_version| from |lacros_path|.
+  static bool LacrosChannelAndVersion(
+      re2::StringPiece lacros_path,
+      metrics::SystemProfileProto_Channel& lacros_channel,
+      std::string& lacros_version);
+
+  // Enumeration of various locations gotten from parsing a Lacros binary path.
+  // This is used to monitor any change to the Lacros path.
+  enum class ParseLacrosPath {
+    kRootfs,
+    kStateful,
+    kUnrecognized,
+    // Magic constant used by the histogram macros.
+    kMaxValue = kUnrecognized,
   };
 
   // Annotations on the collected sampled_profile, including adding process

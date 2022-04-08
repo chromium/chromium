@@ -13395,6 +13395,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="All CPUs have zero frequencies"/>
 </enum>
 
+<enum name="ChromeOSParseLacrosPath">
+  <int value="0" label="Rootfs"/>
+  <int value="1" label="Stateful"/>
+  <int value="2" label="Unrecognized"/>
+</enum>
+
 <enum name="ChromeOSParsePSICPUStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Fail to read file /proc/pressure/cpu"/>

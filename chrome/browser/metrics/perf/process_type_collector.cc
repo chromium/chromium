@@ -26,18 +26,15 @@ void SkipLine(re2::StringPiece* contents) {
 
 // Matches both Ash-Chrome and Lacros binaries.
 const LazyRE2 kChromeExePathMatcher = {
-    R"(((/opt/google/chrome/chrome|)"
-    R"(/run/lacros/chrome|)"
-    R"(/run/imageloader/lacros\S*/[\d.]*/chrome)\s*))"};
+    R"((/opt/google/chrome/chrome|\S*lacros\S*/chrome))"};
 
 // Matches Lacros binaries.
-const LazyRE2 kLacrosExePathMatcher = {
-    R"(/run/lacros/chrome|)"
-    R"(/run/imageloader/lacros\S*/[\d.]*/chrome)"};
+const LazyRE2 kLacrosExePathMatcher = {R"((\S*lacros\S*/chrome))"};
 }  // namespace
 
 std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes(
-    std::vector<uint32_t>& lacros_pids) {
+    std::vector<uint32_t>& lacros_pids,
+    std::string& lacros_path) {
   std::string output;
   if (!base::GetAppOutput(std::vector<std::string>({"ps", "-ewwo", "pid,cmd"}),
                           &output)) {
@@ -46,7 +43,7 @@ std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes(
     return std::map<uint32_t, Process>();
   }
 
-  return ParseProcessTypes(output, lacros_pids);
+  return ParseProcessTypes(output, lacros_pids, lacros_path);
 }
 
 std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
@@ -64,7 +61,8 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
 
 std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
     re2::StringPiece contents,
-    std::vector<uint32_t>& lacros_pids) {
+    std::vector<uint32_t>& lacros_pids,
+    std::string& lacros_path) {
   static const LazyRE2 kLineMatcher = {
       R"(\s*(\d+))"    // PID
       R"(\s+(.+)\n?)"  // COMMAND LINE
@@ -101,8 +99,12 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
     }
 
     // Use a second match to record any Lacros PID.
-    if (RE2::Consume(&cmd, *kLacrosExePathMatcher)) {
+    re2::StringPiece lacros_cmd;
+    if (RE2::Consume(&cmd, *kLacrosExePathMatcher, &lacros_cmd)) {
       lacros_pids.emplace_back(pid);
+      if (lacros_path.empty()) {
+        lacros_path = lacros_cmd;
+      }
     }
 
     std::string type;
