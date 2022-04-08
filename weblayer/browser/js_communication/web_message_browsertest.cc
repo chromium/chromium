@@ -91,7 +91,7 @@ class WebMessageHostImpl : public WebMessageHost {
   std::unique_ptr<base::RunLoop> state_changed_run_loop_;
 };
 
-// WebMessageHostFactory implementation that creates WebMessageHostImp.
+// WebMessageHostFactory implementation that creates WebMessageHostImpl.
 class WebMessageHostFactoryImpl : public WebMessageHostFactory {
  public:
   explicit WebMessageHostFactoryImpl(base::RepeatingClosure quit_closure)
@@ -126,6 +126,30 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
   // web_message_test.html posts a message immediately.
   shell()->tab()->GetNavigationController()->Navigate(
       embedded_test_server()->GetURL("/web_message_test.html"));
+  run_loop.Run();
+
+  // There should be two messages. The one from the page, and the ack triggered
+  // when WebMessageHostImpl calls PostMessage().
+  ASSERT_TRUE(current_connection);
+  ASSERT_EQ(2u, current_connection->messages().size());
+  EXPECT_EQ(u"from page", current_connection->messages()[0]);
+  EXPECT_EQ(u"bouncing from c++", current_connection->messages()[1]);
+  // WebLayer's Page has no functions, verify it can be requested.
+  current_connection->proxy()->GetPage();
+}
+
+// Ensures that a listener removed from a post message works.
+IN_PROC_BROWSER_TEST_F(WebMessageTest, RemoveFromReceive) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  base::RunLoop run_loop;
+  shell()->tab()->AddWebMessageHostFactory(
+      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()), u"x",
+      {"*"});
+
+  // web_message_test.html posts a message immediately.
+  shell()->tab()->GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("/web_message_test2.html"));
   run_loop.Run();
 
   // There should be two messages. The one from the page, and the ack triggered
