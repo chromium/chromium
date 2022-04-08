@@ -5355,6 +5355,7 @@ test("unit_tests") {
       "../browser/android/signin/web_signin_bridge_unittest.cc",
       "../browser/android/survey/http_client_type_unittest.cc",
       "../browser/android/survey/survey_http_client_unittest.cc",
+      "../browser/android/url_param_filter/cross_otr_observer_android_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
       "../browser/android/webapk/webapk_installer_unittest.cc",
       "../browser/commerce/merchant_viewer/merchant_viewer_data_manager_unittest.cc",

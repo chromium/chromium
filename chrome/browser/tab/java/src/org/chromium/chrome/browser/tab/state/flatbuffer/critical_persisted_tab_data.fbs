@@ -32,6 +32,7 @@ enum LaunchTypeAtCreation:int {
     FROM_TAB_GROUP_UI = 13,
     FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14,
     FROM_APP_WIDGET = 15,
+    FROM_LONGPRESS_INCOGNITO = 16,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

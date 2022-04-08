@@ -38,14 +38,15 @@ class CrossOtrObserver : public content::WebContentsObserver,
   void WebContentsDestroyed() override;
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
+  // Inherited from content::WebContentsUserData, but should not be used outside
+  // this class or its Android counterpart. MaybeCreateForWebContents should be
+  // used instead.
+  using content::WebContentsUserData<CrossOtrObserver>::CreateForWebContents;
 
  private:
   explicit CrossOtrObserver(content::WebContents* web_contents);
 
   friend class content::WebContentsUserData<CrossOtrObserver>;
-  // Inherited from content::WebContentsUserData, but should not be used outside
-  // this class. MaybeCreateForWebcontents must be used instead.
-  using content::WebContentsUserData<CrossOtrObserver>::CreateForWebContents;
   // Flushes metrics and removes the observer from the WebContents.
   void Detach();
   // Drives state machine logic; we write the cross-OTR response code metric

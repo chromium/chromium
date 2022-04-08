@@ -123,7 +123,8 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
     static boolean linkClicked(@TabLaunchType int type) {
         return type == TabLaunchType.FROM_LINK || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
                 || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
+                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO;
     }
 
     @Override

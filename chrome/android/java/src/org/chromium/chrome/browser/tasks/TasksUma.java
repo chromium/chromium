@@ -79,7 +79,8 @@ public class TasksUma {
                     || tabLaunchType == TabLaunchType.FROM_LAUNCHER_SHORTCUT
                     || tabLaunchType == TabLaunchType.FROM_APP_WIDGET) {
                 manuallyCreatedCount++;
-            } else if (tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND) {
+            } else if (tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                    || tabLaunchType == TabLaunchType.FROM_LONGPRESS_INCOGNITO) {
                 targetBlankCreatedCount++;
             } else if (tabLaunchType == TabLaunchType.FROM_EXTERNAL_APP
                     || tabLaunchType == TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB) {

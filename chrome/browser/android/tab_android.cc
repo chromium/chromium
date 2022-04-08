@@ -25,6 +25,7 @@
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/browser/android/tab_printer.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -138,7 +139,6 @@ std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
 
 void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
   DCHECK(web_contents);
-
   TabHelpers::AttachTabHelpers(web_contents);
 }
 
@@ -288,6 +288,9 @@ void TabAndroid::InitWebContents(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 
   AttachTabHelpers(web_contents_.get());
+  url_param_filter::MaybeCreateCrossOtrObserverForTabLaunchType(
+      web_contents_.get(),
+      static_cast<TabModel::TabLaunchType>(GetLaunchType()));
 
   SetWindowSessionID(session_window_id_);
 

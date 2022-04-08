@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabmodel;
+package org.chromium.chrome.browser.url_param_filter;
 
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -30,25 +31,31 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 /**
- * Verifies URL load parameters set when triggering navigations from the context menu.
+ * Verifies URL parameters filtering on "Open in new incognito tab" when enabled.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class ContextMenuLoadUrlParamsTest {
+public class UrlParamFilterTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -57,21 +64,30 @@ public class ContextMenuLoadUrlParamsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
+    // An encoded string with parameter classifications. For more details, see
+    // CreateBase64EncodedFilterParamClassificationForTesting in url_param_filter_test_helper.cc.
+    // This classifies "plzblock" on destination URLs as filterable.
+    private static final String LOCAL_IP_DESTINATION_PLZBLOCK =
+            "H4sIAAAAAAAAAOOS5OI0NDLXMwBCQwEmKS4ujoKcqqSc%2fORsACDxPHgbAAAA";
+    // Same as LOCAL_IP_DESTINATION_PLZBLOCK, but blocks plzblock on navigations emanating from
+    // 127.0.0.1 instead of only on 127.0.0.1 as a destination.
+    private static final String LOCAL_IP_SOURCE_PLZBLOCK =
+            "H4sIAAAAAAAAAOOS5OI0NDLXMwBCQwFGKS4ujoKcqqSc%2fORsAO6d9sUbAAAA";
+
     private static final String HTML_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
-    private static final Pattern SCHEME_SEPARATOR_RE = Pattern.compile("://");
 
-    // Load parameters of the last call to openNewTab().
-    private static LoadUrlParams sOpenNewTabLoadUrlParams;
+    // The last tab opened; used to retrieve the new incognito tab.
+    private static Tab sLastOpenedTab;
 
-    // Records parameters of calls to TabModelSelector methods and otherwise behaves like
-    // TabModelSelectorImpl.
+    // Records tabs opened and otherwise behaves like TabModelSelectorImpl.
     private static class RecordingTabModelSelector extends TabModelSelectorImpl {
         @Override
         public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
                 boolean incognito) {
-            sOpenNewTabLoadUrlParams = loadUrlParams;
-            return super.openNewTab(loadUrlParams, type, parent, incognito);
+            Tab result = super.openNewTab(loadUrlParams, type, parent, incognito);
+            sLastOpenedTab = result;
+            return result;
         }
 
         public RecordingTabModelSelector(Activity activity, TabCreatorManager tabCreatorManager,
@@ -114,51 +130,69 @@ public class ContextMenuLoadUrlParamsTest {
     }
 
     /**
-     * Verifies that the referrer is correctly set for "Open in new tab".
+     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab".
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    public void testOpenInNewTabReferrer() throws TimeoutException {
-        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink",
-                R.id.contextmenu_open_in_new_tab);
+    @CommandLineFlags.Add({"enable-features=IncognitoParamFilterEnabled:classifications/"
+            + LOCAL_IP_DESTINATION_PLZBLOCK})
+    public void
+    testOpenInIncognitoDestinationFiltering() throws TimeoutException {
+        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
 
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertEquals(sActivityTestRule.getTestServer().getURL(HTML_PATH),
-                sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        waitForLoad(sLastOpenedTab.getWebContents());
+        Assert.assertFalse(
+                "".equals(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec()));
+        Assert.assertFalse(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec().contains(
+                "plzblock"));
     }
 
     /**
-     * Verifies that the referrer is not set for "Open in new incognito tab".
+     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab".
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    public void testOpenInIncognitoTabNoReferrer() throws TimeoutException {
-        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink",
-                R.id.contextmenu_open_in_incognito_tab);
+    @CommandLineFlags.
+    Add({"enable-features=IncognitoParamFilterEnabled:classifications/" + LOCAL_IP_SOURCE_PLZBLOCK})
+    public void testOpenInIncognitoSourceFiltering() throws TimeoutException {
+        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
 
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams.getInitiatorOrigin());
-        Assert.assertEquals(new GURL(sActivityTestRule.getTestServer().getURL(HTML_PATH)).getHost(),
-                sOpenNewTabLoadUrlParams.getInitiatorOrigin().getHost());
-        Assert.assertNull(sOpenNewTabLoadUrlParams.getReferrer());
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        waitForLoad(sLastOpenedTab.getWebContents());
+        Assert.assertFalse(
+                "".equals(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec()));
+        Assert.assertFalse(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec().contains(
+                "plzblock"));
     }
 
     /**
-     * Verifies that the referrer is stripped from username and password fields.
+     * Verifies that parameters are not filtered for "Open in new incognito tab" unless explicitly
+     * enabled via feature param.
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    public void testOpenInNewTabSanitizeReferrer() throws TimeoutException {
-        String testUrl = sActivityTestRule.getTestServer().getURL(HTML_PATH);
-        String[] schemeAndUrl = SCHEME_SEPARATOR_RE.split(testUrl, 2);
-        Assert.assertEquals(2, schemeAndUrl.length);
-        String testUrlUserPass = schemeAndUrl[0] + "://user:pass@" + schemeAndUrl[1];
-        triggerContextMenuLoad(testUrlUserPass, "testLink", R.id.contextmenu_open_in_new_tab);
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertEquals(testUrl, sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+    public void testOpenInIncognitoNonFiltering() throws TimeoutException {
+        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
+
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        waitForLoad(sLastOpenedTab.getWebContents());
+        Assert.assertFalse(
+                "".equals(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec()));
+        Assert.assertTrue(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec().contains(
+                "plzblock"));
+    }
+
+    private void waitForLoad(final WebContents webContents) {
+        final Coordinates coord = Coordinates.createFor(webContents);
+        CriteriaHelper.pollUiThread(
+                coord::frameInfoUpdated, "FrameInfo has not been updated in time.");
     }
 
     private void triggerContextMenuLoad(String url, String openerDomId, int menuItemId)
@@ -168,6 +202,5 @@ public class ContextMenuLoadUrlParamsTest {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 sActivityTestRule.getActivity(), tab, openerDomId, menuItemId);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 }

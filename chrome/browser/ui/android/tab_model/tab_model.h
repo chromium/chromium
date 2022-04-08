@@ -96,6 +96,8 @@ class TabModel {
     FROM_LONGPRESS_BACKGROUND_IN_GROUP,
     // Opened from an app widget.
     FROM_APP_WIDGET,
+    // Open from the long press context menu item 'Open in Incognito Tab'.
+    FROM_LONGPRESS_INCOGNITO,
     // Must be last.
     SIZE
   };

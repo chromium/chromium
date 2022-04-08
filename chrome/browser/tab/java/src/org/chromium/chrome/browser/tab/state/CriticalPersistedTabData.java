@@ -319,6 +319,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_RESTORE;
             case LaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND:
                 return TabLaunchType.FROM_LONGPRESS_FOREGROUND;
+            case LaunchTypeAtCreation.FROM_LONGPRESS_INCOGNITO:
+                return TabLaunchType.FROM_LONGPRESS_INCOGNITO;
             case LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND:
                 return TabLaunchType.FROM_LONGPRESS_BACKGROUND;
             case LaunchTypeAtCreation.FROM_REPARENTING:
@@ -369,6 +371,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return LaunchTypeAtCreation.FROM_RESTORE;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
                 return LaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND;
+            case LaunchTypeAtCreation.FROM_LONGPRESS_INCOGNITO:
+                return TabLaunchType.FROM_LONGPRESS_INCOGNITO;
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
                 return LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND;
             case TabLaunchType.FROM_REPARENTING:
