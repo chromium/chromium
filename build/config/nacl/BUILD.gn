@@ -43,6 +43,17 @@ config("nacl_warnings") {
   }
 }
 
+config("nacl_static_libstdc++") {
+  # The sysroot of linux x86 bots can have a different version of libstdc++
+  # than the one that is on the bots natively. Linking dynamically against
+  # libstdc++ can then lead to linking against symbols that are not found when
+  # running the executable.
+  # Therefore, link statically instead.
+  if (is_linux && current_cpu == "x86") {
+    ldflags = [ "-static-libstdc++" ]
+  }
+}
+
 # The base target that all targets in the NaCl build should depend on.
 # This allows configs to be modified for everything in the NaCl build, even when
 # the NaCl build is composed into the Chrome build.  (GN has no functionality to
@@ -52,6 +63,7 @@ source_set("nacl_base") {
   public_configs = [
     ":nacl_defines",
     ":nacl_warnings",
+    ":nacl_static_libstdc++",
   ]
   if (current_os == "nacl") {
     public_configs += [ ":nexe_defines" ]
