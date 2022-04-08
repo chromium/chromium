@@ -146,6 +146,13 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
           'arm/for-signing-only/TrichromeChromeGoogleSystemStable.apk',
           prefix=unsigned_prefix),
   ]
+  trichrome64_system_apks = [
+      make_artifact('arm_64/TrichromeWebViewGoogleSystemStable.apk'),
+      make_artifact('arm_64/TrichromeLibraryGoogleSystemStable.apk'),
+      make_artifact(
+          'arm_64/for-signing-only/TrichromeChromeGoogleSystemStable.apk',
+          prefix=unsigned_prefix),
+  ]
   trichrome_system_stubs = [
       make_artifact('arm/TrichromeWebViewGoogleSystemStubStable.apk'),
       make_artifact('arm/TrichromeLibraryGoogleSystemStubStable.apk'),
@@ -183,16 +190,21 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
 
   webview.PrintLibraryCompression()
 
-  # AndroidGo size exists only for webview & library.
+  metrics['System Image Size (arm32)'] = sum(x.GetApkSize()
+                                             for x in trichrome_system_apks)
+  metrics['System Image Size (arm64)'] = sum(x.GetApkSize()
+                                             for x in trichrome64_system_apks)
+
   go_install_size = (trichrome_chrome.GetAndroidGoSize() +
                      trichrome_webview.GetAndroidGoSize() +
                      trichrome_library.GetAndroidGoSize())
   metrics['Android Go (TriChrome) Install Size'] = go_install_size
 
-  system_apks_size = sum(x.GetCompressedSize() for x in trichrome_system_apks)
+  compressed_system_apks_size = sum(x.GetCompressedSize()
+                                    for x in trichrome_system_apks)
   stubs_sizes = sum(x.GetApkSize() for x in trichrome_system_stubs)
   metrics['Android Go (Trichrome) Compressed System Image'] = (
-      system_apks_size + stubs_sizes)
+      compressed_system_apks_size + stubs_sizes)
 
   monochrome.AddMethodCount(metrics)
 
