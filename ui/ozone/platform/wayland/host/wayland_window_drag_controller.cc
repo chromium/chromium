@@ -109,12 +109,6 @@ bool WaylandWindowDragController::StartDragSession() {
   if (state_ != State::kIdle)
     return true;
 
-  origin_window_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
-  if (!origin_window_) {
-    LOG(ERROR) << "Failed to get origin window.";
-    return false;
-  }
-
   auto serial = connection_->serial_tracker().GetSerial(
       {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
   if (!serial.has_value()) {
@@ -127,6 +121,14 @@ bool WaylandWindowDragController::StartDragSession() {
   drag_source_ = serial->type == wl::SerialType::kTouchPress
                      ? DragSource::kTouch
                      : DragSource::kMouse;
+
+  origin_window_ = *drag_source_ == DragSource::kMouse
+                       ? window_manager_->GetCurrentPointerFocusedWindow()
+                       : window_manager_->GetCurrentTouchFocusedWindow();
+  if (!origin_window_) {
+    LOG(ERROR) << "Failed to get origin window.";
+    return false;
+  }
 
   DCHECK(!data_source_);
   data_source_ = data_device_manager_->CreateSource(this);

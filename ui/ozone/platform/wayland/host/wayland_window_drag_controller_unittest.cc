@@ -324,6 +324,60 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
 }
 
 // Check the following flow works as expected:
+// 1. With two windows open,
+// 2. Touch down and start drag a window,
+// 3. Emulate the compositor sending an unexpected `pointer enter` event
+//   to another window, when the drag is ongoing.
+//
+// NOTE: This bug isn't noticed on DUT, but seems to be frequent on ash/chrome
+// linux desktop builds (with ozone/x11 underneath).
+TEST_P(WaylandWindowDragControllerTest,
+       DragAndDropWithExtraneousPointerEnterEvent_TOUCH) {
+  // Init and open |target_window|.
+  PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
+  properties.type = PlatformWindowType::kWindow;
+  EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
+  auto window_2 = WaylandWindow::Create(&delegate_, connection_.get(),
+                                        std::move(properties));
+  ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+  Sync();
+
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  ASSERT_TRUE(GetWmMoveLoopHandler(*window_2));
+  ASSERT_TRUE(GetWaylandExtension(*window_2));
+
+  // Start triggering a drag operation.
+  SendTouchDown(window_2.get(), &delegate_, 0 /*point id*/,
+                {0, 0} /*location*/);
+
+  // This operation simulates bogus Wayland compositor that might send out
+  // unexpected pointer enter events.
+  SendPointerEnter(window_.get(), &delegate_);
+  Sync();
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(window_.get(), window_manager()->GetCurrentPointerFocusedWindow());
+  EXPECT_EQ(window_2.get(), window_manager()->GetCurrentTouchFocusedWindow());
+
+  // Set up an "interaction flow", start the drag session, run move loop
+  // and verify the window effectively being dragged.
+  GetWaylandExtension(*window_2)->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
+
+  Sync();
+  // Verify that the proper window is being dragged.
+  EXPECT_EQ(window_2.get(), drag_controller()->origin_window_for_testing());
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  SendTouchUp(0 /*touch id*/);
+  Sync();
+}
+
+// Check the following flow works as expected:
 // 1. With only 1 window open;
 // 2. Move pointer into it, press left button, move cursor a bit (drag);
 // 3. Run move loop,

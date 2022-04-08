@@ -88,6 +88,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     set_extended_drag_available_for_testing_ = true;
   }
 
+  WaylandWindow* origin_window_for_testing() { return origin_window_; }
+
  private:
   class ExtendedDragSource;
 
