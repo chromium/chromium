@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
+#import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,6 +21,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 }  // namespace
 
+@interface FirstFollowCoordinator () <FirstFollowViewDelegate>
+@end
+
 @implementation FirstFollowCoordinator
 
 #pragma mark - ChromeCoordinator
@@ -27,6 +34,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   firstFollowViewController.followedWebChannel = self.followedWebChannel;
   // Ownership is passed to VC so this object is not retained after VC closes.
   self.followedWebChannel = nil;
+  firstFollowViewController.delegate = self;
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =
@@ -53,6 +61,22 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
   }
+}
+
+#pragma mark - FirstFollowViewDelegate
+
+// Go To Feed button tapped.
+- (void)handleGoToFeedTapped {
+  [self.newTabPageCommandsHandler
+      openNTPScrolledIntoFeedType:FeedTypeFollowing];
+}
+
+#pragma mark - Helpers
+
+// The dispatcher used for NewTabPageCommands.
+- (id<NewTabPageCommands>)newTabPageCommandsHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            NewTabPageCommands);
 }
 
 @end

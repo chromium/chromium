@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FirstFollowViewDelegate;
 @class FollowedWebChannel;
 
 // The UI that informs the user about the feed and following channels the
@@ -15,6 +16,9 @@
 
 // The web channel that was recently followed.
 @property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
+
+// Delegate to execute actions triggered in this UI.
+@property(nonatomic, weak) id<FirstFollowViewDelegate> delegate;
 
 @end
 

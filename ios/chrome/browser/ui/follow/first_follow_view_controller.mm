@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -83,11 +84,6 @@ constexpr CGFloat kButtonCornerRadius = 8;
 
 #pragma mark - Helper
 
-// Go To Feed button tapped.
-- (void)handleGoToFeedTapped {
-  // TODO(crbug.com/1312124): Use a dispatcher to handle this action.
-}
-
 // Dismisses the sheet.
 - (void)handleGotItTapped {
   [self.presentingViewController dismissViewControllerAnimated:YES
@@ -122,7 +118,7 @@ constexpr CGFloat kButtonCornerRadius = 8;
   [button setTitle:l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GO_TO_FEED)
           forState:UIControlStateNormal];
   [button setAccessibilityIdentifier:kFirstFollowGoToFeedButtonIdentifier];
-  [button addTarget:self
+  [button addTarget:self.delegate
                 action:@selector(handleGoToFeedTapped)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
