@@ -31,6 +31,8 @@ namespace gin {
 namespace {
 v8::ArrayBuffer::Allocator* g_array_buffer_allocator = nullptr;
 const intptr_t* g_reference_table = nullptr;
+v8::FatalErrorCallback g_fatal_error_callback = nullptr;
+v8::OOMErrorCallback g_oom_error_callback = nullptr;
 }  // namespace
 
 IsolateHolder::IsolateHolder(
@@ -57,9 +59,7 @@ IsolateHolder::IsolateHolder(
     IsolateType isolate_type,
     IsolateCreationMode isolate_creation_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback,
-    v8::FatalErrorCallback fatal_error_callback,
-    v8::OOMErrorCallback oom_error_callback)
+    v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
   CHECK(Initialized())
       << "You need to invoke gin::IsolateHolder::Initialize first";
@@ -94,8 +94,8 @@ IsolateHolder::IsolateHolder(
     params.embedder_wrapper_object_index = kEncodedValueIndex;
     params.create_histogram_callback = create_histogram_callback;
     params.add_histogram_sample_callback = add_histogram_sample_callback;
-    params.fatal_error_callback = fatal_error_callback;
-    params.oom_error_callback = oom_error_callback;
+    params.fatal_error_callback = g_fatal_error_callback;
+    params.oom_error_callback = g_oom_error_callback;
 
     v8::Isolate::Initialize(isolate_, params);
   }
@@ -121,11 +121,15 @@ IsolateHolder::~IsolateHolder() {
 void IsolateHolder::Initialize(ScriptMode mode,
                                v8::ArrayBuffer::Allocator* allocator,
                                const intptr_t* reference_table,
-                               const std::string js_command_line_flags) {
+                               const std::string js_command_line_flags,
+                               v8::FatalErrorCallback fatal_error_callback,
+                               v8::OOMErrorCallback oom_error_callback) {
   CHECK(allocator);
-  V8Initializer::Initialize(mode, js_command_line_flags);
+  V8Initializer::Initialize(mode, js_command_line_flags, oom_error_callback);
   g_array_buffer_allocator = allocator;
   g_reference_table = reference_table;
+  g_fatal_error_callback = fatal_error_callback;
+  g_oom_error_callback = oom_error_callback;
 }
 
 // static

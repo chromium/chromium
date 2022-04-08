@@ -14,6 +14,7 @@
 #include "gin/gin_export.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
+#include "v8/include/v8-callbacks.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #include "gin/public/v8_snapshot_file_type.h"
@@ -29,7 +30,8 @@ class GIN_EXPORT V8Initializer {
  public:
   // This should be called by IsolateHolder::Initialize().
   static void Initialize(IsolateHolder::ScriptMode mode,
-                         const std::string js_command_line_flags = {});
+                         const std::string js_command_line_flags = {},
+                         v8::OOMErrorCallback oom_error_callback = nullptr);
 
   // Get address and size information for currently loaded snapshot.
   // If no snapshot is loaded, the return values are null for addresses

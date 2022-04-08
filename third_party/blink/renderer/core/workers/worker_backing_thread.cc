@@ -71,7 +71,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
   isolate_ = V8PerIsolateData::Initialize(
       scheduler->V8TaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
-      nullptr, ReportV8FatalError, ReportV8OOMError);
+      nullptr);
   scheduler->SetV8Isolate(isolate_);
   AddWorkerIsolate(isolate_);
   V8Initializer::InitializeWorker(isolate_);

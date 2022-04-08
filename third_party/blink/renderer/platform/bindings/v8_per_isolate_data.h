@@ -114,9 +114,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   static v8::Isolate* Initialize(scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
                                  v8::CreateHistogramCallback,
-                                 v8::AddHistogramSampleCallback,
-                                 v8::FatalErrorCallback fatal_error_callback,
-                                 v8::OOMErrorCallback oom_error_callback);
+                                 v8::AddHistogramSampleCallback);
 
   static V8PerIsolateData* From(v8::Isolate* isolate) {
     DCHECK(isolate);
@@ -225,9 +223,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
-                   v8::AddHistogramSampleCallback,
-                   v8::FatalErrorCallback,
-                   v8::OOMErrorCallback);
+                   v8::AddHistogramSampleCallback);
   explicit V8PerIsolateData(V8ContextSnapshotMode);
   ~V8PerIsolateData();
 
@@ -300,11 +296,6 @@ PLATFORM_EXPORT void* CreateHistogram(const char* name,
 // Adds an entry to the supplied histogram. `hist` was previously returned from
 // CreateHistogram().
 PLATFORM_EXPORT void AddHistogramSample(void* hist, int sample);
-
-// Callback functions called when V8 encounters a fatal or OOM error.
-PLATFORM_EXPORT void ReportV8FatalError(const char* location,
-                                        const char* message);
-PLATFORM_EXPORT void ReportV8OOMError(const char* location, bool is_js_heap);
 
 }  // namespace blink
 
