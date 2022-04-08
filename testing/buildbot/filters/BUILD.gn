@@ -100,6 +100,9 @@ source_set("chromeos_filters") {
   data = [
     "//testing/buildbot/filters/chromeos.base_unittests.filter",
     "//testing/buildbot/filters/chromeos.browser_tests.filter",
+    "//testing/buildbot/filters/chromeos.amd64-generic.gl_tests_validating.filter",
+    "//testing/buildbot/filters/chromeos.kevin.gl_tests_validating.filter",
+    "//testing/buildbot/filters/chromeos.gl_unittests.filter",
     "//testing/buildbot/filters/chromeos.media_unittests.filter",
     "//testing/buildbot/filters/chromeos.services_unittests.filter",
     "//testing/buildbot/filters/chromeos.unit_tests.filter",

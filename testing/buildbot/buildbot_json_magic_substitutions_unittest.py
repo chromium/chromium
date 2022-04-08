@@ -10,13 +10,14 @@ import buildbot_json_magic_substitutions as magic_substitutions
 
 def CreateConfigWithPool(pool, device_type=None):
   dims = {
-    'swarming': {
-      'dimension_sets': [
-        {
-          'pool': pool,
-        },
-      ],
-    },
+      'name': 'test_name',
+      'swarming': {
+          'dimension_sets': [
+              {
+                  'pool': pool,
+              },
+          ],
+      },
   }
   if device_type:
     dims['swarming']['dimension_sets'][0]['device_type'] = device_type
@@ -38,6 +39,34 @@ class ChromeOSTelemetryRemoteTest(unittest.TestCase):
     self.assertEqual(
         magic_substitutions.ChromeOSTelemetryRemote(test_config, None),
         ['--remote=variable_chromeos_device_hostname'])
+
+  def testNoPool(self):
+    test_config = CreateConfigWithPool(None)
+    with self.assertRaisesRegex(RuntimeError, 'No pool *'):
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None)
+
+  def testUnknownPool(self):
+    test_config = CreateConfigWithPool('totally-legit-pool')
+    with self.assertRaisesRegex(RuntimeError, 'Unknown CrOS pool *'):
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None)
+
+
+class ChromeOSGtestFilterFileTest(unittest.TestCase):
+  def testVirtualMachineFile(self):
+    test_config = CreateConfigWithPool('chromium.tests.cros.vm')
+    self.assertEqual(
+        magic_substitutions.ChromeOSGtestFilterFile(test_config, None), [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/'
+            'chromeos.amd64-generic.test_name.filter',
+        ])
+
+  def testPhysicalHardwareFile(self):
+    test_config = CreateConfigWithPool('chromium.tests', device_type='eve')
+    self.assertEqual(
+        magic_substitutions.ChromeOSGtestFilterFile(test_config, None), [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/'
+            'chromeos.eve.test_name.filter',
+        ])
 
   def testNoPool(self):
     test_config = CreateConfigWithPool(None)

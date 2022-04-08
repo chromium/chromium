@@ -1,0 +1,34 @@
+# crbug.com/1314114
+-GLHelperTest.BGRAASyncReadbackTest
+-GLHelperTest.RGBAASyncReadbackTest
+-*GLHelperPixelReadbackTest.ScaleTest*
+
+# crbug.com/1314115
+-SharedImageGLBackingProduceDawnTest.Basic
+-WebGPUMailboxTest.AssociateMailboxCmd*
+-WebGPUMailboxTest.AssociateOnTwoDevicesAtTheSameTime*
+-WebGPUMailboxTest.DissociateMailboxCmd*
+-WebGPUMailboxTest.ErrorWhenUsingTextureAfterDissociate*
+-WebGPUMailboxTest.ReadUninitializedSharedImage*
+-WebGPUMailboxTest.ReadWritableUninitializedSharedImage*
+-WebGPUMailboxTest.UseA_UseB_DestroyA_DestroyB*
+-WebGPUMailboxTest.WriteToMailboxThenReadFromIt*
+-WebGPUTest.RequestDeviceAfterContextLost
+-WebGPUTest.FlushNoCommands
+-WebGPUTest.ImplicitFallbackAdapterIsDisallowed
+-WebGPUTest.ReportLoss
+-WebGPUTest.ReportLossReentrant
+-WebGPUTest.RequestAdapterAfterContextLost
+-WebGPUTest.RequestDeviceWitUnsupportedFeature
+-WebGPUTest.SPIRVIsDisallowed
+
+# crbug.com/1314124
+-ExternalVkImageFactoryTest.SkiaVulkanWrite_DawnRead
+-ExternalVkImageFactoryTest.DawnWrite_SkiaVulkanRead
+-WebGPUTest.ExplicitFallbackAdapterIsDisallowed
+
+# crbug.com/1314463
+-GLTextureMailboxTest.SharedTextures
+
+# crbug.com/1314466
+-GLTextureMailboxTest.OrderingBarrierImpliesFlush

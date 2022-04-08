@@ -1,0 +1,42 @@
+# crbug.com/1314114
+-GLHelperTest.BGRAASyncReadbackTest
+-GLHelperTest.RGBAASyncReadbackTest
+-*GLHelperPixelReadbackTest.ScaleTest*
+
+# crbug.com/1314115
+-SharedImageGLBackingProduceDawnTest.Basic
+-WebGPUMailboxTest.AssociateMailboxCmd*
+-WebGPUMailboxTest.AssociateOnTwoDevicesAtTheSameTime*
+-WebGPUMailboxTest.DissociateMailboxCmd*
+-WebGPUMailboxTest.ErrorWhenUsingTextureAfterDissociate*
+-WebGPUMailboxTest.ReadUninitializedSharedImage*
+-WebGPUMailboxTest.ReadWritableUninitializedSharedImage*
+-WebGPUMailboxTest.UseA_UseB_DestroyA_DestroyB*
+-WebGPUMailboxTest.WriteToMailboxThenReadFromIt*
+-WebGPUTest.RequestDeviceAfterContextLost
+-WebGPUTest.FlushNoCommands
+-WebGPUTest.ImplicitFallbackAdapterIsDisallowed
+-WebGPUTest.ReportLoss
+-WebGPUTest.ReportLossReentrant
+-WebGPUTest.RequestAdapterAfterContextLost
+-WebGPUTest.RequestDeviceWitUnsupportedFeature
+-WebGPUTest.SPIRVIsDisallowed
+
+# crbug.com/1314118
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName*
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters*
+
+# crbug.com/1314120
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3GettersArray*
+
+# crbug.com/1314124
+-ExternalVkImageFactoryTest.SkiaVulkanWrite_DawnRead
+-ExternalVkImageFactoryTest.DawnWrite_SkiaVulkanRead
+
+# crbug.com/1314468
+-GpuMemoryBufferTestEGL.GLCreateImageCHROMIUMFromNativePixmap

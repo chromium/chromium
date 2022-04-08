@@ -2625,6 +2625,9 @@
           '--use-cmd-decoder=passthrough',
           '--use-gl=angle',
         ],
+        'chromeos_args': [
+          '--stop-ui',
+        ],
         'desktop_args': [
           '--use-gpu-in-tests',
         ],
@@ -2634,8 +2637,16 @@
         },
       },
       'gl_unittests': {
-        'desktop_args': ['--use-gpu-in-tests'],
-        'linux_args': ['--no-xvfb'],
+        'chromeos_args': [
+          '--stop-ui',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter',
+        ],
+        'desktop_args': [
+          '--use-gpu-in-tests',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
       },
     },
     'gpu_common_gtests_validating': {
@@ -2644,14 +2655,26 @@
         'args' : [
           '--use-cmd-decoder=validating',
         ],
+        'chromeos_args': [
+          '--stop-ui',
+          '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile',
+        ],
         'desktop_args': [
           '--use-gpu-in-tests',
         ],
         'linux_args': ['--no-xvfb'],
       },
       'gl_unittests': {
-        'desktop_args': ['--use-gpu-in-tests'],
-        'linux_args': ['--no-xvfb'],
+        'chromeos_args': [
+          '--stop-ui',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter',
+        ],
+        'desktop_args': [
+          '--use-gpu-in-tests',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
       },
     },
 
@@ -6339,7 +6362,7 @@
       # 'gpu_angle_unit_gtests',
       # TODO(crbug.com/1087567, crbug.com/1087590): Enable once there are tests
       # that actually pass.
-      # 'gpu_common_gtests',
+      'gpu_common_gtests_validating',
       # TODO(crbug.com/1087563): Enable once tab_capture_end2end_tests passes
       # on CrOS.
       # 'gpu_desktop_specific_gtests',
