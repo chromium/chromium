@@ -68,8 +68,8 @@ Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
 
   // A vector to hold all of the possible FFT setups we need.  The setups are
   // initialized lazily.
-  DEFINE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetupDatum>>, fft_setups,
-                      (kMaxFFTPow2Size));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetupDatum>>,
+                                  fft_setups, (kMaxFFTPow2Size));
 
   return fft_setups;
 }
