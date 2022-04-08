@@ -80,9 +80,7 @@ int TrackAudioRenderer::Render(base::TimeDelta delay,
     return 0;
   }
 
-  // TODO(https://crbug.com/1302080): use the actual playout time instead of
-  // stubbing with Now().
-  const base::TimeTicks playout_time = base::TimeTicks::Now() + delay;
+  const base::TimeTicks playout_time = delay_timestamp + delay;
   DVLOG(2) << "Pulling audio out of shifter to be played "
            << delay.InMilliseconds() << " ms from now.";
   audio_shifter_->Pull(audio_bus, playout_time);
