@@ -37,12 +37,7 @@ constexpr int CountryCharsToCountryID(char c1, char c2) {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-// Returns the identifier for the user current country. Used to update the list
-// of search engines when user switches device region settings. For use on iOS
-// only.
-// TODO(ios): Once user can customize search engines ( http://crbug.com/153047 )
-// this declaration should be removed and the definition in the .cc file be
-// moved back to the anonymous namespace.
+// Returns the identifier for the user current country.
 int GetCurrentCountryID();
 
 // Converts a two-letter country code to an integer-based country identifier.
