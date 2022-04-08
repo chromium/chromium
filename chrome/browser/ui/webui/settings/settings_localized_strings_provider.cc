@@ -1268,7 +1268,19 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile);
 #endif
 
-  if (is_dice_enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_main_profile = profile->IsMainProfile();
+#else
+  bool is_main_profile = false;
+#endif
+
+  if (is_main_profile) {
+    static constexpr webui::LocalizedString kTurnOffStrings[] = {
+        {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
+        {"syncDisconnectTitle", IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_TITLE},
+    };
+    html_source->AddLocalizedStrings(kTurnOffStrings);
+  } else if (is_dice_enabled) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
         {"syncDisconnectTitle",
@@ -1289,7 +1301,17 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
           g_browser_process->GetApplicationLocale())
           .spec();
 
-  if (is_dice_enabled) {
+  if (is_main_profile) {
+    static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
+        {"syncDisconnectDeleteProfile",
+         IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
+        {"syncDisconnectConfirm",
+         IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM},
+        {"syncDisconnectExplanation",
+         IDS_SETTINGS_SYNC_DISCONNECT_MAIN_PROFILE_EXPLANATION},
+    };
+    html_source->AddLocalizedStrings(kSyncDisconnectStrings);
+  } else if (is_dice_enabled) {
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},

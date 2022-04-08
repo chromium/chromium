@@ -71,6 +71,14 @@ export class SettingsSignoutDialogElement extends
        * stats is returned from the browser.
        */
       deleteProfileWarning_: String,
+
+      /**
+       * True if the footer for the profile deletion is visible.
+       */
+      isFooterVisible_: {
+        type: Boolean,
+        computed: 'computeIsFooterVisible_()',
+      },
     };
   }
 
@@ -78,6 +86,7 @@ export class SettingsSignoutDialogElement extends
   private deleteProfile_: boolean;
   private deleteProfileWarningVisible_: boolean;
   private deleteProfileWarning_: string;
+  private isFooterVisible_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -156,6 +165,15 @@ export class SettingsSignoutDialogElement extends
     // Chrome OS users are always signed-in, so just turn off sync.
     SyncBrowserProxyImpl.getInstance().turnOffSync();
     // </if>
+  }
+
+  private computeIsFooterVisible_(): boolean {
+    // <if expr="chromeos_lacros">
+    if (!loadTimeData.getBoolean('isSecondaryUser')) {
+      return false;
+    }
+    // </if>
+    return !this.syncStatus!.domain;
   }
 }
 
