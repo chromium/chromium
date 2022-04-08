@@ -68,6 +68,28 @@ export class ModulesElement extends PolymerElement {
         value: () => ({all: true, ids: []}),
       },
 
+      modulesFreRemoved_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * When the first run experience (FRE) is disabled and modules are
+       * enabled, we show the modules without a FRE.
+       */
+      modulesFreShown: {
+        type: Boolean,
+        computed:
+            `computeModulesFreShown_(modulesLoaded_, modulesFreVisible_, modulesShownToUser)`,
+        reflectToAttribute: true,
+        notify: true,
+      },
+
+      modulesFreVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
       /** Data about the most recently removed module. */
       removedModuleData_: {
         type: Object,
@@ -75,6 +97,7 @@ export class ModulesElement extends PolymerElement {
       },
 
       modulesLoaded_: Boolean,
+
       modulesVisibilityDetermined_: Boolean,
 
       modulesLoadedAndVisibilityDetermined_: {
@@ -85,27 +108,9 @@ export class ModulesElement extends PolymerElement {
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
-      modulesShownToUser_: Boolean,
-
-      modulesFreVisible_: {
+      modulesShownToUser: {
         type: Boolean,
-        value: false,
-      },
-
-      modulesFreRemoved_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * When the first run experience (FRE) is disabled and modules are
-       * enabled, we show the modules without a FRE.
-       */
-      showModulesFre_: {
-        reflectToAttribute: true,
-        type: Boolean,
-        computed:
-            `computeShowModulesFre_(modulesLoaded_, modulesFreVisible_, modulesShownToUser_)`,
+        notify: true,
       },
 
       /** @private {boolean} */
@@ -130,14 +135,13 @@ export class ModulesElement extends PolymerElement {
   private dismissedModules_: string[];
   private disabledModules_: {all: boolean, ids: string[]};
   private removedModuleData_: {message: string, undo: () => void}|null;
-  private modulesFirstRunExperienceEnabled_: boolean;
+  private modulesFreRemoved_: boolean;
+  private modulesFreShown: boolean;
+  private modulesFreVisible_: boolean;
   private modulesLoaded_: boolean;
   private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
-  private modulesShownToUser_: boolean;
-  private modulesFreVisible_: boolean;
-  private modulesFreRemoved_: boolean;
-  private showModulesFre_: boolean;
+  private modulesShownToUser: boolean;
   private dragEnabled_: boolean;
 
   private setDisabledModulesListenerId_: number|null = null;
@@ -178,21 +182,21 @@ export class ModulesElement extends PolymerElement {
     this.renderModules_();
   }
 
-  private computeShowModulesFre_(): boolean {
+  private computeModulesFreShown_(): boolean {
     return (
         loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
         this.modulesLoaded_ && this.modulesFreVisible_ &&
-        this.modulesShownToUser_);
+        this.modulesShownToUser);
   }
 
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {
     this.$.modules.innerHTML = '';
     let shortModuleSiblingsContainer: HTMLElement|null = null;
-    this.modulesShownToUser_ = false;
+    this.modulesShownToUser = false;
     moduleContainers.forEach((moduleContainer: HTMLElement, index: number) => {
       let moduleContainerParent = this.$.modules;
       if (!moduleContainer.hidden) {
-        this.modulesShownToUser_ = !moduleContainer.hidden;
+        this.modulesShownToUser = !moduleContainer.hidden;
       }
       if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
         // Wrap pairs of sibling short modules in a container. All other

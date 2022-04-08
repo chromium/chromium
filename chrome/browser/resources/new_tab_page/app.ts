@@ -191,6 +191,11 @@ export class AppElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('shortcutsEnabled'),
       },
 
+      modulesFreShown: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       modulesRedesignedLayoutEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
@@ -221,6 +226,11 @@ export class AppElement extends PolymerElement {
       modulesLoaded_: {
         type: Boolean,
         value: false,
+      },
+
+      modulesShownToUser: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
 
       /**
@@ -261,12 +271,14 @@ export class AppElement extends PolymerElement {
   private logoEnabled_: boolean;
   private oneGoogleBarEnabled_: boolean;
   private shortcutsEnabled_: boolean;
+  private modulesFreShown: boolean;
   private modulesRedesignedLayoutEnabled_: boolean;
   private middleSlotPromoEnabled_: boolean;
   private modulesEnabled_: boolean;
   private modulesRedesignedEnabled_: boolean;
   private middleSlotPromoLoaded_: boolean;
   private modulesLoaded_: boolean;
+  private modulesShownToUser: boolean;
   private promoAndModulesLoaded_: boolean;
   private lazyRender_: boolean;
 

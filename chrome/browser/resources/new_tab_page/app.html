@@ -183,6 +183,34 @@
     }
   }
 
+  @media (max-width: 970px) {
+    :host([modules-shown-to-user]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeText {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1020px) {
+    :host([modules-fre-shown]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeText {
+      display: none;
+    }
+  }
+
   #themeAttribution {
     align-self: flex-start;
     bottom: 16px;
@@ -291,8 +319,10 @@
       </template>
       <template is="dom-if" if="[[modulesEnabled_]]">
         <ntp-modules id="modules"
-            on-modules-loaded="onModulesLoaded_"
+            modules-fre-shown="{{modulesFreShown}}"
+            modules-shown-to-user="{{modulesShownToUser}}"
             on-customize-module="onCustomizeModule_"
+            on-modules-loaded="onModulesLoaded_"
             hidden="[[!promoAndModulesLoaded_]]">
         </ntp-modules>
       </template>
@@ -312,7 +342,7 @@
       </a>
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
-           button in container to enfore solid background color. -->
+           button in container to enforce solid background color. -->
       <div id="customizeButtonContainer">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}">

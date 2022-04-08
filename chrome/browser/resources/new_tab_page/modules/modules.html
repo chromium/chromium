@@ -13,7 +13,7 @@
     }
   }
 
-  :host([show-modules-fre_]) #freAndModulesContainer {
+  :host([modules-fre-shown]) #freAndModulesContainer {
     background-color: var(--ntp-background-override-color);
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
@@ -107,7 +107,7 @@
   }
 </style>
 <div id="freAndModulesContainer">
-  <template is="dom-if" if="[[showModulesFre_]]">
+  <template is="dom-if" if="[[modulesFreShown]]">
     <div id="firstRunExperience">
       <header id="firstRunExperienceTitle">
         $i18n{modulesFirstRunExperienceTitle}
