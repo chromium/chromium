@@ -31,24 +31,48 @@ static const ax::mojom::Role kRolesToSkip[]{
 };
 static constexpr int kMaxNodes = 5000;
 
+int32_t GetNumberOfChildParagraphs(const ui::AXNode* node) {
+  int n = 0;
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    if (iter.get()->GetRole() == ax::mojom::Role::kParagraph)
+      n++;
+  }
+  return n;
+}
+
 // TODO(crbug.com/1266555): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
+// The article node is the one which contains the most number of paragraphs.
+// TODO(crbug.com/1266555): Ensure that this also includes the header node.
 const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
+  const ui::AXNode* article = nullptr;
+  int32_t max = 0;
   std::queue<const ui::AXNode*> queue;
   queue.push(node);
 
   while (!queue.empty()) {
     const ui::AXNode* popped = queue.front();
     queue.pop();
-    if (popped->GetRole() == ax::mojom::Role::kArticle)
-      return popped;
-    for (auto iter = popped->UnignoredChildrenBegin();
-         iter != popped->UnignoredChildrenEnd(); ++iter) {
-      queue.push(iter.get());
+    int32_t n = GetNumberOfChildParagraphs(popped);
+    if (n > max) {
+      max = n;
+      article = popped;
+    }
+
+    // TODO(crbug.com/1266555): Replace this with skipping all content nodes,
+    // including paragraphs, headings, and other text-like containers from
+    // AXNodeProperties.
+    if (popped->GetRole() != ax::mojom::Role::kParagraph) {
+      // Only explore branches that do not have a large number of paragraphs.
+      for (auto iter = popped->UnignoredChildrenBegin();
+           iter != popped->UnignoredChildrenEnd(); ++iter) {
+        queue.push(iter.get());
+      }
     }
   }
 
-  return nullptr;
+  return article;
 }
 
 void AddTextNodesToVector(const ui::AXNode* node,
@@ -108,14 +132,16 @@ void AXTreeDistiller::DistillAXTree() {
   if (!success)
     return;
 
-  // If this page has an article node, only combine text from that node.
-  const ui::AXNode* reader_root = GetArticleNode(tree.root());
-  if (!reader_root) {
-    reader_root = tree.root();
+  const ui::AXNode* article_node = GetArticleNode(tree.root());
+  // If this page does not have an article node, this means it is not
+  // distillable.
+  if (!article_node) {
+    is_distillable_ = false;
+    return;
   }
 
   text_node_ids_->reserve(snapshot_->nodes.size());
-  AddTextNodesToVector(reader_root, text_node_ids_.get());
+  AddTextNodesToVector(article_node, text_node_ids_.get());
 }
 
 }  // namespace content

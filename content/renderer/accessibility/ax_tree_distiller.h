@@ -33,6 +33,7 @@ class CONTENT_EXPORT AXTreeDistiller {
 
   ui::AXTreeUpdate* GetSnapshot() { return snapshot_.get(); }
   std::vector<ui::AXNodeID>* GetTextNodeIDs() { return text_node_ids_.get(); }
+  bool IsDistillable() { return is_distillable_; }
 
  private:
   // Takes a snapshot of an accessibility tree and caches it as |snapshot_|.
@@ -45,6 +46,7 @@ class CONTENT_EXPORT AXTreeDistiller {
   RenderFrameImpl* render_frame_;
   std::unique_ptr<ui::AXTreeUpdate> snapshot_;
   std::unique_ptr<std::vector<ui::AXNodeID>> text_node_ids_;
+  bool is_distillable_ = true;
 };
 
 }  // namespace content

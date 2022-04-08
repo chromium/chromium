@@ -77,41 +77,83 @@ const TestCase kDistillWebPageTestCases[] = {
     {"simple_page",
      R"HTML(<!doctype html>
       <body>
-        <div>Test</div>
+        <p>Test</p>
       <body>)HTML",
      {"Test"}},
     /* ----------------------- */
-    {"simple_page_two_nodes",
+    {"simple_page_two_paragraphs",
      R"HTML(<!doctype html>
       <body>
-        <div>Test 1</div>
-        <div>Test 2</div>
+        <p>Test 1</p>
+        <p>Test 2</p>
       <body>)HTML",
      {"Test 1", "Test 2"}},
     /* ----------------------- */
     {"simple_page_no_content",
      R"HTML(<!doctype html>
       <body>
-        <header>Header</header>
-        <div role='banner'>Banner</div>
-        <div role="navigation'>Navigation</div>
-        <audio>Audio</audio>
-        <img alt='Image alt'></img>
-        <button>Button</button>
-        <div aria-label='Label'></div>
-        <div role='complementary'>Complementary</div>
-        <div role='content'>Content Info</div>
-        <footer>Footer</footer>
+        <p>
+          <header>Header</header>
+          <div role='banner'>Banner</div>
+          <div role="navigation'>Navigation</div>
+          <audio>Audio</audio>
+          <img alt='Image alt'></img>
+          <button>Button</button>
+          <div aria-label='Label'></div>
+          <div role='complementary'>Complementary</div>
+          <div role='content'>Content Info</div>
+          <footer>Footer</footer>
+        </p>
       <body>)HTML",
      {}},
     /* ----------------------- */
-    {"simple_page_article",
+    {"simple_page_no_paragraph",
      R"HTML(<!doctype html>
       <body>
-        <div>Not content</div>
-        <div role='article'>Content</div>
+        <div tabindex='0'>
+          <div>Not paragraph</div>
+          <div>Not paragraph</div>
+        </div>
+        <div tabindex='0'>
+          <p>Paragraph</p>
+        </div>
       <body>)HTML",
-     {"Content"}},
+     {"Paragraph"}},
+    /* ----------------------- */
+    {"article_is_node_with_most_paragraphs",
+     R"HTML(<!doctype html>
+      <body>
+        <div tabindex='0'>
+          <p>P1</p>
+        </div>
+        <div tabindex='0'>
+          <p>P2</p>
+          <p>P3</p>
+        </div>
+      <body>)HTML",
+     {"P2", "P3"}},
+    /* ----------------------- */
+    {"include_paragraphs_in_collapsed_nodes",
+     R"HTML(<!doctype html>
+      <body>
+        <p>P1</p>
+        <div>
+          <p>P2</p>
+          <p>P3</p>
+        </div>
+      <body>)HTML",
+     {"P1", "P2", "P3"}},
+    /* ----------------------- */
+    {"node_with_most_paragraphs_may_be_deep_in_tree",
+     R"HTML(<!doctype html>
+      <body>
+        <p>P1</p>
+        <div tabindex='0'>
+          <p>P2</p>
+          <p>P3</p>
+        </div>
+      <body>)HTML",
+     {"P2", "P3"}},
 };
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
