@@ -64,12 +64,23 @@ BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
 BLINK_COMMON_EXPORT mojom::HandleLinks HandleLinksFromString(
     const std::string& handle_links);
 
-BLINK_COMMON_EXPORT absl::optional<Manifest::LaunchHandler::RouteTo>
-RouteToFromString(const std::string& route_to);
+struct BLINK_COMMON_EXPORT ParsedRouteTo {
+  Manifest::LaunchHandler::RouteTo route_to =
+      Manifest::LaunchHandler::RouteTo::kAuto;
+  bool legacy_existing_client_value = false;
+
+  bool operator==(const ParsedRouteTo& other) const;
+  bool operator!=(const ParsedRouteTo& other) const;
+};
+
+BLINK_COMMON_EXPORT absl::optional<ParsedRouteTo> RouteToFromString(
+    const std::string& route_to);
+
+enum NavigateExistingClient { kAlways, kNever };
 
 BLINK_COMMON_EXPORT
-absl::optional<Manifest::LaunchHandler::NavigateExistingClient>
-NavigateExistingClientFromString(const std::string& navigate_existing_client);
+absl::optional<NavigateExistingClient> NavigateExistingClientFromString(
+    const std::string& navigate_existing_client);
 
 }  // namespace blink
 

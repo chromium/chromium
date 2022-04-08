@@ -49,7 +49,8 @@ class WebAppLaunchProcess {
   content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
   std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
   LaunchHandler::RouteTo GetLaunchRouteTo() const;
-  LaunchHandler::NavigateExistingClient GetLaunchNavigateExistingClient() const;
+  bool RouteToExistingClient() const;
+  bool NeverNavigateExistingClients() const;
 
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();

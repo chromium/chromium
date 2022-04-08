@@ -135,15 +135,27 @@ WebAppProto::HandleLinks HandleLinksToProto(
 }
 
 LaunchHandler::RouteTo ProtoToLaunchHandlerRouteTo(
-    const LaunchHandlerProto::RouteTo& route_to) {
+    const LaunchHandlerProto::RouteTo& route_to,
+    const LaunchHandlerProto::NavigateExistingClient&
+        navigate_existing_client) {
   switch (route_to) {
     case LaunchHandlerProto_RouteTo_UNSPECIFIED_ROUTE:
     case LaunchHandlerProto_RouteTo_AUTO:
       return LaunchHandler::RouteTo::kAuto;
     case LaunchHandlerProto_RouteTo_NEW_CLIENT:
       return LaunchHandler::RouteTo::kNewClient;
-    case LaunchHandlerProto_RouteTo_EXISTING_CLIENT:
-      return LaunchHandler::RouteTo::kExistingClient;
+    case LaunchHandlerProto_RouteTo_DEPRECATED_EXISTING_CLIENT:
+      // route_to: existing-client and navigate_existing_client were removed in
+      // favor of existing-client-navigate and existing-client-retain.
+      if (navigate_existing_client ==
+          LaunchHandlerProto_NavigateExistingClient_NEVER) {
+        return LaunchHandler::RouteTo::kExistingClientRetain;
+      }
+      return LaunchHandler::RouteTo::kExistingClientNavigate;
+    case LaunchHandlerProto_RouteTo_EXISTING_CLIENT_NAVIGATE:
+      return LaunchHandler::RouteTo::kExistingClientNavigate;
+    case LaunchHandlerProto_RouteTo_EXISTING_CLIENT_RETAIN:
+      return LaunchHandler::RouteTo::kExistingClientRetain;
   }
 }
 
@@ -154,32 +166,10 @@ LaunchHandlerProto::RouteTo LaunchHandlerRouteToToProto(
       return LaunchHandlerProto_RouteTo_AUTO;
     case LaunchHandler::RouteTo::kNewClient:
       return LaunchHandlerProto_RouteTo_NEW_CLIENT;
-    case LaunchHandler::RouteTo::kExistingClient:
-      return LaunchHandlerProto_RouteTo_EXISTING_CLIENT;
-  }
-}
-
-LaunchHandler::NavigateExistingClient
-ProtoToLaunchHandlerNavigateExistingClient(
-    const LaunchHandlerProto::NavigateExistingClient&
-        navigate_existing_client) {
-  switch (navigate_existing_client) {
-    case LaunchHandlerProto_NavigateExistingClient_UNSPECIFIED_NAVIGATE:
-    case LaunchHandlerProto_NavigateExistingClient_ALWAYS:
-      return LaunchHandler::NavigateExistingClient::kAlways;
-    case LaunchHandlerProto_NavigateExistingClient_NEVER:
-      return LaunchHandler::NavigateExistingClient::kNever;
-  }
-}
-
-LaunchHandlerProto::NavigateExistingClient
-LaunchHandlerNavigateExistingClientToProto(
-    const LaunchHandler::NavigateExistingClient& navigate_existing_client) {
-  switch (navigate_existing_client) {
-    case LaunchHandler::NavigateExistingClient::kAlways:
-      return LaunchHandlerProto_NavigateExistingClient_ALWAYS;
-    case LaunchHandler::NavigateExistingClient::kNever:
-      return LaunchHandlerProto_NavigateExistingClient_NEVER;
+    case LaunchHandler::RouteTo::kExistingClientNavigate:
+      return LaunchHandlerProto_RouteTo_EXISTING_CLIENT_NAVIGATE;
+    case LaunchHandler::RouteTo::kExistingClientRetain:
+      return LaunchHandlerProto_RouteTo_EXISTING_CLIENT_RETAIN;
   }
 }
 
@@ -604,13 +594,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_storage_isolated(web_app.IsStorageIsolated());
 
   if (web_app.launch_handler()) {
-    LaunchHandlerProto& launch_handler_proto =
-        *local_data->mutable_launch_handler();
-    launch_handler_proto.set_route_to(
+    local_data->mutable_launch_handler()->set_route_to(
         LaunchHandlerRouteToToProto(web_app.launch_handler()->route_to));
-    launch_handler_proto.set_navigate_existing_client(
-        LaunchHandlerNavigateExistingClientToProto(
-            web_app.launch_handler()->navigate_existing_client));
   }
 
   if (web_app.parent_app_id_) {
@@ -1150,14 +1135,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     const LaunchHandlerProto& launch_handler_proto =
         local_data.launch_handler();
     if (launch_handler_proto.has_route_to()) {
-      launch_handler.route_to =
-          ProtoToLaunchHandlerRouteTo(launch_handler_proto.route_to());
+      launch_handler.route_to = ProtoToLaunchHandlerRouteTo(
+          launch_handler_proto.route_to(),
+          launch_handler_proto.navigate_existing_client());
     }
-    if (launch_handler_proto.has_navigate_existing_client()) {
-      launch_handler.navigate_existing_client =
-          ProtoToLaunchHandlerNavigateExistingClient(
-              launch_handler_proto.navigate_existing_client());
-    }
+
     web_app->SetLaunchHandler(std::move(launch_handler));
   }
 

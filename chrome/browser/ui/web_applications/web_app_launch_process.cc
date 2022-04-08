@@ -185,7 +185,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
 
   // If launch handler is routing to an existing client, we want to use the
   // existing WebContents rather than opening a new tab.
-  if (GetLaunchRouteTo() == LaunchHandler::RouteTo::kExistingClient) {
+  if (RouteToExistingClient()) {
     return WindowOpenDisposition::CURRENT_TAB;
   }
 
@@ -205,12 +205,26 @@ LaunchHandler::RouteTo WebAppLaunchProcess::GetLaunchRouteTo() const {
   return launch_handler.route_to;
 }
 
-LaunchHandler::NavigateExistingClient
-WebAppLaunchProcess::GetLaunchNavigateExistingClient() const {
-  DCHECK(web_app_);
-  return web_app_->launch_handler()
-      .value_or(LaunchHandler())
-      .navigate_existing_client;
+bool WebAppLaunchProcess::RouteToExistingClient() const {
+  switch (GetLaunchRouteTo()) {
+    case LaunchHandler::RouteTo::kAuto:
+    case LaunchHandler::RouteTo::kNewClient:
+      return false;
+    case LaunchHandler::RouteTo::kExistingClientNavigate:
+    case LaunchHandler::RouteTo::kExistingClientRetain:
+      return true;
+  }
+}
+
+bool WebAppLaunchProcess::NeverNavigateExistingClients() const {
+  switch (GetLaunchRouteTo()) {
+    case LaunchHandler::RouteTo::kAuto:
+    case LaunchHandler::RouteTo::kNewClient:
+    case LaunchHandler::RouteTo::kExistingClientNavigate:
+      return false;
+    case LaunchHandler::RouteTo::kExistingClientRetain:
+      return true;
+  }
 }
 
 content::WebContents* WebAppLaunchProcess::MaybeLaunchSystemWebApp(
@@ -301,8 +315,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
   DCHECK(existing_tab);
-  if (GetLaunchNavigateExistingClient() ==
-          LaunchHandler::NavigateExistingClient::kNever &&
+  if (NeverNavigateExistingClients() &&
       provider_.registrar().IsUrlInAppScope(existing_tab->GetLastCommittedURL(),
                                             params_.app_id)) {
     // If the web contents is currently navigating then interrupt it. The

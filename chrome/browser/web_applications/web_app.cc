@@ -630,9 +630,6 @@ base::Value WebApp::AsDebugValue() const {
         "launch_handler", base::Value(base::Value::Type::DICTIONARY));
     launch_handler_json.SetStringKey(
         "route_to", ConvertToString(launch_handler_->route_to));
-    launch_handler_json.SetStringKey(
-        "navigate_existing_client",
-        ConvertToString(launch_handler_->navigate_existing_client));
   } else {
     root.SetKey("launch_handler", base::Value());
   }

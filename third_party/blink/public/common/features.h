@@ -370,6 +370,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableHandleLinks;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLaunchHandler;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLaunchHandlerV1API;
+
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableManifestId;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableTranslations;

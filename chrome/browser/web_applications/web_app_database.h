@@ -60,12 +60,12 @@ class WebAppDatabase {
   // Exposed for testing.
   static std::unique_ptr<WebApp> ParseWebApp(const AppId& app_id,
                                              const std::string& value);
+  // Exposed for testing.
+  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
 
   bool is_opened() const { return opened_; }
 
  private:
-  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
-
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const absl::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);

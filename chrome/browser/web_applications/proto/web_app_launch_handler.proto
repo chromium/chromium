@@ -16,7 +16,9 @@ message LaunchHandlerProto {
     UNSPECIFIED_ROUTE = 0;
     AUTO = 1;
     NEW_CLIENT = 2;
-    EXISTING_CLIENT = 3;
+    DEPRECATED_EXISTING_CLIENT = 3;
+    EXISTING_CLIENT_NAVIGATE = 4;
+    EXISTING_CLIENT_RETAIN = 5;
   }
 
   enum NavigateExistingClient {

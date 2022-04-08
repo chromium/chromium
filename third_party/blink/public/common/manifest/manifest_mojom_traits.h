@@ -205,12 +205,6 @@ struct BLINK_COMMON_EXPORT
     return launch_handler.route_to;
   }
 
-  static blink::mojom::ManifestLaunchHandler::NavigateExistingClient
-  navigate_existing_client(
-      const ::blink::Manifest::LaunchHandler& launch_handler) {
-    return launch_handler.navigate_existing_client;
-  }
-
   static bool Read(blink::mojom::ManifestLaunchHandlerDataView data,
                    ::blink::Manifest::LaunchHandler* out);
 };

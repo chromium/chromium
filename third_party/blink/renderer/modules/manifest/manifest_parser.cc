@@ -1607,8 +1607,6 @@ Vector<String> ManifestParser::ParseOriginAllowlist(
 mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
     const JSONObject* object) {
   using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
-  using NavigateExistingClient =
-      mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
 
   if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(execution_context_))
     return nullptr;
@@ -1624,19 +1622,34 @@ mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
     return nullptr;
   }
 
-  RouteTo route_to = ParseFirstValidEnum<absl::optional<RouteTo>>(
-                         launch_handler_object, "route_to", &RouteToFromString,
-                         /*invalid_value=*/absl::nullopt)
-                         .value_or(RouteTo::kAuto);
+  ParsedRouteTo parsed_route_to =
+      ParseFirstValidEnum<absl::optional<ParsedRouteTo>>(
+          launch_handler_object, "route_to", &RouteToFromString,
+          /*invalid_value=*/absl::nullopt)
+          .value_or(ParsedRouteTo{});
 
-  NavigateExistingClient navigate_existing_client =
-      ParseFirstValidEnum<absl::optional<NavigateExistingClient>>(
-          launch_handler_object, "navigate_existing_client",
-          &NavigateExistingClientFromString, /*invalid_value=*/absl::nullopt)
-          .value_or(NavigateExistingClient::kAlways);
+  // route_to: existing-client and navigate_existing_client were removed in
+  // favor of existing-client-navigate and existing-client-retain.
+  if (parsed_route_to.legacy_existing_client_value &&
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableLaunchHandlerV1API)) {
+    NavigateExistingClient navigate_existing_client =
+        ParseFirstValidEnum<absl::optional<NavigateExistingClient>>(
+            launch_handler_object, "navigate_existing_client",
+            &NavigateExistingClientFromString,
+            /*invalid_value=*/absl::nullopt)
+            .value_or(NavigateExistingClient::kAlways);
+    switch (navigate_existing_client) {
+      case NavigateExistingClient::kAlways:
+        parsed_route_to.route_to = RouteTo::kExistingClientNavigate;
+        break;
+      case NavigateExistingClient::kNever:
+        parsed_route_to.route_to = RouteTo::kExistingClientRetain;
+        break;
+    }
+  }
 
-  return mojom::blink::ManifestLaunchHandler::New(route_to,
-                                                  navigate_existing_client);
+  return mojom::blink::ManifestLaunchHandler::New(parsed_route_to.route_to);
 }
 
 HashMap<String, mojom::blink::ManifestTranslationItemPtr>

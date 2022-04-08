@@ -190,9 +190,6 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
   if (!data.ReadRouteTo(&out->route_to))
     return false;
 
-  if (!data.ReadNavigateExistingClient(&out->navigate_existing_client))
-    return false;
-
   return true;
 }
 

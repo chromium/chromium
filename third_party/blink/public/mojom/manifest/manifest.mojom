@@ -287,17 +287,14 @@ struct ManifestLaunchHandler {
     // Create a new client for each app launch.
     kNewClient,
     // Use an existing client if available, otherwise create a new one to use.
-    kExistingClient,
+    // Navigate the existing client to the launch URL.
+    kExistingClientNavigate,
+    // Use an existing client if available, otherwise create a new one to use.
+    // Do not navigate the client and just enqueue a LaunchParams in the
+    // document's LaunchQueue.
+    kExistingClientRetain,
   };
   RouteTo route_to;
-
-  // When routing to an existing client this specifies whether to navigate it to
-  // the launch URL or just pass the URL in the enqueued LaunchParams.
-  enum NavigateExistingClient {
-    kAlways,
-    kNever,
-  };
-  NavigateExistingClient navigate_existing_client;
 };
 
 // Structure representing the translated manifest fields. Each field corresponds

@@ -449,4 +449,63 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   EXPECT_FALSE(app_copy->is_generated_icon());
 }
 
+TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
+  std::unique_ptr<WebApp> base_app =
+      test::CreateRandomWebApp(GURL("https://example.com"), /*seed=*/0);
+  std::unique_ptr<WebAppProto> base_proto =
+      WebAppDatabase::CreateWebAppProto(*base_app);
+
+  // "launch_handler": {
+  //   "route_to": "existing-client",
+  //   "navigate_existing_client": "always"
+  // }
+  // ->
+  // "launch_handler": {
+  //   "route_to": "existing-client-navigate"
+  // }
+  WebAppProto old_navigate_proto(*base_proto);
+  old_navigate_proto.mutable_launch_handler()->set_route_to(
+      LaunchHandlerProto_RouteTo_DEPRECATED_EXISTING_CLIENT);
+  old_navigate_proto.mutable_launch_handler()->set_navigate_existing_client(
+      LaunchHandlerProto_NavigateExistingClient_ALWAYS);
+
+  std::unique_ptr<WebApp> new_navigate_app =
+      WebAppDatabase::CreateWebApp(old_navigate_proto);
+  EXPECT_EQ(new_navigate_app->launch_handler(),
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientNavigate}));
+
+  std::unique_ptr<WebAppProto> new_navigate_proto =
+      WebAppDatabase::CreateWebAppProto(*new_navigate_app);
+  EXPECT_EQ(new_navigate_proto->launch_handler().route_to(),
+            LaunchHandlerProto_RouteTo_EXISTING_CLIENT_NAVIGATE);
+  EXPECT_EQ(new_navigate_proto->launch_handler().navigate_existing_client(),
+            LaunchHandlerProto_NavigateExistingClient_UNSPECIFIED_NAVIGATE);
+
+  // "launch_handler": {
+  //   "route_to": "existing-client",
+  //   "navigate_existing_client": "never"
+  // }
+  // ->
+  // "launch_handler": {
+  //   "route_to": "existing-client-retain"
+  // }
+  WebAppProto old_retain_proto(*base_proto);
+  old_retain_proto.mutable_launch_handler()->set_route_to(
+      LaunchHandlerProto_RouteTo_DEPRECATED_EXISTING_CLIENT);
+  old_retain_proto.mutable_launch_handler()->set_navigate_existing_client(
+      LaunchHandlerProto_NavigateExistingClient_NEVER);
+
+  std::unique_ptr<WebApp> new_retain_app =
+      WebAppDatabase::CreateWebApp(old_retain_proto);
+  EXPECT_EQ(new_retain_app->launch_handler(),
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientRetain}));
+
+  std::unique_ptr<WebAppProto> new_retain_proto =
+      WebAppDatabase::CreateWebAppProto(*new_retain_app);
+  EXPECT_EQ(new_retain_proto->launch_handler().route_to(),
+            LaunchHandlerProto_RouteTo_EXISTING_CLIENT_RETAIN);
+  EXPECT_EQ(new_retain_proto->launch_handler().navigate_existing_client(),
+            LaunchHandlerProto_NavigateExistingClient_UNSPECIFIED_NAVIGATE);
+}
+
 }  // namespace web_app

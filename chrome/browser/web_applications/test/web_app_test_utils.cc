@@ -457,11 +457,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetSyncFallbackData(std::move(sync_fallback_data));
 
   if (random.next_bool()) {
-    LaunchHandler launch_handler;
-    launch_handler.route_to = random.next_enum<LaunchHandler::RouteTo>();
-    launch_handler.navigate_existing_client =
-        random.next_enum<LaunchHandler::NavigateExistingClient>();
-    app->SetLaunchHandler(launch_handler);
+    app->SetLaunchHandler(
+        LaunchHandler{random.next_enum<LaunchHandler::RouteTo>()});
   }
 
   const base::Time manifest_update_time =

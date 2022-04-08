@@ -1861,14 +1861,19 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerLaunchHandlerBrowserTest,
       "launch_handler": $2
     }
   )";
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "null"});
-  AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->launch_handler(),
-            absl::nullopt);
 
+  // Deprecated launch_handler syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, R"({
     "route_to": "existing-client",
     "navigate_existing_client": "never"
+  })"});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->launch_handler(),
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientRetain}));
+
+  // New launch_handler syntax.
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, R"({
+    "route_to": "existing-client-navigate"
   })"});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
@@ -1881,8 +1886,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerLaunchHandlerBrowserTest,
                                  {{128, kAll}, kInstallableIconTopLeftColor},
                                  {{256, kAll}, kInstallableIconTopLeftColor}});
   EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->launch_handler(),
-            (LaunchHandler{LaunchHandler::RouteTo::kExistingClient,
-                           LaunchHandler::NavigateExistingClient::kNever}));
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientNavigate}));
 }
 
 class ManifestUpdateManagerSystemAppBrowserTest
