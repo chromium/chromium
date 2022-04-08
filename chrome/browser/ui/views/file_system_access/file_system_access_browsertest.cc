@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -976,6 +977,10 @@ class FencedFrameFileSystemAccessBrowserTest
 
 IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
+  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
+      std::make_unique<ChromeFileSystemAccessPermissionContext>(
+          browser()->profile());
+
   const base::FilePath test_file = CreateTestFile("");
 
   ui::SelectFileDialog::SetFactory(
@@ -1006,6 +1011,23 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
 
   // Even read-only access should show a usage indicator.
   EXPECT_FALSE(IsUsageIndicatorVisible());
+
+  auto grant = permission_context->GetWritePermissionGrant(
+      url::Origin::Create(fenced_frame_url), test_file,
+      content::FileSystemAccessPermissionContext::HandleType::kFile,
+      content::FileSystemAccessPermissionContext::UserAction::kOpen);
+
+  base::test::TestFuture<
+      content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
+      future;
+
+  // RequestPermission() for the fenced frame must fail.
+  grant->RequestPermission(
+      fenced_frame_host->GetGlobalId(),
+      content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+      future.GetCallback());
+  EXPECT_EQ(future.Get<>(), content::FileSystemAccessPermissionGrant::
+                                PermissionRequestOutcome::kInvalidFrame);
 }
 
 INSTANTIATE_TEST_SUITE_P(
