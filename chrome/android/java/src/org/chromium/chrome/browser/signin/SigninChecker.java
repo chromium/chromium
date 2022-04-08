@@ -9,8 +9,6 @@ import android.accounts.Account;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApplicationState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
@@ -34,8 +32,7 @@ import java.util.List;
 /**
  * This class regroups sign-in checks when chrome starts up and when accounts change on device
  */
-public class SigninChecker
-        implements ApplicationStatus.ApplicationStateListener, AccountTrackerService.Observer {
+public class SigninChecker implements AccountTrackerService.Observer {
     private static final String TAG = "SigninChecker";
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
@@ -53,7 +50,6 @@ public class SigninChecker
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mNumOfChildAccountChecksDone = 0;
 
-        ApplicationStatus.registerApplicationStateListener(this);
         mAccountTrackerService.addObserver(this);
     }
 
@@ -200,20 +196,13 @@ public class SigninChecker
     }
 
     /**
-     * Called once during initialization and then again for every start (warm-start).
+     * Called once when Chrome starts.
      * Responsible for checking if configuration has changed since Chrome was last launched
      * and updates state accordingly.
      */
     public void onMainActivityStart() {
         try (TraceEvent ignored = TraceEvent.scoped("SigninHelper.onMainActivityStart")) {
             validateAccountSettings();
-        }
-    }
-
-    @Override
-    public void onApplicationStateChange(int newState) {
-        if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-            onMainActivityStart();
         }
     }
 }
