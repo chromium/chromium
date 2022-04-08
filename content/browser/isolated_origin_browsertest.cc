@@ -801,16 +801,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest,
 // Basic test to make sure an origin opting-in in a primary FrameTree
 // triggers registration of a non-opting-origin in an existing prerendering
 // Frametree.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-// TODO(crbug.com/1308998): Disabled due to flakes on Linux TSAN.
-#define MAYBE_SimplePrerenderSubOriginIsolationTest \
-  DISABLED_SimplePrerenderSubOriginIsolationTest
-#else
-#define MAYBE_SimplePrerenderSubOriginIsolationTest \
-  SimplePrerenderSubOriginIsolationTest
-#endif
 IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
-                       MAYBE_SimplePrerenderSubOriginIsolationTest) {
+                       SimplePrerenderSubOriginIsolationTest) {
   GURL test_url(https_server()->GetURL("foo.com",
                                        "/cross_site_iframe_factory.html?"
                                        "foo.com(foo.com)"));
