@@ -94,6 +94,7 @@ crbug.com/dawn/1330 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,s
 
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,clamp:f32:* [ Timeout ]
 
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createView:format:* [ Timeout ]
 
 ###
 ### Test bugs
@@ -177,10 +178,6 @@ wpt_internal/webgpu/cts.https.html?q=webgpu:idl,constants,flags:TextureUsage,cou
 # Test shouldn't have a stencil8 variant.
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:format="stencil8";* [ Failure ]
 
-# Failures because srgb-equality for compressed formats isn't implemented in Dawn validation.
-crbug.com/dawn/1204 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:* [ Crash ]
-crbug.com/dawn/1204 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:* [ Crash ]
-
 # Failures because readonly storage textures have been removed. https://crbug.com/dawn/1025
 crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:unused_bindings_in_pipeline:* [ Failure ]
 
@@ -209,8 +206,6 @@ crbug.com/dawn/999 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buf
 
 crbug.com/dawn/746 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
-crbug.com/1215024 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
-crbug.com/1215024 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createComputePipeline:entry_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createComputePipeline:entry_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createComputePipeline:entry_point_name_must_match:isAsync=false;shaderModuleEntryPoint="s%C3%A9quen%C3%A7age";stageEntryPoint="s%C3%A9quen%C3%A7age";* [ Failure ]
@@ -359,28 +354,6 @@ crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution
 
 # Queue Validation Failures
 crbug.com/dawn/1350 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,writeBuffer:ranges:* [ Failure ]
-
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,device_mismatch:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,dimension:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,mipLevel:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,sample_count:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,state:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,usage:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,destination:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,source:* [ Failure ]
-crbug.com/dawn/1351 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_imageBitmap,state:* [ Failure ]
-
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,device_mismatch:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,dimension:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,mipLevel:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,sample_count:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,state:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,usage:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,destination:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,source:* [ Failure ]
-crbug.com/dawn/1351 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_imageBitmap,state:* [ Failure ]
 
 # maxArrayLayoutCount limit should be 256 instead of 2048
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2047];* [ Failure ]
@@ -579,7 +552,6 @@ crbug.com/dawn/1064 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,oper
 crbug.com/dawn/1064 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="minStorageBufferOffsetAlignment";* [ Failure ]
 crbug.com/dawn/1064 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="minUniformBufferOffsetAlignment";* [ Failure ]
 
-
 # Null-deref on Intel; failure on NVIDIA.
 crbug.com/1237592 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Failure Crash ]
 
@@ -612,9 +584,6 @@ crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 
 # Incorrect results in subcases, need further investigation.
 crbug.com/dawn/1267 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth24unorm-stencil8";* [ Failure ]
-
-# Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
-crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
 
 # The D3D12 debug layers produce and incorrect warning: Missing State: 0x1000: D3D12_RESOURCE_STATE_RESOLVE_DEST
 crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
@@ -660,5 +629,3 @@ crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,insertBits:integer:* [ Failure ]
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,extractBits:u32:* [ Failure ]
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,extractBits:i32:* [ Failure ]
-
-crbug.com/dawn/1353 [ Win ] CopyTests_T2T.CopyFromNonZeroMipLevelWithTexelBlockSizeLessThan4Bytes/D3D12_Intel_R_HD_Graphics_630_UsageCopySrc_1 [ Crash ]
