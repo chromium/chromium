@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -17,7 +16,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -231,11 +229,10 @@ void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
 
 void AuthenticatorRequestSheetView::UpdateIconColors() {
   if (back_arrow_) {
-    const auto* const cp = GetColorProvider();
-    views::SetImageFromVectorIconWithColor(
+    views::SetImageFromVectorIcon(
         back_arrow_, vector_icons::kBackArrowIcon,
-        cp->GetColor(kColorWebAuthnBackArrowButtonIcon),
-        cp->GetColor(kColorWebAuthnBackArrowButtonIconDisabled));
+        color_utils::DeriveDefaultIconColor(views::style::GetColor(
+            *this, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
   }
 }
 

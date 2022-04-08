@@ -588,12 +588,9 @@ void ContentSettingBubbleContents::Init() {
 
 void ContentSettingBubbleContents::StyleLearnMoreButton() {
   DCHECK(learn_more_button_);
-  const ui::ColorProvider* cp = GetColorProvider();
-  SkColor icon_color = cp->GetColor(ui::kColorIcon);
-  SkColor icon_disabled_color = cp->GetColor(ui::kColorIconDisabled);
-  views::SetImageFromVectorIconWithColor(learn_more_button_,
-                                         vector_icons::kHelpOutlineIcon,
-                                         icon_color, icon_disabled_color);
+  SkColor text_color = GetColorProvider()->GetColor(ui::kColorLabelForeground);
+  views::SetImageFromVectorIcon(learn_more_button_,
+                                vector_icons::kHelpOutlineIcon, text_color);
 }
 
 std::unique_ptr<views::View>

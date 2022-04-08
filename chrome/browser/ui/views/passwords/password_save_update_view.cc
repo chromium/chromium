@@ -546,7 +546,7 @@ void PasswordSaveUpdateView::OnThemeChanged() {
         color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
                                            GetDefaultSizeOfVectorIcon(kEyeIcon),
-                                           icon_color, disabled_icon_color);
+                                           icon_color);
     views::SetToggledImageFromVectorIconWithColor(
         password_view_button_, kEyeCrossedIcon,
         GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color,

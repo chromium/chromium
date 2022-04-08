@@ -327,13 +327,10 @@ void CustomTabBarView::OnThemeChanged() {
 
   title_bar_color_ = color_provider->GetColor(kColorPwaTheme);
   const SkColor foreground_color =
-      color_provider->GetColor(kColorPwaToolbarButtonIcon);
-  const SkColor foreground_disabled_color =
-      color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
-  SetImageFromVectorIconWithColor(close_button_,
-                                  vector_icons::kCloseRoundedIcon,
-                                  GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-                                  foreground_color, foreground_disabled_color);
+      color_provider->GetColor(kColorPwaToolbarForeground);
+  SetImageFromVectorIconWithColor(
+      close_button_, vector_icons::kCloseRoundedIcon,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE), foreground_color);
 
   background_color_ = color_provider->GetColor(kColorPwaToolbarBackground);
   SetBackground(views::CreateSolidBackground(background_color_));

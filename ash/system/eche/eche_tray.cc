@@ -89,10 +89,8 @@ std::unique_ptr<views::Button> CreateButton(
     int message_id) {
   SkColor color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
-  SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
   auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIconWithColor(button.get(), icon, color,
-                                         disabled_color);
+  views::SetImageFromVectorIconWithColor(button.get(), icon, color);
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();
 

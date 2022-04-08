@@ -86,8 +86,6 @@
   E_CPONLY(kColorLinkForegroundDisabled) \
   E_CPONLY(kColorLinkForegroundPressed) \
   E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
-  E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
-  E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
   E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \
   E_CPONLY(kColorLiveCaptionBubbleLink) \
   E_CPONLY(kColorMenuBackground) \

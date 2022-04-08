@@ -144,11 +144,8 @@ views::ImageButton* MediaControlsHeaderView::close_button_for_testing() const {
 
 void MediaControlsHeaderView::UpdateCloseButtonVisibility() {
   if (force_close_x_visible_ || close_button_->HasFocus()) {
-    SkColor color = gfx::kGoogleGrey700;
-    SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
-    SetImageFromVectorIconWithColor(
-        close_button_, vector_icons::kCloseRoundedIcon, kCloseButtonIconSize,
-        color, disabled_color);
+    SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
+                           kCloseButtonIconSize, gfx::kGoogleGrey700);
   } else {
     close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
   }

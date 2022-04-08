@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
@@ -1039,11 +1038,8 @@ void LocationBarView::RefreshClearAllButtonIcon() {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   const gfx::VectorIcon& icon =
       touch_ui ? omnibox::kClearIcon : kTabCloseNormalIcon;
-  const ui::ColorProvider* cp = GetColorProvider();
-  SetImageFromVectorIconWithColor(
-      clear_all_button_, icon,
-      cp->GetColor(kColorLocationBarClearAllButtonIcon),
-      cp->GetColor(kColorLocationBarClearAllButtonIconDisabled));
+  SetImageFromVectorIcon(clear_all_button_, icon,
+                         GetColor(OmniboxPart::LOCATION_BAR_CLEAR_ALL));
   clear_all_button_->SetBorder(views::CreateEmptyBorder(
       GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING)));
 }

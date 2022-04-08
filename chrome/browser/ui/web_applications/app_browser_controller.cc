@@ -445,10 +445,7 @@ void AppBrowserController::AddColorMixers(
                                       : default_background;
 #endif
   mixer[kColorPwaToolbarBackground] = {ui::kColorEndpointBackground};
-  mixer[kColorPwaToolbarButtonIcon] =
-      ui::DeriveDefaultIconColor(ui::kColorEndpointForeground);
-  mixer[kColorPwaToolbarButtonIconDisabled] =
-      ui::SetAlpha(kColorPwaToolbarButtonIcon, gfx::kDisabledControlAlpha);
+  mixer[kColorPwaToolbarForeground] = {ui::kColorEndpointForeground};
   if (bg_color)
     mixer[kColorWebContentsBackground] = {kColorPwaBackground};
 }

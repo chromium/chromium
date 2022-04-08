@@ -244,13 +244,9 @@ void MediaItemUIView::OnMediaArtworkChanged(const gfx::ImageSkia& image) {
   ForceExpandedState();
 }
 
-void MediaItemUIView::OnColorsChanged(SkColor foreground,
-                                      SkColor foreground_disabled,
-                                      SkColor background) {
-  if (foreground_color_ != foreground ||
-      foreground_disabled_color_ != foreground_disabled) {
+void MediaItemUIView::OnColorsChanged(SkColor foreground, SkColor background) {
+  if (foreground_color_ != foreground) {
     foreground_color_ = foreground;
-    foreground_disabled_color_ = foreground_disabled;
     UpdateDismissButtonIcon();
   }
 
@@ -308,9 +304,9 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
     icon_size = kModernDismissButtonIconSize;
 
-  views::SetImageFromVectorIconWithColor(
-      dismiss_button_, vector_icons::kCloseRoundedIcon, icon_size,
-      foreground_color_, foreground_disabled_color_);
+  views::SetImageFromVectorIconWithColor(dismiss_button_,
+                                         vector_icons::kCloseRoundedIcon,
+                                         icon_size, foreground_color_);
 }
 
 void MediaItemUIView::UpdateDismissButtonBackground() {

@@ -157,8 +157,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarSeparator};
   mixer[kColorToolbarSeparator] = {ui::kColorNativeButtonBorder};
   mixer[kColorToolbarText] = {ui::kColorNativeLabelForeground};
-  mixer[kColorToolbarTextDisabled] =
-      ui::SetAlpha(kColorToolbarText, gfx::kDisabledControlAlpha);
   mixer[kColorToolbarTopSeparatorFrameActive] =
       GetGtkToolbarTopSeparatorColorTransform(true);
   mixer[kColorToolbarTopSeparatorFrameInactive] =

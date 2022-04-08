@@ -29,13 +29,14 @@ TEST_F(ImageButtonFactoryTest, CreateVectorImageButton) {
   EXPECT_EQ(ImageButton::ALIGN_MIDDLE, button->v_alignment_);
 }
 
-TEST_F(ImageButtonFactoryTest, SetImageFromVectorIconWithColor) {
+TEST_F(ImageButtonFactoryTest, SetImageFromVectorIcon) {
   auto button = CreateVectorImageButton(Button::PressedCallback());
-  SetImageFromVectorIconWithColor(button.get(), vector_icons::kCloseRoundedIcon,
-                                  SK_ColorRED, SK_ColorRED);
+  SetImageFromVectorIcon(button.get(), vector_icons::kCloseRoundedIcon,
+                         SK_ColorRED);
   EXPECT_FALSE(button->GetImage(Button::STATE_NORMAL).isNull());
   EXPECT_FALSE(button->GetImage(Button::STATE_DISABLED).isNull());
-  EXPECT_EQ(SK_ColorRED, InkDrop::Get(button.get())->GetBaseColor());
+  EXPECT_EQ(color_utils::DeriveDefaultIconColor(SK_ColorRED),
+            InkDrop::Get(button.get())->GetBaseColor());
 }
 
 class ImageButtonFactoryWidgetTest : public ViewsTestBase {

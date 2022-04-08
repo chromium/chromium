@@ -889,10 +889,6 @@ void CaptionBubble::SetTextColor() {
   SkColor default_text_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
   SkColor text_color = default_text_color;
-  SkColor icon_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIcon);
-  SkColor icon_disabled_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIconDisabled);
   if (caption_style_) {
     ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
                                           &text_color, color_provider);
@@ -932,18 +928,19 @@ void CaptionBubble::SetTextColor() {
   media_foundation_renderer_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
 #endif
-  views::SetImageFromVectorIconWithColor(back_to_tab_button_,
-                                         vector_icons::kLaunchIcon, kButtonDip,
-                                         icon_color, icon_disabled_color);
-  views::SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip, icon_color,
-      icon_disabled_color);
-  views::SetImageFromVectorIconWithColor(
-      expand_button_, vector_icons::kCaretDownIcon, kButtonDip, icon_color,
-      icon_disabled_color);
-  views::SetImageFromVectorIconWithColor(collapse_button_,
-                                         vector_icons::kCaretUpIcon, kButtonDip,
-                                         icon_color, icon_disabled_color);
+  views::SetImageFromVectorIcon(back_to_tab_button_, vector_icons::kLaunchIcon,
+                                kButtonDip, text_color);
+  views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
+                                kButtonDip, text_color);
+  views::SetImageFromVectorIcon(expand_button_, vector_icons::kCaretDownIcon,
+                                kButtonDip, text_color);
+  views::SetImageFromVectorIcon(collapse_button_, vector_icons::kCaretUpIcon,
+                                kButtonDip, text_color);
+
+  views::InkDrop::Get(back_to_tab_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(close_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(expand_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(collapse_button_)->SetBaseColor(text_color);
 }
 
 void CaptionBubble::SetBackgroundColor() {

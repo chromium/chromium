@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
@@ -77,11 +76,10 @@ void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
 
 void ChosenObjectView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const ui::ColorProvider* cp = GetColorProvider();
-  views::SetImageFromVectorIconWithColor(
+  views::SetImageFromVectorIcon(
       delete_button_, vector_icons::kCloseRoundedIcon,
-      cp->GetColor(kColorPageInfoChosenObjectDeleteButtonIcon),
-      cp->GetColor(kColorPageInfoChosenObjectDeleteButtonIconDisabled));
+      views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
+                             views::style::STYLE_PRIMARY));
 }
 
 ChosenObjectView::~ChosenObjectView() = default;
