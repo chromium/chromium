@@ -554,6 +554,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
 
+  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+  // switch of lacros-chrome is complete.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  pairings_from_extension = base::span<const device::CableDiscoveryData>();
+#endif
+
   std::vector<device::CableDiscoveryData> pairings;
   if (cable_extension_permitted) {
     pairings.insert(pairings.end(), pairings_from_extension.begin(),
@@ -890,19 +896,6 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
     return true;
   }
 
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete. If updating this, also update
-  // kWebAuthCableServerLink.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-
-  // caBLEv1 is disabled on these platforms. It never launched on them because
-  // it causes problems in bluez. Rather than disabling caBLE completely, which
-  // is what was done prior to Jan 2022, this `return` just disables caBLEv1
-  // on these platforms.
-  return false;
-
-#else
-
   // Because the future of the caBLE extension might be that we transition
   // everything to QR-code or sync-based pairing, we don't want use of the
   // extension to spread without consideration. Therefore it's limited to
@@ -914,8 +907,6 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
   const GURL test_site("https://webauthndemo.appspot.com");
   DCHECK(test_site.is_valid());
   return origin.IsSameOriginWith(test_site);
-
-#endif
 }
 
 void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(

@@ -186,10 +186,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
   // On Linux, some configurations aren't supported because of bluez
   // limitations. This macro maps the expected result in that case.
-
-  // This is crbug.com/1314459. It should be `Result::kNone` but, due to that
-  // bug, 3rd-party mode actually triggers.
-#define NONE_ON_LINUX(r) (Result::k3rdParty)
+#define NONE_ON_LINUX(r) (Result::kNone)
 #else
 #define NONE_ON_LINUX(r) (r)
 #endif
@@ -220,7 +217,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           // a.g.c should not get caBLE without an extension
           "https://accounts.google.com",
           {},
-          NONE_ON_LINUX(Result::kNone),
+          Result::kNone,
       },
       {
           "https://accounts.google.com",
