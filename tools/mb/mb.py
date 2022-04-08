@@ -1796,10 +1796,7 @@ class MetaBuildWrapper(object):
           './' + str(executable) + executable_suffix,
           '--test-launcher-bot-mode',
           '--asan=%d' % asan,
-          # Enable lsan when asan is enabled except on Windows where LSAN isn't
-          # supported.
-          # TODO(https://crbug.com/948939): Enable on Mac once things pass.
-          '--lsan=%d' % (asan and not is_mac and not is_win),
+          '--lsan=%d' % asan,  # Enable lsan when asan is enabled.
           '--msan=%d' % msan,
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
