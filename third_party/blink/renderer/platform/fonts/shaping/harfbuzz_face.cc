@@ -266,13 +266,9 @@ bool HarfBuzzFace::ShouldSubpixelPosition() {
 class HarfBuzzSkiaGetFontFuncs final {
  public:
   static HarfBuzzSkiaGetFontFuncs& Get() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(std::unique_ptr<HarfBuzzSkiaGetFontFuncs>,
-                                    shared_hb_funcs, ());
-    if (!shared_hb_funcs) {
-      DCHECK(IsMainThread());
-      shared_hb_funcs = base::WrapUnique(new HarfBuzzSkiaGetFontFuncs());
-    }
-    return *shared_hb_funcs;
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(HarfBuzzSkiaGetFontFuncs, shared_hb_funcs,
+                                    ());
+    return shared_hb_funcs;
   }
 
 #if BUILDFLAG(IS_MAC)
