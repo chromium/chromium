@@ -38,7 +38,7 @@ const AssistantVoiceMatchBase = Polymer.mixinBehaviors(
  */
 class AssistantVoiceMatch extends AssistantVoiceMatchBase {
   static get is() {
-    return `assistant-voice-match`;
+    return 'assistant-voice-match';
   }
 
   /* #html_template_placeholder */

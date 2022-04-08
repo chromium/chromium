@@ -4,7 +4,6 @@
 
 // <include src="utils.js">
 // <include src="assistant_loading.js">
-// <include src="assistant_related_info.js">
 
 /**
  * @fileoverview Polymer element for displaying material design assistant

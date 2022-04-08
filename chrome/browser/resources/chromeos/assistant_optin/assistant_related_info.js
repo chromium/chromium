@@ -10,122 +10,142 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
+/* #js_imports_placeholder */
+
 /**
  * Name of the screen.
  * @type {string}
  */
 const RELATED_INFO_SCREEN_ID = 'RelatedInfoScreen';
 
-Polymer({
-  is: 'assistant-related-info',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const AssistantRelatedInfoBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+/**
+ * @polymer
+ */
+class AssistantRelatedInfo extends AssistantRelatedInfoBase {
+  static get is() {
+    return 'assistant-related-info';
+  }
 
-  properties: {
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Whether page content is loading.
+       */
+      loading: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Whether activity control consent is skipped.
+       */
+      skipActivityControl_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether to use same design for accept/decline buttons.
+       */
+      equalWeightButtons_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The given name of the user, if a child account is in use; otherwise,
+       * this is an empty string.
+       */
+      childName_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * Whether page content is loading.
+     * The animation URL template - loaded from loadTimeData.
+     * The template is expected to have '$' instead of the locale.
+     * @private {string}
      */
-    loading: {
-      type: Boolean,
-      value: true,
-    },
+    this.urlTemplate_ =
+        'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html';
 
     /**
-     * Whether activity control consent is skipped.
+     * Whether try to reload with the default url when a 404 error occurred.
+     * @type {boolean}
+     * @private
      */
-    skipActivityControl_: {
-      type: Boolean,
-      value: false,
-    },
+    this.reloadWithDefaultUrl_ = false;
 
     /**
-     * Indicates whether to use same design for accept/decline buttons.
+     * Whether an error occurs while the webview is loading.
+     * @type {boolean}
+     * @private
      */
-    equalWeightButtons_: {
-      type: Boolean,
-      value: false,
-    },
+    this.loadingError_ = false;
 
     /**
-     * The given name of the user, if a child account is in use; otherwise,
-     * this is an empty string.
+     * The animation webview object.
+     * @type {Object}
+     * @private
      */
-    childName_: {
-      type: String,
-      value: '',
-    },
-  },
+    this.webview_ = null;
+
+    /**
+     * Whether the screen has been initialized.
+     * @type {boolean}
+     * @private
+     */
+    this.initialized_ = false;
+
+    /**
+     * Whether the response header has been received for the animation webview.
+     * @type {boolean}
+     * @private
+     */
+    this.headerReceived_ = false;
+
+    /**
+     * Whether the webview has been successfully loaded.
+     * @type {boolean}
+     * @private
+     */
+    this.webViewLoaded_ = false;
+
+    /**
+     * Whether all the consent text strings has been successfully loaded.
+     * @type {boolean}
+     * @private
+     */
+    this.consentStringLoaded_ = false;
+
+    /**
+     * Whether the screen has been shown to the user.
+     * @type {boolean}
+     * @private
+     */
+    this.screenShown_ = false;
+
+    /** @private {?assistant.BrowserProxy} */
+    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+  }
 
   setUrlTemplateForTesting(url) {
     this.urlTemplate_ = url;
-  },
-
-  /**
-   * The animation URL template - loaded from loadTimeData.
-   * The template is expected to have '$' instead of the locale.
-   * @private {string}
-   */
-  urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
-
-  /**
-   * Whether try to reload with the default url when a 404 error occurred.
-   * @type {boolean}
-   * @private
-   */
-  reloadWithDefaultUrl_: false,
-
-  /**
-   * Whether an error occurs while the webview is loading.
-   * @type {boolean}
-   * @private
-   */
-  loadingError_: false,
-
-  /**
-   * The animation webview object.
-   * @type {Object}
-   * @private
-   */
-  webview_: null,
-
-  /**
-   * Whether the screen has been initialized.
-   * @type {boolean}
-   * @private
-   */
-  initialized_: false,
-
-  /**
-   * Whether the response header has been received for the animation webview.
-   * @type {boolean}
-   * @private
-   */
-  headerReceived_: false,
-
-  /**
-   * Whether the webview has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  webViewLoaded_: false,
-
-  /**
-   * Whether all the consent text strings has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  consentStringLoaded_: false,
-
-  /**
-   * Whether the screen has been shown to the user.
-   * @type {boolean}
-   * @private
-   */
-  screenShown_: false,
-
-  /** @private {?assistant.BrowserProxy} */
-  browserProxy_: null,
+  }
 
   /**
    * On-tap event handler for next button.
@@ -138,7 +158,7 @@ Polymer({
     }
     this.loading = true;
     this.browserProxy_.userActed(RELATED_INFO_SCREEN_ID, ['next-pressed']);
-  },
+  }
 
   /**
    * On-tap event handler for skip button.
@@ -151,32 +171,29 @@ Polymer({
     }
     this.loading = true;
     this.browserProxy_.userActed(RELATED_INFO_SCREEN_ID, ['skip-pressed']);
-  },
-
-  /** @override */
-  created() {
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * Reloads the page.
    */
   reloadPage() {
-    this.fire('loading');
+    this.dispatchEvent(
+        new CustomEvent('loading', {bubbles: true, composed: true}));
     this.loading = true;
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
     this.webview_.src = this.urlTemplate_.replace('$', locale);
-  },
+  }
 
   /**
    * Handles event when animation webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
-    this.fire('error');
+    this.dispatchEvent(
+        new CustomEvent('error', {bubbles: true, composed: true}));
     this.loadingError_ = true;
-  },
+  }
 
   /**
    * Handles event when animation webview is loaded.
@@ -199,7 +216,7 @@ Polymer({
     if (this.consentStringLoaded_) {
       this.onPageLoaded();
     }
-  },
+  }
 
   /**
    * Handles event when webview request headers received.
@@ -219,7 +236,7 @@ Polymer({
     } else if (details.statusCode != '200') {
       this.onWebViewErrorOccurred();
     }
-  },
+  }
 
   /**
    * Reload the page with the given consent string text data.
@@ -240,20 +257,21 @@ Polymer({
     if (this.webViewLoaded_) {
       this.onPageLoaded();
     }
-  },
+  }
 
   /**
    * Handles event when all the page content has been loaded.
    */
   onPageLoaded() {
-    this.fire('loaded');
+    this.dispatchEvent(
+        new CustomEvent('loaded', {bubbles: true, composed: true}));
     this.loading = false;
     this.$['next-button'].focus();
     if (!this.hidden && !this.screenShown_) {
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
     }
-  },
+  }
 
   /**
    * Signal from host to show the screen.
@@ -270,7 +288,7 @@ Polymer({
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
     }
-  },
+  }
 
   initializeWebview_(webview) {
     const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
@@ -281,21 +299,21 @@ Polymer({
     webview.addEventListener(
         'contentload', this.onWebViewContentLoad.bind(this));
     webview.addContentScripts([webviewStripLinksContentScript]);
-  },
+  }
 
   /**
    * Get default animation url for locale en.
    */
   getDefaultAnimationUrl_() {
     return this.urlTemplate_.replace('$', 'en_us');
-  },
+  }
 
   /**
    * Returns the webview animation container.
    */
   getAnimationContainer() {
     return this.$['animation-container'];
-  },
+  }
 
   /**
    * Returns the title of the dialog.
@@ -308,5 +326,7 @@ Polymer({
           this.i18n('assistantRelatedInfoTitleForChild', childName) :
           this.i18n('assistantRelatedInfoTitle');
     }
-  },
-});
+  }
+}
+
+customElements.define(AssistantRelatedInfo.is, AssistantRelatedInfo);
