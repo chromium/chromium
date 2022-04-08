@@ -65,10 +65,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
       viz::ReleaseCallback release_callback,
-      // TODO(crbug/1289449) Remove ths default value and extend this validation
-      // to all type of AcceleratedStaticBitmapImage created from
-      // CreateFromCanvasMailbox.
-      bool supports_display_compositing_ = true);
+      bool supports_display_compositing,
+      bool is_overlay_candidate);
 
   bool CurrentFrameKnownToBeOpaque() override;
   bool IsTextureBacked() const override { return true; }
@@ -120,6 +118,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;
   }
+  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
@@ -140,6 +139,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       GLenum texture_target,
       bool is_origin_top_left,
       bool supports_display_compositing,
+      bool is_overlay_candidate,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -154,8 +154,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;
-  const bool is_origin_top_left_;
-  const bool supports_display_compositing_;
+  const bool is_origin_top_left_ : 1;
+  const bool supports_display_compositing_ : 1;
+  const bool is_overlay_candidate_ : 1;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;

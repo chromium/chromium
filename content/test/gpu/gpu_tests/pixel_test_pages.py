@@ -754,6 +754,12 @@ class PixelTestPages():
             'offscreencanvas_imagebitmap_from_worker_uses_overlay.html',
             base_name + '_OffscreenCanvasImageBitmapWorkerUsesOverlay',
             test_rect=[0, 0, 100, 100]),
+
+        # --enable-gpu-benchmarking is required to run this test. it's added to
+        # the pixel tests by default.
+        PixelTestPage('offscreencanvas_imagebitmap_uses_overlay.html',
+                      base_name + '_OffscreenCanvasImageBitmapUsesOverlay',
+                      test_rect=[0, 0, 100, 100]),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the

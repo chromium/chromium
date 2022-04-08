@@ -172,7 +172,8 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::TransferToStaticBitmapImage() {
       /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
       swap_buffers_->GetContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
-      std::move(release_callback));
+      std::move(release_callback), /*supports_display_compositing=*/true,
+      transferable_resource.is_overlay_candidate);
 }
 
 scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {

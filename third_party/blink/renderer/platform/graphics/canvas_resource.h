@@ -554,6 +554,7 @@ class PLATFORM_EXPORT CanvasResourceSkiaDawnSharedImage final
 
   OwningThreadData owning_thread_data_;
   bool is_origin_top_left_;
+  bool is_overlay_candidate_;
 };
 #endif
 

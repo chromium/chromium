@@ -652,7 +652,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
       mailbox(), GetSyncToken(), texture_id_for_image, image_info,
       texture_target_, is_origin_top_left_, context_provider_wrapper_,
       owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), supports_display_compositing_);
+      std::move(release_callback), supports_display_compositing_,
+      is_overlay_candidate_);
 
   DCHECK(image);
   return image;
@@ -751,7 +752,9 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
       owning_thread_task_runner_(Thread::Current()->GetTaskRunner()),
-      is_origin_top_left_(is_origin_top_left) {
+      is_origin_top_left_(is_origin_top_left),
+      is_overlay_candidate_(shared_image_usage_flags &
+                            gpu::SHARED_IMAGE_USAGE_SCANOUT) {
   if (!context_provider_wrapper_)
     return;
 
@@ -980,7 +983,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSkiaDawnSharedImage::Bitmap() {
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox(), GetSyncToken(), 0, image_info, GL_TEXTURE_2D,
       is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      owning_thread_task_runner_, std::move(release_callback),
+      /*supports_display_compositing=*/true, is_overlay_candidate_);
 
   DCHECK(image);
   return image;
@@ -1101,7 +1105,8 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       mailbox_, GetSyncToken(), /*shared_image_texture_id=*/0u,
       CreateSkImageInfo(), texture_target_, is_origin_top_left_,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      std::move(release_callback), /*supports_display_compositing=*/true,
+      is_overlay_candidate_);
 }
 
 void ExternalCanvasResource::TearDown() {
@@ -1216,7 +1221,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       back_buffer_mailbox_, GetSyncToken(), shared_texture_id, image_info,
       GL_TEXTURE_2D, true /*is_origin_top_left*/, context_provider_wrapper_,
       owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      std::move(release_callback), /*supports_display_compositing=*/true,
+      /*is_overlay_candidate=*/true);
 }
 
 void CanvasResourceSwapChain::Abandon() {

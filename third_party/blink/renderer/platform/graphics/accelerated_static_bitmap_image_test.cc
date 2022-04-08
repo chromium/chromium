@@ -55,7 +55,8 @@ scoped_refptr<StaticBitmapImage> CreateBitmap() {
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
+      /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {

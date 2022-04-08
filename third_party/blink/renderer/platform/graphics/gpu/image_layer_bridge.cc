@@ -34,8 +34,16 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     const scoped_refptr<StaticBitmapImage>& source,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
-  if (source->IsTextureBacked())
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, if |source| is not an overlay candidate, it is worth copying it
+  // to a new buffer that is an overlay candidate, even when |source| is
+  // already on the GPU.
+  if (source->IsOverlayCandidate()) {
+#else
+  if (source->IsTextureBacked()) {
+#endif
     return source;
+  }
 
   auto paint_image = source->PaintImageForCurrentFrame();
   auto image_info = paint_image.GetSkImageInfo().makeWH(
@@ -88,6 +96,7 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
 
   image_ = std::move(image);
   if (image_) {
+    LOG(ERROR) << "Image Is texture-backed:" << image_->IsTextureBacked();
     if (opacity_mode_ == kNonOpaque) {
       layer_->SetContentsOpaque(image_->CurrentFrameKnownToBeOpaque());
       layer_->SetBlendBackgroundColor(!image_->CurrentFrameKnownToBeOpaque());
