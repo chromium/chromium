@@ -202,6 +202,8 @@ PlainTextRange CachedTextInputInfo::GetPlainTextRange(
 PlainTextRange CachedTextInputInfo::GetSelection(
     const EphemeralRange& range) const {
   DCHECK(container_);
+  if (range.IsNull())
+    return PlainTextRange();
   return GetPlainTextRangeWithCache(range, &selection_);
 }
 
