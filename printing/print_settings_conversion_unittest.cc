@@ -50,17 +50,19 @@ const char kPrinterSettings[] = R"({
 
 }  // namespace
 
-TEST(PrintSettingsConversionTest, ConversionTest_InvalidSettings) {
+TEST(PrintSettingsConversionTest, InvalidSettings) {
   absl::optional<base::Value> value = base::JSONReader::Read("{}");
   ASSERT_TRUE(value.has_value());
-  EXPECT_FALSE(PrintSettingsFromJobSettings(value.value()));
+  ASSERT_TRUE(value.value().is_dict());
+  EXPECT_FALSE(PrintSettingsFromJobSettings(value.value().GetDict()));
 }
 
 TEST(PrintSettingsConversionTest, ConversionTest) {
   absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
-  std::unique_ptr<PrintSettings> settings =
-      PrintSettingsFromJobSettings(value.value());
+  ASSERT_TRUE(value.value().is_dict());
+  auto& dict = value.value().GetDict();
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(settings->send_user_info());
@@ -69,24 +71,25 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
 #endif
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 300);
-  value->SetIntKey("dpiVertical", 600);
-  settings = PrintSettingsFromJobSettings(value.value());
+  dict.Set("dpiVertical", 600);
+  settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->rasterize_pdf_dpi(), 150);
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 600);
-  EXPECT_TRUE(value->RemoveKey("dpiVertical"));
-  settings = PrintSettingsFromJobSettings(value.value());
+  EXPECT_TRUE(dict.Remove("dpiVertical"));
+  settings = PrintSettingsFromJobSettings(dict);
   EXPECT_FALSE(settings);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
+TEST(PrintSettingsConversionTest, DontSendUsername) {
   absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
-  value->SetKey(kSettingSendUserInfo, base::Value(false));
-  std::unique_ptr<PrintSettings> settings =
-      PrintSettingsFromJobSettings(value.value());
+  ASSERT_TRUE(value.value().is_dict());
+  auto& dict = value.value().GetDict();
+  dict.Set(kSettingSendUserInfo, false);
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_FALSE(settings->send_user_info());
   EXPECT_EQ("", settings->username());
@@ -97,18 +100,19 @@ TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value.value().is_dict());
+  auto& dict = value.value().GetDict();
 
   {
-    base::Value advanced_attributes(base::Value::Type::DICTIONARY);
-    advanced_attributes.SetStringKey("printer-info", "yada");
-    advanced_attributes.SetStringKey("printer-make-and-model", "yada");
-    advanced_attributes.SetStringKey("system_driverinfo", "yada");
-    advanced_attributes.SetStringKey("Foo", "Bar");
-    value->SetKey(kSettingAdvancedSettings, std::move(advanced_attributes));
+    base::Value::Dict advanced_attributes;
+    advanced_attributes.Set("printer-info", "yada");
+    advanced_attributes.Set("printer-make-and-model", "yada");
+    advanced_attributes.Set("system_driverinfo", "yada");
+    advanced_attributes.Set("Foo", "Bar");
+    dict.Set(kSettingAdvancedSettings, std::move(advanced_attributes));
   }
 
-  std::unique_ptr<PrintSettings> settings =
-      PrintSettingsFromJobSettings(value.value());
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->advanced_settings().size(), 1u);
   ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));

@@ -68,28 +68,29 @@ mojom::PrintDuplexMode ToArcDuplexMode(int duplex_mode) {
 }
 
 // Gets and builds the print attributes from the job settings.
-mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
+mojom::PrintAttributesPtr GetPrintAttributes(
+    const base::Value::Dict& job_settings) {
   // PrintMediaSize:
-  const base::Value* media_size_value =
-      job_settings.FindDictKey(printing::kSettingMediaSize);
+  const base::Value::Dict* media_size_value =
+      job_settings.FindDict(printing::kSettingMediaSize);
   if (!media_size_value)
     return nullptr;
   // Vendor ID will be empty when Destination is Save as PDF.
   const std::string* vendor_id =
-      media_size_value->FindStringKey(printing::kSettingMediaSizeVendorId);
+      media_size_value->FindString(printing::kSettingMediaSizeVendorId);
   std::string id = "PDF";
   if (vendor_id && !vendor_id->empty()) {
     id = *vendor_id;
   }
   absl::optional<int> width_microns =
-      media_size_value->FindIntKey(printing::kSettingMediaSizeWidthMicrons);
+      media_size_value->FindInt(printing::kSettingMediaSizeWidthMicrons);
   absl::optional<int> height_microns =
-      media_size_value->FindIntKey(printing::kSettingMediaSizeHeightMicrons);
+      media_size_value->FindInt(printing::kSettingMediaSizeHeightMicrons);
   if (!width_microns.has_value() || !height_microns.has_value())
     return nullptr;
   // Swap the width and height if layout is landscape.
   absl::optional<bool> landscape =
-      job_settings.FindBoolKey(printing::kSettingLandscape);
+      job_settings.FindBool(printing::kSettingLandscape);
   if (!landscape.has_value())
     return nullptr;
   gfx::Size size_micron;
@@ -104,9 +105,9 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
       id, "ARC", size_mil.width(), size_mil.height());
 
   // PrintResolution:
-  int horizontal_dpi = job_settings.FindIntKey(printing::kSettingDpiHorizontal)
+  int horizontal_dpi = job_settings.FindInt(printing::kSettingDpiHorizontal)
                            .value_or(printing::kDefaultPdfDpi);
-  int vertical_dpi = job_settings.FindIntKey(printing::kSettingDpiVertical)
+  int vertical_dpi = job_settings.FindInt(printing::kSettingDpiVertical)
                          .value_or(printing::kDefaultPdfDpi);
 
   // PrintMargins:
@@ -116,14 +117,14 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
   mojom::PrintMarginsPtr margins = mojom::PrintMargins::New(0, 0, 0, 0);
 
   // PrintColorMode:
-  absl::optional<int> color = job_settings.FindIntKey(printing::kSettingColor);
+  absl::optional<int> color = job_settings.FindInt(printing::kSettingColor);
   if (!color.has_value())
     return nullptr;
   mojom::PrintColorMode color_mode = ToArcColorMode(color.value());
 
   // PrintDuplexMode:
   absl::optional<int> duplex =
-      job_settings.FindIntKey(printing::kSettingDuplexMode);
+      job_settings.FindInt(printing::kSettingDuplexMode);
   if (!duplex.has_value())
     return nullptr;
   mojom::PrintDuplexMode duplex_mode = ToArcDuplexMode(duplex.value());
@@ -136,7 +137,7 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
 // Creates a PrintDocumentRequest from the provided |job_settings|. Uses helper
 // functions to parse |job_settings|.
 mojom::PrintDocumentRequestPtr PrintDocumentRequestFromJobSettings(
-    const base::Value& job_settings) {
+    const base::Value::Dict& job_settings) {
   return mojom::PrintDocumentRequest::New(
       printing::GetPageRangesFromJobSettings(job_settings),
       GetPrintAttributes(job_settings));
@@ -271,7 +272,7 @@ void PrintSessionImpl::CreatePreviewDocument(
     base::Value job_settings,
     CreatePreviewDocumentCallback callback) {
   mojom::PrintDocumentRequestPtr request =
-      PrintDocumentRequestFromJobSettings(job_settings);
+      PrintDocumentRequestFromJobSettings(job_settings.GetDict());
   if (!request || !request->attributes) {
     std::move(callback).Run(base::ReadOnlySharedMemoryRegion());
     return;

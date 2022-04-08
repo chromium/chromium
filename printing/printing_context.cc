@@ -122,7 +122,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   ResetSettings();
   {
     std::unique_ptr<PrintSettings> settings =
-        PrintSettingsFromJobSettings(job_settings);
+        PrintSettingsFromJobSettings(job_settings.GetDict());
     if (!settings) {
       NOTREACHED();
       return OnError();

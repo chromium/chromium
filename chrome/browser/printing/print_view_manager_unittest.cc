@@ -147,7 +147,7 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
   DCHECK(printer_language_type_);
 #endif
   std::unique_ptr<PrintSettings> settings =
-      PrintSettingsFromJobSettings(new_settings);
+      PrintSettingsFromJobSettings(new_settings.GetDict());
   mojom::ResultCode result = mojom::ResultCode::kSuccess;
   if (!settings) {
     settings = std::make_unique<PrintSettings>();
