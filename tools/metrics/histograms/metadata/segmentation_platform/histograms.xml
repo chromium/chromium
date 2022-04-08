@@ -428,6 +428,7 @@ chromium-metrics-reviews@google.com.
     Recorded when failure is hit when trying to compute selection, or when
     reading the selected segment.
   </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>
 
 <histogram
