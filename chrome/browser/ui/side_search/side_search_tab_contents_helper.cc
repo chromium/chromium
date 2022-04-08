@@ -95,12 +95,16 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
     // navigation completes.
     last_search_url_ = url;
 
-    if (!config->is_side_panel_srp_available())
-      TestSRPAvailability();
-
     if (side_panel_contents_)
       UpdateSideContentsNavigation();
   }
+}
+
+void SideSearchTabContentsHelper::DidFirstVisuallyNonEmptyPaint() {
+  // If `last_search_url_` has been set and we have not yet completed the
+  // service check do so now.
+  if (last_search_url_ && !GetConfig()->is_side_panel_srp_available())
+    TestSRPAvailability();
 }
 
 void SideSearchTabContentsHelper::OnSideSearchConfigChanged() {

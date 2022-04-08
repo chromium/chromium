@@ -77,6 +77,7 @@ class SideSearchTabContentsHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
   // SideSearchConfig::Observer:
   void OnSideSearchConfigChanged() override;
