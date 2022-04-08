@@ -71,11 +71,14 @@ AccessibilityBridge::AccessibilityBridge(
     ZX_LOG(ERROR, status) << "SemanticTree disconnected";
     std::move(on_error_callback_).Run(ZX_ERR_INTERNAL);
   });
+
+  // Set up inspect node for semantic trees.
+  inspect_node_tree_dump_ = inspect_node_.CreateLazyNode(
+      kSemanticTreesInspectNodeName,
+      [this]() { return fit::make_ok_promise(FillInspectData()); });
 }
 
 inspect::Inspector AccessibilityBridge::FillInspectData() {
-  DCHECK(enable_semantic_updates_);
-
   inspect::Inspector inspector;
 
   // Add a node for each AXTree of which the accessibility bridge is aware.
@@ -310,10 +313,6 @@ void AccessibilityBridge::OnSemanticsModeChanged(
     // The first call to AccessibilityEventReceived after this call will be
     // the entire semantic tree.
     web_contents_->EnableWebContentsOnlyAccessibilityMode();
-    // Set up inspect node for semantic trees.
-    inspect_node_tree_dump_ = inspect_node_.CreateLazyNode(
-        kSemanticTreesInspectNodeName,
-        [this]() { return fit::make_ok_promise(FillInspectData()); });
   } else {
     // The SemanticsManager will clear all state in this case, which is
     // mirrored here.
@@ -327,7 +326,6 @@ void AccessibilityBridge::OnSemanticsModeChanged(
     tree_connections_.clear();
     frame_id_to_tree_id_.clear();
     InterruptPendingActions();
-    inspect_node_tree_dump_ = inspect::LazyNode();
   }
 
   // Notify the SemanticsManager that this request was handled.
