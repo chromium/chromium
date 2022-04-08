@@ -211,7 +211,7 @@ export class AvatarCamera extends WithPersonalizationStore {
 
   private getTakePhotoIcon_(mode: AvatarCameraMode): string {
     return mode === AvatarCameraMode.VIDEO ? 'personalization:loop' :
-                                             'personalization:camera';
+                                             'personalization:camera_compact';
   }
 
   private getTakePhotoText_(mode: AvatarCameraMode): string {
