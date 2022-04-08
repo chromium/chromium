@@ -207,6 +207,7 @@ src:*mojo/public/c/system/thunks.cc
 
 # Call to vulkan function pointers from shared library.
 src:*/third_party/skia/src/gpu/vk/*
+src:*/third_party/skia/src/gpu/ganesh/vk/*
 src:*/third_party/skia/third_party/vulkanmemoryallocator/*
 
 # The follow entries are speculatively disabled. They're included in the
