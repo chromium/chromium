@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/projector/test/mock_projector_client.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace base {
@@ -69,6 +71,35 @@ void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
              bool shift_down = false,
              int count = 1);
+
+// Defines a helper class to allow setting up and testing the Projector feature
+// in multiple test fixtures. Note that this helper initializes the Projector-
+// related features in its constructor, so test fixtures that use this should
+// also initialize their `ScopedFeatureList` in their constructors to avoid
+// DCHECKing when nested ScopedFeatureLists being destroyed in a different order
+// than they are initialized.
+class ProjectorCaptureModeIntegrationHelper {
+ public:
+  ProjectorCaptureModeIntegrationHelper();
+  ProjectorCaptureModeIntegrationHelper(
+      const ProjectorCaptureModeIntegrationHelper&) = delete;
+  ProjectorCaptureModeIntegrationHelper& operator=(
+      const ProjectorCaptureModeIntegrationHelper&) = delete;
+  ~ProjectorCaptureModeIntegrationHelper() = default;
+
+  MockProjectorClient* projector_client() { return &projector_client_; }
+
+  // Sets up the projector feature. Must be called after `AshTestBase::SetUp()`
+  // has been called.
+  void SetUp();
+
+  // Starts a new projector capture session.
+  void StartProjectorModeSession();
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockProjectorClient projector_client_;
+};
 
 }  // namespace ash
 

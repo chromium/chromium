@@ -4586,28 +4586,17 @@ class ProjectorCaptureModeIntegrationTests
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
+  MockProjectorClient* projector_client() {
+    return projector_helper_.projector_client();
+  }
+
   // CaptureModeTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kProjector,
-                              features::kProjectorAnnotator},
-        /*disabled_features=*/{});
     CaptureModeTest::SetUp();
-    auto* projector_controller = ProjectorController::Get();
-    projector_controller->SetClient(&projector_client_);
-    ON_CALL(projector_client_, StopSpeechRecognition)
-        .WillByDefault(testing::Invoke([]() {
-          ProjectorController::Get()->OnSpeechRecognitionStopped();
-        }));
-
-    // Simulate the availability of speech recognition.
-    projector_controller->OnSpeechRecognitionAvailabilityChanged(
-        SpeechRecognitionAvailability::kAvailable);
+    projector_helper_.SetUp();
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
     CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
                                                        /*by_user=*/true);
-    EXPECT_CALL(projector_client_, IsDriveFsMounted())
-        .WillRepeatedly(testing::Return(true));
   }
 
   void TearDown() override {
@@ -4616,14 +4605,7 @@ class ProjectorCaptureModeIntegrationTests
   }
 
   void StartProjectorModeSession() {
-    auto* projector_session = ProjectorSession::Get();
-    EXPECT_FALSE(projector_session->is_active());
-    auto* projector_controller = ProjectorController::Get();
-    EXPECT_CALL(projector_client_, MinimizeProjectorApp());
-    projector_controller->StartProjectorSession("projector_data");
-    EXPECT_TRUE(projector_session->is_active());
-    auto* controller = CaptureModeController::Get();
-    EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
+    projector_helper_.StartProjectorModeSession();
   }
 
   void StartRecordingForProjectorFromSource(CaptureModeSource source) {
@@ -4698,8 +4680,7 @@ class ProjectorCaptureModeIntegrationTests
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  MockProjectorClient projector_client_;
+  ProjectorCaptureModeIntegrationHelper projector_helper_;
   std::unique_ptr<aura::Window> window_;
   base::HistogramTester histogram_tester_;
 };
@@ -4813,7 +4794,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   // Hit Enter to begin recording. The recording session should be marked for
   // projector.
   PressAndReleaseKey(ui::VKEY_RETURN);
-  EXPECT_CALL(projector_client_, StartSpeechRecognition());
+  EXPECT_CALL(*projector_client(), StartSpeechRecognition());
   WaitForRecordingToStart();
   histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
                                       ProjectorCreationFlow::kRecordingStarted,
@@ -4824,7 +4805,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   EXPECT_TRUE(controller->video_recording_watcher_for_testing()
                   ->is_in_projector_mode());
 
-  EXPECT_CALL(projector_client_, StopSpeechRecognition());
+  EXPECT_CALL(*projector_client(), StopSpeechRecognition());
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 
   histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
@@ -4858,7 +4839,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   EXPECT_CALL(
-      projector_client_,
+      *projector_client(),
       OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
           NewScreencastPreconditionState::kDisabled,
           {NewScreencastPreconditionReason::kScreenRecordingInProgress})));
@@ -4870,7 +4851,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
             NewScreencastPreconditionState::kEnabled);
   // There is another OnNewScreencastPreconditionChanged() call during tear
   // down.
-  EXPECT_CALL(projector_client_,
+  EXPECT_CALL(*projector_client(),
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kEnabled, {})));
 }

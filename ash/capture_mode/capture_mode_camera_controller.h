@@ -157,6 +157,10 @@ class ASH_EXPORT CaptureModeCameraController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Selects the first camera in the `available_cameras_` list (if any), and
+  // only if no other camera is already selected.
+  void MaybeSelectFirstCamera();
+
   // Returns true if camera support is disabled by admins via
   // the `SystemFeaturesDisableList` policy, false otherwise.
   bool IsCameraDisabledByPolicy() const;

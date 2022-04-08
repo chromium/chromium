@@ -362,6 +362,11 @@ void CaptureModeCameraController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void CaptureModeCameraController::MaybeSelectFirstCamera() {
+  if (!selected_camera_.is_valid() && !available_cameras_.empty())
+    SetSelectedCamera(available_cameras_[0].camera_id);
+}
+
 bool CaptureModeCameraController::IsCameraDisabledByPolicy() const {
   return delegate_->IsCameraDisabledByPolicy();
 }

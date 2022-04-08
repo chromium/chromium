@@ -7,6 +7,8 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "base/files/file_path.h"
@@ -97,6 +99,41 @@ void SendKey(ui::KeyboardCode key_code,
   const int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
   for (int i = 0; i < count; ++i)
     event_generator->PressAndReleaseKey(key_code, flags);
+}
+
+// -----------------------------------------------------------------------------
+// ProjectorCaptureModeIntegrationHelper:
+
+ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kProjector,
+                            features::kProjectorAnnotator},
+      /*disabled_features=*/{});
+}
+
+void ProjectorCaptureModeIntegrationHelper::SetUp() {
+  auto* projector_controller = ProjectorController::Get();
+  projector_controller->SetClient(&projector_client_);
+  ON_CALL(projector_client_, StopSpeechRecognition)
+      .WillByDefault(testing::Invoke(
+          []() { ProjectorController::Get()->OnSpeechRecognitionStopped(); }));
+
+  // Simulate the availability of speech recognition.
+  projector_controller->OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability::kAvailable);
+  EXPECT_CALL(projector_client_, IsDriveFsMounted())
+      .WillRepeatedly(testing::Return(true));
+}
+
+void ProjectorCaptureModeIntegrationHelper::StartProjectorModeSession() {
+  auto* projector_session = ProjectorSession::Get();
+  EXPECT_FALSE(projector_session->is_active());
+  auto* projector_controller = ProjectorController::Get();
+  EXPECT_CALL(projector_client_, MinimizeProjectorApp());
+  projector_controller->StartProjectorSession("projector_data");
+  EXPECT_TRUE(projector_session->is_active());
+  auto* controller = CaptureModeController::Get();
+  EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
 }  // namespace ash

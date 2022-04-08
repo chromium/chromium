@@ -723,6 +723,10 @@ void CaptureModeSession::Initialize() {
   UpdateFloatingPanelBoundsIfNeeded();
 
   MaybeCreateUserNudge();
+
+  auto* camera_controller = controller_->camera_controller();
+  if (is_in_projector_mode_ && camera_controller)
+    camera_controller->MaybeSelectFirstCamera();
 }
 
 void CaptureModeSession::Shutdown() {

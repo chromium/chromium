@@ -160,15 +160,16 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
 
 class CaptureModeCameraTest : public AshTestBase {
  public:
-  CaptureModeCameraTest() = default;
+  CaptureModeCameraTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kCaptureModeSelfieCamera);
+  }
   CaptureModeCameraTest(const CaptureModeCameraTest&) = delete;
   CaptureModeCameraTest& operator=(const CaptureModeCameraTest&) = delete;
   ~CaptureModeCameraTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCaptureModeSelfieCamera);
     AshTestBase::SetUp();
     window_ = CreateTestWindow(gfx::Rect(30, 40, 600, 500));
   }
@@ -2557,6 +2558,76 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
+
+class ProjectorCaptureModeCameraTest : public CaptureModeCameraTest {
+ public:
+  ProjectorCaptureModeCameraTest() = default;
+  ~ProjectorCaptureModeCameraTest() override = default;
+
+  // CaptureModeCameraTest:
+  void SetUp() override {
+    CaptureModeCameraTest::SetUp();
+    projector_helper_.SetUp();
+  }
+
+  void StartProjectorModeSession() {
+    projector_helper_.StartProjectorModeSession();
+  }
+
+ private:
+  ProjectorCaptureModeIntegrationHelper projector_helper_;
+};
+
+TEST_F(ProjectorCaptureModeCameraTest, NoAvailableCameras) {
+  // Initially no camera should be selected.
+  auto* camera_controller = GetCameraController();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+
+  // Starting a projector session should not result in showing any cameras, or
+  // any crashes.
+  StartProjectorModeSession();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
+TEST_F(ProjectorCaptureModeCameraTest, FirstCamSelectedByDefault) {
+  AddDefaultCamera();
+
+  // Initially no camera should be selected.
+  auto* camera_controller = GetCameraController();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+
+  // Starting a projector session should result in selecting the first available
+  // camera by default, and its preview should be visible.
+  StartProjectorModeSession();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+}
+
+TEST_F(ProjectorCaptureModeCameraTest,
+       SessionStartsWithAnAlreadySelectedCamera) {
+  const std::string model_id_1 = "model1";
+  const std::string model_id_2 = "model2";
+  AddFakeCamera("/dev/video0", "fake cam 1", model_id_1);
+  AddFakeCamera("/dev/video1", "fake cam 2", model_id_2);
+
+  // Initially there's a camera already selected before we start the session,
+  // and it's the second camera in the list.
+  auto* camera_controller = GetCameraController();
+  CameraId cam_id_1(model_id_1, 1);
+  CameraId cam_id_2(model_id_2, 1);
+  EXPECT_EQ(cam_id_1, camera_controller->available_cameras()[0].camera_id);
+  EXPECT_EQ(cam_id_2, camera_controller->available_cameras()[1].camera_id);
+  camera_controller->SetSelectedCamera(cam_id_2);
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+
+  // Starting a projector session should not result in selecting the first
+  // camera. The already selected camera should remain as is.
+  StartProjectorModeSession();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_EQ(cam_id_2, camera_controller->selected_camera());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+}
 
 // A test fixture for testing the rendered video frames. The boolean parameter
 // determines the type of the buffer that backs the video frames. `true` means
