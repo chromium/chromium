@@ -1904,6 +1904,30 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_TITLE" desc="Title of a modal dialog shown when the user tries to open the scanner in a Split View mode. [Length: 40em] [iOS only]" meaning="Title of a Split View error dialog in Scanner.">
         Split View
       </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_GO_TO_FEED" desc="The iOS snackbar action when successfuly following a web content. [iOS only]">
+        GO TO FEED
+      </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_TRY_AGAIN" desc="The iOS snackbar message when failed to follow/unfollow a web content. [iOS only]">
+        TRY AGAIN
+      </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_UNDO" desc="The iOS snackbar action when succeed to unfollow a web content. [iOS only]">
+        UNDO
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_FAILED" desc="The iOS snackbar message when failed to follow a web content. [iOS only]">
+        Can't follow. Something went wrong.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_SUCCEED" desc="The iOS snackbar message when ssucceed to follow a web content. [iOS only]">
+        Following <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_OFFLINE" desc="The iOS snackbar message when failed to follow/unfollow a web content because of offline. [iOS only]">
+        You're offline. Check your internet connection and try again.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_FAILED" desc="The iOS snackbar message when failed to unfollow a web content. [iOS only]">
+        Can't unfollow. Something went wrong.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_SUCCEED" desc="The iOS snackbar message when succeed to unfollow a web content. [iOS only]">
+        Unfollowed <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
+      </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
         Your organization turned off Incognito mode
       </message>
