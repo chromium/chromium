@@ -622,7 +622,7 @@ suite('SettingsDevicePage', function() {
     const reverseScrollToggle =
         pointersPage.$$('#enableReverseScrollingToggle');
     assertEquals(expected, reverseScrollToggle.checked);
-    assertEquals(
+    expectEquals(
         expected, devicePage.prefs.settings.touchpad.natural_scroll.value);
   }
 
@@ -658,18 +658,18 @@ suite('SettingsDevicePage', function() {
   }
 
   test(assert(TestNames.DevicePage), function() {
-    assertTrue(isVisible(devicePage.$$('#pointersRow')));
-    assertTrue(isVisible(devicePage.$$('#keyboardRow')));
-    assertTrue(isVisible(devicePage.$$('#displayRow')));
+    expectTrue(isVisible(devicePage.$$('#pointersRow')));
+    expectTrue(isVisible(devicePage.$$('#keyboardRow')));
+    expectTrue(isVisible(devicePage.$$('#displayRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
-    assertTrue(isVisible(devicePage.$$('#pointersRow')));
+    expectTrue(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-pointing-stick-changed', false);
-    assertTrue(isVisible(devicePage.$$('#pointersRow')));
+    expectTrue(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-touchpad-changed', false);
-    assertFalse(isVisible(devicePage.$$('#pointersRow')));
+    expectFalse(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-mouse-changed', true);
-    assertTrue(isVisible(devicePage.$$('#pointersRow')));
+    expectTrue(isVisible(devicePage.$$('#pointersRow')));
   });
 
   suite(assert(TestNames.Pointers), function() {
@@ -738,49 +738,49 @@ suite('SettingsDevicePage', function() {
     });
 
     test('mouse', function() {
-      assertTrue(isVisible(pointersPage.$$('#mouse')));
+      expectTrue(isVisible(pointersPage.$$('#mouse')));
 
       const slider = assert(pointersPage.$$('#mouse settings-slider'));
-      assertEquals(4, slider.pref.value);
+      expectEquals(4, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
-      assertEquals(3, devicePage.prefs.settings.mouse.sensitivity2.value);
+      expectEquals(3, devicePage.prefs.settings.mouse.sensitivity2.value);
 
       pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
-      assertEquals(5, slider.pref.value);
+      expectEquals(5, slider.pref.value);
     });
 
     test('touchpad', function() {
-      assertTrue(isVisible(pointersPage.$$('#touchpad')));
+      expectTrue(isVisible(pointersPage.$$('#touchpad')));
 
-      assertTrue(pointersPage.$$('#touchpad #enableTapToClick').checked);
-      assertFalse(pointersPage.$$('#touchpad #enableTapDragging').checked);
+      expectTrue(pointersPage.$$('#touchpad #enableTapToClick').checked);
+      expectFalse(pointersPage.$$('#touchpad #enableTapDragging').checked);
 
       const slider = assert(pointersPage.$$('#touchpad settings-slider'));
-      assertEquals(3, slider.pref.value);
+      expectEquals(3, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
           'ArrowRight');
-      assertEquals(4, devicePage.prefs.settings.touchpad.sensitivity2.value);
+      expectEquals(4, devicePage.prefs.settings.touchpad.sensitivity2.value);
 
       pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
-      assertEquals(2, slider.pref.value);
+      expectEquals(2, slider.pref.value);
     });
 
     test('haptic touchpad', function() {
-      assertTrue(pointersPage.$$('#touchpadHapticFeedbackToggle').checked);
+      expectTrue(pointersPage.$$('#touchpadHapticFeedbackToggle').checked);
 
       const slider = assert(pointersPage.$$('#touchpadHapticClickSensitivity'));
-      assertEquals(3, slider.pref.value);
+      expectEquals(3, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
           'ArrowRight');
-      assertEquals(
+      expectEquals(
           5, devicePage.prefs.settings.touchpad.haptic_click_sensitivity.value);
 
       pointersPage.set(
           'prefs.settings.touchpad.haptic_click_sensitivity.value', 1);
-      assertEquals(1, slider.pref.value);
+      expectEquals(1, slider.pref.value);
     });
 
     test('link doesn\'t activate control', function() {
@@ -790,7 +790,7 @@ suite('SettingsDevicePage', function() {
       const reverseScrollLabel =
           pointersPage.$$('#enableReverseScrollingLabel');
       const a = reverseScrollLabel.$.container.querySelector('a');
-      assertTrue(!!a);
+      expectTrue(!!a);
       // Prevent actually opening a link, which would block test.
       a.removeAttribute('href');
       a.click();
@@ -814,26 +814,26 @@ suite('SettingsDevicePage', function() {
 
     test('pointing stick acceleration toggle', function() {
       const toggle = assert(pointersPage.$$('#pointingStickAcceleration'));
-      assertEquals(true, toggle.pref.value);
+      expectEquals(true, toggle.pref.value);
       toggle.click();
-      assertEquals(
+      expectEquals(
           false, devicePage.prefs.settings.pointing_stick.acceleration.value);
 
       pointersPage.set(
           'prefs.settings.pointing_stick.acceleration.value', true);
-      assertEquals(true, toggle.pref.value);
+      expectEquals(true, toggle.pref.value);
     });
 
     test('pointing stick speed slider', function() {
       const slider = assert(pointersPage.$$('#pointingStick settings-slider'));
-      assertEquals(4, slider.pref.value);
+      expectEquals(4, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
-      assertEquals(
+      expectEquals(
           3, devicePage.prefs.settings.pointing_stick.sensitivity.value);
 
       pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
-      assertEquals(5, slider.pref.value);
+      expectEquals(5, slider.pref.value);
     });
 
     test('Deep link to pointing stick primary button setting', async () => {
@@ -881,7 +881,7 @@ suite('SettingsDevicePage', function() {
 
     test('keyboard', async () => {
       // Initially, the optional keys are hidden.
-      assertFalse(!!keyboardPage.$$('#capsLockKey'));
+      expectFalse(!!keyboardPage.$$('#capsLockKey'));
 
       // Pretend no internal keyboard is available.
       const keyboardParams = {
@@ -893,68 +893,68 @@ suite('SettingsDevicePage', function() {
       };
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.$$('#launcherKey'));
-      assertFalse(!!keyboardPage.$$('#capsLockKey'));
-      assertFalse(!!keyboardPage.$$('#externalMetaKey'));
-      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
-      assertFalse(!!keyboardPage.$$('#assistantKey'));
+      expectFalse(!!keyboardPage.$$('#launcherKey'));
+      expectFalse(!!keyboardPage.$$('#capsLockKey'));
+      expectFalse(!!keyboardPage.$$('#externalMetaKey'));
+      expectFalse(!!keyboardPage.$$('#externalCommandKey'));
+      expectFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Pretend a Caps Lock key is now available.
       keyboardParams['showCapsLock'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.$$('#launcherKey'));
-      assertTrue(!!keyboardPage.$$('#capsLockKey'));
-      assertFalse(!!keyboardPage.$$('#externalMetaKey'));
-      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
-      assertFalse(!!keyboardPage.$$('#assistantKey'));
+      expectFalse(!!keyboardPage.$$('#launcherKey'));
+      expectTrue(!!keyboardPage.$$('#capsLockKey'));
+      expectFalse(!!keyboardPage.$$('#externalMetaKey'));
+      expectFalse(!!keyboardPage.$$('#externalCommandKey'));
+      expectFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add a non-Apple external keyboard.
       keyboardParams['showExternalMetaKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.$$('#launcherKey'));
-      assertTrue(!!keyboardPage.$$('#capsLockKey'));
-      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
-      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
-      assertFalse(!!keyboardPage.$$('#assistantKey'));
+      expectFalse(!!keyboardPage.$$('#launcherKey'));
+      expectTrue(!!keyboardPage.$$('#capsLockKey'));
+      expectTrue(!!keyboardPage.$$('#externalMetaKey'));
+      expectFalse(!!keyboardPage.$$('#externalCommandKey'));
+      expectFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add an Apple keyboard.
       keyboardParams['showAppleCommandKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.$$('#launcherKey'));
-      assertTrue(!!keyboardPage.$$('#capsLockKey'));
-      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
-      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
-      assertFalse(!!keyboardPage.$$('#assistantKey'));
+      expectFalse(!!keyboardPage.$$('#launcherKey'));
+      expectTrue(!!keyboardPage.$$('#capsLockKey'));
+      expectTrue(!!keyboardPage.$$('#externalMetaKey'));
+      expectTrue(!!keyboardPage.$$('#externalCommandKey'));
+      expectFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add an internal keyboard.
       keyboardParams['hasLauncherKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertTrue(!!keyboardPage.$$('#launcherKey'));
-      assertTrue(!!keyboardPage.$$('#capsLockKey'));
-      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
-      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
-      assertFalse(!!keyboardPage.$$('#assistantKey'));
+      expectTrue(!!keyboardPage.$$('#launcherKey'));
+      expectTrue(!!keyboardPage.$$('#capsLockKey'));
+      expectTrue(!!keyboardPage.$$('#externalMetaKey'));
+      expectTrue(!!keyboardPage.$$('#externalCommandKey'));
+      expectFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Pretend an Assistant key is now available.
       keyboardParams['hasAssistantKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertTrue(!!keyboardPage.$$('#launcherKey'));
-      assertTrue(!!keyboardPage.$$('#capsLockKey'));
-      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
-      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
-      assertTrue(!!keyboardPage.$$('#assistantKey'));
+      expectTrue(!!keyboardPage.$$('#launcherKey'));
+      expectTrue(!!keyboardPage.$$('#capsLockKey'));
+      expectTrue(!!keyboardPage.$$('#externalMetaKey'));
+      expectTrue(!!keyboardPage.$$('#externalCommandKey'));
+      expectTrue(!!keyboardPage.$$('#assistantKey'));
 
       const collapse = keyboardPage.$$('iron-collapse');
       assertTrue(!!collapse);
-      assertTrue(collapse.opened);
+      expectTrue(collapse.opened);
 
-      assertEquals(500, keyboardPage.$$('#delaySlider').pref.value);
-      assertEquals(500, keyboardPage.$$('#repeatRateSlider').pref.value);
+      expectEquals(500, keyboardPage.$$('#delaySlider').pref.value);
+      expectEquals(500, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       // Test interaction with the settings-slider's underlying cr-slider.
       MockInteractions.pressAndReleaseKeyOn(
@@ -965,31 +965,31 @@ suite('SettingsDevicePage', function() {
               .shadowRoot.querySelector('cr-slider'),
           39, [], 'ArrowRight');
       await flushTasks();
-      assertEquals(1000, get('xkb_auto_repeat_delay_r2'));
-      assertEquals(300, get('xkb_auto_repeat_interval_r2'));
+      expectEquals(1000, get('xkb_auto_repeat_delay_r2'));
+      expectEquals(300, get('xkb_auto_repeat_interval_r2'));
 
       // Test sliders change when prefs change.
       set('xkb_auto_repeat_delay_r2', 1500);
       await flushTasks();
-      assertEquals(1500, keyboardPage.$$('#delaySlider').pref.value);
+      expectEquals(1500, keyboardPage.$$('#delaySlider').pref.value);
       set('xkb_auto_repeat_interval_r2', 2000);
       await flushTasks();
-      assertEquals(2000, keyboardPage.$$('#repeatRateSlider').pref.value);
+      expectEquals(2000, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       // Test sliders round to nearest value when prefs change.
       set('xkb_auto_repeat_delay_r2', 600);
       await flushTasks();
-      assertEquals(500, keyboardPage.$$('#delaySlider').pref.value);
+      expectEquals(500, keyboardPage.$$('#delaySlider').pref.value);
       set('xkb_auto_repeat_interval_r2', 45);
       await flushTasks();
-      assertEquals(50, keyboardPage.$$('#repeatRateSlider').pref.value);
+      expectEquals(50, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       set('xkb_auto_repeat_enabled_r2', false);
-      assertFalse(collapse.opened);
+      expectFalse(collapse.opened);
 
       // Test keyboard shortcut viewer button.
       keyboardPage.$$('#keyboardShortcutViewer').click();
-      assertEquals(
+      expectEquals(
           1,
           DevicePageBrowserProxyImpl.getInstance()
               .keyboardShortcutViewerShown_);
@@ -1017,15 +1017,15 @@ suite('SettingsDevicePage', function() {
     test('display tests', function() {
       // Verify all the conditionals that get run during page load
       // before the display info has been populated.
-      assertEquals(undefined, displayPage.displays);
-      assertFalse(displayPage.showMirror_(true, displayPage.displays));
-      assertFalse(displayPage.showMirror_(false, displayPage.displays));
-      assertFalse(displayPage.isMirrored_(displayPage.displays));
-      assertFalse(
+      expectEquals(undefined, displayPage.displays);
+      expectFalse(displayPage.showMirror_(true, displayPage.displays));
+      expectFalse(displayPage.showMirror_(false, displayPage.displays));
+      expectFalse(displayPage.isMirrored_(displayPage.displays));
+      expectFalse(
           displayPage.showUnifiedDesktop_(true, true, displayPage.displays));
-      assertFalse(
+      expectFalse(
           displayPage.showUnifiedDesktop_(false, false, displayPage.displays));
-      assertEquals(
+      expectEquals(
           displayPage.invalidDisplayId_,
           browserProxy.lastHighlightedDisplayId_);
 
@@ -1041,31 +1041,31 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             // There should be a single display which should be primary and
             // selected. Mirroring should be disabled.
-            assertEquals(1, displayPage.displays.length);
-            assertEquals(
+            expectEquals(1, displayPage.displays.length);
+            expectEquals(
                 displayPage.displays[0].id, displayPage.selectedDisplay.id);
-            assertEquals(
+            expectEquals(
                 displayPage.displays[0].id, displayPage.primaryDisplayId);
-            assertFalse(displayPage.showMirror_(false, displayPage.displays));
-            assertFalse(displayPage.isMirrored_(displayPage.displays));
+            expectFalse(displayPage.showMirror_(false, displayPage.displays));
+            expectFalse(displayPage.isMirrored_(displayPage.displays));
 
             // Verify unified desktop only shown when enabled.
-            assertTrue(displayPage.showUnifiedDesktop_(
+            expectTrue(displayPage.showUnifiedDesktop_(
                 true, true, displayPage.displays));
-            assertFalse(displayPage.showUnifiedDesktop_(
+            expectFalse(displayPage.showUnifiedDesktop_(
                 false, false, displayPage.displays));
 
             // Sanity check the first display is internal.
-            assertTrue(displayPage.displays[0].isInternal);
+            expectTrue(displayPage.displays[0].isInternal);
 
             // Ambient EQ only shown when enabled.
-            assertTrue(displayPage.showAmbientColorSetting_(
+            expectTrue(displayPage.showAmbientColorSetting_(
                 true, displayPage.displays[0]));
-            assertFalse(displayPage.showAmbientColorSetting_(
+            expectFalse(displayPage.showAmbientColorSetting_(
                 false, displayPage.displays[0]));
 
             // Verify that the arrangement section is not shown.
-            assertEquals(null, displayPage.$$('#arrangement-section'));
+            expectEquals(null, displayPage.$$('#arrangement-section'));
 
             // Add a second display.
             addDisplay(2);
@@ -1082,55 +1082,55 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             // There should be two displays, the first should be primary and
             // selected. Mirroring should be enabled but set to false.
-            assertEquals(2, displayPage.displays.length);
-            assertEquals(
+            expectEquals(2, displayPage.displays.length);
+            expectEquals(
                 displayPage.displays[0].id, displayPage.selectedDisplay.id);
-            assertEquals(
+            expectEquals(
                 displayPage.displays[0].id, displayPage.primaryDisplayId);
-            assertTrue(displayPage.showMirror_(false, displayPage.displays));
-            assertFalse(displayPage.isMirrored_(displayPage.displays));
+            expectTrue(displayPage.showMirror_(false, displayPage.displays));
+            expectFalse(displayPage.isMirrored_(displayPage.displays));
 
             // Verify unified desktop only shown when enabled.
-            assertTrue(displayPage.showUnifiedDesktop_(
+            expectTrue(displayPage.showUnifiedDesktop_(
                 true, true, displayPage.displays));
-            assertFalse(displayPage.showUnifiedDesktop_(
+            expectFalse(displayPage.showUnifiedDesktop_(
                 false, false, displayPage.displays));
 
             // Sanity check the second display is not internal.
-            assertFalse(displayPage.displays[1].isInternal);
+            expectFalse(displayPage.displays[1].isInternal);
 
 
             // Verify the display modes are parsed correctly.
 
             // 5 total modes, 2 parent modes.
-            assertEquals(7, displayPage.modeToParentModeMap_.size);
-            assertEquals(0, displayPage.modeToParentModeMap_.get(0));
-            assertEquals(0, displayPage.modeToParentModeMap_.get(1));
-            assertEquals(5, displayPage.modeToParentModeMap_.get(2));
-            assertEquals(5, displayPage.modeToParentModeMap_.get(3));
-            assertEquals(5, displayPage.modeToParentModeMap_.get(4));
-            assertEquals(5, displayPage.modeToParentModeMap_.get(5));
-            assertEquals(5, displayPage.modeToParentModeMap_.get(6));
+            expectEquals(7, displayPage.modeToParentModeMap_.size);
+            expectEquals(0, displayPage.modeToParentModeMap_.get(0));
+            expectEquals(0, displayPage.modeToParentModeMap_.get(1));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(2));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(3));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(4));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(5));
+            expectEquals(5, displayPage.modeToParentModeMap_.get(6));
 
             // Two resolution options, one for each parent mode.
-            assertEquals(2, displayPage.refreshRateList_.length);
+            expectEquals(2, displayPage.refreshRateList_.length);
 
             // Each parent mode has the correct number of refresh rates.
-            assertEquals(2, displayPage.parentModeToRefreshRateMap_.size);
-            assertEquals(
+            expectEquals(2, displayPage.parentModeToRefreshRateMap_.size);
+            expectEquals(
                 2, displayPage.parentModeToRefreshRateMap_.get(0).length);
-            assertEquals(
+            expectEquals(
                 3, displayPage.parentModeToRefreshRateMap_.get(5).length);
 
             // Ambient EQ never shown on non-internal display regardless of
             // whether it is enabled.
-            assertFalse(displayPage.showAmbientColorSetting_(
+            expectFalse(displayPage.showAmbientColorSetting_(
                 true, displayPage.displays[1]));
-            assertFalse(displayPage.showAmbientColorSetting_(
+            expectFalse(displayPage.showAmbientColorSetting_(
                 false, displayPage.displays[1]));
 
             // Verify that the arrangement section is shown.
-            assertTrue(!!displayPage.$$('#arrangement-section'));
+            expectTrue(!!displayPage.$$('#arrangement-section'));
 
             // Select the second display and make it primary. Also change the
             // orientation of the second display.
@@ -1139,7 +1139,7 @@ suite('SettingsDevicePage', function() {
             const displayDiv = displayLayout.$$('#_fakeDisplayId2');
             assertTrue(!!displayDiv);
             displayDiv.click();
-            assertEquals(
+            expectEquals(
                 displayPage.displays[1].id, displayPage.selectedDisplay.id);
 
             displayPage.updatePrimaryDisplay_({target: {value: '0'}});
@@ -1157,13 +1157,13 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             // Confirm that the second display is selected, primary, and
             // rotated.
-            assertEquals(2, displayPage.displays.length);
-            assertEquals(
+            expectEquals(2, displayPage.displays.length);
+            expectEquals(
                 displayPage.displays[1].id, displayPage.selectedDisplay.id);
-            assertTrue(displayPage.displays[1].isPrimary);
-            assertEquals(
+            expectTrue(displayPage.displays[1].isPrimary);
+            expectEquals(
                 displayPage.displays[1].id, displayPage.primaryDisplayId);
-            assertEquals(90, displayPage.displays[1].rotation);
+            expectEquals(90, displayPage.displays[1].rotation);
 
             // Mirror the displays.
             displayPage.onMirroredTap_({target: {blur: function() {}}});
@@ -1180,15 +1180,15 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             // Confirm that there is now only one display and that it is
             // primary and mirroring is enabled.
-            assertEquals(1, displayPage.displays.length);
-            assertEquals(
+            expectEquals(1, displayPage.displays.length);
+            expectEquals(
                 displayPage.displays[0].id, displayPage.selectedDisplay.id);
-            assertTrue(displayPage.displays[0].isPrimary);
-            assertTrue(displayPage.showMirror_(false, displayPage.displays));
-            assertTrue(displayPage.isMirrored_(displayPage.displays));
+            expectTrue(displayPage.displays[0].isPrimary);
+            expectTrue(displayPage.showMirror_(false, displayPage.displays));
+            expectTrue(displayPage.isMirrored_(displayPage.displays));
 
             // Verify that the arrangement section is shown while mirroring.
-            assertTrue(!!displayPage.$$('#arrangement-section'));
+            expectTrue(!!displayPage.$$('#arrangement-section'));
 
             // Ensure that the zoom value remains unchanged while draggging.
             function pointerEvent(eventType, ratio) {
@@ -1201,13 +1201,13 @@ suite('SettingsDevicePage', function() {
               }));
             }
 
-            assertEquals(1, displayPage.selectedZoomPref_.value);
+            expectEquals(1, displayPage.selectedZoomPref_.value);
             pointerEvent('pointerdown', .6);
-            assertEquals(1, displayPage.selectedZoomPref_.value);
+            expectEquals(1, displayPage.selectedZoomPref_.value);
             pointerEvent('pointermove', .3);
-            assertEquals(1, displayPage.selectedZoomPref_.value);
+            expectEquals(1, displayPage.selectedZoomPref_.value);
             pointerEvent('pointerup', 0);
-            assertEquals(1.25, displayPage.selectedZoomPref_.value);
+            expectEquals(1.25, displayPage.selectedZoomPref_.value);
 
             // Navigate out of the display page.
             return showAndGetDeviceSubpage('power', routes.POWER);
@@ -1215,7 +1215,7 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             // Moving out of the display page should set selected display to
             // invalid.
-            assertEquals(
+            expectEquals(
                 displayPage.invalidDisplayId_,
                 browserProxy.lastHighlightedDisplayId_);
 
@@ -1235,7 +1235,7 @@ suite('SettingsDevicePage', function() {
       fakeSystemDisplay.onDisplayChanged.callListeners();
       await fakeSystemDisplay.getInfoCalled.promise;
       await fakeSystemDisplay.getLayoutCalled.promise;
-      assertEquals(2, displayPage.displays.length);
+      expectEquals(2, displayPage.displays.length);
 
       flush();
       // await fakeSystemDisplay.getInfoCalled.promise;
@@ -1269,10 +1269,10 @@ suite('SettingsDevicePage', function() {
               assertEquals(2, displayPage.displays.length);
               assertTrue(displayPage.shouldShowArrangementSection_());
 
-              assertTrue(!!displayPage.$$('#arrangement-section'));
+              expectTrue(!!displayPage.$$('#arrangement-section'));
 
-              assertTrue(displayPage.showMirror_(false, displayPage.displays));
-              assertFalse(displayPage.isMirrored_(displayPage.displays));
+              expectTrue(displayPage.showMirror_(false, displayPage.displays));
+              expectFalse(displayPage.isMirrored_(displayPage.displays));
 
               flush();
 
@@ -1285,8 +1285,8 @@ suite('SettingsDevicePage', function() {
             const layout =
                 displayLayout.displayLayoutMap_.get('fakeDisplayId2');
 
-            assertEquals(layout.parentId, 'fakeDisplayId1');
-            assertEquals(layout.position, 'right');
+            expectEquals(layout.parentId, 'fakeDisplayId1');
+            expectEquals(layout.position, 'right');
 
             const offset =
                 displayLayout.keyboardDragStepSize / displayLayout.visualScale;
@@ -1297,19 +1297,19 @@ suite('SettingsDevicePage', function() {
                 'keydown', {key: 'ArrowDown', bubbles: true}));
             display.dispatchEvent(
                 new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
-            assertEquals(offset, layout.offset);
+            expectEquals(offset, layout.offset);
 
             display.dispatchEvent(new KeyboardEvent(
                 'keydown', {key: 'ArrowDown', bubbles: true}));
             display.dispatchEvent(
                 new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
-            assertEquals(offset * 2, layout.offset);
+            expectEquals(offset * 2, layout.offset);
 
             display.dispatchEvent(
                 new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
             display.dispatchEvent(
                 new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
-            assertEquals(offset, layout.offset);
+            expectEquals(offset, layout.offset);
           });
     });
   });
@@ -1323,14 +1323,14 @@ suite('SettingsDevicePage', function() {
     fakeSystemDisplay.onDisplayChanged.callListeners();
     await fakeSystemDisplay.getInfoCalled.promise;
     await fakeSystemDisplay.getLayoutCalled.promise;
-    assertEquals(1, displayPage.displays.length);
+    expectEquals(1, displayPage.displays.length);
 
     const temperature = displayPage.$$('#nightLightTemperatureDiv');
     const schedule = displayPage.$$('#nightLightScheduleTypeDropDown');
 
     // Night Light is off, so temperature is hidden. Schedule is always shown.
-    assertTrue(temperature.hidden);
-    assertFalse(schedule.hidden);
+    expectTrue(temperature.hidden);
+    expectFalse(schedule.hidden);
 
     // Enable Night Light. Use an atomic update of |displayPage.prefs| so
     // Polymer notices the change.
@@ -1340,8 +1340,8 @@ suite('SettingsDevicePage', function() {
     flush();
 
     // Night Light is on, so temperature is visible.
-    assertFalse(temperature.hidden);
-    assertFalse(schedule.hidden);
+    expectFalse(temperature.hidden);
+    expectFalse(schedule.hidden);
   });
 
   suite(assert(TestNames.Power), function() {
@@ -1436,7 +1436,7 @@ suite('SettingsDevicePage', function() {
 
         // Select a "When idle" selection and expect it to be set.
         selectValue(acIdleSelect, IdleBehavior.DISPLAY_ON);
-        assertEquals(
+        expectEquals(
             IdleBehavior.DISPLAY_ON,
             DevicePageBrowserProxyImpl.getInstance().acIdleBehavior_);
       });
@@ -1508,7 +1508,7 @@ suite('SettingsDevicePage', function() {
 
         // Select the device.
         selectValue(powerSourceSelect, powerSourceSelect.children[1].value);
-        assertEquals(
+        expectEquals(
             powerSource.id,
             DevicePageBrowserProxyImpl.getInstance().powerSourceId_);
       });
@@ -1528,7 +1528,7 @@ suite('SettingsDevicePage', function() {
 
         acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
         selectValue(acIdleSelect, IdleBehavior.DISPLAY_ON);
-        assertEquals(
+        expectEquals(
             IdleBehavior.DISPLAY_ON,
             DevicePageBrowserProxyImpl.getInstance().acIdleBehavior_);
       });
@@ -1553,7 +1553,7 @@ suite('SettingsDevicePage', function() {
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
               selectValue(batteryIdleSelect, IdleBehavior.DISPLAY_ON);
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_ON,
                   DevicePageBrowserProxyImpl.getInstance()
                       .batteryIdleBehavior_);
@@ -1581,18 +1581,18 @@ suite('SettingsDevicePage', function() {
         assertTrue(lidClosedToggle.checked);
 
         lidClosedToggle.shadowRoot.querySelector('#control').click();
-        assertEquals(
+        expectEquals(
             LidClosedBehavior.DO_NOTHING,
             DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior_);
         sendLid(LidClosedBehavior.DO_NOTHING);
-        assertFalse(lidClosedToggle.checked);
+        expectFalse(lidClosedToggle.checked);
 
         lidClosedToggle.shadowRoot.querySelector('#control').click();
-        assertEquals(
+        expectEquals(
             LidClosedBehavior.SUSPEND,
             DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior_);
         sendLid(LidClosedBehavior.SUSPEND);
-        assertTrue(lidClosedToggle.checked);
+        expectTrue(lidClosedToggle.checked);
       });
       test('display idle behavior for shut_down/stop_session', function() {
         return new Promise(function(resolve) {
@@ -1640,18 +1640,18 @@ suite('SettingsDevicePage', function() {
             .then(function() {
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
-              assertFalse(batteryIdleSelect.disabled);
+              expectFalse(batteryIdleSelect.disabled);
               const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
-              assertFalse(acIdleSelect.disabled);
-              assertEquals(
+              expectFalse(acIdleSelect.disabled);
+              expectEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
-              assertFalse(lidClosedToggle.checked);
-              assertFalse(lidClosedToggle.isPrefEnforced());
+              expectFalse(lidClosedToggle.checked);
+              expectFalse(lidClosedToggle.isPrefEnforced());
             })
             .then(function() {
               sendPowerManagementSettings(
@@ -1680,18 +1680,18 @@ suite('SettingsDevicePage', function() {
             .then(function() {
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
-              assertFalse(batteryIdleSelect.disabled);
+              expectFalse(batteryIdleSelect.disabled);
               const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
-              assertFalse(acIdleSelect.disabled);
-              assertEquals(
+              expectFalse(acIdleSelect.disabled);
+              expectEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
-              assertFalse(lidClosedToggle.checked);
-              assertFalse(lidClosedToggle.isPrefEnforced());
+              expectFalse(lidClosedToggle.checked);
+              expectFalse(lidClosedToggle.isPrefEnforced());
             });
       });
       test('display idle and lid behavior', function() {
@@ -1735,17 +1735,17 @@ suite('SettingsDevicePage', function() {
               acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_ON.toString(), acIdleSelect.value);
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), batteryIdleSelect.value);
-              assertFalse(acIdleSelect.disabled);
-              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
-              assertEquals(
+              expectFalse(acIdleSelect.disabled);
+              expectEquals(null, powerPage.$$('#acIdleManagedIndicator'));
+              expectEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
-              assertFalse(lidClosedToggle.checked);
-              assertFalse(lidClosedToggle.isPrefEnforced());
+              expectFalse(lidClosedToggle.checked);
+              expectFalse(lidClosedToggle.isPrefEnforced());
             })
             .then(function() {
               sendPowerManagementSettings(
@@ -1768,19 +1768,19 @@ suite('SettingsDevicePage', function() {
             .then(function() {
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), acIdleSelect.value);
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_ON.toString(), batteryIdleSelect.value);
-              assertFalse(acIdleSelect.disabled);
-              assertFalse(batteryIdleSelect.disabled);
-              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
-              assertEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
-              assertEquals(
+              expectFalse(acIdleSelect.disabled);
+              expectFalse(batteryIdleSelect.disabled);
+              expectEquals(null, powerPage.$$('#acIdleManagedIndicator'));
+              expectEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
+              expectEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
-              assertTrue(lidClosedToggle.checked);
-              assertFalse(lidClosedToggle.isPrefEnforced());
+              expectTrue(lidClosedToggle.checked);
+              expectFalse(lidClosedToggle.isPrefEnforced());
             });
       });
 
@@ -1813,20 +1813,20 @@ suite('SettingsDevicePage', function() {
               acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
-              assertEquals(
+              expectEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
-              assertTrue(acIdleSelect.disabled);
-              assertTrue(batteryIdleSelect.disabled);
+              expectTrue(acIdleSelect.disabled);
+              expectTrue(batteryIdleSelect.disabled);
               expectNotEquals(null, powerPage.$$('#acIdleManagedIndicator'));
               expectNotEquals(
                   null, powerPage.$$('#batteryIdleManagedIndicator'));
-              assertEquals(
+              expectEquals(
                   loadTimeData.getString('powerLidShutDownLabel'),
                   lidClosedToggle.label);
-              assertTrue(lidClosedToggle.checked);
-              assertTrue(lidClosedToggle.isPrefEnforced());
+              expectTrue(lidClosedToggle.checked);
+              expectTrue(lidClosedToggle.isPrefEnforced());
             })
             .then(function() {
               sendPowerManagementSettings(
@@ -1843,25 +1843,25 @@ suite('SettingsDevicePage', function() {
             .then(function() {
               const batteryIdleSelect =
                   assert(powerPage.$$('#batteryIdleSelect'));
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), acIdleSelect.value);
-              assertEquals(
+              expectEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), batteryIdleSelect.value);
-              assertTrue(acIdleSelect.disabled);
-              assertTrue(batteryIdleSelect.disabled);
-              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
-              assertEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
-              assertEquals(
+              expectTrue(acIdleSelect.disabled);
+              expectTrue(batteryIdleSelect.disabled);
+              expectEquals(null, powerPage.$$('#acIdleManagedIndicator'));
+              expectEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
+              expectEquals(
                   loadTimeData.getString('powerLidSignOutLabel'),
                   lidClosedToggle.label);
-              assertTrue(lidClosedToggle.checked);
-              assertTrue(lidClosedToggle.isPrefEnforced());
+              expectTrue(lidClosedToggle.checked);
+              expectTrue(lidClosedToggle.isPrefEnforced());
             });
       });
 
       test('hide lid behavior when lid not present', function() {
         return new Promise(function(resolve) {
-                 assertFalse(powerPage.$$('#lidClosedToggle').hidden);
+                 expectFalse(powerPage.$$('#lidClosedToggle').hidden);
                  sendPowerManagementSettings(
                      [
                        IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
@@ -1879,7 +1879,7 @@ suite('SettingsDevicePage', function() {
                  powerPage.async(resolve);
                })
             .then(function() {
-              assertTrue(powerPage.$$('#lidClosedToggle').hidden);
+              expectTrue(powerPage.$$('#lidClosedToggle').hidden);
             });
       });
 
@@ -1901,7 +1901,7 @@ suite('SettingsDevicePage', function() {
                      powerPage.async(resolve);
                    })
                 .then(function() {
-                  assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
+                  expectEquals(null, powerPage.$$('#batteryIdleSettingBox'));
                 });
           });
 
@@ -1996,20 +1996,20 @@ suite('SettingsDevicePage', function() {
 
       // Since both prefs are initially false, the launch palette on eject pref
       // toggle is disabled.
-      assertTrue(isVisible(stylusPage.$$('#enableStylusToolsToggle')));
-      assertTrue(isVisible(stylusPage.$$('#launchPaletteOnEjectEventToggle')));
-      assertTrue(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
-      assertFalse(devicePage.prefs.settings.enable_stylus_tools.value);
-      assertFalse(
+      expectTrue(isVisible(stylusPage.$$('#enableStylusToolsToggle')));
+      expectTrue(isVisible(stylusPage.$$('#launchPaletteOnEjectEventToggle')));
+      expectTrue(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
+      expectFalse(devicePage.prefs.settings.enable_stylus_tools.value);
+      expectFalse(
           devicePage.prefs.settings.launch_palette_on_eject_event.value);
 
       // Tapping the enable stylus tools pref causes the launch palette on
       // eject pref toggle to not be disabled anymore.
       stylusPage.$$('#enableStylusToolsToggle').click();
-      assertTrue(devicePage.prefs.settings.enable_stylus_tools.value);
-      assertFalse(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
+      expectTrue(devicePage.prefs.settings.enable_stylus_tools.value);
+      expectFalse(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
       stylusPage.$$('#launchPaletteOnEjectEventToggle').click();
-      assertTrue(devicePage.prefs.settings.launch_palette_on_eject_event.value);
+      expectTrue(devicePage.prefs.settings.launch_palette_on_eject_event.value);
     });
 
     test('choose first app if no preferred ones', function() {
@@ -2120,9 +2120,9 @@ suite('SettingsDevicePage', function() {
     });
 
     test('enabled-on-lock-screen', function() {
-      assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-      assertFalse(isVisible(enableAppOnLockScreenToggle()));
-      assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+      expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+      expectFalse(isVisible(enableAppOnLockScreenToggle()));
+      expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
       return new Promise(function(resolve) {
                // No apps available.
@@ -2131,9 +2131,9 @@ suite('SettingsDevicePage', function() {
              })
           .then(function() {
             flush();
-            assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenToggle()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             // Single app which does not support lock screen note taking.
             browserProxy.addNoteTakingApp(
@@ -2144,9 +2144,9 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenToggle()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             // Add an app with lock screen support, but do not select it yet.
             browserProxy.addNoteTakingApp(
@@ -2157,9 +2157,9 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenToggle()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             // Select the app with lock screen app support.
             appSelector.value = 'v2';
@@ -2173,10 +2173,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
+            expectFalse(enableAppOnLockScreenToggle().checked);
 
             // Preferred app updated to be enabled on lock screen.
             browserProxy.setNoteTakingApps([
@@ -2189,10 +2189,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertTrue(enableAppOnLockScreenToggle().checked);
+            expectTrue(enableAppOnLockScreenToggle().checked);
 
             // Select the app that does not support lock screen again.
             appSelector.value = 'v1';
@@ -2206,9 +2206,9 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(enableAppOnLockScreenToggle()));
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
           });
     });
 
@@ -2221,10 +2221,10 @@ suite('SettingsDevicePage', function() {
           .then(function() {
             flush();
 
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             browserProxy.setNoteTakingApps(
                 [entry('n1', 'v1', true, LockScreenSupport.ENABLED)]);
@@ -2235,10 +2235,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertTrue(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectTrue(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             browserProxy.setNoteTakingApps(
                 [entry('n1', 'v1', true, LockScreenSupport.SUPPORTED)]);
@@ -2249,10 +2249,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             browserProxy.setNoteTakingApps([]);
             return new Promise(function(resolve) {
@@ -2261,7 +2261,7 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(isVisible(enableAppOnLockScreenToggle()));
+            expectFalse(isVisible(enableAppOnLockScreenToggle()));
           });
     });
 
@@ -2275,8 +2275,8 @@ suite('SettingsDevicePage', function() {
             flush();
 
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             enableAppOnLockScreenToggle().click();
             assertEquals(1, browserProxy.setAppOnLockScreenCount_);
@@ -2287,10 +2287,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectTrue(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
-            assertEquals(
+            expectEquals(
                 LockScreenSupport.ENABLED,
                 browserProxy.getPreferredAppLockScreenState());
 
@@ -2303,9 +2303,9 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertEquals(
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectEquals(
                 LockScreenSupport.SUPPORTED,
                 browserProxy.getPreferredAppLockScreenState());
           });
@@ -2321,7 +2321,7 @@ suite('SettingsDevicePage', function() {
             flush();
 
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
+            expectFalse(enableAppOnLockScreenToggle().checked);
 
             enableAppOnLockScreenToggleLabel().click();
             assertEquals(1, browserProxy.setAppOnLockScreenCount_);
@@ -2332,10 +2332,10 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(enableAppOnLockScreenToggle().checked);
-            assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectTrue(enableAppOnLockScreenToggle().checked);
+            expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
-            assertEquals(
+            expectEquals(
                 LockScreenSupport.ENABLED,
                 browserProxy.getPreferredAppLockScreenState());
 
@@ -2348,16 +2348,16 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertEquals(
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectEquals(
                 LockScreenSupport.SUPPORTED,
                 browserProxy.getPreferredAppLockScreenState());
           });
     });
 
     test('lock-screen-apps-disabled-by-policy', function() {
-      assertFalse(isVisible(enableAppOnLockScreenToggle()));
-      assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
+      expectFalse(isVisible(enableAppOnLockScreenToggle()));
+      expectFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
       return new Promise(function(resolve) {
                // Add an app with lock screen support.
@@ -2367,10 +2367,10 @@ suite('SettingsDevicePage', function() {
              })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertTrue(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectTrue(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             // The toggle should be disabled, so enabling app on lock screen
             // should not be attempted.
@@ -2394,12 +2394,12 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(enableAppOnLockScreenToggle()));
-            assertFalse(enableAppOnLockScreenToggle().checked);
-            assertTrue(isVisible(enableAppOnLockScreenPolicyIndicator()));
+            expectFalse(enableAppOnLockScreenToggle().checked);
+            expectTrue(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
-            assertEquals(
+            expectEquals(
                 LockScreenSupport.NOT_ALLOWED_BY_POLICY,
                 browserProxy.getPreferredAppLockScreenState());
           });
@@ -2415,8 +2415,8 @@ suite('SettingsDevicePage', function() {
              })
           .then(function() {
             flush();
-            assertFalse(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(keepLastNoteOnLockScreenToggle()));
+            expectFalse(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(keepLastNoteOnLockScreenToggle()));
 
             browserProxy.setNoteTakingApps([
               entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
@@ -2428,8 +2428,8 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
-            assertFalse(isVisible(keepLastNoteOnLockScreenToggle()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectFalse(isVisible(keepLastNoteOnLockScreenToggle()));
 
             browserProxy.setNoteTakingApps([
               entry('n2', 'v2', true, LockScreenSupport.ENABLED),
@@ -2440,23 +2440,23 @@ suite('SettingsDevicePage', function() {
           })
           .then(function() {
             flush();
-            assertTrue(isVisible(noteTakingAppLockScreenSettings()));
+            expectTrue(isVisible(noteTakingAppLockScreenSettings()));
             assert(isVisible(keepLastNoteOnLockScreenToggle()));
-            assertTrue(keepLastNoteOnLockScreenToggle().checked);
+            expectTrue(keepLastNoteOnLockScreenToggle().checked);
 
             // Clicking the toggle updates the pref value.
             keepLastNoteOnLockScreenToggle()
                 .shadowRoot.querySelector('#control')
                 .click();
-            assertFalse(keepLastNoteOnLockScreenToggle().checked);
+            expectFalse(keepLastNoteOnLockScreenToggle().checked);
 
-            assertFalse(
+            expectFalse(
                 devicePage.prefs.settings.restore_last_lock_screen_note.value);
 
             // Changing the pref value updates the toggle.
             devicePage.set(
                 'prefs.settings.restore_last_lock_screen_note.value', true);
-            assertTrue(keepLastNoteOnLockScreenToggle().checked);
+            expectTrue(keepLastNoteOnLockScreenToggle().checked);
           });
     });
   });

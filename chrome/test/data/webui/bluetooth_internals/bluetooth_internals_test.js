@@ -99,29 +99,29 @@ suite('bluetooth_internals', function() {
     var serviceUuidsColumn = deviceRow.children[3];
     var manufacturerDataColumn = deviceRow.children[4];
 
-    assertTrue(!!nameForDisplayColumn);
-    assertTrue(!!addressColumn);
-    assertTrue(!!rssiColumn);
-    assertTrue(!!serviceUuidsColumn);
-    assertTrue(!!manufacturerDataColumn);
+    expectTrue(!!nameForDisplayColumn);
+    expectTrue(!!addressColumn);
+    expectTrue(!!rssiColumn);
+    expectTrue(!!serviceUuidsColumn);
+    expectTrue(!!manufacturerDataColumn);
 
     adapterBroker.deviceChanged(deviceInfo);
 
-    assertEquals(deviceInfo.nameForDisplay, nameForDisplayColumn.textContent);
-    assertEquals(deviceInfo.address, addressColumn.textContent);
+    expectEquals(deviceInfo.nameForDisplay, nameForDisplayColumn.textContent);
+    expectEquals(deviceInfo.address, addressColumn.textContent);
 
     if (deviceInfo.rssi) {
-      assertEquals(String(deviceInfo.rssi.value), rssiColumn.textContent);
+      expectEquals(String(deviceInfo.rssi.value), rssiColumn.textContent);
     }
 
     if (deviceInfo.serviceUuids) {
-      assertEquals(
+      expectEquals(
           formatServiceUuids(deviceInfo.serviceUuids),
           serviceUuidsColumn.textContent);
     }
 
     if (deviceInfo.manufacturerDataMap) {
-      assertEquals(
+      expectEquals(
           formatManufacturerDataMap(deviceInfo.manufacturerDataMap),
           manufacturerDataColumn.textContent);
     }
@@ -172,7 +172,7 @@ suite('bluetooth_internals', function() {
     var removedRow =
         deviceTable.querySelector('#' + escapeDeviceAddress(address));
 
-    assertEquals(expectRemoved, removedRow.classList.contains('removed'));
+    expectEquals(expectRemoved, removedRow.classList.contains('removed'));
   }
 
   /**
@@ -180,7 +180,7 @@ suite('bluetooth_internals', function() {
    */
   test('DeviceAdded', function() {
     var devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
     var infoCopy = fakeDeviceInfo3();
@@ -190,7 +190,7 @@ suite('bluetooth_internals', function() {
     adapterBroker.deviceAdded(infoCopy);
 
     devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES + 1, devices.length);
+    expectEquals(EXPECTED_DEVICES + 1, devices.length);
   });
 
   /**
@@ -198,14 +198,14 @@ suite('bluetooth_internals', function() {
    */
   test('DeviceSetToRemoved', function() {
     var devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     var fakeDevice = fakeDeviceInfo2();
     adapterBroker.deviceRemoved(fakeDevice);
 
     // The number of rows shouldn't change.
     devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     expectDeviceRemoved(fakeDevice.address, true);
   });
@@ -215,7 +215,7 @@ suite('bluetooth_internals', function() {
    */
   test('DeviceChanged', function() {
     var devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
     var newDeviceInfo = fakeDeviceInfo1();
@@ -234,7 +234,7 @@ suite('bluetooth_internals', function() {
    */
   test('DeviceUpdateCycle', function() {
     var devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
     var originalDeviceInfo = fakeDeviceInfo3();
@@ -260,7 +260,7 @@ suite('bluetooth_internals', function() {
 
   test('DeviceAddedRssiCheck', function() {
     var devices = deviceTable.querySelectorAll('tbody tr');
-    assertEquals(EXPECTED_DEVICES, devices.length);
+    expectEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
     var newDeviceInfo = fakeDeviceInfo3();
@@ -269,23 +269,23 @@ suite('bluetooth_internals', function() {
     var deviceRow = deviceTable.querySelector(
         '#' + escapeDeviceAddress(newDeviceInfo.address));
     var rssiColumn = deviceRow.children[2];
-    assertEquals('Unknown', rssiColumn.textContent);
+    expectEquals('Unknown', rssiColumn.textContent);
 
     var newDeviceInfo1 = fakeDeviceInfo3();
     newDeviceInfo1.rssi = {value: -42};
     adapterBroker.deviceChanged(newDeviceInfo1);
-    assertEquals('-42', rssiColumn.textContent);
+    expectEquals('-42', rssiColumn.textContent);
 
     // Device table should keep last valid rssi value.
     var newDeviceInfo2 = fakeDeviceInfo3();
     newDeviceInfo2.rssi = null;
     adapterBroker.deviceChanged(newDeviceInfo2);
-    assertEquals('-42', rssiColumn.textContent);
+    expectEquals('-42', rssiColumn.textContent);
 
     var newDeviceInfo3 = fakeDeviceInfo3();
     newDeviceInfo3.rssi = {value: -17};
     adapterBroker.deviceChanged(newDeviceInfo3);
-    assertEquals('-17', rssiColumn.textContent);
+    expectEquals('-17', rssiColumn.textContent);
   });
 
   /* Sidebar Tests */
@@ -294,7 +294,7 @@ suite('bluetooth_internals', function() {
         Array.from(sidebarNode.querySelectorAll('.sidebar-content li'));
 
     pageNames.forEach(function(pageName) {
-      assertTrue(sidebarItems.some(function(item) {
+      expectTrue(sidebarItems.some(function(item) {
         return item.dataset.pageName === pageName;
       }));
     });
@@ -302,28 +302,28 @@ suite('bluetooth_internals', function() {
 
   test('Sidebar_DefaultState', function() {
     // Sidebar should be closed by default.
-    assertFalse(sidebarNode.classList.contains('open'));
+    expectFalse(sidebarNode.classList.contains('open'));
   });
 
   test('Sidebar_OpenClose', function() {
     sidebarObj.open();
-    assertTrue(sidebarNode.classList.contains('open'));
+    expectTrue(sidebarNode.classList.contains('open'));
     sidebarObj.close();
-    assertFalse(sidebarNode.classList.contains('open'));
+    expectFalse(sidebarNode.classList.contains('open'));
   });
 
   test('Sidebar_OpenTwice', function() {
     // Multiple calls to open shouldn't change the state.
     sidebarObj.open();
     sidebarObj.open();
-    assertTrue(sidebarNode.classList.contains('open'));
+    expectTrue(sidebarNode.classList.contains('open'));
   });
 
   test('Sidebar_CloseTwice', function() {
     // Multiple calls to close shouldn't change the state.
     sidebarObj.close();
     sidebarObj.close();
-    assertFalse(sidebarNode.classList.contains('open'));
+    expectFalse(sidebarNode.classList.contains('open'));
   });
 
   /* Snackbar Tests */
@@ -353,8 +353,8 @@ suite('bluetooth_internals', function() {
     return new Promise(function(resolve) {
       // Let event queue finish.
       setTimeout(function() {
-        assertEquals(0, $('snackbar-container').children.length);
-        assertFalse(!!Snackbar.current_);
+        expectEquals(0, $('snackbar-container').children.length);
+        expectFalse(!!Snackbar.current_);
         resolve();
       }, 50);
     });
@@ -389,7 +389,7 @@ suite('bluetooth_internals', function() {
     var snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    assertEquals(2, Snackbar.queue_.length);
+    expectEquals(2, Snackbar.queue_.length);
 
     function next() {
       actualCalls++;
@@ -401,7 +401,7 @@ suite('bluetooth_internals', function() {
     return whenSnackbarShows(snackbar3)
         .then(next)
         .then(function() {
-          assertEquals(expectedCalls, actualCalls);
+          expectEquals(expectedCalls, actualCalls);
         })
         .then(finishSnackbarTest);
   });
@@ -415,7 +415,7 @@ suite('bluetooth_internals', function() {
     var snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    assertEquals(2, Snackbar.queue_.length);
+    expectEquals(2, Snackbar.queue_.length);
 
     function next() {
       assertTrue(false);
@@ -431,8 +431,8 @@ suite('bluetooth_internals', function() {
           return Snackbar.dismiss(true);
         })
         .then(function() {
-          assertEquals(0, Snackbar.queue_.length);
-          assertFalse(!!Snackbar.current_);
+          expectEquals(0, Snackbar.queue_.length);
+          expectFalse(!!Snackbar.current_);
         })
         .then(finishSnackbarTest);
   });
@@ -445,9 +445,9 @@ suite('bluetooth_internals', function() {
       var value = adapterInfo[propName];
 
       if (typeof (value) === 'boolean') {
-        assertEquals(value, valueCell.classList.contains('checked'));
+        expectEquals(value, valueCell.classList.contains('checked'));
       } else if (typeof (value) === 'string') {
-        assertEquals(value, valueCell.textContent);
+        expectEquals(value, valueCell.textContent);
       } else {
         assert('boolean or string type expected but got ' + typeof (value));
       }
@@ -521,9 +521,9 @@ suite('bluetooth_internals', function() {
       }
 
       if (typeof (value) === 'boolean') {
-        assertEquals(value, valueCell.classList.contains('checked'));
+        expectEquals(value, valueCell.classList.contains('checked'));
       } else if (typeof (value) === 'string') {
-        assertEquals(value, valueCell.textContent);
+        expectEquals(value, valueCell.textContent);
       } else {
         assert('boolean or string type expected but got ' + typeof (value));
       }
@@ -539,7 +539,7 @@ suite('bluetooth_internals', function() {
     var deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
     deviceInspectLink.click();
-    assertEquals('#' + deviceDetailsPageId, window.location.hash);
+    expectEquals('#' + deviceDetailsPageId, window.location.hash);
 
     var detailsPage = $(deviceDetailsPageId);
     assertTrue(!!detailsPage);
@@ -551,9 +551,9 @@ suite('bluetooth_internals', function() {
           checkDeviceDetailsFieldSet(detailsPage, device);
 
           detailsPage.querySelector('.forget').click();
-          assertEquals('#devices', window.location.hash);
+          expectEquals('#devices', window.location.hash);
           detailsPage = $(deviceDetailsPageId);
-          assertFalse(!!detailsPage);
+          expectFalse(!!detailsPage);
         });
   });
 
@@ -565,7 +565,7 @@ suite('bluetooth_internals', function() {
 
     // First link is 'Inspect'.
     deviceLinks[0].click();
-    assertEquals('#' + deviceDetailsPageId, window.location.hash);
+    expectEquals('#' + deviceDetailsPageId, window.location.hash);
 
     var detailsPage = $(deviceDetailsPageId);
     assertTrue(!!detailsPage);
@@ -578,9 +578,9 @@ suite('bluetooth_internals', function() {
 
           // Second link is 'Forget'.
           deviceLinks[1].click();
-          assertEquals('#devices', window.location.hash);
+          expectEquals('#devices', window.location.hash);
           detailsPage = $(deviceDetailsPageId);
-          assertFalse(!!detailsPage);
+          expectFalse(!!detailsPage);
         });
   });
 });
@@ -604,93 +604,93 @@ suite('BluetoothInternalsUnitTests', function() {
 
   test('ValueControl_SetValue_Hexadecimal_EmptyArray', function() {
     valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    expectEquals('', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_OneValue', function() {
     valueControl.setValue([aCode]);
-    assertEquals('0x61', valueControl.valueInput_.value);
+    expectEquals('0x61', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_ThreeValues', function() {
     valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('0x616263', valueControl.valueInput_.value);
+    expectEquals('0x616263', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_UTF8_EmptyArray', function() {
     valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    expectEquals('', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_UTF8_OneValue', function() {
     valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([aCode]);
-    assertEquals('a', valueControl.valueInput_.value);
+    expectEquals('a', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_UTF8_ThreeValues', function() {
     valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('abc', valueControl.valueInput_.value);
+    expectEquals('abc', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_EmptyArray', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    expectEquals('', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_OneValue', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([aCode]);
-    assertEquals(String(aCode), valueControl.valueInput_.value);
+    expectEquals(String(aCode), valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_ThreeValues', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('97-98-99', valueControl.valueInput_.value);
+    expectEquals('97-98-99', valueControl.valueInput_.value);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_EmptyString', function() {
     valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_BadHexPrefix', function() {
-    assertThrows(function() {
+    expectThrows(function() {
       valueControl.value_.setAs(ValueDataType.HEXADECIMAL, 'd0x');
     }, 'Expected new value to start with "0x"');
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_ThreeValues', function() {
     valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '0x616263');
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 
   test('ValueControl_ConvertValue_UTF8_EmptyString', function() {
     valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.value_.setAs(ValueDataType.UTF8, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_UTF8_ThreeValues', function() {
     valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.value_.setAs(ValueDataType.UTF8, 'abc');
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 
   test('ValueControl_ConvertValue_Decimal_EmptyString', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.value_.setAs(ValueDataType.DECIMAL, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues_Fail', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
 
-    assertThrows(function() {
+    expectThrows(function() {
       valueControl.value_.setAs(ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
     }, 'New value can only contain numbers and hyphens');
   });
@@ -698,6 +698,6 @@ suite('BluetoothInternalsUnitTests', function() {
   test('ValueControl_ConvertValue_Decimal_ThreeValues', function() {
     valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.value_.setAs(ValueDataType.DECIMAL, '97-98-99' /* abc */);
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 });

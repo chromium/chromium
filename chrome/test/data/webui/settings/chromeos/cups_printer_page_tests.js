@@ -141,59 +141,59 @@ suite('CupsAddPrinterDialogTests', function() {
 
   test('ValidIPV4', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
-    assertTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1'));
   });
 
   test('ValidIPV4WithPort', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
-    assertTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1:1234'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1:1234'));
   });
 
   test('ValidIPV6', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     // Test the full ipv6 address scheme.
-    assertTrue(canAddPrinter(dialog, 'Test printer', '1:2:a3:ff4:5:6:7:8'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '1:2:a3:ff4:5:6:7:8'));
 
     // Test the shorthand prefix scheme.
-    assertTrue(canAddPrinter(dialog, 'Test printer', '::255'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '::255'));
 
     // Test the shorthand suffix scheme.
-    assertTrue(canAddPrinter(dialog, 'Test printer', '1::'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '1::'));
   });
 
   test('ValidIPV6WithPort', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
-    assertTrue(canAddPrinter(dialog, 'Test printer', '[1:2:aa2:4]:12'));
-    assertTrue(canAddPrinter(dialog, 'Test printer', '[::255]:54'));
-    assertTrue(canAddPrinter(dialog, 'Test printer', '[1::]:7899'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '[1:2:aa2:4]:12'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '[::255]:54'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', '[1::]:7899'));
   });
 
   test('InvalidIPV6', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
-    assertFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:4:5:6:7:8:9'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:aa:a1245:2'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:za:2'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', '1:::22'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', '1::2::3'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:4:5:6:7:8:9'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:aa:a1245:2'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:za:2'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '1:::22'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '1::2::3'));
   });
 
   test('ValidHostname', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
-    assertTrue(canAddPrinter(dialog, 'Test printer', 'hello-world.com'));
-    assertTrue(canAddPrinter(dialog, 'Test printer', 'hello.world.com:12345'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', 'hello-world.com'));
+    expectTrue(canAddPrinter(dialog, 'Test printer', 'hello.world.com:12345'));
   });
 
   test('InvalidHostname', function() {
     const dialog = document.createElement('add-printer-manually-dialog');
 
-    assertFalse(canAddPrinter(dialog, 'Test printer', 'helloworld!123.com'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', 'helloworld123-.com'));
-    assertFalse(canAddPrinter(dialog, 'Test printer', '-helloworld123.com'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', 'helloworld!123.com'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', 'helloworld123-.com'));
+    expectFalse(canAddPrinter(dialog, 'Test printer', '-helloworld123.com'));
   });
 
   /**

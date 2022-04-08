@@ -36,12 +36,12 @@ suite('<app-management-main-view>', function() {
 
   test('simple app addition', async function() {
     // Ensure there is no apps initially
-    assertEquals(0, getAppItems().length);
+    expectEquals(0, getAppItems().length);
 
     const app = await fakeHandler.addApp();
 
     const appItems = getAppItems();
-    assertEquals(1, appItems.length);
+    expectEquals(1, appItems.length);
     assertFalse(!!Router.getInstance().getQueryParameters().get('id'));
     store.setReducersEnabled(false);
 

@@ -227,7 +227,7 @@ GEN('#if BUILDFLAG(IS_CHROMEOS)');
 
 // Sync should be disabled if there was no primary account set.
 TEST_F('SyncInternalsWebUITest', 'SyncDisabledByDefaultChromeOS', function() {
-  assertTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
+  expectTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
   // We don't check 'Disable Reasons' here because the string depends on the
   // flag SplitSettingsSync. There's not a good way to check a C++ flag value
   // in the middle of a JS test, nor is there a simple way to enable or disable
@@ -235,17 +235,17 @@ TEST_F('SyncInternalsWebUITest', 'SyncDisabledByDefaultChromeOS', function() {
   // TODO(crbug.com/1087165): When SplitSettingsSync is the default, delete this
   // test and use SyncInternalsWebUITest.SyncDisabledByDefault on all
   // platforms.
-  assertTrue(this.hasInDetails(true, 'Username', ''));
+  expectTrue(this.hasInDetails(true, 'Username', ''));
 });
 
 GEN('#else');
 
 // On non-ChromeOS, sync should be disabled if there was no primary account set.
 TEST_F('SyncInternalsWebUITest', 'SyncDisabledByDefault', function() {
-  assertTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
-  assertTrue(
+  expectTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
+  expectTrue(
       this.hasInDetails(true, 'Disable Reasons', 'Not signed in, User choice'));
-  assertTrue(this.hasInDetails(true, 'Username', ''));
+  expectTrue(this.hasInDetails(true, 'Username', ''));
 });
 
 GEN('#endif');
@@ -261,7 +261,7 @@ TEST_F('SyncInternalsWebUITest', 'LoadPastedAboutInfo', function() {
   // Trigger the import.
   document.querySelector('#import-status').click();
 
-  assertTrue(this.hasInDetails(true, 'Summary', 'Sync service initialized'));
+  expectTrue(this.hasInDetails(true, 'Summary', 'Sync service initialized'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
@@ -278,16 +278,16 @@ TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
                               .children[eventCount - 2];
   const displayedEvent2 = document.querySelector('#traffic-event-container')
                               .children[eventCount - 1];
-  assertTrue(
+  expectTrue(
       displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.details));
-  assertTrue(displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.type));
-  assertTrue(
+  expectTrue(displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.type));
+  expectTrue(
       displayedEvent2.innerHTML.includes(NETWORK_EVENT_DETAILS_2.details));
-  assertTrue(displayedEvent2.innerHTML.includes(NETWORK_EVENT_DETAILS_2.type));
+  expectTrue(displayedEvent2.innerHTML.includes(NETWORK_EVENT_DETAILS_2.type));
 
   // Test that repeated events are not re-displayed.
   cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
-  assertEquals(
+  expectEquals(
       eventCount,
       document.querySelector('#traffic-event-container').children.length);
 });
@@ -296,7 +296,7 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
        function() {
   // Select the search tab.
   document.querySelector('#sync-search-tab').selected = true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  expectTrue(document.querySelector('#sync-search-tab').selected);
 
   // Build the data model and attach to result list.
   setupSyncResultsListForTest([
@@ -317,7 +317,7 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
   // Select the first list item and verify the search tab remains selected.
   document.querySelector('#sync-results-list').getListItemByIndex(0).selected =
       true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  expectTrue(document.querySelector('#sync-search-tab').selected);
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
@@ -327,7 +327,7 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
   document.querySelector('#node-browser-refresh-button').click();
 
   // Check that the refresh time was updated.
-  assertNotEquals(
+  expectNotEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'Never');
 
@@ -340,7 +340,7 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 
   // Check the type root and expand it.
   const typeRoot = tree.items[0];
-  assertFalse(typeRoot.expanded);
+  expectFalse(typeRoot.expanded);
   typeRoot.expanded = true;
   assertEquals(1, typeRoot.items.length);
 
@@ -348,22 +348,22 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
   const leaf = typeRoot.items[0];
 
   // Verify that selecting it affects the details view.
-  assertTrue(document.querySelector('#node-details').hasAttribute('hidden'));
+  expectTrue(document.querySelector('#node-details').hasAttribute('hidden'));
   leaf.selected = true;
-  assertFalse(document.querySelector('#node-details').hasAttribute('hidden'));
+  expectFalse(document.querySelector('#node-details').hasAttribute('hidden'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
   setAllNodesForTest(HARD_CODED_ALL_NODES);
 
   // Should start with non-refreshed node browser.
-  assertEquals(
+  expectEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'Never');
 
   // Selecting the tab will refresh it.
   document.querySelector('#sync-browser-tab').selected = true;
-  assertNotEquals(
+  expectNotEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'Never');
 
@@ -372,7 +372,7 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
       'TestCanary';
   document.querySelector('#sync-browser-tab').selected = false;
   document.querySelector('#sync-browser-tab').selected = true;
-  assertEquals(
+  expectEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'TestCanary');
 });
@@ -387,6 +387,6 @@ TEST_F('SyncInternalsWebUITest', 'DumpSyncEventsToText', function() {
   // Verify our event is among the results.
   const eventDumpText = document.querySelector('#data-dump').textContent;
 
-  assertGE(eventDumpText.indexOf('onProtocolEvent'), 0);
-  assertGE(eventDumpText.indexOf('someData'), 0);
+  expectGE(eventDumpText.indexOf('onProtocolEvent'), 0);
+  expectGE(eventDumpText.indexOf('someData'), 0);
 });

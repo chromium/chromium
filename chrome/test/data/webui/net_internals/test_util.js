@@ -101,7 +101,7 @@ function getTab(tabId) {
     var tabId = getTabId(hash);
 
     // Make sure the tab link is visible, as we only simulate normal usage.
-    assertTrue(
+    expectTrue(
         tabLinkIsVisible(tabId), tabId + ' does not have a visible tab link.');
     var tabLinkNode = getTab(tabId).tabLink;
 

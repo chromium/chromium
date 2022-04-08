@@ -53,7 +53,7 @@ suite('<app-management-file-handling-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertFalse(
+    expectFalse(
         fileHandlingItem.shadowRoot.querySelector('#toggle-row').isChecked());
   });
 });

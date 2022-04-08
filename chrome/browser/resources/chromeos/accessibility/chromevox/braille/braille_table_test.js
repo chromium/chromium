@@ -19,23 +19,23 @@ ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {};
  */
 TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
-    assertEquals(184, tables.length);
+    expectEquals(184, tables.length);
     assertNotNullNorUndefined(
         BrailleTable.forId(tables, 'en-us-g1'),
         'Can\'t find US English grade 1 table');
     for (let i = 0, table; table = tables[i]; ++i) {
-      assertEquals('string', typeof table.id);
-      assertTrue(table.dots === '6' || table.dots === '8');
+      expectEquals('string', typeof table.id);
+      expectTrue(table.dots === '6' || table.dots === '8');
 
       // Ensure we have an English UI language.
       chrome.i18n.getUILanguage = () => 'en';
       let displayName = BrailleTable.getDisplayName(table);
       assertTrue(!!displayName, 'No display name for table: ' + table.id);
-      assertTrue(displayName.length > 0);
+      expectTrue(displayName.length > 0);
 
       // English always uses LibLouis's enDisplayName if possible.
       if (table.enDisplayName) {
-        assertTrue(
+        expectTrue(
             displayName.indexOf(table.enDisplayName) >= 0,
             'LibLouis display name no included');
       }
@@ -44,7 +44,7 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
       chrome.i18n.getUILanguage = () => 'fr';
       displayName = BrailleTable.getDisplayName(table);
       assertTrue(!!displayName, 'No display name for table: ' + table.id);
-      assertTrue(displayName.length > 0);
+      expectTrue(displayName.length > 0);
 
       // Other languages only use the enDisplayName if they need to disambiguate
       // or have no locale name.
@@ -52,12 +52,12 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
           table.locale, table.locale);
       if (!localeName ||
           (table.enDisplayName && table.alwaysUseEnDisplayName)) {
-        assertTrue(
+        expectTrue(
             displayName.indexOf(table.enDisplayName) >= 0,
             'No LibLouis display name: ' + displayName +
                 ' for non-English locale: ' + table.locale);
       } else {
-        assertFalse(
+        expectFalse(
             displayName.indexOf(table.enDisplayName) >= 0,
             displayName + ' should not contain ' + table.enDisplayName);
       }
@@ -69,16 +69,16 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
 TEST_F('ChromeVoxBrailleTableTest', 'testGetDisplayName', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
     let table = BrailleTable.forId(tables, 'bg');
-    assertEquals('Bulgarian, Grade 1', BrailleTable.getDisplayName(table));
+    expectEquals('Bulgarian, Grade 1', BrailleTable.getDisplayName(table));
     table = BrailleTable.forId(tables, 'ar-ar-g1');
-    assertEquals(
+    expectEquals(
         'Arabic (Argentina), Grade 1', BrailleTable.getDisplayName(table));
     table = BrailleTable.forId(tables, 'en-ueb-g1');
-    assertEquals(
+    expectEquals(
         'Unified English uncontracted braille, Grade 1',
         BrailleTable.getDisplayName(table));
     table = BrailleTable.forId(tables, 'en-us-g2');
-    assertEquals(
+    expectEquals(
         'English (United States), Grade 2', BrailleTable.getDisplayName(table));
   }));
 });
@@ -92,10 +92,10 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetUncontracted', function() {
       const checkedTable = BrailleTable.forId(tables, idToCheck);
       const uncontractedTable =
           BrailleTable.getUncontracted(tables, checkedTable);
-      assertNotEquals(
+      expectNotEquals(
           null, uncontractedTable,
           'Table does not have uncontracted table: ' + checkedTable);
-      assertEquals(uncontractedId, uncontractedTable.id);
+      expectEquals(uncontractedId, uncontractedTable.id);
     }
     expectUncontracted('en-nabcc', 'en-us-g2');
     expectUncontracted('en-us-comp8-ext', 'en-us-comp8-ext');

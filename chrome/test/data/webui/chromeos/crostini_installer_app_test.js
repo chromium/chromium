@@ -137,88 +137,88 @@ suite('<crostini-installer-app>', () => {
   ];
 
   test('installFlow', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
+    expectFalse(app.$$('#prompt-message').hidden);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
 
     // It should wait for disk info to be available.
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
+    expectFalse(app.$$('#configure-message').hidden);
     await clickCancel();  // Back to the prompt page.
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
+    expectFalse(app.$$('#configure-message').hidden);
     await clickInstall();
     await fakeBrowserProxy.handler.whenCalled('install').then(
         ([diskSize, username]) => {
           assertEquals(
               username, loadTimeData.getString('defaultContainerUsername'));
         });
-    assertFalse(app.$$('#installing-message').hidden);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
-    assertTrue(getInstallButton().hidden);
+    expectFalse(app.$$('#installing-message').hidden);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    expectTrue(getInstallButton().hidden);
 
     fakeBrowserProxy.page.onProgressUpdate(
         InstallerState.kCreateDiskImage, 0.5);
     await flushTasks();
-    assertTrue(
+    expectTrue(
         !!app.$$('#installing-message > div').textContent.trim(),
         'progress message should be set');
-    assertEquals(
+    expectEquals(
         app.$$('#installing-message > paper-progress').getAttribute('value'),
         '50');
 
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kNone);
     await flushTasks();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });
 
   // We only proceed to the config page if disk info is available. Let's make
   // sure if the user click the next button multiple time very soon it dose not
   // blow up.
   test('multipleClickNextBeforeDiskAvailable', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     // It should wait for disk info to be available.
     await clickNext();
     await clickNext();
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
     await flushTasks();
     // Enter configure page as usual
-    assertFalse(app.$$('#configure-message').hidden);
+    expectFalse(app.$$('#configure-message').hidden);
 
     // Can back to prompt page as usual.
     await clickCancel();
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     await clickNext();
     await flushTasks();
     // Re-enter configure page as usual
-    assertFalse(app.$$('#configure-message').hidden);
+    expectFalse(app.$$('#configure-message').hidden);
   });
 
   test('straightToErrorPageIfMinDiskUnmet', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace([], 0, false);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
-    assertTrue(
+    expectFalse(app.$$('#error-message').hidden);
+    expectTrue(
         !!app.$$('#error-message > div').textContent.trim(),
         'error message should be set');
     // We do not show retry button in this case.
@@ -226,20 +226,20 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('showWarningIfLowFreeSpace', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, true);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
-    assertFalse(isHidden(app.$$('#low-free-space-warning')));
+    expectFalse(app.$$('#configure-message').hidden);
+    expectFalse(isHidden(app.$$('#low-free-space-warning')));
   });
 
   diskTicks.forEach(async (_, defaultIndex) => {
     test(`configDiskSpaceWithDefault-${defaultIndex}`, async () => {
-      assertFalse(app.$$('#prompt-message').hidden);
+      expectFalse(app.$$('#prompt-message').hidden);
 
       fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
           diskTicks, defaultIndex, false);
@@ -247,21 +247,21 @@ suite('<crostini-installer-app>', () => {
       await clickNext();
       await flushTasks();
 
-      assertFalse(app.$$('#configure-message').hidden);
-      assertTrue(isHidden(app.$$('#low-free-space-warning')));
-      assertTrue(isHidden(app.$$('#diskSlider')));
+      expectFalse(app.$$('#configure-message').hidden);
+      expectTrue(isHidden(app.$$('#low-free-space-warning')));
+      expectTrue(isHidden(app.$$('#diskSlider')));
 
       await clickInstall();
       await fakeBrowserProxy.handler.whenCalled('install').then(
           ([diskSize, username]) => {
             assertEquals(Number(diskSize), diskTicks[defaultIndex].value);
           });
-      assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+      expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     });
   });
 
   test('configDiskSpaceWithUserSelection', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    expectFalse(app.$$('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
@@ -271,9 +271,9 @@ suite('<crostini-installer-app>', () => {
     await clickCustomSize();
     await flushTasks();
 
-    assertFalse(app.$$('#configure-message').hidden);
-    assertTrue(isHidden(app.$$('#low-free-space-warning')));
-    assertFalse(isHidden(app.$$('#diskSlider')));
+    expectFalse(app.$$('#configure-message').hidden);
+    expectTrue(isHidden(app.$$('#low-free-space-warning')));
+    expectFalse(isHidden(app.$$('#diskSlider')));
 
     app.$$('#diskSlider').value = 1;
 
@@ -282,7 +282,7 @@ suite('<crostini-installer-app>', () => {
         ([diskSize, username]) => {
           assertEquals(Number(diskSize), diskTicks[1].value);
         });
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
   });
 
   test('configUsername', async () => {
@@ -290,7 +290,7 @@ suite('<crostini-installer-app>', () => {
         diskTicks, 0, false);
     await clickNext();
 
-    assertEquals(
+    expectEquals(
         app.$.username.value,
         loadTimeData.getString('defaultContainerUsername'));
 
@@ -305,30 +305,30 @@ suite('<crostini-installer-app>', () => {
       app.$.username.value = username;
 
       await flushTasks();
-      assertTrue(app.$.username.invalid);
-      assertTrue(!!app.$.username.errorMessage);
-      assertTrue(app.$.install.disabled);
+      expectTrue(app.$.username.invalid);
+      expectTrue(!!app.$.username.errorMessage);
+      expectTrue(app.$.install.disabled);
     }
 
     // Test the empty username. The username field should not show an error, but
     // we want the install button to be disabled.
     app.$.username.value = '';
     await flushTasks();
-    assertFalse(app.$.username.invalid);
-    assertFalse(!!app.$.username.errorMessage);
-    assertTrue(app.$.install.disabled);
+    expectFalse(app.$.username.invalid);
+    expectFalse(!!app.$.username.errorMessage);
+    expectTrue(app.$.install.disabled);
 
     // Test a valid username
     const validUsername = 'totally-valid_username';
     app.$.username.value = validUsername;
     await flushTasks();
-    assertFalse(app.$.username.invalid);
+    expectFalse(app.$.username.invalid);
     clickInstall();
     await fakeBrowserProxy.handler.whenCalled('install').then(
         ([diskSize, username]) => {
           assertEquals(username, validUsername);
         });
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
   });
 
   test('errorCancel', async () => {
@@ -338,15 +338,15 @@ suite('<crostini-installer-app>', () => {
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
-    assertTrue(
+    expectFalse(app.$$('#error-message').hidden);
+    expectTrue(
         !!app.$$('#error-message > div').textContent.trim(),
         'error message should be set');
 
     await clickCancel();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('cancelBeforeStart'), 0);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('cancelBeforeStart'), 0);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
   });
 
   test('errorRetry', async () => {
@@ -356,13 +356,13 @@ suite('<crostini-installer-app>', () => {
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
-    assertTrue(
+    expectFalse(app.$$('#error-message').hidden);
+    expectTrue(
         !!app.$$('#error-message > div').textContent.trim(),
         'error message should be set');
 
     await clickInstall();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
   });
 
   test('errorNeedUpdate', async () => {
@@ -373,13 +373,13 @@ suite('<crostini-installer-app>', () => {
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kNeedUpdate);
     await flushTasks();
 
-    assertEquals(app.$$('#title').innerText, 'Chrome OS update required');
-    assertFalse(app.$$('#error-message').hidden);
-    assertEquals(
+    expectEquals(app.$$('#title').innerText, 'Chrome OS update required');
+    expectFalse(app.$$('#error-message').hidden);
+    expectEquals(
         app.$$('#error-message').innerText,
         'To finish setting up Linux, update Chrome OS and try again.');
-    assertFalse(app.$$('#settings').hidden);
-    assertEquals(app.$$('#settings').innerText, 'Open Settings');
+    expectFalse(app.$$('#settings').hidden);
+    expectEquals(app.$$('#settings').innerText, 'Open Settings');
   });
 
   [clickCancel,
@@ -387,12 +387,12 @@ suite('<crostini-installer-app>', () => {
   ].forEach((canceller, i) => test(`cancelBeforeStart-{i}`, async () => {
               await canceller();
               await flushTasks();
-              assertEquals(
+              expectEquals(
                   fakeBrowserProxy.handler.getCallCount('cancelBeforeStart'),
                   1);
-              assertEquals(
+              expectEquals(
                   fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-              assertEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
+              expectEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
             }));
 
   // This is a special case that requestClose is different from clicking cancel
@@ -402,9 +402,9 @@ suite('<crostini-installer-app>', () => {
     await clickNext();  // Progress to config page.
     await fakeBrowserProxy.page.requestClose();
     await flushTasks();
-    assertEquals(fakeBrowserProxy.handler.getCallCount('cancelBeforeStart'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
-    assertEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('cancelBeforeStart'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    expectEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 0);
   });
 
 
@@ -417,16 +417,16 @@ suite('<crostini-installer-app>', () => {
               await clickInstall();
               await canceller();
               await flushTasks();
-              assertEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 1);
-              assertEquals(
+              expectEquals(fakeBrowserProxy.handler.getCallCount('cancel'), 1);
+              expectEquals(
                   fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0,
                   'should not close until onCanceled is called');
-              assertTrue(getInstallButton().hidden);
-              assertTrue(getCancelButton().disabled);
+              expectTrue(getInstallButton().hidden);
+              expectTrue(getCancelButton().disabled);
 
               fakeBrowserProxy.page.onCanceled();
               await flushTasks();
-              assertEquals(
+              expectEquals(
                   fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
             }));
 });

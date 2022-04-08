@@ -69,12 +69,12 @@ suite('AddSmbShareDialogTests', function() {
   test('AddBecomesEnabled', function() {
     const url = addDialog.$.address;
 
-    assertTrue(!!url);
+    expectTrue(!!url);
     url.value = 'smb://192.168.1.1/testshare';
 
     const addButton = addDialog.$$('.action-button');
-    assertTrue(!!addButton);
-    assertFalse(addButton.disabled);
+    expectTrue(!!addButton);
+    expectFalse(addButton.disabled);
   });
 
   test('AddDisabledWithInvalidUrl', function() {
@@ -82,37 +82,37 @@ suite('AddSmbShareDialogTests', function() {
     const addButton = addDialog.$$('.action-button');
 
     url.value = '';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
 
     // Invalid scheme (must start with smb:// or \\)
     url.value = 'foobar';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = 'foo\\\\bar\\baz';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = 'smb:/foo/bar';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
 
     // Incomplete (must be of the form \\server\share)
     url.value = '\\\\foo';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = '\\\\foo\\';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = '\\\\foo\\\\';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
 
     // Incomplete (must be of the form smb://server/share)
     url.value = 'smb://';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = 'smb://foo';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
     url.value = 'smb://foo/';
-    assertTrue(addButton.disabled);
+    expectTrue(addButton.disabled);
 
     // Valid URLs.
     url.value = '\\\\foo\\bar';
-    assertFalse(addButton.disabled);
+    expectFalse(addButton.disabled);
     url.value = 'smb://foo/bar';
-    assertFalse(addButton.disabled);
+    expectFalse(addButton.disabled);
   });
 
   test('ClickAdd', function() {
@@ -124,23 +124,23 @@ suite('AddSmbShareDialogTests', function() {
     const expectedShouldOpenFileManager = false;
 
     const url = addDialog.$$('#address');
-    assertTrue(!!url);
+    expectTrue(!!url);
     url.value = expectedSmbUrl;
 
     const name = addDialog.$$('#name');
-    assertTrue(!!name);
+    expectTrue(!!name);
     name.value = expectedSmbName;
 
     const un = addDialog.$$('#username');
-    assertTrue(!!un);
+    expectTrue(!!un);
     un.value = expectedUsername;
 
     const pw = addDialog.$$('#password');
-    assertTrue(!!pw);
+    expectTrue(!!pw);
     pw.value = expectedPassword;
 
     const addButton = addDialog.$$('.action-button');
-    assertTrue(!!addButton);
+    expectTrue(!!addButton);
 
     addDialog.authenticationMethod_ = expectedAuthMethod;
     addDialog.shouldOpenFileManagerAfterMount = expectedShouldOpenFileManager;
@@ -148,12 +148,12 @@ suite('AddSmbShareDialogTests', function() {
     smbBrowserProxy.resetResolver('smbMount');
     addButton.click();
     return smbBrowserProxy.whenCalled('smbMount').then(function(args) {
-      assertEquals(expectedSmbUrl, args[0]);
-      assertEquals(expectedSmbName, args[1]);
-      assertEquals(expectedUsername, args[2]);
-      assertEquals(expectedPassword, args[3]);
-      assertEquals(expectedAuthMethod, args[4]);
-      assertEquals(expectedShouldOpenFileManager, args[5]);
+      expectEquals(expectedSmbUrl, args[0]);
+      expectEquals(expectedSmbName, args[1]);
+      expectEquals(expectedUsername, args[2]);
+      expectEquals(expectedPassword, args[3]);
+      expectEquals(expectedAuthMethod, args[4]);
+      expectEquals(expectedShouldOpenFileManager, args[5]);
     });
   });
 
@@ -165,7 +165,7 @@ suite('AddSmbShareDialogTests', function() {
     const button = page.$$('#addShare');
 
     assertFalse(!!page.$$('cr-policy-pref-indicator'));
-    assertFalse(button.disabled);
+    expectFalse(button.disabled);
 
     page.prefs = {
       network_file_shares: {allowed: {value: false}},
@@ -178,37 +178,37 @@ suite('AddSmbShareDialogTests', function() {
 
   test('AuthenticationSelectorVisibility', function() {
     const authenticationMethod = addDialog.$$('#authentication-method');
-    assertTrue(!!authenticationMethod);
+    expectTrue(!!authenticationMethod);
 
-    assertTrue(authenticationMethod.hidden);
+    expectTrue(authenticationMethod.hidden);
 
     addDialog.isActiveDirectory_ = true;
 
-    assertFalse(authenticationMethod.hidden);
+    expectFalse(authenticationMethod.hidden);
   });
 
   test('AuthenticationSelectorControlsCredentialFields', function() {
     addDialog.isActiveDirectory_ = true;
 
-    assertFalse(addDialog.$$('#authentication-method').hidden);
+    expectFalse(addDialog.$$('#authentication-method').hidden);
 
     const dropDown = addDialog.$$('.md-select');
-    assertTrue(!!dropDown);
+    expectTrue(!!dropDown);
 
     const credentials = addDialog.$$('#credentials');
-    assertTrue(!!credentials);
+    expectTrue(!!credentials);
 
     dropDown.value = 'kerberos';
     dropDown.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    assertTrue(credentials.hidden);
+    expectTrue(credentials.hidden);
 
     dropDown.value = 'credentials';
     dropDown.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    assertFalse(credentials.hidden);
+    expectFalse(credentials.hidden);
   });
 
   test('MostRecentlyUsedUrl', function() {
@@ -240,8 +240,8 @@ suite('AddSmbShareDialogTests', function() {
     const openDialogButton = page.$$('#addShare');
     openDialogButton.click();
 
-    assertEquals(expectedSmbUrl, addDialog.mountUrl_);
-    assertEquals(expectedSmbUrl, addDialog.mountUrl_);
+    expectEquals(expectedSmbUrl, addDialog.mountUrl_);
+    expectEquals(expectedSmbUrl, addDialog.mountUrl_);
   });
 
   test('InvalidUrlErrorDisablesAddButton', function() {
@@ -250,7 +250,7 @@ suite('AddSmbShareDialogTests', function() {
 
     // Invalid URL, but passes regex test.
     url.value = 'smb://foo\\\\/bar';
-    assertFalse(addButton.disabled);
+    expectFalse(addButton.disabled);
 
     smbBrowserProxy.smbMountResult = SmbMountResult.INVALID_URL;
     addButton.click();
@@ -271,17 +271,17 @@ suite('AddSmbShareDialogTests', function() {
   test('LoadingBarDuringDiscovery', async function() {
     const url = addDialog.$.address;
     // Loading bar is shown when the page loads.
-    assertTrue(url.showLoading);
+    expectTrue(url.showLoading);
 
     await smbBrowserProxy.whenCalled('startDiscovery');
 
     cr.webUIListenerCallback('on-shares-found', ['smb://foo/bar'], false);
-    assertTrue(url.showLoading);
+    expectTrue(url.showLoading);
 
     cr.webUIListenerCallback('on-shares-found', ['smb://foo/bar2'], true);
-    assertFalse(url.showLoading);
+    expectFalse(url.showLoading);
 
-    assertEquals(2, url.items.length);
+    expectEquals(2, url.items.length);
   });
 
 });

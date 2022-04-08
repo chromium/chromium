@@ -154,7 +154,7 @@ suite('SettingsTrafficCountersTest', function() {
   function ensureDaySelectionInputIsNotPresent() {
     const daySelectionInput =
         settingsTrafficCounters.shadowRoot.querySelector('#daySelectionInput');
-    assertFalse(!!daySelectionInput);
+    expectFalse(!!daySelectionInput);
   }
 
   /**

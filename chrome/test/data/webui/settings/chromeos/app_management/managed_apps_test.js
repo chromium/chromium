@@ -43,17 +43,17 @@ suite('<app-management-managed-apps>', () => {
     const uninstallWrapper =
         appDetailView.$$('app-management-detail-view-header')
             .$$('#uninstall-wrapper');
-    assertTrue(!!uninstallWrapper.querySelector('#policy-indicator'));
+    expectTrue(!!uninstallWrapper.querySelector('#policy-indicator'));
   });
 
   test('Permission toggles affected by policy', () => {
     function checkToggle(permissionType, policyAffected) {
       const permissionToggle =
           getPermissionToggleByType(appDetailView, permissionType);
-      assertTrue(
+      expectTrue(
           permissionToggle.shadowRoot.querySelector('cr-toggle').disabled ===
           policyAffected);
-      assertTrue(
+      expectTrue(
           !!permissionToggle.root.querySelector('#policyIndicator') ===
           policyAffected);
     }
@@ -66,8 +66,8 @@ suite('<app-management-managed-apps>', () => {
   test('Pin to shelf toggle effected by policy', () => {
     const pinToShelfSetting = appDetailView.$$('#pin-to-shelf-setting')
                                   .$$('app-management-toggle-row');
-    assertTrue(!!pinToShelfSetting.root.querySelector('#policyIndicator'));
-    assertTrue(
+    expectTrue(!!pinToShelfSetting.root.querySelector('#policyIndicator'));
+    expectTrue(
         pinToShelfSetting.shadowRoot.querySelector('cr-toggle').disabled);
   });
 });
