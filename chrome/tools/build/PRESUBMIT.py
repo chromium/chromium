@@ -20,7 +20,7 @@ def _CheckChange(input_api, output_api):
     for filepath in affected_files:
       if filepath.endswith(files_config_path):
         output, error = input_api.subprocess.Popen(
-            ['python', files_config_path],
+            ['python3', files_config_path],
             stdout=input_api.subprocess.PIPE,
             stderr=input_api.subprocess.PIPE).communicate()
         if output or error:
