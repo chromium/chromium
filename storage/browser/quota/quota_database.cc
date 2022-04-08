@@ -561,11 +561,15 @@ QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
 
   // Scheduling this commit introduces the chance of inconsistencies
   // between the buckets table and data stored on disk in the file system.
-  // If there is a crash, or a battery failure before the transaction is
+  // If there is a crash or a battery failure before the transaction is
   // committed, the bucket directory may be deleted from the file system,
   // while an entry still may exist in the database.
   //
-  // TODO(crbug.com/1314129): Update to immediately commit transaction.
+  // While this is not ideal, this does not introduce any new edge case.
+  // We should check that bucket IDs have existing associated directories,
+  // because database corruption could result in invalid bucket IDs.
+  // TODO(crbug.com/1314567): For handling inconsistencies between the db and
+  // the file system.
   ScheduleCommit();
 
   return QuotaError::kNone;
@@ -1039,9 +1043,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   int64_t bucket_id = db_->GetLastInsertRowId();
   DCHECK_GT(bucket_id, 0);
 
-  // Commit so bucket data is persisted immediately. This reduces the chance of
-  // inconsistencies between the buckets table and data stored on disk in the
-  // filesystem.
+  // Commit immediately so that we persist the bucket metadata to disk before we
+  // inform other services / web apps (via the Buckets API) that we did so.
+  // Once informed, that promise should persist across power failures.
   Commit();
 
   return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
