@@ -23,6 +23,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
@@ -204,6 +205,10 @@ const char kWebstoreBlockByPolicy[] =
     "Extension installation is blocked by policy";
 const char kIncognitoError[] =
     "Apps cannot be installed in guest/incognito mode";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kSecondaryProfileError[] =
+    "Apps may only be installed using the main profile";
+#endif
 const char kEphemeralAppLaunchingNotSupported[] =
     "Ephemeral launching of apps is no longer supported.";
 
@@ -948,6 +953,11 @@ WebstorePrivateCompleteInstallFunction::Run() {
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
     return RespondNow(Error(kIncognitoError));
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile()) {
+    return RespondNow(Error(kSecondaryProfileError));
+  }
+#endif
 
   if (!crx_file::id_util::IdIsValid(params->expected_id))
     return RespondNow(Error(kWebstoreInvalidIdError));
