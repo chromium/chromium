@@ -67,14 +67,18 @@ WebSocketHttp2HandshakeStream::~WebSocketHttp2HandshakeStream() {
   RecordHandshakeResult(result_);
 }
 
+void WebSocketHttp2HandshakeStream::RegisterRequest(
+    const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  DCHECK(request_info->traffic_annotation.is_valid());
+  request_info_ = request_info;
+}
+
 int WebSocketHttp2HandshakeStream::InitializeStream(
-    const HttpRequestInfo* request_info,
     bool can_send_early,
     RequestPriority priority,
     const NetLogWithSource& net_log,
     CompletionOnceCallback callback) {
-  DCHECK(request_info->traffic_annotation.is_valid());
-  request_info_ = request_info;
   priority_ = priority;
   net_log_ = net_log;
   return OK;

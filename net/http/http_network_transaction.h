@@ -145,6 +145,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
     STATE_INIT_STREAM_COMPLETE,
+    STATE_CONNECTED_CALLBACK,
     STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_GENERATE_PROXY_AUTH_TOKEN,
     STATE_GENERATE_PROXY_AUTH_TOKEN_COMPLETE,
@@ -186,7 +187,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int DoCreateStreamComplete(int result);
   int DoInitStream();
   int DoInitStreamComplete(int result);
-  int DoConnectedCallbackComplete(int results);
+  int DoConnectedCallback();
+  int DoConnectedCallbackComplete(int result);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();

@@ -217,9 +217,9 @@ class WebSocketHandshakeStreamCreateHelperTest
         static_cast<WebSocketBasicHandshakeStream*>(handshake.get())
             ->SetWebSocketKeyForTesting("dGhlIHNhbXBsZSBub25jZQ==");
 
-        int rv =
-            handshake->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                        net_log, CompletionOnceCallback());
+        handshake->RegisterRequest(&request_info);
+        int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                             CompletionOnceCallback());
         EXPECT_THAT(rv, IsOk());
 
         HttpResponseInfo response;
@@ -274,9 +274,10 @@ class WebSocketHandshakeStreamCreateHelperTest
         std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
             create_helper.CreateHttp2Stream(spdy_session, {} /* dns_aliases */);
 
-        int rv = handshake->InitializeStream(
-            &request_info, true, DEFAULT_PRIORITY, NetLogWithSource(),
-            CompletionOnceCallback());
+        handshake->RegisterRequest(&request_info);
+        int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY,
+                                             NetLogWithSource(),
+                                             CompletionOnceCallback());
         EXPECT_THAT(rv, IsOk());
 
         HttpResponseInfo response;

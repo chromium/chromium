@@ -574,9 +574,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     request_info.url = GURL("https://www.example.org/");
     request_info.traffic_annotation =
         MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-    EXPECT_EQ(OK,
-              stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                       net_log_, CompletionOnceCallback()));
+    stream->RegisterRequest(&request_info);
+    EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                           CompletionOnceCallback()));
     // Ensure that session is alive and active.
     QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
     EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -2143,9 +2143,9 @@ TEST_P(QuicStreamFactoryTest, MaxOpenStream) {
     }
     std::unique_ptr<HttpStream> stream = CreateStream(&request);
     EXPECT_TRUE(stream);
-    EXPECT_EQ(OK,
-              stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                       net_log_, CompletionOnceCallback()));
+    stream->RegisterRequest(&request_info);
+    EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                           CompletionOnceCallback()));
     streams.push_back(std::move(stream));
   }
 
@@ -2159,9 +2159,10 @@ TEST_P(QuicStreamFactoryTest, MaxOpenStream) {
                 failed_on_default_network_callback_, CompletionOnceCallback()));
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream);
+  stream->RegisterRequest(&request_info);
   EXPECT_EQ(ERR_IO_PENDING,
-            stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                     net_log_, callback_.callback()));
+            stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                     callback_.callback()));
 
   // Close the first stream.
   streams.front()->Close(false);
@@ -2303,8 +2304,9 @@ TEST_P(QuicStreamFactoryTest, CloseAllSessions) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Close the session and verify that stream saw the error.
   factory_->CloseAllSessions(ERR_INTERNET_DISCONNECTED,
@@ -2515,8 +2517,9 @@ TEST_P(QuicStreamFactoryTest, CloseSessionsOnIPAddressChanged) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Check an active session exists for the destination.
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -2616,8 +2619,9 @@ TEST_P(QuicStreamFactoryTest, GoAwaySessionsOnIPAddressChanged) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -2708,8 +2712,9 @@ TEST_P(QuicStreamFactoryTest, OnIPAddressChangedWithConnectionMigration) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
@@ -2829,8 +2834,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -2992,8 +2998,9 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3100,8 +3107,9 @@ TEST_P(QuicStreamFactoryTest, MigrationTimeoutWithNoNewNetwork) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3232,8 +3240,9 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   request_info.load_flags |= LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3309,8 +3318,9 @@ TEST_P(QuicStreamFactoryTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3430,8 +3440,9 @@ void QuicStreamFactoryTestBase::TestOnNetworkDisconnectedNonMigratableStream(
   request_info.load_flags |= LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3497,8 +3508,9 @@ TEST_P(QuicStreamFactoryTest,
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3760,8 +3772,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkDisconnected(
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -3899,8 +3912,9 @@ TEST_P(QuicStreamFactoryTest, NewNetworkConnectedAfterNoNetwork) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4092,8 +4106,9 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4260,8 +4275,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4415,8 +4431,9 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyProbingWriterError) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4555,8 +4572,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4685,8 +4703,9 @@ TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -4809,8 +4828,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5002,8 +5022,9 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5151,8 +5172,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5378,8 +5400,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5531,8 +5554,9 @@ TEST_P(QuicStreamFactoryTest, DoNotMigrateToBadSocketOnPathDegrading) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5679,8 +5703,9 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5831,8 +5856,9 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5976,9 +6002,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info1.url = url_;
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
   HttpResponseInfo response1;
   HttpRequestHeaders request_headers1;
   EXPECT_EQ(OK, stream1->SendRequest(request_headers1, &response1,
@@ -5991,9 +6017,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info2.url = url_;
   request_info2.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info2, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
   HttpResponseInfo response2;
   HttpRequestHeaders request_headers2;
   EXPECT_EQ(OK, stream2->SendRequest(request_headers2, &response2,
@@ -6094,8 +6120,9 @@ TEST_P(QuicStreamFactoryTest, MigrateOnPathDegradingWithNoNewNetwork) {
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -6233,8 +6260,9 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
   request_info.load_flags |= LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -6311,8 +6339,9 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyConnectionMigrationDisabled) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -6448,9 +6477,9 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnAsyncWriteError) {
   request_info1.url = GURL("https://www.example.org/");
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Request #2 returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
@@ -6470,9 +6499,9 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnAsyncWriteError) {
   request_info2.url = GURL("https://www.example.org/");
   request_info2.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info2, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -6615,9 +6644,9 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   request_info1.url = GURL("https://www.example.org/");
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -7000,8 +7029,9 @@ void QuicStreamFactoryTestBase::
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
   // Send the request.
   HttpResponseInfo response;
   HttpRequestHeaders request_headers;
@@ -7200,8 +7230,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
   // Send the request.
   HttpResponseInfo response;
   HttpRequestHeaders request_headers;
@@ -7260,8 +7291,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteError(
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -7385,8 +7417,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -7555,9 +7588,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   request_info1.url = GURL("https://www.example.org/");
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
@@ -7576,9 +7609,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   request_info2.url = GURL("https://www.example.org/");
   request_info2.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info2, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -7715,9 +7748,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams(
   request_info1.url = GURL("https://www.example.org/");
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
@@ -7738,9 +7771,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams(
   request_info2.url = GURL("https://www.example.org/");
   request_info2.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info2, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -7883,9 +7916,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
   request_info1.url = GURL("https://www.example.org/");
   request_info1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream1->InitializeStream(&request_info1, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
@@ -7906,9 +7939,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
   request_info2.url = GURL("https://www.example.org/");
   request_info2.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info2, true, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8034,8 +8067,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNonMigratableStream(
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8123,8 +8157,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMigrationDisabled(
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8232,8 +8267,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnMultipleWriteErrors(
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8366,8 +8402,9 @@ void QuicStreamFactoryTestBase::
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8530,8 +8567,9 @@ void QuicStreamFactoryTestBase::
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8700,8 +8738,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   request_info.url = url_;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8860,8 +8899,9 @@ TEST_P(QuicStreamFactoryTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -8983,8 +9023,9 @@ TEST_P(QuicStreamFactoryTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9119,8 +9160,9 @@ TEST_P(QuicStreamFactoryTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9326,8 +9368,9 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9494,8 +9537,9 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9631,8 +9675,9 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeout) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9763,8 +9808,9 @@ TEST_P(QuicStreamFactoryTest, NoRetransmittableOnWireTimeout) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -9895,8 +9941,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -10027,8 +10074,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -10120,8 +10168,9 @@ TEST_P(QuicStreamFactoryTest,
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -10276,8 +10325,9 @@ void QuicStreamFactoryTestBase::
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -10866,8 +10916,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -11056,8 +11107,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv6ToIPv4Fails) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -11139,8 +11191,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv6Fails) {
   request_info.url = GURL("https://www.example.org/");
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -11409,8 +11462,9 @@ TEST_P(QuicStreamFactoryTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_EQ(OK, stream->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                         net_log_, CompletionOnceCallback()));
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
 
   DVLOG(1)
       << "Created 1st session and initialized a stream. Now trigger timeout";
@@ -11443,9 +11497,9 @@ TEST_P(QuicStreamFactoryTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
 
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
-  EXPECT_EQ(OK,
-            stream2->InitializeStream(&request_info, false, DEFAULT_PRIORITY,
-                                      net_log_, CompletionOnceCallback()));
+  stream2->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream2->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
   session2->connection()->CloseConnection(
       quic::QUIC_NETWORK_IDLE_TIMEOUT, "test",
       quic::ConnectionCloseBehavior::SILENT_CLOSE);

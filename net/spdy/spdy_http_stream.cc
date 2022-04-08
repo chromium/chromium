@@ -134,16 +134,20 @@ SpdyHttpStream::~SpdyHttpStream() {
   }
 }
 
-int SpdyHttpStream::InitializeStream(const HttpRequestInfo* request_info,
-                                     bool can_send_early,
+void SpdyHttpStream::RegisterRequest(const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  request_info_ = request_info;
+}
+
+int SpdyHttpStream::InitializeStream(bool can_send_early,
                                      RequestPriority priority,
                                      const NetLogWithSource& stream_net_log,
                                      CompletionOnceCallback callback) {
   DCHECK(!stream_);
+  DCHECK(request_info_);
   if (!spdy_session_)
     return ERR_CONNECTION_CLOSED;
 
-  request_info_ = request_info;
   if (pushed_stream_id_ != kNoPushedStreamFound) {
     int error = spdy_session_->GetPushedStream(
         request_info_->url, pushed_stream_id_, priority, &stream_);
@@ -163,7 +167,7 @@ int SpdyHttpStream::InitializeStream(const HttpRequestInfo* request_info,
       can_send_early, priority, request_info_->socket_tag, stream_net_log,
       base::BindOnce(&SpdyHttpStream::OnStreamCreated,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      NetworkTrafficAnnotationTag(request_info->traffic_annotation));
+      NetworkTrafficAnnotationTag{request_info_->traffic_annotation});
 
   if (rv == OK) {
     stream_ = stream_request_.ReleaseStream().get();

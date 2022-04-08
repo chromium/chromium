@@ -52,8 +52,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   ~WebSocketBasicHandshakeStream() override;
 
   // HttpStreamBase methods
-  int InitializeStream(const HttpRequestInfo* request_info,
-                       bool can_send_early,
+  void RegisterRequest(const HttpRequestInfo* request_info) override;
+  int InitializeStream(bool can_send_early,
                        RequestPriority priority,
                        const NetLogWithSource& net_log,
                        CompletionOnceCallback callback) override;
@@ -158,6 +158,13 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   const raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 
   NetLogWithSource net_log_;
+
+  // The request to send.
+  // Set to null before the response body is read. This is to allow |this| to
+  // be shared for reading and to possibly outlive request_info_'s owner.
+  // Setting to null happens after headers are completely read or upload data
+  // stream is uploaded, whichever is later.
+  raw_ptr<const HttpRequestInfo> request_info_;
 
   base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_{this};
 };

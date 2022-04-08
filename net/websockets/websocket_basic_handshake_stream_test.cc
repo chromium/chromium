@@ -68,9 +68,10 @@ TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
   NetLogWithSource net_log;
+  basic_handshake_stream.RegisterRequest(&request_info);
   const int result1 =
       callback1.GetResult(basic_handshake_stream.InitializeStream(
-          &request_info, true, LOWEST, net_log, callback1.callback()));
+          true, LOWEST, net_log, callback1.callback()));
   EXPECT_EQ(result1, OK);
 
   auto request_headers = WebSocketCommonTestHeaders();
@@ -135,9 +136,10 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
   NetLogWithSource net_log;
+  basic_handshake_stream.RegisterRequest(&request_info);
   const int result1 =
       callback1.GetResult(basic_handshake_stream.InitializeStream(
-          &request_info, true, LOWEST, net_log, callback1.callback()));
+          true, LOWEST, net_log, callback1.callback()));
   EXPECT_EQ(result1, OK);
 
   auto request_headers = WebSocketCommonTestHeaders();

@@ -198,14 +198,19 @@ WebSocketBasicHandshakeStream::~WebSocketBasicHandshakeStream() {
   RecordHandshakeResult(result_);
 }
 
+void WebSocketBasicHandshakeStream::RegisterRequest(
+    const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  DCHECK(request_info->traffic_annotation.is_valid());
+  request_info_ = request_info;
+}
+
 int WebSocketBasicHandshakeStream::InitializeStream(
-    const HttpRequestInfo* request_info,
     bool can_send_early,
     RequestPriority priority,
     const NetLogWithSource& net_log,
     CompletionOnceCallback callback) {
-  DCHECK(request_info->traffic_annotation.is_valid());
-  url_ = request_info->url;
+  url_ = request_info_->url;
   net_log_ = net_log;
   // The WebSocket may receive a socket in the early data state from
   // HttpNetworkTransaction, which means it must call ConfirmHandshake() for
@@ -217,7 +222,9 @@ int WebSocketBasicHandshakeStream::InitializeStream(
   // Data after the WebSockets handshake may not be replayable, but the
   // handshake is guaranteed to be confirmed once the HTTP response is received.
   DCHECK(can_send_early);
-  state_.Initialize(request_info, priority, net_log);
+  state_.Initialize(request_info_, priority, net_log);
+  // RequestInfo is no longer needed after this point.
+  request_info_ = nullptr;
   return OK;
 }
 

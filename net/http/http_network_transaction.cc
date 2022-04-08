@@ -378,7 +378,7 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
       // Renewed streams shouldn't carry over sent or received bytes.
       DCHECK_EQ(0, new_stream->GetTotalReceivedBytes());
       DCHECK_EQ(0, new_stream->GetTotalSentBytes());
-      next_state_ = STATE_INIT_STREAM;
+      next_state_ = STATE_CONNECTED_CALLBACK;
     }
     stream_.reset(new_stream);
   }
@@ -738,6 +738,9 @@ int HttpNetworkTransaction::DoLoop(int result) {
       case STATE_INIT_STREAM_COMPLETE:
         rv = DoInitStreamComplete(rv);
         break;
+      case STATE_CONNECTED_CALLBACK:
+        rv = DoConnectedCallback();
+        break;
       case STATE_CONNECTED_CALLBACK_COMPLETE:
         rv = DoConnectedCallbackComplete(rv);
         break;
@@ -857,7 +860,7 @@ int HttpNetworkTransaction::DoCreateStream() {
 int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
-    next_state_ = STATE_INIT_STREAM;
+    next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
   } else if (result == ERR_HTTP_1_1_REQUIRED ||
              result == ERR_PROXY_HTTP_1_1_REQUIRED) {
@@ -877,10 +880,8 @@ int HttpNetworkTransaction::DoInitStream() {
   DCHECK(stream_.get());
   next_state_ = STATE_INIT_STREAM_COMPLETE;
 
-  stream_->GetRemoteEndpoint(&remote_endpoint_);
-
-  return stream_->InitializeStream(request_, can_send_early_data_, priority_,
-                                   net_log_, io_callback_);
+  return stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
+                                   io_callback_);
 }
 
 int HttpNetworkTransaction::DoInitStreamComplete(int result) {
@@ -898,22 +899,33 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
     return result;
   }
 
+  next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
+  return result;
+}
+
+int HttpNetworkTransaction::DoConnectedCallback() {
+  // Register the HttpRequestInfo object on the stream here so that it's
+  // available when invoking the `connected_callback_`, as
+  // HttpStream::GetAcceptChViaAlps() needs the HttpRequestInfo to retrieve
+  // the ACCEPT_CH frame payload.
+  stream_->RegisterRequest(request_);
+  stream_->GetRemoteEndpoint(&remote_endpoint_);
   next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
 
-  // Fire off notification that we have successfully connected.
-  if (!connected_callback_.is_null()) {
-    TransportType type = TransportType::kDirect;
-    if (!proxy_info_.is_direct()) {
-      type = TransportType::kProxied;
-    }
-    result = connected_callback_.Run(
-        TransportInfo(type, remote_endpoint_,
-                      std::string(stream_->GetAcceptChViaAlps())),
-        base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
-                       base::Unretained(this)));
+  if (connected_callback_.is_null()) {
+    return OK;
   }
 
-  return result;
+  // Fire off notification that we have successfully connected.
+  TransportType type = TransportType::kDirect;
+  if (!proxy_info_.is_direct()) {
+    type = TransportType::kProxied;
+  }
+  return connected_callback_.Run(
+      TransportInfo(type, remote_endpoint_,
+                    std::string{stream_->GetAcceptChViaAlps()}),
+      base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
+                     base::Unretained(this)));
 }
 
 int HttpNetworkTransaction::DoConnectedCallbackComplete(int result) {
@@ -926,7 +938,7 @@ int HttpNetworkTransaction::DoConnectedCallbackComplete(int result) {
     return result;
   }
 
-  next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
+  next_state_ = STATE_INIT_STREAM;
   return OK;
 }
 

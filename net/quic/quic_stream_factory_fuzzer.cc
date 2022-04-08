@@ -165,7 +165,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   request_info.url = GURL(kUrl);
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY, env->net_log,
+  stream->RegisterRequest(&request_info);
+  stream->InitializeStream(true, DEFAULT_PRIORITY, env->net_log,
                            CompletionOnceCallback());
 
   HttpResponseInfo response;

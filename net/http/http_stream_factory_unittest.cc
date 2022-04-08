@@ -127,8 +127,8 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   StreamType type() const { return type_; }
 
   // HttpStream methods
-  int InitializeStream(const HttpRequestInfo* request_info,
-                       bool can_send_early,
+  void RegisterRequest(const HttpRequestInfo* request_info) override {}
+  int InitializeStream(bool can_send_early,
                        RequestPriority priority,
                        const NetLogWithSource& net_log,
                        CompletionOnceCallback callback) override {
@@ -2751,10 +2751,10 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   // Verify attempting to use the first stream fails because the session's
   // socket tag has since changed.
   TestCompletionCallback callback1;
-  EXPECT_EQ(ERR_FAILED,
-            waiter1.stream()->InitializeStream(
-                &request_info1, /* can_send_early = */ false, DEFAULT_PRIORITY,
-                NetLogWithSource(), callback1.callback()));
+  waiter1.stream()->RegisterRequest(&request_info1);
+  EXPECT_EQ(ERR_FAILED, waiter1.stream()->InitializeStream(
+                            /* can_send_early = */ false, DEFAULT_PRIORITY,
+                            NetLogWithSource(), callback1.callback()));
 
   // Verify the socket tag can be changed, this time using an IP alias
   // (different host, same IP).
@@ -2785,10 +2785,10 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   // Initialize the third stream, thus marking the session active, so it cannot
   // have its socket tag changed.
   TestCompletionCallback callback3;
-  EXPECT_EQ(OK,
-            waiter3.stream()->InitializeStream(
-                &request_info3, /* can_send_early = */ false, DEFAULT_PRIORITY,
-                NetLogWithSource(), callback3.callback()));
+  waiter3.stream()->RegisterRequest(&request_info3);
+  EXPECT_EQ(OK, waiter3.stream()->InitializeStream(
+                    /* can_send_early = */ false, DEFAULT_PRIORITY,
+                    NetLogWithSource(), callback3.callback()));
 
   // Verify a new session is created when a request with a different tag is
   // started.
@@ -2908,10 +2908,10 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // Initialize the first stream, thus marking the session active, so it cannot
   // have its socket tag changed and be reused for the second session.
   TestCompletionCallback callback1;
-  EXPECT_EQ(OK,
-            waiter1.stream()->InitializeStream(
-                &request_info1, /* can_send_early = */ false, DEFAULT_PRIORITY,
-                NetLogWithSource(), callback1.callback()));
+  waiter1.stream()->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, waiter1.stream()->InitializeStream(
+                    /* can_send_early = */ false, DEFAULT_PRIORITY,
+                    NetLogWithSource(), callback1.callback()));
 
   // Create a second stream with a new tag.
   StreamRequestWaiter waiter2;
@@ -2944,10 +2944,10 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // Initialize the second stream, thus marking the session active, so it cannot
   // have its socket tag changed and be reused for the third session.
   TestCompletionCallback callback2;
-  EXPECT_EQ(OK,
-            waiter2.stream()->InitializeStream(
-                &request_info2, /* can_send_early = */ false, DEFAULT_PRIORITY,
-                NetLogWithSource(), callback2.callback()));
+  waiter2.stream()->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, waiter2.stream()->InitializeStream(
+                    /* can_send_early = */ false, DEFAULT_PRIORITY,
+                    NetLogWithSource(), callback2.callback()));
 
   // Release first stream so first session can be retagged for third request.
   waiter1.stream()->Close(/* not_reusable = */ true);
