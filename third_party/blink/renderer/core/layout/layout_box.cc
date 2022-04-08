@@ -3594,7 +3594,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
 
       // Propagating OOF needs re-layout.
-      if (physical_fragment.HasOutOfFlowPositionedDescendants())
+      if (physical_fragment.NeedsOOFPositionedInfoPropagation())
         return nullptr;
 
       // Any floats might need to move, causing lines to wrap differently,
@@ -3721,6 +3721,13 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       // the cache (and thus kept the fragment with the OOF), we'd end up with
       // extraneous OOF fragments.
       if (UNLIKELY(physical_fragment.HasNestedMulticolsWithOOFs()))
+        return nullptr;
+
+      // Any fragmented out-of-flow positioned items will be placed once we
+      // reach the fragmentation context root rather than the containing block,
+      // so we should miss the cache in this case to ensure that such OOF
+      // descendants are laid out correctly.
+      if (physical_fragment.HasOutOfFlowFragmentChild())
         return nullptr;
 
       // If the node didn't break into multiple fragments, we might be able to
