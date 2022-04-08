@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Manual;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -26,33 +26,33 @@ public class IntentionalCrashTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @DisabledTest
-    @SmallTest
     @Test
+    @SmallTest
+    @Manual(message = "Intentional crash.")
     public void testRendererCrash() {
         mActivityTestRule.startMainActivityFromLauncher();
         mActivityTestRule.loadUrl("chrome://crash");
     }
 
-    @DisabledTest
-    @SmallTest
     @Test
+    @SmallTest
+    @Manual(message = "Intentional crash.")
     public void testBrowserCrash() {
         mActivityTestRule.startMainActivityFromLauncher();
         mActivityTestRule.loadUrl("chrome://inducebrowsercrashforrealz");
     }
 
-    @DisabledTest
-    @SmallTest
     @Test
+    @SmallTest
+    @Manual(message = "Intentional crash.")
     public void testJavaCrash() {
         mActivityTestRule.startMainActivityFromLauncher();
         mActivityTestRule.loadUrl("chrome://java-crash/");
     }
 
-    @DisabledTest
-    @SmallTest
     @Test
+    @SmallTest
+    @Manual(message = "Intentional crash.")
     public void testGpuCrash() {
         mActivityTestRule.startMainActivityFromLauncher();
         mActivityTestRule.loadUrl("chrome://gpucrash");

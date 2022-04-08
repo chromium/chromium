@@ -92,8 +92,8 @@ public class TabSwitcherControllerTest {
         Assert.assertTrue(NewTabPageController.getInstance().isCurrentPageThis());
     }
 
-    @DisabledTest(message = "https://crbug.com/1140998")
     @Test
+    @DisabledTest(message = "https://crbug.com/1140998")
     public void testOpenMenu() {
         mController.clickMenu();
         Assert.assertTrue(TabSwitcherMenuController.getInstance().isCurrentPageThis());
