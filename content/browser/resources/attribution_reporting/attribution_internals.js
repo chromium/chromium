@@ -780,7 +780,7 @@ class EventLevelReportTableModel extends ReportTableModel {
       new DateColumn('Report Time', (e) => e.reportTime),
       new ValueColumn('Report Priority', (e) => e.reportPriority),
       new ValueColumn(
-          'Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
+          'Randomized Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
     ];
 
     // Sort by report time by default.
