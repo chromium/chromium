@@ -84,6 +84,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // The frame size is "frozen" when the `src` attribute is set.
   // The frozen state is kept in this element so that it can survive across
   // reattaches.
+  // The size is in layout size (i.e., DSF multiplied.)
   const absl::optional<PhysicalSize> FrozenFrameSize() const;
   // True if the frame size should be frozen when the next resize completed.
   // When `src` is set but layout is not completed yet, the frame size is frozen
@@ -143,7 +144,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // `kFencedFrameMandatoryUnsandboxedFlags`.
   Member<FencedFrameDelegate> frame_delegate_;
   Member<ResizeObserver> resize_observer_;
-  // See |FrozenFrameSize| above.
+  // See |FrozenFrameSize| above. Stored in CSS pixel (without DSF multiplied.)
   absl::optional<PhysicalSize> frozen_frame_size_;
   absl::optional<PhysicalRect> content_rect_;
   bool should_freeze_frame_size_on_next_layout_ = false;

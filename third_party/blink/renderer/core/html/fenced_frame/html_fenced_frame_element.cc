@@ -492,9 +492,10 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
   DCHECK(!features::IsFencedFramesMPArchBased());
   DCHECK(content_rect_);
-  DCHECK(frozen_frame_size_);
-  const double child_width = frozen_frame_size_->width.ToDouble();
-  const double child_height = frozen_frame_size_->height.ToDouble();
+  const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize();
+  DCHECK(frozen_size);
+  const double child_width = frozen_size->width.ToDouble();
+  const double child_height = frozen_size->height.ToDouble();
   // TODO(kojii): Theoritically this `transform` is the same as `object-fit:
   // contain`, but `<iframe>` does not support the `object-fit` property today.
   // We can change to use the `object-fit` property and stop the resize-observer
