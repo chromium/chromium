@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"

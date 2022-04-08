@@ -8,6 +8,7 @@
 #include <deque>
 
 #include "base/memory/raw_ptr.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"

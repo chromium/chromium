@@ -5,14 +5,19 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 
+#include <deque>
 #include <queue>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "url/origin.h"
 
 namespace base {
@@ -54,13 +59,14 @@ class TestDatabaseOperationReceiver {
       DB_DELETE = 6,
       DB_CLEAR = 7,
       DB_LENGTH = 8,
-      DB_KEY = 9,
-      DB_PURGE_MATCHING = 10,
-      DB_PURGE_STALE = 11,
-      DB_FETCH_ORIGINS = 12,
-      DB_IS_OPEN = 13,
-      DB_STATUS = 14,
-      DB_OVERRIDE_TIME = 15,
+      DB_KEYS = 9,
+      DB_ENTRIES = 10,
+      DB_PURGE_MATCHING = 11,
+      DB_PURGE_STALE = 12,
+      DB_FETCH_ORIGINS = 13,
+      DB_IS_OPEN = 14,
+      DB_STATUS = 15,
+      DB_OVERRIDE_TIME = 16,
     } type;
     url::Origin origin;
     std::vector<std::u16string> params;
@@ -179,6 +185,83 @@ class OriginMatcherFunctionUtility {
 
  private:
   std::vector<OriginMatcherFunction> matcher_table_;
+};
+
+class TestSharedStorageEntriesListener
+    : public shared_storage_worklet::mojom::SharedStorageEntriesListener {
+ public:
+  explicit TestSharedStorageEntriesListener(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~TestSharedStorageEntriesListener() override;
+
+  void DidReadEntries(
+      bool success,
+      const std::string& error_message,
+      std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+          entries,
+      bool has_more_entries) override;
+
+  [[nodiscard]] mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  BindNewPipeAndPassRemote();
+
+  void Flush();
+
+  void VerifyNoError() const;
+
+  [[nodiscard]] std::string error_message() const { return error_message_; }
+
+  [[nodiscard]] size_t BatchCount() const;
+
+  [[nodiscard]] std::vector<std::u16string> TakeKeys();
+
+  [[nodiscard]] std::vector<std::pair<std::u16string, std::u16string>>
+  TakeEntries();
+
+ private:
+  mojo::Receiver<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      receiver_{this};
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::string error_message_;
+  std::deque<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+      entries_;
+  std::vector<bool> has_more_;
+};
+
+class TestSharedStorageEntriesListenerUtility {
+ public:
+  explicit TestSharedStorageEntriesListenerUtility(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~TestSharedStorageEntriesListenerUtility();
+
+  [[nodiscard]] size_t RegisterListener();
+
+  [[nodiscard]] mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  BindNewPipeAndPassRemoteForId(size_t id);
+
+  void FlushForId(size_t id);
+
+  void VerifyNoErrorForId(size_t id);
+
+  [[nodiscard]] std::string ErrorMessageForId(size_t id);
+
+  [[nodiscard]] size_t BatchCountForId(size_t id);
+
+  [[nodiscard]] std::vector<std::u16string> TakeKeysForId(size_t id);
+
+  [[nodiscard]] std::vector<std::pair<std::u16string, std::u16string>>
+  TakeEntriesForId(size_t id);
+
+  [[nodiscard]] bool is_empty() const { return listener_table_.empty(); }
+
+  [[nodiscard]] size_t size() const { return listener_table_.size(); }
+
+ private:
+  [[nodiscard]] TestSharedStorageEntriesListener* GetListenerForId(size_t id);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::deque<TestSharedStorageEntriesListener> listener_table_;
 };
 
 // Wraps a bool indicating if the database is in memory only,

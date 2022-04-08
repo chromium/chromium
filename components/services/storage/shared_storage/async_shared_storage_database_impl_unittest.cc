@@ -30,6 +30,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sql/database.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -372,24 +373,65 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void Key(url::Origin context_origin, int index, GetResult* out_key) {
-    DCHECK(out_key);
+  void Keys(url::Origin context_origin,
+            TestSharedStorageEntriesListenerUtility* listener_utility,
+            int listener_id,
+            OperationResult* out_result) {
+    DCHECK(out_result);
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    auto callback = receiver_->MakeGetResultCallback(
-        DBOperation(Type::DB_KEY, context_origin,
-                    {base::NumberToString16(index)}),
-        out_key);
-    async_database_->Key(std::move(context_origin), index, std::move(callback));
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_KEYS, context_origin,
+                    {base::NumberToString16(listener_id)}),
+        out_result);
+    async_database_->Keys(
+        std::move(context_origin),
+        listener_utility->BindNewPipeAndPassRemoteForId(listener_id),
+        std::move(callback));
   }
 
-  GetResult KeySync(url::Origin context_origin, int index) {
+  OperationResult KeysSync(
+      url::Origin context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          listener) {
     DCHECK(async_database_);
 
-    base::test::TestFuture<GetResult> future;
-    async_database_->Key(std::move(context_origin), index,
-                         future.GetCallback());
+    base::test::TestFuture<OperationResult> future;
+    async_database_->Keys(std::move(context_origin), std::move(listener),
+                          future.GetCallback());
+    return future.Get();
+  }
+
+  void Entries(url::Origin context_origin,
+               TestSharedStorageEntriesListenerUtility* listener_utility,
+               int listener_id,
+               OperationResult* out_result) {
+    DCHECK(out_result);
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_ENTRIES, context_origin,
+                    {base::NumberToString16(listener_id)}),
+        out_result);
+    async_database_->Entries(
+        std::move(context_origin),
+        listener_utility->BindNewPipeAndPassRemoteForId(listener_id),
+        std::move(callback));
+  }
+
+  OperationResult EntriesSync(
+      url::Origin context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          listener) {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<OperationResult> future;
+    async_database_->Entries(std::move(context_origin), std::move(listener),
+                             future.GetCallback());
     return future.Get();
   }
 
@@ -631,8 +673,28 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncOperations) {
             base::StrCat({u"value1", u"value1"}));
   EXPECT_EQ(2, LengthSync(kOrigin1));
 
-  EXPECT_EQ(KeySync(kOrigin1, 0).data, u"key1");
-  EXPECT_EQ(KeySync(kOrigin1, 1).data, u"key2");
+  TestSharedStorageEntriesListenerUtility listener_utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = listener_utility.RegisterListener();
+  EXPECT_EQ(
+      OperationResult::kSuccess,
+      KeysSync(kOrigin1, listener_utility.BindNewPipeAndPassRemoteForId(id1)));
+  listener_utility.FlushForId(id1);
+  EXPECT_THAT(listener_utility.TakeKeysForId(id1),
+              ElementsAre(u"key1", u"key2"));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id1));
+  listener_utility.VerifyNoErrorForId(id1);
+
+  size_t id2 = listener_utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            EntriesSync(kOrigin1,
+                        listener_utility.BindNewPipeAndPassRemoteForId(id2)));
+  listener_utility.FlushForId(id2);
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
+              ElementsAre(std::make_pair(u"key1", u"value1value1"),
+                          std::make_pair(u"key2", u"value1")));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
+  listener_utility.VerifyNoErrorForId(id2);
 
   EXPECT_EQ(OperationResult::kSuccess, ClearSync(kOrigin1));
   EXPECT_EQ(0, LengthSync(kOrigin1));
@@ -641,6 +703,10 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncOperations) {
 // Verifies that the async operations are executed in order and without races.
 TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
+  TestSharedStorageEntriesListenerUtility listener_utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = listener_utility.RegisterListener();
+  size_t id2 = listener_utility.RegisterListener();
 
   std::queue<DBOperation> operation_list(
       {{Type::DB_SET,
@@ -670,8 +736,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
        {Type::DB_APPEND, kOrigin1, {u"key1", u"value1"}},
        {Type::DB_GET, kOrigin1, {u"key1"}},
        {Type::DB_LENGTH, kOrigin1},
-       {Type::DB_KEY, kOrigin1, {base::NumberToString16(0)}},
-       {Type::DB_KEY, kOrigin1, {base::NumberToString16(1)}},
+       {Type::DB_KEYS, kOrigin1, {base::NumberToString16(id1)}},
+       {Type::DB_ENTRIES, kOrigin1, {base::NumberToString16(id2)}},
        {Type::DB_CLEAR, kOrigin1},
        {Type::DB_LENGTH, kOrigin1}});
 
@@ -711,13 +777,14 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
   int length4 = -1;
   Length(kOrigin1, &length4);
 
-  GetResult key1;
-  Key(kOrigin1, 0, &key1);
-  GetResult key2;
-  Key(kOrigin1, 1, &key2);
-
   OperationResult result7 = OperationResult::kSqlError;
-  Clear(kOrigin1, &result7);
+  Keys(kOrigin1, &listener_utility, id1, &result7);
+
+  OperationResult result8 = OperationResult::kSqlError;
+  Entries(kOrigin1, &listener_utility, id2, &result8);
+
+  OperationResult result9 = OperationResult::kSqlError;
+  Clear(kOrigin1, &result9);
   int length5 = -1;
   Length(kOrigin1, &length5);
 
@@ -743,10 +810,22 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
   EXPECT_EQ(value5.data, u"value1value1");
   EXPECT_EQ(2, length4);
 
-  EXPECT_EQ(key1.data, u"key1");
-  EXPECT_EQ(key2.data, u"key2");
-
   EXPECT_EQ(OperationResult::kSuccess, result7);
+  listener_utility.FlushForId(id1);
+  EXPECT_THAT(listener_utility.TakeKeysForId(id1),
+              ElementsAre(u"key1", u"key2"));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id1));
+  listener_utility.VerifyNoErrorForId(id1);
+  listener_utility.FlushForId(id2);
+
+  EXPECT_EQ(OperationResult::kSuccess, result8);
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
+              ElementsAre(std::make_pair(u"key1", u"value1value1"),
+                          std::make_pair(u"key2", u"value1")));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
+  listener_utility.VerifyNoErrorForId(id2);
+
+  EXPECT_EQ(OperationResult::kSuccess, result9);
   EXPECT_EQ(0, length5);
 }
 
@@ -1052,11 +1131,14 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   operation_list.push(DBOperation(Type::DB_TRIM_MEMORY));
   operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
-  operation_list.push(DBOperation(Type::DB_GET, kOrigin2, {u"key1"}));
-  operation_list.push(DBOperation(Type::DB_GET, kOrigin4, {u"key1"}));
-  operation_list.push(DBOperation(Type::DB_GET, kOrigin4, {u"key2"}));
-  operation_list.push(DBOperation(Type::DB_GET, kOrigin4, {u"key3"}));
-  operation_list.push(DBOperation(Type::DB_GET, kOrigin4, {u"key4"}));
+  TestSharedStorageEntriesListenerUtility listener_utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = listener_utility.RegisterListener();
+  operation_list.push(
+      DBOperation(Type::DB_ENTRIES, kOrigin2, {base::NumberToString16(id1)}));
+  size_t id2 = listener_utility.RegisterListener();
+  operation_list.push(
+      DBOperation(Type::DB_ENTRIES, kOrigin4, {base::NumberToString16(id2)}));
 
   SetExpectedOperationList(std::move(operation_list));
 
@@ -1154,16 +1236,10 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   std::vector<mojom::StorageUsageInfoPtr> infos4;
   FetchOrigins(&infos4);
 
-  GetResult value1;
-  Get(kOrigin2, u"key1", &value1);
-  GetResult value2;
-  Get(kOrigin4, u"key1", &value2);
-  GetResult value3;
-  Get(kOrigin4, u"key2", &value3);
-  GetResult value4;
-  Get(kOrigin4, u"key3", &value4);
-  GetResult value5;
-  Get(kOrigin4, u"key4", &value5);
+  OperationResult result14 = OperationResult::kSqlError;
+  Entries(kOrigin2, &listener_utility, id1, &result14);
+  OperationResult result15 = OperationResult::kSqlError;
+  Entries(kOrigin4, &listener_utility, id2, &result15);
 
   WaitForOperations();
   EXPECT_TRUE(is_finished());
@@ -1233,16 +1309,22 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   // Database is still intact after trimming memory.
-  EXPECT_EQ(value1.data, u"value1");
-  EXPECT_EQ(OperationResult::kSuccess, value1.result);
-  EXPECT_EQ(value2.data, u"value1");
-  EXPECT_EQ(OperationResult::kSuccess, value2.result);
-  EXPECT_EQ(value3.data, u"value2");
-  EXPECT_EQ(OperationResult::kSuccess, value3.result);
-  EXPECT_EQ(value4.data, u"value3");
-  EXPECT_EQ(OperationResult::kSuccess, value4.result);
-  EXPECT_EQ(value5.data, u"value4");
-  EXPECT_EQ(OperationResult::kSuccess, value5.result);
+  EXPECT_EQ(OperationResult::kSuccess, result14);
+  listener_utility.FlushForId(id1);
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id1),
+              ElementsAre(std::make_pair(u"key1", u"value1")));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id1));
+  listener_utility.VerifyNoErrorForId(id1);
+
+  EXPECT_EQ(OperationResult::kSuccess, result15);
+  listener_utility.FlushForId(id2);
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
+              ElementsAre(std::make_pair(u"key1", u"value1"),
+                          std::make_pair(u"key2", u"value2"),
+                          std::make_pair(u"key3", u"value3"),
+                          std::make_pair(u"key4", u"value4")));
+  EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
+  listener_utility.VerifyNoErrorForId(id2);
 }
 
 class AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest

@@ -14,7 +14,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace base {
 class Time;
@@ -55,12 +57,12 @@ class AsyncSharedStorageDatabase {
   virtual void Destroy(base::OnceCallback<void(bool)> callback) = 0;
 
   // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
-  // `Length()`, `Key()`, `PurgeMatchingOrigins()`, `PurgeStaleOrigins()`, and
-  // `FetchOrigins()` are all async versions of the corresponding methods in
-  // `storage::SharedStorageDatabase`, with the modification that `Set()` and
-  // `Append()` take a boolean callback to indicate that a value was set or
-  // appended, rather than a long integer callback with the row number for the
-  // next available row.
+  // `Length()`, `Keys()`, `Entries()`, `PurgeMatchingOrigins()`,
+  // `PurgeStaleOrigins()`, and `FetchOrigins()` are all async versions of the
+  // corresponding methods in `storage::SharedStorageDatabase`, with the
+  // modification that `Set()` and `Append()` take a boolean callback to
+  // indicate that a value was set or appended, rather than a long integer
+  // callback with the row number for the next available row.
   //
   // It is OK to call these async methods even if the database has failed to
   // initialize, as there is an alternate code path to handle this case that
@@ -141,17 +143,28 @@ class AsyncSharedStorageDatabase {
   virtual void Length(url::Origin context_origin,
                       base::OnceCallback<void(int)> callback) = 0;
 
-  // If a list of all the keys for `context_origin` are taken in lexicographic
-  // order, retrieves the `key` at `index` of the list and calls `callback` with
-  // a struct bundling it as a parameter (along with a OperationResult to
-  // indicate whether the transaction was free of database errors); otherwise
-  // calls `callback` with `absl::nullopt` in the data field of the struct.
-  // `index` must be non-negative.
-  //
-  // TODO(crbug.com/1247861): Replace with an async iterator.
-  virtual void Key(url::Origin context_origin,
-                   int index,
-                   base::OnceCallback<void(GetResult)> callback) = 0;
+  // From a list of all the keys for `context_origin` taken in lexicographic
+  // order, send batches of keys to the Shared Storage worklet's async iterator
+  // via a remote that consumes `pending_listener`. Calls `callback` with an
+  // OperationResult to indicate whether the transaction was successful.
+  virtual void Keys(
+      url::Origin context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener,
+      base::OnceCallback<void(OperationResult)> callback) = 0;
+
+  // From a list of all the key-value pairs for `context_origin` taken in
+  // lexicographic order, send batches of key-value pairs to the Shared Storage
+  // worklet's async iterator via a remote that consumes `pending_listener`.
+  // Calls `callback` with an OperationResult to indicate whether the
+  // transaction was successful.
+  virtual void Entries(
+      url::Origin context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener,
+      base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Clears all origins that match `origin_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between

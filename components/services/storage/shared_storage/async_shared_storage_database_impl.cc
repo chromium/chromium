@@ -120,14 +120,27 @@ void AsyncSharedStorageDatabaseImpl::Length(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabaseImpl::Key(
+void AsyncSharedStorageDatabaseImpl::Keys(
     url::Origin context_origin,
-    int index,
-    base::OnceCallback<void(GetResult)> callback) {
-  DCHECK_GE(index, 0);
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+        pending_listener,
+    base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(database_);
-  database_.AsyncCall(&SharedStorageDatabase::Key)
-      .WithArgs(std::move(context_origin), static_cast<uint64_t>(index))
+  database_.AsyncCall(&SharedStorageDatabase::Keys)
+      .WithArgs(std::move(context_origin), std::move(pending_listener))
+      .Then(std::move(callback));
+}
+
+void AsyncSharedStorageDatabaseImpl::Entries(
+    url::Origin context_origin,
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+        pending_listener,
+    base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::Entries)
+      .WithArgs(std::move(context_origin), std::move(pending_listener))
       .Then(std::move(callback));
 }
 

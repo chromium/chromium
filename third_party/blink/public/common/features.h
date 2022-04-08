@@ -97,6 +97,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // Maximum number of tries to initialize the database.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMaxSharedStorageInitTries;
+// The maximum number of keys or key-value pairs returned in each batch by
+// the async `keys()` and `entries()` iterators, respectively.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageIteratorBatchSize;
 // The length of the initial interval from service startup after which
 // SharedStorageManager first checks for any stale origins, purging any that it
 // finds.

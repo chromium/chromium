@@ -4,6 +4,8 @@
 
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
 
+#include <deque>
+#include <iterator>
 #include <queue>
 #include <string>
 #include <utility>
@@ -15,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "sql/database.h"
 #include "sql/test/test_helpers.h"
@@ -43,7 +46,8 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(
     : type(type), origin(std::move(origin)), params(std::move(params)) {
   DCHECK(type == Type::DB_GET || type == Type::DB_SET ||
          type == Type::DB_APPEND || type == Type::DB_DELETE ||
-         type == Type::DB_KEY || type == Type::DB_OVERRIDE_TIME);
+         type == Type::DB_KEYS || type == Type::DB_ENTRIES ||
+         type == Type::DB_OVERRIDE_TIME);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(
@@ -334,6 +338,127 @@ OriginMatcherFunction OriginMatcherFunctionUtility::TakeMatcherFunctionForId(
     size_t id) {
   DCHECK_LT(id, matcher_table_.size());
   return std::move(matcher_table_[id]);
+}
+
+TestSharedStorageEntriesListener::TestSharedStorageEntriesListener(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {}
+
+TestSharedStorageEntriesListener::~TestSharedStorageEntriesListener() = default;
+
+void TestSharedStorageEntriesListener::DidReadEntries(
+    bool success,
+    const std::string& error_message,
+    std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+        entries,
+    bool has_more_entries) {
+  if (!success) {
+    error_message_ = error_message;
+    return;
+  }
+
+  using iter_type = std::vector<
+      shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>::iterator;
+  entries_.insert(entries_.end(),
+                  std::move_iterator<iter_type>(entries.begin()),
+                  std::move_iterator<iter_type>(entries.end()));
+  has_more_.push_back(has_more_entries);
+}
+
+mojo::PendingRemote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+TestSharedStorageEntriesListener::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote(task_runner_);
+}
+
+void TestSharedStorageEntriesListener::Flush() {
+  receiver_.FlushForTesting();
+}
+
+void TestSharedStorageEntriesListener::VerifyNoError() const {
+  DCHECK(!has_more_.empty());
+  for (size_t i = 0; i < has_more_.size() - 1; i++)
+    EXPECT_TRUE(has_more_[i]);
+  EXPECT_FALSE(has_more_.back());
+  EXPECT_TRUE(error_message_.empty());
+}
+
+size_t TestSharedStorageEntriesListener::BatchCount() const {
+  return has_more_.size();
+}
+
+std::vector<std::u16string> TestSharedStorageEntriesListener::TakeKeys() {
+  std::vector<std::u16string> keys;
+  while (!entries_.empty()) {
+    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr entry =
+        std::move(entries_.front());
+    entries_.pop_front();
+    keys.emplace_back(std::move(entry->key));
+  }
+  return keys;
+}
+
+std::vector<std::pair<std::u16string, std::u16string>>
+TestSharedStorageEntriesListener::TakeEntries() {
+  std::vector<std::pair<std::u16string, std::u16string>> entries;
+  while (!entries_.empty()) {
+    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr entry =
+        std::move(entries_.front());
+    entries_.pop_front();
+    entries.emplace_back(std::move(entry->key), std::move(entry->value));
+  }
+  return entries;
+}
+
+TestSharedStorageEntriesListenerUtility::
+    TestSharedStorageEntriesListenerUtility(
+        scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {}
+
+TestSharedStorageEntriesListenerUtility::
+    ~TestSharedStorageEntriesListenerUtility() = default;
+
+size_t TestSharedStorageEntriesListenerUtility::RegisterListener() {
+  listener_table_.emplace_back(task_runner_);
+  return listener_table_.size() - 1;
+}
+
+mojo::PendingRemote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+TestSharedStorageEntriesListenerUtility::BindNewPipeAndPassRemoteForId(
+    size_t id) {
+  return GetListenerForId(id)->BindNewPipeAndPassRemote();
+}
+
+void TestSharedStorageEntriesListenerUtility::FlushForId(size_t id) {
+  GetListenerForId(id)->Flush();
+}
+
+void TestSharedStorageEntriesListenerUtility::VerifyNoErrorForId(size_t id) {
+  GetListenerForId(id)->VerifyNoError();
+}
+
+std::string TestSharedStorageEntriesListenerUtility::ErrorMessageForId(
+    size_t id) {
+  return GetListenerForId(id)->error_message();
+}
+
+size_t TestSharedStorageEntriesListenerUtility::BatchCountForId(size_t id) {
+  return GetListenerForId(id)->BatchCount();
+}
+
+std::vector<std::u16string>
+TestSharedStorageEntriesListenerUtility::TakeKeysForId(size_t id) {
+  return GetListenerForId(id)->TakeKeys();
+}
+
+std::vector<std::pair<std::u16string, std::u16string>>
+TestSharedStorageEntriesListenerUtility::TakeEntriesForId(size_t id) {
+  return GetListenerForId(id)->TakeEntries();
+}
+
+TestSharedStorageEntriesListener*
+TestSharedStorageEntriesListenerUtility::GetListenerForId(size_t id) {
+  DCHECK_LT(id, listener_table_.size());
+  return &listener_table_[id];
 }
 
 std::vector<SharedStorageWrappedBool> GetSharedStorageWrappedBools() {

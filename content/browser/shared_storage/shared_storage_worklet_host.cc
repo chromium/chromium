@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"

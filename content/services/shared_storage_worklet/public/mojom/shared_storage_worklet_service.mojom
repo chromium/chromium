@@ -6,31 +6,12 @@ module shared_storage_worklet.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import
+"components/services/storage/shared_storage/public/mojom/shared_storage.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// Used to denote a shared storage's key, value, or the [key, value] pair. This
-// would unify the handling for different type of iterators, such as for
-// sharedStorage.keys() and for sharedStorage.entries().
-struct SharedStorageKeyAndOrValue {
-  mojo_base.mojom.String16 key;
-  mojo_base.mojom.String16 value;
-};
-
-// Used by the SharedStorageWorkletServiceClient receiver (i.e. the worklet
-// environment) to listen for new entries sent from the browser process.
-interface SharedStorageEntriesListener {
-  // Called by the SharedStorageWorkletServiceClient remote (i.e. in the browser
-  // process) when some entries have been obtained. `has_more_entries` is false
-  // when all the entries have been obtained, and indicates that the callback
-  // will not be called again.
-  DidReadEntries(
-      bool success, string error_message,
-      array<SharedStorageKeyAndOrValue> entries,
-      bool has_more_entries);
-};
 
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.

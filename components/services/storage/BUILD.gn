@@ -97,6 +97,7 @@ source_set("storage") {
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
     "//components/services/storage/public/mojom",
     "//components/services/storage/service_worker:service_worker_proto",
+    "//components/services/storage/shared_storage/public/mojom",
     "//mojo/public/cpp/bindings",
     "//sql",
     "//third_party/abseil-cpp:absl",
@@ -154,6 +155,7 @@ bundle_data("tests_bundle_data") {
   sources = [
     "//components/test/data/storage/shared_storage.v0.init_too_old.sql",
     "//components/test/data/storage/shared_storage.v1.init_too_new.sql",
+    "//components/test/data/storage/shared_storage.v1.iterator.sql",
     "//components/test/data/storage/shared_storage.v1.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +

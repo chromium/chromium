@@ -93,9 +93,16 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
              base::OnceCallback<void(OperationResult)> callback) override;
   void Length(url::Origin context_origin,
               base::OnceCallback<void(int)> callback) override;
-  void Key(url::Origin context_origin,
-           int index,
-           base::OnceCallback<void(GetResult)> callback) override;
+  void Keys(url::Origin context_origin,
+            mojo::PendingRemote<
+                shared_storage_worklet::mojom::SharedStorageEntriesListener>
+                pending_listener,
+            base::OnceCallback<void(OperationResult)> callback) override;
+  void Entries(url::Origin context_origin,
+               mojo::PendingRemote<
+                   shared_storage_worklet::mojom::SharedStorageEntriesListener>
+                   pending_listener,
+               base::OnceCallback<void(OperationResult)> callback) override;
   void PurgeMatchingOrigins(OriginMatcherFunction origin_matcher,
                             base::Time begin,
                             base::Time end,

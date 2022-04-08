@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -43,7 +44,9 @@ using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 
 const int kMaxEntriesPerOrigin = 5;
+const int kMaxEntriesPerOriginForIteratorTest = 1000;
 const int kMaxStringLength = 100;
+const int kMaxBatchSizeForIteratorTest = 25;
 
 }  // namespace
 
@@ -120,7 +123,16 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
 
   url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
   EXPECT_EQ(db_->Get(chromium_org, u"a").data, u"");
-  EXPECT_EQ(db_->Key(chromium_org, 2UL).data, u"c");
+
+  TestSharedStorageEntriesListener listener(
+      task_environment_.GetMainThreadTaskRunner());
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(chromium_org, listener.BindNewPipeAndPassRemote()));
+  listener.Flush();
+  EXPECT_THAT(listener.TakeKeys(), ElementsAre(u"a", u"b", u"c"));
+  EXPECT_EQ("", listener.error_message());
+  EXPECT_EQ(1U, listener.BatchCount());
+  listener.VerifyNoError();
 
   url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
   EXPECT_EQ(
@@ -198,7 +210,6 @@ TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
   EXPECT_EQ(OperationResult::kInitFailure, db_->Delete(kOrigin, u"key"));
   EXPECT_EQ(OperationResult::kInitFailure, db_->Clear(kOrigin));
   EXPECT_EQ(-1, db_->Length(kOrigin));
-  EXPECT_EQ(OperationResult::kInitFailure, db_->Key(kOrigin, 0).result);
   EXPECT_EQ(OperationResult::kInitFailure,
             db_->PurgeMatchingOrigins(OriginMatcherFunction(),
                                       base::Time::Min(), base::Time::Max(),
@@ -364,31 +375,128 @@ TEST_P(SharedStorageDatabaseParamTest, Length) {
   EXPECT_EQ(0L, db_->Length(kOrigin2));
 }
 
-TEST_P(SharedStorageDatabaseParamTest, Key) {
+TEST_P(SharedStorageDatabaseParamTest, Keys) {
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_FALSE(db_->Key(kOrigin1, 0UL).data);
+  TestSharedStorageEntriesListenerUtility utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin1, utility.BindNewPipeAndPassRemoteForId(id1)));
+  utility.FlushForId(id1);
+  EXPECT_TRUE(utility.TakeKeysForId(id1).empty());
+  EXPECT_EQ(1U, utility.BatchCountForId(id1));
+  utility.VerifyNoErrorForId(id1);
+
+  EXPECT_EQ(InitStatus::kUnattempted, db_->DBStatusForTesting());
 
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
-  EXPECT_EQ(db_->Key(kOrigin1, 0UL).data, u"key1");
-  EXPECT_EQ(db_->Key(kOrigin1, 1UL).data, u"key2");
-  EXPECT_FALSE(db_->Key(kOrigin1, 2UL).data);
+
+  size_t id2 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin1, utility.BindNewPipeAndPassRemoteForId(id2)));
+  utility.FlushForId(id2);
+  EXPECT_THAT(utility.TakeKeysForId(id2), ElementsAre(u"key1", u"key2"));
+  EXPECT_EQ(1U, utility.BatchCountForId(id2));
+  utility.VerifyNoErrorForId(id2);
 
   const url::Origin kOrigin2 =
       url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_FALSE(db_->Key(kOrigin2, 0UL).data);
+  size_t id3 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id3)));
+  utility.FlushForId(id3);
+  EXPECT_TRUE(utility.TakeKeysForId(id3).empty());
+  EXPECT_EQ(1U, utility.BatchCountForId(id3));
+  utility.VerifyNoErrorForId(id3);
 
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key3", u"value3"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key2", u"value2"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value1"));
-  EXPECT_EQ(db_->Key(kOrigin2, 0UL).data, u"key1");
-  EXPECT_EQ(db_->Key(kOrigin2, 1UL).data, u"key2");
+
+  size_t id4 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id4)));
+  utility.FlushForId(id4);
+  EXPECT_THAT(utility.TakeKeysForId(id4),
+              ElementsAre(u"key1", u"key2", u"key3"));
+  EXPECT_EQ(1U, utility.BatchCountForId(id4));
+  utility.VerifyNoErrorForId(id4);
 
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key2"));
-  EXPECT_EQ(db_->Key(kOrigin2, 0UL).data, u"key1");
 
-  // There is no longer a key at this index.
-  EXPECT_FALSE(db_->Key(kOrigin2, 1UL).data);
+  size_t id5 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id5)));
+  utility.FlushForId(id5);
+  EXPECT_THAT(utility.TakeKeysForId(id5), ElementsAre(u"key1", u"key3"));
+  EXPECT_EQ(1U, utility.BatchCountForId(id5));
+  utility.VerifyNoErrorForId(id5);
+}
+
+TEST_P(SharedStorageDatabaseParamTest, Entries) {
+  url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
+  TestSharedStorageEntriesListenerUtility utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin1, utility.BindNewPipeAndPassRemoteForId(id1)));
+  utility.FlushForId(id1);
+  EXPECT_TRUE(utility.TakeEntriesForId(id1).empty());
+  EXPECT_EQ(1U, utility.BatchCountForId(id1));
+  utility.VerifyNoErrorForId(id1);
+
+  EXPECT_EQ(InitStatus::kUnattempted, db_->DBStatusForTesting());
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
+
+  size_t id2 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin1, utility.BindNewPipeAndPassRemoteForId(id2)));
+  utility.FlushForId(id2);
+  EXPECT_THAT(utility.TakeEntriesForId(id2),
+              ElementsAre(std::make_pair(u"key1", u"value1"),
+                          std::make_pair(u"key2", u"value2")));
+  EXPECT_EQ(1U, utility.BatchCountForId(id2));
+  utility.VerifyNoErrorForId(id2);
+
+  url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
+  size_t id3 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id3)));
+  utility.FlushForId(id3);
+  EXPECT_TRUE(utility.TakeEntriesForId(id3).empty());
+  EXPECT_EQ(1U, utility.BatchCountForId(id3));
+  utility.VerifyNoErrorForId(id3);
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key3", u"value3"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key2", u"value2"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value1"));
+
+  size_t id4 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id4)));
+  utility.FlushForId(id4);
+  EXPECT_THAT(utility.TakeEntriesForId(id4),
+              ElementsAre(std::make_pair(u"key1", u"value1"),
+                          std::make_pair(u"key2", u"value2"),
+                          std::make_pair(u"key3", u"value3")));
+  EXPECT_EQ(1U, utility.BatchCountForId(id4));
+  utility.VerifyNoErrorForId(id4);
+
+  EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key2"));
+
+  size_t id5 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id5)));
+  utility.FlushForId(id5);
+  EXPECT_THAT(utility.TakeEntriesForId(id5),
+              ElementsAre(std::make_pair(u"key1", u"value1"),
+                          std::make_pair(u"key3", u"value3")));
+  EXPECT_EQ(1U, utility.BatchCountForId(id5));
+  utility.VerifyNoErrorForId(id5);
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Clear) {
@@ -828,6 +936,89 @@ TEST_P(SharedStorageDatabaseParamTest, MaxStringLength) {
   // This key has the maximum allowed length.
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, kLongString, u"value1"));
   EXPECT_EQ(2L, db_->Length(kOrigin1));
+}
+
+class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
+ public:
+  void SetUp() override {
+    SharedStorageDatabaseTest::SetUp();
+
+    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
+    db_ = std::make_unique<SharedStorageDatabase>(
+        file_name_, special_storage_policy_, std::move(options));
+  }
+
+  void InitSharedStorageFeature() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        {blink::features::kSharedStorageAPI},
+        {{"MaxSharedStorageEntriesPerOrigin",
+          base::NumberToString(kMaxEntriesPerOriginForIteratorTest)},
+         {"MaxSharedStorageStringLength",
+          base::NumberToString(kMaxStringLength)},
+         {"MaxSharedStorageIteratorBatchSize",
+          base::NumberToString(kMaxBatchSizeForIteratorTest)}});
+  }
+};
+
+TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
+  db_ = LoadFromFile("shared_storage.v1.iterator.sql");
+  ASSERT_TRUE(db_);
+
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  TestSharedStorageEntriesListenerUtility utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(google_com, utility.BindNewPipeAndPassRemoteForId(id1)));
+  utility.FlushForId(id1);
+  EXPECT_EQ(201U, utility.TakeKeysForId(id1).size());
+
+  // Batch size is 25 for this test.
+  EXPECT_EQ(9U, utility.BatchCountForId(id1));
+  utility.VerifyNoErrorForId(id1);
+
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  size_t id2 = utility.RegisterListener();
+  EXPECT_EQ(
+      OperationResult::kSuccess,
+      db_->Keys(chromium_org, utility.BindNewPipeAndPassRemoteForId(id2)));
+  utility.FlushForId(id2);
+  EXPECT_EQ(26U, utility.TakeKeysForId(id2).size());
+
+  // Batch size is 25 for this test.
+  EXPECT_EQ(2U, utility.BatchCountForId(id2));
+  utility.VerifyNoErrorForId(id2);
+}
+
+TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
+  db_ = LoadFromFile("shared_storage.v1.iterator.sql");
+  ASSERT_TRUE(db_);
+
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  TestSharedStorageEntriesListenerUtility utility(
+      task_environment_.GetMainThreadTaskRunner());
+  size_t id1 = utility.RegisterListener();
+  EXPECT_EQ(
+      OperationResult::kSuccess,
+      db_->Entries(google_com, utility.BindNewPipeAndPassRemoteForId(id1)));
+  utility.FlushForId(id1);
+  EXPECT_EQ(201U, utility.TakeEntriesForId(id1).size());
+
+  // Batch size is 25 for this test.
+  EXPECT_EQ(9U, utility.BatchCountForId(id1));
+  utility.VerifyNoErrorForId(id1);
+
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  size_t id2 = utility.RegisterListener();
+  EXPECT_EQ(
+      OperationResult::kSuccess,
+      db_->Entries(chromium_org, utility.BindNewPipeAndPassRemoteForId(id2)));
+  utility.FlushForId(id2);
+  EXPECT_EQ(26U, utility.TakeEntriesForId(id2).size());
+
+  // Batch size is 25 for this test.
+  EXPECT_EQ(2U, utility.BatchCountForId(id2));
+  utility.VerifyNoErrorForId(id2);
 }
 
 }  // namespace storage

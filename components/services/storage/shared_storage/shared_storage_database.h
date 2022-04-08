@@ -19,6 +19,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -204,14 +206,25 @@ class SharedStorageDatabase {
   // TODO(crbug.com/1277662): Consider renaming to something more descriptive.
   [[nodiscard]] int64_t Length(url::Origin context_origin);
 
-  // If a list of all the keys for `context_origin` are taken in lexicographic
-  // order, retrieves the `key` at `index` of the list and sets it as
-  // data in the returned struct; otherwise the struct holds `absl::nullopt` if
-  // no such `key` exists.  The `GetResult` struct also has a bool
-  // `success` indicating whether the transaction was free of errors.
-  //
-  // TODO(crbug.com/1247861): Replace with an async iterator.
-  [[nodiscard]] GetResult Key(url::Origin context_origin, uint64_t index);
+  // From a list of all the keys for `context_origin` taken in lexicographic
+  // order, send batches of keys to the Shared Storage worklet's async iterator
+  // via a remote that consumes `pending_listener`. Returns whether the
+  // operation was successful.
+  [[nodiscard]] OperationResult Keys(
+      const url::Origin& context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener);
+
+  // From a list of all the key-value pairs for `context_origin` taken in
+  // lexicographic order, send batches of key-value pairs to the Shared Storage
+  // worklet's async iterator via a remote that consumes `pending_listener`.
+  // Returns whether the operation was successful.
+  [[nodiscard]] OperationResult Entries(
+      const url::Origin& context_origin,
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener);
 
   // Clears all origins that match `origin_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
@@ -389,6 +402,10 @@ class SharedStorageDatabase {
 
   // Maxmium number of times that SQL database attempts to initialize.
   size_t max_init_tries_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maximum number of keys or key-value pairs returned per batch by the
+  // async `Keys()` and `Entries()` iterators, respectively.
+  size_t max_iterator_batch_size_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Clock used to determine current time. Can be overridden in tests.
   raw_ptr<base::Clock> clock_ GUARDED_BY_CONTEXT(sequence_checker_);

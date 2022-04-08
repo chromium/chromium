@@ -158,20 +158,26 @@ void SharedStorageManager::Length(url::Origin context_origin,
   database_->Length(std::move(context_origin), std::move(new_callback));
 }
 
-void SharedStorageManager::Key(url::Origin context_origin,
-                               int index,
-                               base::OnceCallback<void(GetResult)> callback) {
+void SharedStorageManager::Keys(
+    url::Origin context_origin,
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+        pending_listener,
+    base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(database_);
-  auto new_callback = base::BindOnce(
-      [](base::WeakPtr<SharedStorageManager> manager,
-         base::OnceCallback<void(GetResult)> callback, GetResult result) {
-        if (manager)
-          manager->OnOperationResult(result.result);
-        std::move(callback).Run(result);
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  database_->Keys(std::move(context_origin), std::move(pending_listener),
+                  GetOperationResultCallback(std::move(callback)));
+}
 
-  database_->Key(std::move(context_origin), index, std::move(new_callback));
+void SharedStorageManager::Entries(
+    url::Origin context_origin,
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+        pending_listener,
+    base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(database_);
+  database_->Entries(std::move(context_origin), std::move(pending_listener),
+                     GetOperationResultCallback(std::move(callback)));
 }
 
 void SharedStorageManager::Clear(

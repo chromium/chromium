@@ -17,6 +17,8 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "components/services/storage/shared_storage/async_shared_storage_database.h"
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
 
 namespace base {
@@ -156,15 +158,26 @@ class SharedStorageManager {
   void Length(url::Origin context_origin,
               base::OnceCallback<void(int)> callback);
 
-  // If a list of all the keys for `context_origin` are taken in lexicographic
-  // order, retrieves the `key` at `index` of the list and calls `callback` with
-  // it as a parameter; otherwise calls `callback` with the parameter
-  // `absl::nullopt`.
-  //
-  // TODO(crbug.com/1247861): Replace with an async iterator.
-  void Key(url::Origin context_origin,
-           int index,
-           base::OnceCallback<void(GetResult)> callback);
+  // From a list of all the keys for `context_origin` taken in lexicographic
+  // order, send batches of keys to the Shared Storage worklet's async iterator
+  // via a remote that consumes `pending_listener`. Calls `callback` with an
+  // OperationResult to indicate whether the transaction was successful.
+  void Keys(url::Origin context_origin,
+            mojo::PendingRemote<
+                shared_storage_worklet::mojom::SharedStorageEntriesListener>
+                pending_listener,
+            base::OnceCallback<void(OperationResult)> callback);
+
+  // From a list of all the key-value pairs for `context_origin` taken in
+  // lexicographic order, send batches of key-value pairs to the Shared Storage
+  // worklet's async iterator via a remote that consumes `pending_listener`.
+  // Calls `callback` with an OperationResult to indicate whether the
+  // transaction was successful.
+  void Entries(url::Origin context_origin,
+               mojo::PendingRemote<
+                   shared_storage_worklet::mojom::SharedStorageEntriesListener>
+                   pending_listener,
+               base::OnceCallback<void(OperationResult)> callback);
 
   // Clears all entries for `context_origin`. The parameter of `callback`
   // reports whether the operation is successful. Can be called either as part

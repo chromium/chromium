@@ -79,3 +79,4 @@ interface SharedStorageDocumentService {
   // Handle sharedStorage.clear(): delete all entries.
   SharedStorageClear();
 };
+
