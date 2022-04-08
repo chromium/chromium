@@ -142,7 +142,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
   // Apply managed guest session specific default values if no value is fetched
   // from the cloud.
   if (type_ == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
-    if (chrome_policy.GetValueUnsafe(key::kShelfAutoHideBehavior) == nullptr) {
+    if (!chrome_policy.IsPolicySet(key::kShelfAutoHideBehavior)) {
       // Force the |ShelfAutoHideBehavior| policy to |Never|, ensuring that the
       // ash shelf does not auto-hide.
       chrome_policy.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
@@ -150,7 +150,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
                         base::Value("Never"), nullptr);
     }
 
-    if (chrome_policy.GetValueUnsafe(key::kShowLogoutButtonInTray) == nullptr) {
+    if (!chrome_policy.IsPolicySet(key::kShowLogoutButtonInTray)) {
       // Force the |ShowLogoutButtonInTray| policy to |true|, ensuring that a
       // big, red logout button is shown in the ash system tray.
       chrome_policy.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,

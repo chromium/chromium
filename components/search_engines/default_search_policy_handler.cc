@@ -231,9 +231,9 @@ bool DefaultSearchPolicyHandler::CheckIndividualPolicies(
     PolicyErrorMap* errors) {
   bool all_ok = true;
   for (const auto& policy_map_entry : kDefaultSearchPolicyDataMap) {
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
     // It's important to check policy type for all policies and not just exit on
     // the first error, so we report all policy errors.
-    // |GetValueUnsafe(...)| is used due to multiple policy types being handled.
     const base::Value* value =
         policies.GetValueUnsafe(policy_map_entry.policy_name);
     if (value && value->type() != policy_map_entry.value_type) {

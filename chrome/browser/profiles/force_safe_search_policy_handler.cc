@@ -35,6 +35,8 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
                         base::Value::Type::INTEGER)) {
     return;
   }
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value) {
     prefs->SetValue(prefs::kForceGoogleSafeSearch, value->Clone());

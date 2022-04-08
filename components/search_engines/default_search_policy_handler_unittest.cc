@@ -167,7 +167,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, InvalidType) {
     EXPECT_TRUE(store_->GetValue(
         DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
 
-    // |GetValueUnsafe(...)| is used due to multiple policy types being handled.
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
     auto old_value = policy.GetValueUnsafe(policy_name)->Clone();
     // BinaryValue is not supported in any current default search policy params.
     // Try changing policy param to BinaryValue and check that policy becomes

@@ -31,6 +31,8 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   bool mode_is_applicable = true;
   bool templates_is_applicable = true;
 
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* mode = policies.GetValueUnsafe(key::kDnsOverHttpsMode);
   base::StringPiece mode_str;
   if (!mode) {
@@ -53,6 +55,8 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     }
   }
 
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* templates =
       policies.GetValueUnsafe(key::kDnsOverHttpsTemplates);
   if (IsTemplatesPolicyNotSpecified(templates, mode_str)) {

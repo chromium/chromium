@@ -124,6 +124,7 @@ void ApplyDevicePolicyAsRecommendedPolicy(const std::string& device_policy,
                                           const std::string& user_policy,
                                           const PolicyMap& device_policy_map,
                                           PolicyMap* user_policy_map) {
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* value = device_policy_map.GetValueUnsafe(device_policy);
   ApplyValueAsRecommendedPolicy(value, user_policy, user_policy_map);
 }

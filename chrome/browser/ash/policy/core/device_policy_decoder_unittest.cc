@@ -104,6 +104,7 @@ void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* actual_value = policies.GetValueUnsafe(policy_path);
   ASSERT_NE(actual_value, nullptr);
   EXPECT_EQ(*actual_value, expected_value);
@@ -119,6 +120,7 @@ void DevicePolicyDecoderTest::DecodeUnsetDevicePolicyTestHelper(
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* actual_value = policies.GetValueUnsafe(policy_path);
   EXPECT_EQ(actual_value, nullptr);
 }

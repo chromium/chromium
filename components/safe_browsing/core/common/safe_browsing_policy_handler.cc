@@ -55,8 +55,8 @@ PolicyCheckResult CheckSafeBrowsingEnabled(
 // does not have a valid value, returns |nullopt|.
 absl::optional<ProtectionLevel> GetValueFromSafeBrowsingEnabledPolicy(
     const policy::PolicyMap& policies) {
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* safe_browsing_enabled =
       policies.GetValueUnsafe(policy::key::kSafeBrowsingEnabled);
 
@@ -109,8 +109,8 @@ PolicyCheckResult CheckSafeBrowsingProtectionLevel(
 // does not have a valid value, returns |nullopt|.
 absl::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
     const policy::PolicyMap& policies) {
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* safe_browsing_protection_level =
       policies.GetValueUnsafe(policy::key::kSafeBrowsingProtectionLevel);
 
@@ -145,17 +145,17 @@ absl::optional<ProtectionLevel> GetValueFromBothPolicies(
 bool SafeBrowsingPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Deprecated boolean policy SafeBrowsingEnabled.
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
   const base::Value* safe_browsing_enabled =
       policies.GetValueUnsafe(policy::key::kSafeBrowsingEnabled);
   PolicyCheckResult safe_browsing_enabled_result =
       CheckSafeBrowsingEnabled(safe_browsing_enabled, errors);
 
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Enumerated policy SafeBrowsingProtectionLevel.
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
   const base::Value* safe_browsing_protection_level =
       policies.GetValueUnsafe(policy::key::kSafeBrowsingProtectionLevel);
   PolicyCheckResult safe_browsing_protection_level_result =

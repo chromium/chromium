@@ -220,6 +220,8 @@ void ActiveDirectoryPolicyManager::ExpandVariables(PolicyMap* policy_map) {
   chromeos::VariableExpander expander(
       {{"MACHINE_NAME", policy->machine_name()}});
   for (const char* policy_name : kPoliciesToExpand) {
+    // It's safe to use `GetMutableValueUnsafe()` as multiple policy types are
+    // handled.
     base::Value* value = policy_map->GetMutableValueUnsafe(policy_name);
     if (value) {
       if (!expander.ExpandValue(value)) {

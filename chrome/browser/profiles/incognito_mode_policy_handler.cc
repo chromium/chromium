@@ -26,6 +26,8 @@ IncognitoModePolicyHandler::~IncognitoModePolicyHandler() {}
 
 bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                      PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* availability =
       policies.GetValueUnsafe(key::kIncognitoModeAvailability);
   if (availability) {
@@ -45,6 +47,8 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return true;
   }
 
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* deprecated_enabled =
       policies.GetValueUnsafe(key::kIncognitoEnabled);
   if (deprecated_enabled && !deprecated_enabled->is_bool()) {

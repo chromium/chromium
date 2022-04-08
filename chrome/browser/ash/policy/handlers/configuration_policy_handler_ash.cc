@@ -146,13 +146,10 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
 
   const std::string policy = policy_name();
-  const base::Value* value = policies.GetValueUnsafe(policy);
-  if (!value)
+  if (!policies.IsPolicySet(policy))
     return true;
-  if (!value->is_dict()) {
-    NOTREACHED();
-    return false;
-  }
+  const base::Value* value = policies.GetValue(policy, base::Value::Type::DICT);
+  DCHECK(value);
   absl::optional<std::string> url_string =
       GetSubkeyString(*value, errors, policy, kSubkeyURL);
   absl::optional<std::string> hash_string =
@@ -364,6 +361,8 @@ ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {}
 void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr)) {
@@ -400,6 +399,8 @@ DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() {}
 
 void DeprecatedIdleActionHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value && EnsureInRange(value, nullptr, nullptr)) {
     if (!prefs->GetValue(ash::prefs::kPowerAcIdleAction, nullptr))

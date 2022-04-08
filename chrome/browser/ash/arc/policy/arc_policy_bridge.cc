@@ -61,11 +61,12 @@ void MapBoolToBool(const std::string& arc_policy_name,
                    const policy::PolicyMap& policy_map,
                    bool invert_bool_value,
                    base::Value* filtered_policies) {
-  const base::Value* const policy_value =
-      policy_map.GetValueUnsafe(policy_name);
-  if (!policy_value)
+  if (!policy_map.IsPolicySet(policy_name))
     return;
-  if (!policy_value->is_bool()) {
+
+  const base::Value* const policy_value =
+      policy_map.GetValue(policy_name, base::Value::Type::BOOLEAN);
+  if (!policy_value) {
     NOTREACHED() << "Policy " << policy_name << " is not a boolean.";
     return;
   }
@@ -80,11 +81,12 @@ void MapIntToBool(const std::string& arc_policy_name,
                   const policy::PolicyMap& policy_map,
                   int int_true,
                   base::Value* filtered_policies) {
-  const base::Value* const policy_value =
-      policy_map.GetValueUnsafe(policy_name);
-  if (!policy_value)
+  if (!policy_map.IsPolicySet(policy_name))
     return;
-  if (!policy_value->is_int()) {
+
+  const base::Value* const policy_value =
+      policy_map.GetValue(policy_name, base::Value::Type::INTEGER);
+  if (!policy_value) {
     NOTREACHED() << "Policy " << policy_name << " is not an integer.";
     return;
   }
@@ -114,11 +116,12 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
                              const policy::PolicyMap& policy_map,
                              base::Value* filtered_policies,
                              const std::vector<std::string>& fields) {
-  const base::Value* const policy_value =
-      policy_map.GetValueUnsafe(policy_name);
-  if (!policy_value)
+  if (!policy_map.IsPolicySet(policy_name))
     return;
-  if (!policy_value->is_dict()) {
+
+  const base::Value* const policy_value =
+      policy_map.GetValue(policy_name, base::Value::Type::DICT);
+  if (!policy_value) {
     NOTREACHED() << "Policy " << policy_name << " is not an object.";
     return;
   }
@@ -140,15 +143,16 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     return;
   }
 
-  // Importing CA certificates from device policy is not allowed.
-  // Import only from user policy.
-  const base::Value* onc_policy_value =
-      policy_map.GetValueUnsafe(policy::key::kOpenNetworkConfiguration);
-  if (!onc_policy_value) {
+  if (!policy_map.IsPolicySet(policy::key::kOpenNetworkConfiguration)) {
     VLOG(1) << "onc policy is not set.";
     return;
   }
-  if (!onc_policy_value->is_string()) {
+
+  // Importing CA certificates from device policy is not allowed.
+  // Import only from user policy.
+  const base::Value* onc_policy_value = policy_map.GetValue(
+      policy::key::kOpenNetworkConfiguration, base::Value::Type::STRING);
+  if (!onc_policy_value) {
     LOG(ERROR) << "Value of onc policy has invalid format.";
     return;
   }
@@ -290,6 +294,8 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       policy_service->GetPolicies(policy_namespace);
 
   base::Value filtered_policies(base::Value::Type::DICTIONARY);
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Parse ArcPolicy as JSON string before adding other policies to the
   // dictionary.
   const base::Value* const app_policy_value =
