@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,7 +121,9 @@ public class ContextReporter {
 
                 @Override
                 public void onUrlUpdated(Tab tab) {
-                    reportUsageOfCurrentContextIfPossible(tab, false, null);
+                    try (TraceEvent te = TraceEvent.scoped("ContextReporter::onUrlUpdated")) {
+                        reportUsageOfCurrentContextIfPossible(tab, false, null);
+                    }
                 }
             };
         }
