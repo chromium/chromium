@@ -108,7 +108,7 @@ export class Camera extends View implements CameraViewUI {
   /**
    * Event for tracking camera availability state.
    */
-  private cameraReady: WaitableEvent = new WaitableEvent();
+  private cameraReady = new WaitableEvent();
 
   /**
    * Promise for the current take of photo or recording.

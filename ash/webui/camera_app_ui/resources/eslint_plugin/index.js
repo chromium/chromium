@@ -40,31 +40,45 @@ const parameterCommentFormatRule = {
 
 const genericParameterOnDeclarationType = {
   create: (context) => {
-    return {
-      /* eslint-disable-next-line @typescript-eslint/naming-convention */
-      VariableDeclarator({id: {typeAnnotation}, init}) {
-        if (init === null || init.type !== 'NewExpression' ||
-            init.callee.type !== 'Identifier') {
-          return;
-        }
-        const newTypeName = init.callee.name;
+    function checkTypeParameterSameAsNewExpression(typeAnnotation, value) {
+      if (value === null || value.type !== 'NewExpression' ||
+          value.callee.type !== 'Identifier') {
+        return;
+      }
+      const newTypeName = value.callee.name;
 
-        if (typeAnnotation === undefined ||
-            typeAnnotation.type !== 'TSTypeAnnotation' ||
-            typeAnnotation.typeAnnotation.type !== 'TSTypeReference' ||
-            typeAnnotation.typeAnnotation.typeName.type !== 'Identifier') {
-          return;
-        }
-        const typeAnnotationTypeName =
-            typeAnnotation.typeAnnotation.typeName.name;
+      if (typeAnnotation === undefined ||
+          typeAnnotation.type !== 'TSTypeAnnotation' ||
+          typeAnnotation.typeAnnotation.type !== 'TSTypeReference' ||
+          typeAnnotation.typeAnnotation.typeName.type !== 'Identifier') {
+        return;
+      }
+      const typeAnnotationTypeName =
+          typeAnnotation.typeAnnotation.typeName.name;
 
-        if (newTypeName === typeAnnotationTypeName) {
+      if (newTypeName === typeAnnotationTypeName) {
+        if (typeAnnotation.typeAnnotation.typeParameters !== undefined) {
           context.report({
             node: typeAnnotation.typeAnnotation.typeParameters,
             message:
                 'Generic type parameters can be moved to the new expression.',
           });
+        } else {
+          context.report({
+            node: typeAnnotation.typeAnnotation,
+            message: 'Redundant type annotation.',
+          });
         }
+      }
+    }
+    return {
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      PropertyDefinition({value, typeAnnotation}) {
+        checkTypeParameterSameAsNewExpression(typeAnnotation, value);
+      },
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      VariableDeclarator({id: {typeAnnotation}, init}) {
+        checkTypeParameterSameAsNewExpression(typeAnnotation, init);
       },
     };
   },
