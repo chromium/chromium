@@ -1645,6 +1645,20 @@
         {}
        ]
       ],
+      "nested-with-tall-padding-and-spanner-and-content.html": [
+       "cca75d461cfff3a8bc108af560d777102e8ebd3d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "nested-with-tall-padding.html": [
+       "7f062b1ef9407fdb7473fc6e32c6f156e246b07c",
+       [
+        null,
+        {}
+       ]
+      ],
       "oof-in-nested-line-float.html": [
        "d4d67763c875bd0a64b8069de73d6d95abb8a740",
        [
@@ -96120,6 +96134,32 @@
         [
          [
           "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "scrollIntoView-target-with-contents-hidden.html": [
+       "576702c9d508f3b487263b3a9e1e9cdcf0cc91fa",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/scrollIntoView-target-with-contents-hidden-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "scrollIntoView-with-focus-target-with-contents-hidden.html": [
+       "7816f4b0b544f3b739b36ea65a7de37ab0f149c0",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/scrollIntoView-with-focus-target-with-contents-hidden-ref.html",
           "=="
          ]
         ],
@@ -260601,6 +260641,14 @@
         []
        ]
       },
+      "scrollIntoView-target-with-contents-hidden-ref.html": [
+       "1b554d74685ec8e9a7ce8d704e2a135b217731db",
+       []
+      ],
+      "scrollIntoView-with-focus-target-with-contents-hidden-ref.html": [
+       "8c45c7de512db5d4b417d287b01d372819236319",
+       []
+      ],
       "spacer-and-container-ref.html": [
        "c605d2ab9c22120043e67cd269c41071b79319f2",
        []
@@ -307129,7 +307177,7 @@
         []
        ],
        "subframe-render-blocking-preload.html": [
-        "80d88408b38a39341cf5d191a1b4856245c51cb1",
+        "31734b9bbc733de8db4e8b93070ceaf73b1823c2",
         []
        ],
        "target-red.css": [
@@ -307137,7 +307185,7 @@
         []
        ],
        "test-render-blocking.js": [
-        "c92564d60a39b8119aafe79020633be27c1f5337",
+        "7fa2462046b02dd1aea797470e059631edf06948",
         []
        ]
       }
@@ -464106,7 +464154,7 @@
        ]
       ],
       "render-blocked-apis-by-preload-link.tentative.html": [
-       "f7167835d8f6a0e08d390f676c4fe677586584f0",
+       "07827371be7cacff976c2dc0ac893db977b16d38",
        [
         null,
         {
@@ -495092,6 +495140,34 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "change-focus-again-in-blur-during-transitionWhile.html": [
+      "2275ac8e96c375a102c402f7a3ada54bb0e2496e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "change-focus-back-to-origial-during-transitionWhile.html": [
+      "b94ef1e660a98f4be9cc4a53422803350b6b84fa",
+      [
+       null,
+       {}
+      ]
+     ],
+     "change-focus-during-transitionWhile.html": [
+      "6ed4fca6d2b221e5f7f1700456b002b6c55d5902",
+      [
+       null,
+       {}
+      ]
+     ],
+     "change-focus-then-remove-during-transitionWhile.html": [
+      "6a90a25eb671aa2cb0c0056eda75c47dd6ed6f2d",
+      [
+       null,
+       {}
       ]
      ],
      "multiple-transitionWhile.html": [
