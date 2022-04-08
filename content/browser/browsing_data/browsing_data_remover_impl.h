@@ -104,7 +104,9 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to BrowsingDataRemoverTasks in enums.xml.
+  // Entries must also be added to BrowsingDataRemoverTasks in enums.xml and
+  // History.ClearBrowsingData.Duration.Task.{Task} in
+  // histograms/metadata/history/histograms.xml.
   enum class TracingDataType {
     kSynchronous = 1,
     kEmbedderData = 2,
@@ -122,6 +124,10 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kDeferredCookies = 14,
     kMaxValue = kDeferredCookies,
   };
+
+  // Returns the suffix for the History.ClearBrowsingData.Duration.Task.{Task}
+  // histogram
+  const char* GetHistogramSuffix(TracingDataType task);
 
   // Represents a single removal task. Contains all parameters needed to execute
   // it and a pointer to the observer that added it. CONTENT_EXPORTed to be
@@ -179,7 +185,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // Called by the closures returned by CreateTaskCompletionClosure().
   // Checks if all tasks have completed, and if so, calls Notify().
-  void OnTaskComplete(TracingDataType data_type);
+  void OnTaskComplete(TracingDataType data_type, base::TimeTicks started);
 
   // Increments the number of pending tasks by one, and returns a OnceClosure
   // that calls OnTaskComplete(). The Remover is complete once all the closures

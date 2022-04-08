@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -721,7 +722,8 @@ void BrowsingDataRemoverImpl::Notify() {
       base::BindOnce(&BrowsingDataRemoverImpl::RunNextTask, GetWeakPtr()));
 }
 
-void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type) {
+void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
+                                             base::TimeTicks started) {
   // TODO(brettw) http://crbug.com/305259: This should also observe session
   // clearing (what about other things such as passwords, etc.?) and wait for
   // them to complete before continuing.
@@ -734,6 +736,12 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type) {
       TRACE_ID_WITH_SCOPE("BrowsingDataRemoverImpl",
                           static_cast<int>(data_type)),
       "data_type", static_cast<int>(data_type));
+
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"History.ClearBrowsingData.Duration.Task.",
+                    GetHistogramSuffix(data_type)}),
+      base::TimeTicks::Now() - started);
+
   if (!pending_sub_tasks_.empty())
     return;
 
@@ -778,6 +786,39 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type) {
   Notify();
 }
 
+const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
+  switch (task) {
+    case TracingDataType::kSynchronous:
+      return "Synchronous";
+    case TracingDataType::kEmbedderData:
+      return "EmbedderData";
+    case TracingDataType::kStoragePartition:
+      return "StoragePartition";
+    case TracingDataType::kHttpCache:
+      return "HttpCache";
+    case TracingDataType::kHttpAndMediaCaches:
+      return "HttpAndMediaCaches";
+    case TracingDataType::kReportingCache:
+      return "ReportingCache";
+    case TracingDataType::kChannelIds:
+      return "ChannelIds";
+    case TracingDataType::kNetworkHistory:
+      return "NetworkHistory";
+    case TracingDataType::kAuthCache:
+      return "AuthCache";
+    case TracingDataType::kCodeCaches:
+      return "CodeCaches";
+    case TracingDataType::kNetworkErrorLogging:
+      return "NetworkErrorLogging";
+    case TracingDataType::kTrustTokens:
+      return "TrustTokens";
+    case TracingDataType::kConversions:
+      return "Conversions";
+    case TracingDataType::kDeferredCookies:
+      return "DeferredCookies";
+  }
+}
+
 base::OnceClosure BrowsingDataRemoverImpl::CreateTaskCompletionClosure(
     TracingDataType data_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -790,7 +831,7 @@ base::OnceClosure BrowsingDataRemoverImpl::CreateTaskCompletionClosure(
                           static_cast<int>(data_type)),
       "data_type", static_cast<int>(data_type));
   return base::BindOnce(&BrowsingDataRemoverImpl::OnTaskComplete, GetWeakPtr(),
-                        data_type);
+                        data_type, base::TimeTicks::Now());
 }
 
 base::OnceClosure BrowsingDataRemoverImpl::CreateTaskCompletionClosureForMojo(
@@ -799,7 +840,7 @@ base::OnceClosure BrowsingDataRemoverImpl::CreateTaskCompletionClosureForMojo(
   return RunsOrPostOnCurrentTaskRunner(mojo::WrapCallbackWithDropHandler(
       CreateTaskCompletionClosure(data_type),
       base::BindOnce(&BrowsingDataRemoverImpl::OnTaskComplete, GetWeakPtr(),
-                     data_type)));
+                     data_type, base::TimeTicks::Now())));
 }
 
 void BrowsingDataRemoverImpl::RecordUnfinishedSubTasks() {

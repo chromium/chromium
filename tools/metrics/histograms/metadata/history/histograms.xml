@@ -86,6 +86,60 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.ClearBrowsingData.Duration.ChromeTask.{Task}"
+    units="ms" expires_after="2022-10-01">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Records the duration of a ChromeBrowsingDataRemoverDelegate task for {Task}
+    deletion.
+  </summary>
+  <token key="Task">
+    <variant name="AccountCompromisedCredentials"
+        summary="AccountCompromisedCredentials"/>
+    <variant name="AccountPasswords" summary="AccountPasswords"/>
+    <variant name="AccountPasswordsSynced" summary="AccountPasswordsSynced"/>
+    <variant name="AutofillData" summary="AutofillData"/>
+    <variant name="AutofillOrigins" summary="AutofillOrigins"/>
+    <variant name="CdmLicenses" summary="CdmLicenses"/>
+    <variant name="CompromisedCredentials" summary="CompromisedCredentials"/>
+    <variant name="Cookies" summary="Cookies"/>
+    <variant name="DisableAutoSignin" summary="DisableAutoSignin"/>
+    <variant name="DomainReliability" summary="DomainReliability"/>
+    <variant name="ExploreSites" summary="ExploreSites"/>
+    <variant name="FaviconCacheExpiration" summary="FaviconCacheExpiration"/>
+    <variant name="FieldInfo" summary="FieldInfo"/>
+    <variant name="FlashDeauthorization" summary="FlashDeauthorization"/>
+    <variant name="History" summary="History"/>
+    <variant name="HostCache" summary="HostCache"/>
+    <variant name="HostNameResolution" summary="HostNameResolution"/>
+    <variant name="HttpAuthCache" summary="HttpAuthCache"/>
+    <variant name="KeywordsModel" summary="KeywordsModel"/>
+    <variant name="LegacyStrikes" summary="LegacyStrikes"/>
+    <variant name="MediaFeeds" summary="MediaFeeds"/>
+    <variant name="NaclCache" summary="NaclCache"/>
+    <variant name="NetworkErrorLogging" summary="NetworkErrorLogging"/>
+    <variant name="NetworkPredictor" summary="NetworkPredictor"/>
+    <variant name="OfflinePages" summary="OfflinePages"/>
+    <variant name="Passwords" summary="Passwords"/>
+    <variant name="PasswordsStatistics" summary="PasswordsStatistics"/>
+    <variant name="PluginData" summary="PluginData"/>
+    <variant name="PnaclCache" summary="PnaclCache"/>
+    <variant name="ReportingCache" summary="ReportingCache"/>
+    <variant name="SecurePaymentConfirmationCredentials"
+        summary="SecurePaymentConfirmationCredentials"/>
+    <variant name="Strikes" summary="Strikes"/>
+    <variant name="Synchronous" summary="Synchronous"/>
+    <variant name="TpmAttestationKeys" summary="TpmAttestationKeys"/>
+    <variant name="UserDataSnapshot" summary="UserDataSnapshot"/>
+    <variant name="VideoDecodeHistory" summary="VideoDecodeHistory"/>
+    <variant name="WebAppHistory" summary="WebAppHistory"/>
+    <variant name="WebAuthnCredentials" summary="WebAuthnCredentials"/>
+    <variant name="WebrtcEventLogs" summary="WebrtcEventLogs"/>
+    <variant name="WebrtcLogs" summary="WebrtcLogs"/>
+  </token>
+</histogram>
+
 <histogram name="History.ClearBrowsingData.Duration.FilteredDeletion"
     units="ms" expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
@@ -155,6 +209,31 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record tasks from StoragePartition that took more than 180s to finish.
   </summary>
+</histogram>
+
+<histogram name="History.ClearBrowsingData.Duration.Task.{Task}" units="ms"
+    expires_after="2022-10-01">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Records the duration of a BrowsingDataRemoverImpl task for {Task} deletion.
+  </summary>
+  <token key="Task">
+    <variant name="AuthCache" summary="AuthCache"/>
+    <variant name="ChannelIds" summary="ChannelIds"/>
+    <variant name="CodeCaches" summary="CodeCaches"/>
+    <variant name="Conversions" summary="Conversions"/>
+    <variant name="DeferredCookies" summary="DeferredCookies"/>
+    <variant name="EmbedderData" summary="EmbedderData"/>
+    <variant name="HttpAndMediaCaches" summary="HttpAndMediaCaches"/>
+    <variant name="HttpCache" summary="HttpCache"/>
+    <variant name="NetworkErrorLogging" summary="NetworkErrorLogging"/>
+    <variant name="NetworkHistory" summary="NetworkHistory"/>
+    <variant name="ReportingCache" summary="ReportingCache"/>
+    <variant name="StoragePartition" summary="StoragePartition"/>
+    <variant name="Synchronous" summary="Synchronous"/>
+    <variant name="TrustTokens" summary="TrustTokens"/>
+  </token>
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.TimeRangeDeletion"

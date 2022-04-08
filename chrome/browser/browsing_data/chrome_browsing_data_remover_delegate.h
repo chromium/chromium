@@ -99,7 +99,9 @@ class ChromeBrowsingDataRemoverDelegate
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml.
+  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml
+  // and History.ClearBrowsingData.Duration.ChromeTask.{Task}
+  // in histograms/metadata/history/histograms.xml.
   enum class TracingDataType {
     kSynchronous = 1,
     kHistory = 2,
@@ -109,7 +111,7 @@ class ChromeBrowsingDataRemoverDelegate
     kAutofillData = 6,
     kAutofillOrigins = 7,
     kPluginData = 8,
-    kFlashLsoHelper = 9,  // deprecated
+    // kFlashLsoHelper = 9, deprecated
     kDomainReliability = 10,
     kNetworkPredictor = 11,
     kWebrtcLogs = 12,
@@ -124,7 +126,7 @@ class ChromeBrowsingDataRemoverDelegate
     kNetworkErrorLogging = 21,
     kFlashDeauthorization = 22,
     kOfflinePages = 23,
-    kPrecache = 24,  // deprecated
+    // kPrecache = 24, deprecated
     kExploreSites = 25,
     kLegacyStrikes = 26,
     kWebrtcEventLogs = 27,
@@ -132,7 +134,7 @@ class ChromeBrowsingDataRemoverDelegate
     kHostCache = 29,
     kTpmAttestationKeys = 30,
     kStrikes = 31,
-    kLeakedCredentials = 32,  // deprecated
+    // kLeakedCredentials = 32, deprecated
     kFieldInfo = 33,
     kCompromisedCredentials = 34,
     kUserDataSnapshot = 35,
@@ -144,8 +146,16 @@ class ChromeBrowsingDataRemoverDelegate
     kSecurePaymentConfirmationCredentials = 41,
     kWebAppHistory = 42,
     kWebAuthnCredentials = 43,
+
+    // Please update ChromeBrowsingDataRemoverTasks in enums.xml and
+    // History.ClearBrowsingData.Duration.ChromeTask.{Task}
+    // in histograms/metadata/history/histograms.xml when adding entries!
     kMaxValue = kWebAuthnCredentials,
   };
+
+  // Returns the suffix for the
+  // History.ClearBrowsingData.Duration.ChromeTask.{Task} histogram
+  const char* GetHistogramSuffix(TracingDataType task);
 
   // Called by CreateTaskCompletionClosure().
   void OnTaskStarted(TracingDataType data_type);
@@ -154,6 +164,7 @@ class ChromeBrowsingDataRemoverDelegate
   // Checks if all tasks have completed, and if so, calls callback_.
   void OnTaskComplete(TracingDataType data_type,
                       uint64_t data_type_mask,
+                      base::TimeTicks started,
                       bool success);
 
   // Increments the number of pending tasks by one, and returns a OnceClosure
