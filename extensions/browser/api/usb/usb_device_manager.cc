@@ -89,6 +89,15 @@ bool WillDispatchDeviceEvent(
     return true;
   }
 
+  // Check against WebUsbAllowDevicesForUrls.
+  ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+  DCHECK(client);
+  if (client->IsUsbDeviceAllowedByPolicy(browser_context, extension->id(),
+                                         device_info.vendor_id,
+                                         device_info.product_id)) {
+    return true;
+  }
+
   return false;
 }
 

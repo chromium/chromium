@@ -43,14 +43,14 @@ UsbPolicyAllowedDevices::~UsbPolicyAllowedDevices() {}
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     const url::Origin& origin,
-    const device::mojom::UsbDeviceInfo& device_info) {
+    const device::mojom::UsbDeviceInfo& device_info) const {
   return IsDeviceAllowed(
       origin, std::make_pair(device_info.vendor_id, device_info.product_id));
 }
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     const url::Origin& origin,
-    const std::pair<int, int>& device_ids) {
+    const std::pair<int, int>& device_ids) const {
   // Search through each set of URL pair that match the given device. The
   // keys correspond to the following URL pair sets:
   //  * (vendor_id, product_id): A set corresponding to the exact device.

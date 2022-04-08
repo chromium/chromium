@@ -48,6 +48,8 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/usb/usb_chooser_context.h"
+#include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -661,6 +663,24 @@ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
 void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
     bool did_update) {
   g_did_chrome_update_for_testing = did_update;
+}
+
+bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    int vendor_id,
+    int product_id) const {
+  url::Origin origin =
+      extensions::Extension::CreateOriginFromExtensionId(extension_id);
+
+  UsbChooserContext* usb_chooser_context =
+      UsbChooserContextFactory::GetForProfile(static_cast<Profile*>(context));
+  // This will never be null as even incognito mode has its own instance.
+  DCHECK(usb_chooser_context);
+
+  // Check against WebUsbAllowDevicesForUrls.
+  return usb_chooser_context->usb_policy_allowed_devices().IsDeviceAllowed(
+      origin, {vendor_id, product_id});
 }
 
 }  // namespace extensions

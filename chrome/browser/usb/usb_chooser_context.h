@@ -100,6 +100,10 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
 
   void InitDeviceList(std::vector<::device::mojom::UsbDeviceInfoPtr> devices);
 
+  const UsbPolicyAllowedDevices& usb_policy_allowed_devices() {
+    return *usb_policy_allowed_devices_;
+  }
+
  private:
   // device::mojom::UsbDeviceManagerClient implementation.
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;

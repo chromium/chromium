@@ -386,6 +386,14 @@ UsbDeviceManager* UsbExtensionFunction::usb_device_manager() {
   return usb_device_manager_;
 }
 
+bool UsbExtensionFunction::IsUsbDeviceAllowedByPolicy(int vendor_id,
+                                                      int product_id) {
+  ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+  DCHECK(client);
+  return client->IsUsbDeviceAllowedByPolicy(browser_context(), extension_id(),
+                                            vendor_id, product_id);
+}
+
 UsbPermissionCheckingFunction::UsbPermissionCheckingFunction()
     : device_permissions_manager_(nullptr) {}
 
@@ -411,6 +419,10 @@ bool UsbPermissionCheckingFunction::HasDevicePermission(
       UsbDevicePermission::CheckParam::ForUsbDevice(extension(), device);
   if (extension()->permissions_data()->CheckAPIPermissionWithParam(
           mojom::APIPermissionID::kUsbDevice, param.get())) {
+    return true;
+  }
+
+  if (IsUsbDeviceAllowedByPolicy(device.vendor_id, device.product_id)) {
     return true;
   }
 
@@ -592,7 +604,8 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
       UsbDevicePermission::CheckParam::ForDeviceWithAnyInterfaceClass(
           extension(), vendor_id_, product_id_, interface_id);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          mojom::APIPermissionID::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get()) &&
+      !IsUsbDeviceAllowedByPolicy(vendor_id_, product_id_)) {
     return RespondNow(Error(kErrorPermissionDenied));
   }
 
@@ -631,7 +644,8 @@ void UsbFindDevicesFunction::OnGetDevicesComplete(
         UsbDevicePermission::CheckParam::ForUsbDevice(extension(),
                                                       *device_info);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-            mojom::APIPermissionID::kUsbDevice, param.get())) {
+            mojom::APIPermissionID::kUsbDevice, param.get()) &&
+        !IsUsbDeviceAllowedByPolicy(vendor_id_, product_id_)) {
       barrier_.Run();
     } else {
       mojo::Remote<device::mojom::UsbDevice> device;

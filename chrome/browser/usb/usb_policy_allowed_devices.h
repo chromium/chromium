@@ -43,9 +43,9 @@ class UsbPolicyAllowedDevices {
 
   // Checks if |origin| is allowed to use the device with |device_info|.
   bool IsDeviceAllowed(const url::Origin& origin,
-                       const device::mojom::UsbDeviceInfo& device_info);
+                       const device::mojom::UsbDeviceInfo& device_info) const;
   bool IsDeviceAllowed(const url::Origin& origin,
-                       const std::pair<int, int>& device_ids);
+                       const std::pair<int, int>& device_ids) const;
 
   const UsbDeviceIdsToUrlsMap& map() const { return usb_device_ids_to_urls_; }
 

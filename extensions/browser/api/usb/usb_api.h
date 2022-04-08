@@ -36,6 +36,8 @@ class UsbExtensionFunction : public ExtensionFunction {
 
   UsbDeviceManager* usb_device_manager();
 
+  bool IsUsbDeviceAllowedByPolicy(int vendor_id, int product_id);
+
  private:
   raw_ptr<UsbDeviceManager> usb_device_manager_ = nullptr;
 };

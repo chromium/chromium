@@ -176,6 +176,10 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                           const ExtensionId& extension_id,
                                           const GURL& url) const override;
   static void set_did_chrome_update_for_testing(bool did_update);
+  bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
+                                  const ExtensionId& extension_id,
+                                  int vendor_id,
+                                  int product_id) const override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

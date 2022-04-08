@@ -407,6 +407,12 @@ class ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const GURL& url) const;
 
+  // Return true if the USB device is allowed by policy.
+  virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
+                                          const ExtensionId& extension_id,
+                                          int vendor_id,
+                                          int product_id) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

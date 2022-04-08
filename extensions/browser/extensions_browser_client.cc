@@ -150,4 +150,12 @@ void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     const ExtensionId& extension_id,
     const GURL& url) const {}
 
+bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    int vendor_id,
+    int product_id) const {
+  return false;
+}
+
 }  // namespace extensions
