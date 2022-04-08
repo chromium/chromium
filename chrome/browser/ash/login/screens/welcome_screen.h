@@ -103,7 +103,7 @@ class WelcomeScreen : public BaseScreen,
   std::string GetApplicationLocale();
   std::string GetInputMethod() const;
 
-  void SetApplicationLocale(const std::string& locale);
+  void SetApplicationLocale(const std::string& locale, const bool is_from_ui);
   void SetInputMethod(const std::string& input_method);
   void SetTimezone(const std::string& timezone_id);
   std::string GetTimezone() const;
@@ -177,6 +177,10 @@ class WelcomeScreen : public BaseScreen,
   // the screen is not hidden.
   void UpdateChromadMigrationOobeFlow(bool exists);
 
+  // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
+  // exit_callback with given Result
+  void Exit(Result result) const;
+
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
 
@@ -200,6 +204,11 @@ class WelcomeScreen : public BaseScreen,
   // This local flag should be true if the OOBE flow is operating as part of the
   // Chromad to cloud device migration. If so, this screen should be skipped.
   bool is_chromad_migration_oobe_flow_ = false;
+
+  // This local flag should be true if there was a language change from the UI,
+  // it's value will be written into the OOBE.WelcomeScreen.UserChangedLocale
+  // metric when we exit the WelcomeScreen.
+  bool is_locale_changed_ = false;
 
   // WeakPtrFactory used to schedule and cancel tasks related to language update
   // in this object.

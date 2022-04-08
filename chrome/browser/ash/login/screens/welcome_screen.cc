@@ -88,6 +88,8 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
 constexpr const char kUserActionQuickStartClicked[] = "activateQuickStart";
+constexpr const char kWelcomeScreenLocaleChangeMetric[] =
+    "OOBE.WelcomeScreen.UserChangedLocale";
 
 struct WelcomeScreenA11yUserAction {
   const char* name_;
@@ -251,7 +253,8 @@ std::string WelcomeScreen::GetInputMethod() const {
   return input_method_;
 }
 
-void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
+void WelcomeScreen::SetApplicationLocale(const std::string& locale,
+                                         const bool is_from_ui) {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   if (app_locale == locale || locale.empty()) {
     if (language_list_.GetListDeprecated().empty())
@@ -272,6 +275,9 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
                               true /* login_layouts_only */,
                               std::move(callback),
                               ProfileManager::GetActiveUserProfile());
+  if (is_from_ui) {
+    is_locale_changed_ = true;
+  }
 }
 
 void WelcomeScreen::SetInputMethod(const std::string& input_method) {
@@ -353,7 +359,8 @@ void WelcomeScreen::ShowImpl() {
   if (selected_language_code_.empty()) {
     const StartupCustomizationDocument* startup_manifest =
         StartupCustomizationDocument::GetInstance();
-    SetApplicationLocale(startup_manifest->initial_locale_default());
+    SetApplicationLocale(startup_manifest->initial_locale_default(),
+                         /*is_from_ui*/ false);
   }
 
   // Skip this screen if this is an automatic enrollment as part of Zero-Touch
@@ -391,7 +398,7 @@ void WelcomeScreen::HideImpl() {
 void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionQuickStartClicked) {
     DCHECK(ash::features::IsOobeQuickStartEnabled());
-    exit_callback_.Run(Result::QUICK_START);
+    Exit(Result::QUICK_START);
     return;
   }
   if (action_id == kUserActionContinueButtonClicked) {
@@ -532,19 +539,19 @@ void WelcomeScreen::OnContinueButtonPressed() {
   demo_mode_detector_.reset();
 
   if (switches::IsOsInstallAllowed())
-    exit_callback_.Run(Result::NEXT_OS_INSTALL);
+    Exit(Result::NEXT_OS_INSTALL);
   else
-    exit_callback_.Run(Result::NEXT);
+    Exit(Result::NEXT);
 }
 
 void WelcomeScreen::OnSetupDemoMode() {
   demo_mode_detector_.reset();
-  exit_callback_.Run(Result::SETUP_DEMO);
+  Exit(Result::SETUP_DEMO);
 }
 
 void WelcomeScreen::OnEnableDebugging() {
   demo_mode_detector_.reset();
-  exit_callback_.Run(Result::ENABLE_DEBUGGING);
+  Exit(Result::ENABLE_DEBUGGING);
 }
 
 void WelcomeScreen::OnLanguageChangedCallback(
@@ -626,6 +633,12 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
   // Simulates a user action, in case this screen is already shown and this OOBE
   // flow is part of Chromad to cloud migration.
   OnUserActionDeprecated(kUserActionContinueButtonClicked);
+}
+
+void WelcomeScreen::Exit(Result result) const {
+  base::UmaHistogramBoolean(kWelcomeScreenLocaleChangeMetric,
+                            is_locale_changed_);
+  exit_callback_.Run(result);
 }
 
 }  // namespace ash

@@ -91,6 +91,9 @@ const char kChromeVoxHintLaptopSpokenString[] =
     "Do you want to activate ChromeVox, the built-in screen reader for Chrome "
     "OS? If so, press the space bar.";
 
+constexpr const char kWelcomeScreenLocaleChangeMetric[] =
+    "OOBE.WelcomeScreen.UserChangedLocale";
+
 void ToggleAccessibilityFeature(const std::string& feature_name,
                                 bool new_value) {
   test::JSChecker js = test::OobeJS();
@@ -412,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, PRE_SelectedLanguage) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   const std::string locale = "ru";
   test::LanguageReloadObserver observer(welcome_screen());
-  welcome_screen()->SetApplicationLocale(locale);
+  welcome_screen()->SetApplicationLocale(locale, /*is_from_ui*/ true);
   observer.Wait();
 
   EXPECT_EQ(g_browser_process->local_state()->GetString(
@@ -453,6 +456,43 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, A11yVirtualKeyboard) {
       WelcomeScreen::A11yUserAction::kDisableVirtualKeyboard, 1);
 
   histogram_tester_.ExpectTotalCount("OOBE.WelcomeScreen.A11yUserActions", 2);
+}
+
+// Set of tests for the OOBE.WelcomeScreen.UserChangedLocale
+IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, UserChangedLocaleMetric) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  // We need to proceed to the next screen because metric is written right
+  // before we call exit_callback_().
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
+  WaitForScreenExit();
+  histogram_tester_.ExpectTotalCount(kWelcomeScreenLocaleChangeMetric, 1);
+  histogram_tester_.ExpectUniqueSample(kWelcomeScreenLocaleChangeMetric, false,
+                                       1);
+}
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
+                       UserChangedLocaleMetricAfterUILocaleChange) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+
+  test::OobeJS().TapOnPath(
+      {"connect", "welcomeScreen", "languageSelectionButton"});
+  EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
+
+  test::OobeJS().ExpectEQ(kCurrentLang, std::string("English (United States)"));
+
+  test::LanguageReloadObserver observer(welcome_screen());
+  test::OobeJS().SelectElementInPath("fr",
+                                     {"connect", "languageSelect", "select"});
+  observer.Wait();
+  test::OobeJS().ExpectEQ(kCurrentLang, std::string("français"));
+  EXPECT_EQ(g_browser_process->GetApplicationLocale(), "fr");
+
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
+  WaitForScreenExit();
+
+  histogram_tester_.ExpectTotalCount(kWelcomeScreenLocaleChangeMetric, 1);
+  histogram_tester_.ExpectUniqueSample(kWelcomeScreenLocaleChangeMetric, true,
+                                       1);
 }
 
 class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {

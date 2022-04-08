@@ -312,7 +312,7 @@ void WelcomeScreenHandler::InitializeDeprecated() {
 
 void WelcomeScreenHandler::HandleSetLocaleId(const std::string& locale_id) {
   if (screen_)
-    screen_->SetApplicationLocale(locale_id);
+    screen_->SetApplicationLocale(locale_id, /*is_from_ui*/ true);
 }
 
 void WelcomeScreenHandler::HandleSetInputMethodId(
