@@ -60,7 +60,6 @@ js_library("multidevice_feature_item") {
     "..:route_origin_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -88,7 +87,6 @@ js_library("multidevice_page") {
     "../..:router",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]

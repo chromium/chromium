@@ -89,9 +89,10 @@ js_library("bluetooth_pairing_device_selection_page") {
     ":bluetooth_types",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/localized_link",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
   ]
+
+  externs_list = [ "//ui/webui/resources/cr_components/localized_link/localized_link_externs.js" ]
 }
 
 js_library("bluetooth_pairing_request_code_page") {
