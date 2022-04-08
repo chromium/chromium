@@ -28,8 +28,7 @@
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace web_app {
-namespace internals {
+namespace web_app::internals {
 namespace {
 
 constexpr char kWebAppId[] = "123";
@@ -200,28 +199,22 @@ TEST_F(WebAppShortcutWinTest,
 
   const base::FilePath::StringType shortcut_name =
       FILE_PATH_LITERAL("shortcut*with*illegal*characters...");
-  const base::FilePath shortcut_path_old_syntax = GetShortcutPath(
-      shortcut_dir, FILE_PATH_LITERAL("shortcut_with_illegal_characters.._"));
-  const base::FilePath shortcut_path_new_syntax = GetShortcutPath(
+  const base::FilePath sanitized_shortcut_path = GetShortcutPath(
       shortcut_dir, FILE_PATH_LITERAL("shortcut with illegal characters"));
 
   const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/path"));
   const base::FilePath::StringType profile_name =
       profile_path.BaseName().value();
 
-  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path_old_syntax, profile_name));
-  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path_new_syntax, profile_name));
+  ASSERT_TRUE(CreateTestAppShortcut(sanitized_shortcut_path, profile_name));
 
-  // Find shortcuts matching |shortcut_name|. Both the shortcut matching the old
-  // syntax (sanitized with underscores) and new (sanitized with spaces) should
-  // be found.
+  // Find shortcuts matching `shortcut_name`. A shortcut with the sanitized name
+  // should be found.
   std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
       shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
-  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ(1u, result.size());
   EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), shortcut_path_old_syntax));
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), shortcut_path_new_syntax));
+            std::find(result.begin(), result.end(), sanitized_shortcut_path));
 }
 
 TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
@@ -380,5 +373,4 @@ TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
       base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\_   _.ico")));
 }
 
-}  // namespace internals
-}  // namespace web_app
+}  // namespace web_app::internals

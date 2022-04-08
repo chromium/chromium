@@ -499,17 +499,6 @@ std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
     // exist (e.g., "|shortcut_name| (2).lnk").
     AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
                                 GetSanitizedFileName(shortcut_name));
-
-    // Find all shortcuts matching the old syntax for shortcut names.
-    // TODO(crbug.com/1188959): remove this and its unit test in April 2022.
-    const base::FilePath::StringType shortcut_name_wide =
-        base::UTF16ToWide(shortcut_name);
-    base::FilePath::StringType shortcut_name_old_syntax = shortcut_name_wide;
-    base::i18n::ReplaceIllegalCharactersInPath(&shortcut_name_old_syntax, '_');
-    if (shortcut_name_old_syntax != shortcut_name_wide) {
-      AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
-                                  base::FilePath(shortcut_name_old_syntax));
-    }
   }
   return shortcut_paths;
 }
