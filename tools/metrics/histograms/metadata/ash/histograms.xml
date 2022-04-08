@@ -3550,8 +3550,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.TimeInSplitView" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-10-17">
   <owner>xdai@chromium.org</owner>
+  <owner>nupurjain@chromim.org</owner>
+  <owner>fanafan@chromium.org</owner>
   <summary>
     The amount of time that the user spent in split view mode. The time is
     measured from the moment a window is snapped to one side of the screen to
