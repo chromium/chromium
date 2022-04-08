@@ -423,11 +423,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseGCMSenderID(const JSONObject* object);
 
-  // Parses the 'capture_links' field of the manifest.
-  // This specifies how navigations into the web app's scope should be captured.
-  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
-  mojom::blink::CaptureLinks ParseCaptureLinks(const JSONObject* object);
-
   // Parses the 'isolated_storage' field of the manifest.
   // This marks whether the application should be loaded in a dedicated storage
   // partition.

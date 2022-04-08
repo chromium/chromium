@@ -61,7 +61,6 @@
 
 class ContentSettingsPattern;
 class ContentSettingsTypeSet;
-class GURL;
 class Profile;
 
 namespace apps {
@@ -212,9 +211,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths);
-
-  content::WebContents* MaybeNavigateExistingWindow(const std::string& app_id,
-                                                    absl::optional<GURL> url);
 
   void LaunchAppWithIntent(
       const std::string& app_id,

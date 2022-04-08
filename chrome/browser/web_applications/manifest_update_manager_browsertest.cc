@@ -64,7 +64,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/handle_links.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
@@ -1805,44 +1804,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(UpdateDialogParam::kEnabled,
                       UpdateDialogParam::kDisabled),
     ManifestUpdateManagerBrowserTest_UpdateDialog::ParamToString);
-
-class ManifestUpdateManagerCaptureLinksBrowserTest
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableLinkCapturing};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerCaptureLinksBrowserTest,
-                       CheckFindsCaptureLinksChange) {
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $1,
-      "capture_links": "$2"
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "none"});
-  AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetProvider().registrar().GetAppCaptureLinks(app_id),
-            blink::mojom::CaptureLinks::kNone);
-
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "new-client"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  ConfirmShortcutColors(app_id, {{{32, kAll}, kInstallableIconTopLeftColor},
-                                 {{48, kAll}, kInstallableIconTopLeftColor},
-                                 {{64, kWin}, kInstallableIconTopLeftColor},
-                                 {{96, kWin}, kInstallableIconTopLeftColor},
-                                 {{128, kAll}, kInstallableIconTopLeftColor},
-                                 {{256, kAll}, kInstallableIconTopLeftColor}});
-  EXPECT_EQ(GetProvider().registrar().GetAppCaptureLinks(app_id),
-            blink::mojom::CaptureLinks::kNewClient);
-}
 
 class ManifestUpdateManagerHandleLinksBrowserTest
     : public ManifestUpdateManagerBrowserTest {

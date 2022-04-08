@@ -608,13 +608,6 @@ const apps::ShareTarget* WebAppRegistrar::GetAppShareTarget(
              : nullptr;
 }
 
-blink::mojom::CaptureLinks WebAppRegistrar::GetAppCaptureLinks(
-    const AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->capture_links()
-                 : blink::mojom::CaptureLinks::kUndefined;
-}
-
 blink::mojom::HandleLinks WebAppRegistrar::GetAppHandleLinks(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

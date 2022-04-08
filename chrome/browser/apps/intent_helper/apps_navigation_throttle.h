@@ -14,7 +14,6 @@
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }  // namespace content
 
 namespace apps {
@@ -51,19 +50,6 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   GURL starting_url_;
 
  private:
-  // Returns whether navigation to |url| was captured by a web app and what to
-  // do next if so.
-  // Note that this implementation is only for:
-  //  - |kDesktopPWAsTabStripLinkCapturing|
-  //  - |kWebAppEnableLinkCapturing| when |kIntentPickerPWAPersistence| is
-  //    disabled.
-  // When |kIntentPickerPWAPersistence| is enabled |kWebAppEnableLinkCapturing|
-  // is handled by WebApps::LaunchAppWithIntentImpl() instead and integrates
-  // properly with App Service's intent handling system.
-  absl::optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
-      content::WebContents* web_contents,
-      content::NavigationHandle* handle) const;
-
   ThrottleCheckResult HandleRequest();
 
   // Keeps track of whether the navigation is coming from a link or not. If the

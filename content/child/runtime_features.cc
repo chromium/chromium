@@ -387,7 +387,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppDarkMode", blink::features::kWebAppEnableDarkMode},
           {"WebAppHandleLinks", blink::features::kWebAppEnableHandleLinks},
           {"WebAppLaunchHandler", blink::features::kWebAppEnableLaunchHandler},
-          {"WebAppLinkCapturing", blink::features::kWebAppEnableLinkCapturing},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAppTranslations", blink::features::kWebAppEnableTranslations},
           {"WebAppWindowControlsOverlay",

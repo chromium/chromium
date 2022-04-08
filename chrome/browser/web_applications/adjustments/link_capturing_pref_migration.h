@@ -21,6 +21,7 @@ namespace web_app {
 // These web apps are exempt from the user preference opt in model we have now
 // as they would have been installed prior to the opt in model coming into
 // effect.
+// TODO(crbug.com/1312844): Remove after 2022-09.
 class LinkCapturingPrefMigration : public apps::AppRegistryCache::Observer {
  public:
   explicit LinkCapturingPrefMigration(Profile& profile);

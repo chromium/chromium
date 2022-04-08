@@ -187,7 +187,6 @@ bool ManifestParser::Parse() {
 
   manifest_->gcm_sender_id = ParseGCMSenderID(root_object.get());
   manifest_->shortcuts = ParseShortcuts(root_object.get());
-  manifest_->capture_links = ParseCaptureLinks(root_object.get());
 
   manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
   manifest_->permissions_policy =
@@ -1497,16 +1496,6 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
   absl::optional<String> gcm_sender_id =
       ParseString(object, "gcm_sender_id", Trim(true));
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
-}
-
-mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
-    const JSONObject* object) {
-  if (!RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(execution_context_))
-    return mojom::blink::CaptureLinks::kUndefined;
-
-  return ParseFirstValidEnum<mojom::blink::CaptureLinks>(
-      object, "capture_links", &CaptureLinksFromString,
-      /*invalid_value=*/mojom::blink::CaptureLinks::kUndefined);
 }
 
 bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {

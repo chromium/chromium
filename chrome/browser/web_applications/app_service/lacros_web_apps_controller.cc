@@ -209,13 +209,6 @@ void LacrosWebAppsController::Launch(
       ReturnLaunchResults(std::move(callback), {});
       return;
     }
-
-    web_contents = publisher_helper().MaybeNavigateExistingWindow(
-        launch_params->app_id, launch_params->intent->url);
-    if (web_contents) {
-      ReturnLaunchResults(std::move(callback), {web_contents});
-      return;
-    }
   }
 
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);

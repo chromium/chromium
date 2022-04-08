@@ -61,7 +61,6 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
@@ -1573,22 +1572,6 @@ const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 
-content::WebContents* WebAppPublisherHelper::MaybeNavigateExistingWindow(
-    const std::string& app_id,
-    absl::optional<GURL> url) {
-  content::WebContents* web_contents = nullptr;
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return web_contents;
-  }
-  if (web_app->capture_links() ==
-      blink::mojom::CaptureLinks::kExistingClientNavigate) {
-    web_contents = provider_->ui_manager().NavigateExistingWindow(
-        app_id, url ? url.value() : registrar().GetAppLaunchUrl(app_id));
-  }
-  return web_contents;
-}
-
 void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
@@ -1597,13 +1580,6 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     int64_t display_id,
     base::OnceCallback<void(const std::vector<content::WebContents*>&)>
         callback) {
-  content::WebContents* web_contents =
-      MaybeNavigateExistingWindow(app_id, intent->url);
-  if (web_contents) {
-    std::move(callback).Run({web_contents});
-    return;
-  }
-
   bool is_file_handling_launch = intent->files && !intent->files->empty() &&
                                  !apps_util::IsShareIntent(intent);
   auto params = apps::CreateAppLaunchParamsForIntent(

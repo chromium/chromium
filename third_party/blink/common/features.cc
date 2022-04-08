@@ -868,12 +868,6 @@ const base::Feature kWebAppEnableHandleLinks{"WebAppEnableHandleLinks",
 const base::Feature kWebAppEnableLaunchHandler{
     "WebAppEnableLaunchHandler", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables declarative link capturing in web apps.
-// Explainer:
-// https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md
-const base::Feature kWebAppEnableLinkCapturing{
-    "WebAppEnableLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables Unique ID feature in web apps. Controls parsing of "id" field in web
 // app manifests. See explainer for more information:
 // https://github.com/philloooo/pwa-unique-id

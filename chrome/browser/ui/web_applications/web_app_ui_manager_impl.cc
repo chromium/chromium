@@ -416,21 +416,6 @@ void WebAppUiManagerImpl::ReparentAppTabToWindow(content::WebContents* contents,
   ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
-content::WebContents* WebAppUiManagerImpl::NavigateExistingWindow(
-    const AppId& app_id,
-    const GURL& url) {
-  for (Browser* open_browser : *BrowserList::GetInstance()) {
-    if (web_app::AppBrowserController::IsForWebApp(open_browser, app_id)) {
-      open_browser->OpenURL(content::OpenURLParams(
-          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PAGE_TRANSITION_LINK,
-          /*is_renderer_initiated=*/false));
-      return open_browser->tab_strip_model()->GetActiveWebContents();
-    }
-  }
-  return nullptr;
-}
-
 void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
     const std::string& app_id,
     bool title_change,
