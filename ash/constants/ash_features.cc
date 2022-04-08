@@ -898,6 +898,12 @@ const base::Feature kLauncherAppSort{"LauncherAppSort",
 const base::Feature kLauncherFolderRenameKeepsSortOrder{
     "LauncherFolderRenameKeepsSortOrder", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, the app list sort nudge and toast will have additional
+// buttons for dismissal.
+const base::Feature kLauncherDismissButtonsOnSortNudgeAndToast{
+    "LauncherDismissButtonsOnSortNudgeAndToast",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Uses short intervals for launcher nudge for testing if enabled.
 const base::Feature kLauncherNudgeShortInterval{
     "LauncherNudgeShortInterval", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1769,6 +1775,12 @@ bool IsLauncherAppSortEnabled() {
 bool IsLauncherFolderRenameKeepsSortOrderEnabled() {
   return IsLauncherAppSortEnabled() &&
          base::FeatureList::IsEnabled(kLauncherFolderRenameKeepsSortOrder);
+}
+
+bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled() {
+  return IsLauncherAppSortEnabled() &&
+         base::FeatureList::IsEnabled(
+             kLauncherDismissButtonsOnSortNudgeAndToast);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {

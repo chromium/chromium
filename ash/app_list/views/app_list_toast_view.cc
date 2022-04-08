@@ -9,9 +9,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/highlight_border.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -31,6 +34,7 @@ namespace {
 constexpr int kCornerRadius = 16;
 constexpr auto kInteriorMargin = gfx::Insets::TLBR(8, 8, 8, 16);
 constexpr auto kTitleContainerMargin = gfx::Insets::TLBR(0, 16, 0, 24);
+constexpr auto kCloseButtonMargin = gfx::Insets::TLBR(0, 8, 0, 0);
 
 constexpr int kToastHeight = 32;
 constexpr int kToastMaximumWidth = 640;
@@ -89,8 +93,11 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
   if (has_icon_background_)
     toast->AddIconBackground();
 
-  if (has_button_)
+  if (button_callback_)
     toast->SetButton(*button_text_, button_callback_);
+
+  if (close_button_callback_)
+    toast->SetCloseButton(close_button_callback_);
 
   if (subtitle_)
     toast->SetSubtitle(*subtitle_);
@@ -134,9 +141,16 @@ AppListToastView::Builder& AppListToastView::Builder::SetButton(
     views::Button::PressedCallback button_callback) {
   DCHECK(button_callback);
 
-  has_button_ = true;
   button_text_ = button_text;
   button_callback_ = button_callback;
+  return *this;
+}
+
+AppListToastView::Builder& AppListToastView::Builder::SetCloseButton(
+    views::Button::PressedCallback close_button_callback) {
+  DCHECK(close_button_callback);
+
+  close_button_callback_ = close_button_callback;
   return *this;
 }
 
@@ -223,6 +237,17 @@ void AppListToastView::SetButton(
       button_callback, button_text, PillButton::Type::kIconless,
       /*icon=*/nullptr));
   toast_button_->SetBorder(views::NullBorder());
+}
+
+void AppListToastView::SetCloseButton(
+    views::Button::PressedCallback close_button_callback) {
+  DCHECK(close_button_callback);
+
+  close_button_ = AddChildView(std::make_unique<IconButton>(
+      close_button_callback, IconButton::Type::kSmallFloating,
+      &vector_icons::kCloseIcon,
+      IDS_ASH_LAUNCHER_CLOSE_SORT_TOAST_BUTTON_SPOKEN_TEXT));
+  close_button_->SetProperty(views::kMarginsKey, kCloseButtonMargin);
 }
 
 void AppListToastView::SetTitle(const std::u16string title) {

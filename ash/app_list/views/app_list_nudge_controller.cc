@@ -233,13 +233,22 @@ void AppListNudgeController::SetNudgeActive(bool is_nudge_active,
   UpdateCurrentNudgeStateInPrefs(false, is_active_updated);
 }
 
+void AppListNudgeController::OnReorderNudgeConfirmed() {
+  PrefService* prefs = GetPrefs();
+  if (!prefs)
+    return;
+
+  // Record the nudge as confirmed so that it will not show up again.
+  DictionaryPrefUpdate update(prefs, prefs::kAppListReorderNudge);
+  update->SetBoolPath(kReorderNudgeConfirmed, true);
+}
+
 void AppListNudgeController::UpdateCurrentNudgeStateInPrefs(
     bool is_visible_updated,
     bool is_active_updated) {
   PrefService* prefs = GetPrefs();
-  if (!prefs) {
+  if (!prefs)
     return;
-  }
 
   // Handle the case where the nudge is active to the users.
   if (is_active_) {

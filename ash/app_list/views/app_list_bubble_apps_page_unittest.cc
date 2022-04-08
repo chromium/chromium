@@ -263,7 +263,7 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
             "Apps are sorted by name");
 
   views::LabelButton* undo_button =
-      apps_page->toast_container_for_test()->GetToastDismissButton();
+      apps_page->toast_container_for_test()->GetToastButton();
   undo_button->GetViewAccessibility().GetAccessibleNodeData(&button_data);
   EXPECT_EQ(button_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             "Undo sort order by name");
@@ -315,7 +315,7 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsWithItemFocused) {
   EXPECT_FALSE(first_item->HasFocus());
   EXPECT_TRUE(helper->GetBubbleAppsPage()
                   ->toast_container_for_test()
-                  ->GetToastDismissButton()
+                  ->GetToastButton()
                   ->HasFocus());
 
   // Simulate the sort undo by setting the new order to nullopt. The focus

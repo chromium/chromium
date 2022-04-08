@@ -557,8 +557,7 @@ TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
   // animation.
   EXPECT_EQ(2, listener.focus_change_count());
   EXPECT_FALSE(first_item->HasFocus());
-  EXPECT_TRUE(
-      reorder_undo_toast_container->GetToastDismissButton()->HasFocus());
+  EXPECT_TRUE(reorder_undo_toast_container->GetToastButton()->HasFocus());
 
   // Simulate the sort undo by setting the new order to nullopt. The focus
   // should be on the search box after undoing the sort.

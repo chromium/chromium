@@ -4557,8 +4557,14 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_UNDO_SORT_DONE_SPOKEN_TEXT" desc="Accessibility text read by chromevox after successfully undoing/reverting the sorting action on apps in launcher.">
        Sort undo successful
       </message>
+      <message name="IDS_ASH_LAUNCHER_CLOSE_SORT_TOAST_BUTTON_SPOKEN_TEXT" desc="Accessibility text read by chromevox when focusing on the close button shown in a toast that gets shown in the launcher UI after user sorts apps in the launcher.">
+        Close sort toast
+      </message>
       <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE" desc="Title of a nudge shown in the Chrome OS launcher UI above the list of apps that informs users that they can sort their apps by name or color.">
         Sort your apps by name or color
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON" desc="Text for the button used to dismiss a nudge shown in the Chrome OS launcher UI. The nudge is located above the list of apps and informs users that they can sort their apps by name or color.">
+        OK
       </message>
       <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_CLAMSHELL_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the Chrome OS launcher UI in clamshell mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
         Right-click anywhere to reorder your apps

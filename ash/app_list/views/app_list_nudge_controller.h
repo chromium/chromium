@@ -95,6 +95,10 @@ class ASH_EXPORT AppListNudgeController {
   // the nudge is hidden. A inactive nudge could be visible in the background.
   void SetNudgeActive(bool is_nudge_active, NudgeType type);
 
+  // Called when the reorder nudge is dismissed. Updates the pref so the reorder
+  // nudge will not show again.
+  void OnReorderNudgeConfirmed();
+
   // Updates the the current nudge state in prefs to determine if a nudge should
   // be showing.
   void UpdateCurrentNudgeStateInPrefs(bool is_visible_updated,

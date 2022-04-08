@@ -21,6 +21,7 @@
 #include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -47,7 +48,9 @@ class AppListNudgeControllerTest : public AshTestBase {
   AppListNudgeControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherAppSort, features::kProductivityLauncher}, {});
+        {features::kLauncherAppSort, features::kProductivityLauncher,
+         features::kLauncherDismissButtonsOnSortNudgeAndToast},
+        {});
   }
   AppListNudgeControllerTest(const AppListNudgeControllerTest&) = delete;
   AppListNudgeControllerTest& operator=(const AppListNudgeControllerTest&) =
@@ -96,7 +99,7 @@ class AppListNudgeControllerTest : public AshTestBase {
 };
 
 TEST_F(AppListNudgeControllerTest, Basic) {
-  // Simulate an user login.
+  // Simulate a user login.
   SimulateUserLogin("user@gmail.com");
 
   // The reorder nudge should show 3 times to the users.
@@ -125,7 +128,7 @@ TEST_F(AppListNudgeControllerTest, Basic) {
 }
 
 TEST_F(AppListNudgeControllerTest, StopShowingNudgeAfterReordering) {
-  // Simulate an user login.
+  // Simulate a user login.
   SimulateUserLogin("user@gmail.com");
 
   // The reorder nudge should show for the first time.
@@ -151,7 +154,7 @@ TEST_F(AppListNudgeControllerTest, StopShowingNudgeAfterReordering) {
 }
 
 TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
-  // Simulate an user login.
+  // Simulate a user login.
   SimulateUserLogin("user@gmail.com");
 
   ShowAppListAndWait();
@@ -204,6 +207,60 @@ TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
   EXPECT_FALSE(GetToastContainerView()->is_toast_visible());
   EXPECT_EQ(AppListToastContainerView::ToastType::kNone,
             GetToastContainerView()->current_toast());
+}
+
+TEST_F(AppListNudgeControllerTest, ReorderNudgeDismissButton) {
+  // Simulate a user login.
+  SimulateUserLogin("user@gmail.com");
+
+  ShowAppListAndWait();
+  EXPECT_TRUE(GetToastContainerView()->is_toast_visible());
+  EXPECT_EQ(AppListToastContainerView::ToastType::kReorderNudge,
+            GetToastContainerView()->current_toast());
+
+  // Dismiss the reorder nudge and check that it is no longer visible.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(GetToastContainerView()
+                                   ->GetToastButton()
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(GetToastContainerView()->is_toast_visible());
+
+  // Close and reopen app list to make sure that the reorder nudge is no longer
+  // shown after being dismissed.
+  DismissAppList();
+  ShowAppListAndWait();
+  EXPECT_FALSE(GetToastContainerView()->is_toast_visible());
+  EXPECT_EQ(AppListToastContainerView::ToastType::kNone,
+            GetToastContainerView()->current_toast());
+}
+
+TEST_F(AppListNudgeControllerTest, ReorderUndoCloseButton) {
+  // Simulate a user login.
+  SimulateUserLogin("user@gmail.com");
+
+  ShowAppListAndWait();
+
+  // Simulate that the app list is reordered by name and check that the reorder
+  // undo nudge is shown.
+  Shell::Get()->app_list_controller()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kNameAlphabetical, /*animate=*/false,
+      base::OnceClosure());
+  EXPECT_TRUE(GetToastContainerView()->is_toast_visible());
+  EXPECT_EQ(AppListToastContainerView::ToastType::kReorderUndo,
+            GetToastContainerView()->current_toast());
+
+  GetToastContainerView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Click the close button and check that the nudge is no longer visible.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(GetToastContainerView()
+                                   ->GetCloseButton()
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(GetToastContainerView()->is_toast_visible());
 }
 
 }  // namespace ash

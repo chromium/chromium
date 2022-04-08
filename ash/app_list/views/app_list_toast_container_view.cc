@@ -12,6 +12,7 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -91,14 +92,22 @@ bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool AppListToastContainerView::HandleFocus(int column) {
-  // Only handle the focus if the button on the toast exists.
-  views::LabelButton* dismiss_button = GetToastDismissButton();
-  if (!dismiss_button)
-    return false;
+  // Only handle the focus if a button on the toast exists.
+  views::LabelButton* toast_button = GetToastButton();
+  if (toast_button) {
+    focused_app_column_ = column;
+    toast_button->RequestFocus();
+    return true;
+  }
 
-  focused_app_column_ = column;
-  dismiss_button->RequestFocus();
-  return true;
+  views::Button* close_button = GetCloseButton();
+  if (close_button) {
+    focused_app_column_ = column;
+    close_button->RequestFocus();
+    return true;
+  }
+
+  return false;
 }
 
 void AppListToastContainerView::MaybeUpdateReorderNudgeView() {
@@ -123,11 +132,19 @@ void AppListToastContainerView::CreateReorderNudgeView() {
           ? IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TABLET_MODE_SUBTITLE
           : IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_CLAMSHELL_MODE_SUBTITLE;
 
+  AppListToastView::Builder toast_view_builder(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE));
+
+  if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
+    toast_view_builder.SetButton(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON),
+        base::BindRepeating(&AppListToastContainerView::DismissReorderNudgeView,
+                            base::Unretained(this)));
+  }
+
   toast_view_ = AddChildView(
-      AppListToastView::Builder(
-          l10n_util::GetStringUTF16(
-              IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE))
-          .SetStyleForTabletMode(tablet_mode_)
+      toast_view_builder.SetStyleForTabletMode(tablet_mode_)
           .SetSubtitle(l10n_util::GetStringUTF16(subtitle_message_id))
           .SetThemingIcons(tablet_mode_ ? &kReorderNudgeDarkTabletIcon
                                         : &kReorderNudgeDarkClamshellIcon,
@@ -136,6 +153,12 @@ void AppListToastContainerView::CreateReorderNudgeView() {
           .SetIconBackground(true)
           .Build());
   current_toast_ = ToastType::kReorderNudge;
+}
+
+void AppListToastContainerView::DismissReorderNudgeView() {
+  // TODO(mmourgos): Add animations for the nudge being dismissed.
+  RemoveReorderNudgeView();
+  nudge_controller_->OnReorderNudgeConfirmed();
 }
 
 void AppListToastContainerView::RemoveReorderNudgeView() {
@@ -147,9 +170,9 @@ void AppListToastContainerView::RemoveReorderNudgeView() {
 }
 
 void AppListToastContainerView::RemoveCurrentView() {
-  if (toast_view_) {
+  if (toast_view_)
     RemoveChildViewT(toast_view_);
-  }
+
   toast_view_ = nullptr;
   current_toast_ = ToastType::kNone;
 }
@@ -219,9 +242,16 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
     return;
   }
 
+  AppListToastView::Builder toast_view_builder(toast_text);
+
+  if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
+    toast_view_builder.SetCloseButton(base::BindRepeating(
+        &AppListToastContainerView::OnReorderCloseButtonClicked,
+        base::Unretained(this)));
+  }
+
   toast_view_ = AddChildView(
-      AppListToastView::Builder(toast_text)
-          .SetStyleForTabletMode(tablet_mode_)
+      toast_view_builder.SetStyleForTabletMode(tablet_mode_)
           .SetIcon(toast_icon)
           .SetButton(l10n_util::GetStringUTF16(
                          IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_ACTION_BUTTON),
@@ -250,15 +280,27 @@ void AppListToastContainerView::AnnounceUndoSort() {
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_UNDO_SORT_DONE_SPOKEN_TEXT));
 }
 
-views::LabelButton* AppListToastContainerView::GetToastDismissButton() {
-  if (!toast_view_ || current_toast_ != ToastType::kReorderUndo)
+views::LabelButton* AppListToastContainerView::GetToastButton() {
+  if (!toast_view_)
     return nullptr;
 
   return toast_view_->toast_button();
 }
 
+views::Button* AppListToastContainerView::GetCloseButton() {
+  if (!toast_view_)
+    return nullptr;
+
+  return toast_view_->close_button();
+}
+
 void AppListToastContainerView::OnReorderUndoButtonClicked() {
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSortRevert();
+}
+
+void AppListToastContainerView::OnReorderCloseButtonClicked() {
+  // TODO(mmourgos): Add animations for removing undo toast.
+  RemoveCurrentView();
 }
 
 std::u16string AppListToastContainerView::CalculateToastTextFromOrder(

@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_ICON_BUTTON_H_
 #define ASH_STYLE_ICON_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -24,7 +25,7 @@ namespace ash {
 // might change on different toggle states. A fixed size of EmptyBorder will be
 // applied to the button if `has_border` is true, this is done to help
 // differentiating focus ring from the content of the button.
-class IconButton : public views::ImageButton {
+class ASH_EXPORT IconButton : public views::ImageButton {
  public:
   METADATA_HEADER(IconButton);
 

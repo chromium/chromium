@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class Button;
 class LabelButton;
 }
 
@@ -89,6 +90,9 @@ class AppListToastContainerView : public views::View {
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
 
+  // Dismisses the reorder nudge view and ensures it will no longer be shown.
+  void DismissReorderNudgeView();
+
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();
 
@@ -115,7 +119,10 @@ class AppListToastContainerView : public views::View {
   void AnnounceUndoSort();
 
   // This function expects that `toast_view_` exists.
-  views::LabelButton* GetToastDismissButton();
+  views::LabelButton* GetToastButton();
+
+  // Gets the close button if one exists.
+  views::Button* GetCloseButton();
 
   AppListToastView* toast_view() { return toast_view_; }
   bool is_toast_visible() const { return toast_view_; }
@@ -126,6 +133,9 @@ class AppListToastContainerView : public views::View {
  private:
   // Called when the `toast_view_`'s dismiss button is clicked.
   void OnReorderUndoButtonClicked();
+
+  // Called when the `toast_view_`'s close button is clicked.
+  void OnReorderCloseButtonClicked();
 
   // Calculates the toast text based on the temporary sorting order.
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(

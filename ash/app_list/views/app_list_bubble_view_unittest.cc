@@ -882,7 +882,7 @@ TEST_F(AppListBubbleViewTest, DownArrowFromToastKeepsSameColumnInAppsGrid) {
   AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
       AppListSortOrder::kColor,
       /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
-  ASSERT_TRUE(GetToastContainerView()->GetToastDismissButton());
+  ASSERT_TRUE(GetToastContainerView()->GetToastButton());
 
   for (int column = 0; column < 5; column++) {
     // Pressing down arrow from an item in recent apps selects the app in the
@@ -892,7 +892,7 @@ TEST_F(AppListBubbleViewTest, DownArrowFromToastKeepsSameColumnInAppsGrid) {
     ASSERT_TRUE(recent_app->HasFocus());
 
     PressAndReleaseKey(ui::VKEY_DOWN);
-    EXPECT_TRUE(GetToastContainerView()->GetToastDismissButton()->HasFocus());
+    EXPECT_TRUE(GetToastContainerView()->GetToastButton()->HasFocus());
 
     PressAndReleaseKey(ui::VKEY_DOWN);
     AppListItemView* app = GetAppsGridView()->GetItemViewAt(column);
@@ -972,7 +972,7 @@ TEST_F(AppListBubbleViewTest, UpArrowFromToastKeepsSameColumnInAppsGrid) {
   AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
       AppListSortOrder::kColor,
       /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
-  ASSERT_TRUE(GetToastContainerView()->GetToastDismissButton());
+  ASSERT_TRUE(GetToastContainerView()->GetToastButton());
 
   for (int column = 0; column < 5; column++) {
     // Pressing up arrow from an item in the apps grid selects the app in the
@@ -982,7 +982,7 @@ TEST_F(AppListBubbleViewTest, UpArrowFromToastKeepsSameColumnInAppsGrid) {
     ASSERT_TRUE(app->HasFocus());
 
     PressAndReleaseKey(ui::VKEY_UP);
-    EXPECT_TRUE(GetToastContainerView()->GetToastDismissButton()->HasFocus());
+    EXPECT_TRUE(GetToastContainerView()->GetToastButton()->HasFocus());
 
     PressAndReleaseKey(ui::VKEY_UP);
     EXPECT_TRUE(GetRecentAppsView()->GetItemViewAt(column)->HasFocus())
