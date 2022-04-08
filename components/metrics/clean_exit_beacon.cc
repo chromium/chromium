@@ -79,33 +79,31 @@ void RecordMonitoringStage(base::Value* beacon_file_contents) {
 }
 
 // Records the the combined state of two distinct beacons' values in the given
-// histogram. One beacon is stored in Local State while the other is stored
-// elsewhere (e.g. in platform-specific storage, like the Windows registry, or
-// in the beacon file).
+// histogram.
 void RecordBeaconConsistency(const std::string& histogram_name,
-                             absl::optional<bool> other_beacon_value,
-                             absl::optional<bool> local_state_beacon_value) {
+                             absl::optional<bool> beacon_value1,
+                             absl::optional<bool> beacon_value2) {
   CleanExitBeaconConsistency consistency =
       CleanExitBeaconConsistency::kDirtyDirty;
 
-  if (!other_beacon_value) {  // The non-Local-State-backed beacon is missing.
-    if (!local_state_beacon_value) {  // The Local State beacon is missing.
+  if (!beacon_value1) {
+    if (!beacon_value2) {
       consistency = CleanExitBeaconConsistency::kMissingMissing;
     } else {
-      consistency = local_state_beacon_value.value()
+      consistency = beacon_value2.value()
                         ? CleanExitBeaconConsistency::kMissingClean
                         : CleanExitBeaconConsistency::kMissingDirty;
     }
-  } else if (!local_state_beacon_value) {
-    consistency = other_beacon_value.value()
+  } else if (!beacon_value2) {
+    consistency = beacon_value1.value()
                       ? CleanExitBeaconConsistency::kCleanMissing
                       : CleanExitBeaconConsistency::kDirtyMissing;
-  } else if (other_beacon_value.value()) {
-    consistency = local_state_beacon_value.value()
+  } else if (beacon_value1.value()) {
+    consistency = beacon_value2.value()
                       ? CleanExitBeaconConsistency::kCleanClean
                       : CleanExitBeaconConsistency::kCleanDirty;
   } else {
-    consistency = local_state_beacon_value.value()
+    consistency = beacon_value2.value()
                       ? CleanExitBeaconConsistency::kDirtyClean
                       : CleanExitBeaconConsistency::kDirtyDirty;
   }
@@ -329,6 +327,10 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
     }
     RecordBeaconConsistency("UMA.CleanExitBeacon.BeaconFileConsistency",
                             beacon_file_beacon_value, local_state_beacon_value);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+    RecordBeaconConsistency("UMA.CleanExitBeaconConsistency3",
+                            beacon_file_beacon_value, backup_beacon_value);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   }
 
   bool did_previous_session_exit_cleanly =
