@@ -96,7 +96,10 @@ void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
         return view ==
                UIElement::GetBackingElement<views::View, ViewElement>(child);
       });
-  DCHECK(iter != children().end());
+  if (iter == children().end()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
   RemoveChild(child_element);
   delete child_element;
@@ -104,6 +107,15 @@ void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
 
 void ViewElement::OnChildViewAdded(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
+  auto iter = std::find_if(
+      children().begin(), children().end(), [view](UIElement* child) {
+        return view ==
+               UIElement::GetBackingElement<views::View, ViewElement>(child);
+      });
+  if (iter != children().end()) {
+    RebuildTree();
+    return;
+  }
   AddChild(new ViewElement(view, delegate(), this));
 }
 
@@ -114,7 +126,11 @@ void ViewElement::OnChildViewReordered(views::View* parent, views::View* view) {
         return view ==
                UIElement::GetBackingElement<views::View, ViewElement>(child);
       });
-  DCHECK(iter != children().end());
+  if (iter == children().end() ||
+      children().size() != view_->children().size()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
   ReorderChild(child_element, parent->GetIndexOf(view));
 }
@@ -226,6 +242,13 @@ void* ViewElement::GetClassInstance() const {
 
 ui::Layer* ViewElement::GetLayer() const {
   return view_->layer();
+}
+
+void ViewElement::RebuildTree() {
+  ClearChildren();
+  for (auto* child : view_->children()) {
+    AddChild(new ViewElement(child, delegate(), this));
+  }
 }
 
 }  // namespace ui_devtools

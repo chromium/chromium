@@ -97,6 +97,32 @@ ADD_PROPERTY_METADATA(bool, BoolProperty)
 ADD_PROPERTY_METADATA(SkColor, ColorProperty, ui::metadata::SkColorConverter)
 END_METADATA
 
+class AlwaysOnTopView : public views::View {
+  METADATA_HEADER(AlwaysOnTopView);
+};
+BEGIN_METADATA(AlwaysOnTopView, views::View)
+END_METADATA
+
+class SelfReorderingTestView : public views::View, public views::ViewObserver {
+ public:
+  METADATA_HEADER(SelfReorderingTestView);
+  SelfReorderingTestView()
+      : always_on_top_view_(AddChildView(std::make_unique<AlwaysOnTopView>())) {
+    AddObserver(this);
+  }
+  ~SelfReorderingTestView() override { RemoveObserver(this); }
+
+  // views::ViewObserver
+  void OnChildViewAdded(View* observed_view, View* child) override {
+    ReorderChildView(always_on_top_view_, -1);
+  }
+
+ private:
+  raw_ptr<views::View> always_on_top_view_;
+};
+BEGIN_METADATA(SelfReorderingTestView, views::View)
+END_METADATA
+
 class ViewElementTest : public views::ViewsTestBase {
  public:
   ViewElementTest() {}
@@ -398,6 +424,23 @@ TEST_F(ViewElementTest, DispatchMouseEvent) {
     element()->DispatchMouseEvent(event.get());
 
   view()->parent()->RemoveChildView(view());
+}
+
+TEST_F(ViewElementTest, OutOfOrderObserverTest) {
+  // Override the expectation from setup; we don't need to keep track
+  // in this test.
+  EXPECT_CALL(*delegate(), OnUIElementAdded(_, _)).Times(testing::AnyNumber());
+  auto view = std::make_unique<SelfReorderingTestView>();
+  auto element = std::make_unique<ViewElement>(view.get(), delegate(), nullptr);
+  // `element` will receive OnChildViewReordered and OnViewAdded out of
+  // order. Ensure it doesn't crash and that the subtree is consistent
+  // afterward.
+  view->AddChildView(std::make_unique<views::View>());
+  ASSERT_EQ(element->children().size(), 2u);
+  auto attrs = element->children().at(1)->GetAttributes();
+  EXPECT_EQ(attrs[0], "name");
+  std::string& name = attrs[1];
+  EXPECT_EQ(name, "AlwaysOnTopView");
 }
 
 }  // namespace ui_devtools

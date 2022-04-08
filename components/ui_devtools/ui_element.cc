@@ -37,11 +37,7 @@ void UIElement::ResetNodeId() {
 }
 
 UIElement::~UIElement() {
-  if (owns_children_) {
-    for (auto* child : children_)
-      delete child;
-  }
-  children_.clear();
+  ClearChildren();
 }
 
 std::string UIElement::GetTypeName() const {
@@ -85,6 +81,8 @@ void UIElement::AddOrderedChild(UIElement* child,
 }
 
 void UIElement::ClearChildren() {
+  for (auto* child : children_)
+    delete child;
   children_.clear();
 }
 
