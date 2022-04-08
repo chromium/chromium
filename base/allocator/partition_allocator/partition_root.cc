@@ -626,6 +626,23 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
 }
 
 template <bool thread_safe>
+void PartitionRoot<thread_safe>::DestructForTesting() {
+  // We need to destruct the thread cache before we unreserve any of the super
+  // pages below, which we currently are not doing. So, we should only call
+  // this function on PartitionRoots without a thread cache.
+  PA_CHECK(!with_thread_cache);
+  auto pool_handle = ChoosePool();
+  auto* curr = first_extent;
+  while (curr != nullptr) {
+    auto* next = curr->next;
+    internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        pool_handle, reinterpret_cast<uintptr_t>(curr),
+        kSuperPageSize * curr->number_of_consecutive_super_pages);
+    curr = next;
+  }
+}
+
+template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
 #if BUILDFLAG(IS_APPLE)

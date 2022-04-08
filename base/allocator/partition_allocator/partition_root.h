@@ -347,6 +347,12 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
   ~PartitionRoot();
 
+  // This will unreserve any space in the GigaCage that the PartitionRoot is
+  // using. This is needed because many tests create and destroy many
+  // PartitionRoots over the lifetime of a process, which can exhaust the
+  // GigaCage and cause tests to fail.
+  void DestructForTesting();
+
   // Public API
   //
   // Allocates out of the given bucket. Properly, this function should probably

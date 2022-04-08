@@ -93,11 +93,8 @@ class SystemAllocator : public Allocator {
 
 class PartitionAllocator : public Allocator {
  public:
-  explicit PartitionAllocator(bool use_alternate_bucket_dist) {
-    if (!use_alternate_bucket_dist)
-      alloc_.SwitchToDenserBucketDistribution();
-  }
-  ~PartitionAllocator() override = default;
+  PartitionAllocator() = default;
+  ~PartitionAllocator() override { alloc_.DestructForTesting(); }
 
   void* Alloc(size_t size) override {
     return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
@@ -133,6 +130,8 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     ThreadCacheRegistry::Instance().PurgeAll();
     if (!use_alternate_bucket_dist)
       g_partition_root->SwitchToDenserBucketDistribution();
+    else
+      g_partition_root->ResetBucketDistributionForTesting();
   }
   ~PartitionAllocatorWithThreadCache() override = default;
 
@@ -325,7 +324,7 @@ std::unique_ptr<Allocator> CreateAllocator(AllocatorType type,
     case AllocatorType::kSystem:
       return std::make_unique<SystemAllocator>();
     case AllocatorType::kPartitionAlloc:
-      return std::make_unique<PartitionAllocator>(use_alternate_bucket_dist);
+      return std::make_unique<PartitionAllocator>();
     case AllocatorType::kPartitionAllocWithThreadCache:
       return std::make_unique<PartitionAllocatorWithThreadCache>(
           use_alternate_bucket_dist);
@@ -429,13 +428,11 @@ TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucketWithFree) {
 }
 
 #if !defined(MEMORY_CONSTRAINED)
-#if !BUILDFLAG(IS_LINUX)  // crbug.com/1302681
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucket) {
   auto params = GetParam();
   RunTest(std::get<int>(params), std::get<bool>(params),
           std::get<AllocatorType>(params), MultiBucket, nullptr, "MultiBucket");
 }
-#endif  // !BUILDFLAG(IS_LINUX)
 #endif  // defined(MEMORY_CONSTRAINED)
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFree) {
