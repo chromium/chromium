@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <utility>
-#include <vector>
-
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

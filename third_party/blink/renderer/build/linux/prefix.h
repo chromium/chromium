@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// no-include-guard-because-pch-file
+// no-std-usage-because-pch-file
+
 // This file is used as a precompiled header for both C and C++ files. So
 // any C++ headers must go in the __cplusplus block below.
 

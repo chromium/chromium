@@ -4626,7 +4626,8 @@ def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
                 has_stl_include = True
                 continue
 
-            if not uses_std_namespace and std_namespace_re.search(line):
+            if not uses_std_namespace and (std_namespace_re.search(line)
+                    or 'no-std-usage-because-pch-file' in line):
                 uses_std_namespace = True
                 continue
 
@@ -4774,7 +4775,8 @@ def CheckForLongPathnames(input_api, output_api):
 def CheckForIncludeGuards(input_api, output_api):
     """Check that header files have proper guards against multiple inclusion.
     If a file should not have such guards (and it probably should) then it
-    should include the string "no-include-guard-because-multiply-included".
+    should include the string "no-include-guard-because-multiply-included" or
+    "no-include-guard-because-pch-file".
     """
 
     def is_chromium_header_file(f):
@@ -4834,7 +4836,8 @@ def CheckForIncludeGuards(input_api, output_api):
                                              guard_name_pattern + ')')
 
         for line_number, line in enumerate(f.NewContents()):
-            if 'no-include-guard-because-multiply-included' in line:
+            if ('no-include-guard-because-multiply-included' in line
+                    or 'no-include-guard-because-pch-file' in line):
                 guard_name = 'DUMMY'  # To not trigger check outside the loop.
                 break
 
@@ -4887,7 +4890,8 @@ def CheckForIncludeGuards(input_api, output_api):
                     [f.LocalPath()], 'Missing include guard in %s\n'
                     'Recommended name: %s\n'
                     'This check can be disabled by having the string\n'
-                    'no-include-guard-because-multiply-included in the header.'
+                    '"no-include-guard-because-multiply-included" or\n'
+                    '"no-include-guard-because-pch-file" in the header.'
                     % (f.LocalPath(), expected_guard)))
 
     return errors
