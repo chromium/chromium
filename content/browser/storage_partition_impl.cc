@@ -1820,19 +1820,19 @@ void StoragePartitionImpl::OnAuthRequired(
   if (!is_primary_main_frame.has_value())
     is_primary_main_frame = IsPrimaryMainFrameRequest(context);
   auto web_contents_getter = base::BindRepeating(GetWebContents, context);
-  int process_id;
-  switch (context.type()) {
-    case URLLoaderNetworkContext::Type::kRenderFrameHostContext: {
-      auto* render_frame_host = context.navigation_or_document()->GetDocument();
-      DCHECK(render_frame_host);
+  int process_id = network::mojom::kBrowserProcessId;
+  if (context.type() ==
+      URLLoaderNetworkContext::Type::kRenderFrameHostContext) {
+    // Set `process_id` to `kInvalidProcessId` considering `render_frame_host`
+    // can be null when it's destroyed already. `process_id` is updated only if
+    // `render_frame_host` is not null. If `render_frame_host` is null,
+    // OnAuthRequiredContinuation() fails to get the web contents and calls
+    // OnAuthCredentials() with a nullopt that triggers CancelAuth().
+    process_id = network::mojom::kInvalidProcessId;
+
+    auto* render_frame_host = context.navigation_or_document()->GetDocument();
+    if (render_frame_host)
       process_id = render_frame_host->GetGlobalId().child_id;
-      break;
-    }
-    case URLLoaderNetworkContext::Type::kNavigationRequestContext:
-    case URLLoaderNetworkContext::Type::kServiceWorkerContext: {
-      process_id = network::mojom::kBrowserProcessId;
-      break;
-    }
   }
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
