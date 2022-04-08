@@ -18,6 +18,7 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
+#include "ui/events/ozone/evdev/input_device_opener_evdev.h"
 
 namespace ui {
 
@@ -39,7 +40,8 @@ class EvdevThread : public base::Thread {
   void Init() override {
     TRACE_EVENT0("evdev", "EvdevThread::Init");
     input_device_factory_ =
-        new InputDeviceFactoryEvdev(std::move(dispatcher_), cursor_);
+        new InputDeviceFactoryEvdev(std::move(dispatcher_), cursor_,
+                                    std::make_unique<InputDeviceOpenerEvdev>());
 
     std::unique_ptr<InputDeviceFactoryEvdevProxy> proxy(
         new InputDeviceFactoryEvdevProxy(base::ThreadTaskRunnerHandle::Get(),
