@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/ssl/ssl_error_handler.h"
@@ -115,7 +116,7 @@ void SSLManager::OnSSLCertificateError(
     const base::WeakPtr<SSLErrorHandler::Delegate>& delegate,
     bool is_main_frame_request,
     const GURL& url,
-    WebContents* web_contents,
+    NavigationOrDocumentHandle* navigation_or_document,
     int net_error,
     const net::SSLInfo& ssl_info,
     bool fatal) {
@@ -125,14 +126,24 @@ void SSLManager::OnSSLCertificateError(
            << ssl_info.cert_status;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  WebContents* web_contents = nullptr;
+  FrameTreeNode* frame_tree_node = nullptr;
+  // This handle can be null if the request is from service worker.
+  if (navigation_or_document) {
+    web_contents = navigation_or_document->GetWebContents();
+    frame_tree_node = navigation_or_document->GetFrameTreeNode();
+  }
+
   std::unique_ptr<SSLErrorHandler> handler(
       new SSLErrorHandler(web_contents, delegate, is_main_frame_request, url,
                           net_error, ssl_info, fatal));
 
-  if (!web_contents) {
+  if (!web_contents || !frame_tree_node) {
     // Requests can fail to dispatch because they don't have a WebContents. See
     // https://crbug.com/86537. In this case we have to make a decision in this
-    // function.
+    // function. Also, if the navigation or document which have been responsible
+    // for the request don't exist, there is no point in trying to process
+    // further.
     handler->DenyRequest();
     return;
   }
@@ -144,11 +155,11 @@ void SSLManager::OnSSLCertificateError(
     return;
   }
 
-  NavigationControllerImpl* controller =
-      static_cast<NavigationControllerImpl*>(&web_contents->GetController());
-  controller->SetPendingNavigationSSLError(true);
+  NavigationControllerImpl& controller =
+      frame_tree_node->navigator().controller();
+  controller.SetPendingNavigationSSLError(true);
 
-  SSLManager* manager = controller->ssl_manager();
+  SSLManager* manager = controller.ssl_manager();
   manager->OnCertError(std::move(handler));
 }
 

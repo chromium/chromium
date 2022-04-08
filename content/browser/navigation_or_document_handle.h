@@ -13,6 +13,7 @@
 
 namespace content {
 
+class FrameTreeNode;
 class WebContents;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -39,6 +40,8 @@ class NavigationOrDocumentHandle
   RenderFrameHost* GetDocument() const;
 
   WebContents* GetWebContents() const;
+
+  FrameTreeNode* GetFrameTreeNode() const;
 
   bool IsInPrimaryMainFrame() const;
 

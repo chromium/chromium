@@ -1918,7 +1918,7 @@ void StoragePartitionImpl::OnSSLCertificateError(
   bool is_primary_main_frame_request = IsPrimaryMainFrameRequest(context);
   SSLManager::OnSSLCertificateError(
       delegate->GetWeakPtr(), is_primary_main_frame_request, url,
-      GetWebContents(context), net_error, ssl_info, fatal);
+      context.navigation_or_document(), net_error, ssl_info, fatal);
 }
 
 void StoragePartitionImpl::OnLoadingStateUpdate(

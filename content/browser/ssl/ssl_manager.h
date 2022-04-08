@@ -24,6 +24,7 @@ namespace content {
 class BrowserContext;
 class NavigationEntryImpl;
 class NavigationControllerImpl;
+class NavigationOrDocumentHandle;
 class SSLHostStateDelegate;
 struct LoadCommittedDetails;
 
@@ -48,7 +49,7 @@ class SSLManager {
       const base::WeakPtr<SSLErrorHandler::Delegate>& delegate,
       bool is_main_frame_request,
       const GURL& url,
-      WebContents* web_contents,
+      NavigationOrDocumentHandle* navigation_or_document,
       int net_error,
       const net::SSLInfo& ssl_info,
       bool fatal);

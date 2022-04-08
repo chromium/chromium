@@ -4,6 +4,7 @@
 
 #include "content/browser/navigation_or_document_handle.h"
 
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -52,6 +53,15 @@ WebContents* NavigationOrDocumentHandle::GetWebContents() const {
         navigation_request->frame_tree_node());
   } else if (auto* rfh = GetDocument()) {
     return WebContents::FromRenderFrameHost(rfh);
+  }
+  return nullptr;
+}
+
+FrameTreeNode* NavigationOrDocumentHandle::GetFrameTreeNode() const {
+  if (auto* navigation_request = GetNavigationRequest()) {
+    return navigation_request->frame_tree_node();
+  } else if (auto* rfh = GetDocument()) {
+    return FrameTreeNode::From(rfh);
   }
   return nullptr;
 }
