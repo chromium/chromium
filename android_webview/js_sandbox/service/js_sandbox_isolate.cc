@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/renderer/js_sandbox/js_sandbox_isolate.h"
+#include "android_webview/js_sandbox/service/js_sandbox_isolate.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 
-#include "android_webview/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
+#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"

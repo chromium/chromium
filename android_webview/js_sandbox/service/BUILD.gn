@@ -9,9 +9,8 @@ source_set("js_sandbox") {
   ]
 
   deps = [
-    "//android_webview:browser_jni_headers",
-    "//android_webview:js_sandbox_jni_headers",
     "//android_webview/common",
+    "//android_webview/js_sandbox:js_sandbox_jni_headers",
     "//base",
     "//gin",
   ]
