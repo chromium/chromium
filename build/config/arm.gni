@@ -132,7 +132,12 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     arm_control_flow_integrity = "pac"
 
     # TODO(cavalcantii): enable the feature for the following OSes next.
-    if (is_mac || is_chromeos || is_fuchsia || is_win) {
+    if (is_mac || is_chromeos || is_fuchsia || is_win ||
+        target_cpu != "arm64") {
+      # target_cpu != "arm64" covers some cases (e.g. the ChromeOS x64 MSAN
+      # build) where the target platform is x64, but V8 is configured to use
+      # the arm64 simulator. Pointer authentication doesn't work properly
+      # in this mode (yet).
       arm_control_flow_integrity = "none"
     }
   }
