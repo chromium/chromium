@@ -172,11 +172,13 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(context_client_minor_version == 0);
   }
 
-  if (GLSurfaceEGL::IsCreateContextRobustnessSupported()) {
+  bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
+
+  if (GLSurfaceEGL::IsCreateContextRobustnessSupported() || is_swangle) {
     DVLOG(1) << "EGL_EXT_create_context_robustness supported.";
     context_attributes.push_back(EGL_CONTEXT_OPENGL_ROBUST_ACCESS_EXT);
-    context_attributes.push_back(attribs.robust_buffer_access ? EGL_TRUE
-                                                              : EGL_FALSE);
+    context_attributes.push_back(
+        (attribs.robust_buffer_access || is_swangle) ? EGL_TRUE : EGL_FALSE);
     if (attribs.lose_context_on_reset) {
       context_attributes.push_back(
           EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_EXT);
@@ -252,10 +254,11 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     context_attributes.push_back(EGL_FALSE);
   }
 
-  if (GLSurfaceEGL::IsRobustResourceInitSupported()) {
+  if (GLSurfaceEGL::IsRobustResourceInitSupported() || is_swangle) {
     context_attributes.push_back(EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE);
     context_attributes.push_back(
-        attribs.robust_resource_initialization ? EGL_TRUE : EGL_FALSE);
+        (attribs.robust_resource_initialization || is_swangle) ? EGL_TRUE
+                                                               : EGL_FALSE);
   } else {
     DCHECK(!attribs.robust_resource_initialization);
   }
