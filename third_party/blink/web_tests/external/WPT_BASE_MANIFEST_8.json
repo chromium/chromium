@@ -230194,6 +230194,19 @@
        ]
       },
       "the-frameset-and-frame-elements": {
+       "frameset-visibility-hidden.html": [
+        "b6c454b03fd78f22812c8eea91825c23fb289d6c",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-frameset-and-frame-elements/reference/empty-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "large-cols-abssize.html": [
         "ba55da868651d06bd48e8ab151584316defbaad6",
         [
@@ -260417,6 +260430,10 @@
       ],
       "container-computed-expected.txt": [
        "bbe86ab75b72693cf96df110ca8d00c774656d6d",
+       []
+      ],
+      "container-for-shadow-dom-expected.txt": [
+       "126cd057fafc28394287282c35b305cd668d8b61",
        []
       ],
       "container-parsing-expected.txt": [
@@ -311423,6 +311440,10 @@
         []
        ],
        "reference": {
+        "empty-ref.html": [
+         "0e76edd65b7baf5316fc9d0c4da59a3502e4c27a",
+         []
+        ],
         "green-ref.html": [
          "62208d72c917f09413ffdf6377ac32afe6468a6e",
          []
@@ -376907,7 +376928,7 @@
        ]
       ],
       "container-for-shadow-dom.html": [
-       "1ac4243bc41819a7ede64fefef6966644ac0c878",
+       "33a2ce23e0d5a7f93cf98a9a00b191a500044adf",
        [
         null,
         {}
