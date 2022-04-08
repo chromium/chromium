@@ -23,11 +23,14 @@ namespace blink {
 
 namespace {
 
-WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
-                                 std::string* label,
-                                 GPUDevice* device) {
+WGPUTextureDescriptor AsDawnType(
+    const GPUTextureDescriptor* webgpu_desc,
+    std::string* label,
+    std::unique_ptr<WGPUTextureFormat[]>* view_formats,
+    GPUDevice* device) {
   DCHECK(webgpu_desc);
   DCHECK(label);
+  DCHECK(view_formats);
   DCHECK(device);
 
   WGPUTextureDescriptor dawn_desc = {};
@@ -44,6 +47,10 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();
   }
+
+  *view_formats = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->viewFormats());
+  dawn_desc.viewFormatCount = webgpu_desc->viewFormats().size();
+  dawn_desc.viewFormats = view_formats->get();
 
   return dawn_desc;
 }
@@ -98,7 +105,9 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   std::string label;
-  WGPUTextureDescriptor dawn_desc = AsDawnType(webgpu_desc, &label, device);
+  std::unique_ptr<WGPUTextureFormat[]> view_formats;
+  WGPUTextureDescriptor dawn_desc =
+      AsDawnType(webgpu_desc, &label, &view_formats, device);
 
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
