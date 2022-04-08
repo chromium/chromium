@@ -337,11 +337,12 @@ BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
       type_(data->ContentType().IsolatedCopy()),
       size_(size),
       is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
+  auto elements = data->ReleaseElements();
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE("Storage.Blob.RegisterBlobTime");
   GetThreadSpecificRegistry()->Register(
       blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-      type_.IsNull() ? "" : type_, "", data->ReleaseElements());
+      type_.IsNull() ? "" : type_, "", std::move(elements));
 }
 
 BlobDataHandle::BlobDataHandle(const String& uuid,
