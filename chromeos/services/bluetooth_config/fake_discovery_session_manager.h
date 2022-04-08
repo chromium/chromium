@@ -7,6 +7,7 @@
 
 #include "chromeos/services/bluetooth_config/discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
+#include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -25,6 +26,10 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
 
   using DiscoverySessionManager::HasAtLeastOneDiscoveryClient;
 
+  std::vector<FakeDevicePairingHandler*>& device_pairing_handlers() {
+    return device_pairing_handlers_;
+  }
+
  private:
   // DiscoverySessionManager:
   void OnHasAtLeastOneDiscoveryClientChanged() override;
@@ -33,6 +38,8 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
       mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) override;
 
   bool is_discovery_session_active_ = false;
+
+  std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
 };
 
 }  // namespace bluetooth_config

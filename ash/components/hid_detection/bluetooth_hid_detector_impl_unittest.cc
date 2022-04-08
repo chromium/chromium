@@ -8,13 +8,18 @@
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_power_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
+#include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
+#include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using chromeos::bluetooth_config::FakeDevicePairingHandler;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
+using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+using chromeos::bluetooth_config::mojom::DeviceType;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
@@ -39,8 +44,11 @@ class BluetoothHidDetectorImplTest : public testing::Test {
       StopBluetoothHidDetection();
   }
 
-  void StartBluetoothHidDetection() {
-    bluetooth_hid_detector_.StartBluetoothHidDetection();
+  void StartBluetoothHidDetection(bool pointer_is_missing = true,
+                                  bool keyboard_is_missing = true) {
+    bluetooth_hid_detector_.StartBluetoothHidDetection(
+        {.pointer_is_missing = pointer_is_missing,
+         .keyboard_is_missing = keyboard_is_missing});
     base::RunLoop().RunUntilIdle();
   }
 
@@ -87,8 +95,52 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddUnpairedDevice(std::string* id_out, DeviceType device_type) {
+    // We use the number of devices created in this test as the id.
+    *id_out = base::NumberToString(num_devices_created_);
+    ++num_devices_created_;
+
+    auto device = BluetoothDeviceProperties::New();
+    device->id = *id_out;
+    device->device_type = device_type;
+    unpaired_devices_.push_back(device.Clone());
+
+    UpdateDiscoveredDevicesProviderDevices();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void RemoveUnpairedDevice(const std::string& device_id) {
+    unpaired_devices_.erase(
+        std::remove_if(unpaired_devices_.begin(), unpaired_devices_.end(),
+                       [device_id](BluetoothDevicePropertiesPtr const& device) {
+                         return device->id == device_id;
+                       }),
+        unpaired_devices_.end());
+
+    UpdateDiscoveredDevicesProviderDevices();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::vector<FakeDevicePairingHandler*> GetDevicePairingHandlers() {
+    return scoped_bluetooth_config_test_helper_
+        .fake_discovery_session_manager()
+        ->device_pairing_handlers();
+  }
+
  private:
+  void UpdateDiscoveredDevicesProviderDevices() {
+    std::vector<BluetoothDevicePropertiesPtr> unpaired_devices;
+    for (auto& device : unpaired_devices_) {
+      unpaired_devices.push_back(device.Clone());
+    }
+    scoped_bluetooth_config_test_helper_.fake_discovered_devices_provider()
+        ->SetDiscoveredDevices(std::move(unpaired_devices));
+  }
+
   base::test::TaskEnvironment task_environment_;
+
+  std::vector<BluetoothDevicePropertiesPtr> unpaired_devices_;
+  size_t num_devices_created_ = 0u;
 
   chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
@@ -218,6 +270,186 @@ TEST_F(BluetoothHidDetectorImplTest,
   SetAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetAdapterState());
   EXPECT_TRUE(IsDiscoverySessionActive());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevices_TypeNotHid) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kHeadset);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+
+  // Begin HID detection. |device_id1| should not be attempted to be paired
+  // with.
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevices_TypeNotMissing) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+
+  // Begin HID detection. |device_id1| should not be attempted to be paired
+  // with.
+  StartBluetoothHidDetection(/*is_pointer_missing=*/false);
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevices_BeforeStartingDetection) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboardMouseCombo);
+
+  // Begin HID detection. |device_id1| should be attempted to be paired with.
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock |device_id1| being paired. |device_id2| should be attempted to be
+  // paired with.
+  RemoveUnpairedDevice(device_id1);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock |device_id2| being paired.
+  RemoveUnpairedDevice(device_id2);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+}
+
+TEST_F(BluetoothHidDetectorImplTest,
+       AddDevices_SeriallyAfterStartingDetection) {
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kTablet);
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock |device_id1| being paired.
+  RemoveUnpairedDevice(device_id1);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock |device_id2| being paired.
+  RemoveUnpairedDevice(device_id2);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevices_BatchAfterStartingDetection) {
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+
+  // Mock |device_id1| being paired.
+  RemoveUnpairedDevice(device_id1);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock |device_id2| being paired.
+  RemoveUnpairedDevice(device_id2);
+  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AdapterDisablesDuringPairing) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+
+  // Begin HID detection. |device_id1| should be attempted to be paired with.
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Mock the adapter disabling.
+  SetAdapterState(BluetoothSystemState::kDisabled);
+  EXPECT_FALSE(IsDiscoverySessionActive());
+
+  // Mock the adapter re-enabling Bluetooth. This should cause
+  // BluetoothHidDetector to start discovery again. The first device should be
+  // attempted to be paired with again.
+  SetAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(2u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[1]->current_pairing_device_id());
+}
+
+TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
+
+  // Begin HID detection. |device_id1| should be attempted to be paired with.
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+
+  // Stop detection.
+  StopBluetoothHidDetection();
+  EXPECT_FALSE(IsDiscoverySessionActive());
+
+  // Start detection again. The first device should be attempted to be paired
+  // with again.
+  StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(2u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[1]->current_pairing_device_id());
 }
 
 }  // namespace hid_detection

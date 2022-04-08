@@ -432,7 +432,6 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   // Finish the pairing with failure.
   device_pairing_handler1->SimulatePairDeviceFinished(
       device::ConnectionFailureReason::kFailed);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kNonAuthFailure);
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
   EXPECT_TRUE(delegate1->pairing_handler().is_connected());
@@ -455,7 +454,6 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   // Finish the pairing with success.
   device_pairing_handler1->SimulatePairDeviceFinished(
       /*failure_reason=*/absl::nullopt);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
   EXPECT_TRUE(delegate1->pairing_handler().is_connected());
@@ -488,7 +486,6 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   // Finish the pairing with success.
   device_pairing_handler2->SimulatePairDeviceFinished(
       /*failure_reason=*/absl::nullopt);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
   EXPECT_TRUE(delegate2->IsMojoPipeConnected());
   EXPECT_TRUE(delegate2->pairing_handler().is_connected());
@@ -622,7 +619,6 @@ TEST_F(DiscoverySessionManagerImplTest,
 
   device_pairing_handler->SimulatePairDeviceFinished(
       /*failure_reason=*/absl::nullopt);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // |delegate| will still be connected.

@@ -6,10 +6,14 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "components/device_event_log/device_event_log.h"
 
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-
 namespace ash {
 namespace hid_detection {
+namespace {
+using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+using chromeos::bluetooth_config::mojom::DeviceType;
+using chromeos::bluetooth_config::mojom::KeyEnteredHandler;
+}  // namespace
 
 BluetoothHidDetectorImpl::BluetoothHidDetectorImpl() = default;
 
@@ -18,9 +22,15 @@ BluetoothHidDetectorImpl::~BluetoothHidDetectorImpl() {
                                  << "BluetoothHidDetectorImpl is destroyed.";
 }
 
-void BluetoothHidDetectorImpl::StartBluetoothHidDetection() {
+void BluetoothHidDetectorImpl::StartBluetoothHidDetection(
+    InputDevicesStatus input_devices_status) {
+  DCHECK(input_devices_status.pointer_is_missing ||
+         input_devices_status.keyboard_is_missing)
+      << "StartBluetoothHidDetection() called when neither pointer or keyboard "
+      << "is missing";
   DCHECK_EQ(kNotStarted, state_);
   HID_LOG(EVENT) << "Starting Bluetooth HID detection";
+  input_devices_status_ = input_devices_status;
   state_ = kStarting;
   GetBluetoothConfigService(
       cros_bluetooth_config_remote_.BindNewPipeAndPassReceiver());
@@ -36,7 +46,7 @@ void BluetoothHidDetectorImpl::StopBluetoothHidDetection() {
   cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive(false);
   cros_bluetooth_config_remote_.reset();
   system_properties_observer_receiver_.reset();
-  bluetooth_discovery_delegate_receiver_.reset();
+  ResetDiscoveryState();
 }
 
 void BluetoothHidDetectorImpl::OnPropertiesUpdated(
@@ -80,7 +90,6 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
         HID_LOG(EVENT) << "Bluetooth adapter has stopped being enabled while "
                        << "Bluetooth HID detection is in progress";
         state_ = kStoppedExternally;
-        bluetooth_discovery_delegate_receiver_.reset();
       }
       return;
     case kStoppedExternally:
@@ -98,15 +107,132 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
 void BluetoothHidDetectorImpl::OnBluetoothDiscoveryStarted(
     mojo::PendingRemote<chromeos::bluetooth_config::mojom::DevicePairingHandler>
         handler) {
-  // TODO(crbug.com/1299099): Implement pairing.
+  HID_LOG(EVENT) << "Bluetooth discovery started.";
+  DCHECK(!device_pairing_handler_remote_);
+  device_pairing_handler_remote_.Bind(std::move(handler));
 }
 
-void BluetoothHidDetectorImpl::OnBluetoothDiscoveryStopped() {}
+void BluetoothHidDetectorImpl::OnBluetoothDiscoveryStopped() {
+  HID_LOG(EVENT) << "Bluetooth discovery stopped.";
+  ResetDiscoveryState();
+}
 
 void BluetoothHidDetectorImpl::OnDiscoveredDevicesListChanged(
-    std::vector<chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
-        discovered_devices) {
-  // TODO(crbug.com/1299099): Implement pairing.
+    std::vector<BluetoothDevicePropertiesPtr> discovered_devices) {
+  for (const auto& discovered_device : discovered_devices) {
+    if (!ShouldAttemptToPairWithDevice(discovered_device))
+      continue;
+    if (queued_device_ids_.contains(discovered_device->id))
+      continue;
+
+    queued_device_ids_.insert(discovered_device->id);
+    queue_->emplace(discovered_device.Clone());
+    HID_LOG(EVENT) << "Queuing device: " << discovered_device->id << ". ["
+                   << queue_->size() << "] devices now in queue.";
+  }
+  ProcessQueue();
+}
+
+void BluetoothHidDetectorImpl::RequestPinCode(RequestPinCodeCallback callback) {
+  // TODO(crbug/1299099): Implement.
+}
+
+void BluetoothHidDetectorImpl::RequestPasskey(RequestPasskeyCallback callback) {
+  // TODO(crbug/1299099): Implement.
+}
+
+void BluetoothHidDetectorImpl::DisplayPinCode(
+    const std::string& pin_code,
+    mojo::PendingReceiver<KeyEnteredHandler> handler) {
+  // TODO(crbug/1299099): Implement.
+}
+
+void BluetoothHidDetectorImpl::DisplayPasskey(
+    const std::string& passkey,
+    mojo::PendingReceiver<KeyEnteredHandler> handler) {
+  // TODO(crbug/1299099): Implement.
+}
+
+void BluetoothHidDetectorImpl::ConfirmPasskey(const std::string& passkey,
+                                              ConfirmPasskeyCallback callback) {
+  // TODO(crbug/1299099): Implement.
+}
+
+void BluetoothHidDetectorImpl::AuthorizePairing(
+    AuthorizePairingCallback callback) {
+  // TODO(crbug/1299099): Implement.
+}
+
+bool BluetoothHidDetectorImpl::ShouldAttemptToPairWithDevice(
+    const BluetoothDevicePropertiesPtr& device) {
+  switch (device->device_type) {
+    case DeviceType::kMouse:
+      [[fallthrough]];
+    case DeviceType::kTablet:
+      return input_devices_status_.pointer_is_missing;
+    case DeviceType::kKeyboard:
+      return input_devices_status_.keyboard_is_missing;
+    case DeviceType::kKeyboardMouseCombo:
+      return input_devices_status_.pointer_is_missing ||
+             input_devices_status_.keyboard_is_missing;
+    default:
+      return false;
+  }
+}
+
+void BluetoothHidDetectorImpl::ProcessQueue() {
+  if (current_pairing_device_)
+    return;
+
+  if (queue_->empty()) {
+    HID_LOG(DEBUG) << "No devices queued";
+    return;
+  }
+
+  current_pairing_device_ = std::move(queue_->front());
+  queue_->pop();
+  HID_LOG(EVENT) << "Popped device with id: "
+                 << current_pairing_device_.value()->id
+                 << " from front of queue. [" << queue_->size()
+                 << "] devices now in queue.";
+
+  // TODO(crbug.com/1299099): Check if device type is still missing and return
+  // early if not.
+
+  // TODO(crbug.com/1299099): Notify delegate of change in status.
+  HID_LOG(EVENT) << "Pairing with device with id: "
+                 << current_pairing_device_.value()->id;
+  device_pairing_handler_remote_->PairDevice(
+      current_pairing_device_.value()->id,
+      device_pairing_delegate_receiver_.BindNewPipeAndPassRemote(),
+      base::BindOnce(&BluetoothHidDetectorImpl::OnPairDevice,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothHidDetectorImpl::OnPairDevice(
+    chromeos::bluetooth_config::mojom::PairingResult pairing_result) {
+  // TODO(crbug.com/1299099): Notify delegate of change in status.
+  HID_LOG(EVENT) << "Finished pairing with "
+                 << current_pairing_device_.value()->id
+                 << ", result: " << pairing_result << ", [" << queue_->size()
+                 << "] devices still in queue.";
+  queued_device_ids_.erase(current_pairing_device_.value()->id);
+  current_pairing_device_.reset();
+  device_pairing_delegate_receiver_.reset();
+  ProcessQueue();
+}
+
+void BluetoothHidDetectorImpl::ResetDiscoveryState() {
+  // Reset Mojo-related properties.
+  bluetooth_discovery_delegate_receiver_.reset();
+  device_pairing_handler_remote_.reset();
+  device_pairing_delegate_receiver_.reset();
+
+  // Reset queue-related properties.
+  current_pairing_device_.reset();
+  queue_ = std::make_unique<base::queue<
+      chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
+  queued_device_ids_.clear();
 }
 
 }  // namespace hid_detection

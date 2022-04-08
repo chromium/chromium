@@ -13,9 +13,15 @@ namespace hid_detection {
 // currently paired with.
 class BluetoothHidDetector {
  public:
+  struct InputDevicesStatus {
+    bool pointer_is_missing;
+    bool keyboard_is_missing;
+  };
+
   virtual ~BluetoothHidDetector();
 
-  virtual void StartBluetoothHidDetection() = 0;
+  virtual void StartBluetoothHidDetection(
+      InputDevicesStatus input_devices_status) = 0;
   virtual void StopBluetoothHidDetection() = 0;
 
  protected:

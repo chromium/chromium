@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
 
+#include "base/run_loop.h"
 #include "chromeos/services/bluetooth_config/device_conversion_util.h"
 
 namespace chromeos {
@@ -28,6 +29,7 @@ void FakeDevicePairingHandler::SimulatePairDeviceFinished(
     absl::optional<device::ConnectionFailureReason> failure_reason) {
   DCHECK(!current_pairing_device_id().empty());
   FinishCurrentPairingRequest(failure_reason);
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateFetchDeviceFinished(
