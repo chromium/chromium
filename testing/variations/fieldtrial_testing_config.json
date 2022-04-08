@@ -2801,6 +2801,30 @@
             ]
         }
     ],
+    "DiscountConsentV2": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_ntp_dialog_20220323",
+                    "params": {
+                        "discount-consent-ntp-variation": "3",
+                        "step-one-one-cart-content": "Get discount codes for $1",
+                        "step-one-three-carts-content": "Get discount codes for $1, $2, and more",
+                        "step-one-two-carts-content": "Get discount codes for $1 and $2",
+                        "step-two-content": "Let Google use your carts to find personalized discounts when available"
+                    },
+                    "enable_features": [
+                        "DiscountConsentV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsHttpsSvcbSchemeUpgrade": [
         {
             "platforms": [

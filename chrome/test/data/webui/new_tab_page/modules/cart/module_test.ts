@@ -36,7 +36,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
   suite('Normal cart without rule-based discount', () => {
     suiteSetup(() => {
-      loadTimeData.overrideValues({ruleBasedDiscountEnabled: false});
+      loadTimeData.overrideValues({
+        ruleBasedDiscountEnabled: false,
+        modulesCartDiscountConsentVariation: DiscountConsentVariation.Default
+      });
     });
 
     test('creates no module if no cart item', async () => {
@@ -732,15 +735,17 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Arrange.
       const moduleElement =
           await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
-      assertTrue(!!moduleElement);
+      assertTrue(!!moduleElement, 'Module should exist');
       document.body.append(moduleElement);
       moduleElement.$.consentCardElement.render();
 
       // Assert.
       const consentCard = $$<HTMLElement>(moduleElement, '#consentCard')!;
       const consentToast = moduleElement.$.confirmDiscountConsentToast;
-      assertEquals(true, isVisible(consentCard));
-      assertEquals(false, consentToast.open);
+      assertEquals(
+          true, isVisible(consentCard), 'Consent card should be visible');
+      assertEquals(
+          false, consentToast.open, 'Consent toast should not be opened');
       assertEquals(
           loadTimeData.getString('modulesCartDiscountConsentContent'),
           consentCard.querySelector<HTMLElement>('#consentContent')!.innerText);
@@ -760,8 +765,12 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       await flushTasks();
 
       // Assert.
-      assertEquals(false, isVisible(consentCard));
-      assertEquals(true, consentToast.open);
+      assertEquals(
+          false, isVisible(consentCard),
+          'Consent card should not be visible after clicking the cancel button');
+      assertEquals(
+          true, consentToast.open,
+          'Consent toast should be opened after clicking the cancel button');
       assertEquals(
           'Reject confirmation!',
           moduleElement.$.confirmDiscountConsentMessage.innerText);
@@ -771,15 +780,20 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       moduleElement.$.confirmDiscountConsentButton.click();
 
       // Assert.
-      assertEquals(false, consentToast.open);
-      assertEquals(false, isVisible(consentCard));
+      assertEquals(
+          false, consentToast.open,
+          'Consent toast should not be opened after acting on the toast');
+      assertEquals(
+          false, isVisible(consentCard),
+          'Consent card should not be visible after acting on the toast');
 
       // Act.
       moduleElement.showDiscountConsent = true;
       moduleElement.$.consentCardElement.render();
 
       // Assert.
-      assertEquals(true, isVisible(consentCard));
+      assertEquals(
+          true, isVisible(consentCard), 'Consent card should be visible');
       assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
 
       // Act.
@@ -787,8 +801,12 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       await flushTasks();
 
       // Assert.
-      assertEquals(false, isVisible(consentCard));
-      assertEquals(true, consentToast.open);
+      assertEquals(
+          false, isVisible(consentCard),
+          'Consent card should not be visible after accepting');
+      assertEquals(
+          true, consentToast.open,
+          'Consent toast should be opened after accepting');
       assertEquals(
           'Accept confirmation!',
           moduleElement.$.confirmDiscountConsentMessage.innerText);
@@ -797,8 +815,12 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       moduleElement.$.confirmDiscountConsentButton.click();
 
       // Assert.
-      assertEquals(false, consentToast.open);
-      assertEquals(false, isVisible(consentCard));
+      assertEquals(
+          false, consentToast.open,
+          'Consent toast should not be opened after acting on confirm toast');
+      assertEquals(
+          false, isVisible(consentCard),
+          'Consent card should not be visible after confirm toast');
       assertEquals(1, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
     });
 
