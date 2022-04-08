@@ -898,8 +898,7 @@ export class FakeShimlessRmaService {
           },
           9000);
       this.triggerCalibrationOverallObserver(
-          CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete,
-          10000);
+          CalibrationOverallStatus.kCalibrationOverallComplete, 10000);
     }
   }
 

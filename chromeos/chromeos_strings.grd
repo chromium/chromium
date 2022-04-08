@@ -2773,6 +2773,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
         Calibrating device components
       </message>
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE" translateable="false" desc="Title for the page shown when component calibration steps are complete.">
+        Calibration complete
+      </message>
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE" translateable="false" desc="Message to display when all component calibration steps are complete.">
         Completed
       </message>

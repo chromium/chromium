@@ -94,6 +94,18 @@ export function reimagingCalibrationRunPageTest() {
   test('NextButtonAfterCalibrationCompleteTriggersContinue', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationRunPage();
+
+    const calibrationTitle = component.shadowRoot.querySelector('h1');
+    const progressSpinner =
+        component.shadowRoot.querySelector('paper-spinner-lite');
+    const completeIllustration = component.shadowRoot.querySelector('img');
+
+    assertEquals(
+        loadTimeData.getString('runCalibrationTitleText'),
+        calibrationTitle.textContent.trim());
+    assertFalse(progressSpinner.hidden);
+    assertTrue(completeIllustration.hidden);
+
     let calibrationCompleteCalls = 0;
     service.calibrationComplete = () => {
       calibrationCompleteCalls++;
@@ -112,6 +124,11 @@ export function reimagingCalibrationRunPageTest() {
 
     assertEquals(1, calibrationCompleteCalls);
     assertDeepEquals(savedResult, expectedResult);
+    assertEquals(
+        loadTimeData.getString('runCalibrationCompleteTitleText'),
+        calibrationTitle.textContent.trim());
+    assertTrue(progressSpinner.hidden);
+    assertFalse(completeIllustration.hidden);
   });
 
   test(

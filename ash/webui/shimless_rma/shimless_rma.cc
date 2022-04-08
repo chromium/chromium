@@ -188,6 +188,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_FINALIZE_FAILED_RETRY_BUTTON_LABEL},
       // Run calibration page
       {"runCalibrationTitleText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE},
+      {"runCalibrationCompleteTitleText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE},
       {"runCalibrationCompleteText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE},
       {"runCalibrationStartingText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING},
       {"runCalibrationCalibratingComponent",

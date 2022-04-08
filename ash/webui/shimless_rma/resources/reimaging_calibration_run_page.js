@@ -122,6 +122,16 @@ export class ReimagingCalibrationRunPage extends
     const componentType = this.i18n(ComponentTypeToId[status.component]);
     return this.i18n('runCalibrationCalibratingComponent', componentType);
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getCalibrationTitleString_() {
+    return this.i18n(
+        this.calibrationComplete_ ? 'runCalibrationCompleteTitleText' :
+                                    'runCalibrationTitleText');
+  }
 }
 
 customElements.define(

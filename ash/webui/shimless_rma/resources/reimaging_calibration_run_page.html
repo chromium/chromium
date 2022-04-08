@@ -3,8 +3,9 @@
 
 <base-page>
   <div slot="left-pane">
-    <h1>[[i18n('runCalibrationTitleText')]]</h1>
-    <div id="calibration" class="instructions">
+    <h1>[[getCalibrationTitleString_(calibrationComplete_)]]</h1>
+    <div id="calibration" class="instructions"
+        hidden$="[[calibrationComplete_]]">
       <span>[[calibrationStatusMessage_]]</span>
     </div>
   </div>
@@ -13,6 +14,9 @@
       <paper-spinner-lite active hidden$="[[calibrationComplete_]]"
           class="large-spinner">
       </paper-spinner-lite>
+      <!-- TODO(gavinwill): Replace calibration complete illustration. -->
+      <img class="illustration" src="illustrations/downloading.svg"
+          hidden$="[[!calibrationComplete_]]">
     </div>
   </div>
 </base-page>
