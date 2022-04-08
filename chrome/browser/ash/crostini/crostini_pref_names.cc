@@ -103,21 +103,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kCrostiniSharedUsbDevices);
   registry->RegisterBooleanPref(kCrostiniMicAllowed, false);
   registry->RegisterBooleanPref(kTerminalSshAllowedByPolicy, true);
-
-  // Set a default value for crostini.containers to ensure that we track the
-  // default container even if its creation predates this preference. This
-  // preference should not be accessed unless crostini is installed
-  // (i.e. kCrostiniEnabled is true).
-  base::Value default_container(base::Value::Type::DICTIONARY);
-  default_container.SetKey(kVmKey, base::Value(kCrostiniDefaultVmName));
-  default_container.SetKey(kContainerKey,
-                           base::Value(kCrostiniDefaultContainerName));
-
-  base::Value::ListStorage default_containers_list;
-  default_containers_list.push_back(std::move(default_container));
-  registry->RegisterListPref(kCrostiniContainers,
-                             base::Value(std::move(default_containers_list)));
-
+  registry->RegisterListPref(kCrostiniContainers);
   registry->RegisterBooleanPref(crostini::prefs::kReportCrostiniUsageEnabled,
                                 false);
   registry->RegisterStringPref(kCrostiniLastLaunchTerminaComponentVersion,

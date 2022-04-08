@@ -274,7 +274,7 @@ chrome.test.runTests([
     const validateGetPrefs = (prefs, settingsLength) => {
       chrome.test.assertEq(3, Object.keys(prefs).length);
       chrome.test.assertTrue(Array.isArray(prefs[pContainers]));
-      chrome.test.assertEq(1, prefs[pContainers].length);
+      chrome.test.assertEq(0, prefs[pContainers].length);
       chrome.test.assertEq('object', typeof prefs[pSettings]);
       chrome.test.assertEq(
           settingsLength, Object.keys(prefs[pSettings]).length);
