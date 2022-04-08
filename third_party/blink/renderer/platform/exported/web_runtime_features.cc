@@ -545,6 +545,10 @@ void WebRuntimeFeatures::EnableAutomationControlled(bool enable) {
   RuntimeEnabledFeatures::SetAutomationControlledEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDigitalGoodsAPI(bool enable) {
+  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableDisplayCutoutAPI(bool enable) {
   RuntimeEnabledFeatures::SetDisplayCutoutAPIEnabled(enable);
 }

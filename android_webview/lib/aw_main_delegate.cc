@@ -238,6 +238,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(device::features::kWebXrHitTest);
 
+    // TODO(https://crbug.com/1312827): Digital Goods API is not yet supported
+    // on WebView.
+    features.DisableIfNotSet(::features::kDigitalGoodsApi);
+
     features.DisableIfNotSet(::features::kDynamicColorGamut);
 
     // De-jelly is never supported on WebView.

@@ -254,6 +254,7 @@ interface USBEndpoint
     getter speechSynthesis                   # Speech API, crbug.com/487255
     attribute chrome                         # crbug.com/618471
     method gc                                # test only
+    method getDigitalGoodsService            # Digital Goods API, crbug.com/1312827
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
     method showOpenFilePicker                # File System Access API, crbug.com/1011535

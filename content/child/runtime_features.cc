@@ -213,6 +213,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},
     {wf::EnableDevicePosture, features::kDevicePosture},
+    {wf::EnableDigitalGoodsAPI, features::kDigitalGoodsApi,
+     kSetOnlyIfOverridden},
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
