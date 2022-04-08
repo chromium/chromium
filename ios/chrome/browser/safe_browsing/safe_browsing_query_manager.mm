@@ -8,6 +8,8 @@
 #include "base/check_op.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -61,9 +63,13 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
   network::mojom::RequestDestination request_destination =
       query.IsMainFrame() ? network::mojom::RequestDestination::kDocument
                           : network::mojom::RequestDestination::kIframe;
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state_->GetBrowserState());
+  SafeBrowsingService* safe_browsing_service =
+      safe_browsing_client->GetSafeBrowsingService();
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
-      GetApplicationContext()->GetSafeBrowsingService()->CreateUrlChecker(
-          request_destination, web_state_);
+      safe_browsing_service->CreateUrlChecker(request_destination, web_state_);
   base::OnceCallback<void(bool proceed, bool show_error_page)> callback =
       base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
                      weak_factory_.GetWeakPtr(), query);

@@ -26,10 +26,10 @@ class SafeBrowsingService;
 class SafeBrowsingClient : public KeyedService {
  public:
   // Gets the safe browsing service for this client. Must not be nullptr.
-  virtual SafeBrowsingService* GetSafeBrowsingService() const = 0;
+  virtual SafeBrowsingService* GetSafeBrowsingService() = 0;
   // Gets the real time url look up service. Clients may return nullptr.
-  virtual safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
-      const = 0;
+  virtual safe_browsing::RealTimeUrlLookupService*
+  GetRealTimeUrlLookupService() = 0;
   // Returns whether or not |resource| should be blocked from loading.
   virtual bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const = 0;

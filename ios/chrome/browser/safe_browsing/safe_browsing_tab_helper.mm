@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -137,8 +139,11 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state()->GetBrowserState());
   SafeBrowsingService* safe_browsing_service =
-      GetApplicationContext()->GetSafeBrowsingService();
+      safe_browsing_client->GetSafeBrowsingService();
   if (!safe_browsing_service->CanCheckUrl(request_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -223,8 +228,11 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state()->GetBrowserState());
   SafeBrowsingService* safe_browsing_service =
-      GetApplicationContext()->GetSafeBrowsingService();
+      safe_browsing_client->GetSafeBrowsingService();
   GURL response_url = GetCanonicalizedUrl(net::GURLWithNSURL(response.URL));
   if (!safe_browsing_service->CanCheckUrl(response_url)) {
     return std::move(callback).Run(
@@ -344,14 +352,12 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     }
   }
 
-  // When a prendered page is unsafe, cancel the prerender.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState()));
-  if (prerender_service &&
-      prerender_service->IsWebStatePrerendered(web_state()) &&
-      decision.ShouldCancelNavigation()) {
-    prerender_service->CancelPrerender();
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state()->GetBrowserState());
+  if (decision.ShouldCancelNavigation()) {
+    safe_browsing_client->OnMainFrameUrlQueryCancellationDecided(web_state(),
+                                                                 url);
   }
 }
 
@@ -376,15 +382,14 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   }
   sub_frame_query.response_callbacks.clear();
 
-  // When a subframe in a prerendered page is unsafe, cancel the prerender.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState()));
-  if (prerender_service &&
-      prerender_service->IsWebStatePrerendered(web_state()) &&
-      decision.ShouldCancelNavigation()) {
-    prerender_service->CancelPrerender();
-    return;
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state()->GetBrowserState());
+  bool should_display_error = false;
+  if (decision.ShouldCancelNavigation()) {
+    should_display_error =
+        safe_browsing_client->OnSubFrameUrlQueryCancellationDecided(web_state(),
+                                                                    url);
   }
 
   // Error pages are only shown for cancelled main frame navigations, so
@@ -392,8 +397,10 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   // actually show the safe browsing blocking page.  To trigger the blocking
   // page, reload the last committed item so that the stored sub frame unsafe
   // resource can be used to populate an error page in the main frame upon
-  // reloading.
-  if (decision.ShouldCancelNavigation() && decision.ShouldDisplayError()) {
+  // reloading.  Furthermore, the client may prevent errors from displaying in
+  // cases where it is not needed, for example in prerendered web states.
+  if (should_display_error && decision.ShouldCancelNavigation() &&
+      decision.ShouldDisplayError()) {
     DCHECK(SafeBrowsingUnsafeResourceContainer::FromWebState(web_state())
                ->GetSubFrameUnsafeResource(main_frame_item));
     navigation_manager->DiscardNonCommittedItems();

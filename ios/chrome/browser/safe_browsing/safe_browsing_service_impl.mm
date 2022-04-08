@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/components/cookie_util/cookie_util.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -115,9 +117,12 @@ std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 SafeBrowsingServiceImpl::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state) {
+  SafeBrowsingClient* safe_browsing_client =
+      SafeBrowsingClientFactory::GetForBrowserState(
+          web_state->GetBrowserState());
   safe_browsing::RealTimeUrlLookupService* url_lookup_service =
-      RealTimeUrlLookupServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+      safe_browsing_client->GetRealTimeUrlLookupService();
+
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   bool can_realtime_check_subresource_url =

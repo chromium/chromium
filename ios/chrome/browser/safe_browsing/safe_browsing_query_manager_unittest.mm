@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "components/security_interstitials/core/unsafe_resource.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -77,6 +78,7 @@ class SafeBrowsingQueryManagerTest
  protected:
   SafeBrowsingQueryManagerTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
+        browser_state_(TestChromeBrowserState::Builder().Build()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
         navigation_item_id_(
@@ -84,6 +86,7 @@ class SafeBrowsingQueryManagerTest
                                                                         : 0) {
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
+    web_state_->SetBrowserState(browser_state_.get());
   }
 
   SafeBrowsingQueryManager* manager() {
@@ -92,7 +95,8 @@ class SafeBrowsingQueryManagerTest
 
   web::WebTaskEnvironment task_environment_;
   MockQueryManagerObserver observer_;
-  std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   std::string http_method_;
   int navigation_item_id_ = 0;
 };
@@ -203,7 +207,10 @@ class WebStateDestroyingQueryManagerObserver
     : public SafeBrowsingQueryManager::Observer {
  public:
   WebStateDestroyingQueryManagerObserver()
-      : web_state_(std::make_unique<web::FakeWebState>()) {}
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        web_state_(std::make_unique<web::FakeWebState>()) {
+    web_state_->SetBrowserState(browser_state_.get());
+  }
   ~WebStateDestroyingQueryManagerObserver() override {}
 
   void SafeBrowsingQueryFinished(
@@ -221,7 +228,8 @@ class WebStateDestroyingQueryManagerObserver
   web::WebState* web_state() { return web_state_.get(); }
 
  private:
-  std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
 };
 }  // namespace
 
