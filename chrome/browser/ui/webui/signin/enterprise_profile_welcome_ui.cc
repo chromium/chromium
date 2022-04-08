@@ -65,10 +65,12 @@ void EnterpriseProfileWelcomeUI::Initialize(
     EnterpriseProfileWelcomeUI::ScreenType type,
     const AccountInfo& account_info,
     bool force_new_profile,
+    bool show_link_data_option,
     absl::optional<SkColor> profile_color,
     signin::SigninChoiceCallback proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
-      browser, type, account_info, profile_color, std::move(proceed_callback));
+      browser, type, force_new_profile, account_info, profile_color,
+      std::move(proceed_callback));
   handler_ = handler.get();
 
   if (type ==
@@ -81,8 +83,8 @@ void EnterpriseProfileWelcomeUI::Initialize(
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
     update_data.Set("enterpriseProfileWelcomeTitle",
                     l10n_util::GetStringUTF16(title_id));
-    if (force_new_profile)
-      update_data.Set("showLinkDataCheckbox", true);
+
+    update_data.Set("showLinkDataCheckbox", show_link_data_option);
 
     content::WebUIDataSource::Update(
         Profile::FromWebUI(web_ui()),

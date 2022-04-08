@@ -11,9 +11,13 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -26,6 +30,7 @@
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
+#include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -71,36 +76,6 @@ void OnEmailConfirmation(signin::SigninChoiceCallback callback,
 }
 #endif
 
-void OnProfileCheckComplete(const AccountInfo& account_info,
-                            signin::SigninChoiceCallback callback,
-                            base::WeakPtr<Browser> browser,
-                            bool prompt_for_new_profile) {
-  if (!browser) {
-    std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
-    return;
-  }
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(browser->profile()->GetPath());
-  browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, /*force_new_profile=*/true,
-      GenerateNewProfileColor(entry).color,
-      base::BindOnce(
-          [](signin::SigninChoiceCallback callback, Browser* browser,
-             bool prompt_for_new_profile, signin::SigninChoice choice) {
-            browser->signin_view_controller()->CloseModalSignin();
-            signin::SigninChoice result = signin::SIGNIN_CHOICE_CANCEL;
-            if (choice != signin::SIGNIN_CHOICE_CANCEL) {
-              result = prompt_for_new_profile
-                           ? signin::SIGNIN_CHOICE_NEW_PROFILE
-                           : signin::SIGNIN_CHOICE_CONTINUE;
-            }
-            std::move(callback).Run(result);
-          },
-          std::move(callback), browser.get(), prompt_for_new_profile));
-}
-
 }  // namespace
 
 TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(Browser* browser)
@@ -130,11 +105,18 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
+  account_level_signin_restriction_policy_fetcher_ =
+      std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
+          g_browser_process->browser_policy_connector(),
+          g_browser_process->system_network_context_manager()
+              ->GetSharedURLLoaderFactory());
   // Checking whether to show the prompt for a new profile is sometimes
   // asynchronous.
   ShouldEnterpriseConfirmationPromptForNewProfile(
-      profile_, base::BindOnce(&OnProfileCheckComplete, account_info,
-                               std::move(callback), browser_->AsWeakPtr()));
+      profile_,
+      base::BindOnce(&TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr(), account_info,
+                     std::move(callback)));
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
@@ -196,4 +178,67 @@ void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
 void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
   if (browser == browser_)
     browser_ = nullptr;
+}
+
+void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
+    const AccountInfo& account_info,
+    signin::SigninChoiceCallback callback,
+    const std::string& signin_restriction) {
+  if (!browser_) {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
+    return;
+  }
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+  auto force_new_profile = signin_util::ProfileSeparationEnforcedByPolicy(
+      browser_->profile(), signin_restriction);
+  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+      account_info, force_new_profile,
+      /*show_link_data_option=*/!force_new_profile,
+      GenerateNewProfileColor(entry).color,
+      base::BindOnce(
+          [](signin::SigninChoiceCallback callback, Browser* browser,
+             signin::SigninChoice choice) {
+            browser->signin_view_controller()->CloseModalSignin();
+            std::move(callback).Run(choice);
+          },
+          std::move(callback), browser_.get()));
+}
+
+void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
+    const AccountInfo& account_info,
+    signin::SigninChoiceCallback callback,
+    bool prompt_for_new_profile) {
+  if (!browser_) {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
+    return;
+  }
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+
+  if (prompt_for_new_profile) {
+    account_level_signin_restriction_policy_fetcher_
+        ->GetManagedAccountsSigninRestriction(
+            IdentityManagerFactory::GetForProfile(browser_->profile()),
+            account_info.account_id,
+            base::BindOnce(&TurnSyncOnHelperDelegateImpl::
+                               OnProfileSigninRestrictionsFetched,
+                           weak_ptr_factory_.GetWeakPtr(), account_info,
+                           std::move(callback)));
+  } else {
+    browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+        account_info, /*force_new_profile=*/false,
+        /*show_link_data_option*/ false, GenerateNewProfileColor(entry).color,
+        base::BindOnce(
+            [](signin::SigninChoiceCallback callback, Browser* browser,
+               signin::SigninChoice choice) {
+              browser->signin_view_controller()->CloseModalSignin();
+              std::move(callback).Run(choice);
+            },
+            std::move(callback), browser_.get()));
+  }
 }

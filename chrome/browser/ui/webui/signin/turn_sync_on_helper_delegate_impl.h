@@ -18,6 +18,10 @@ class Profile;
 class SigninUIError;
 struct AccountInfo;
 
+namespace policy {
+class UserCloudSigninRestrictionPolicyFetcher;
+}
+
 // Default implementation for TurnSyncOnHelper::Delegate.
 class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
                                      public BrowserListObserver,
@@ -63,12 +67,28 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
+  void OnProfileSigninRestrictionsFetched(
+      const AccountInfo& account_info,
+      signin::SigninChoiceCallback callback,
+      const std::string& signin_restriction);
+
+  void OnProfileCheckComplete(const AccountInfo& account_info,
+                              signin::SigninChoiceCallback callback,
+                              bool prompt_for_new_profile);
+
   raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
+  // Used to fetch the cloud user level policy value of
+  // ManagedAccountsSigninRestriction. This can only fetch one policy value for
+  // one account at the time.
+  std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
+      account_level_signin_restriction_policy_fetcher_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
+
+  base::WeakPtrFactory<TurnSyncOnHelperDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_

@@ -21,6 +21,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -387,6 +388,25 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
   return false;
 }
 
+bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
+    const AccountInfo& intercepted_account_info) const {
+  DCHECK(intercepted_account_info.IsValid());
+  // Check if the intercepted account is managed.
+  if (!intercepted_account_info.IsManaged())
+    return false;
+
+  CoreAccountInfo primary_core_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  if (primary_core_account_info.account_id ==
+          intercepted_account_info.account_id &&
+      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    return true;
+  }
+
+  return false;
+}
+
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(intercepted_account_info.IsValid());
@@ -489,6 +509,10 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
     }
+  } else if (ShouldShowEnterpriseDialog(info)) {
+    interception_type = SigninInterceptionType::kEnterpriseAcceptManagement;
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
   } else if (!profile_->GetPrefs()->GetBoolean(
                  prefs::kSigninInterceptionEnabled)) {
     RecordSigninInterceptionHeuristicOutcome(
@@ -534,6 +558,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
           base::Unretained(this), info.email, switch_to_entry->GetPath());
       break;
     case SigninInterceptionType::kEnterpriseForced:
+    case SigninInterceptionType::kEnterpriseAcceptManagement:
       callback = base::BindOnce(
           &DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult,
           base::Unretained(this), info, profile_color);
@@ -685,6 +710,13 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     const AccountInfo& account_info,
     SkColor profile_color,
     SigninInterceptionResult create) {
+  signin_util::RecordEnterpriseProfileCreationUserChoice(
+      /*enforced_by_policy=*/signin_util::ProfileSeparationEnforcedByPolicy(
+          profile_,
+          intercepted_account_level_policy_value_.value_or(std::string())),
+      /*created=*/create == SigninInterceptionResult::kAccepted);
+
+  // Make sure existing account is a non-signed in profile.
   if (create == SigninInterceptionResult::kAccepted) {
     intercepted_account_management_accepted_ = true;
     // In case of a reauth if there was no consent for management, do not create
@@ -699,6 +731,13 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
       OnProfileCreationChoice(account_info, profile_color,
                               SigninInterceptionResult::kAccepted);
     }
+  } else if (create == SigninInterceptionResult::kAcceptedWithExistingProfile) {
+    intercepted_account_management_accepted_ = true;
+    DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
+              account_info.account_id);
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+        profile_, intercepted_account_management_accepted_);
+    Reset();
   } else {
     DCHECK_EQ(SigninInterceptionResult::kDeclined, create)
         << "The user can only accept or decline";
@@ -710,11 +749,6 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
         signin_metrics::SourceForRefreshTokenOperation::
             kTurnOnSyncHelper_Abort);
   }
-  signin_util::RecordEnterpriseProfileCreationUserChoice(
-      /*enforced_by_policy=*/signin_util::ProfileSeparationEnforcedByPolicy(
-          profile_,
-          intercepted_account_level_policy_value_.value_or(std::string())),
-      /*created=*/create == SigninInterceptionResult::kAccepted);
 }
 
 void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {

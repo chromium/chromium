@@ -109,11 +109,13 @@ SkColor GetHighlightColor(absl::optional<SkColor> theme_color) {
 EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
+    bool force_new_profile,
     const AccountInfo& account_info,
     absl::optional<SkColor> profile_color,
     signin::SigninChoiceCallback proceed_callback)
     : browser_(browser),
       type_(type),
+      force_new_profile_(force_new_profile),
       email_(base::UTF8ToUTF16(account_info.email)),
       domain_name_(gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
@@ -219,8 +221,9 @@ void EnterpriseProfileWelcomeHandler::HandleProceed(
   if (proceed_callback_) {
     bool use_existing_profile = args[0].GetIfBool().value_or(false);
     std::move(proceed_callback_)
-        .Run(use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
-                                  : signin::SIGNIN_CHOICE_NEW_PROFILE);
+        .Run(use_existing_profile || !force_new_profile_
+                 ? signin::SIGNIN_CHOICE_CONTINUE
+                 : signin::SIGNIN_CHOICE_NEW_PROFILE);
   }
 }
 
@@ -283,7 +286,9 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       dict.SetStringKey(
           "proceedLabel",
           l10n_util::GetStringUTF8(
-              IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON));
+              force_new_profile_
+                  ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
+                  : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
       break;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:

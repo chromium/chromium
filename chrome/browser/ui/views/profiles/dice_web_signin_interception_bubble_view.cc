@@ -101,6 +101,8 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   std::string histogram_base_name = "Signin.InterceptResult";
   switch (bubble_parameters.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case DiceWebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
       histogram_base_name.append(".Enterprise");
       break;

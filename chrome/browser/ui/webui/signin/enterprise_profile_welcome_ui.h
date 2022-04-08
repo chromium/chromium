@@ -49,6 +49,7 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
                   ScreenType type,
                   const AccountInfo& account_info,
                   bool force_new_profile,
+                  bool show_link_data_option,
                   absl::optional<SkColor> profile_color,
                   signin::SigninChoiceCallback proceed_callback);
 

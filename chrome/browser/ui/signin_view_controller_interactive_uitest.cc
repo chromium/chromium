@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, /*force_new_profile=*/true, SK_ColorWHITE,
+      account_info, /*force_new_profile=*/true, /*show_link_data_option=*/true,
+      SK_ColorWHITE,
       base::BindOnce(
           [](Browser* browser, signin::SigninChoice* result,
              signin::SigninChoice choice) {

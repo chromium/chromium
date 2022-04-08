@@ -242,6 +242,8 @@ std::string DiceWebSigninInterceptHandler::GetHeaderText() {
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
       return intercepted_account().given_name;
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case DiceWebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       NOTREACHED() << "This interception type is not handled by a bubble";
       return std::string();
@@ -280,6 +282,8 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
       return l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
+    case DiceWebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       NOTREACHED() << "This interception type is not handled by a bubble";

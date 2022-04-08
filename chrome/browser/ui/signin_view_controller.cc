@@ -258,6 +258,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog() {
 void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     const AccountInfo& account_info,
     bool force_new_profile,
+    bool show_link_data_option,
     SkColor profile_color,
     signin::SigninChoiceCallback callback) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -265,8 +266,8 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
-          browser_, account_info, force_new_profile, profile_color,
-          std::move(callback)),
+          browser_, account_info, force_new_profile, show_link_data_option,
+          profile_color, std::move(callback)),
       GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGNIN_ENTERPRISE_INTERCEPTION);

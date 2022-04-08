@@ -46,7 +46,11 @@ class ForcedEnterpriseSigninInterceptionHandle
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
-      : browser_(browser), callback_(std::move(callback)) {
+      : browser_(browser),
+        force_new_profile_(bubble_parameters.interception_type ==
+                           DiceWebSigninInterceptor::SigninInterceptionType::
+                               kEnterpriseForced),
+        callback_(std::move(callback)) {
     DCHECK(browser_);
     DCHECK(callback_);
     ShowEnterpriseProfileInterceptionDialog(
@@ -64,22 +68,27 @@ class ForcedEnterpriseSigninInterceptionHandle
   void ShowEnterpriseProfileInterceptionDialog(const AccountInfo& account_info,
                                                SkColor profile_color) {
     browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        account_info, /*force_new_profile=*/true, profile_color,
+        account_info, force_new_profile_,
+        /*show_link_data_option=*/!force_new_profile_, profile_color,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
                        base::Unretained(this)));
   }
 
-  void OnEnterpriseInterceptionDialogClosed(signin::SigninChoice choice) {
-    switch (choice) {
+  void OnEnterpriseInterceptionDialogClosed(signin::SigninChoice result) {
+    switch (result) {
       case signin::SIGNIN_CHOICE_NEW_PROFILE:
         std::move(callback_).Run(SigninInterceptionResult::kAccepted);
+        break;
+      case signin::SIGNIN_CHOICE_CONTINUE:
+        DCHECK(!force_new_profile_);
+        std::move(callback_).Run(
+            SigninInterceptionResult::kAcceptedWithExistingProfile);
         break;
       case signin::SIGNIN_CHOICE_CANCEL:
         browser_->signin_view_controller()->CloseModalSignin();
         std::move(callback_).Run(SigninInterceptionResult::kDeclined);
         break;
-      case signin::SIGNIN_CHOICE_CONTINUE:
       case signin::SIGNIN_CHOICE_SIZE:
       default:
         NOTREACHED();
@@ -88,6 +97,7 @@ class ForcedEnterpriseSigninInterceptionHandle
   }
 
   raw_ptr<Browser> browser_;
+  const bool force_new_profile_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
 };
 
@@ -114,7 +124,10 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
   }
 
   if (bubble_parameters.interception_type ==
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced) {
+          DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced ||
+      bubble_parameters.interception_type ==
+          DiceWebSigninInterceptor::SigninInterceptionType::
+              kEnterpriseAcceptManagement) {
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
         chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
         std::move(callback));

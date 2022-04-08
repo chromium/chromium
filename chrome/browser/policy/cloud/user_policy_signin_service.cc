@@ -91,8 +91,6 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   // in the destructor because we want to shutdown the registration helper
   // before UserCloudPolicyManager shuts down the CloudPolicyClient.
   registration_helper_.reset();
-  if (g_browser_process->profile_manager())
-    observed_profile_.Reset();
 
   UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }

@@ -77,6 +77,7 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       const AccountInfo& account_info,
       bool force_new_profile,
+      bool show_link_data_option,
       SkColor profile_color,
       signin::SigninChoiceCallback callback);
 #endif
