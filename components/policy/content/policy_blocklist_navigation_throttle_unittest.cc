@@ -281,7 +281,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_PolicyChange) {
   }
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, DISABLED_SafeSites_Failure) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Failure) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpFailedResponse();
 
