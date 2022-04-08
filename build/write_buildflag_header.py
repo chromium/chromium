@@ -15,8 +15,8 @@
 
 import optparse
 import os
+import re
 import shlex
-import sys
 
 
 class Options:
@@ -39,10 +39,12 @@ def GetOptions():
                     help="Name of the response file containing the flags.")
   cmdline_options, cmdline_flags = parser.parse_args()
 
-  # Compute header guard by replacing some chars with _ and upper-casing.
+  # Compute a valid C++ header guard by replacing non valid chars with '_',
+  # upper-casing everything and prepending '_' if first symbol is digit.
   header_guard = cmdline_options.output.upper()
-  header_guard = \
-      header_guard.replace('/', '_').replace('\\', '_').replace('.', '_')
+  if header_guard[0].isdigit():
+    header_guard = '_' + header_guard
+  header_guard = re.sub('[^\w]', '_', header_guard)
   header_guard += '_'
 
   # The actual output file is inside the gen dir.
