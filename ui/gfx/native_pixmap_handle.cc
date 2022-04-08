@@ -75,7 +75,11 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
   for (auto& plane : handle.planes) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     DCHECK(plane.fd.is_valid());
-    base::ScopedFD fd_dup(HANDLE_EINTR(dup(plane.fd.get())));
+    // Combining the HANDLE_EINTR and ScopedFD's constructor causes the compiler
+    // to emit some very strange assembly that tends to cause FD ownership
+    // violations. see crbug.com/c/1287325.
+    int checked_dup = HANDLE_EINTR(dup(plane.fd.get()));
+    base::ScopedFD fd_dup(checked_dup);
     if (!fd_dup.is_valid()) {
       PLOG(ERROR) << "dup";
       return NativePixmapHandle();
