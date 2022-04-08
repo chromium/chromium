@@ -367,10 +367,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 #pragma mark - ContentSuggestionsCommands
 
-- (void)openReadingList {
-  [self.dispatcher showReadingList];
-}
-
 - (void)openMostVisitedItem:(CollectionViewItem*)item
                     atIndex:(NSInteger)mostVisitedIndex {
   NewTabPageTabHelper* NTPHelper =
@@ -466,10 +462,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   DCHECK(web_state);
   int index = web_state_list->GetIndexOfWebState(web_state);
   web_state_list->ActivateWebStateAt(index);
-}
-
-- (void)hideMostRecentTab {
-  [self hideRecentTabTile];
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
