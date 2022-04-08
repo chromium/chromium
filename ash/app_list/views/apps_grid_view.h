@@ -639,6 +639,17 @@ class ASH_EXPORT AppsGridView : public views::View,
   // position of the block.
   base::TimeDelta GetPulsingBlockAnimationDelayForIndex(int block_index);
 
+  // Invoked when the animation for swapping a |placeholder| with an |app_view|
+  // is done.
+  void OnSwapAnimationDone(views::View* placeholder, AppListItemView* app_view);
+
+  // Triggers the animation for swapping a pulsing block view with a
+  // corresponding new asset at index on item list. (We use the item_list index
+  // because the view is not added to the `view_model_` yet.)
+  // Only triggers when there are pulsing blocks and the app list model is
+  // syncing.
+  AppListItemView* MaybeSwapPlaceholderAsset(size_t index);
+
   // Updates the number of pulsing block views based on AppListModel status and
   // number of apps.
   void UpdatePulsingBlockViews();

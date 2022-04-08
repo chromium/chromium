@@ -1204,6 +1204,57 @@ base::TimeDelta AppsGridView::GetPulsingBlockAnimationDelayForIndex(
          staging_step_delay * (block_index_in_view_model % cols_);
 }
 
+void AppsGridView::OnSwapAnimationDone(views::View* placeholder,
+                                       AppListItemView* app_view) {
+  delete placeholder;
+
+  if (view_model_.GetIndexOfView(app_view) != -1 && !ItemViewsRequireLayers())
+    app_view->DestroyLayer();
+
+  UpdatePulsingBlockViews();
+}
+
+AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
+  int model_index = GetTargetModelIndexFromItemIndex(index);
+  AppListItemView* view = items_container_->AddChildViewAt(
+      CreateViewForItemAtIndex(index), model_index);
+  view_model_.Add(view, model_index);
+
+  const bool placeholder_in_view_index =
+      model_index == (view_model_.view_size() - 1);
+  const bool is_syncing =
+      model_ && model_->status() == AppListModelStatus::kStatusSyncing;
+  const bool should_animate_placeholder_swap =
+      ash::features::IsLauncherPulsingBlocksRefreshEnabled() &&
+      pulsing_blocks_model_.view_size() > 0 && is_syncing &&
+      placeholder_in_view_index;
+
+  if (should_animate_placeholder_swap) {
+    PulsingBlockView* placeholder =
+        items_container_->AddChildView(std::make_unique<PulsingBlockView>(
+            app_list_config_->grid_icon_size(), base::TimeDelta()));
+    placeholder->SetBoundsRect(view->bounds());
+    placeholder->SetPaintToLayer();
+    view->EnsureLayer();
+    view->layer()->SetOpacity(0);
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindOnce(&AppsGridView::OnSwapAnimationDone,
+                                weak_factory_.GetWeakPtr(), placeholder, view))
+        .OnAborted(base::BindOnce(&AppsGridView::OnSwapAnimationDone,
+                                  weak_factory_.GetWeakPtr(), placeholder,
+                                  view))
+        .Once()
+        .SetDuration(base::Milliseconds(200))
+        .SetOpacity(placeholder->layer(), 0.0f, gfx::Tween::LINEAR)
+        .SetOpacity(view->layer(), 1.0f, gfx::Tween::LINEAR);
+  } else {
+    UpdatePulsingBlockViews();
+  }
+  return view;
+}
+
 void AppsGridView::UpdatePulsingBlockViews() {
   int existing_items = item_list_ ? item_list_->item_count() : 0;
   const int tablet_page_size =
@@ -2533,10 +2584,7 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   MaybeAbortReorderAnimation();
 
   if (!item->is_page_break()) {
-    int model_index = GetTargetModelIndexFromItemIndex(index);
-    AppListItemView* view = items_container_->AddChildViewAt(
-        CreateViewForItemAtIndex(index), model_index);
-    view_model_.Add(view, model_index);
+    AppListItemView* view = MaybeSwapPlaceholderAsset(index);
 
     if (item == drag_item_) {
       drag_view_ = view;
