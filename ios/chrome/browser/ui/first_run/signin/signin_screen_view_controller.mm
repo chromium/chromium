@@ -26,11 +26,11 @@
 namespace {
 
 // Width of the identity control if nothing is contraining it.
-constexpr CGFloat kIdentityControlMaxWidth = 327;
+constexpr CGFloat kIdentityControlMaxWidth = 327.;
 // Margin above the identity button.
-constexpr CGFloat kIdentityTopMargin = 16;
+constexpr CGFloat kIdentityTopMargin = 0.;
 // Margin between elements in the bottom view.
-constexpr CGFloat kBottomViewInnerVerticalMargin = 8;
+constexpr CGFloat kBottomViewInnerVerticalMargin = 8.;
 
 // Banner at the top of the view.
 NSString* const kSigninBannerName = @"signin_banner";
