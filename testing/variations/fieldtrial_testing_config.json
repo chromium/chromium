@@ -2568,6 +2568,21 @@
             ]
         }
     ],
+    "CursiveStylusPreinstall": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CursiveStylusPreinstall"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
