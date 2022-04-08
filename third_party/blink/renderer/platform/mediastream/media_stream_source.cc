@@ -209,14 +209,6 @@ void MediaStreamSource::AddObserver(MediaStreamSource::Observer* observer) {
   observers_.insert(observer);
 }
 
-void MediaStreamSource::SetPlatformSource(
-    std::unique_ptr<WebPlatformMediaStreamSource> platform_source) {
-  if (platform_source)
-    platform_source->SetOwner(this);
-
-  platform_source_ = std::move(platform_source);
-}
-
 void MediaStreamSource::SetAudioProcessingProperties(
     EchoCancellationMode echo_cancellation_mode,
     bool auto_gain_control,

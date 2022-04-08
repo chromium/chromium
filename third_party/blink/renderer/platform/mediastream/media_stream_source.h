@@ -89,12 +89,15 @@ class PLATFORM_EXPORT MediaStreamSource final
       ReadyState state = kReadyStateLive,
       bool requires_consumer = false);
 
-  MediaStreamSource(const String& id,
-                    StreamType type,
-                    const String& name,
-                    bool remote,
-                    ReadyState state = kReadyStateLive,
-                    bool requires_consumer = false);
+  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
+  [[deprecated(
+      "Provide a WebPlatformMediaStreamSource during "
+      "construction")]] MediaStreamSource(const String& id,
+                                          StreamType type,
+                                          const String& name,
+                                          bool remote,
+                                          ReadyState state = kReadyStateLive,
+                                          bool requires_consumer = false);
 
   const String& Id() const { return id_; }
   StreamType GetType() const { return type_; }
@@ -112,12 +115,6 @@ class PLATFORM_EXPORT MediaStreamSource final
   WebPlatformMediaStreamSource* GetPlatformSource() const {
     return platform_source_.get();
   }
-
-  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
-  [[deprecated(
-      "Use the constructor that takes a WebPlatformMediaStreamSource")]] void
-  SetPlatformSource(
-      std::unique_ptr<WebPlatformMediaStreamSource> platform_source);
 
   void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation_mode,
                                     bool auto_gain_control,
