@@ -140,8 +140,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
 
   // To browser.
   uint32_t version_ = 0;
-  // |total_scroll_offset_| and |max_scroll_offset_| are in physical pixel when
-  // use-zoom-for-dsf is enabled, otherwise in dip.
+  // |total_scroll_offset_| and |max_scroll_offset_| are in physical pixels.
   gfx::PointF total_scroll_offset_;  // Modified by both.
   gfx::PointF max_scroll_offset_;
   gfx::SizeF scrollable_size_;

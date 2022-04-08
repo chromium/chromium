@@ -197,9 +197,9 @@ absl::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments()
   // frame/widget. This doesn't take the page's zoom factor into account so we
   // must scale by the inverse of the page zoom in order to get correct client
   // coordinates.
-  // Note that when use-zoom-for-dsf is enabled, WindowToViewportScalar will
-  // be the device scale factor, and PageZoomFactor will be the combination
-  // of the device scale factor and the zoom percent of the page.
+  // WindowToViewportScalar is the device scale factor, and PageZoomFactor is
+  // the combination of the device scale factor and the zoom percent of the
+  // page.
   HeapVector<Member<DOMRect>> viewport_segments;
   const float dips_to_blink =
       frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(1.0f);

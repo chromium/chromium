@@ -150,8 +150,7 @@ float DevToolsHost::zoomFactor() {
   if (!frontend_frame_)
     return 1;
   float zoom_factor = frontend_frame_->PageZoomFactor();
-  // Cancel the device scale factor applied to the zoom factor in
-  // use-zoom-for-dsf mode.
+  // Cancel the device scale factor applied to the zoom factor.
   const ChromeClient* client =
       frontend_frame_->View()->GetChromeClient();
   float window_to_viewport_ratio =

@@ -116,8 +116,7 @@ void SelectPopup::ShowMenu(
   popup_client_.set_disconnect_handler(
       base::BindOnce(&SelectPopup::HideMenu, base::Unretained(this)));
 
-  // |bounds| is in physical pixels if --use-zoom-for-dsf is enabled.
-  // Otherwise, it is in DIP pixels.
+  // |bounds| is in physical pixels.
   gfx::RectF bounds_dip = gfx::RectF(bounds);
   bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
   view->SetAnchorRect(popup_view, bounds_dip);

@@ -2944,14 +2944,11 @@ TEST_F(ViewportTest, viewport1) {
       base_url_ + "viewport/viewport-legacy-merge-quirk-1.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
-  // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
-  // is enabled.
+  // Initial width and height must be scaled by DSF.
   PageScaleConstraints constraints = RunViewportTest(page, 960, 1056);
 
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout width == 640 * DSF = 1920
   EXPECT_EQ(1920, constraints.layout_size.width());
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout height == 704 * DSF = 2112
   EXPECT_EQ(2112, constraints.layout_size.height());
   EXPECT_NEAR(1.0f, constraints.initial_scale, 0.01f);
@@ -2974,14 +2971,11 @@ TEST_F(ViewportTest, viewport2) {
 
   // This quirk allows content attributes of meta viewport tags to be merged.
   page->GetSettings().SetViewportMetaMergeContentQuirk(true);
-  // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
-  // is enabled.
+  // Initial width and height must be scaled by DSF.
   PageScaleConstraints constraints = RunViewportTest(page, 960, 1056);
 
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout width == 500 * DSF = 1500
   EXPECT_EQ(1500, constraints.layout_size.width());
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout height == 550 * DSF = 1650
   EXPECT_EQ(1650, constraints.layout_size.height());
   EXPECT_NEAR(2.0f, constraints.initial_scale, 0.01f);
@@ -3001,11 +2995,9 @@ TEST_F(ViewportTest, viewport3) {
                                 base_url_ + "viewport/viewport-48.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
-  // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
-  // is enabled.
+  // Initial width and height must be scaled by DSF.
   PageScaleConstraints constraints = RunViewportTest(page, 960, 1056);
 
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout width == 3000 * DSF = 9000
   EXPECT_EQ(9000, constraints.layout_size.width());
   EXPECT_EQ(1056, constraints.layout_size.height());
@@ -3026,14 +3018,11 @@ TEST_F(ViewportTest, viewport4) {
                                 base_url_ + "viewport/viewport-39.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
-  // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
-  // is enabled.
+  // Initial width and height must be scaled by DSF.
   PageScaleConstraints constraints = RunViewportTest(page, 960, 1056);
 
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout width == 200 * DSF = 600
   EXPECT_EQ(600, constraints.layout_size.width());
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout height == 700 * DSF = 2100
   EXPECT_EQ(2100, constraints.layout_size.height());
   EXPECT_NEAR(1.6f, constraints.initial_scale, 0.01f);
@@ -3056,11 +3045,9 @@ TEST_F(ViewportTest, viewport5) {
                                 base_url_ + "viewport/viewport-48.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
-  // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
-  // is enabled.
+  // Initial width and height must be scaled by DSF.
   PageScaleConstraints constraints = RunViewportTest(page, 960, 1056);
 
-  // When --use-zoom-for-dsf is enabled,
   // constraints layout width == 3000 * DSF = 12000 and it should not be clamped
   // to 10000.
   EXPECT_EQ(12000, constraints.layout_size.width());

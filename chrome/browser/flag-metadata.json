@@ -2847,11 +2847,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "enable-use-zoom-for-dsf",
-    "owners": [ "ccameron" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "enable-user-cloud-signin-restriction-policy",
     "owners": [ "ydago" ],
     "expiry_milestone": 102

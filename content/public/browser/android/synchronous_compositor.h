@@ -118,7 +118,7 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // Should be called by the embedder after the embedder had modified the
   // scroll offset of the root layer. |root_offset| must be in physical pixel
-  // scale if --use-zoom-for-dsf is enabled. Otherwise, it must be in DIP scale.
+  // scale.
   virtual void DidChangeRootLayerScrollOffset(
       const gfx::PointF& root_offset) = 0;
 

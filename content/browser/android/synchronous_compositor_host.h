@@ -175,8 +175,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // Indicates begin frames are paused from the browser.
   bool begin_frame_paused_ = false;
 
-  // Updated by both renderer and browser. This is in physical pixel when
-  // use-zoom-for-dsf is enabled, otherwise in dip.
+  // Updated by both renderer and browser. This is in physical pixels.
   gfx::PointF root_scroll_offset_;
 
   // Indicates that whether OnComputeScroll is called or overridden. The

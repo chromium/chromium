@@ -893,7 +893,6 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
 void PdfViewWebPlugin::UpdateScaledValues() {
   total_translate_ = snapshot_translate_;
 
-  // Scale translate to compensate for use-zoom-for-DSF.
   if (viewport_to_dip_scale_ != 1.0f)
     total_translate_.Scale(1.0f / viewport_to_dip_scale_);
 }

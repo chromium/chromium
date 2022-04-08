@@ -88,9 +88,6 @@ class PLATFORM_EXPORT Font {
     kUseFallbackIfFontNotReady
   };
 
-  // TODO(layout-dev): Once zoom-for-dsf launches on Mac the device_scale_factor
-  // parameter can be removed from all of these methods.
-  // https://crbug.com/716231
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
                 const gfx::PointF&,
