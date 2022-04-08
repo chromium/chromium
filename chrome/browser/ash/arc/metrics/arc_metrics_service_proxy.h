@@ -49,7 +49,6 @@ class ArcMetricsServiceProxy : public KeyedService,
   void OnTaskDestroyed(int32_t task_id) override;
 
   // ArcSessionManagerObserver overrides.
-  void OnArcStarted() override;
   void OnArcSessionStopped(ArcStopReason stop_reason) override;
 
   // ArcMetricsService::AppKillObserver overrides.

@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 
@@ -56,8 +55,6 @@ ArcMetricsServiceProxy::ArcMetricsServiceProxy(
   arc_app_list_prefs_->AddObserver(this);
   arc::ArcSessionManager::Get()->AddObserver(this);
   arc_metrics_service_->AddAppKillObserver(this);
-  arc_metrics_service_->set_prefs(
-      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 void ArcMetricsServiceProxy::Shutdown() {
@@ -78,10 +75,6 @@ void ArcMetricsServiceProxy::OnTaskDestroyed(int32_t task_id) {
   arc_metrics_service_->OnTaskDestroyed(task_id);
 }
 
-void ArcMetricsServiceProxy::OnArcStarted() {
-  arc_metrics_service_->OnArcStarted();
-}
-
 void ArcMetricsServiceProxy::OnArcSessionStopped(ArcStopReason stop_reason) {
   const auto* profile = ProfileManager::GetPrimaryUserProfile();
   if (arc::IsArcAllowedForProfile(profile)) {
@@ -92,7 +85,6 @@ void ArcMetricsServiceProxy::OnArcSessionStopped(ArcStopReason stop_reason) {
     VLOG(1) << metric_name << ": "
             << static_cast<std::underlying_type_t<ArcStopReason>>(stop_reason);
   }
-  arc_metrics_service_->OnArcSessionStopped();
 }
 
 void ArcMetricsServiceProxy::OnArcLowMemoryKill() {
