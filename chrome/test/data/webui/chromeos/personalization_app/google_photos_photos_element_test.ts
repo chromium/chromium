@@ -51,7 +51,7 @@ suite('GooglePhotosPhotosTest', function() {
       GooglePhotosPhotosSection[] {
     const sections: GooglePhotosPhotosSection[] = [];
 
-    photos.forEach((photo, i) => {
+    photos.forEach(photo => {
       const title = toString(photo.date);
 
       // Find/create the appropriate |section| in which to insert |photo|.
@@ -68,7 +68,7 @@ suite('GooglePhotosPhotosTest', function() {
         section.rows.push(row);
       }
 
-      row!.push({...photo, index: i});
+      row!.push(photo);
     });
 
     return sections;
@@ -143,8 +143,7 @@ suite('GooglePhotosPhotosTest', function() {
     // should be rendered initially.
     const titleSelector = '.title:not([hidden])';
     assertEquals(querySelectorAll(titleSelector)!.length, 0);
-    const photoSelector =
-        'wallpaper-grid-item:not([hidden]).photo:not([placeholder])';
+    const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     // Initialize Google Photos data in the |personalizationStore|.
@@ -310,52 +309,6 @@ suite('GooglePhotosPhotosTest', function() {
     assertEquals(photoEls[1]!.selected, false);
   });
 
-  test('displays placeholders until photos are present', async () => {
-    // Prepare Google Photos data.
-    const photosCount = 5;
-    const photos: GooglePhotosPhoto[] =
-        Array.from({length: photosCount}, (_, i) => ({
-                                            id: `id-${i}`,
-                                            name: `name-${i}`,
-                                            date: {data: []},
-                                            url: {url: `url-${i}`},
-                                          }));
-
-    // Initialize |googlePhotosPhotosElement|.
-    googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
-    await waitAfterNextRender(googlePhotosPhotosElement);
-
-    // Initially only placeholders should be present.
-    const selector =
-        '.row:not([hidden]) wallpaper-grid-item:not([hidden]).photo';
-    const photoSelector = `${selector}:not([placeholder])`;
-    const placeholderSelector = `${selector}[placeholder]`;
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
-    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
-
-    // Clicking a placeholder should do nothing.
-    const clickHandler = 'selectGooglePhotosPhoto';
-    (querySelector(placeholderSelector) as HTMLElement).click();
-    await new Promise<void>(resolve => setTimeout(resolve));
-    assertEquals(wallpaperProvider.getCallCount(clickHandler), 0);
-
-    // Provide Google Photos data.
-    personalizationStore.data.wallpaper.googlePhotos.count = photosCount;
-    personalizationStore.data.wallpaper.googlePhotos.photos = photos;
-    personalizationStore.notifyObservers();
-
-    // Only photos should be present.
-    await waitAfterNextRender(googlePhotosPhotosElement);
-    assertNotEquals(querySelectorAll(photoSelector)!.length, 0);
-    assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
-
-    // Clicking a photo should do something.
-    (querySelector(photoSelector) as HTMLElement).click();
-    assertEquals(
-        await wallpaperProvider.whenCalled(clickHandler), photos[0]!.id);
-  });
-
   test('incrementally loads photos', async () => {
     // Set photos count returned by |wallpaperProvider|.
     const photosCount = 200;
@@ -478,8 +431,7 @@ suite('GooglePhotosPhotosTest', function() {
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 1);
     assertEquals(personalizationStore.data.wallpaper.loading.selected, true);
     assertDeepEquals(
-        personalizationStore.data.wallpaper.pendingSelected,
-        {...photo, index: 0});
+        personalizationStore.data.wallpaper.pendingSelected, photo);
 
     // Wait for and verify hard-coded selection failure.
     const methodName = 'selectGooglePhotosPhoto';
