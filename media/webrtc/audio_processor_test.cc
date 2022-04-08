@@ -105,18 +105,18 @@ class AudioProcessorTest : public ::testing::Test {
       AudioProcessor& audio_processor,
       MockProcessedCaptureCallback& mock_capture_callback) {
     // Read the audio data from a file.
-    const media::AudioParameters& params =
-        audio_processor.GetInputFormatForTesting();
+    const media::AudioParameters& input_params = audio_processor.input_format();
     const media::AudioParameters& output_params =
-        audio_processor.OutputFormat();
-    const int packet_size = params.frames_per_buffer() * 2 * params.channels();
+        audio_processor.output_format();
+    const int packet_size =
+        input_params.frames_per_buffer() * 2 * input_params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
     std::unique_ptr<char[]> capture_data(new char[length]);
     ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
     const int16_t* data_ptr =
         reinterpret_cast<const int16_t*>(capture_data.get());
-    std::unique_ptr<media::AudioBus> data_bus =
-        media::AudioBus::Create(params.channels(), params.frames_per_buffer());
+    std::unique_ptr<media::AudioBus> data_bus = media::AudioBus::Create(
+        input_params.channels(), input_params.frames_per_buffer());
 
     const base::TimeTicks input_capture_time = base::TimeTicks::Now();
     int num_preferred_channels = -1;
@@ -130,7 +130,7 @@ class AudioProcessorTest : public ::testing::Test {
           (*audio_processor.GetAudioProcessingModuleConfigForTesting())
               .echo_canceller.enabled;
       if (is_aec_enabled) {
-        audio_processor.OnPlayoutData(*data_bus, params.sample_rate(),
+        audio_processor.OnPlayoutData(*data_bus, input_params.sample_rate(),
                                       base::Milliseconds(10));
       }
 
@@ -147,7 +147,7 @@ class AudioProcessorTest : public ::testing::Test {
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
                                            num_preferred_channels, 1.0, false);
 
-      data_ptr += params.frames_per_buffer() * params.channels();
+      data_ptr += input_params.frames_per_buffer() * input_params.channels();
 
       // Test different values of num_preferred_channels.
       if (++num_preferred_channels > 5) {
@@ -238,10 +238,10 @@ TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
       AudioProcessor::GetDefaultOutputFormat(params_, settings));
   EXPECT_FALSE(audio_processor->has_webrtc_audio_processing());
 
-  EXPECT_EQ(audio_processor->OutputFormat().sample_rate(),
+  EXPECT_EQ(audio_processor->output_format().sample_rate(),
             params_.sample_rate());
-  EXPECT_EQ(audio_processor->OutputFormat().channels(), params_.channels());
-  EXPECT_EQ(audio_processor->OutputFormat().frames_per_buffer(),
+  EXPECT_EQ(audio_processor->output_format().channels(), params_.channels());
+  EXPECT_EQ(audio_processor->output_format().frames_per_buffer(),
             params_.sample_rate() / 100);
 
   ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_);
@@ -373,7 +373,7 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
         params_, GetProcessorOutputParams(params_, settings));
     EXPECT_EQ(audio_processor->has_webrtc_audio_processing(), use_apm);
     // There's no sense in continuing if this fails.
-    ASSERT_EQ(2, audio_processor->OutputFormat().channels());
+    ASSERT_EQ(2, audio_processor->output_format().channels());
 
     // Run the test consecutively to make sure the stereo channels are not
     // flipped back and forth.
@@ -580,7 +580,7 @@ TEST(AudioProcessorCallbackTest,
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
       AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -630,7 +630,7 @@ TEST(AudioProcessorCallbackTest,
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
       AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -670,7 +670,7 @@ TEST(AudioProcessorCallbackTest,
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
       AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -707,7 +707,7 @@ TEST(AudioProcessorCallbackTest,
       mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
       AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();

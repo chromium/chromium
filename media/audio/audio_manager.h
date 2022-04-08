@@ -22,6 +22,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace audio {
+class AudioManagerPowerUser;
+}  // namespace audio
+
 namespace media {
 
 class AudioDebugRecordingManager;
@@ -175,7 +179,7 @@ class MEDIA_EXPORT AudioManager {
  protected:
   FRIEND_TEST_ALL_PREFIXES(AudioManagerTest, AudioDebugRecording);
   friend class AudioDeviceInfoAccessorForTests;
-  friend class AudioManagerPowerUser;
+  friend class audio::AudioManagerPowerUser;
 
   explicit AudioManager(std::unique_ptr<AudioThread> audio_thread);
 

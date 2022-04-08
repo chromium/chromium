@@ -36,6 +36,30 @@ namespace media {
 
 namespace {
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
+
+int GetCaptureBufferSize(bool need_webrtc_processing,
+                         const AudioParameters device_format) {
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+  // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
+  // https://crbug.com/638081
+  return 2 * device_format.sample_rate() / 100;
+#else
+  // If audio processing is turned on, require 10ms buffers.
+  if (need_webrtc_processing)
+    return device_format.sample_rate() / 100;
+
+  // If WebRTC audio processing is not required and the native hardware buffer
+  // size was provided, use it. It can be harmful, in terms of CPU/power
+  // consumption, to use smaller buffer sizes than the native size.
+  // (https://crbug.com/362261).
+  if (int hardware_buffer_size = device_format.frames_per_buffer())
+    return hardware_buffer_size;
+
+  // If the buffer size is missing from the device parameters, provide 10ms as
+  // a fall-back.
+  return device_format.sample_rate() / 100;
+#endif
+}
 }  // namespace
 
 // Wraps AudioBus to provide access to the array of channel pointers, since this
@@ -298,11 +322,6 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
   }
 }
 
-const media::AudioParameters& AudioProcessor::OutputFormat() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  return output_format_;
-}
-
 void AudioProcessor::SetOutputWillBeMuted(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage(
@@ -515,6 +534,39 @@ void AudioProcessor::SendLogMessage(const std::string& message) {
   log_callback_.Run(base::StringPrintf("MSAP::%s [this=0x%" PRIXPTR "]",
                                        message.c_str(),
                                        reinterpret_cast<uintptr_t>(this)));
+}
+
+absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
+    const AudioParameters& device_format,
+    const AudioProcessingSettings& audio_processing_settings) {
+  const ChannelLayout channel_layout = device_format.channel_layout();
+
+  // The audio processor can only handle up to two channels.
+  if (channel_layout != CHANNEL_LAYOUT_MONO &&
+      channel_layout != CHANNEL_LAYOUT_STEREO &&
+      channel_layout != CHANNEL_LAYOUT_DISCRETE) {
+    return absl::nullopt;
+  }
+
+  // The audio processor code assumes that sample rates are divisible by 100.
+  if (device_format.sample_rate() % 100 != 0) {
+    return absl::nullopt;
+  }
+
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      device_format.sample_rate(),
+      GetCaptureBufferSize(
+          audio_processing_settings.NeedWebrtcAudioProcessing(),
+          device_format));
+  params.set_effects(device_format.effects());
+  if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
+    DCHECK_LE(device_format.channels(), 2);
+    params.set_channels_for_discrete(device_format.channels());
+  }
+  DVLOG(1) << params.AsHumanReadableString();
+  CHECK(params.IsValid());
+  return params;
 }
 
 // If WebRTC audio processing is used, the default output format is fixed to the

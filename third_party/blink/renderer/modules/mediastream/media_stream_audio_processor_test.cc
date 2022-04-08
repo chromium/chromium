@@ -123,11 +123,11 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
                                            num_preferred_channels, 1.0, false);
       EXPECT_EQ(expected_output_sample_rate,
-                audio_processor.OutputFormat().sample_rate());
+                audio_processor.output_format().sample_rate());
       EXPECT_EQ(expected_output_channels,
-                audio_processor.OutputFormat().channels());
+                audio_processor.output_format().channels());
       EXPECT_EQ(expected_output_buffer_size,
-                audio_processor.OutputFormat().frames_per_buffer());
+                audio_processor.output_format().frames_per_buffer());
 
       data_ptr += params.frames_per_buffer() * params.channels();
 
@@ -358,7 +358,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
             source_params, webrtc_audio_device));
     EXPECT_EQ(audio_processor->has_webrtc_audio_processing(), use_apm);
     // There's no sense in continuing if this fails.
-    ASSERT_EQ(2, audio_processor->OutputFormat().channels());
+    ASSERT_EQ(2, audio_processor->output_format().channels());
 
     // Run the test consecutively to make sure the stereo channels are not
     // flipped back and forth.
@@ -465,7 +465,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
           params, webrtc_audio_device));
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
 
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -523,7 +523,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
           params, webrtc_audio_device));
   ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
 
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -571,7 +571,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
           params, webrtc_audio_device));
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
 
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();
@@ -616,7 +616,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
           params, webrtc_audio_device));
   ASSERT_FALSE(audio_processor->has_webrtc_audio_processing());
 
-  int output_sample_rate = audio_processor->OutputFormat().sample_rate();
+  int output_sample_rate = audio_processor->output_format().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
   data_bus->Zero();

@@ -39,20 +39,45 @@ namespace {
 // Audio parameters for the VerifyAudioFlowWithoutAudioProcessing test.
 constexpr int kSampleRate = 48000;
 constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
-constexpr int kRequestedBufferSize = 512;
+constexpr int kDeviceBufferSize = 512;
 
-// On Android, ProcessedLocalAudioSource forces a 20ms buffer size from the
-// input device.
+enum class ProcessingLocation {
+  kProcessedLocalAudioSource,
+  kAudioService,
+  kAudioServiceAvoidResampling
+};
+
+std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
+    ProcessingLocation processing_location) {
+  // On Android, ProcessedLocalAudioSource forces a 20ms buffer size from the
+  // input device.
 #if BUILDFLAG(IS_ANDROID)
-constexpr int kExpectedSourceBufferSize = kSampleRate / 50;
+  constexpr int kExpectedUnprocessedBufferSize = kSampleRate / 50;
 #else
-constexpr int kExpectedSourceBufferSize = kRequestedBufferSize;
+  constexpr int kExpectedUnprocessedBufferSize = kDeviceBufferSize;
 #endif
 
-// On both platforms, even though audio processing is turned off, the
-// MediaStreamAudioProcessor will force the use of 10ms buffer sizes on the
-// output end of its FIFO.
-constexpr int kExpectedOutputBufferSize = kSampleRate / 100;
+  // On both platforms, even though audio processing is turned off, the audio
+  // processing code may force the use of 10ms output buffer sizes.
+  constexpr int kExpectedOutputBufferSize = kSampleRate / 100;
+
+  switch (processing_location) {
+    case ProcessingLocation::kProcessedLocalAudioSource:
+      // The ProcessedLocalAudioSource changes format when it hosts the audio
+      // processor.
+      return {kExpectedUnprocessedBufferSize, kExpectedOutputBufferSize};
+    case ProcessingLocation::kAudioService:
+      // With processing in the audio service, the stream is locked to a
+      // device- and processing-friendly format.
+      return {kExpectedUnprocessedBufferSize, kExpectedUnprocessedBufferSize};
+    case ProcessingLocation::kAudioServiceAvoidResampling:
+      // To minimize resampling after processing in the audio service,
+      // ProcessedLocalAudioSource requests audio in the post-processing format.
+      return {kExpectedOutputBufferSize, kExpectedOutputBufferSize};
+    default:
+      NOTREACHED();
+  }
+}
 
 class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
  public:
@@ -80,12 +105,19 @@ class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
 
 }  // namespace
 
-class ProcessedLocalAudioSourceTest : public SimTest,
-                                      public testing::WithParamInterface<bool> {
+class ProcessedLocalAudioSourceTest
+    : public SimTest,
+      public testing::WithParamInterface<ProcessingLocation> {
  protected:
   ProcessedLocalAudioSourceTest() = default;
 
   ~ProcessedLocalAudioSourceTest() override = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+    std::tie(expected_source_buffer_size_, expected_output_buffer_size_) =
+        ComputeExpectedSourceAndOutputBufferSizes(GetParam());
+  }
 
   void TearDown() override {
     SimTest::TearDown();
@@ -102,8 +134,7 @@ class ProcessedLocalAudioSourceTest : public SimTest,
             *MainFrame().GetFrame(),
             MediaStreamDevice(mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
                               "mock_audio_device_id", "Mock audio device",
-                              kSampleRate, kChannelLayout,
-                              kRequestedBufferSize),
+                              kSampleRate, kChannelLayout, kDeviceBufferSize),
             false /* disable_local_echo */, properties, num_requested_channels,
             base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
@@ -118,16 +149,13 @@ class ProcessedLocalAudioSourceTest : public SimTest,
   void CheckSourceFormatMatches(const media::AudioParameters& params) {
     EXPECT_EQ(kSampleRate, params.sample_rate());
     EXPECT_EQ(kChannelLayout, params.channel_layout());
-    EXPECT_EQ(kExpectedSourceBufferSize, params.frames_per_buffer());
+    EXPECT_EQ(expected_source_buffer_size_, params.frames_per_buffer());
   }
 
   void CheckOutputFormatMatches(const media::AudioParameters& params) {
     EXPECT_EQ(kSampleRate, params.sample_rate());
     EXPECT_EQ(kChannelLayout, params.channel_layout());
-    if (media::IsChromeWideEchoCancellationEnabled())
-      EXPECT_EQ(kExpectedSourceBufferSize, params.frames_per_buffer());
-    else
-      EXPECT_EQ(kExpectedOutputBufferSize, params.frames_per_buffer());
+    EXPECT_EQ(expected_output_buffer_size_, params.frames_per_buffer());
   }
 
   media::AudioCapturerSource::CaptureCallback* capture_source_callback() const {
@@ -145,6 +173,9 @@ class ProcessedLocalAudioSourceTest : public SimTest,
     return webrtc_audio_device_platform_support_->mock_audio_capturer_source();
   }
 
+  int expected_source_buffer_size_;
+  int expected_output_buffer_size_;
+
  private:
   ScopedTestingPlatformSupport<AudioCapturerSourceTestingPlatformSupport>
       webrtc_audio_device_platform_support_;
@@ -153,18 +184,17 @@ class ProcessedLocalAudioSourceTest : public SimTest,
 };
 
 // Tests a basic end-to-end start-up, track+sink connections, audio flow, and
-// shut-down. The unit tests in media_stream_audio_unittest.cc provide more
-// comprehensive testing of the object graph connections and multi-threading
-// concerns.
+// shut-down. The tests in media_stream_audio_test.cc provide more comprehensive
+// testing of the object graph connections and multi-threading concerns.
 TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   base::test::ScopedFeatureList scoped_feature_list;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (GetParam()) {
-    scoped_feature_list.InitAndEnableFeature(
-        media::kChromeWideEchoCancellation);
-  } else {
-    scoped_feature_list.InitAndEnableFeature(
-        media::kChromeWideEchoCancellation);
+  if (GetParam() == ProcessingLocation::kAudioService) {
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        media::kChromeWideEchoCancellation, {{"minimize_resampling", "false"}});
+  } else if (GetParam() == ProcessingLocation::kAudioServiceAvoidResampling) {
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        media::kChromeWideEchoCancellation, {{"minimize_resampling", "true"}});
   }
 #endif
 
@@ -204,7 +234,7 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   const base::TimeTicks capture_time =
       base::TimeTicks::Now() + base::Milliseconds(delay_ms);
   std::unique_ptr<media::AudioBus> audio_bus =
-      media::AudioBus::Create(2, kExpectedSourceBufferSize);
+      media::AudioBus::Create(2, expected_source_buffer_size_);
   audio_bus->Zero();
   EXPECT_CALL(*sink, OnDataCallback()).Times(AtLeast(1));
   capture_source_callback()->Capture(audio_bus.get(), capture_time, volume,
@@ -217,11 +247,17 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-INSTANTIATE_TEST_SUITE_P(All, ProcessedLocalAudioSourceTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProcessedLocalAudioSourceTest,
+    testing::Values(ProcessingLocation::kProcessedLocalAudioSource,
+                    ProcessingLocation::kAudioService,
+                    ProcessingLocation::kAudioServiceAvoidResampling));
 #else
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProcessedLocalAudioSourceTest,
-                         testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProcessedLocalAudioSourceTest,
+    testing::Values(ProcessingLocation::kProcessedLocalAudioSource));
 #endif
 
 }  // namespace blink

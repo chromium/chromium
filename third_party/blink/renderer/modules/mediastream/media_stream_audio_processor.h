@@ -81,7 +81,9 @@ class MODULES_EXPORT MediaStreamAudioProcessor
 
   // The format of the processed capture output audio from the processor.
   // Is constant throughout MediaStreamAudioProcessor lifetime.
-  const media::AudioParameters& OutputFormat() const;
+  const media::AudioParameters& output_format() const {
+    return audio_processor_->output_format();
+  }
 
   // Accessor to check if WebRTC audio processing is enabled or not.
   bool has_webrtc_audio_processing() const {

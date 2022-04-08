@@ -49,11 +49,9 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   // |settings| specifies which audio processing effects to apply. Some effect
   // must be required, i.e. the AudioProcessorHandler may only be created if
   // |settings.NeedAudioModification()| is true.
-  // |audio_format| specifies the audio format, both before and after
-  // processing. If |settings|.NeedWebrtcAudioProcessing(), then
-  // |audio_format|.frames_per_buffer() must specify 10 ms.
-  // TODO(https://crbug.com/1298056): Support different input vs output format
-  // to avoid unnecessary resampling.
+  // |input_format| and |output_format| specify formats before and after
+  // processing, where |*_format|.frames_per_buffer() must be 10 ms if
+  // |settings|.NeedWebrtcAudioProcessing().
   // |log_callback| is used for logging messages on the owning sequence.
   // |deliver_processed_audio_callback| is used to deliver processed audio
   // provided to ProcessCapturedAudio().
@@ -62,7 +60,8 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   // recording source, and must outlive the AudioProcessorHandler if not null.
   AudioProcessorHandler(
       const media::AudioProcessingSettings& settings,
-      const media::AudioParameters& audio_format,
+      const media::AudioParameters& input_format,
+      const media::AudioParameters& output_format,
       LogCallback log_callback,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       mojo::PendingReceiver<media::mojom::AudioProcessorControls>
@@ -80,6 +79,12 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
                             base::TimeTicks audio_capture_time,
                             double volume,
                             bool key_pressed);
+
+  // The format of audio input to the processor; constant throughout its
+  // lifetime.
+  const media::AudioParameters& input_format() const {
+    return audio_processor_->input_format();
+  }
 
  private:
   // Used in the mojom::AudioProcessorControls implementation.

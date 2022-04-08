@@ -13,7 +13,8 @@ namespace audio {
 
 AudioProcessorHandler::AudioProcessorHandler(
     const media::AudioProcessingSettings& settings,
-    const media::AudioParameters& audio_format,
+    const media::AudioParameters& input_format,
+    const media::AudioParameters& output_format,
     LogCallback log_callback,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
@@ -23,8 +24,8 @@ AudioProcessorHandler::AudioProcessorHandler(
           std::move(deliver_processed_audio_callback),
           std::move(log_callback),
           settings,
-          /*input_format=*/audio_format,
-          /*output_format=*/audio_format)),
+          input_format,
+          output_format)),
       receiver_(this, std::move(controls_receiver)),
       aecdump_recording_manager_(aecdump_recording_manager) {
   DCHECK(settings.NeedAudioModification());
@@ -77,7 +78,7 @@ void AudioProcessorHandler::SetPreferredNumCaptureChannels(
     int32_t num_preferred_channels) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   num_preferred_channels = base::clamp(
-      num_preferred_channels, 1, audio_processor_->OutputFormat().channels());
+      num_preferred_channels, 1, audio_processor_->output_format().channels());
   num_preferred_channels_.store(num_preferred_channels,
                                 std::memory_order_release);
 }

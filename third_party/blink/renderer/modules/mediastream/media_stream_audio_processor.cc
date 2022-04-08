@@ -102,11 +102,7 @@ void MediaStreamAudioProcessor::Stop() {
 
 const media::AudioParameters&
 MediaStreamAudioProcessor::GetInputFormatForTesting() const {
-  return audio_processor_->GetInputFormatForTesting();
-}
-
-const media::AudioParameters& MediaStreamAudioProcessor::OutputFormat() const {
-  return audio_processor_->OutputFormat();
+  return audio_processor_->input_format();
 }
 
 void MediaStreamAudioProcessor::OnStartDump(base::File dump_file) {

@@ -709,6 +709,13 @@ class ProcessingBasedContainer {
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
+    int sample_rate_hz = media::kAudioProcessingSampleRateHz;
+    if (!ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
+      // If audio processing runs in the audio service without any mitigations
+      // for unnecessary resmapling, ProcessedLocalAudioSource will output audio
+      // at the device sample rate.
+      sample_rate_hz = device_parameters.sample_rate();
+    }
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed,
         {EchoCancellationType::kEchoCancellationAec3,
@@ -721,37 +728,7 @@ class ProcessingBasedContainer {
         BoolSet(), /* goog_highpass_filter_set */
         IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
-        IntRangeSet::FromValue(
-            media::kAudioProcessingSampleRateHz), /* sample_rate_range */
-        source_info, is_device_capture, device_parameters,
-        is_reconfiguration_allowed);
-  }
-
-  // Creates an instance of ProcessingBasedContainer for the WebRTC processed
-  // source type in case audio processing is done in the audio service. The
-  // source type allows (a) any type of echo cancellation, though the system
-  // echo cancellation type depends on the availability of the related
-  // |parameters.effects()|, and (b) any combination of processing properties
-  // settings.
-  static ProcessingBasedContainer CreateRemoteApmProcessedContainer(
-      const SourceInfo& source_info,
-      bool is_device_capture,
-      const media::AudioParameters& device_parameters,
-      bool is_reconfiguration_allowed) {
-    return ProcessingBasedContainer(
-        ProcessingType::kApmProcessed,
-        {EchoCancellationType::kEchoCancellationAec3,
-         EchoCancellationType::kEchoCancellationDisabled},
-        BoolSet(), /* auto_gain_control_set */
-        BoolSet(), /* goog_audio_mirroring_set */
-        BoolSet(), /* goog_experimental_echo_cancellation_set */
-        BoolSet(), /* goog_noise_suppression_set */
-        BoolSet(), /* goog_experimental_noise_suppression_set */
-        BoolSet(), /* goog_highpass_filter_set */
-        IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
-        GetApmSupportedChannels(device_parameters), /* channels_set */
-        IntRangeSet::FromValue(
-            device_parameters.sample_rate()), /* sample_rate_range */
+        IntRangeSet::FromValue(sample_rate_hz),     /* sample_rate_range */
         source_info, is_device_capture, device_parameters,
         is_reconfiguration_allowed);
   }
@@ -1168,17 +1145,10 @@ class DeviceContainer {
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
             source_info, is_device_capture, device_parameters_,
             is_reconfiguration_allowed));
-    if (media::IsChromeWideEchoCancellationEnabled()) {
-      processing_based_containers_.push_back(
-          ProcessingBasedContainer::CreateRemoteApmProcessedContainer(
-              source_info, is_device_capture, device_parameters_,
-              is_reconfiguration_allowed));
-    } else {
-      processing_based_containers_.push_back(
-          ProcessingBasedContainer::CreateApmProcessedContainer(
-              source_info, is_device_capture, device_parameters_,
-              is_reconfiguration_allowed));
-    }
+    processing_based_containers_.push_back(
+        ProcessingBasedContainer::CreateApmProcessedContainer(
+            source_info, is_device_capture, device_parameters_,
+            is_reconfiguration_allowed));
 
     DCHECK_EQ(processing_based_containers_.size(), 3u);
 

@@ -12,6 +12,7 @@ source_set("audio") {
   sources = [
     "aecdump_recording_manager.cc",
     "aecdump_recording_manager.h",
+    "audio_manager_power_user.h",
     "concurrent_stream_metric_reporter.cc",
     "concurrent_stream_metric_reporter.h",
     "debug_recording.cc",

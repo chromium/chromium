@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/media_switches.h"
 #include "media/base/sample_rates.h"
+#include "media/media_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -115,53 +117,11 @@ constexpr bool IsIndependentSystemNsAllowed() {
 #endif
 }
 
-int GetCaptureBufferSize(bool need_webrtc_processing,
-                         const media::AudioParameters input_device_params) {
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
-  // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
-  // https://crbug.com/638081
-  return 2 * input_device_params.sample_rate() / 100;
-#else
-  // If audio processing is turned on, require 10ms buffers.
-  if (need_webrtc_processing)
-    return input_device_params.sample_rate() / 100;
-
-  // If audio processing is off and the native hardware buffer size was
-  // provided, use it. It can be harmful, in terms of CPU/power consumption,
-  // to use smaller buffer sizes than the native size
-  // (https://crbug.com/362261).
-  if (int hardware_buffer_size = input_device_params.frames_per_buffer())
-    return hardware_buffer_size;
-
-  // If the buffer size is missing from the MediaStreamDevice, provide 10ms as
-  // a fall-back.
-  return input_device_params.sample_rate() / 100;
-#endif
-}
-
-// Will return nullopt if |input_device_params| are not supported.
-absl::optional<media::AudioParameters> ComputeAudioCaptureParams(
-    const media::AudioParameters& input_device_params,
-    const media::AudioProcessingSettings& audio_processing_settings) {
-  const media::ChannelLayout channel_layout =
-      input_device_params.channel_layout();
-  DVLOG(1) << "Audio input hardware channel layout: " << channel_layout;
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout", channel_layout,
+void LogInputDeviceParametersToUma(
+    const media::AudioParameters& input_device_params) {
+  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout",
+                            input_device_params.channel_layout(),
                             media::CHANNEL_LAYOUT_MAX + 1);
-
-  // Verify that the reported input channel configuration is supported.
-  if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO &&
-      channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
-    SendLogMessage(
-        base::StringPrintf("EnsureSourceIsStarted() => (ERROR: "
-                           "input channel layout (%d) is not supported.",
-                           static_cast<int>(channel_layout)));
-    return absl::nullopt;
-  }
-
-  DVLOG(1) << "Audio input hardware sample rate: "
-           << input_device_params.sample_rate();
   media::AudioSampleRate asr;
   if (media::ToAudioSampleRate(input_device_params.sample_rate(), &asr)) {
     UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputSampleRate", asr,
@@ -170,24 +130,22 @@ absl::optional<media::AudioParameters> ComputeAudioCaptureParams(
     UMA_HISTOGRAM_COUNTS_1M("WebRTC.AudioInputSampleRateUnexpected",
                             input_device_params.sample_rate());
   }
-
-  media::AudioParameters params(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-      input_device_params.sample_rate(),
-      GetCaptureBufferSize(
-          audio_processing_settings.NeedWebrtcAudioProcessing(),
-          input_device_params));
-  params.set_effects(input_device_params.effects());
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    DCHECK_LE(input_device_params.channels(), 2);
-    params.set_channels_for_discrete(input_device_params.channels());
-  }
-  DVLOG(1) << params.AsHumanReadableString();
-  CHECK(params.IsValid());
-  return params;
 }
 
 }  // namespace
+
+// static
+bool ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (!media::IsChromeWideEchoCancellationEnabled())
+    return true;
+  return GetFieldTrialParamByFeatureAsBool(media::kChromeWideEchoCancellation,
+                                           "minimize_resampling",
+                                           /*default_value=*/true);
+#else
+  return true;
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+}
 
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     LocalFrame& frame,
@@ -394,15 +352,31 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
           num_requested_channels_ > 1));
 
   // Determine the audio format required of the AudioCapturerSource.
-  auto maybe_audio_capture_params =
-      ComputeAudioCaptureParams(device().input, audio_processing_settings);
-  if (!maybe_audio_capture_params)  // Unsupported configuration.
+  const media::AudioParameters input_device_params = device().input;
+  LogInputDeviceParametersToUma(input_device_params);
+  auto maybe_audio_capture_params = media::AudioProcessor::ComputeInputFormat(
+      input_device_params, audio_processing_settings);
+
+  if (!maybe_audio_capture_params) {
+    SendLogMessage(base::StringPrintf(
+        "EnsureSourceIsStarted() => (ERROR: "
+        "input device format (%s) is not supported.",
+        input_device_params.AsHumanReadableString().c_str()));
     return false;
-  media::AudioParameters& audio_capture_params = *maybe_audio_capture_params;
+  }
+  media::AudioParameters audio_capture_params = *maybe_audio_capture_params;
 
   media::AudioSourceParameters source_config(device().session_id());
 
   if (media::IsChromeWideEchoCancellationEnabled()) {
+    if (OutputAudioAtProcessingSampleRate()) {
+      // Since audio processing will be applied in the audio service, we request
+      // audio here in the audio processing output format to avoid forced
+      // resampling.
+      audio_capture_params = media::AudioProcessor::GetDefaultOutputFormat(
+          audio_capture_params, audio_processing_settings);
+    }
+
     // Create a proxy to the audio processor in the audio service.
     audio_processor_proxy_ =
         new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
@@ -415,6 +389,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     source_config.processing = audio_processing_settings;
 
   } else {
+    DCHECK(OutputAudioAtProcessingSampleRate());
     // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
     // module.
 
@@ -433,7 +408,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
     // The output format of this ProcessedLocalAudioSource is the audio
     // processor's output format.
-    SetFormat(media_stream_audio_processor_->OutputFormat());
+    SetFormat(media_stream_audio_processor_->output_format());
   }
 
   SendLogMessageWithSessionId(

@@ -558,17 +558,38 @@ class MediaStreamConstraintsUtilAudioTest
   std::string GetMediaStreamSource() override { return GetParam(); }
 };
 
+enum class ApmLocation {
+  kProcessedLocalAudioSource,
+  kAudioService,
+  kAudioServiceAvoidResampling
+};
+
 class MediaStreamConstraintsRemoteAPMTest
     : public MediaStreamConstraintsUtilAudioTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<ApmLocation> {
+ protected:
+  ApmLocation GetApmLocation() { return GetParam(); }
+
+ private:
   void SetUp() override {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (UseRemoteAPMFlag()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          media::kChromeWideEchoCancellation);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          media::kChromeWideEchoCancellation);
+    switch (GetApmLocation()) {
+      case ApmLocation::kProcessedLocalAudioSource:
+        scoped_feature_list_.InitAndDisableFeature(
+            media::kChromeWideEchoCancellation);
+        break;
+      case ApmLocation::kAudioService:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            media::kChromeWideEchoCancellation,
+            {{ "minimize_resampling",
+               "false" }});
+        break;
+      case ApmLocation::kAudioServiceAvoidResampling:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            media::kChromeWideEchoCancellation,
+            {{ "minimize_resampling",
+               "true" }});
+        break;
     }
 #endif
 
@@ -585,9 +606,6 @@ class MediaStreamConstraintsRemoteAPMTest
     }
   }
 
-  bool UseRemoteAPMFlag() { return GetParam(); }
-
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2020,8 +2038,9 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service.
-  if (media::IsChromeWideEchoCancellationEnabled())
+  // Native sample rate is only supported by APM in the audio service, without
+  // resampling mitigations.
+  if (GetApmLocation() == ApmLocation::kAudioService)
     EXPECT_TRUE(result.HasValue());
   else
     EXPECT_FALSE(result.HasValue());
@@ -2039,8 +2058,9 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service.
-  if (media::IsChromeWideEchoCancellationEnabled())
+  // Native sample rate is only supported by APM in the audio service, without
+  // resampling mitigations.
+  if (GetApmLocation() == ApmLocation::kAudioService)
     EXPECT_FALSE(result.HasValue());
   else
     EXPECT_TRUE(result.HasValue());
@@ -2102,12 +2122,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          blink::kMediaStreamSourceSystem,
                                          blink::kMediaStreamSourceDesktop));
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-INSTANTIATE_TEST_SUITE_P(All,
-                         MediaStreamConstraintsRemoteAPMTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamConstraintsRemoteAPMTest,
+    testing::Values(ApmLocation::kProcessedLocalAudioSource,
+                    ApmLocation::kAudioService,
+                    ApmLocation::kAudioServiceAvoidResampling));
 #else
-INSTANTIATE_TEST_SUITE_P(All,
-                         MediaStreamConstraintsRemoteAPMTest,
-                         testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamConstraintsRemoteAPMTest,
+    testing::Values(ApmLocation::kProcessedLocalAudioSource));
 #endif
 }  // namespace blink
