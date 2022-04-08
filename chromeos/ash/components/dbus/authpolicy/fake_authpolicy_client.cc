@@ -25,7 +25,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -354,4 +354,4 @@ void FakeAuthPolicyClient::StoreDevicePolicy(RefreshPolicyCallback callback) {
       base::BindOnce(&OnStorePolicy, std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

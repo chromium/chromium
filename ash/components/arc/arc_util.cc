@@ -401,12 +401,12 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                                          std::move(jobs), std::move(callback));
   switch (operation) {
     case UpstartOperation::JOB_START:
-      chromeos::UpstartClient::Get()->StartJob(job_name, environment,
-                                               std::move(wrapped_callback));
+      ash::UpstartClient::Get()->StartJob(job_name, environment,
+                                          std::move(wrapped_callback));
       break;
     case UpstartOperation::JOB_STOP:
-      chromeos::UpstartClient::Get()->StopJob(job_name, environment,
-                                              std::move(wrapped_callback));
+      ash::UpstartClient::Get()->StopJob(job_name, environment,
+                                         std::move(wrapped_callback));
       break;
     case UpstartOperation::JOB_STOP_AND_START:
       NOTREACHED();

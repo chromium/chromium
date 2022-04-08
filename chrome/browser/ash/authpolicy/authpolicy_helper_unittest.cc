@@ -16,7 +16,7 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 
-class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
+class MockAuthPolicyClient : public FakeAuthPolicyClient {
  public:
   MockAuthPolicyClient() { SetStarted(true); }
 
@@ -77,7 +77,7 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
   mock_client->CheckExpectations();
 
   InstallAttributesClient::Shutdown();
-  chromeos::AuthPolicyClient::Shutdown();
+  AuthPolicyClient::Shutdown();
 }
 
 }  // namespace ash

@@ -14,7 +14,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kCorrectMachineName[] = "machine_name";
@@ -355,4 +355,4 @@ TEST_F(FakeAuthPolicyClientTest, WaitForServiceToBeAvailableCalled) {
   EXPECT_EQ(3, service_is_available_called_num_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

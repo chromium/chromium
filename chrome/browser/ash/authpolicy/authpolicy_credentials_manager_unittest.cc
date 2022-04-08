@@ -26,8 +26,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::AuthPolicyClient;
-
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 constexpr char kProfileEmail[] = "user@example.com";
 constexpr char kDisplayName[] = "DisplayName";
@@ -98,8 +96,8 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   AuthPolicyCredentialsManager* authpolicy_credentials_manager() {
     return authpolicy_credentials_manager_;
   }
-  chromeos::FakeAuthPolicyClient* fake_authpolicy_client() const {
-    return chromeos::FakeAuthPolicyClient::Get();
+  FakeAuthPolicyClient* fake_authpolicy_client() const {
+    return FakeAuthPolicyClient::Get();
   }
 
   MockUserManager* mock_user_manager() {

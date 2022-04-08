@@ -791,7 +791,7 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   chromeos::DBusThreadManager::Initialize();
   chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
-  auto upstart_client = std::make_unique<chromeos::FakeUpstartClient>();
+  auto upstart_client = std::make_unique<ash::FakeUpstartClient>();
   arc::prefs::RegisterLocalStatePrefs(
       profile()->GetTestingPrefService()->registry());
   auto arc_session_manager =

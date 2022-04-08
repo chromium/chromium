@@ -67,7 +67,7 @@ class BrowserLoaderTest : public testing::Test {
  protected:
   component_updater::MockComponentUpdateService mock_component_update_service_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
-  chromeos::FakeUpstartClient fake_upstart_client_;
+  ash::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<BrowserLoader> browser_loader_;
 };

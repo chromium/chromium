@@ -24,7 +24,7 @@
 namespace arc {
 namespace {
 
-class TestUpstartClient : public chromeos::FakeUpstartClient {
+class TestUpstartClient : public ash::FakeUpstartClient {
  public:
   TestUpstartClient() = default;
 
@@ -71,7 +71,7 @@ class ArcDataRemoverTest : public testing::Test {
   }
 
   TestUpstartClient* upstart_client() {
-    return static_cast<TestUpstartClient*>(chromeos::UpstartClient::Get());
+    return static_cast<TestUpstartClient*>(ash::UpstartClient::Get());
   }
 
  private:

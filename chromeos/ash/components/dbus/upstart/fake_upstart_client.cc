@@ -12,7 +12,7 @@
 #include "chromeos/dbus/kerberos/kerberos_client.h"
 #include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Used to track the fake instance, mirrors the instance in the base class.
@@ -116,4 +116,4 @@ void FakeUpstartClient::StopArcDataSnapshotd(VoidDBusMethodCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -47,7 +47,7 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
 
   // testing::Test overrides:
   void SetUp() override {
-    chromeos::AuthPolicyClient::InitializeFake();
+    ash::AuthPolicyClient::InitializeFake();
     fake_client()->SetStarted(true);
     fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
   }
@@ -56,7 +56,7 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
     if (mock_external_data_manager())
       EXPECT_CALL(*mock_external_data_manager(), Disconnect());
     policy_manager_->Shutdown();
-    chromeos::AuthPolicyClient::Shutdown();
+    ash::AuthPolicyClient::Shutdown();
   }
 
  protected:
@@ -88,8 +88,8 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
   }
 
   // Owned by the AuthPolicyClient global instance.
-  chromeos::FakeAuthPolicyClient* fake_client() {
-    return chromeos::FakeAuthPolicyClient::Get();
+  ash::FakeAuthPolicyClient* fake_client() {
+    return ash::FakeAuthPolicyClient::Get();
   }
 
   // Used to set FakeUserManager.

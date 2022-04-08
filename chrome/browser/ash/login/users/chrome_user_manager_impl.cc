@@ -208,8 +208,8 @@ void MaybeStartBluetoothLogging(const AccountId& account_id) {
   if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()))
     return;
 
-  chromeos::UpstartClient::Get()->StartJob(kBluetoothLoggingUpstartJob, {},
-                                           base::DoNothing());
+  UpstartClient::Get()->StartJob(kBluetoothLoggingUpstartJob, {},
+                                 base::DoNothing());
 }
 
 bool IsManagedSessionEnabled(policy::DeviceLocalAccountPolicyBroker* broker) {

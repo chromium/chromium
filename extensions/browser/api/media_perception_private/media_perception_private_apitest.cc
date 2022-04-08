@@ -111,11 +111,11 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
     // MediaAnalyticsClient and UpstartClient are required by
     // MediaPerceptionAPIManager.
     chromeos::MediaAnalyticsClient::InitializeFake();
-    chromeos::UpstartClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    chromeos::UpstartClient::Shutdown();
+    ash::UpstartClient::Shutdown();
     chromeos::MediaAnalyticsClient::Shutdown();
   }
 

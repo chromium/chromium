@@ -138,12 +138,12 @@ BrowserLoader::BrowserLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
     : BrowserLoader(manager,
                     g_browser_process->component_updater(),
-                    chromeos::UpstartClient::Get()) {}
+                    ash::UpstartClient::Get()) {}
 
 BrowserLoader::BrowserLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager,
     component_updater::ComponentUpdateService* updater,
-    chromeos::UpstartClient* upstart_client)
+    ash::UpstartClient* upstart_client)
     : component_manager_(manager),
       component_update_service_(updater),
       upstart_client_(upstart_client) {

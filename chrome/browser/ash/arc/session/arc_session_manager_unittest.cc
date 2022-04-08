@@ -279,7 +279,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::UpstartClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
 
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
@@ -307,7 +307,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     profile_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::UpstartClient::Shutdown();
+    ash::UpstartClient::Shutdown();
     chromeos::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();

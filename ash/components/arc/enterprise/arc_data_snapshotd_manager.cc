@@ -417,7 +417,7 @@ void ArcDataSnapshotdManager::EnsureDaemonStarted(base::OnceClosure callback) {
   }
   VLOG(1) << "Starting arc-data-snapshotd";
   daemon_weak_ptr_factory_.InvalidateWeakPtrs();
-  chromeos::UpstartClient::Get()->StartArcDataSnapshotd(
+  ash::UpstartClient::Get()->StartArcDataSnapshotd(
       GetStartEnvVars(),
       base::BindOnce(&ArcDataSnapshotdManager::OnDaemonStarted,
                      daemon_weak_ptr_factory_.GetWeakPtr(),
@@ -667,7 +667,7 @@ void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
   VLOG(1) << "Stopping arc-data-snapshotd";
   daemon_weak_ptr_factory_.InvalidateWeakPtrs();
-  chromeos::UpstartClient::Get()->StopArcDataSnapshotd(base::BindOnce(
+  ash::UpstartClient::Get()->StopArcDataSnapshotd(base::BindOnce(
       &ArcDataSnapshotdManager::OnDaemonStopped,
       daemon_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

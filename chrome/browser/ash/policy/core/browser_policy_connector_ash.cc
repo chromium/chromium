@@ -146,7 +146,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
             CreateBackgroundTaskRunner());
 
     if (ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
-      chromeos::UpstartClient::Get()->StartAuthPolicyService();
+      ash::UpstartClient::Get()->StartAuthPolicyService();
 
       device_active_directory_policy_manager_ =
           new DeviceActiveDirectoryPolicyManager(

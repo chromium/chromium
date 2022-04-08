@@ -22,7 +22,7 @@ namespace extensions {
 
 namespace {
 
-class TestUpstartClient : public chromeos::FakeUpstartClient {
+class TestUpstartClient : public ash::FakeUpstartClient {
  public:
   TestUpstartClient() = default;
 
@@ -62,7 +62,7 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
       return true;
     }
 
-    chromeos::FakeUpstartClient::StartMediaAnalytics({}, std::move(callback));
+    ash::FakeUpstartClient::StartMediaAnalytics({}, std::move(callback));
     return true;
   }
 

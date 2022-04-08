@@ -90,7 +90,7 @@ AffiliationTestHelper AffiliationTestHelper::CreateForCloud(
 // static
 AffiliationTestHelper AffiliationTestHelper::CreateForActiveDirectory(
     chromeos::FakeSessionManagerClient* fake_session_manager_client,
-    chromeos::FakeAuthPolicyClient* fake_authpolicy_client) {
+    ash::FakeAuthPolicyClient* fake_authpolicy_client) {
   return AffiliationTestHelper(ManagementType::kActiveDirectory,
                                fake_session_manager_client,
                                fake_authpolicy_client);
@@ -102,7 +102,7 @@ AffiliationTestHelper::AffiliationTestHelper(AffiliationTestHelper&& other) =
 AffiliationTestHelper::AffiliationTestHelper(
     ManagementType management_type,
     chromeos::FakeSessionManagerClient* fake_session_manager_client,
-    chromeos::FakeAuthPolicyClient* fake_authpolicy_client)
+    ash::FakeAuthPolicyClient* fake_authpolicy_client)
     : management_type_(management_type),
       fake_session_manager_client_(fake_session_manager_client),
       fake_authpolicy_client_(fake_authpolicy_client) {

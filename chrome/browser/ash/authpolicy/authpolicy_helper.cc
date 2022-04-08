@@ -24,8 +24,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::AuthPolicyClient;
-
 constexpr char kDCPrefix[] = "DC=";
 constexpr char kOUPrefix[] = "OU=";
 
@@ -143,7 +141,7 @@ void AuthPolicyHelper::TryAuthenticateUser(const std::string& username,
 
 // static
 void AuthPolicyHelper::Restart() {
-  chromeos::UpstartClient::Get()->RestartAuthPolicyService();
+  UpstartClient::Get()->RestartAuthPolicyService();
 }
 
 // static

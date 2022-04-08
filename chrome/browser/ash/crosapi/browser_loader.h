@@ -30,7 +30,7 @@ class BrowserLoader {
   // Constructor for testing.
   BrowserLoader(scoped_refptr<component_updater::CrOSComponentManager> manager,
                 component_updater::ComponentUpdateService* updater,
-                chromeos::UpstartClient* upstart_client);
+                ash::UpstartClient* upstart_client);
 
   BrowserLoader(const BrowserLoader&) = delete;
   BrowserLoader& operator=(const BrowserLoader&) = delete;
@@ -109,8 +109,8 @@ class BrowserLoader {
   component_updater::ComponentUpdateService* const component_update_service_;
 
   // Pointer held to `UpstartClient` for testing purposes.
-  // Otherwise, the lifetime is the same as `chromeos::UpstartClient::Get()`.
-  chromeos::UpstartClient* const upstart_client_;
+  // Otherwise, the lifetime is the same as `ash::UpstartClient::Get()`.
+  ash::UpstartClient* const upstart_client_;
 
   // Time when the lacros component was loaded.
   base::TimeTicks lacros_start_load_time_;

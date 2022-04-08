@@ -392,7 +392,7 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
       // Do nothing.
       break;
     case DEVICE_MODE_ENTERPRISE_AD:
-      chromeos::UpstartClient::Get()->StartAuthPolicyService();
+      ash::UpstartClient::Get()->StartAuthPolicyService();
       break;
     default:
       LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
@@ -884,7 +884,7 @@ void EnrollmentHandler::OnDeviceAccountTokenStored() {
     // policy is accepted.
     ash::DeviceSettingsService::Get()->SetDeviceMode(
         install_attributes_->GetMode());
-    chromeos::AuthPolicyClient::Get()->RefreshDevicePolicy(
+    ash::AuthPolicyClient::Get()->RefreshDevicePolicy(
         base::BindOnce(&EnrollmentHandler::HandleActiveDirectoryPolicyRefreshed,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {

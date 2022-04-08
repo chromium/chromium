@@ -15,7 +15,7 @@
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -179,4 +179,4 @@ UpstartClient* UpstartClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

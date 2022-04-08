@@ -15,7 +15,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 // AuthPolicyClient is used to communicate with the org.chromium.AuthPolicy
 // sevice. All method should be called from the origin thread (UI thread) which
@@ -104,11 +104,6 @@ class COMPONENT_EXPORT(AUTHPOLICY) AuthPolicyClient {
   virtual ~AuthPolicyClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::AuthPolicyClient;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_

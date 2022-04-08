@@ -69,7 +69,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     chromeos::DBusThreadManager::Initialize();
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::UpstartClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
 
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
@@ -112,7 +112,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     identity_test_env_profile_adaptor_.reset();
     profile_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    chromeos::UpstartClient::Shutdown();
+    ash::UpstartClient::Shutdown();
     chromeos::SessionManagerClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();

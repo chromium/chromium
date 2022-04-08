@@ -20,7 +20,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     : public AuthPolicyClient {
@@ -188,12 +188,6 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   base::WeakPtrFactory<FakeAuthPolicyClient> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeAuthPolicyClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_

@@ -19,10 +19,9 @@ namespace ash {
 // for enrollment and login UI to proper cancel the flows.
 class AuthPolicyHelper {
  public:
-  using AuthCallback = chromeos::AuthPolicyClient::AuthCallback;
-  using JoinCallback = chromeos::AuthPolicyClient::JoinCallback;
-  using RefreshPolicyCallback =
-      chromeos::AuthPolicyClient::RefreshPolicyCallback;
+  using AuthCallback = AuthPolicyClient::AuthCallback;
+  using JoinCallback = AuthPolicyClient::JoinCallback;
+  using RefreshPolicyCallback = AuthPolicyClient::RefreshPolicyCallback;
   using OnDecryptedCallback =
       base::OnceCallback<void(std::string decrypted_data)>;
 

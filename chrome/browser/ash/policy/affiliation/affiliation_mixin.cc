@@ -85,7 +85,7 @@ AffiliationTestHelper AffiliationMixin::GetAffiliationTestHelper() const {
   auto* session_manager_client = chromeos::FakeSessionManagerClient::Get();
   CHECK(session_manager_client);
   if (is_for_active_directory_) {
-    auto* fake_auth_policy_client = chromeos::FakeAuthPolicyClient::Get();
+    auto* fake_auth_policy_client = ash::FakeAuthPolicyClient::Get();
     CHECK(fake_auth_policy_client);
     return AffiliationTestHelper::CreateForActiveDirectory(
         session_manager_client, fake_auth_policy_client);

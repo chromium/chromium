@@ -111,7 +111,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::ArcQuotaClient>(bus);
   InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
   InitializeDBusClient<chromeos::AttestationClient>(bus);
-  InitializeDBusClient<chromeos::AuthPolicyClient>(bus);
+  InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<chromeos::BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<chromeos::CiceroneClient>(bus);
@@ -151,7 +151,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::TypecdClient>(bus);
   InitializeDBusClient<chromeos::U2FClient>(bus);
   InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
-  InitializeDBusClient<chromeos::UpstartClient>(bus);
+  InitializeDBusClient<UpstartClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
   // signals sent from the session manager. This needs to happen before
@@ -204,7 +204,7 @@ void ShutdownDBus() {
     bluez::BluezDBusManager::Shutdown();
   }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
-  chromeos::UpstartClient::Shutdown();
+  UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
   chromeos::U2FClient::Shutdown();
   chromeos::TypecdClient::Shutdown();
@@ -246,7 +246,7 @@ void ShutdownDBus() {
   chromeos::CiceroneClient::Shutdown();
   chromeos::CdmFactoryDaemonClient::Shutdown();
   chromeos::BiodClient::Shutdown();
-  chromeos::AuthPolicyClient::Shutdown();
+  AuthPolicyClient::Shutdown();
   chromeos::AttestationClient::Shutdown();
   chromeos::ArcQuotaClient::Shutdown();
   chromeos::ArcCameraClient::Shutdown();

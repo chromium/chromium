@@ -45,7 +45,7 @@ namespace {
 
 constexpr char kPublicAccountEmail[] = "public-account@localhost";
 
-class TestUpstartClient : public chromeos::FakeUpstartClient {
+class TestUpstartClient : public ash::FakeUpstartClient {
  public:
   // FakeUpstartClient overrides:
   MOCK_METHOD(void,

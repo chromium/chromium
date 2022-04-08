@@ -44,8 +44,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::AuthPolicyClient;
-
 constexpr base::TimeDelta kGetUserStatusCallsInterval = base::Hours(1);
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 

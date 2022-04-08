@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // UpstartClient is used to communicate with the com.ubuntu.Upstart
 // sevice. All methods should be called from the origin thread (UI thread) which
@@ -104,11 +104,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   UpstartClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::UpstartClient;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_UPSTART_UPSTART_CLIENT_H_

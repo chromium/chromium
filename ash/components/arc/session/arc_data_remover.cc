@@ -46,7 +46,7 @@ void ArcDataRemover::Run(RunCallback callback) {
   }
 
   VLOG(1) << "Starting ARC data removal";
-  auto* upstart_client = chromeos::UpstartClient::Get();
+  auto* upstart_client = ash::UpstartClient::Get();
   if (!upstart_client) {
     // May be null in tests
     std::move(callback).Run(absl::nullopt);

@@ -12,13 +12,16 @@
 
 class AccountId;
 
+namespace ash {
+class FakeAuthPolicyClient;
+}
+
 namespace base {
 class CommandLine;
 }  // namespace base
 
 namespace chromeos {
 class FakeSessionManagerClient;
-class FakeAuthPolicyClient;
 }  // namespace chromeos
 
 namespace policy {
@@ -37,7 +40,7 @@ class AffiliationTestHelper {
   // Directory accounts). The pointers must outlive this object.
   static AffiliationTestHelper CreateForActiveDirectory(
       chromeos::FakeSessionManagerClient* fake_session_manager_client,
-      chromeos::FakeAuthPolicyClient* fake_authpolicy_client);
+      ash::FakeAuthPolicyClient* fake_authpolicy_client);
 
   // Allow move construction, so the static constructors can be used despite
   // deleted constructors.
@@ -87,7 +90,7 @@ class AffiliationTestHelper {
   AffiliationTestHelper(
       ManagementType management_type,
       chromeos::FakeSessionManagerClient* fake_session_manager_client,
-      chromeos::FakeAuthPolicyClient* fake_authpolicy_client);
+      ash::FakeAuthPolicyClient* fake_authpolicy_client);
 
   // ASSERTs on pointer validity.
   void CheckPreconditions();
@@ -95,7 +98,7 @@ class AffiliationTestHelper {
   ManagementType management_type_;
   chromeos::FakeSessionManagerClient*
       fake_session_manager_client_;                         // Not owned.
-  chromeos::FakeAuthPolicyClient* fake_authpolicy_client_;  // Not owned.
+  ash::FakeAuthPolicyClient* fake_authpolicy_client_;       // Not owned.
 };
 
 }  // namespace policy
