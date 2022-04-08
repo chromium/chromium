@@ -9,6 +9,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace sharing_hub {
@@ -42,11 +43,17 @@ PreviewView::PreviewView(std::u16string title, GURL url, ui::ImageModel image) {
   image_->SetPreferredSize(kImageSize);
 
   auto* labels_container = AddChildView(std::make_unique<views::View>());
+  labels_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
   auto* labels_layout =
       labels_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
   labels_layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
 
   // TODO(ellyjones): These do not exactly match the redlines, which call for
   // 14pt Roboto specifically. We should probably update the redlines to not
