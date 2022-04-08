@@ -23,13 +23,15 @@
 
 namespace partition_alloc::internal {
 
-// TODO(thakis): Move this back to `NOINLINE static` once
-// https://llvm.org/PR54599 is fixed and the fix is rolled in.
-[[noreturn]] NOINLINE inline void FreelistCorruptionDetected(size_t extra) {
+namespace {
+
+[[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
   // Make it visible in minidumps.
   PA_DEBUG_DATA_ON_STACK("extra", extra);
   IMMEDIATE_CRASH();
 }
+
+}  // namespace
 
 class PartitionFreelistEntry;
 
