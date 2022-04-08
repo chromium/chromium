@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 import archive
@@ -53,14 +54,24 @@ class _Class:
 def _DisassembleApk(mapping, apk_path):
   r8_path = path_util.GetR8Path()
   r8_output = None
-  cmd = [
-      'java', '-cp', r8_path, 'com.android.tools.r8.Disassemble', '--pg-map',
-      mapping, apk_path
-  ]
-  try:
-    r8_output = subprocess.check_output(cmd, encoding='utf8')
-  except subprocess.CalledProcessError:
-    logging.debug('Running R8 failed on APK: %s', apk_path)
+  # Temporary hack until next R8 roll:
+  # Prevents R8 failing due to assets/webapk7.dex.
+  with tempfile.NamedTemporaryFile(mode='wb', suffix='.apk') as tmp_file:
+    with zipfile.ZipFile(tmp_file, 'w') as dst_zip:
+      with zipfile.ZipFile(apk_path) as src_zip:
+        for info in src_zip.infolist():
+          if info.filename.startswith('classes'):
+            dst_zip.writestr(info, src_zip.read(info))
+    tmp_file.flush()
+
+    cmd = [
+        'java', '-cp', r8_path, 'com.android.tools.r8.Disassemble', '--pg-map',
+        mapping, tmp_file.name
+    ]
+    try:
+      r8_output = subprocess.check_output(cmd, encoding='utf8')
+    except subprocess.CalledProcessError:
+      logging.debug('Running R8 failed on APK: %s', apk_path)
 
   return r8_output
 
