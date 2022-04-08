@@ -98,8 +98,11 @@ ipcz_source_set("util") {
 
   public = [
     "util/log.h",
+    "util/ref_counted.h",
     "util/stack_trace.h",
   ]
+
+  sources = [ "util/ref_counted.cc" ]
 
   deps = [ "//third_party/abseil-cpp:absl" ]
   configs = [ ":ipcz_include_src_dir" ]
@@ -112,7 +115,10 @@ config("ipcz_include_src_dir") {
 ipcz_source_set("ipcz_tests_sources") {
   testonly = true
 
-  sources = [ "util/stack_trace_test.cc" ]
+  sources = [
+    "util/ref_counted_test.cc",
+    "util/stack_trace_test.cc",
+  ]
 
   deps = [
     "//testing/gtest",
