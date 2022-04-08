@@ -18,7 +18,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "console_js";
+const char kScriptName[] = "console";
 
 const char kConsoleScriptHandlerName[] = "ConsoleMessageHandler";
 

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("java_script_console") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -27,10 +27,10 @@ source_set("java_script_console") {
   frameworks = [ "Foundation.framework" ]
 }
 
-js_compile_bundle("console_js") {
+optimize_js("console_js") {
   visibility = [ ":java_script_console" ]
-  closure_entry_point = "__crWeb.console"
 
+  primary_script = "resources/console.js"
   sources = [ "resources/console.js" ]
 }
 
