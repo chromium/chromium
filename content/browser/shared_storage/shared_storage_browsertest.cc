@@ -24,6 +24,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -40,6 +41,7 @@ net::Error InvalidUrnError() {
   return blink::features::IsFencedFramesShadowDOMBased() ? net::ERR_ABORTED
                                                          : net::ERR_INVALID_URL;
 }
+
 }  // namespace
 
 class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
@@ -306,6 +308,37 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
         GURL(urn_uuid)));
 
     return metadata_1st_retrieval;
+  }
+
+  void ExecuteScriptInWorklet(const ToRenderFrameHost& execution_target,
+                              const std::string& script) {
+    base::StringPairs run_function_body_replacement;
+    run_function_body_replacement.push_back(
+        std::make_pair("{{RUN_FUNCTION_BODY}}", script));
+
+    std::string host =
+        execution_target.render_frame_host()->GetLastCommittedOrigin().host();
+
+    GURL module_script_url = https_server()->GetURL(
+        host, net::test_server::GetFilePathWithReplacements(
+                  "/shared_storage/customizable_module.js",
+                  run_function_body_replacement));
+
+    EXPECT_TRUE(ExecJs(
+        execution_target,
+        JsReplace("sharedStorage.worklet.addModule($1)", module_script_url)));
+
+    EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+    EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+    EXPECT_TRUE(ExecJs(execution_target, R"(
+        sharedStorage.runOperation('test-operation');
+      )"));
+
+    // There are 2 "worklet operations": addModule and runOperation.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponsesCount(2);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -1523,6 +1556,255 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("b.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+
+      sharedStorage.set('key1', 'value1');
+      sharedStorage.set('key1', 'value111');
+
+      sharedStorage.set('key2', 'value2');
+      sharedStorage.set('key2', 'value222', {ignoreIfPresent: true});
+
+      sharedStorage.set('key3', 'value3');
+      sharedStorage.append('key3', 'value333');
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('key0'));
+      console.log(await sharedStorage.get('key1'));
+      console.log(await sharedStorage.get('key2'));
+      console.log(await sharedStorage.get('key3'));
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value111",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("value2",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("value3value333",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("4", base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.delete('key0');
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+      console.log(await sharedStorage.get('key0'));
+
+      // This won't be executed due to the error in the last get().
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[0].log_level);
+  EXPECT_EQ("sharedStorage.get() failed",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[1].log_level);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInDocument) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.clear();
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+
+      sharedStorage.set('key1', 'value1');
+      sharedStorage.set('key1', 'value111');
+
+      sharedStorage.set('key2', 'value2');
+      sharedStorage.set('key2', 'value222', {ignoreIfPresent: true});
+
+      sharedStorage.set('key3', 'value3');
+      sharedStorage.append('key3', 'value333');
+
+      console.log(await sharedStorage.get('key0'));
+      console.log(await sharedStorage.get('key1'));
+      console.log(await sharedStorage.get('key2'));
+      console.log(await sharedStorage.get('key3'));
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value111",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("value2",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("value3value333",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("4", base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+                       AppendOperationFailedInWorklet) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      await sharedStorage.set('key0', 'a'.repeat(1024));
+
+      // This will fail due to the would-be length being too big.
+      await sharedStorage.append('key0', 'a');
+    )");
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.append() failed",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[0].log_level);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      console.log(await sharedStorage.length());
+      console.log(await sharedStorage.get('key0'));
+
+      sharedStorage.delete('key0');
+
+      console.log(await sharedStorage.length());
+      console.log(await sharedStorage.get('key0'));
+
+      // This won't be executed due to the error in the last get().
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("sharedStorage.get() failed",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[0].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[1].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[2].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[3].log_level);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      console.log(await sharedStorage.length());
+      console.log(await sharedStorage.get('key0'));
+
+      sharedStorage.clear();
+
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[2].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+                       AccessStorageInSameOriginDocument) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+    )"));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.test", "/title1.html")));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+                       AccessStorageInDifferentOriginDocument) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+    )"));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+    )");
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
 }
 
 }  // namespace content

@@ -11,6 +11,10 @@
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
+namespace storage {
+class SharedStorageManager;
+}
+
 namespace content {
 
 class RenderFrameHost;
@@ -39,6 +43,13 @@ class SharedStorageDocumentServiceImpl final
       const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data,
       RunURLSelectionOperationOnWorkletCallback callback) override;
+  void SharedStorageSet(const std::u16string& key,
+                        const std::u16string& value,
+                        bool ignore_if_present) override;
+  void SharedStorageAppend(const std::u16string& key,
+                           const std::u16string& value) override;
+  void SharedStorageDelete(const std::u16string& key) override;
+  void SharedStorageClear() override;
 
   base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
 
@@ -48,6 +59,8 @@ class SharedStorageDocumentServiceImpl final
   explicit SharedStorageDocumentServiceImpl(RenderFrameHost*);
 
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
+
+  storage::SharedStorageManager* GetSharedStorageManager();
 
   mojo::AssociatedReceiver<blink::mojom::SharedStorageDocumentService>
       receiver_{this};

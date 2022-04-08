@@ -4,6 +4,8 @@
 
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 
+#include "components/services/storage/shared_storage/shared_storage_database.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
@@ -76,6 +78,38 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
       name, urls, serialized_data, std::move(callback));
 }
 
+void SharedStorageDocumentServiceImpl::SharedStorageSet(
+    const std::u16string& key,
+    const std::u16string& value,
+    bool ignore_if_present) {
+  storage::SharedStorageDatabase::SetBehavior set_behavior =
+      ignore_if_present
+          ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
+          : storage::SharedStorageDatabase::SetBehavior::kDefault;
+
+  GetSharedStorageManager()->Set(render_frame_host().GetLastCommittedOrigin(),
+                                 key, value, base::DoNothing(), set_behavior);
+}
+
+void SharedStorageDocumentServiceImpl::SharedStorageAppend(
+    const std::u16string& key,
+    const std::u16string& value) {
+  GetSharedStorageManager()->Append(
+      render_frame_host().GetLastCommittedOrigin(), key, value,
+      base::DoNothing());
+}
+
+void SharedStorageDocumentServiceImpl::SharedStorageDelete(
+    const std::u16string& key) {
+  GetSharedStorageManager()->Delete(
+      render_frame_host().GetLastCommittedOrigin(), key, base::DoNothing());
+}
+
+void SharedStorageDocumentServiceImpl::SharedStorageClear() {
+  GetSharedStorageManager()->Clear(render_frame_host().GetLastCommittedOrigin(),
+                                   base::DoNothing());
+}
+
 base::WeakPtr<SharedStorageDocumentServiceImpl>
 SharedStorageDocumentServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -91,6 +125,21 @@ SharedStorageDocumentServiceImpl::GetSharedStorageWorkletHost() {
              render_frame_host().GetProcess()->GetStoragePartition())
       ->GetSharedStorageWorkletHostManager()
       ->GetOrCreateSharedStorageWorkletHost(this);
+}
+
+storage::SharedStorageManager*
+SharedStorageDocumentServiceImpl::GetSharedStorageManager() {
+  storage::SharedStorageManager* shared_storage_manager =
+      static_cast<StoragePartitionImpl*>(
+          render_frame_host().GetProcess()->GetStoragePartition())
+          ->GetSharedStorageManager();
+
+  // This `SharedStorageDocumentServiceImpl` is created only if
+  // `kSharedStorageAPI` is enabled, in which case the `shared_storage_manager`
+  // must be valid.
+  DCHECK(shared_storage_manager);
+
+  return shared_storage_manager;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(SharedStorageDocumentServiceImpl);

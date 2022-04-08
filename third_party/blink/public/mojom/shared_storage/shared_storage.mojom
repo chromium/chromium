@@ -60,4 +60,22 @@ interface SharedStorageDocumentService {
                                     array<url.mojom.Url> urls,
                                     array<uint8> serialized_data)
     => (bool success, string error_message, url.mojom.Url opaque_url);
+
+  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
+  // `ignore_if_present` is true, the entry is not updated if `key` already
+  // exists.
+  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
+                   blink.mojom.SharedStorageValueArgument value,
+                   bool ignore_if_present);
+
+  // Handle sharedStorage.append(): append `value` to the entry for `key`.
+  // Equivalent to "set" if the `key` is not present.
+  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
+                      blink.mojom.SharedStorageValueArgument value);
+
+  // Handle sharedStorage.delete(): delete the entry at the given `key`.
+  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key);
+
+  // Handle sharedStorage.clear(): delete all entries.
+  SharedStorageClear();
 };

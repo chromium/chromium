@@ -123,8 +123,13 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
     return promise;
   }
 
-  // TODO: handle the operation
   resolver->Resolve();
+
+  bool ignore_if_present =
+      options->hasIgnoreIfPresent() && options->ignoreIfPresent();
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageSet(key, value, ignore_if_present);
+
   return promise;
 }
 
@@ -153,8 +158,11 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
     return promise;
   }
 
-  // TODO: handle the operation
   resolver->Resolve();
+
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageAppend(key, value);
+
   return promise;
 }
 
@@ -175,8 +183,10 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
     return promise;
   }
 
-  // TODO: handle the operation
   resolver->Resolve();
+
+  GetSharedStorageDocumentService(execution_context)->SharedStorageDelete(key);
+
   return promise;
 }
 
@@ -189,8 +199,10 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // TODO: handle the operation
   resolver->Resolve();
+
+  GetSharedStorageDocumentService(execution_context)->SharedStorageClear();
+
   return promise;
 }
 

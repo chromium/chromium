@@ -13,6 +13,10 @@
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
+namespace storage {
+class SharedStorageManager;
+}
+
 namespace content {
 
 class SharedStorageDocumentServiceImpl;
@@ -161,6 +165,11 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Note that this `SharedStorageWorkletHost` may outlive the `page_` due to
   // its keep-alive.
   base::WeakPtr<PageImpl> page_;
+
+  // Both `this` and `shared_storage_manager_` live in the `StoragePartition`.
+  // `shared_storage_manager_` almost always outlives `this` (thus is valid)
+  // except for inside `~SharedStorageWorkletHost()`.
+  storage::SharedStorageManager* shared_storage_manager_;
 
   // The shared storage owner document's origin.
   url::Origin shared_storage_origin_;
