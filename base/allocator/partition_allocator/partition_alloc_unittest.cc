@@ -2221,7 +2221,7 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
 TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension is correctly
   // protecting freed pointers. Writes to a freed pointer should cause a crash.
-  CPU cpu;
+  base::CPU cpu;
   if (!cpu.has_mte()) {
     // This test won't pass on non-MTE systems.
     GTEST_SKIP();
@@ -2255,7 +2255,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
 TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
-  CPU cpu;
+  base::CPU cpu;
   void* data = allocator.root()->Alloc(100, "");
   allocator.root()->Free(data);
 
@@ -2266,7 +2266,7 @@ TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
 }
 
 TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
-  CPU cpu;
+  base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** fake_freelist_entry =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
@@ -2290,7 +2290,7 @@ TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
 // With DCHECK_IS_ON(), cookie already handles off-by-one detection.
 #if !DCHECK_IS_ON()
 TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
-  CPU cpu;
+  base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   char* array = static_cast<char*>(allocator.root()->Alloc(alloc_size, ""));
   if (cpu.has_mte()) {
@@ -2313,7 +2313,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
 }
 
 TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
-  CPU cpu;
+  base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** array = static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
   char valid;
