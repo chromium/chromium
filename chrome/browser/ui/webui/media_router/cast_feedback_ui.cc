@@ -46,7 +46,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"additionalComments", IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS},
-      {"additionalComments", IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS},
+      {"allowContactByEmail", IDS_MEDIA_ROUTER_FEEDBACK_ALLOW_CONTACT_BY_EMAIL},
       {"audioAcceptable", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_ACCEPTABLE},
       {"audioGood", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_GOOD},
       {"audioPerfect", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_PERFECT},
@@ -105,6 +105,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       {"videoUnwatchable", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_UNWATCHABLE},
       {"yes", IDS_MEDIA_ROUTER_FEEDBACK_YES},
       {"yourAnswer", IDS_MEDIA_ROUTER_FEEDBACK_YOUR_ANSWER},
+      {"yourEmailAddress", IDS_MEDIA_ROUTER_FEEDBACK_YOUR_EMAIL_ADDRESS},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString(

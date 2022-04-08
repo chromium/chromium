@@ -205,6 +205,12 @@ video files, instead of all files.">
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS" desc="Text for field in feedback form for other comments.">
     Additional comments:
   </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_ALLOW_CONTACT_BY_EMAIL" desc="Label for a checkbox in a form indicating whether the user is permitting Google to contact them by email.">
+    We may email you for more information or updates
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_YOUR_EMAIL_ADDRESS" desc="Default text shown in a text input box for the user to enter their email address.">
+    Your email address
+  </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD" desc="Text for the email field in the feedback form.">
     Email (optional):
   </message>

@@ -22,6 +22,10 @@
   line-height: 13px;
 }
 
+#allow-contact-by-email {
+  padding: 10px 0;
+}
+
 #feedback-confirmation {
   width: initial;
 }
@@ -103,7 +107,7 @@ pre {
   color: var(--google-red-500);
 }
 
-.send-logs {
+.checkbox-label {
   font-size: 15px;
 }
 
@@ -331,13 +335,21 @@ pre {
     </template>
     <div class="question">
       <div class="h2">$i18n{emailField}</div>
-      <cr-input placeholder="$i18n{yourAnswer}"
+      <cr-checkbox checked="{{allowContactByEmail_}}"
+                   aria-description="$i18n{allowContactByEmail}"
+                   id="allow-contact-by-email">
+        <span class="checkbox-label">
+          $i18n{allowContactByEmail}
+        </span>
+      </cr-checkbox>
+      <cr-input placeholder="$i18n{yourEmailAddress}"
                 value="{{userEmail_}}"
-                type="text">
+                type="text"
+                disabled="[[!allowContactByEmail_]]">
       </cr-input>
       <cr-checkbox checked="{{attachLogs_}}"
                    aria-description="$i18n{sendLogs}">
-        <span class="send-logs">
+        <span class="checkbox-label" id="send-logs">
           $i18nRaw{sendLogsHtml}
         </span>
       </cr-checkbox>

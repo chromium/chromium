@@ -116,6 +116,12 @@ export class FeedbackUiElement extends PolymerElement {
   static get properties() {
     return {
       /** @private */
+      allowContactByEmail_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       attachLogs_: {
         type: Boolean,
         value: true,
@@ -205,7 +211,7 @@ export class FeedbackUiElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.shadowRoot.querySelector('.send-logs a')
+    this.shadowRoot.querySelector('#send-logs a')
         .addEventListener('click', event => {
           event.preventDefault();
           this.logsDialog_.showModal();
@@ -287,7 +293,7 @@ export class FeedbackUiElement extends PolymerElement {
     const feedback = {
       productId: 85561,
       description: parts.join('\n'),
-      email: this.userEmail_,
+      email: this.allowContactByEmail_ ? this.userEmail_ : '',
       flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
       categoryTag: this.categoryTag_,
       systemInformation: this.getProductSpecificData_(),
@@ -368,12 +374,17 @@ export class FeedbackUiElement extends PolymerElement {
 
   /** @private */
   getProductSpecificData_() {
-    const data = [{
-      key: 'global_media_controls_cast_start_stop',
-      value: loadTimeData.getBoolean('globalMediaControlsCastStartStop') ?
-          'true' :
-          'false',
-    }];
+    const data = [
+      {
+        key: 'global_media_controls_cast_start_stop',
+        value: String(
+            !!loadTimeData.getBoolean('globalMediaControlsCastStartStop')),
+      },
+      {
+        key: 'feedbackUserCtlConsent',
+        value: String(!!this.allowContactByEmail_),
+      }
+    ];
     return data;
   }
 
