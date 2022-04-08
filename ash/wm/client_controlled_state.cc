@@ -324,7 +324,8 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
         window_state->set_snap_action_source(
             WindowSnapActionSource::kSnapByWindowStateRestore);
       }
-      window_state->RecordAndResetWindowSnapActionSource();
+      window_state->RecordAndResetWindowSnapActionSource(
+          window_state->GetStateType(), next_state_type);
 
       // Get the desired window bounds for the snap state.
       gfx::Rect bounds =

@@ -370,7 +370,8 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
       window_state->set_snap_action_source(
           WindowSnapActionSource::kSnapByWindowStateRestore);
     }
-    window_state->RecordAndResetWindowSnapActionSource();
+    window_state->RecordAndResetWindowSnapActionSource(current_state_type,
+                                                       next_state_type);
   }
 
   EnterToNextState(window_state, next_state_type);

@@ -1207,7 +1207,13 @@ bool WindowState::CanUnresizableSnapOnDisplay(display::Display display) const {
   return true;
 }
 
-void WindowState::RecordAndResetWindowSnapActionSource() {
+void WindowState::RecordAndResetWindowSnapActionSource(
+    chromeos::WindowStateType current_type,
+    chromeos::WindowStateType new_type) {
+  // Do not record the metrics if the window state snap type does not change.
+  if (current_type == new_type)
+    return;
+
   base::UmaHistogramEnumeration(kWindowSnapActionSourceHistogram,
                                 snap_action_source_);
   snap_action_source_ = WindowSnapActionSource::kOthers;

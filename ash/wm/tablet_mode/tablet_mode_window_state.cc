@@ -541,7 +541,6 @@ void TabletModeWindowState::CycleTabletSnap(
   }
   // If |window| can snap in split view, then snap |window| in |snap_position|.
   if (split_view_controller->CanSnapWindow(window)) {
-    window_state->RecordAndResetWindowSnapActionSource();
     split_view_controller->SnapWindow(window, snap_position);
     window_state->ReadOutWindowCycleSnapAction(
         snap_position == SplitViewController::LEFT
@@ -566,17 +565,18 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
   }
 
   window_state->set_bounds_changed_by_user(true);
-  window_state->RecordAndResetWindowSnapActionSource();
+  chromeos::WindowStateType new_state_type =
+      snap_event_type == WM_EVENT_SNAP_PRIMARY
+          ? WindowStateType::kPrimarySnapped
+          : WindowStateType::kSecondarySnapped;
+  window_state->RecordAndResetWindowSnapActionSource(
+      window_state->GetStateType(), new_state_type);
 
   // A snap WMEvent will put the window in tablet split view.
   split_view_controller->OnWindowSnapWMEvent(window, snap_event_type);
 
   // Change window state and bounds to the snapped window state and bounds.
-  UpdateWindow(window_state,
-               snap_event_type == WM_EVENT_SNAP_PRIMARY
-                   ? WindowStateType::kPrimarySnapped
-                   : WindowStateType::kSecondarySnapped,
-               /*animated=*/false);
+  UpdateWindow(window_state, new_state_type, /*animated=*/false);
 }
 
 }  // namespace ash

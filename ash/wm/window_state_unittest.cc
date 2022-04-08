@@ -11,12 +11,15 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state_util.h"
@@ -1330,6 +1333,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kDragWindowToEdgeToSnap,
                                1);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
   window_state->Maximize();
 
   // Use keyboard to snap a window.
@@ -1338,6 +1343,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                1);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
   window_state->Maximize();
 
   // Restore the maximized window to snap window state.
@@ -1345,6 +1352,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   histograms.ExpectBucketCount(
       kWindowSnapActionSourceHistogram,
       WindowSnapActionSource::kSnapByWindowStateRestore, 1);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
   window_state->Maximize();
 
   // Drag or select overview window to snap window.
@@ -1361,6 +1370,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   histograms.ExpectBucketCount(
       kWindowSnapActionSourceHistogram,
       WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap, 1);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
   window_state->Maximize();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -1372,11 +1383,34 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                2);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
 
   // Auto-snap in splitview.
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kAutoSnapBySplitview, 1);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
+
+  // Resize in splitview.
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  auto* split_view_divider = split_view_controller->split_view_divider();
+  gfx::Rect divider_bounds =
+      split_view_divider->GetDividerBoundsInScreen(false);
+  split_view_controller->StartResize(divider_bounds.CenterPoint());
+  gfx::Rect display_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window.get());
+  gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
+  split_view_controller->Resize(resize_point);
+  // This should not cause any metrics change.
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
+  split_view_controller->EndResize(resize_point);
+  histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
+                               WindowSnapActionSource::kOthers, 1);
 }
 
 // Test WindowStateTest functionalities with portrait display. This test is

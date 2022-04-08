@@ -519,7 +519,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   bool CanUnresizableSnapOnDisplay(display::Display display) const;
 
-  void RecordAndResetWindowSnapActionSource();
+  void RecordAndResetWindowSnapActionSource(
+      chromeos::WindowStateType current_type,
+      chromeos::WindowStateType new_type);
 
   // Read out the window cycle snap action through ChromeVox. It can be snap a
   // window to the left, right or unsnapped window. `message_id` provides the
