@@ -134,61 +134,6 @@ std::string GetTraceString() {
   return FormatStackTrace(addresses, 1024);
 }
 
-//! \brief Helper class to own the complex types used by the Objective-C
-//!     exception preprocessor.
-class ExceptionPreprocessorState {
- public:
-  ExceptionPreprocessorState(const ExceptionPreprocessorState&) = delete;
-  ExceptionPreprocessorState& operator=(const ExceptionPreprocessorState&) =
-      delete;
-
-  static ExceptionPreprocessorState* Get() {
-    static ExceptionPreprocessorState* instance = []() {
-      return new ExceptionPreprocessorState();
-    }();
-    return instance;
-  }
-
-  // Inform the delegate of the uncaught exception and remove the global
-  // uncaught exception handler so we don't record this twice.
-  void HandleUncaughtException(NativeCPUContext* cpu_context) {
-    exception_delegate_->HandleUncaughtNSExceptionWithContext(cpu_context);
-
-    NSSetUncaughtExceptionHandler(next_uncaught_exception_handler_);
-    next_uncaught_exception_handler_ = nullptr;
-  }
-
-  id MaybeCallNextPreprocessor(id exception) {
-    return next_preprocessor_ ? next_preprocessor_(exception) : exception;
-  }
-
-  // Register the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
-  void Install(ObjcExceptionDelegate* delegate);
-
-  // Restore the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
-  void Uninstall();
-
-  NSException* last_exception() { return last_exception_; }
-  void set_last_exception(NSException* exception) {
-    [last_exception_ release];
-    last_exception_ = [exception retain];
-  }
-
-  ObjcExceptionDelegate* exception_delegate() { return exception_delegate_; }
-
- private:
-  ExceptionPreprocessorState() = default;
-  ~ExceptionPreprocessorState() = default;
-
-  // Recorded last NSException in case the exception is caught and thrown again
-  // (without using objc_exception_rethrow.)
-  NSException* last_exception_ = nil;
-
-  ObjcExceptionDelegate* exception_delegate_ = nullptr;
-  objc_exception_preprocessor next_preprocessor_ = nullptr;
-  NSUncaughtExceptionHandler* next_uncaught_exception_handler_ = nullptr;
-};
-
 static void SetNSExceptionAnnotations(NSException* exception,
                                       std::string& name,
                                       std::string& reason) {
@@ -219,29 +164,125 @@ static void SetNSExceptionAnnotations(NSException* exception,
   }
 }
 
-static void ObjcUncaughtExceptionHandler(NSException* exception) {
-  std::string name, reason;
-  SetNSExceptionAnnotations(exception, name, reason);
-  NSArray<NSNumber*>* addressArray = [exception callStackReturnAddresses];
+//! \brief Helper class to own the complex types used by the Objective-C
+//!     exception preprocessor.
+class ExceptionPreprocessorState {
+ public:
+  ExceptionPreprocessorState(const ExceptionPreprocessorState&) = delete;
+  ExceptionPreprocessorState& operator=(const ExceptionPreprocessorState&) =
+      delete;
 
-  ObjcExceptionDelegate* exception_delegate =
-      ExceptionPreprocessorState::Get()->exception_delegate();
-  if ([addressArray count] > 0) {
-    static StringAnnotation<256> nameKey("UncaughtNSException");
-    nameKey.Set("true");
-    std::vector<uint64_t> addresses;
-    for (NSNumber* address in addressArray)
-      addresses.push_back([address unsignedLongLongValue]);
-    exception_delegate->HandleUncaughtNSException(&addresses[0],
-                                                  addresses.size());
-  } else {
-    LOG(WARNING) << "Uncaught Objective-C exception name: " << name
-                 << " reason: " << reason << " with no "
-                 << " -callStackReturnAddresses.";
-    NativeCPUContext cpu_context;
-    CaptureContext(&cpu_context);
-    exception_delegate->HandleUncaughtNSExceptionWithContext(&cpu_context);
+  static ExceptionPreprocessorState* Get() {
+    static ExceptionPreprocessorState* instance = []() {
+      return new ExceptionPreprocessorState();
+    }();
+    return instance;
   }
+
+  // Writes an intermediate dumps to a temporary location to be used by the
+  // final UncaughtExceptionHandler and notifies the preprocessor chain.
+  id HandleUncaughtException(NativeCPUContext* cpu_context, id exception) {
+    // If this isn't the first time the preprocessor has detected an uncaught
+    // NSException, note this in the second intermediate dump.
+    objc_exception_preprocessor next_preprocessor = next_preprocessor_;
+    static bool handled_first_exception;
+    if (handled_first_exception) {
+      static StringAnnotation<5> name_key("MultipleHandledUncaughtNSException");
+      name_key.Set("true");
+
+      // Unregister so we stop getting in the way of the exception processor if
+      // we aren't correctly identifying sinkholes. The final uncaught exception
+      // handler is still active.
+      objc_setExceptionPreprocessor(next_preprocessor_);
+      next_preprocessor_ = nullptr;
+    }
+    handled_first_exception = true;
+
+    // Use tmp/ for this intermediate dump path. Normally these dumps are
+    // written to the "pending-serialized-ios-dump" folder and are eligable for
+    // the next pass to convert pending intermediate dumps to minidump files.
+    // Since this intermediate dump isn't eligable until the uncaught handler,
+    // use tmp/.
+    base::FilePath path(base::SysNSStringToUTF8([NSTemporaryDirectory()
+        stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]]));
+    exception_delegate_->HandleUncaughtNSExceptionWithContextAtPath(cpu_context,
+                                                                    path);
+    last_handled_intermediate_dump_ = path;
+
+    return next_preprocessor ? next_preprocessor(exception) : exception;
+  }
+
+  // If the PreprocessException already captured this exception via
+  // HANDLE_UNCAUGHT_NSEXCEPTION. Move last_handled_intermediate_dump_ to
+  // the pending intermediate dump directory and return true. Otherwise the
+  // preprocessor didn't catch anything, so pass the frames or just the context
+  // to the exception_delegate.
+  void FinalizeUncaughtNSException(id exception) {
+    if ([last_exception_ isEqual:exception] &&
+        !last_handled_intermediate_dump_.empty() &&
+        exception_delegate_->MoveIntermediateDumpAtPathToPending(
+            last_handled_intermediate_dump_)) {
+      last_handled_intermediate_dump_ = base::FilePath();
+      return;
+    }
+
+    std::string name, reason;
+    SetNSExceptionAnnotations(exception, name, reason);
+    NSArray<NSNumber*>* address_array = [exception callStackReturnAddresses];
+
+    if ([address_array count] > 0) {
+      static StringAnnotation<256> name_key("UncaughtNSException");
+      name_key.Set("true");
+      std::vector<uint64_t> addresses;
+      for (NSNumber* address in address_array)
+        addresses.push_back([address unsignedLongLongValue]);
+      exception_delegate_->HandleUncaughtNSException(&addresses[0],
+                                                     addresses.size());
+    } else {
+      LOG(WARNING) << "Uncaught Objective-C exception name: " << name
+                   << " reason: " << reason << " with no "
+                   << " -callStackReturnAddresses.";
+      NativeCPUContext cpu_context;
+      CaptureContext(&cpu_context);
+      exception_delegate_->HandleUncaughtNSExceptionWithContext(&cpu_context);
+    }
+  }
+
+  id MaybeCallNextPreprocessor(id exception) {
+    return next_preprocessor_ ? next_preprocessor_(exception) : exception;
+  }
+
+  // Register the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
+  void Install(ObjcExceptionDelegate* delegate);
+
+  // Restore the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
+  void Uninstall();
+
+  NSException* last_exception() { return last_exception_; }
+  void set_last_exception(NSException* exception) {
+    [last_exception_ release];
+    last_exception_ = [exception retain];
+  }
+
+ private:
+  ExceptionPreprocessorState() = default;
+  ~ExceptionPreprocessorState() = default;
+
+  // Location of the intermediate dump generated after an exception triggered
+  // HANDLE_UNCAUGHT_NSEXCEPTION.
+  base::FilePath last_handled_intermediate_dump_;
+
+  // Recorded last NSException in case the exception is caught and thrown again
+  // (without using objc_exception_rethrow.)
+  NSException* last_exception_ = nil;
+
+  ObjcExceptionDelegate* exception_delegate_ = nullptr;
+  objc_exception_preprocessor next_preprocessor_ = nullptr;
+  NSUncaughtExceptionHandler* next_uncaught_exception_handler_ = nullptr;
+};
+
+static void ObjcUncaughtExceptionHandler(NSException* exception) {
+  ExceptionPreprocessorState::Get()->FinalizeUncaughtNSException(exception);
 }
 
 // This function is used to make it clear to the crash processor that an
@@ -258,8 +299,7 @@ static __attribute__((noinline)) id HANDLE_UNCAUGHT_NSEXCEPTION(
 
   ExceptionPreprocessorState* preprocessor_state =
       ExceptionPreprocessorState::Get();
-  preprocessor_state->HandleUncaughtException(&cpu_context);
-  return preprocessor_state->MaybeCallNextPreprocessor(exception);
+  return preprocessor_state->HandleUncaughtException(&cpu_context, exception);
 }
 
 // Returns true if |path| equals |sinkhole| on device. Simulator paths prepend

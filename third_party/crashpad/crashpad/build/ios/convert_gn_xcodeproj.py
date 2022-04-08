@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2020 The Crashpad Authors. All rights reserved.
 #
@@ -26,14 +26,146 @@ import argparse
 import collections
 import copy
 import filecmp
-import json
+import functools
 import hashlib
+import json
 import os
 import re
 import shutil
+import string
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree
+
+
+LLDBINIT_PATH = '$(PROJECT_DIR)/.lldbinit'
+
+PYTHON_RE = re.compile('[ /]python[23]?$')
+
+XCTEST_PRODUCT_TYPES = frozenset((
+    'com.apple.product-type.bundle.unit-test',
+    'com.apple.product-type.bundle.ui-testing',
+))
+
+SCHEME_PRODUCT_TYPES = frozenset((
+    'com.apple.product-type.app-extension',
+    'com.apple.product-type.application',
+    'com.apple.product-type.framework'
+))
+
+
+class Template(string.Template):
+
+  """A subclass of string.Template that changes delimiter."""
+
+  delimiter = '@'
+
+
+@functools.lru_cache
+def LoadSchemeTemplate(root, name):
+  """Return a string.Template object for scheme file loaded relative to root."""
+  path = os.path.join(root, 'build', 'ios', name)
+  with open(path) as file:
+    return Template(file.read())
+
+
+def CreateIdentifier(str_id):
+  """Return a 24 characters string that can be used as an identifier."""
+  return hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
+
+
+def GenerateSchemeForTarget(root, project, old_project, name, path, tests):
+  """Generates the .xcsheme file for target named |name|.
+
+  The file is generated in the new project schemes directory from a template.
+  If there is an existing previous project, then the old scheme file is copied
+  and the lldbinit setting is set. If lldbinit setting is already correct, the
+  file is not modified, just copied.
+  """
+  project_name = os.path.basename(project)
+  relative_path = os.path.join('xcshareddata', 'xcschemes', name + '.xcscheme')
+  identifier = CreateIdentifier('%s %s' % (name, path))
+
+  scheme_path = os.path.join(project, relative_path)
+  if not os.path.isdir(os.path.dirname(scheme_path)):
+    os.makedirs(os.path.dirname(scheme_path))
+
+  old_scheme_path = os.path.join(old_project, relative_path)
+  if os.path.exists(old_scheme_path):
+    made_changes = False
+
+    tree = xml.etree.ElementTree.parse(old_scheme_path)
+    tree_root = tree.getroot()
+
+    for reference in tree_root.findall('.//BuildableReference'):
+      for (attr, value) in (
+          ('BuildableName', path),
+          ('BlueprintName', name),
+          ('BlueprintIdentifier', identifier)):
+        if reference.get(attr) != value:
+          reference.set(attr, value)
+          made_changes = True
+
+    for child in tree_root:
+      if child.tag not in ('TestAction', 'LaunchAction'):
+        continue
+
+      if child.get('customLLDBInitFile') != LLDBINIT_PATH:
+        child.set('customLLDBInitFile', LLDBINIT_PATH)
+        made_changes = True
+
+      # Override the list of testables.
+      if child.tag == 'TestAction':
+        for subchild in child:
+          if subchild.tag != 'Testables':
+            continue
+
+          for elt in list(subchild):
+            subchild.remove(elt)
+
+          if tests:
+            template = LoadSchemeTemplate(root, 'xcodescheme-testable.template')
+            for (key, test_path, test_name) in sorted(tests):
+              testable = ''.join(template.substitute(
+                  BLUEPRINT_IDENTIFIER=key,
+                  BUILDABLE_NAME=test_path,
+                  BLUEPRINT_NAME=test_name,
+                  PROJECT_NAME=project_name))
+
+              testable_elt = xml.etree.ElementTree.fromstring(testable)
+              subchild.append(testable_elt)
+
+    if made_changes:
+      tree.write(scheme_path, xml_declaration=True, encoding='UTF-8')
+
+    else:
+      shutil.copyfile(old_scheme_path, scheme_path)
+
+  else:
+
+    testables = ''
+    if tests:
+      template = LoadSchemeTemplate(root, 'xcodescheme-testable.template')
+      testables = '\n' + ''.join(
+          template.substitute(
+              BLUEPRINT_IDENTIFIER=key,
+              BUILDABLE_NAME=test_path,
+              BLUEPRINT_NAME=test_name,
+              PROJECT_NAME=project_name)
+          for (key, test_path, test_name) in sorted(tests)).rstrip()
+
+    template = LoadSchemeTemplate(root, 'xcodescheme.template')
+
+    with open(scheme_path, 'w') as scheme_file:
+      scheme_file.write(
+          template.substitute(
+              TESTABLES=testables,
+              LLDBINIT_PATH=LLDBINIT_PATH,
+              BLUEPRINT_IDENTIFIER=identifier,
+              BUILDABLE_NAME=path,
+              BLUEPRINT_NAME=name,
+              PROJECT_NAME=project_name))
 
 
 class XcodeProject(object):
@@ -46,13 +178,100 @@ class XcodeProject(object):
     while True:
       self.counter += 1
       str_id = "%s %s %d" % (parent_name, obj['isa'], self.counter)
-      new_id = hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
+      new_id = CreateIdentifier(str_id)
 
       # Make sure ID is unique. It's possible there could be an id conflict
       # since this is run after GN runs.
       if new_id not in self.objects:
         self.objects[new_id] = obj
         return new_id
+
+  def IterObjectsByIsa(self, isa):
+    """Iterates overs objects of the |isa| type."""
+    for key, obj in self.objects.items():
+      if obj['isa'] == isa:
+        yield (key, obj)
+
+  def IterNativeTargetByProductType(self, product_types):
+    """Iterates over PBXNativeTarget objects of any |product_types| types."""
+    for key, obj in self.IterObjectsByIsa('PBXNativeTarget'):
+      if obj['productType'] in product_types:
+        yield (key, obj)
+
+  def UpdateBuildScripts(self):
+    """Update build scripts to respect configuration and platforms."""
+    for key, obj in self.IterObjectsByIsa('PBXShellScriptBuildPhase'):
+
+      shell_path = obj['shellPath']
+      shell_code = obj['shellScript']
+      if shell_path.endswith('/sh'):
+        shell_code = shell_code.replace(
+            'ninja -C .',
+            'ninja -C "../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}"')
+      elif PYTHON_RE.search(shell_path):
+        shell_code = shell_code.replace(
+            '''ninja_params = [ '-C', '.' ]''',
+            '''ninja_params = [ '-C', '../' + os.environ['CONFIGURATION']'''
+            ''' + os.environ['EFFECTIVE_PLATFORM_NAME'] ]''')
+
+      # Replace the build script in the object.
+      obj['shellScript'] = shell_code
+
+
+  def UpdateBuildConfigurations(self, configurations):
+    """Add new configurations, using the first one as default."""
+
+    # Create a list with all the objects of interest. This is needed
+    # because objects will be added to/removed from the project upon
+    # iterating this list and python dictionaries cannot be mutated
+    # during iteration.
+    for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
+      # Use the first build configuration as template for creating all the
+      # new build configurations.
+      build_config_template = self.objects[obj['buildConfigurations'][0]]
+      build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
+          '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
+
+
+      # Remove the existing build configurations from the project before
+      # creating the new ones.
+      for build_config_id in obj['buildConfigurations']:
+        del self.objects[build_config_id]
+      obj['buildConfigurations'] = []
+
+      for configuration in configurations:
+        build_config = copy.copy(build_config_template)
+        build_config['name'] = configuration
+        build_config_id = self.AddObject('products', build_config)
+        obj['buildConfigurations'].append(build_config_id)
+
+  def GetHostMappingForXCTests(self):
+    """Returns a dict from targets to the list of their xctests modules."""
+    mapping = collections.defaultdict(list)
+    for key, obj in self.IterNativeTargetByProductType(XCTEST_PRODUCT_TYPES):
+      build_config_lists_id = obj['buildConfigurationList']
+      build_configs = self.objects[build_config_lists_id]['buildConfigurations']
+
+      # Use the first build configuration to get the name of the host target.
+      # This is arbitrary, but since the build configuration are all identical
+      # after UpdateBuildConfiguration, except for their 'name', it is fine.
+      build_config = self.objects[build_configs[0]]
+      if obj['productType'] == 'com.apple.product-type.bundle.unit-test':
+        # The test_host value will look like this:
+        # `$(BUILD_PRODUCTS_DIR)/host_app_name.app/host_app_name`
+        #
+        # Extract the `host_app_name.app` part as key for the output.
+        test_host_path = build_config['buildSettings']['TEST_HOST']
+        test_host_name = os.path.basename(os.path.dirname(test_host_path))
+      else:
+        test_host_name = build_config['buildSettings']['TEST_TARGET_NAME']
+
+      test_name = obj['name']
+      test_path = self.objects[obj['productReference']]['path']
+
+      mapping[test_host_name].append((key, test_name, test_path))
+
+    return dict(mapping)
 
 
 def check_output(command):
@@ -100,7 +319,7 @@ def WriteXcodeProject(output_path, json_string):
         os.path.join(output_path, 'project.pbxproj'))
 
 
-def UpdateXcodeProject(project_dir, configurations, root_dir):
+def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
   """Update inplace Xcode project to support multiple configurations.
 
   Args:
@@ -113,41 +332,25 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
   json_data = json.loads(LoadXcodeProjectAsJSON(project_dir))
   project = XcodeProject(json_data['objects'])
 
-  objects_to_remove = []
-  for value in list(project.objects.values()):
-    isa = value['isa']
+  project.UpdateBuildScripts()
+  project.UpdateBuildConfigurations(configurations)
 
-    # Teach build shell script to look for the configuration and platform.
-    if isa == 'PBXShellScriptBuildPhase':
-      shell_path = value['shellPath']
-      if shell_path.endswith('/sh'):
-        value['shellScript'] = value['shellScript'].replace(
-            'ninja -C .',
-            'ninja -C "../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}"')
-      elif re.search('[ /]python[23]?$', shell_path):
-        value['shellScript'] = value['shellScript'].replace(
-            'ninja_params = [ \'-C\', \'.\' ]',
-            'ninja_params = [ \'-C\', \'../\' + os.environ[\'CONFIGURATION\']'
-            ' + os.environ[\'EFFECTIVE_PLATFORM_NAME\'] ]')
+  mapping = project.GetHostMappingForXCTests()
 
-    # Add new configuration, using the first one as default.
-    if isa == 'XCConfigurationList':
-      value['defaultConfigurationName'] = configurations[0]
-      objects_to_remove.extend(value['buildConfigurations'])
+  # Generate schemes for application, extensions and framework targets
+  for key, obj in project.IterNativeTargetByProductType(SCHEME_PRODUCT_TYPES):
+    product = project.objects[obj['productReference']]
+    product_path = product['path']
 
-      build_config_template = project.objects[value['buildConfigurations'][0]]
-      build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
-          '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
+    # For XCTests, the key is the product path, while for XCUITests, the key
+    # is the target name. Use a sum of both possible keys (there should not
+    # be overlaps since different hosts are used for XCTests and XCUITests
+    # but this make the code simpler).
+    tests = mapping.get(product_path, []) + mapping.get(obj['name'], [])
+    GenerateSchemeForTarget(
+        root_dir, project_dir, old_project_dir,
+        obj['name'], product_path, tests)
 
-      value['buildConfigurations'] = []
-      for configuration in configurations:
-        new_build_config = copy.copy(build_config_template)
-        new_build_config['name'] = configuration
-        value['buildConfigurations'].append(
-            project.AddObject('products', new_build_config))
-
-  for object_id in objects_to_remove:
-    del project.objects[object_id]
 
   source = GetOrCreateRootGroup(project, json_data['rootObject'], 'Source')
   AddMarkdownToProject(project, root_dir, source)
@@ -274,7 +477,7 @@ def GetFolderForPath(project, group_object, path):
   return group_object
 
 
-def ConvertGnXcodeProject(root_dir, input_dir, output_dir, configurations):
+def ConvertGnXcodeProject(root_dir, proj_name, input_dir, output_dir, configs):
   '''Tweak the Xcode project generated by gn to support multiple configurations.
 
   The Xcode projects generated by "gn gen --ide" only supports a single
@@ -284,34 +487,22 @@ def ConvertGnXcodeProject(root_dir, input_dir, output_dir, configurations):
   to select them in Xcode).
 
   Args:
+    root_dir: directory that is the root of the project
+    proj_name: name of the Xcode project "file" (usually `all.xcodeproj`)
     input_dir: directory containing the XCode projects created by "gn gen --ide"
     output_dir: directory where the tweaked Xcode projects will be saved
-    configurations: list of string corresponding to the configurations that
-      need to be supported by the tweaked Xcode projects, must contains at
-      least one value.
+    configs: list of string corresponding to the configurations that need to be
+        supported by the tweaked Xcode projects, must contains at least one
+        value.
   '''
 
-  # Update the project (supports legacy name "products.xcodeproj" or the new
-  # project name "all.xcodeproj").
-  for project_name in ('all.xcodeproj', 'products.xcodeproj'):
-    if os.path.exists(os.path.join(input_dir, project_name)):
-      UpdateXcodeProject(
-          os.path.join(input_dir, project_name),
-          configurations, root_dir)
+  UpdateXcodeProject(
+      os.path.join(input_dir, proj_name),
+      os.path.join(output_dir, proj_name),
+      configs, root_dir)
 
-      CopyTreeIfChanged(os.path.join(input_dir, project_name),
-                        os.path.join(output_dir, project_name))
-
-    else:
-      shutil.rmtree(os.path.join(output_dir, project_name), ignore_errors=True)
-
-  # Copy all.xcworkspace if it exists (will be removed in a future gn version).
-  workspace_name = 'all.xcworkspace'
-  if os.path.exists(os.path.join(input_dir, workspace_name)):
-    CopyTreeIfChanged(os.path.join(input_dir, workspace_name),
-                      os.path.join(output_dir, workspace_name))
-  else:
-    shutil.rmtree(os.path.join(output_dir, workspace_name), ignore_errors=True)
+  CopyTreeIfChanged(os.path.join(input_dir, proj_name),
+                    os.path.join(output_dir, proj_name))
 
 
 def Main(args):
@@ -329,33 +520,30 @@ def Main(args):
   parser.add_argument(
       '--root', type=os.path.abspath, required=True,
       help='root directory of the project')
+  parser.add_argument(
+      '--project-name', default='all.xcodeproj', dest='proj_name',
+      help='name of the Xcode project (default: %(default)s)')
   args = parser.parse_args(args)
 
   if not os.path.isdir(args.input):
     sys.stderr.write('Input directory does not exists.\n')
     return 1
 
-  # Depending on the version of "gn", there should be either one project file
-  # named "all.xcodeproj" or a project file named "products.xcodeproj" and a
-  # workspace named "all.xcworkspace".
-  required_files_sets = [
-      set(("all.xcodeproj",)),
-      set(("products.xcodeproj", "all.xcworkspace")),
-  ]
-
-  for required_files in required_files_sets:
-    if required_files.issubset(os.listdir(args.input)):
-      break
-  else:
+  if args.proj_name not in os.listdir(args.input):
     sys.stderr.write(
-        'Input directory does not contain all necessary Xcode projects.\n')
+        'Input directory does not contain the Xcode project.\n')
     return 1
 
   if not args.configurations:
     sys.stderr.write('At least one configuration required, see --add-config.\n')
     return 1
 
-  ConvertGnXcodeProject(args.root, args.input, args.output, args.configurations)
+  ConvertGnXcodeProject(
+      args.root,
+      args.proj_name,
+      args.input,
+      args.output,
+      args.configurations)
 
 if __name__ == '__main__':
   sys.exit(Main(sys.argv[1:]))

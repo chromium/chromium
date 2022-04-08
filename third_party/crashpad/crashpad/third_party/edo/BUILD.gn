@@ -7,9 +7,7 @@ import("../../build/crashpad_buildconfig.gni")
 if (crashpad_is_in_chromium) {
   group("edo") {
     testonly = true
-    public_deps = [
-      "//ios/third_party/edo",
-    ]
+    public_deps = [ "//ios/third_party/edo" ]
   }
 } else {
   config("config") {
@@ -103,6 +101,8 @@ if (crashpad_is_in_chromium) {
       "edo/Service/Sources/EDORemoteException.m",
       "edo/Service/Sources/EDORemoteVariable.h",
       "edo/Service/Sources/EDORemoteVariable.m",
+      "edo/Service/Sources/EDORuntimeUtils.h",
+      "edo/Service/Sources/EDORuntimeUtils.m",
       "edo/Service/Sources/EDOServiceError.h",
       "edo/Service/Sources/EDOServiceError.m",
       "edo/Service/Sources/EDOServiceException.h",
@@ -139,8 +139,6 @@ if (crashpad_is_in_chromium) {
     ]
 
     public_configs = [ ":config" ]
-    deps = [
-      "../../build:ios_enable_arc",
-    ]
+    deps = [ "../../build:ios_enable_arc" ]
   }
 }

@@ -18,12 +18,14 @@
 #include <mach-o/dyld.h>
 #include <mach-o/dyld_images.h>
 #include <mach-o/nlist.h>
+#include <objc/objc-exception.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include <thread>
 #include <vector>
 
 #import "Service/Sources/EDOHostNamingService.h"
@@ -100,6 +102,17 @@ GetProcessSnapshotMinidumpFromSinglePending() {
     return nullptr;
   }
   return process_snapshot;
+}
+
+UIWindow* GetAnyWindow() {
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15.0, *)) {
+    UIWindowScene* scene = reinterpret_cast<UIWindowScene*>(
+        [UIApplication sharedApplication].connectedScenes.anyObject);
+    return scene.keyWindow;
+  }
+#endif
+  return [UIApplication sharedApplication].windows[0];
 }
 
 [[clang::optnone]] void recurse(int counter) {
@@ -311,6 +324,27 @@ GetProcessSnapshotMinidumpFromSinglePending() {
   });
 }
 
+- (void)crashUnhandledNSException {
+  std::thread t([self]() {
+    @autoreleasepool {
+      @try {
+        NSError* error = [NSError errorWithDomain:@"com.crashpad.xcuitests"
+                                             code:200
+                                         userInfo:@{@"Error Object" : self}];
+
+        [[NSException exceptionWithName:NSInternalInconsistencyException
+                                 reason:@"Intentionally throwing error."
+                               userInfo:@{NSUnderlyingErrorKey : error}] raise];
+      } @catch (id reason_exception) {
+        // Intentionally use throw here to intentionally make a sinkhole that
+        // will be missed by ObjcPreprocessor.
+        objc_exception_throw(reason_exception);
+      }
+    }
+  });
+  t.join();
+}
+
 - (void)crashUnrecognizedSelectorAfterDelay {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -332,7 +366,7 @@ GetProcessSnapshotMinidumpFromSinglePending() {
   // crash, so dispatch this out of the sinkhole.
   dispatch_async(dispatch_get_main_queue(), ^{
     UIView* unattachedView = [[UIView alloc] init];
-    UIWindow* window = [UIApplication sharedApplication].windows[0];
+    UIWindow* window = GetAnyWindow();
     [NSLayoutConstraint activateConstraints:@[
       [window.rootViewController.view.bottomAnchor
           constraintEqualToAnchor:unattachedView.bottomAnchor],

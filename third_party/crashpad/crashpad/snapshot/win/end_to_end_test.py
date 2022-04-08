@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2015 The Crashpad Authors. All rights reserved.
 #
@@ -14,13 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-
 import os
 import platform
 import pywintypes
 import random
 import re
+import struct
 import subprocess
 import sys
 import tempfile
@@ -104,7 +103,7 @@ def NamedPipeExistsAndReady(pipe_name):
     try:
         win32pipe.WaitNamedPipe(pipe_name, win32pipe.NMPWAIT_WAIT_FOREVER)
     except pywintypes.error as e:
-        if e[0] == winerror.ERROR_FILE_NOT_FOUND:
+        if e.winerror == winerror.ERROR_FILE_NOT_FOUND:
             return False
         raise
     return True
@@ -152,6 +151,14 @@ def GetDumpFromProgram(out_dir, pipe_name, executable_name, expect_exit_code,
             ] + list(args))
         print('Running %s' % os.path.basename(command[0]))
         exit_code = subprocess.call(command)
+
+        # Some win32con codes are negative signed integers, whereas all exit
+        # codes are unsigned integers. Convert from signed to unsigned.
+        if expect_exit_code < 0:
+            expect_exit_code = struct.unpack('I',
+                                             struct.pack('i',
+                                                         expect_exit_code))[0]
+
         if exit_code != expect_exit_code:
             raise subprocess.CalledProcessError(exit_code, executable_name)
 
@@ -160,7 +167,8 @@ def GetDumpFromProgram(out_dir, pipe_name, executable_name, expect_exit_code,
             '--database=' + test_database,
             '--show-pending-reports',
             '--show-all-report-info',
-        ])
+        ],
+                                      text=True)
         for line in out.splitlines():
             if line.strip().startswith('Path:'):
                 return line.partition(':')[2].strip()
@@ -205,7 +213,7 @@ class CdbRun(object):
         # Run a command line that loads the dump, runs the specified cdb
         # command, and then quits, and capturing stdout.
         self.out = subprocess.check_output(
-            [cdb_path, '-z', dump_path, '-c', command + ';q'])
+            [cdb_path, '-z', dump_path, '-c', command + ';q'], text=True)
 
     def Check(self, pattern, message, re_flags=0):
         match_obj = re.search(pattern, self.out, re_flags)

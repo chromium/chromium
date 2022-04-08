@@ -128,8 +128,8 @@ class CrashHandler : public Thread,
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
     base::FilePath path;
-    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(context,
-                                                                     &path)) {
+    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(
+            context, kMachExceptionSimulated, &path)) {
       return;
     }
 
@@ -140,8 +140,8 @@ class CrashHandler : public Thread,
 
   void DumpWithoutCrashAtPath(NativeCPUContext* context,
                               const base::FilePath& path) {
-    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(context,
-                                                                      path);
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
+        context, kMachExceptionSimulated, path);
   }
 
   void StartProcessingPendingReports() {
@@ -323,12 +323,33 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSExceptionWithContext(
       NativeCPUContext* context) override {
-    in_process_handler_.DumpExceptionFromNSExceptionWithContext(context);
+    base::FilePath path;
+    in_process_handler_.DumpExceptionFromSimulatedMachException(
+        context, kMachExceptionFromNSException, &path);
 
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
     // dump isn't generated.
     CHECK(Signals::InstallDefaultHandler(SIGABRT));
+  }
+
+  void HandleUncaughtNSExceptionWithContextAtPath(
+      NativeCPUContext* context,
+      const base::FilePath& path) override {
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
+        context, kMachExceptionFromNSException, path);
+  }
+
+  bool MoveIntermediateDumpAtPathToPending(
+      const base::FilePath& path) override {
+    if (in_process_handler_.MoveIntermediateDumpAtPathToPending(path)) {
+      // After uncaught exceptions are reported, the system immediately triggers
+      // a call to std::terminate()/abort(). Remove the abort handler so a
+      // second dump isn't generated.
+      CHECK(Signals::InstallDefaultHandler(SIGABRT));
+      return true;
+    }
+    return false;
   }
 
   // The signal handler installed at OS-level.

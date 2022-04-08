@@ -13,3 +13,4 @@
 # limitations under the License.
 
 buildconfig = "//build/BUILDCONFIG.gn"
+script_executable = "python3"

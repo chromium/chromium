@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python3
 
 # Copyright 2019 The Crashpad Authors. All rights reserved.
 #

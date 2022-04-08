@@ -73,6 +73,9 @@
 // Trigger a crash with an uncaught NSException.
 - (void)crashNSException;
 
+// Trigger a crash with an uncaught and unhandled NSException.
+- (void)crashUnhandledNSException;
+
 // Trigger an unrecognized selector after delay.
 - (void)crashUnrecognizedSelectorAfterDelay;
 

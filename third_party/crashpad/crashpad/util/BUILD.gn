@@ -589,7 +589,7 @@ crashpad_static_library("util") {
   ]
 
   if (crashpad_is_mac || crashpad_is_ios) {
-    include_dirs += [ "$root_build_dir/gen" ]
+    include_dirs += [ "$root_gen_dir" ]
     deps += [ ":mig_output" ]
   }
 

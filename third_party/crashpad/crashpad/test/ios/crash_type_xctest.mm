@@ -166,6 +166,22 @@
       isEqualToString:@"NSInternalInconsistencyException"]);
 }
 
+- (void)testUnhandledNSException {
+  [rootObject_ crashUnhandledNSException];
+  [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
+  NSDictionary* dict = [rootObject_ getAnnotations];
+  NSString* uncaught_flag =
+      [dict[@"objects"][0] valueForKeyPath:@"UncaughtNSException"];
+  XCTAssertTrue([uncaught_flag containsString:@"true"]);
+  NSString* userInfo =
+      [dict[@"objects"][1] valueForKeyPath:@"exceptionUserInfo"];
+  XCTAssertTrue([userInfo containsString:@"Error Object=<CPTestSharedObject"]);
+  XCTAssertTrue([[dict[@"objects"][2] valueForKeyPath:@"exceptionReason"]
+      isEqualToString:@"Intentionally throwing error."]);
+  XCTAssertTrue([[dict[@"objects"][3] valueForKeyPath:@"exceptionName"]
+      isEqualToString:@"NSInternalInconsistencyException"]);
+}
+
 - (void)testcrashUnrecognizedSelectorAfterDelay {
   [rootObject_ crashUnrecognizedSelectorAfterDelay];
   [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
