@@ -6,6 +6,8 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,6 +194,32 @@ TEST_F(MetadataUtilsTest, MetadataUmaFeatureValidation) {
   }
 }
 
+TEST_F(MetadataUtilsTest, MetadataSqlFeatureValidation) {
+  // Sql feature with no sql query string is invalid.
+  proto::SqlFeature sql_feature;
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureSqlQueryEmpty,
+            metadata_utils::ValidateMetadataSqlFeature(sql_feature));
+
+  sql_feature.set_sql("sql query");
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataSqlFeature(sql_feature));
+
+  // Sql feature with a bind value with no value is invalid.
+  auto* bind_value = sql_feature.add_bind_values();
+  bind_value->set_param_type(proto::SqlFeature::BindValue::BOOL);
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureBindValuesInvalid,
+            metadata_utils::ValidateMetadataSqlFeature(sql_feature));
+
+  bind_value->mutable_value();
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataSqlFeature(sql_feature));
+
+  // Sql feature with a bind value of type unknown is invalid.
+  bind_value->set_param_type(proto::SqlFeature::BindValue::UNKNOWN);
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureBindValuesInvalid,
+            metadata_utils::ValidateMetadataSqlFeature(sql_feature));
+}
+
 TEST_F(MetadataUtilsTest, MetadataCustomInputValidation) {
   // Empty custom input has tensor length of 0 and result in a valid input
   // tensor of length 0.
@@ -318,6 +346,33 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndInputFeatures) {
   feature3->set_tensor_length(2);
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureListInvalid,
             metadata_utils::ValidateMetadataAndFeatures(metadata));
+}
+
+TEST_F(MetadataUtilsTest, MetadataIndexedTensorsValidation) {
+  // Empty indexed tensors are valid.
+  QueryProcessor::IndexedTensors tensor;
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::kValidationSuccess,
+      metadata_utils::ValidateIndexedTensors(tensor, /* expected_size */ 0));
+
+  // Not continuously indexed tensors are invalid.
+  const std::vector<ProcessedValue> value;
+  tensor[0] = value;
+  tensor[1] = value;
+  tensor[3] = value;
+  EXPECT_EQ(metadata_utils::ValidationResult::kIndexedTensorsInvalid,
+            metadata_utils::ValidateIndexedTensors(
+                tensor, /*expected_size*/ tensor.size()));
+
+  tensor[2] = value;
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateIndexedTensors(
+                tensor, /*expected_size*/ tensor.size()));
+
+  // The tensor size should match the expected tensor size.
+  EXPECT_EQ(metadata_utils::ValidationResult::kIndexedTensorsInvalid,
+            metadata_utils::ValidateIndexedTensors(
+                tensor, /*expected_size*/ tensor.size() - 1));
 }
 
 TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {

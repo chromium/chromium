@@ -81409,6 +81409,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="VersionNotSupported"/>
   <int value="11" label="FeatureListInvalid"/>
   <int value="12" label="CustomInputInvalid"/>
+  <int value="13" label="FeatureSqlQueryEmpty"/>
+  <int value="14" label="FeatureBindValuesInvalid"/>
+  <int value="15" label="IndexedTensorsInvalid"/>
 </enum>
 
 <enum name="SegmentationSelectionFailureReason">

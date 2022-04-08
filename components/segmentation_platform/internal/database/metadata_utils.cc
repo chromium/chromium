@@ -48,12 +48,10 @@ uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
 
 std::string FeatureToString(const proto::UMAFeature& feature) {
   std::string result;
-  if (feature.has_type()) {
+  if (feature.has_type())
     result = "type:" + proto::SignalType_Name(feature.type()) + ", ";
-  }
-  if (feature.has_name()) {
+  if (feature.has_name())
     result.append("name:" + feature.name() + ", ");
-  }
   if (feature.has_name_hash()) {
     result.append(
         base::StringPrintf("name_hash:0x%" PRIx64 ", ", feature.name_hash()));
@@ -134,22 +132,37 @@ ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature) {
   return ValidationResult::kValidationSuccess;
 }
 
+ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature) {
+  if (feature.sql().empty())
+    return ValidationResult::kFeatureSqlQueryEmpty;
+
+  for (int i = 0; i < feature.bind_values_size(); ++i) {
+    const auto& bind_value = feature.bind_values(i);
+    if (!bind_value.has_value() ||
+        bind_value.param_type() == proto::SqlFeature::BindValue::UNKNOWN ||
+        ValidateMetadataCustomInput(bind_value.value()) !=
+            ValidationResult::kValidationSuccess) {
+      return ValidationResult::kFeatureBindValuesInvalid;
+    }
+  }
+
+  return ValidationResult::kValidationSuccess;
+}
+
 ValidationResult ValidateMetadataCustomInput(
     const proto::CustomInput& custom_input) {
   if (custom_input.fill_policy() == proto::CustomInput::UNKNOWN_FILL_POLICY) {
     // If the current fill policy is not supported or not filled, we must use
     // the given default value list, therefore the default value list must
     // provide enough input values as specified by tensor length.
-    if (custom_input.tensor_length() > custom_input.default_value_size()) {
+    if (custom_input.tensor_length() > custom_input.default_value_size())
       return ValidationResult::kCustomInputInvalid;
-    }
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::FILL_PREDICTION_TIME) {
     // Current time can only provide up to one input tensor value, so column
     // weight must not exceed 1.
-    if (custom_input.tensor_length() > 1) {
+    if (custom_input.tensor_length() > 1)
       return ValidationResult::kCustomInputInvalid;
-    }
   }
   return ValidationResult::kValidationSuccess;
 }
@@ -186,6 +199,18 @@ ValidationResult ValidateMetadataAndFeatures(
     }
   }
 
+  return ValidationResult::kValidationSuccess;
+}
+
+ValidationResult ValidateIndexedTensors(
+    const QueryProcessor::IndexedTensors& tensor,
+    size_t expected_size) {
+  if (tensor.size() != expected_size)
+    return ValidationResult::kIndexedTensorsInvalid;
+  for (size_t i = 0; i < tensor.size(); ++i) {
+    if (tensor.count(i) != 1)
+      return ValidationResult::kIndexedTensorsInvalid;
+  }
   return ValidationResult::kValidationSuccess;
 }
 
@@ -350,9 +375,8 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
   // Add training/inference inputs.
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
     auto feature = model_metadata.input_features(i);
-    if (feature.has_uma_feature()) {
+    if (feature.has_uma_feature())
       features.push_back(feature.uma_feature());
-    }
   }
 
   // Add training/inference outputs.

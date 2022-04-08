@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -34,7 +35,10 @@ enum class ValidationResult {
   kVersionNotSupported = 10,
   kFeatureListInvalid = 11,
   kCustomInputInvalid = 12,
-  kMaxValue = kCustomInputInvalid,
+  kFeatureSqlQueryEmpty = 13,
+  kFeatureBindValuesInvalid = 14,
+  kIndexedTensorsInvalid = 15,
+  kMaxValue = kIndexedTensorsInvalid,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -46,9 +50,13 @@ ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info);
 ValidationResult ValidateMetadata(
     const proto::SegmentationModelMetadata& model_metadata);
 
-// Whether the given feature metadata is valid to be used for the current
+// Whether the given UMA feature metadata is valid to be used for the current
 // segmentation platform.
 ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature);
+
+// Whether the given SQL feature metadata is valid to be used for the current
+// segmentation platform.
+ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature);
 
 // Whether the given custom input metadata is valid to be used for the current
 // segmentation platform.
@@ -59,6 +67,12 @@ ValidationResult ValidateMetadataCustomInput(
 // current segmentation platform.
 ValidationResult ValidateMetadataAndFeatures(
     const proto::SegmentationModelMetadata& model_metadata);
+
+// Whether the given indexed tensor is valid to be used for the current
+// segmentation platform.
+ValidationResult ValidateIndexedTensors(
+    const QueryProcessor::IndexedTensors& tensor,
+    size_t expected_size);
 
 // Whether the given SegmentInfo, metadata and feature metadata is valid to be
 // used for the current segmentation platform.

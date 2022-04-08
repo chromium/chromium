@@ -92,9 +92,10 @@ void FeatureListQueryProcessor::ProcessNextInputFeature(
     processor = std::make_unique<CustomInputProcessor>(
         std::move(queries), feature_processor_state->prediction_time());
   } else if (input_feature.has_sql_feature()) {
-    std::map<QueryProcessor::FeatureIndex, proto::SqlFeature> queries = {
+    SqlFeatureProcessor::QueryList queries = {
         {kIndexNotUsed, input_feature.sql_feature()}};
-    processor = std::make_unique<SqlFeatureProcessor>(queries);
+    processor = std::make_unique<SqlFeatureProcessor>(
+        std::move(queries), feature_processor_state->prediction_time());
   }
 
   auto* processor_ptr = processor.get();
