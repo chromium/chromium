@@ -48,7 +48,6 @@ class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
   bool IsEasyUnlockEnabledStateSet() const override;
   bool IsChromeOSLoginAllowed() const override;
   bool IsChromeOSLoginEnabled() const override;
-  bool IsSmartLockEligible() const override;
 
  private:
   // ProximityAuthPrefManager:

@@ -17,10 +17,6 @@ const char kEasyUnlockEnabledStateSet[] = "easy_unlock.enabled_state_set";
 // their profile's Easy Unlock preferences.
 const char kEasyUnlockLocalStateUserPrefs[] = "easy_unlock.user_prefs";
 
-// Eligibility preference needed for the Standard Feature Usage Logging (SFUL)
-// framework when using Smart Lock to sign in.
-const char kSmartLockEligiblePrefName[] = "smart_lock.eligible";
-
 // The timestamp of the last promotion check in milliseconds.
 const char kProximityAuthLastPromotionCheckTimestampMs[] =
     "proximity_auth.last_promotion_check_timestamp_ms";

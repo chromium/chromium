@@ -39,10 +39,6 @@ class ProximityAuthPrefManager {
   virtual void SetEasyUnlockEnabledStateSet() const = 0;
   virtual bool IsEasyUnlockEnabledStateSet() const = 0;
 
-  // Returns true if SmartLock is eligible, which is required for use within the
-  // Standard Feature Usage Logging (SFUL) framework.
-  virtual bool IsSmartLockEligible() const = 0;
-
   // Setter and getter for the timestamp of the last time the promotion was
   // shown to the user.
   virtual void SetLastPromotionCheckTimestampMs(int64_t timestamp_ms) = 0;

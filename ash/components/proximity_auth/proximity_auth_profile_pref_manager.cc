@@ -17,10 +17,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace proximity_auth {
-namespace {
-using ::ash::multidevice_setup::mojom::Feature;
-using ::ash::multidevice_setup::mojom::FeatureState;
-}  // namespace
 
 ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(
     PrefService* pref_service,
@@ -86,8 +82,6 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
                              IsEasyUnlockAllowed());
   user_prefs_dict.SetBoolKey(ash::multidevice_setup::kSmartLockEnabledPrefName,
                              IsEasyUnlockEnabled());
-  user_prefs_dict.SetBoolKey(prefs::kSmartLockEligiblePrefName,
-                             IsSmartLockEligible());
   user_prefs_dict.SetBoolKey(
       ash::multidevice_setup::kSmartLockSigninAllowedPrefName,
       IsChromeOSLoginAllowed());
@@ -124,36 +118,9 @@ bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
   // Note: if GetFeatureState() is called in the first few hundred milliseconds
   // of user session startup, it can incorrectly return a feature-default state
   // of kProhibitedByPolicy. See https://crbug.com/1154766 for more.
-  return multidevice_setup_client_->GetFeatureState(Feature::kSmartLock) ==
-         FeatureState::kEnabledByUser;
-}
-
-bool ProximityAuthProfilePrefManager::IsSmartLockEligible() const {
-  switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
-    case FeatureState::kUnavailableNoVerifiedHost:
-      [[fallthrough]];
-    case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
-      [[fallthrough]];
-    case FeatureState::kNotSupportedByChromebook:
-      [[fallthrough]];
-    case FeatureState::kNotSupportedByPhone:
-      return false;
-
-    case FeatureState::kProhibitedByPolicy:
-      [[fallthrough]];
-    case FeatureState::kDisabledByUser:
-      [[fallthrough]];
-    case FeatureState::kEnabledByUser:
-      [[fallthrough]];
-    case FeatureState::kUnavailableInsufficientSecurity:
-      [[fallthrough]];
-    case FeatureState::kUnavailableSuiteDisabled:
-      [[fallthrough]];
-    case FeatureState::kFurtherSetupRequired:
-      [[fallthrough]];
-    case FeatureState::kUnavailableTopLevelFeatureDisabled:
-      return true;
-  }
+  return multidevice_setup_client_->GetFeatureState(
+             ash::multidevice_setup::mojom::Feature::kSmartLock) ==
+         ash::multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
 void ProximityAuthProfilePrefManager::SetEasyUnlockEnabledStateSet() const {

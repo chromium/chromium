@@ -58,7 +58,6 @@ class ProximityAuthProfilePrefManager
   bool IsEasyUnlockEnabled() const override;
   void SetEasyUnlockEnabledStateSet() const override;
   bool IsEasyUnlockEnabledStateSet() const override;
-  bool IsSmartLockEligible() const override;
   void SetLastPromotionCheckTimestampMs(int64_t timestamp_ms) override;
   int64_t GetLastPromotionCheckTimestampMs() const override;
   void SetPromotionShownCount(int count) override;
