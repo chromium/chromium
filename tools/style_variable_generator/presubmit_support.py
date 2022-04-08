@@ -25,6 +25,8 @@ def RunGit(command):
 
 
 def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
+    # TODO(1312192): reenable after fixing presubmit exceptions
+    return []
     files = input_api.AffectedFiles(
         file_filter=lambda f: input_api.FilterSourceFile(
             f, files_to_check=input_file_filter))
