@@ -12,4 +12,4 @@
 // TODO(crbug.com/1282233): Remove this flag once we're confident this
 // doesn't break customers.
 extern const base::Feature kBrowserSwitcherNoneIsGreylist{
-    "BrowserSwitcherNoneIsGreylist", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BrowserSwitcherNoneIsGreylist", base::FEATURE_ENABLED_BY_DEFAULT};
