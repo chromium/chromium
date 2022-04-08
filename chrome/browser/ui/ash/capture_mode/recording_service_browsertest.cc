@@ -262,8 +262,17 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path);
 }
 
+// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RecordingServiceClientEndpointDropped \
+  DISABLED_RecordingServiceClientEndpointDropped
+#else
+#define MAYBE_RecordingServiceClientEndpointDropped \
+  RecordingServiceClientEndpointDropped
+#endif
+
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       RecordingServiceClientEndpointDropped) {
+                       MAYBE_RecordingServiceClientEndpointDropped) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
@@ -291,9 +300,18 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
   FinishVideoRecordingTest(&test_api);
 }
 
+// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RecordingInterruptedOnCaptureLocked \
+  DISABLED_RecordingInterruptedOnCaptureLocked
+#else
+#define MAYBE_RecordingInterruptedOnCaptureLocked \
+  RecordingInterruptedOnCaptureLocked
+#endif
+
 // Tests that recording will be interrupted once screen capture becomes locked.
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       RecordingInterruptedOnCaptureLocked) {
+                       MAYBE_RecordingInterruptedOnCaptureLocked) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
