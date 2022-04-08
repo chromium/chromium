@@ -108,6 +108,8 @@ js_library("feedback_types") {
 
 js_library("feedback_flow") {
   deps = [
+    ":feedback_types",
+    ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -140,6 +142,7 @@ js_library("search_page") {
 js_library("share_data_page") {
   deps = [
     ":feedback_flow",
+    ":feedback_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

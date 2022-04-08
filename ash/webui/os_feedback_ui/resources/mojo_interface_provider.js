@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FakeFeedbackServiceProvider} from './fake_feedback_service_provider.js';
 
+import {fakeExternalEmail} from './fake_data.js';
+import {FakeFeedbackServiceProvider} from './fake_feedback_service_provider.js';
 import {FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
 
 /**
@@ -45,6 +46,7 @@ export function getFeedbackServiceProvider() {
     // TODO(xiangdongkong): Instantiate a real mojo interface here.
     const fakeProvider = /** @type {FeedbackServiceProviderInterface} */ (
         new FakeFeedbackServiceProvider());
+    fakeProvider.setFakeEmail(fakeExternalEmail);
     setFeedbackServiceProviderForTesting(fakeProvider);
   }
   assert(!!feedbackServiceProvider);

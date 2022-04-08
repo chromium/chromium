@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeExternalEmail, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
@@ -14,22 +16,30 @@ export function FeedbackFlowTestSuite() {
   let page = null;
 
   /** @type {?FakeHelpContentProvider} */
-  let provider = null;
+  let helpContentProvider = null;
+
+  /** @type {?FakeFeedbackServiceProvider} */
+  let feedbackServiceProvider = null;
 
   setup(() => {
     document.body.innerHTML = '';
-    // Create provider.
-    provider = new FakeHelpContentProvider();
+    // Create helpContentProvider.
+    helpContentProvider = new FakeHelpContentProvider();
     // Setup search response.
-    provider.setFakeSearchResponse(fakeSearchResponse);
-    // Set the fake provider.
-    setHelpContentProviderForTesting(provider);
+    helpContentProvider.setFakeSearchResponse(fakeSearchResponse);
+    // Set the fake helpContentProvider.
+    setHelpContentProviderForTesting(helpContentProvider);
+
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    feedbackServiceProvider.setFakeEmail(fakeExternalEmail);
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
   teardown(() => {
     page.remove();
     page = null;
-    provider = null;
+    helpContentProvider = null;
+    feedbackServiceProvider = null;
   });
 
   function initializePage() {
@@ -45,6 +55,7 @@ export function FeedbackFlowTestSuite() {
   // Test that the search page is shown by default.
   test('SearchPageIsShownByDefault', async () => {
     await initializePage();
+
     // Find the element whose class is iron-selected.
     const activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
@@ -66,7 +77,7 @@ export function FeedbackFlowTestSuite() {
   // Test that the share data page is shown.
   test('ShareDataPageIsShown', async () => {
     await initializePage();
-    page.currentState_ = FeedbackFlowState.SHARE_DATA;
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
     const activePage = page.shadowRoot.querySelector('.iron-selected');
     assertEquals('shareDataPage', activePage.id);
@@ -92,7 +103,7 @@ export function FeedbackFlowTestSuite() {
   // Test that the confirmation page is shown.
   test('ConfirmationPageIsShown', async () => {
     await initializePage();
-    page.currentState_ = FeedbackFlowState.CONFIRMATION;
+    page.setCurrentStateForTesting(FeedbackFlowState.CONFIRMATION);
 
     const activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
@@ -149,7 +160,7 @@ export function FeedbackFlowTestSuite() {
   // the back button.
   test('NavigateFromShareDataPageToSearchPage', async () => {
     await initializePage();
-    page.currentState_ = FeedbackFlowState.SHARE_DATA;
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
 
     let activePage = page.shadowRoot.querySelector('.iron-selected');
     assertEquals('shareDataPage', activePage.id);
@@ -160,5 +171,12 @@ export function FeedbackFlowTestSuite() {
     activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
+  });
+
+  // Test that the getUserEmail is called after initialization.
+  test('GetUserEmailIsCalled', async () => {
+    assertEquals(0, feedbackServiceProvider.getUserEmailCallCount());
+    await initializePage();
+    assertEquals(1, feedbackServiceProvider.getUserEmailCallCount());
   });
 }

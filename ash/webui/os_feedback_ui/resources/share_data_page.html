@@ -75,10 +75,11 @@
       </div>
     </div>
     <!-- User e-mail -->
-    <div id="user-email" class="text-field-container">
+    <div id="user-email" class="text-field-container"
+        hidden$="[[!hasEmail_(email)]]">
       <label id="user-email-label">Email</label>
       <select id="user-email-drop-down" aria-labelledby="user-email-label">
-        <option value="test.user@google.com">test.user@google.com</option>
+        <option value$="[[email]]">[[email]]</option>
         <option value="">Don't include email address</option>
       </select>
     </div>

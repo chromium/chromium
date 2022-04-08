@@ -18,8 +18,33 @@ export class ShareDataPageElement extends PolymerElement {
   static get is() {
     return 'share-data-page';
   }
+
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      email: {type: String, readOnly: false, notify: true},
+    };
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * @type {string}
+     */
+    this.email;
+  }
+
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  hasEmail_() {
+    return !!this.email;
   }
 
   /**

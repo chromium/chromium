@@ -18,12 +18,26 @@ export class FakeFeedbackServiceProvider {
 
     // Setup method resolvers.
     this.methods_.register('getUserEmail');
+
+    /**
+     * Use to track how many times getUserEmail has been called.
+     * @private {number}
+     */
+    this.getUserEmailCallCount_ = 0;
+  }
+
+  /**
+   * @returns {number}
+   */
+  getUserEmailCallCount() {
+    return this.getUserEmailCallCount_;
   }
 
   /**
    * @return {!Promise<{email: !string}>}
    */
   getUserEmail() {
+    this.getUserEmailCallCount_++;
     return this.methods_.resolveMethod('getUserEmail');
   }
 

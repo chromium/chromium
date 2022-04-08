@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {fakeExternalEmail} from 'chrome://os-feedback/fake_data.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function shareDataPageTestSuite() {
   /** @type {?ShareDataPageElement} */
@@ -82,5 +83,39 @@ export function shareDataPageTestSuite() {
 
     // Privacy note is a long localized string in HTML format.
     assertTrue(getElementContent('#privacy-note').length > 0);
+  });
+
+  // Test that the email drop down is populated with two options.
+  test('emailDropdownPopulated', async () => {
+    await initializePage();
+    page.email = fakeExternalEmail;
+
+    const emailDropdown = getElement('#user-email-drop-down');
+    assertTrue(!!emailDropdown);
+    assertEquals(2, emailDropdown.options.length);
+
+    const firstOption = emailDropdown.options.item(0);
+    assertEquals('test.user2@test.com', firstOption.textContent);
+    assertEquals('test.user2@test.com', firstOption.value);
+
+    const secondOption = emailDropdown.options.item(1);
+    assertEquals('Don\'t include email address', secondOption.textContent);
+    assertEquals('', secondOption.value);
+
+    // The user email section should be visible.
+    const userEmailElement = getElement('#user-email');
+    assertTrue(!!userEmailElement);
+    assertTrue(isVisible(userEmailElement));
+  });
+
+  // Test that the email section is hidden when there is no email.
+  test('emailSectionHiddenWithoutEmail', async () => {
+    await initializePage();
+    page.email = '';
+
+    // The user email section should be hidden.
+    const userEmailElement = getElement('#user-email');
+    assertTrue(!!userEmailElement);
+    assertFalse(isVisible(userEmailElement));
   });
 }
