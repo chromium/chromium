@@ -133,17 +133,9 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   }
   VLOG(1) << "Printing initiated with service for document "
           << document()->cookie();
-#if BUILDFLAG(IS_WIN)
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&PrintJobWorker::OnNewPage,
                                          worker_weak_factory_.GetWeakPtr()));
-#else
-  // TODO(crbug.com/809738)  Still need more support for printing pipeline in
-  // the service (need `RenderPrintedDocument()` support).
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&PrintJobWorkerOop::OnFailure,
-                                         worker_weak_factory_.GetWeakPtr()));
-#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -183,6 +175,20 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintJobWorkerOop::OnDidRenderPrintedDocument(mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR)
+        << "Error rendering printed document via service for document "
+        << document()->cookie() << ": " << result;
+    NotifyFailure(result);
+    return;
+  }
+  VLOG(1) << "Rendered printed document with service for document "
+          << document()->cookie();
+  SendDocumentDone();
+}
 
 void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
                                           mojom::ResultCode result) {
@@ -229,6 +235,26 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
                      std::move(region_mapping.region)));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintJobWorkerOop::SpoolJob() {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+
+  const MetafilePlayer* metafile = document()->GetMetafile();
+  DCHECK(metafile);
+  base::MappedReadOnlyRegion region_mapping =
+      metafile->GetDataAsSharedMemoryRegion();
+  if (!region_mapping.IsValid()) {
+    OnFailure();
+    return;
+  }
+
+  VLOG(1) << "Spooling job to print via service";
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrintJobWorkerOop::SendRenderPrintedDocument,
+                     ui_weak_factory_.GetWeakPtr(), metafile->GetDataType(),
+                     std::move(region_mapping.region)));
+}
 
 void PrintJobWorkerOop::OnDocumentDone() {
   // Can do browser-side checks related to completeness for sending, but must
@@ -487,6 +513,22 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
                      ui_weak_factory_.GetWeakPtr(), page_index));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintJobWorkerOop::SendRenderPrintedDocument(
+    mojom::MetafileDataType data_type,
+    base::ReadOnlySharedMemoryRegion serialized_data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const int32_t document_cookie = document()->cookie();
+  VLOG(1) << "Sending document " << document_cookie << " to `" << device_name_
+          << "` for printing";
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+  service_mgr.RenderPrintedDocument(
+      device_name_, document_cookie, data_type, std::move(serialized_data),
+      base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedDocument,
+                     ui_weak_factory_.GetWeakPtr()));
+}
 
 void PrintJobWorkerOop::SendDocumentDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

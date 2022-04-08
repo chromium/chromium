@@ -178,6 +178,9 @@ mojom::ResultCode TestPrintingContext::PrintDocument(
   DCHECK(in_print_job_);
   DVLOG(1) << "Print document";
 
+  if (render_document_blocked_by_permissions_)
+    return mojom::ResultCode::kAccessDenied;
+
   // No-op.
   return mojom::ResultCode::kSuccess;
 }

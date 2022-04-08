@@ -121,6 +121,9 @@ class PrintJobWorker {
   virtual void SpoolPage(PrintedPage* page);
 #endif
 
+  // Renders the document to the printer.
+  virtual void SpoolJob();
+
   // Internal state verification that spooling of the document is complete.
   void CheckDocumentSpoolingComplete();
 
@@ -170,9 +173,6 @@ class PrintJobWorker {
   // Windows print GDI-specific handling for OnNewPage().
   bool OnNewPageHelperGdi();
 #endif  // BUILDFLAG(IS_WIN)
-
-  // Renders the document to the printer.
-  void SpoolJob();
 
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,
