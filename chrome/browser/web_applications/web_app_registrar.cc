@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -46,6 +47,26 @@ bool WebAppExposed(const WebApp& web_app) {
     return false;
 #endif
   return true;
+}
+
+UserDisplayMode CreateUserDisplayModeFromDisplayMode(
+    blink::mojom::DisplayMode display_mode) {
+  using DisplayMode = blink::mojom::DisplayMode;
+  switch (display_mode) {
+    case DisplayMode::kBrowser:
+      return UserDisplayMode::kBrowser;
+    case DisplayMode::kTabbed:
+      return UserDisplayMode::kTabbed;
+    case DisplayMode::kStandalone:
+      return UserDisplayMode::kStandalone;
+
+    case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kMinimalUi:
+    case DisplayMode::kUndefined:
+      NOTREACHED();
+      return UserDisplayMode::kBrowser;
+  }
 }
 
 }  // namespace
@@ -359,8 +380,10 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
 
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
-  return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     user_display_mode, IsIsolated(app_id));
+  return ResolveEffectiveDisplayMode(
+      app_display_mode, display_mode_overrides,
+      CreateUserDisplayModeFromDisplayMode(user_display_mode),
+      IsIsolated(app_id));
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(

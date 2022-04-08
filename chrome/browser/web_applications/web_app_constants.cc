@@ -7,9 +7,11 @@
 #include <ostream>
 
 #include "base/compiler_specific.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -68,35 +70,52 @@ static_assert(OsHookType::kShortcuts == 0,
 
 namespace {
 
-DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
-    DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& app_display_mode_overrides,
-    DisplayMode user_display_mode) {
+absl::optional<DisplayMode> TryResolveUserDisplayMode(
+    UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
-    case DisplayMode::kBrowser:
-      return user_display_mode;
-    case DisplayMode::kUndefined:
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-      NOTREACHED();
-      [[fallthrough]];
-    case DisplayMode::kTabbed:
+    case UserDisplayMode::kBrowser:
+      return DisplayMode::kBrowser;
+    case UserDisplayMode::kTabbed:
       if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
-        return user_display_mode;
+        return DisplayMode::kTabbed;
       // Treat as standalone.
       [[fallthrough]];
-    case DisplayMode::kStandalone:
+    case UserDisplayMode::kStandalone:
       break;
   }
 
-  for (const DisplayMode& app_display_mode_override :
-       app_display_mode_overrides) {
+  return absl::nullopt;
+}
+
+absl::optional<DisplayMode> TryResolveOverridesDisplayMode(
+    const std::vector<DisplayMode>& display_mode_overrides) {
+  for (DisplayMode override_display_mode : display_mode_overrides) {
     DisplayMode resolved_display_mode =
         ResolveAppDisplayModeForStandaloneLaunchContainer(
-            app_display_mode_override);
-    if (resolved_display_mode == app_display_mode_override)
+            override_display_mode);
+    if (override_display_mode == resolved_display_mode) {
       return resolved_display_mode;
+    }
+  }
+
+  return absl::nullopt;
+}
+
+DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& display_mode_overrides,
+    UserDisplayMode user_display_mode) {
+  const absl::optional<DisplayMode> resolved_display_mode =
+      TryResolveUserDisplayMode(user_display_mode);
+  if (resolved_display_mode.has_value()) {
+    return *resolved_display_mode;
+  }
+
+  const absl::optional<DisplayMode> resolved_override_display_mode =
+      TryResolveOverridesDisplayMode(display_mode_overrides);
+
+  if (resolved_override_display_mode.has_value()) {
+    return *resolved_override_display_mode;
   }
 
   return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
@@ -107,7 +126,7 @@ DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
-    DisplayMode user_display_mode,
+    UserDisplayMode user_display_mode,
     bool is_isolated) {
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(

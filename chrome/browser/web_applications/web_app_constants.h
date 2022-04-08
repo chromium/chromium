@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -159,7 +160,7 @@ using DisplayMode = blink::mojom::DisplayMode;
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
-    DisplayMode user_display_mode,
+    UserDisplayMode user_display_mode,
     bool is_isolated);
 
 apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(

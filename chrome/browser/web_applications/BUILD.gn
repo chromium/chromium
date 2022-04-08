@@ -93,6 +93,7 @@ source_set("web_applications") {
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
     "system_web_apps/system_web_app_types.h",
+    "user_display_mode.h",
     "web_app.cc",
     "web_app.h",
     "web_app_audio_focus_id_map.cc",
