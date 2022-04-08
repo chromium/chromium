@@ -321,12 +321,6 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
                                uint64_t data_element_offset,
                                absl::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
-  if (buffer_offset % 4 != 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Buffer offset must be a multiple of 4");
-    return;
-  }
-
   CHECK_LE(data_bytes_per_element, 8u);
 
   if (data_element_offset > data_byte_length / data_bytes_per_element) {

@@ -352,9 +352,6 @@ crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="read";containerType="vector";* [ Crash ]
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";containerType="vector";* [ Crash ]
 
-# Queue Validation Failures
-crbug.com/dawn/1350 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,writeBuffer:ranges:* [ Failure ]
-
 # maxArrayLayoutCount limit should be 256 instead of 2048
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2047];* [ Failure ]
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2048];* [ Failure ]
