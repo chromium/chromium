@@ -199,12 +199,13 @@ void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
   }
 }
 
-void CrostiniUpgrader::Backup(const ContainerId& container_id,
-                              bool show_file_chooser,
-                              content::WebContents* web_contents) {
+void CrostiniUpgrader::Backup(
+    const ContainerId& container_id,
+    bool show_file_chooser,
+    base::WeakPtr<content::WebContents> web_contents) {
   if (show_file_chooser) {
     CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
-        container_id, web_contents, MakeFactory());
+        container_id, web_contents.get(), MakeFactory());
     return;
   }
   base::FilePath default_path =
@@ -217,13 +218,19 @@ void CrostiniUpgrader::Backup(const ContainerId& container_id,
                      default_path));
 }
 
-void CrostiniUpgrader::OnBackupPathChecked(const ContainerId& container_id,
-                                           content::WebContents* web_contents,
-                                           base::FilePath path,
-                                           bool path_exists) {
+void CrostiniUpgrader::OnBackupPathChecked(
+    const ContainerId& container_id,
+    base::WeakPtr<content::WebContents> web_contents,
+    base::FilePath path,
+    bool path_exists) {
+  if (!web_contents) {
+    // Page has been closed, don't continue
+    return;
+  }
+
   if (path_exists) {
     CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
-        container_id, web_contents, MakeFactory());
+        container_id, web_contents.get(), MakeFactory());
   } else {
     CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
         container_id, path, MakeFactory());
@@ -354,11 +361,12 @@ void CrostiniUpgrader::OnUpgrade(CrostiniResult result) {
   }
 }
 
-void CrostiniUpgrader::Restore(const ContainerId& container_id,
-                               content::WebContents* web_contents) {
+void CrostiniUpgrader::Restore(
+    const ContainerId& container_id,
+    base::WeakPtr<content::WebContents> web_contents) {
   if (!backup_path_.has_value()) {
     CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-        container_id, web_contents, MakeFactory());
+        container_id, web_contents.get(), MakeFactory());
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -369,13 +377,19 @@ void CrostiniUpgrader::Restore(const ContainerId& container_id,
                      *backup_path_));
 }
 
-void CrostiniUpgrader::OnRestorePathChecked(const ContainerId& container_id,
-                                            content::WebContents* web_contents,
-                                            base::FilePath path,
-                                            bool path_exists) {
+void CrostiniUpgrader::OnRestorePathChecked(
+    const ContainerId& container_id,
+    base::WeakPtr<content::WebContents> web_contents,
+    base::FilePath path,
+    bool path_exists) {
+  if (!web_contents) {
+    // Page has been closed, don't continue
+    return;
+  }
+
   if (!path_exists) {
     CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-        container_id, web_contents, MakeFactory());
+        container_id, web_contents.get(), MakeFactory());
   } else {
     CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
         container_id, path, MakeFactory());
