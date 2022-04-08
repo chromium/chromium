@@ -160,6 +160,7 @@ OobeTypes.EnrollmentStep = {
   SUCCESS: 'success',
   CHECKING: 'checking',
   TPM_CHECKING: 'tpm-checking',
+  KIOSK_ENROLLMENT: 'kiosk-enrollment',
 
   /* TODO(dzhioev): define this step on C++ side.
    */

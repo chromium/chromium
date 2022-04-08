@@ -668,6 +668,19 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("enrollmentLocationLabel",
                IDS_ENTERPRISE_ENROLLMENT_LOCATION_LABEL);
   builder->Add("oauthEnrollWorking", IDS_ENTERPRISE_ENROLLMENT_WORKING_MESSAGE);
+  // Kiosk enrollment related string.
+  builder->Add("oauthEnrollKioskEnrollmentConfirmTitle",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_TITLE);
+  builder->Add("oauthEnrollKioskEnrollmentConfirmMessage",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_MESSAGE);
+  builder->Add("oauthEnrollKioskEnrollmentConfirmPowerwashMessage",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_POWERWASH_MESSAGE);
+  builder->Add("oauthEnrollKioskEnrollmentConfirmButton",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_BUTTON);
+  builder->Add("oauthEnrollKioskEnrollmentWorkingTitle",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_WORKING_TITLE);
+  builder->Add("oauthEnrollKioskEnrollmentSuccessTitle",
+               IDS_ENTERPRISE_ENROLLMENT_KIOSK_SUCCESS_TITLE);
   // Do not use AddF for this string as it will be rendered by the JS code.
   builder->Add("oauthEnrollAbeSuccessDomain",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN);

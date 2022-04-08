@@ -2970,6 +2970,24 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_LOCATION_LABEL" desc="Label for location tex box on the device naming screen in the enterprise enrollment dialog.">
     Device Location
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_TITLE" desc="Title of kiosk confirm enrollment screen.">
+    Confirm kiosk and signage device enrollment?
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_MESSAGE" desc="Message of kiosk confirm enrollment screen.">
+    You will use a Kiosk &amp; Signage Upgrade which only allows the device to run in kiosk or signage mode. If you would like users to sign into the device, please go back and enroll using Chrome Enterpirse Upgrade.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_POWERWASH_MESSAGE" desc="Message of kiosk confirm enrollment screen.">
+    If you want to switch after enrollment, you will need to factory reset (powerwash) your device.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_BUTTON" desc="Label for the confirm button on the cofirm kiosk enrollment screen in the enterprise enrollment dialog.">
+    Confirm
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_WORKING_TITLE" desc="Message to show while Kiosk enrollment is in progress.">
+    Kiosk and signage device enrollment
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_SUCCESS_TITLE" desc="Title of the screen to be shown once enterprise kiosk enrollment completes.">
+    Kiosk and signage device enrollment complete
+  </message>
   <!-- Pre-enrollment TPM check. -->
   <message name="IDS_TPM_CHECK_TITLE" desc="The title of loading dialog shown during TPM status check.">
     Device enrollment

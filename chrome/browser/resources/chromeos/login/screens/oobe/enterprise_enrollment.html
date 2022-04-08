@@ -81,7 +81,7 @@
     </gaia-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
-    <oobe-loading-dialog title-key="oauthEnrollScreenTitle"
+    <oobe-loading-dialog title-key="[[getWorkingTitleKey_(licenseType_)]]"
         id="step-working" for-step="working">
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
     </oobe-loading-dialog>
@@ -168,12 +168,40 @@
       </div>
     </oobe-adaptive-dialog>
 
+    <!-- KIOSK CONFIRM DIALOG -->
+    <!-- TODO(crbug.com/1308403): Update image, recheck back button. -->
+    <oobe-adaptive-dialog id="step-kiosk-enrollment" for-step="kiosk-enrollment"
+        role="alert" footer-shrinkable>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollKioskEnrollmentConfirmTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'oauthEnrollKioskEnrollmentConfirmMessage')]]
+        [[i18nDynamic(locale,
+          'oauthEnrollKioskEnrollmentConfirmPowerwashMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img src="images/enrollment_complete.svg"
+            class="oobe-illustration">
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="cancelKioskEnrollmentButton"
+            on-click="onCancelKiosk_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button inverse id="enrollKioskButton"
+            text-key="oauthEnrollKioskEnrollmentConfirmButton"
+            on-click="onEnrollKiosk_" class="focus-on-show"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
     <!-- SUCCESS DIALOG -->
     <oobe-adaptive-dialog id="step-success" for-step="success" role="alert"
         footer-shrinkable>
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
+        [[getSuccessTitle_(locale, licenseType_)]]
       </h1>
       <!-- Hide the subtitle if the domain could not be determined. -->
       <div slot="subtitle" class="self-start" hidden="[[isMeet_]]">
