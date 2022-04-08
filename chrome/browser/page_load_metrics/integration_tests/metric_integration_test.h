@@ -66,6 +66,11 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // resource at the URL "/test.html".
   void LoadHTML(const std::string& content);
 
+  // Wait until the test page navigation is completed and the title change in
+  // JS is executed. We need to add "document.title='ready'" to change the
+  // title at the end of JS in the browser test.
+  void WaitUntilHTMLLoadedAndTitleChanged();
+
   // Begin trace collection for the specified trace categories. The
   // trace includes events from all processes (browser and renderer).
   void StartTracing(const std::vector<std::string>& categories);
