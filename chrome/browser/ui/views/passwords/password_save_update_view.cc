@@ -525,7 +525,12 @@ ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    SetBubbleHeader(IDR_SAVE_PASSWORD_V2, IDR_SAVE_PASSWORD_V2_DARK);
+  } else {
+    SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  }
   if (ShouldShowFailedReauthIPH())
     MaybeShowIPH(IPHType::kFailedReauth);
   else
