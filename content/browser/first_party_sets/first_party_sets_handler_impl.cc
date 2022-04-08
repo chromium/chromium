@@ -75,6 +75,17 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
   return instance.get();
 }
 
+// static
+absl::optional<FirstPartySetsHandler::PolicyParsingError>
+FirstPartySetsHandler::ValidateEnterprisePolicy(
+    const base::Value::Dict& policy) {
+  // Call ParseSetsFromEnterprisePolicy to determine if the all sets in the
+  // policy are valid First-Party Sets. A nullptr is provided since we don't
+  // have use for the actual parsed sets.
+  return FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+      policy, /*out_sets=*/nullptr);
+}
+
 FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(bool enabled)
     : enabled_(enabled) {
   sets_loader_ = std::make_unique<FirstPartySetsLoader>(
@@ -116,16 +127,6 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
     return;
   }
   sets_loader_->SetComponentSets(std::move(sets_file));
-}
-
-absl::optional<FirstPartySetsHandler::PolicyParsingError>
-FirstPartySetsHandlerImpl::ValidateEnterprisePolicy(
-    const base::Value::Dict& policy) const {
-  // Call ParseSetsFromEnterprisePolicy to determine if the all sets in the
-  // policy are valid First-Party Sets. A nullptr is provided since we don't
-  // have use for the actual parsed sets.
-  return FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-      policy, /*out_sets=*/nullptr);
 }
 
 void FirstPartySetsHandlerImpl::ResetForTesting() {

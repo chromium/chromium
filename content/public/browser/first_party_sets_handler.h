@@ -49,6 +49,17 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // Returns the singleton instance.
   static FirstPartySetsHandler* GetInstance();
 
+  // Validates the First-Party Sets Overrides enterprise policy in `policy`,
+  // and may return an error containing information about why the policy is
+  // invalid.
+  //
+  // This validation only checks that all sets in this policy are valid
+  // First-Party Sets and disjoint from each other. It doesn't require
+  // disjointness with other sources, such as the public sets, since this policy
+  // will be used override First-Party Sets in those sources.
+  static absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
+      const base::Value::Dict& policy);
+
   // Returns whether First-Party Sets is enabled.
   //
   // Embedders can use this method to guard First-Party Sets related changes.
@@ -63,17 +74,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // startup if First-Party Sets are enabled, since no First-Party Sets queries
   // are answered until initialization is complete.
   virtual void SetPublicFirstPartySets(base::File sets_file) = 0;
-
-  // Validates the First-Party Sets Overrides enterprise policy in `policy`,
-  // and may return an error containing information about why the policy is
-  // invalid.
-  //
-  // This validation only checks that all sets in this policy are valid
-  // First-Party Sets and disjoint from each other. It doesn't require
-  // disjointness with other sources, such as the public sets, since this policy
-  // will be used override First-Party Sets in those sources.
-  virtual absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
-      const base::Value::Dict& policy) const = 0;
 
   // Resets the state on the instance for testing.
   virtual void ResetForTesting() = 0;

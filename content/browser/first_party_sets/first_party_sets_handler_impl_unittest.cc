@@ -282,8 +282,7 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
               }
             )")
                           .value();
-  EXPECT_EQ(FirstPartySetsHandlerImpl::GetInstance()->ValidateEnterprisePolicy(
-                input.GetDict()),
+  EXPECT_EQ(FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()),
             absl::nullopt);
 }
 
@@ -310,8 +309,7 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
   FirstPartySetsHandler::PolicyParsingError expected_error{
       FirstPartySetsHandler::ParseError::kNonDisjointSets,
       FirstPartySetsHandler::PolicySetType::kAddition, 0};
-  EXPECT_EQ(FirstPartySetsHandlerImpl::GetInstance()->ValidateEnterprisePolicy(
-                input.GetDict()),
+  EXPECT_EQ(FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()),
             expected_error);
 }
 

@@ -69,8 +69,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // FirstPartySetsHandler
   bool IsEnabled() const override;
   void SetPublicFirstPartySets(base::File sets_file) override;
-  absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
-      const base::Value::Dict& policy) const override;
   void ResetForTesting() override;
 
   // Sets whether FPS is enabled (for testing).
