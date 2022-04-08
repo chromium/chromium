@@ -1537,10 +1537,10 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the 'Privacy Guide'.">
     Get started
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_TO_SETTINGS_ARIA_LABEL" desc="Text read by screen readers when focusing on the 'Privacy Guide' back button. If the back button is activated, it will navigate to Settings. This text is only announced by screen readers and is not visible in the UI. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_TO_SETTINGS_ARIA_LABEL" desc="Text read by screen readers when focusing on the back-to-settings button that is shown in the 'Privacy Guide'. If this button is activated, it will navigate to Settings. This text is only announced by screen readers and is not visible in the UI. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
     Privacy Guide back button
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_TO_SETTINGS_ARIA_ROLE_DESC" desc="Description read by screen readers when focusing on the 'Privacy Guide' back button. Indicates to the user that activating the back button will cause 'Privacy Guide' to navigate away from 'Privacy Guide' to Chrome settings. This text is only announced by screen readers and is not visible in the UI. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_TO_SETTINGS_ARIA_ROLE_DESC" desc="Description read by screen readers when focusing on back-to-settings button that is shown in the 'Privacy Guide'. It indicates to the user that activating the this button will cause 'Privacy Guide' to navigate away from 'Privacy Guide' and to Chrome Settings. This text is only announced by screen readers and is not visible in the UI. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
     Click to navigate away from Privacy Guide.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_BUTTON" desc="Text of a button in the privacy guide that reverses to the previous step in the 'Privacy Guide'.">
