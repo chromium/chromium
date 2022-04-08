@@ -61,11 +61,18 @@ SelectedFileInfo ConvertSelectedFileInfo(
   return file;
 }
 
-// Returns the ID of the Wayland shell surface that contains |window|.
+// Returns the ID of the Wayland shell surface that contains `window`, or an
+// empty string if `window` is not associated with a top-level window.
 std::string GetShellWindowUniqueId(aura::Window* window) {
   DCHECK(window);
+  // If the window is not associated with a root window, there's no top-level
+  // window to use as a parent for the file picker. Return an empty ID so
+  // ash-chrome will use a modeless dialog.
+  aura::Window* root_window = window->GetRootWindow();
+  if (!root_window)
+    return std::string();
   // On desktop aura there is one WindowTreeHost per top-level window.
-  aura::WindowTreeHost* window_tree_host = window->GetRootWindow()->GetHost();
+  aura::WindowTreeHost* window_tree_host = root_window->GetHost();
   DCHECK(window_tree_host);
   // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
   // aura::WindowTreeHostPlatform.
