@@ -55,10 +55,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   // Refreshes the list of installed profiles from Hermes. This operation
   // requires the Cellular Device to be inhibited. If |inhibit_lock| is passed
   // by the client, it will be used; otherwise, this function will acquire one
-  // internally.
+  // internally. The |RefreshProfileListAndRestoreSlot| variant is identical
+  // except that it requests Hermes to maintain SIM slots after refresh.
   //
   // On success, this function returns the lock; on failure, it returns null.
   void RefreshProfileList(
+      const dbus::ObjectPath& euicc_path,
+      RefreshProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr);
+  void RefreshProfileListAndRestoreSlot(
       const dbus::ObjectPath& euicc_path,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr);
@@ -115,12 +120,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       const dbus::ObjectPath& carrier_profile_path,
       const std::string& property_name) override;
 
+  void PerformRefreshProfileList(
+      const dbus::ObjectPath& euicc_path,
+      bool restore_slot,
+      RefreshProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr);
   void OnInhibited(
       const dbus::ObjectPath& euicc_path,
+      bool restore_slot,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void RefreshProfilesWithLock(
       const dbus::ObjectPath& euicc_path,
+      bool restore_slot,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnRequestInstalledProfilesResult(HermesResponseStatus status);

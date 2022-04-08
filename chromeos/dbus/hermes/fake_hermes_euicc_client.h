@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void QueueHermesErrorStatus(HermesResponseStatus status) override;
   void SetInteractiveDelay(base::TimeDelta delay) override;
   std::string GenerateFakeActivationCode() override;
+  bool GetLastRefreshProfilesRestoreSlotArg() override;
 
   // HermesEuiccClient:
   void InstallProfileFromActivationCode(
@@ -75,7 +76,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                              const dbus::ObjectPath& carrier_profile_path,
                              const std::string& confirmation_code,
                              HermesResponseCallback callback) override;
-  void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+  void RefreshInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                bool restore_slot,
                                 HermesResponseCallback callback) override;
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
                               const std::string& root_smds,
@@ -135,6 +137,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
 
   // Delay for simulating slow methods.
   base::TimeDelta interactive_delay_;
+
+  // The |restore_slot| argument for the last call to
+  // RefreshInstalledProfiles.
+  bool last_restore_slot_arg_ = false;
 
   using InstalledProfileQueue = std::queue<dbus::ObjectPath>;
   using InstalledProfileQueueMap =

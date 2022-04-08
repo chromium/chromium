@@ -181,7 +181,7 @@ void CellularESimProfileHandlerImpl::StartAutoRefresh(
   for (const auto& path : euicc_paths) {
     NET_LOG(EVENT) << "Found new EUICC whose profiles have not yet been "
                    << "refreshsed. Refreshing profile list for " << path;
-    RefreshProfileList(
+    RefreshProfileListAndRestoreSlot(
         dbus::ObjectPath(path),
         base::BindOnce(
             &CellularESimProfileHandlerImpl::OnAutoRefreshEuiccComplete,

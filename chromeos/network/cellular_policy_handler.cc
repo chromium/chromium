@@ -168,7 +168,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
   if (need_refresh_profile_list_) {
     // Profile list for current euicc may not have been refreshed, so explicitly
     // refresh profile list before processing installation requests.
-    cellular_esim_profile_handler_->RefreshProfileList(
+    cellular_esim_profile_handler_->RefreshProfileListAndRestoreSlot(
         *euicc_path,
         base::BindOnce(&CellularPolicyHandler::OnRefreshProfileList,
                        weak_ptr_factory_.GetWeakPtr(), *euicc_path));

@@ -194,6 +194,10 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
         std::move(inhibit_lock));
   }
 
+  bool GetLastRefreshProfilesRestoreSlotArg() {
+    return helper_.hermes_euicc_test()->GetLastRefreshProfilesRestoreSlotArg();
+  }
+
   base::Value GetEuiccListFromPrefs() {
     return device_prefs_.GetList(prefs::kESimRefreshedEuiccs)->Clone();
   }
@@ -367,6 +371,7 @@ TEST_F(CellularESimProfileHandlerImplTest, Persistent) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 
   // Because the list was refreshed, we now expect GetESimProfiles() to return
   // an empty list.
@@ -390,6 +395,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest,
@@ -413,6 +419,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
           }),
       std::move(inhibit_lock));
   run_loop.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest, RefreshProfileList_Failure) {
@@ -434,6 +441,7 @@ TEST_F(CellularESimProfileHandlerImplTest, RefreshProfileList_Failure) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest,
@@ -463,7 +471,9 @@ TEST_F(CellularESimProfileHandlerImplTest,
           }));
 
   run_loop1.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
   run_loop2.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest,
@@ -492,6 +502,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
             euicc_paths_from_prefs.GetListDeprecated()[0].GetString());
   EXPECT_TRUE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
+  EXPECT_TRUE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {
@@ -575,6 +586,7 @@ TEST_F(CellularESimProfileHandlerImplTest, DisableActiveESimProfile) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 
   profiles = GetESimProfiles();
   EXPECT_EQ(2u, profiles.size());

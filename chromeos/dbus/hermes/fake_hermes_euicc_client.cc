@@ -241,6 +241,10 @@ std::string FakeHermesEuiccClient::GenerateFakeActivationCode() {
                             fake_profile_counter_++);
 }
 
+bool FakeHermesEuiccClient::GetLastRefreshProfilesRestoreSlotArg() {
+  return last_restore_slot_arg_;
+}
+
 void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     const dbus::ObjectPath& euicc_path,
     const std::string& activation_code,
@@ -268,9 +272,11 @@ void FakeHermesEuiccClient::InstallPendingProfile(
       interactive_delay_);
 }
 
-void FakeHermesEuiccClient::RequestInstalledProfiles(
+void FakeHermesEuiccClient::RefreshInstalledProfiles(
     const dbus::ObjectPath& euicc_path,
+    bool restore_slot,
     HermesResponseCallback callback) {
+  last_restore_slot_arg_ = restore_slot;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoRequestInstalledProfiles,

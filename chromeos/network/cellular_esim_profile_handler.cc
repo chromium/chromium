@@ -40,8 +40,25 @@ void CellularESimProfileHandler::RefreshProfileList(
     const dbus::ObjectPath& euicc_path,
     RefreshProfilesCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  PerformRefreshProfileList(euicc_path, /*restore_slot=*/false,
+                            std::move(callback), std::move(inhibit_lock));
+}
+
+void CellularESimProfileHandler::RefreshProfileListAndRestoreSlot(
+    const dbus::ObjectPath& euicc_path,
+    RefreshProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  PerformRefreshProfileList(euicc_path, /*restore_slot=*/true,
+                            std::move(callback), std::move(inhibit_lock));
+}
+
+void CellularESimProfileHandler::PerformRefreshProfileList(
+    const dbus::ObjectPath& euicc_path,
+    bool restore_slot,
+    RefreshProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (inhibit_lock) {
-    RefreshProfilesWithLock(euicc_path, std::move(callback),
+    RefreshProfilesWithLock(euicc_path, restore_slot, std::move(callback),
                             std::move(inhibit_lock));
     return;
   }
@@ -49,7 +66,7 @@ void CellularESimProfileHandler::RefreshProfileList(
   cellular_inhibitor_->InhibitCellularScanning(
       CellularInhibitor::InhibitReason::kRefreshingProfileList,
       base::BindOnce(&CellularESimProfileHandler::OnInhibited,
-                     weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                     weak_ptr_factory_.GetWeakPtr(), euicc_path, restore_slot,
                      std::move(callback)));
 }
 
@@ -84,6 +101,7 @@ void CellularESimProfileHandler::OnCarrierProfilePropertyChanged(
 
 void CellularESimProfileHandler::OnInhibited(
     const dbus::ObjectPath& euicc_path,
+    bool restore_slot,
     RefreshProfilesCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
@@ -91,12 +109,13 @@ void CellularESimProfileHandler::OnInhibited(
     return;
   }
 
-  RefreshProfilesWithLock(euicc_path, std::move(callback),
+  RefreshProfilesWithLock(euicc_path, restore_slot, std::move(callback),
                           std::move(inhibit_lock));
 }
 
 void CellularESimProfileHandler::RefreshProfilesWithLock(
     const dbus::ObjectPath& euicc_path,
+    bool restore_slot,
     RefreshProfilesCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   DCHECK(inhibit_lock);
@@ -111,8 +130,8 @@ void CellularESimProfileHandler::RefreshProfilesWithLock(
   inhibit_lock_ = std::move(inhibit_lock);
   callback_ = std::move(callback);
 
-  HermesEuiccClient::Get()->RequestInstalledProfiles(
-      euicc_path,
+  HermesEuiccClient::Get()->RefreshInstalledProfiles(
+      euicc_path, restore_slot,
       base::BindOnce(
           &CellularESimProfileHandler::OnRequestInstalledProfilesResult,
           weak_ptr_factory_.GetWeakPtr()));

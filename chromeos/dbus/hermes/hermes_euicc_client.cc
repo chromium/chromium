@@ -23,6 +23,9 @@ namespace chromeos {
 
 namespace {
 HermesEuiccClient* g_instance = nullptr;
+
+// TODO(b/198205364): Remove when method name is added in dbus-constants.
+const char kRefreshInstalledProfiles[] = "RefreshInstalledProfiles";
 }  // namespace
 
 HermesEuiccClient::Properties::Properties(
@@ -85,17 +88,6 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
-                                HermesResponseCallback callback) override {
-    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 hermes::euicc::kRequestInstalledProfiles);
-    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
-    object_proxy->CallMethodWithErrorResponse(
-        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
-        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
                               const std::string& root_smds,
                               HermesResponseCallback callback) override {
@@ -103,6 +95,20 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                                  hermes::euicc::kRequestPendingProfiles);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(root_smds);
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
+        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void RefreshInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                bool restore_slot,
+                                HermesResponseCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                                 kRefreshInstalledProfiles);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(restore_slot);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,

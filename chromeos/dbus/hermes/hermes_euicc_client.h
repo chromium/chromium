@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
       // Adds a profile which is not yet present of the EUICC's properties but
       // will be available after a subsequent call to
-      // RequestInstalledProfiles(). Also creates a Shill service representing
+      // RefreshInstalledProfiles(). Also creates a Shill service representing
       // the profile.
       kAddDelayedProfileWithService,
 
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
       // Adds a profile which is not yet present of the EUICC's properties but
       // will be available after a subsequent call to
-      // RequestInstalledProfiles(). Does not create an accompanying Shill
+      // RefreshInstalledProfiles(). Does not create an accompanying Shill
       // service representing the profile, which simulates a "stub" cellular
       // service.
       kAddDelayedProfileWithoutService,
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // fake cellular service is also created in shill. The
     // |add_carrier_profile_behavior| parameter determines whether an associated
     // Shill service is created as well as whether the profile is added to the
-    // EUICC immediately or only after RequestInstalledProfiles() is called.
+    // EUICC immediately or only after RefreshInstalledProfiles() is called.
     // Returns the path to the newly added profile.
     virtual dbus::ObjectPath AddFakeCarrierProfile(
         const dbus::ObjectPath& euicc_path,
@@ -103,6 +103,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // Returns a valid fake activation code that can be used to install
     // a new fake carrier profile.
     virtual std::string GenerateFakeActivationCode() = 0;
+
+    // Returns true when the last call to RefreshInstalledProfiles was requested
+    // with |restore_slot| set to true.
+    virtual bool GetLastRefreshProfilesRestoreSlotArg() = 0;
   };
 
   // Hermes Euicc properties.
@@ -180,9 +184,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
       const std::string& confirmation_code,
       HermesResponseCallback callback) = 0;
 
-  // Updates installed profiles for Euicc at |euicc_path|.
+  // Refreshes installed profiles for Euicc at |euicc_path|.
   // This updates installed profiles list prior to returning.
-  virtual void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+  // If |restore_slot| is true then SIM slot that was active prior to refreshing
+  // is restored.
+  virtual void RefreshInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                        bool restore_slot,
                                         HermesResponseCallback callback) = 0;
 
   // Updates pending profiles for Euicc at |euicc_path| from the SMDS server
