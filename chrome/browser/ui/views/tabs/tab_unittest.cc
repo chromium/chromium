@@ -337,7 +337,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
             << (alert_state ? static_cast<int>(alert_state.value()) : -1));
 
         data.pinned = is_pinned_tab;
-        controller->set_active_tab(is_active_tab);
+        controller->set_active_tab(is_active_tab ? tab : nullptr);
         if (alert_state)
           data.alert_state = {alert_state.value()};
         else
@@ -515,8 +515,8 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   for (bool is_active_tab : {false, true}) {
-    controller->set_active_tab(is_active_tab);
     Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+    controller->set_active_tab(is_active_tab ? tab : nullptr);
     tab->SizeToPreferredSize();
 
     views::View* icon = GetTabIcon(tab);
@@ -530,7 +530,6 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
 
 TEST_F(TabTest, SmallTabsHideCloseButton) {
   auto controller = std::make_unique<FakeTabSlotController>();
-  controller->set_active_tab(false);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
   const int width = tab->tab_style()->GetContentsInsets().width() +
@@ -550,9 +549,9 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
 
 TEST_F(TabTest, ExtraLeftPaddingNotShownOnSmallActiveTab) {
   auto controller = std::make_unique<FakeTabSlotController>();
-  controller->set_active_tab(true);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+  controller->set_active_tab(tab);
   tab->SetBounds(0, 0, 200, 50);
   const views::View* close = GetCloseButton(tab);
   EXPECT_TRUE(close->GetVisible());
@@ -587,9 +586,9 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
 
 TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   auto controller = std::make_unique<FakeTabSlotController>();
-  controller->set_active_tab(true);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+  controller->set_active_tab(tab);
   TabRendererData data;
   data.alert_state = {TabAlertState::AUDIO_PLAYING};
   tab->SetData(data);
@@ -638,7 +637,7 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
     controller->SetTabColors(colors.bg_active, colors.fg_active,
                              colors.bg_inactive, colors.fg_inactive);
     for (TabActive active : {TabActive::kInactive, TabActive::kActive}) {
-      controller->set_active_tab(active == TabActive::kActive);
+      controller->set_active_tab(active == TabActive::kActive ? tab : nullptr);
       tab->UpdateForegroundColors();
       const SkColor fg_color = tab->title_->GetEnabledColor();
       const SkColor bg_color = controller->GetTabBackgroundColor(

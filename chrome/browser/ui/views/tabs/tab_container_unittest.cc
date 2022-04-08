@@ -11,8 +11,25 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+// Walks up the views hierarchy until it finds a tab view. It returns the
+// found tab view, or nullptr if none is found.
+views::View* FindTabView(views::View* view) {
+  views::View* current = view;
+  while (current && !views::IsViewClass<Tab>(current)) {
+    current = current->parent();
+  }
+  return current;
+}
+}  // namespace
 
 class TabContainerTest : public ChromeViewsTestBase {
  public:
@@ -27,18 +44,23 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_slot_controller_ = std::make_unique<FakeTabSlotController>();
 
-    tab_container_ = std::make_unique<TabContainer>(
-        tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
-        nullptr /*drag_context*/, tab_slot_controller_.get(),
-        nullptr /*scroll_contents_view*/);
-    tab_container_->SetAvailableWidthCallback(
+    std::unique_ptr<TabContainer> tab_container =
+        std::make_unique<TabContainer>(
+            tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
+            nullptr /*drag_context*/, tab_slot_controller_.get(),
+            nullptr /*scroll_contents_view*/);
+    tab_container->SetAvailableWidthCallback(
         base::BindRepeating([]() { return 500; }));
-    tab_container_->SetBounds(0, 0, 500, GetLayoutConstant(TAB_HEIGHT));
-    tab_container_->Layout();
+    tab_container->SetBounds(0, 0, 500, GetLayoutConstant(TAB_HEIGHT));
+    tab_container->Layout();
+
+    widget_ = CreateTestWidget();
+    tab_container_ = widget_->SetContentsView(std::move(tab_container));
   }
 
   void TearDown() override {
-    tab_container_.reset();
+    tab_container_ = nullptr;
+    widget_.reset();
     tab_slot_controller_.reset();
     tab_strip_controller_.reset();
 
@@ -51,9 +73,11 @@ class TabContainerTest : public ChromeViewsTestBase {
               TabActive active = TabActive::kInactive,
               TabPinned pinned = TabPinned::kUnpinned) {
     Tab* tab = tab_container_->AddTab(
-        std::make_unique<Tab>(tab_slot_controller_.get()), model_index,
-        TabPinned::kUnpinned);
+        std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
     tab_strip_controller_->AddTab(model_index, active == TabActive::kActive);
+
+    if (active == TabActive::kActive)
+      tab_slot_controller_->set_active_tab(tab);
 
     if (group)
       AddTabToGroup(model_index, group.value());
@@ -64,6 +88,15 @@ class TabContainerTest : public ChromeViewsTestBase {
   void MoveTab(int from_model_index, int to_model_index) {
     tab_strip_controller_->MoveTab(from_model_index, to_model_index);
     tab_container_->MoveTab(from_model_index, to_model_index);
+  }
+
+  // Removes the tab from the viewmodel, but leaves the Tab view itself around
+  // so it can animate closed.
+  void RemoveTab(int model_index) {
+    bool was_active =
+        tab_container_->GetTabAtModelIndex(model_index)->IsActive();
+    tab_strip_controller_->RemoveTab(model_index);
+    tab_container_->RemoveTab(model_index, was_active);
   }
 
   void AddTabToGroup(int model_index, tab_groups::TabGroupId group) {
@@ -147,9 +180,34 @@ class TabContainerTest : public ChromeViewsTestBase {
     return ordered_views;
   }
 
+  // Makes sure that all tabs have the correct AX indices.
+  void VerifyTabIndices() {
+    for (int i = 0; i < tab_container_->GetTabCount(); ++i) {
+      ui::AXNodeData ax_node_data;
+      tab_container_->GetTabAtModelIndex(i)
+          ->GetViewAccessibility()
+          .GetAccessibleNodeData(&ax_node_data);
+      EXPECT_EQ(i + 1, ax_node_data.GetIntAttribute(
+                           ax::mojom::IntAttribute::kPosInSet));
+      EXPECT_EQ(
+          tab_container_->GetTabCount(),
+          ax_node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+    }
+  }
+
+  // Checks whether |tab| contains |point_in_tab_container_coords|, where the
+  // point is in |tab_container_| coordinates.
+  bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tab_container_coords) {
+    gfx::Point point_in_tab_coords(point_in_tab_container_coords);
+    views::View::ConvertPointToTarget(tab_container_.get(), tab,
+                                      &point_in_tab_coords);
+    return tab->HitTestPoint(point_in_tab_coords);
+  }
+
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
-  std::unique_ptr<TabContainer> tab_container_;
+  raw_ptr<TabContainer> tab_container_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 // Verifies child view order matches model order.
@@ -260,4 +318,141 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
   EXPECT_EQ((DropIndex{1, true, true}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 group_header->bounds().right_center() + gfx::Vector2d(-1, 0))));
+}
+
+TEST_F(TabContainerTest, AccessibilityData) {
+  // When adding tabs, indices should be set.
+  AddTab(0);
+  AddTab(1, absl::nullopt, TabActive::kActive);
+  VerifyTabIndices();
+
+  AddTab(0);
+  VerifyTabIndices();
+
+  RemoveTab(1);
+  VerifyTabIndices();
+
+  MoveTab(1, 0);
+  VerifyTabIndices();
+}
+
+TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
+  tab_container_->SetSize(gfx::Size(1000, tab_container_->height()));
+
+  Tab* left_tab = AddTab(0);
+  Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
+  Tab* right_tab = AddTab(2);
+  Tab* most_right_tab = AddTab(3);
+  tab_container_->Layout();
+
+  left_tab->SetBoundsRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(200, 20)));
+  active_tab->SetBoundsRect(gfx::Rect(gfx::Point(150, 0), gfx::Size(200, 20)));
+  ASSERT_TRUE(active_tab->IsActive());
+
+  right_tab->SetBoundsRect(gfx::Rect(gfx::Point(300, 0), gfx::Size(200, 20)));
+  most_right_tab->SetBoundsRect(
+      gfx::Rect(gfx::Point(450, 0), gfx::Size(200, 20)));
+
+  // Test that active tabs gets events from area in which it overlaps with its
+  // left neighbour.
+  gfx::Point left_overlap(
+      (active_tab->x() + left_tab->bounds().right() + 1) / 2,
+      active_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and left tab.
+  ASSERT_TRUE(IsPointInTab(active_tab, left_overlap));
+  ASSERT_TRUE(IsPointInTab(left_tab, left_overlap));
+
+  EXPECT_EQ(active_tab,
+            FindTabView(tab_container_->GetEventHandlerForPoint(left_overlap)));
+
+  // Test that active tabs gets events from area in which it overlaps with its
+  // right neighbour.
+  gfx::Point right_overlap((active_tab->bounds().right() + right_tab->x()) / 2,
+                           active_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and right tab.
+  ASSERT_TRUE(IsPointInTab(active_tab, right_overlap));
+  ASSERT_TRUE(IsPointInTab(right_tab, right_overlap));
+
+  EXPECT_EQ(
+      active_tab,
+      FindTabView(tab_container_->GetEventHandlerForPoint(right_overlap)));
+
+  // Test that if neither of tabs is active, the left one is selected.
+  gfx::Point unactive_overlap(
+      (right_tab->x() + most_right_tab->bounds().right() + 1) / 2,
+      right_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and left tab.
+  ASSERT_TRUE(IsPointInTab(right_tab, unactive_overlap));
+  ASSERT_TRUE(IsPointInTab(most_right_tab, unactive_overlap));
+
+  EXPECT_EQ(
+      right_tab,
+      FindTabView(tab_container_->GetEventHandlerForPoint(unactive_overlap)));
+}
+
+TEST_F(TabContainerTest, GetTooltipHandler) {
+  tab_container_->SetSize(gfx::Size(1000, tab_container_->height()));
+
+  Tab* left_tab = AddTab(0);
+  Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
+  Tab* right_tab = AddTab(2);
+  Tab* most_right_tab = AddTab(3);
+  tab_container_->Layout();
+
+  // Verify that the active tab will be a tooltip handler for points that hit
+  // it.
+  left_tab->SetBoundsRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(200, 20)));
+  active_tab->SetBoundsRect(gfx::Rect(gfx::Point(150, 0), gfx::Size(200, 20)));
+  ASSERT_TRUE(active_tab->IsActive());
+
+  right_tab->SetBoundsRect(gfx::Rect(gfx::Point(300, 0), gfx::Size(200, 20)));
+  most_right_tab->SetBoundsRect(
+      gfx::Rect(gfx::Point(450, 0), gfx::Size(200, 20)));
+
+  // Test that active_tab handles tooltips from area in which it overlaps with
+  // its left neighbour.
+  gfx::Point left_overlap(
+      (active_tab->x() + left_tab->bounds().right() + 1) / 2,
+      active_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and left tab.
+  ASSERT_TRUE(IsPointInTab(active_tab, left_overlap));
+  ASSERT_TRUE(IsPointInTab(left_tab, left_overlap));
+
+  EXPECT_EQ(
+      active_tab,
+      FindTabView(tab_container_->GetTooltipHandlerForPoint(left_overlap)));
+
+  // Test that active_tab handles tooltips from area in which it overlaps with
+  // its right neighbour.
+  gfx::Point right_overlap((active_tab->bounds().right() + right_tab->x()) / 2,
+                           active_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and right tab.
+  ASSERT_TRUE(IsPointInTab(active_tab, right_overlap));
+  ASSERT_TRUE(IsPointInTab(right_tab, right_overlap));
+
+  EXPECT_EQ(
+      active_tab,
+      FindTabView(tab_container_->GetTooltipHandlerForPoint(right_overlap)));
+
+  // Test that if neither of tabs is active, the left one is selected.
+  gfx::Point unactive_overlap(
+      (right_tab->x() + most_right_tab->bounds().right() + 1) / 2,
+      right_tab->bounds().bottom() - 1);
+
+  // Sanity check that the point is in both active and left tab.
+  ASSERT_TRUE(IsPointInTab(right_tab, unactive_overlap));
+  ASSERT_TRUE(IsPointInTab(most_right_tab, unactive_overlap));
+
+  EXPECT_EQ(
+      right_tab,
+      FindTabView(tab_container_->GetTooltipHandlerForPoint(unactive_overlap)));
+
+  // Confirm that tab strip doe not return tooltip handler for points that
+  // don't hit it.
+  EXPECT_FALSE(tab_container_->GetTooltipHandlerForPoint(gfx::Point(-1, 2)));
 }

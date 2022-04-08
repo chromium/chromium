@@ -23,7 +23,7 @@ bool FakeTabSlotController::ToggleTabGroupCollapsedState(
 }
 
 bool FakeTabSlotController::IsActiveTab(const Tab* tab) const {
-  return active_tab_;
+  return active_tab_ == tab;
 }
 
 bool FakeTabSlotController::IsTabSelected(const Tab* tab) const {

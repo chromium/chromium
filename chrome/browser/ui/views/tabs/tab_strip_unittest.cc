@@ -51,16 +51,6 @@
 
 namespace {
 
-// Walks up the views hierarchy until it finds a tab view. It returns the
-// found tab view, on NULL if none is found.
-views::View* FindTabView(views::View* view) {
-  views::View* current = view;
-  while (current && !views::IsViewClass<Tab>(current)) {
-    current = current->parent();
-  }
-  return current;
-}
-
 struct TabStripUnittestParams {
   const bool touch_ui;
   const bool scrolling_enabled;
@@ -175,14 +165,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
     return tab->icon_->GetShowingAttentionIndicator();
   }
 
-  // Checks whether |tab| contains |point_in_tabstrip_coords|, where the point
-  // is in |tab_strip_| coordinates.
-  bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tabstrip_coords) {
-    gfx::Point point_in_tab_coords(point_in_tabstrip_coords);
-    views::View::ConvertPointToTarget(tab_strip_, tab, &point_in_tab_coords);
-    return tab->HitTestPoint(point_in_tab_coords);
-  }
-
   void CompleteAnimationAndLayout() {
     // Complete animations and lay out *within the current tabstrip width*.
     tab_strip_->StopAnimating(true);
@@ -203,20 +185,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
     // animation unconditionally.
     bool is_first_view = false;
     tab_strip_->StoppedDraggingView(view, &is_first_view);
-  }
-
-  // Makes sure that all tabs have the correct AX indices.
-  void VerifyTabIndices() {
-    for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
-      ui::AXNodeData ax_node_data;
-      tab_strip_->tab_at(i)->GetViewAccessibility().GetAccessibleNodeData(
-          &ax_node_data);
-      EXPECT_EQ(i + 1, ax_node_data.GetIntAttribute(
-                           ax::mojom::IntAttribute::kPosInSet));
-      EXPECT_EQ(
-          tab_strip_->GetTabCount(),
-          ax_node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
-    }
   }
 
   std::vector<views::View*> GetChildViews() {
@@ -293,22 +261,6 @@ TEST_P(TabStripTest, AccessibilityEvents) {
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
 }
 
-TEST_P(TabStripTest, AccessibilityData) {
-  // When adding tabs, indexes should be set.
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  VerifyTabIndices();
-
-  controller_->AddTab(0, false);
-  VerifyTabIndices();
-
-  controller_->RemoveTab(1);
-  VerifyTabIndices();
-
-  controller_->MoveTab(1, 0);
-  VerifyTabIndices();
-}
-
 TEST_P(TabStripTest, IsValidModelIndex) {
   EXPECT_FALSE(tab_strip_->IsValidModelIndex(0));
 }
@@ -323,7 +275,7 @@ TEST_P(TabStripTest, AddTabAt) {
   ASSERT_EQ(1, tab_strip_->GetTabCount());
   EXPECT_EQ(0, observer.last_tab_added());
   Tab* tab = tab_strip_->tab_at(0);
-  EXPECT_FALSE(tab == NULL);
+  EXPECT_FALSE(tab == nullptr);
 }
 
 TEST_P(TabStripTest, MoveTab) {
@@ -440,139 +392,6 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   EXPECT_FALSE(tab1->showing_close_button_);
   EXPECT_TRUE(tab3->showing_close_button_);
   EXPECT_FALSE(tab4->showing_close_button_);
-}
-
-TEST_P(TabStripTest, GetEventHandlerForOverlappingArea) {
-  SetMaxTabStripWidth(1000);
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  controller_->AddTab(2, false);
-  controller_->AddTab(3, false);
-  CompleteAnimationAndLayout();
-  ASSERT_EQ(4, tab_strip_->GetTabCount());
-
-  // Verify that the active tab will be a tooltip handler for points that hit
-  // it.
-  Tab* left_tab = tab_strip_->tab_at(0);
-  left_tab->SetBoundsRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(200, 20)));
-
-  Tab* active_tab = tab_strip_->tab_at(1);
-  active_tab->SetBoundsRect(gfx::Rect(gfx::Point(150, 0), gfx::Size(200, 20)));
-  ASSERT_TRUE(active_tab->IsActive());
-
-  Tab* right_tab = tab_strip_->tab_at(2);
-  right_tab->SetBoundsRect(gfx::Rect(gfx::Point(300, 0), gfx::Size(200, 20)));
-
-  Tab* most_right_tab = tab_strip_->tab_at(3);
-  most_right_tab->SetBoundsRect(
-      gfx::Rect(gfx::Point(450, 0), gfx::Size(200, 20)));
-
-  // Test that active tabs gets events from area in which it overlaps with its
-  // left neighbour.
-  gfx::Point left_overlap(
-      (active_tab->x() + left_tab->bounds().right() + 1) / 2,
-      active_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and left tab.
-  ASSERT_TRUE(IsPointInTab(active_tab, left_overlap));
-  ASSERT_TRUE(IsPointInTab(left_tab, left_overlap));
-
-  EXPECT_EQ(active_tab,
-            FindTabView(tab_strip_->GetEventHandlerForPoint(left_overlap)));
-
-  // Test that active tabs gets events from area in which it overlaps with its
-  // right neighbour.
-  gfx::Point right_overlap((active_tab->bounds().right() + right_tab->x()) / 2,
-                           active_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and right tab.
-  ASSERT_TRUE(IsPointInTab(active_tab, right_overlap));
-  ASSERT_TRUE(IsPointInTab(right_tab, right_overlap));
-
-  EXPECT_EQ(active_tab,
-            FindTabView(tab_strip_->GetEventHandlerForPoint(right_overlap)));
-
-  // Test that if neither of tabs is active, the left one is selected.
-  gfx::Point unactive_overlap(
-      (right_tab->x() + most_right_tab->bounds().right() + 1) / 2,
-      right_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and left tab.
-  ASSERT_TRUE(IsPointInTab(right_tab, unactive_overlap));
-  ASSERT_TRUE(IsPointInTab(most_right_tab, unactive_overlap));
-
-  EXPECT_EQ(right_tab,
-            FindTabView(tab_strip_->GetEventHandlerForPoint(unactive_overlap)));
-}
-
-TEST_P(TabStripTest, GetTooltipHandler) {
-  SetMaxTabStripWidth(1000);
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  controller_->AddTab(2, false);
-  controller_->AddTab(3, false);
-  CompleteAnimationAndLayout();
-  ASSERT_EQ(4, tab_strip_->GetTabCount());
-
-  // Verify that the active tab will be a tooltip handler for points that hit
-  // it.
-  Tab* left_tab = tab_strip_->tab_at(0);
-  left_tab->SetBoundsRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(200, 20)));
-
-  Tab* active_tab = tab_strip_->tab_at(1);
-  active_tab->SetBoundsRect(gfx::Rect(gfx::Point(150, 0), gfx::Size(200, 20)));
-  ASSERT_TRUE(active_tab->IsActive());
-
-  Tab* right_tab = tab_strip_->tab_at(2);
-  right_tab->SetBoundsRect(gfx::Rect(gfx::Point(300, 0), gfx::Size(200, 20)));
-
-  Tab* most_right_tab = tab_strip_->tab_at(3);
-  most_right_tab->SetBoundsRect(
-      gfx::Rect(gfx::Point(450, 0), gfx::Size(200, 20)));
-
-  // Test that active_tab handles tooltips from area in which it overlaps with
-  // its left neighbour.
-  gfx::Point left_overlap(
-      (active_tab->x() + left_tab->bounds().right() + 1) / 2,
-      active_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and left tab.
-  ASSERT_TRUE(IsPointInTab(active_tab, left_overlap));
-  ASSERT_TRUE(IsPointInTab(left_tab, left_overlap));
-
-  EXPECT_EQ(active_tab,
-            FindTabView(tab_strip_->GetTooltipHandlerForPoint(left_overlap)));
-
-  // Test that active_tab handles tooltips from area in which it overlaps with
-  // its right neighbour.
-  gfx::Point right_overlap((active_tab->bounds().right() + right_tab->x()) / 2,
-                           active_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and right tab.
-  ASSERT_TRUE(IsPointInTab(active_tab, right_overlap));
-  ASSERT_TRUE(IsPointInTab(right_tab, right_overlap));
-
-  EXPECT_EQ(active_tab,
-            FindTabView(tab_strip_->GetTooltipHandlerForPoint(right_overlap)));
-
-  // Test that if neither of tabs is active, the left one is selected.
-  gfx::Point unactive_overlap(
-      (right_tab->x() + most_right_tab->bounds().right() + 1) / 2,
-      right_tab->bounds().bottom() - 1);
-
-  // Sanity check that the point is in both active and left tab.
-  ASSERT_TRUE(IsPointInTab(right_tab, unactive_overlap));
-  ASSERT_TRUE(IsPointInTab(most_right_tab, unactive_overlap));
-
-  EXPECT_EQ(
-      right_tab,
-      FindTabView(tab_strip_->GetTooltipHandlerForPoint(unactive_overlap)));
-
-  // Confirm that tab strip doe not return tooltip handler for points that
-  // don't hit it.
-  EXPECT_FALSE(tab_strip_->GetTooltipHandlerForPoint(gfx::Point(-1, 2)));
 }
 
 // The cached widths are private, but if they give incorrect results it can

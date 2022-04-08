@@ -17,7 +17,7 @@ class FakeTabSlotController : public TabSlotController {
   FakeTabSlotController& operator=(const FakeTabSlotController&) = delete;
   ~FakeTabSlotController() override = default;
 
-  void set_active_tab(bool value) { active_tab_ = value; }
+  void set_active_tab(Tab* tab) { active_tab_ = tab; }
   void set_paint_throbber_to_layer(bool value) {
     paint_throbber_to_layer_ = value;
   }
@@ -105,7 +105,7 @@ class FakeTabSlotController : public TabSlotController {
 
  private:
   ui::ListSelectionModel selection_model_;
-  bool active_tab_ = false;
+  raw_ptr<Tab> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
 
   SkColor tab_bg_color_active_ = gfx::kPlaceholderColor;
