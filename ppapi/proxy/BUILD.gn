@@ -162,6 +162,12 @@ component("proxy") {
   ]
 
   if (is_nacl) {
+    # Consistency check: Check that is_nacl_irt is set to true for this
+    # code that is built for the NaCl IRT.  Previously, there was a bug
+    # where is_nacl_irt was not always set to true for builds of the NaCl
+    # IRT.
+    assert(is_nacl_irt)
+
     sources += [
       "../nacl_irt/irt_interfaces.cc",
       "../nacl_irt/irt_interfaces.h",

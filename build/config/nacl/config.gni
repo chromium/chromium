@@ -15,8 +15,6 @@ declare_args() {
   is_nacl_saigo = false
 }
 
-is_nacl_irt = false
-
 nacl_toolchain_dir = "//native_client/toolchain/${host_os}_x86"
 
 if (is_nacl_glibc) {
@@ -51,5 +49,5 @@ nacl_toolchain_tooldir =
     "${nacl_toolchain_dir}/${nacl_toolchain_package}/${_nacl_tuple}"
 nacl_toolprefix = "${nacl_toolchain_bindir}/${_nacl_tuple}-"
 
-nacl_irt_toolchain = "//build/toolchain/nacl:irt_" + target_cpu
+nacl_irt_toolchain = "//build/toolchain/nacl:irt_" + current_cpu
 is_nacl_irt = current_toolchain == nacl_irt_toolchain
