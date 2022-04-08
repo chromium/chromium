@@ -82,6 +82,7 @@ enum ProbeCategoryEnum {
   kFan,
   kStatefulPartition,
   kBluetooth,
+  kSystem,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -424,6 +425,27 @@ union BluetoothResult {
   ProbeError error;
 };
 
+// The OS information.
+struct OsInfo {
+  // Contents of CrosConfig in /branding/oem-name.
+  string? oem_name;
+};
+
+// System Information.
+struct SystemInfo {
+  // The info related to the OS.
+  OsInfo os_info;
+};
+
+// System probe result. Can either be populated with the SystemInfo or an
+// error retrieving the information.
+union SystemResult {
+  // Valid SystemInfo.
+  SystemInfo system_info;
+  // The error that occurred attempting to retrieve SystemInfo.
+  ProbeError error;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -464,6 +486,9 @@ struct TelemetryInfo {
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
   BluetoothResult? bluetooth_result;
+  // Information about the system. Only present when kSystem was included in
+  // the categories input to ProbeTelemetryInfo.
+  SystemResult? system_result;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.

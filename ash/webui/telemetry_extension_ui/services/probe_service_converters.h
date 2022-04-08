@@ -109,6 +109,15 @@ health::mojom::BluetoothAdapterInfoPtr UncheckedConvertPtr(
 health::mojom::BluetoothResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BluetoothResultPtr input);
 
+health::mojom::OsInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::OsInfoPtr input);
+
+health::mojom::SystemInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::SystemInfoV2Ptr input);
+
+health::mojom::SystemResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::SystemResultV2Ptr input);
+
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
 

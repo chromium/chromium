@@ -41,6 +41,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition;
     case health::mojom::ProbeCategoryEnum::kBluetooth:
       return cros_healthd::mojom::ProbeCategoryEnum::kBluetooth;
+    case health::mojom::ProbeCategoryEnum::kSystem:
+      return cros_healthd::mojom::ProbeCategoryEnum::kSystem2;
   }
   NOTREACHED();
 }
@@ -314,6 +316,28 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
   }
 }
 
+health::mojom::OsInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::OsInfoPtr input) {
+  return health::mojom::OsInfo::New(std::move(input->oem_name));
+}
+
+health::mojom::SystemInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::SystemInfoV2Ptr input) {
+  return health::mojom::SystemInfo::New(ConvertPtr(std::move(input->os_info)));
+}
+
+health::mojom::SystemResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::SystemResultV2Ptr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::SystemResultV2::Tag::SYSTEM_INFO_V2:
+      return health::mojom::SystemResult::NewSystemInfo(
+          ConvertPtr(std::move(input->get_system_info_v2())));
+    case cros_healthd::mojom::SystemResultV2::Tag::ERROR:
+      return health::mojom::SystemResult::NewError(
+          ConvertPtr(std::move(input->get_error())));
+  }
+}
+
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   return health::mojom::TelemetryInfo::New(
@@ -326,7 +350,8 @@ health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
       ConvertPtr(std::move(input->backlight_result)),
       ConvertPtr(std::move(input->fan_result)),
       ConvertPtr(std::move(input->stateful_partition_result)),
-      ConvertPtr(std::move(input->bluetooth_result)));
+      ConvertPtr(std::move(input->bluetooth_result)),
+      ConvertPtr(std::move(input->system_result_v2)));
 }
 
 }  // namespace unchecked

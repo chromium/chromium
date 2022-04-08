@@ -41,7 +41,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       health::mojom::ProbeCategoryEnum::kBacklight,
       health::mojom::ProbeCategoryEnum::kFan,
       health::mojom::ProbeCategoryEnum::kStatefulPartition,
-      health::mojom::ProbeCategoryEnum::kBluetooth};
+      health::mojom::ProbeCategoryEnum::kBluetooth,
+      health::mojom::ProbeCategoryEnum::kSystem};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -54,7 +55,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kBacklight,
           cros_healthd::mojom::ProbeCategoryEnum::kFan,
           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
-          cros_healthd::mojom::ProbeCategoryEnum::kBluetooth));
+          cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
+          cros_healthd::mojom::ProbeCategoryEnum::kSystem2));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -661,6 +663,48 @@ TEST(ProbeServiceConverters, BluetoothResultPtrError) {
   EXPECT_TRUE(output->is_error());
 }
 
+TEST(ProbeServiceConverters, OsInfoPtr) {
+  constexpr char kOemName[] = "OEM-NAME";
+
+  auto input = cros_healthd::mojom::OsInfo::New();
+  input->oem_name = kOemName;
+
+  const auto output = ConvertPtr(std::move(input));
+  ASSERT_TRUE(output);
+  EXPECT_EQ(output->oem_name, kOemName);
+}
+
+TEST(ProbeServiceConverters, SystemResultPtr) {
+  constexpr char kOemName[] = "OEM-NAME";
+
+  cros_healthd::mojom::SystemResultV2Ptr input;
+  {
+    auto os_info = cros_healthd::mojom::OsInfo::New();
+    os_info->oem_name = kOemName;
+
+    auto system_info_v2 = cros_healthd::mojom::SystemInfoV2::New();
+    system_info_v2->os_info = std::move(os_info);
+
+    input = cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
+        std::move(system_info_v2));
+  }
+
+  const auto output = ConvertPtr(std::move(input));
+  ASSERT_TRUE(output);
+  ASSERT_TRUE(output->is_system_info());
+
+  const auto& system_info_output = output->get_system_info();
+  ASSERT_TRUE(system_info_output->os_info);
+  EXPECT_EQ(system_info_output->os_info->oem_name, kOemName);
+}
+
+TEST(ProbeServiceConverters, SystemResultPtrError) {
+  const auto output =
+      ConvertPtr(cros_healthd::mojom::SystemResultV2::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
+}
+
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
   auto input = cros_healthd::mojom::TelemetryInfo::New();
   {
@@ -676,6 +720,7 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
     input->stateful_partition_result =
         cros_healthd::mojom::StatefulPartitionResult::New();
     input->bluetooth_result = cros_healthd::mojom::BluetoothResult::New();
+    input->system_result_v2 = cros_healthd::mojom::SystemResultV2::New();
   }
 
   EXPECT_EQ(
@@ -689,7 +734,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
           health::mojom::BacklightResult::New(),
           health::mojom::FanResult::New(),
           health::mojom::StatefulPartitionResult::New(),
-          health::mojom::BluetoothResult::New()));
+          health::mojom::BluetoothResult::New(),
+          health::mojom::SystemResult::New()));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
@@ -704,7 +750,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 health::mojom::BacklightResultPtr(nullptr),
                 health::mojom::FanResultPtr(nullptr),
                 health::mojom::StatefulPartitionResultPtr(nullptr),
-                health::mojom::BluetoothResultPtr(nullptr)));
+                health::mojom::BluetoothResultPtr(nullptr),
+                health::mojom::SystemResultPtr(nullptr)));
 }
 
 }  // namespace converters
