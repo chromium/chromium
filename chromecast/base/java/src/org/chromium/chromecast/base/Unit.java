@@ -15,8 +15,15 @@ package org.chromium.chromecast.base;
  */
 public final class Unit {
     private static final Unit sInstance = new Unit();
+
     private Unit() {}
+
     public static Unit unit() {
         return sInstance;
+    }
+
+    @Override
+    public String toString() {
+        return "()";
     }
 }
