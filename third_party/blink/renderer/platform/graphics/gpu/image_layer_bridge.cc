@@ -40,11 +40,14 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   auto paint_image = source->PaintImageForCurrentFrame();
   auto image_info = paint_image.GetSkImageInfo().makeWH(
       source->Size().width(), source->Size().height());
+  // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
+  // if possible. This is safe because the prerequisite capabilities are checked
+  // downstream in CanvasResourceProvider::CreateSharedImageProvider.
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, source->IsOriginTopLeft(),
-      gpu::SHARED_IMAGE_USAGE_DISPLAY);
+      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
