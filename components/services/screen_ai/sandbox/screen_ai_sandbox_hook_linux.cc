@@ -31,6 +31,8 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
     // fail later as the library does not exist.
     if (!screen_ai_library)
       VLOG(1) << dlerror();
+    else
+      VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
   }
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();

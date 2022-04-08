@@ -64,10 +64,10 @@ enum ErrorType {
   kFailedProcessingImage = 2,
 };
 
-// Main interface a client uses for Screen AI services. Each renderer has its
-// own ScreenAIAnnotator and all ScreenAIAnnotators of one profile use one
-// ScreenAIService.
-// Requests are sent from renderers in AxScreenAIAnnotator class.
+// Main interface a client uses for Screen AI services. Each browser mainframe
+// has its own ScreenAIAnnotator and all ScreenAIAnnotators of one profile use
+// one ScreenAIService.
+// Requests are sent from browsers in RenderFrameHostImpl class.
 interface ScreenAIAnnotator {
   // Receives a snapshot, schedules image processing, and returns the error
   // type (if any) and an array of detected nodes.

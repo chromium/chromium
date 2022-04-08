@@ -2567,7 +2567,6 @@ static_library("browser") {
 
     deps += [
       "//chrome/browser/error_reporting",
-      "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
       "//components/services/screen_ai/public/cpp:utilities",
     ]
   }

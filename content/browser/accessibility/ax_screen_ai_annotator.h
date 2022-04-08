@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace gfx {
 class Image;
@@ -16,14 +16,13 @@ class Image;
 
 namespace content {
 
+class BrowserContext;
 class RenderFrameHost;
 
 class AXScreenAIAnnotator {
  public:
-  AXScreenAIAnnotator(
-      RenderFrameHost* const render_frame_host,
-      mojo::AssociatedRemote<screen_ai::mojom::ScreenAIAnnotator>
-          screen_ai_annotator);
+  AXScreenAIAnnotator(RenderFrameHost* const render_frame_host,
+                      BrowserContext* browser_context);
   ~AXScreenAIAnnotator();
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
   AXScreenAIAnnotator& operator=(const AXScreenAIAnnotator&) = delete;
@@ -33,6 +32,11 @@ class AXScreenAIAnnotator {
   void Run();
 
  private:
+  // Returns the Screen AI service for the given browser context, creates it if
+  // it does not exist.
+  mojo::Remote<screen_ai::mojom::ScreenAIService>&
+  GetScreenAIServiceForBrowserContext(BrowserContext* browser_context);
+
   // Receives an screenshot and sends it to ScreenAI library for processing.
   void OnScreenshotReceived(gfx::Image snapshot);
 
@@ -44,8 +48,7 @@ class AXScreenAIAnnotator {
   // Owns us.
   raw_ptr<RenderFrameHost> const render_frame_host_;
 
-  mojo::AssociatedRemote<screen_ai::mojom::ScreenAIAnnotator>
-      screen_ai_annotator_;
+  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
   base::WeakPtrFactory<AXScreenAIAnnotator> weak_ptr_factory_{this};
 };

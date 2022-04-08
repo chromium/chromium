@@ -2672,14 +2672,9 @@ void RenderFrameHostImpl::RunScreenAIAnnotator() {
   if (!features::IsScreenAIEnabled())
     return;
   if (!ax_screen_ai_annotator_) {
-    mojo::AssociatedRemote<screen_ai::mojom::ScreenAIAnnotator>
-        screen_ai_annotator;
-    GetRemoteAssociatedInterfaces()->GetInterface(&screen_ai_annotator);
-
-    ax_screen_ai_annotator_ = std::make_unique<AXScreenAIAnnotator>(
-        this, std::move(screen_ai_annotator));
+    ax_screen_ai_annotator_ =
+        std::make_unique<AXScreenAIAnnotator>(this, GetBrowserContext());
   }
-
   ax_screen_ai_annotator_->Run();
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
