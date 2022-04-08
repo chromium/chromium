@@ -45,6 +45,8 @@ class DependenciesChrome : public Dependencies {
       content::BrowserContext* browser_context) const override;
 
   bool IsCustomTab(const content::WebContents& web_contents) const override;
+
+  bool IsWebLayer() const override;
 };
 
 }  // namespace autofill_assistant

@@ -56,6 +56,8 @@ class Dependencies {
 
   virtual bool IsCustomTab(const content::WebContents& web_contents) const = 0;
 
+  virtual bool IsWebLayer() const = 0;
+
  protected:
   Dependencies(
       JNIEnv* env,

@@ -87,4 +87,8 @@ bool DependenciesChrome::IsCustomTab(const WebContents& web_contents) const {
   return tab_android->IsCustomTab();
 }
 
+bool DependenciesChrome::IsWebLayer() const {
+  return false;
+}
+
 }  // namespace autofill_assistant
