@@ -56,4 +56,7 @@
     <!-- Dynamic color dimensions. -->
     <dimen name="feed_header_section_tab_bg_elevation_enabled">@dimen/default_elevation_2</dimen>
     <dimen name="feed_header_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
+
+    <!-- Menu footer chip dimensions. -->
+    <item name="menu_footer_chip_background_alpha" format="float" type="dimen">0.1</item>
 </resources>

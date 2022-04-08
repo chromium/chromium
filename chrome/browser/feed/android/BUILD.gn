@@ -161,6 +161,7 @@ android_resources("feed_java_resources") {
     "java/res/color/chip_hairline_color.xml",
     "java/res/color/header_title_text_color_list.xml",
     "java/res/color/menu_footer_chip_background.xml",
+    "java/res/color/menu_footer_chip_background_baseline.xml",
     "java/res/color/tab_layout_text_color_list.xml",
     "java/res/drawable-hdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable-mdpi/follow_accelerator_shadow.9.png",
