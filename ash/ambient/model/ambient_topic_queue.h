@@ -5,12 +5,15 @@
 #ifndef ASH_AMBIENT_MODEL_AMBIENT_TOPIC_QUEUE_H_
 #define ASH_AMBIENT_MODEL_AMBIENT_TOPIC_QUEUE_H_
 
+#include <memory>
 #include <queue>
+#include <utility>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -69,6 +72,7 @@ class ASH_EXPORT AmbientTopicQueue {
                     int topic_fetch_size,
                     base::TimeDelta topic_fetch_interval,
                     bool should_split_topics,
+                    std::unique_ptr<Delegate> delegate,
                     AmbientBackendController* backend_controller);
   AmbientTopicQueue(const AmbientTopicQueue&) = delete;
   AmbientTopicQueue& operator=(const AmbientTopicQueue&) = delete;
@@ -106,7 +110,10 @@ class ASH_EXPORT AmbientTopicQueue {
   bool HasReachedTopicFetchLimit() const;
 
   void FetchTopics();
-  void OnScreenUpdateInfoFetched(const ash::ScreenUpdate& screen_update);
+  void OnScreenUpdateInfoFetched(const base::RepeatingClosure& barrier_closure,
+                                 const gfx::Size& requested_topic_size,
+                                 const ash::ScreenUpdate& screen_update);
+  void OnAllScreenUpdateInfoFetched();
   void ScheduleFetchTopics(bool backoff);
   void Push(AmbientModeTopic topic);
   void RunPendingWaitCallbacks(WaitResult wait_result);
@@ -115,6 +122,7 @@ class ASH_EXPORT AmbientTopicQueue {
   const int topic_fetch_size_;
   const base::TimeDelta topic_fetch_interval_;
   const bool should_split_topics_;
+  const std::unique_ptr<Delegate> delegate_;
   const base::raw_ptr<AmbientBackendController> backend_controller_;
 
   std::queue<AmbientModeTopic> available_topics_;
@@ -136,6 +144,16 @@ class ASH_EXPORT AmbientTopicQueue {
   // is currently in progress. These are flushed/run when the topic fetch
   // completes.
   std::vector<WaitCallback> pending_wait_cbs_;
+
+  // Transient storage for the IMAX responses returned from each topic fetch.
+  // There is one entry per topic size requested since there is also one network
+  // request made per topic size.
+  //
+  // The key contains the requested topic size's width/height. Using a map
+  // ensures a *deterministic* ordering of the topic sizes when processing this
+  // map after each fetch, but the order itself is irrelevant.
+  base::flat_map<std::pair<int, int>, std::vector<AmbientModeTopic>>
+      pending_topic_batches_;
 
   base::WeakPtrFactory<AmbientTopicQueue> weak_factory_{this};
 };

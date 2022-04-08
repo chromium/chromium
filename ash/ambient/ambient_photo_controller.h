@@ -120,7 +120,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
   // Start/stop updating the screen contents.
   // We need different logics to update photos and weather info because they
   // have different refreshing intervals.
-  void StartScreenUpdate();
+  void StartScreenUpdate(
+      std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
   void StopScreenUpdate();
   bool IsScreenUpdateActive() const;
 
@@ -146,7 +147,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
   friend std::ostream& operator<<(std::ostream& os, State state);
 
   // Initialize variables.
-  void Init();
+  void Init(std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
 
   void FetchWeather();
 

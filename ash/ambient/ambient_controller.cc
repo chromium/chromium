@@ -12,6 +12,8 @@
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
+#include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
+#include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
@@ -795,7 +797,16 @@ void AmbientController::StartRefreshingImages() {
   DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
   ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
       CreatePhotoConfigForCurrentTheme());
-  ambient_photo_controller_->StartScreenUpdate();
+  std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
+  if (pending_animation_static_resources_) {
+    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
+        pending_animation_static_resources_->GetSkottieWrapper()
+            ->GetImageAssetMetadata());
+  } else {
+    topic_queue_delegate =
+        std::make_unique<AmbientTopicQueueSlideshowDelegate>();
+  }
+  ambient_photo_controller_->StartScreenUpdate(std::move(topic_queue_delegate));
 }
 
 void AmbientController::StopRefreshingImages() {

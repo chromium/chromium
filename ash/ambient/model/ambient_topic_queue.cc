@@ -5,6 +5,7 @@
 #include "ash/ambient/model/ambient_topic_queue.h"
 
 #include <algorithm>
+#include <limits>
 #include <random>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -124,11 +126,13 @@ AmbientTopicQueue::AmbientTopicQueue(
     int topic_fetch_size,
     base::TimeDelta topic_fetch_interval,
     bool should_split_topics,
+    std::unique_ptr<Delegate> delegate,
     AmbientBackendController* backend_controller)
     : topic_fetch_limit_(topic_fetch_limit),
       topic_fetch_size_(topic_fetch_size),
       topic_fetch_interval_(topic_fetch_interval),
       should_split_topics_(should_split_topics),
+      delegate_(std::move(delegate)),
       backend_controller_(backend_controller),
       fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy) {
   DCHECK_GT(topic_fetch_limit_, 0);
@@ -177,34 +181,37 @@ void AmbientTopicQueue::FetchTopics() {
 
   topic_fetch_in_progress_ = true;
   fetch_topic_timer_.Stop();
+  pending_topic_batches_.clear();
 
-  // TODO(b/225043577): Move this screen size logic to a separate class. It's
-  // here temporarily.
-  auto* ambient_container = Shell::GetContainer(
-      Shell::GetPrimaryRootWindow(), kShellWindowId_AmbientModeContainer);
-  gfx::Size display_size_px = display::Screen::GetScreen()
-                                  ->GetDisplayNearestView(ambient_container)
-                                  .GetSizeInPixel();
-
-  // For portrait photos, the server returns image of half requested width.
-  // When the device is in portrait mode, where only shows one portrait photo,
-  // it will cause unnecessary scaling. To reduce this effect, always requesting
-  // the landscape display size.
-  const int width = std::max(display_size_px.width(), display_size_px.height());
-  const int height =
-      std::min(display_size_px.width(), display_size_px.height());
-
-  backend_controller_->FetchScreenUpdateInfo(
-      topic_fetch_size_, gfx::Size(width, height),
-      base::BindOnce(&AmbientTopicQueue::OnScreenUpdateInfoFetched,
+  // Make one topic network request per topic size and wait for them all to
+  // complete.
+  std::vector<gfx::Size> topic_sizes = delegate_->GetTopicSizes();
+  int num_topic_sizes_requested = topic_sizes.size();
+  DCHECK_GT(num_topic_sizes_requested, 0);
+  // Distribute the |topic_fetch_size_| equally among the different topic
+  // sizes requested. For example, if |topic_fetch_size_| is 100 and there is a
+  // portrait and landscape size requested, request 50 of each. Impose a floor
+  // of 1 though in case there are a bunch of topic sizes requested.
+  int num_topics_per_request =
+      std::max(topic_fetch_size_ / num_topic_sizes_requested, 1);
+  auto barrier_closure = base::BarrierClosure(
+      /*num_closures=*/num_topic_sizes_requested,
+      base::BindOnce(&AmbientTopicQueue::OnAllScreenUpdateInfoFetched,
                      weak_factory_.GetWeakPtr()));
+  for (const gfx::Size& requested_topic_size : topic_sizes) {
+    backend_controller_->FetchScreenUpdateInfo(
+        num_topics_per_request, requested_topic_size,
+        base::BindOnce(&AmbientTopicQueue::OnScreenUpdateInfoFetched,
+                       weak_factory_.GetWeakPtr(), barrier_closure,
+                       requested_topic_size));
+  }
 }
 
 void AmbientTopicQueue::OnScreenUpdateInfoFetched(
+    const base::RepeatingClosure& barrier_closure,
+    const gfx::Size& requested_topic_size,
     const ash::ScreenUpdate& screen_update) {
-  DCHECK(topic_fetch_in_progress_);
-  topic_fetch_in_progress_ = false;
-
+  DCHECK(barrier_closure);
   std::vector<AmbientModeTopic> processed_topics;
   if (should_split_topics_) {
     for (const AmbientModeTopic& topic : screen_update.next_topics) {
@@ -229,19 +236,66 @@ void AmbientTopicQueue::OnScreenUpdateInfoFetched(
   // happened during the fetch or CreatePairedTopics() yielded no paired topics.
   if (processed_topics.empty()) {
     if (screen_update.next_topics.empty()) {
-      LOG(WARNING) << "IMAX server returned screen update with no topics.";
+      LOG(WARNING)
+          << "IMAX server returned screen update with no topics for size "
+          << requested_topic_size.ToString();
     } else {
-      LOG(WARNING) << "CreatePairedTopics() yielded no topics.";
+      LOG(WARNING) << "CreatePairedTopics() yielded no topics for size "
+                   << requested_topic_size.ToString();
     }
+  }
+
+  bool inserted = pending_topic_batches_
+                      .emplace(std::make_pair(requested_topic_size.width(),
+                                              requested_topic_size.height()),
+                               std::move(processed_topics))
+                      .second;
+  DCHECK(inserted) << "Duplicate topic size found: "
+                   << requested_topic_size.ToString();
+  barrier_closure.Run();
+}
+
+void AmbientTopicQueue::OnAllScreenUpdateInfoFetched() {
+  DCHECK(topic_fetch_in_progress_);
+  topic_fetch_in_progress_ = false;
+
+  size_t total_fetched_topics = 0;
+  size_t smallest_topic_batch = std::numeric_limits<size_t>::max();
+  for (const auto& [_, topic_batch] : pending_topic_batches_) {
+    total_fetched_topics += topic_batch.size();
+    if (topic_batch.size() < smallest_topic_batch)
+      smallest_topic_batch = topic_batch.size();
+  }
+
+  if (total_fetched_topics == 0) {
+    LOG(ERROR) << "Topic fetch returned no topics. Retrying with backoff";
     fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     ScheduleFetchTopics(/*backoff=*/true);
     RunPendingWaitCallbacks(WaitResult::kTopicFetchBackingOff);
     return;
   }
 
-  for (AmbientModeTopic& processed_topic : processed_topics) {
-    Push(std::move(processed_topic));
+  if (smallest_topic_batch > 0) {
+    // Intersperse topics from each requested size in the queue so that the
+    // caller sees a uniform distribution of each size when popping from it.
+    for (size_t topic_idx = 0; topic_idx < smallest_topic_batch; ++topic_idx) {
+      for (auto& [_, topic_batch] : pending_topic_batches_) {
+        DCHECK_LT(topic_idx, topic_batch.size());
+        Push(std::move(topic_batch[topic_idx]));
+      }
+    }
+  } else {
+    // In the worst case where there were no topics fetched a topic size, add
+    // just one topic from all of the other topic sizes. This means there will
+    // not be a completely uniform distribution in the end, but this is damage
+    // control and prevents scenarios where we don't fill the queue with
+    // anything because of one problematic request.
+    for (auto& [_, topic_batch] : pending_topic_batches_) {
+      if (!topic_batch.empty())
+        Push(std::move(topic_batch.front()));
+    }
   }
+
   fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/true);
   ScheduleFetchTopics(/*backoff=*/false);
   RunPendingWaitCallbacks(WaitResult::kTopicsAvailable);

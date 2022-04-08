@@ -4,13 +4,16 @@
 
 #include "ash/ambient/model/ambient_topic_queue.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_topic_queue_test_delegate.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +23,7 @@ namespace ash {
 namespace {
 
 using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -67,6 +71,10 @@ AmbientModeTopic CreateTopic(const std::string& url,
   return topic;
 }
 
+MATCHER_P(TopicUrlContainsSize, size, "") {
+  return arg.url.find(size.ToString()) != std::string::npos;
+}
+
 class AmbientTopicQueueTest : public AmbientAshTestBase {
  protected:
   static constexpr ::ambient::TopicType kDefaultTopicType =
@@ -86,7 +94,9 @@ class AmbientTopicQueuePairedTopicTest : public AmbientAshTestBase {};
 TEST_F(AmbientTopicQueueTest, WaitForTopicsAvailable) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/5,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -104,7 +114,9 @@ TEST_F(AmbientTopicQueueTest, WaitForTopicsAvailable) {
 TEST_F(AmbientTopicQueueTest, RefillsWhenEmpty) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -120,7 +132,9 @@ TEST_F(AmbientTopicQueueTest, RefillsWhenEmpty) {
 TEST_F(AmbientTopicQueueTest, RefillsOnSchedule) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   // Wait for first topic to be pushed.
   ASSERT_THAT(WaitForTopicsAvailable(queue),
@@ -135,7 +149,9 @@ TEST_F(AmbientTopicQueueTest, RefillsOnSchedule) {
 TEST_F(AmbientTopicQueueTest, StopsRefillingAtLimit) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/2, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -155,7 +171,9 @@ TEST_F(AmbientTopicQueueTest, StopsRefillingAtLimit) {
 TEST_F(AmbientTopicQueueTest, StopsRefillingAtLimitForScheduledRefills) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/2, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   // Fast forward some huge amount so that the topic limit should be reached
   // via scheduled refills.
@@ -170,7 +188,9 @@ TEST_F(AmbientTopicQueueTest, NotifiesWhenFetchFailed) {
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
   AmbientTopicQueue queue(/*topic_fetch_limit=*/2, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   EXPECT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicFetchBackingOff));
@@ -180,7 +200,9 @@ TEST_F(AmbientTopicQueueTest, NotifiesWhenBackingOff) {
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
   AmbientTopicQueue queue(/*topic_fetch_limit=*/2, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   // Fast forward some huge amount to enter backoff state.
   task_environment()->FastForwardBy(10 * kDefaultTopicFetchInterval);
@@ -192,7 +214,9 @@ TEST_F(AmbientTopicQueueTest, RetriesAfterFailedFetch) {
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
   AmbientTopicQueue queue(/*topic_fetch_limit=*/2, /*topic_fetch_size=*/1,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   // Fast forward by some huge amount of time to simulate a series of failures
   // with backoff.
@@ -212,7 +236,9 @@ TEST_F(AmbientTopicQueueTest, DoesNotPairTopicsWhenSplitIsSet) {
       ::ambient::TopicType::kCulturalInstitute);
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/2,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/true, backend_controller());
+                          /*should_split_topics=*/true,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -226,7 +252,9 @@ TEST_F(AmbientTopicQueueTest, DoesNotPairTopicsWhenSplitIsSet) {
 TEST_F(AmbientTopicQueuePairedTopicTest, SplitsIncomingTopics) {
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/2,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/true, backend_controller());
+                          /*should_split_topics=*/true,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -281,7 +309,9 @@ TEST_F(AmbientTopicQueueTest, ShouldPairLandscapeImages) {
 
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/10,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -353,7 +383,9 @@ TEST_F(AmbientTopicQueueTest, ShouldNotPairPortraitImages) {
 
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/10,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -432,7 +464,9 @@ TEST_F(AmbientTopicQueueTest,
 
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/10,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -468,7 +502,9 @@ TEST_F(AmbientTopicQueueTest, ShouldNotPairTwoLandscapeImagesInGeoCategory) {
 
   AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/10,
                           kDefaultTopicFetchInterval,
-                          /*should_split_topics=*/false, backend_controller());
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
 
   ASSERT_THAT(WaitForTopicsAvailable(queue),
               Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
@@ -489,6 +525,158 @@ TEST_F(AmbientTopicQueueTest, ShouldNotPairTwoLandscapeImagesInGeoCategory) {
   EXPECT_EQ(fetched_topics[1 - index].topic_type, ::ambient::TopicType::kGeo);
   EXPECT_EQ(fetched_topics[1 - index].related_image_url, "");
   EXPECT_EQ(fetched_topics[1 - index].related_details, "");
+}
+
+TEST_F(AmbientTopicQueueTest, UniformTopicSizeDistribution) {
+  static constexpr gfx::Size kSize1 = gfx::Size(100, 200);
+  static constexpr gfx::Size kSize2 = gfx::Size(200, 100);
+
+  backend_controller()->set_custom_topic_generator(base::BindLambdaForTesting(
+      [](int num_topics_requested, const gfx::Size& topic_size) {
+        std::vector<AmbientModeTopic> topics;
+        for (int i = 0; i < num_topics_requested; ++i) {
+          topics.push_back(CreateTopic(
+              /*url=*/base::StringPrintf("http://test-url-%s.com",
+                                         topic_size.ToString().c_str()),
+              /*details=*/"",
+              /*is_portrait=*/false,
+              /*related_url=*/"",
+              /*related_details=*/"", kDefaultTopicType));
+        }
+        return topics;
+      }));
+
+  auto delegate = std::make_unique<AmbientTopicQueueTestDelegate>();
+  delegate->SetTopicSizes({kSize1, kSize2});
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/4,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false, std::move(delegate),
+                          backend_controller());
+
+  // Fast forward some huge amount so that the topic limit should be reached
+  // via scheduled refills.
+  task_environment()->FastForwardBy(10 * kDefaultTopicFetchInterval);
+  std::vector<AmbientModeTopic> fetched_topics = PopUntilEmpty(queue);
+  EXPECT_THAT(
+      fetched_topics,
+      ElementsAre(TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2)));
+}
+
+TEST_F(AmbientTopicQueueTest,
+       TrimsIMAXResponseForUniformTopicSizeDistribution) {
+  static constexpr gfx::Size kSize1 = gfx::Size(100, 200);
+  static constexpr gfx::Size kSize2 = gfx::Size(200, 100);
+
+  backend_controller()->set_custom_topic_generator(base::BindLambdaForTesting(
+      [](int num_topics_requested, const gfx::Size& topic_size) {
+        int num_topics_to_return = topic_size == kSize1
+                                       ? num_topics_requested / 2
+                                       : num_topics_requested;
+        std::vector<AmbientModeTopic> topics;
+        for (int i = 0; i < num_topics_to_return; ++i) {
+          topics.push_back(CreateTopic(
+              /*url=*/base::StringPrintf("http://test-url-%s.com",
+                                         topic_size.ToString().c_str()),
+              /*details=*/"",
+              /*is_portrait=*/false,
+              /*related_url=*/"",
+              /*related_details=*/"", kDefaultTopicType));
+        }
+        return topics;
+      }));
+
+  auto delegate = std::make_unique<AmbientTopicQueueTestDelegate>();
+  delegate->SetTopicSizes({kSize1, kSize2});
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/4,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false, std::move(delegate),
+                          backend_controller());
+
+  ASSERT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
+  std::vector<AmbientModeTopic> fetched_topics = PopUntilEmpty(queue);
+  EXPECT_THAT(fetched_topics, ElementsAre(TopicUrlContainsSize(kSize1),
+                                          TopicUrlContainsSize(kSize2)));
+}
+
+TEST_F(AmbientTopicQueueTest, HandlesEmptyResponseForSingleTopicSize) {
+  static constexpr gfx::Size kSize1 = gfx::Size(100, 200);
+  static constexpr gfx::Size kSize2 = gfx::Size(200, 100);
+
+  backend_controller()->set_custom_topic_generator(base::BindLambdaForTesting(
+      [](int num_topics_requested, const gfx::Size& topic_size) {
+        std::vector<AmbientModeTopic> topics;
+        if (topic_size == kSize1)
+          return topics;
+
+        for (int i = 0; i < num_topics_requested; ++i) {
+          topics.push_back(CreateTopic(
+              /*url=*/base::StringPrintf("http://test-url-%s.com",
+                                         topic_size.ToString().c_str()),
+              /*details=*/"",
+              /*is_portrait=*/false,
+              /*related_url=*/"",
+              /*related_details=*/"", kDefaultTopicType));
+        }
+        return topics;
+      }));
+
+  auto delegate = std::make_unique<AmbientTopicQueueTestDelegate>();
+  delegate->SetTopicSizes({kSize1, kSize2});
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/4,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false, std::move(delegate),
+                          backend_controller());
+
+  ASSERT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
+  std::vector<AmbientModeTopic> fetched_topics = PopUntilEmpty(queue);
+  EXPECT_THAT(fetched_topics, ElementsAre(TopicUrlContainsSize(kSize2)));
+}
+
+TEST_F(AmbientTopicQueueTest, HandlesManyRequestedTopicSizes) {
+  static constexpr gfx::Size kSize1 = gfx::Size(100, 200);
+  static constexpr gfx::Size kSize2 = gfx::Size(200, 100);
+  static constexpr gfx::Size kSize3 = gfx::Size(300, 400);
+  static constexpr gfx::Size kSize4 = gfx::Size(400, 300);
+
+  backend_controller()->set_custom_topic_generator(base::BindLambdaForTesting(
+      [](int num_topics_requested, const gfx::Size& topic_size) {
+        std::vector<AmbientModeTopic> topics;
+        for (int i = 0; i < num_topics_requested; ++i) {
+          topics.push_back(CreateTopic(
+              /*url=*/base::StringPrintf("http://test-url-%s.com",
+                                         topic_size.ToString().c_str()),
+              /*details=*/"",
+              /*is_portrait=*/false,
+              /*related_url=*/"",
+              /*related_details=*/"", kDefaultTopicType));
+        }
+        return topics;
+      }));
+
+  auto delegate = std::make_unique<AmbientTopicQueueTestDelegate>();
+  delegate->SetTopicSizes({kSize1, kSize2, kSize3, kSize4});
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/2,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false, std::move(delegate),
+                          backend_controller());
+
+  // Fast forward some huge amount so that the topic limit should be reached
+  // via scheduled refills.
+  task_environment()->FastForwardBy(10 * kDefaultTopicFetchInterval);
+  std::vector<AmbientModeTopic> fetched_topics = PopUntilEmpty(queue);
+  EXPECT_THAT(
+      fetched_topics,
+      ElementsAre(TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize3), TopicUrlContainsSize(kSize4),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2),
+                  TopicUrlContainsSize(kSize3), TopicUrlContainsSize(kSize4),
+                  TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2)));
 }
 
 }  // namespace

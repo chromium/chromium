@@ -137,7 +137,8 @@ AmbientPhotoController::AmbientPhotoController(
 
 AmbientPhotoController::~AmbientPhotoController() = default;
 
-void AmbientPhotoController::Init() {
+void AmbientPhotoController::Init(
+    std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate) {
   state_ = State::kPreparingNextTopicSet;
   topic_index_ = 0;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
@@ -147,17 +148,19 @@ void AmbientPhotoController::Init() {
       /*topic_fetch_limit=*/kMaxNumberOfCachedImages,
       /*topic_fetch_size=*/kTopicsBatchSize, kTopicFetchInterval,
       ambient_backend_model_.photo_config().should_split_topics,
+      std::move(topic_queue_delegate),
       Shell::Get()->ambient_controller()->ambient_backend_controller());
 }
 
-void AmbientPhotoController::StartScreenUpdate() {
+void AmbientPhotoController::StartScreenUpdate(
+    std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate) {
   if (state_ != State::kInactive) {
     DVLOG(3) << "AmbientPhotoController is already active. Ignoring "
                 "StartScreenUpdate().";
     return;
   }
 
-  Init();
+  Init(std::move(topic_queue_delegate));
   FetchWeather();
   weather_refresh_timer_.Start(
       FROM_HERE, kWeatherRefreshInterval,
