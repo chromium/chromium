@@ -75,7 +75,7 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // target devices.
   void CreateManageDevicesLink();
 
-  raw_ptr<SendTabToSelfBubbleController> controller_;  // Weak reference.
+  base::WeakPtr<SendTabToSelfBubbleController> controller_;
 
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().
