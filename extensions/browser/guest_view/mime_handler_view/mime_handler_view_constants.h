@@ -12,8 +12,8 @@ namespace mime_handler_view {
 // API namespace.
 extern const char kAPINamespace[];
 
-// Other.
-extern const char kViewId[];
+// Create parameters.
+extern const char kStreamId[];
 
 }  // namespace mime_handler_view
 

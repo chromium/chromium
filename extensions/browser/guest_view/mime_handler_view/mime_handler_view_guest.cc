@@ -164,14 +164,14 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
 void MimeHandlerViewGuest::CreateWebContents(
     const base::DictionaryValue& create_params,
     WebContentsCreatedCallback callback) {
-  const std::string* view_id =
-      create_params.FindStringKey(mime_handler_view::kViewId);
-  if (!view_id || view_id->empty()) {
+  const std::string* stream_id =
+      create_params.FindStringKey(mime_handler_view::kStreamId);
+  if (!stream_id || stream_id->empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
-  stream_ =
-      MimeHandlerStreamManager::Get(browser_context())->ReleaseStream(*view_id);
+  stream_ = MimeHandlerStreamManager::Get(browser_context())
+                ->ReleaseStream(*stream_id);
   if (!stream_) {
     std::move(callback).Run(nullptr);
     return;

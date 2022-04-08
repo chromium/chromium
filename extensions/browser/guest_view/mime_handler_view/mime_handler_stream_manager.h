@@ -42,17 +42,12 @@ class MimeHandlerStreamManager : public KeyedService,
   static MimeHandlerStreamManager* Get(content::BrowserContext* context);
 
   // The |frame_tree_node_id| parameter is used for the top level plugins case
-  // (PDF, etc). If this parameter has a valid value then it overrides the
-  // |render_process_id| and |render_frame_id| parameters.
-  // The |render_process_id| is the id of the renderer process.
-  // The |render_frame_id| is the routing id of the RenderFrameHost.
-  void AddStream(const std::string& view_id,
+  // (PDF, etc).
+  void AddStream(const std::string& stream_id,
                  std::unique_ptr<StreamContainer> stream,
-                 int frame_tree_node_id,
-                 int render_process_id,
-                 int render_frame_id);
+                 int frame_tree_node_id);
 
-  std::unique_ptr<StreamContainer> ReleaseStream(const std::string& view_id);
+  std::unique_ptr<StreamContainer> ReleaseStream(const std::string& stream_id);
 
   // ExtensionRegistryObserver override.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -64,15 +59,15 @@ class MimeHandlerStreamManager : public KeyedService,
 
   class EmbedderObserver;
 
-  // Maps view id->StreamContainer to maintain their lifetime until they are
+  // Maps stream id->StreamContainer to maintain their lifetime until they are
   // used or removed.
   std::map<std::string, std::unique_ptr<StreamContainer>> streams_;
 
-  // Maps extension id->view id for removing the associated streams when an
+  // Maps extension id->stream id for removing the associated streams when an
   // extension is unloaded.
   std::map<std::string, std::set<std::string>> streams_by_extension_id_;
 
-  // Maps view id->EmbedderObserver for maintaining the lifetime of the
+  // Maps stream id->EmbedderObserver for maintaining the lifetime of the
   // EmbedderObserver until it is removed.
   std::map<std::string, std::unique_ptr<EmbedderObserver>> embedder_observers_;
 };

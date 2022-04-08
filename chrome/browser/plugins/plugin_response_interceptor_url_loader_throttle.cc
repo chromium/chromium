@@ -126,9 +126,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   MimeTypesHandler::ReportUsedHandler(extension_id);
 
-  std::string view_id = base::GenerateGUID();
-  // The string passed down to the original client with the response body.
-  std::string payload = view_id;
+  // TODO(mcnee): Could this id just be an int instead? This is only used
+  // internally.
+  const std::string stream_id = base::GenerateGUID();
 
   mojo::PendingRemote<network::mojom::URLLoader> dummy_new_loader;
   std::ignore = dummy_new_loader.InitWithNewPipeAndPassReceiver();
@@ -137,12 +137,14 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       new_client.BindNewPipeAndPassReceiver();
 
   uint32_t data_pipe_size = 64U;
+  // The string passed down to the original client with the response body.
+  std::string payload;
   // Provide the MimeHandlerView code a chance to override the payload. This is
   // the case where the resource is handled by frame-based MimeHandlerView.
   *defer = extensions::MimeHandlerViewAttachHelper::
       OverrideBodyForInterceptedResponse(
-          frame_tree_node_id_, response_url, response_head->mime_type, view_id,
-          &payload, &data_pipe_size,
+          frame_tree_node_id_, response_url, response_head->mime_type,
+          stream_id, &payload, &data_pipe_size,
           base::BindOnce(
               &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
               weak_factory_.GetWeakPtr()));
@@ -195,8 +197,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       FROM_HERE,
       base::BindOnce(
           &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
-          extension_id, view_id, embedded, frame_tree_node_id_,
-          -1 /* render_process_id */, -1 /* render_frame_id */,
+          extension_id, stream_id, embedded, frame_tree_node_id_,
           std::move(transferrable_loader), response_url));
 }
 
