@@ -90,7 +90,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 }
 
 // Tests that QLPreviewController is shown for sucessfully downloaded USDZ file.
-- (void)testDownloadUsdz {
+// TODO(crbug.com/1060374): Test fails on iOS15 device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDownloadUsdz DISABLED_testDownloadUsdz
+#else
+#define MAYBE_testDownloadUsdz testDownloadUsdz
+#endif
+- (void)MAYBE_testDownloadUsdz {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Good"];
   [ChromeEarlGrey tapWebStateElementWithID:@"good"];
@@ -168,7 +174,16 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       @"AR preview dialog UI was presented");
 }
 
-- (void)testVisibilitychangeEventFired {
+// Tests that the visibilitychange event is fired when quicklook is
+// shown/hidden.
+// TODO(crbug.com/1060374): Test fails on iOS15 device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibilitychangeEventFired \
+  DISABLED_testVisibilitychangeEventFired
+#else
+#define MAYBE_testVisibilitychangeEventFired testVisibilitychangeEventFired
+#endif
+- (void)MAYBE_testVisibilitychangeEventFired {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Good"];
   [ChromeEarlGrey tapWebStateElementWithID:@"good"];
