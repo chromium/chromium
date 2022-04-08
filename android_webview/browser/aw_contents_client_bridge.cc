@@ -376,6 +376,15 @@ bool AwContentsClientBridge::ShouldOverrideUrlLoading(const std::u16string& url,
   return true;
 }
 
+bool AwContentsClientBridge::SendBrowseIntent(const std::u16string& url) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj)
+    return false;
+  ScopedJavaLocalRef<jstring> jurl = ConvertUTF16ToJavaString(env, url);
+  return Java_AwContentsClientBridge_sendBrowseIntent(env, obj, jurl);
+}
+
 void AwContentsClientBridge::NewDownload(const GURL& url,
                                          const std::string& user_agent,
                                          const std::string& content_disposition,

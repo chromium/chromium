@@ -1965,6 +1965,25 @@ public class AwSettings {
         }
     }
 
+    public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
+        synchronized (mAwSettingsLock) {
+            mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
+                if (mNativeAwSettings != 0) {
+                    AwSettingsJni.get().setEnterpriseAuthenticationAppLinkPolicyEnabled(
+                            mNativeAwSettings, AwSettings.this, enabled);
+                }
+            });
+        }
+    }
+
+    public boolean getEnterpriseAuthenticationAppLinkPolicyEnabled() {
+        synchronized (mAwSettingsLock) {
+            assert mNativeAwSettings != 0;
+            return AwSettingsJni.get().getEnterpriseAuthenticationAppLinkPolicyEnabled(
+                    mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         long init(AwSettings caller, WebContents webContents);
@@ -1984,5 +2003,9 @@ public class AwSettings {
         void updateCookiePolicyLocked(long nativeAwSettings, AwSettings caller);
         void updateAllowFileAccessLocked(long nativeAwSettings, AwSettings caller);
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
+        void setEnterpriseAuthenticationAppLinkPolicyEnabled(
+                long nativeAwSettings, AwSettings caller, boolean enabled);
+        boolean getEnterpriseAuthenticationAppLinkPolicyEnabled(
+                long nativeAwSettings, AwSettings caller);
     }
 }

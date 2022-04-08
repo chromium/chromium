@@ -132,6 +132,8 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
 
   embedder_support::OriginTrialPrefs::RegisterPrefs(pref_registry.get());
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
+  AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
+      pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 

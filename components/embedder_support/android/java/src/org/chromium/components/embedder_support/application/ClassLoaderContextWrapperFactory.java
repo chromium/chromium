@@ -127,7 +127,7 @@ public class ClassLoaderContextWrapperFactory {
             if (ContextUtils.activityFromContext(this) == null) {
                 // FLAG_ACTIVITY_NEW_TASK is needed to start activities from a non-activity
                 // context.
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
 
             super.startActivity(intent);

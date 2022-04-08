@@ -50,6 +50,17 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildHandlerList(
       policy::key::kAuthAndroidNegotiateAccountType,
       prefs::kAuthAndroidNegotiateAccountType, base::Value::Type::STRING));
 
+  // TODO(ayushsha): Add custom SchemaValidation handler to
+  // * Validate the format of url.
+  // * Maximum authentication url that can be added.
+  handlers->AddHandler(
+      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
+          policy::key::kEnterpriseAuthenticationAppLinkPolicy,
+          prefs::kEnterpriseAuthAppLinkPolicy, chrome_schema,
+          policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
   return handlers;
 }
 

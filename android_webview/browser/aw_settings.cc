@@ -78,6 +78,9 @@ AwSettings::AwSettings(JNIEnv* env,
       javascript_can_open_windows_automatically_(false),
       allow_third_party_cookies_(false),
       allow_file_access_(false),
+      enterprise_authentication_app_link_policy_enabled_(
+          true),  // TODO(b/222053757,ayushsha): Change this policy to be by
+                  // default false from next Android version(Maybe Android U).
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -542,6 +545,19 @@ bool AwSettings::IsForceDarkApplied(JNIEnv* env,
     return aw_dark_mode->is_force_dark_applied();
   }
   return false;
+}
+
+void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean enabled) {
+  enterprise_authentication_app_link_policy_enabled_ = enabled;
+}
+
+bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return enterprise_authentication_app_link_policy_enabled();
 }
 
 bool AwSettings::GetAllowFileAccess() {

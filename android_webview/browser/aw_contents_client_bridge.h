@@ -99,6 +99,9 @@ class AwContentsClientBridge {
                                 bool is_redirect,
                                 bool is_main_frame,
                                 bool* ignore_navigation);
+
+  bool SendBrowseIntent(const std::u16string& url);
+
   void NewDownload(const GURL& url,
                    const std::string& user_agent,
                    const std::string& content_disposition,

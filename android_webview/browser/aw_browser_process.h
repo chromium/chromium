@@ -30,6 +30,7 @@ namespace prefs {
 // Used for Kerberos authentication.
 extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kAuthServerAllowlist[];
+extern const char kEnterpriseAuthAppLinkPolicy[];
 
 }  // namespace prefs
 
@@ -72,6 +73,9 @@ class AwBrowserProcess {
 
   static void RegisterNetworkContextLocalStatePrefs(
       PrefRegistrySimple* pref_registry);
+  static void RegisterEnterpriseAuthenticationAppLinkPolicyPref(
+      PrefRegistrySimple* pref_registry);
+
   // Constructs HttpAuthDynamicParams based on |local_state_|.
   network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams();
 

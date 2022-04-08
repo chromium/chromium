@@ -99,6 +99,17 @@ class AwSettings : public content::WebContentsObserver {
   bool IsForceDarkApplied(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
 
+  void SetEnterpriseAuthenticationAppLinkPolicyEnabled(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jboolean enabled);
+  bool GetEnterpriseAuthenticationAppLinkPolicyEnabled(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  inline bool enterprise_authentication_app_link_policy_enabled() {
+    return enterprise_authentication_app_link_policy_enabled_;
+  }
+
  private:
   AwRenderViewHostExt* GetAwRenderViewHostExt();
   void UpdateEverything();
@@ -112,6 +123,7 @@ class AwSettings : public content::WebContentsObserver {
   bool javascript_can_open_windows_automatically_;
   bool allow_third_party_cookies_;
   bool allow_file_access_;
+  bool enterprise_authentication_app_link_policy_enabled_;
 
   JavaObjectWeakGlobalRef aw_settings_;
 };
