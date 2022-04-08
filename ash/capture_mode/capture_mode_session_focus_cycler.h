@@ -137,14 +137,6 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // displaying a region.
   bool RegionGroupFocused() const;
 
-  // Returns true if the current focus group is associated with capture bar,
-  // otherwise returns false.
-  bool CaptureBarFocused() const;
-
-  // Returns true if the current focus is on capture label, otherwise returns
-  // false.
-  bool CaptureLabelFocused() const;
-
   // Gets the current fine tune position for drawing the focus rects/rings on
   // the session's layer. Returns FineTunePosition::kNone if focus is on another
   // group.

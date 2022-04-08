@@ -1056,7 +1056,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       else if (can_exit_on_escape_)
         controller_->Stop();  // |this| is destroyed here.
 
-      MaybeUpdateCaptureUisOpacity();
       return;
     }
 
@@ -1071,10 +1070,8 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       event->SetHandled();
 
-      if (focus_cycler_->OnSpacePressed()) {
-        MaybeUpdateCaptureUisOpacity();
+      if (focus_cycler_->OnSpacePressed())
         return;
-      }
 
       // Create a default region if we are in region mode and there is no
       // existing region.
@@ -1089,7 +1086,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       event->SetHandled();
       focus_cycler_->AdvanceFocus(/*reverse=*/event->IsShiftDown());
-      MaybeUpdateCaptureUisOpacity();
       return;
     }
 
@@ -1373,14 +1369,6 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
         opacity = 0.f;
         continue;
       }
-
-      if (focus_cycler_->CaptureBarFocused())
-        continue;
-    }
-
-    if (widget == capture_label_widget_.get() &&
-        focus_cycler_->CaptureLabelFocused()) {
-      continue;
     }
 
     if (IsWidgetOverlappedWithCameraPreview(widget))

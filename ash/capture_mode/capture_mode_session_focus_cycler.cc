@@ -292,16 +292,6 @@ bool CaptureModeSessionFocusCycler::RegionGroupFocused() const {
          current_focus_group_ == FocusGroup::kCaptureButton;
 }
 
-bool CaptureModeSessionFocusCycler::CaptureBarFocused() const {
-  return current_focus_group_ == FocusGroup::kTypeSource ||
-         current_focus_group_ == FocusGroup::kSettingsClose ||
-         current_focus_group_ == FocusGroup::kPendingSettings;
-}
-
-bool CaptureModeSessionFocusCycler::CaptureLabelFocused() const {
-  return current_focus_group_ == FocusGroup::kCaptureButton;
-}
-
 FineTunePosition CaptureModeSessionFocusCycler::GetFocusedFineTunePosition()
     const {
   if (current_focus_group_ != FocusGroup::kSelection)
