@@ -2226,6 +2226,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PASSWORD_GENERATION_DIALOG_TITLE" desc="Text shown in a modal dialog that displays a generated password. This dialog is triggered by the user requesting to generate a password.">
         Suggested password
       </message>
+      <message name="IDS_PASSWORD_GENERATION_DIALOG_TITLE_UPM_BRANDED" desc="Text shown in a modal dialog that displays a generated password. This dialog is triggered by the user requesting to generate a password. Unified Password Manager version.">
+        Use strong password?
+      </message>
       <message name="IDS_PASSWORD_GENERATION_DIALOG_CANCEL_BUTTON" desc="Text for the cancel button belonging to the modal dialog that displays a generated password. Can be used by the user to cancel the password generation flow.">
         Cancel
       </message>
