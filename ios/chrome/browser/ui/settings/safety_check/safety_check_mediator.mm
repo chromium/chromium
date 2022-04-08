@@ -98,8 +98,11 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 }  // namespace
 
 @interface SafetyCheckMediator () <BooleanObserver, PasswordCheckObserver> {
+  scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
+
   // A helper object for observing changes in the password check status
-  // and changes to the compromised credentials list.
+  // and changes to the compromised credentials list. It needs to be destroyed
+  // before `_passwordCheckManager`, so it needs to be declared afterwards.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 }
 
@@ -174,6 +177,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 @end
 
 @implementation SafetyCheckMediator
+
+@synthesize passwordCheckManager = _passwordCheckManager;
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                    passwordCheckManager:
@@ -302,6 +307,15 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   [self reconfigurePasswordCheckItem];
   [self reconfigureUpdateCheckItem];
   [self reconfigureSafeBrowsingCheckItem];
+}
+
+#pragma mark - Public Methods
+
+- (void)startCheckIfNotRunning {
+  if (self.checksRemaining) {
+    return;
+  }
+  [self startCheck];
 }
 
 #pragma mark - PasswordCheckObserver
@@ -661,7 +675,11 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
     return;
   }
+  [self startCheck];
+}
 
+// Starts a safety check
+- (void)startCheck {
   // Otherwise start a check.
   self.checkStartTime = base::Time::Now();
 

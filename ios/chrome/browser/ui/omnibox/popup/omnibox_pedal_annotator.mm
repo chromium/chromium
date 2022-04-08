@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -18,6 +19,14 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Hard-coded here to avoid dependency on //content. This needs to be kept in
+// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
+const char kChromeUIScheme[] = "chrome";
+
+}
 
 @implementation OmniboxPedalAnnotator
 
@@ -35,15 +44,18 @@
 
   switch (match.action->GetID()) {
     case (int)OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
+      NSString* urlStr = [NSString
+          stringWithFormat:@"%s://%s", kChromeUIScheme, kChromeUIDinoHost];
+      GURL url(base::SysNSStringToUTF8(urlStr));
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
-                   subtitle:@"Replace → me"
+                   subtitle:urlStr
           accessibilityHint:suggestionContents
                   imageName:@"pedal_dino"
                      action:^{
-                       OpenNewTabCommand* command = [OpenNewTabCommand
-                           commandWithURLFromChrome:GURL("chrome://dino")
-                                        inIncognito:NO];
+                       OpenNewTabCommand* command =
+                           [OpenNewTabCommand commandWithURLFromChrome:url
+                                                           inIncognito:NO];
                        [pedalsEndpoint openURLInNewTab:command];
                      }];
     }
@@ -85,6 +97,72 @@
                        [pedalsEndpoint
                            showSavedPasswordsSettingsFromViewController:nil
                                                        showCancelButton:NO];
+                     }];
+    }
+    case (int)OmniboxPedalId::UPDATE_CREDIT_CARD: {
+      return [[OmniboxPedalData alloc]
+              initWithTitle:hint
+                   subtitle:
+                       l10n_util::GetNSString(
+                           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD)
+          accessibilityHint:suggestionContents
+                  imageName:@"pedal_payments"
+                     action:^{
+                       [omniboxCommandHandler cancelOmniboxEdit];
+                       [pedalsEndpoint showCreditCardSettings];
+                     }];
+    }
+    case (int)OmniboxPedalId::LAUNCH_INCOGNITO: {
+      return [[OmniboxPedalData alloc]
+              initWithTitle:hint
+                   subtitle:l10n_util::GetNSString(
+                                IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO)
+          accessibilityHint:suggestionContents
+                  imageName:@"pedal_incognito"
+                     action:^{
+                       [pedalsEndpoint
+                           openURLInNewTab:[OpenNewTabCommand
+                                               incognitoTabCommand]];
+                     }];
+    }
+    case (int)OmniboxPedalId::RUN_CHROME_SAFETY_CHECK: {
+      NSString* subtitle = l10n_util::GetNSString(
+          IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
+      return [[OmniboxPedalData alloc]
+              initWithTitle:hint
+                   subtitle:subtitle
+          accessibilityHint:suggestionContents
+                  imageName:@"pedal_safety_check"
+                     action:^{
+                       [omniboxCommandHandler cancelOmniboxEdit];
+                       [pedalsEndpoint
+                           showSafetyCheckSettingsAndStartSafetyCheck];
+                     }];
+    }
+    case (int)OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
+      NSString* subtitle = l10n_util::GetNSString(
+          IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS);
+      return [[OmniboxPedalData alloc]
+              initWithTitle:hint
+                   subtitle:subtitle
+          accessibilityHint:suggestionContents
+                  imageName:@"pedal_settings"
+                     action:^{
+                       [omniboxCommandHandler cancelOmniboxEdit];
+                       [pedalsEndpoint showSettingsFromViewController:nil];
+                     }];
+    }
+    case (int)OmniboxPedalId::VIEW_CHROME_HISTORY: {
+      return [[OmniboxPedalData alloc]
+              initWithTitle:hint
+                   subtitle:
+                       l10n_util::GetNSString(
+                           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY)
+          accessibilityHint:suggestionContents
+                  imageName:@"pedal_history"
+                     action:^{
+                       [omniboxCommandHandler cancelOmniboxEdit];
+                       [pedalsEndpoint showHistory];
                      }];
     }
     default:

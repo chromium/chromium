@@ -42,6 +42,9 @@ class SyncSetupService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Starts a safety check if one is not currently running.
+- (void)startCheckIfNotRunning;
+
 // The consumer for the Safety Check mediator.
 @property(nonatomic, weak) id<SafetyCheckConsumer> consumer;
 

@@ -62,8 +62,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
     (UIViewController*)baseViewController;
 
 // Shows the list of credit cards in the settings.
-- (void)showCreditCardSettingsFromViewController:
-    (UIViewController*)baseViewController;
+- (void)showCreditCardSettings;
 
 // Shows the settings page informing the user how to set Chrome as the default
 // browser.
@@ -72,6 +71,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 // Shows the settings page allowing the user to clear their browsing data.
 - (void)showClearBrowsingDataSettings;
+
+// Shows the Safety Check page and start Safety Check.
+- (void)showSafetyCheckSettingsAndStartSafetyCheck;
 
 @end
 

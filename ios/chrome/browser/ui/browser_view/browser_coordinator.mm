@@ -1006,7 +1006,7 @@
 
 - (void)openCreditCardSettings {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showCreditCardSettingsFromViewController:self.viewController];
+      showCreditCardSettings];
 }
 
 #pragma mark - RepostFormTabHelperDelegate

@@ -1438,6 +1438,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS" desc="Subtitle for the Manage Passwords acceleration pedal in the omnibox that should correspond to the path to the Passwords Settings dialog in Settings">
        Menu → Settings → Passwords
       </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD" desc="Subtitle for the Manage Payment Methods acceleration pedal in the omnibox that should correspond to the path to the Payment Methods dialog in Settings">
+       Menu → Settings → Payment Methods
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO" desc="Subtitle for the Open Incognito Tab acceleration pedal in the omnibox that should correspond to the path to the New Incognito Tab button">
+       Menu → New Incognito Tab
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK" desc="Subtitle for the Run Chrome Safety Check acceleration pedal in the omnibox that should correspond to the path to the Safety Check dialog in Settings">
+       Menu → Settings → Safety Check
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS" desc="Subtitle for the Manage Settings acceleration pedal in the omnibox that should correspond to the path to Settings">
+       Menu → Settings
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY" desc="Subtitle for the View Your Chrome History acceleration pedal in the omnibox that should correspond to the path to History">
+       Menu → History
+      </message>
 
       <message name="IDS_IOS_OPEN_TABS_LAST_USED" desc="Last used timestamp label [Length: 20em] [iOS only]">
         Last synced: <ph name="LAST_USED_TIME">$1<ex>3 mins ago</ex></ph>

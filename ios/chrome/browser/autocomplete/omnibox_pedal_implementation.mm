@@ -142,6 +142,215 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
+ public:
+  OmniboxPedalUpdateCreditCard()
+      : OmniboxPedal(
+            OmniboxPedalId::UPDATE_CREDIT_CARD,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT,
+                IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+    return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_OPTIONAL_GOOGLE_CHROME
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_OPTIONAL_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CHANGE,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CREDIT_CARD_INFORMATION,
+        },
+#endif
+    };
+  }
+
+ protected:
+  ~OmniboxPedalUpdateCreditCard() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalLaunchIncognito : public OmniboxPedal {
+ public:
+  OmniboxPedalLaunchIncognito()
+      : OmniboxPedal(
+            OmniboxPedalId::LAUNCH_INCOGNITO,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
+                IDS_IOS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
+            GURL()) {}
+
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    return client.IsIncognitoModeAvailable();
+  }
+
+ protected:
+  ~OmniboxPedalLaunchIncognito() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
+ public:
+  OmniboxPedalRunChromeSafetyCheck()
+      : OmniboxPedal(
+            OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+            OmniboxPedal::LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
+                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalRunChromeSafetyCheck() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageChromeSettings : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeSettings()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROME_SETTINGS,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHANGE_CHROME_SETTINGS
+    if (!locale_is_english) {
+      return {
+          {
+              true,
+              true,
+              IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHANGE_CHROME_SETTINGS,
+          },
+      };
+    }
+#endif
+    return {};
+  }
+
+ protected:
+  ~OmniboxPedalManageChromeSettings() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalViewChromeHistory : public OmniboxPedal {
+ public:
+  OmniboxPedalViewChromeHistory()
+      : OmniboxPedal(
+            OmniboxPedalId::VIEW_CHROME_HISTORY,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT,
+                IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_SEE_CHROME_HISTORY
+    if (!locale_is_english) {
+      return {
+          {
+              true,
+              true,
+              IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_SEE_CHROME_HISTORY,
+          },
+      };
+    }
+#endif
+    return {};
+  }
+
+ protected:
+  ~OmniboxPedalViewChromeHistory() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
+ public:
+  OmniboxPedalPlayChromeDinoGame()
+      : OmniboxPedal(
+            OmniboxPedalId::PLAY_CHROME_DINO_GAME,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT,
+                IDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_CHROME_DINO
+    if (!locale_is_english) {
+      return {
+          {
+              true,
+              true,
+              IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_CHROME_DINO,
+          },
+      };
+    }
+#endif
+
+    return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_DINOSAUR,
+        },
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_GAME,
+        },
+#endif
+    };
+  }
+
+ protected:
+  ~OmniboxPedalPlayChromeDinoGame() override = default;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -155,6 +364,12 @@ GetPedalImplementations(bool incognito, bool testing) {
 
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalSetChromeAsDefaultBrowser());
+  add(new OmniboxPedalUpdateCreditCard());
+  add(new OmniboxPedalLaunchIncognito());
+  add(new OmniboxPedalRunChromeSafetyCheck());
+  add(new OmniboxPedalManageChromeSettings());
+  add(new OmniboxPedalViewChromeHistory());
+  add(new OmniboxPedalPlayChromeDinoGame());
 
   return pedals;
 }

@@ -88,6 +88,10 @@
   return self;
 }
 
+- (void)startCheckIfNotRunning {
+  [self.mediator startCheckIfNotRunning];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

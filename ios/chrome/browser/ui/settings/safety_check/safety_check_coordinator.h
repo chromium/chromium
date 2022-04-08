@@ -34,6 +34,9 @@
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
 
+// Start a safety check if it is not currently running.
+- (void)startCheckIfNotRunning;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_COORDINATOR_H_

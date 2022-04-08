@@ -45,6 +45,35 @@
   <message name="IDS_IOS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_HINT" desc="In Title Case: The button text contents to suggest pedal action, SET_CHROME_AS_DEFAULT_BROWSER">
     Set Chrome as Default Browser
   </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT, but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT" desc="In Title Case: The button text contents to suggest pedal action, UPDATE_CREDIT_CARD">
+    Manage Payment Methods
+  </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT but with "window" changed to "tab" and title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="In Title Case: The button text contents to suggest pedal action, LAUNCH_INCOGNITO">
+    Open Incognito Tab
+  </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT" desc="In Title Case: The button text contents to suggest pedal action, RUN_CHROME_SAFETY_CHECK">
+    Run Chrome Safety Check
+  </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT" desc="In Title Case: The button text contents to suggest pedal action, MANAGE_CHROME_SETTINGS">
+    Manage Settings
+  </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT" desc="In Title Case: The button text contents to suggest pedal action, VIEW_CHROME_HISTORY">
+    View Your Chrome History
+  </message>
+  <!-- Same as IDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT" desc="In Title Case: The button text contents to suggest pedal action, PLAY_CHROME_DINO_GAME">
+    Play Chrome Dino Game
+  </message>
+  <!-- iOS Omnibox Actions non-title strings -->
+  <!-- Same as IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS but with "window" changed to "tab" -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, LAUNCH_INCOGNITO">
+    Open a new Incognito tab to browse privately
+  </message>
 
   <!-- Same as IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT, but title case instead of sentence case -->
   <message name="IDS_IOS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="In Title Case: The button text contents to suggest pedal action, MANAGE_PASSWORDS">

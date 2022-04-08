@@ -1630,6 +1630,10 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController {
+  if (!baseViewController) {
+    baseViewController = self.currentInterface.viewController;
+  }
+
   DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
                                   << base::SysNSStringToUTF8(NSStringFromClass(
                                          self.signinCoordinator.class));
@@ -1851,14 +1855,12 @@ bool IsSigninForcedByPolicy() {
 }
 
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
-- (void)showCreditCardSettingsFromViewController:
-    (UIViewController*)baseViewController {
+- (void)showCreditCardSettings {
   DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
                                   << base::SysNSStringToUTF8(NSStringFromClass(
                                          self.signinCoordinator.class));
   if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-        showCreditCardSettingsFromViewController:baseViewController];
+    [self.settingsNavigationController showCreditCardSettings];
     return;
   }
 
@@ -1866,9 +1868,10 @@ bool IsSigninForcedByPolicy() {
   self.settingsNavigationController = [SettingsNavigationController
       autofillCreditCardControllerForBrowser:browser
                                     delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  [self.currentInterface.viewController
+      presentViewController:self.settingsNavigationController
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)showDefaultBrowserSettingsFromViewController:
@@ -1902,6 +1905,23 @@ bool IsSigninForcedByPolicy() {
   self.settingsNavigationController = [SettingsNavigationController
       clearBrowsingDataControllerForBrowser:browser
                                    delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
+- (void)showSafetyCheckSettingsAndStartSafetyCheck {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController
+            showSafetyCheckSettingsAndStartSafetyCheck];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+
+  self.settingsNavigationController =
+      [SettingsNavigationController safetyCheckControllerForBrowser:browser
+                                                           delegate:self];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
