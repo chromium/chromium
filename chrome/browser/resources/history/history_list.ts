@@ -421,7 +421,8 @@ export class HistoryListElement extends HistoryListElementBase {
     BrowserServiceImpl.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
     assert(this.$.sharedMenu.getIfExists());
-    this.fire_('change-query', {search: this.actionMenuModel_!.item.domain});
+    this.fire_(
+        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
   }

@@ -389,7 +389,15 @@ void BrowsingHistoryHandler::SendHistoryQuery(int max_count,
   history::QueryOptions options;
   options.max_count = max_count;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
-  browsing_history_service_->QueryHistory(query, options);
+  std::u16string query_without_prefix = query;
+
+  const std::u16string kHostPrefix = u"host:";
+  if (base::StartsWith(query, kHostPrefix)) {
+    options.host_only = true;
+    query_without_prefix = query.substr(kHostPrefix.length());
+  }
+
+  browsing_history_service_->QueryHistory(query_without_prefix, options);
 }
 
 void BrowsingHistoryHandler::HandleQueryHistoryContinuation(

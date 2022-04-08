@@ -73,6 +73,11 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   // outlive the BrowsingHistoryHandler instance.
   void set_clock(base::Clock* clock) { clock_ = clock; }
 
+  void set_browsing_history_service_for_testing(
+      std::unique_ptr<history::BrowsingHistoryService> service) {
+    browsing_history_service_ = std::move(service);
+  }
+
  protected:
   virtual void SendHistoryQuery(int count, const std::u16string& query);
 

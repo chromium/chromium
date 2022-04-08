@@ -56,7 +56,7 @@ suite('#overflow-menu', function() {
     moreButton.click();
     let e = await whenChangeQueryFired;
 
-    assertEquals('www.chromium.org', e.detail.search);
+    assertEquals('host:www.chromium.org', e.detail.search);
 
     sharedMenu.close();
     assertFalse(sharedMenu.open);
@@ -75,7 +75,7 @@ suite('#overflow-menu', function() {
     whenChangeQueryFired = eventToPromise('change-query', listContainer);
     moreButton.click();
     e = await whenChangeQueryFired;
-    assertEquals('www.wikipedia.org', e.detail.search);
+    assertEquals('host:www.wikipedia.org', e.detail.search);
 
     sharedMenu.close();
     assertFalse(sharedMenu.open);

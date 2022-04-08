@@ -249,9 +249,12 @@ void ShowHistory(Browser* browser, const std::string& host_name) {
   base::RecordAction(UserMetricsAction("ShowHistory"));
   GURL url = GURL(kChromeUIHistoryURL);
   if (!host_name.empty()) {
-    url = url.Resolve(base::StringPrintf(
-        "/?q=%s",
-        net::EscapeQueryParamValue(host_name, /*use_plus=*/false).c_str()));
+    GURL::Replacements replacements;
+    std::string query("q=");
+    query += net::EscapeQueryParamValue(base::StrCat({"host:", host_name}),
+                                        /*use_plus=*/false);
+    replacements.SetQueryStr(query);
+    url = url.ReplaceComponents(replacements);
   }
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }

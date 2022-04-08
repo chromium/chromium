@@ -196,6 +196,8 @@ BrowsingHistoryService::BrowsingHistoryService(
   }
 }
 
+BrowsingHistoryService::BrowsingHistoryService() = default;
+
 BrowsingHistoryService::~BrowsingHistoryService() {
   query_task_tracker_.TryCancelAll();
   web_history_request_.reset();

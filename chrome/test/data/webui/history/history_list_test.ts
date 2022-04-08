@@ -439,12 +439,12 @@ suite(history_list_test.suiteName, function() {
               return testService.whenCalled('queryHistory');
             })
             .then(function(query) {
-              assertEquals('www.google.com', query);
+              assertEquals('host:www.google.com', query);
               return flushTasks();
             })
             .then(function() {
               assertEquals(
-                  'www.google.com',
+                  'host:www.google.com',
                   toolbar.$.mainToolbar.getSearchField().getValue());
 
               element.$.sharedMenu.get().close();
