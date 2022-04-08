@@ -44,7 +44,7 @@ TEST_F(StaticTriggerConditionsTest, Update) {
   TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
                                     options};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   fake_platform_delegate_.is_first_time_user_ = true;
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
       .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
@@ -63,7 +63,7 @@ TEST_F(StaticTriggerConditionsTest, Update) {
 TEST_F(StaticTriggerConditionsTest, HasResults) {
   TriggerContext trigger_context;
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   EXPECT_FALSE(static_trigger_conditions.has_results());
 
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
@@ -81,7 +81,7 @@ TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
               {"must_match", "matching_value"}}),
       {}};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
 
   ScriptParameterMatchProto must_match;
   must_match.set_name("must_match");
@@ -98,7 +98,7 @@ TEST_F(StaticTriggerConditionsTest, CachesFirstTimeUserFlag) {
   TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
                                     TriggerContext::Options{}};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   fake_platform_delegate_.is_first_time_user_ = true;
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl)
       .WillRepeatedly(

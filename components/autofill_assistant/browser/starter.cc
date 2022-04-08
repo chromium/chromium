@@ -84,7 +84,7 @@ std::unique_ptr<ServiceRequestSender> CreateBase64TriggerScriptRequestSender(
 // Creates a service request sender that communicates with a remote endpoint.
 std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
     content::BrowserContext* browser_context,
-    StarterPlatformDelegate* delegate) {
+    base::WeakPtr<StarterPlatformDelegate> delegate) {
   return std::make_unique<ServiceRequestSenderImpl>(
       browser_context,
       /* access_token_fetcher = */ nullptr,
@@ -175,7 +175,7 @@ GetImplicitTriggeringDebugParametersFromCommandLine() {
 }  // namespace
 
 Starter::Starter(content::WebContents* web_contents,
-                 StarterPlatformDelegate* platform_delegate,
+                 base::WeakPtr<StarterPlatformDelegate> platform_delegate,
                  ukm::UkmRecorder* ukm_recorder,
                  base::WeakPtr<RuntimeManager> runtime_manager,
                  const base::TickClock* tick_clock)
@@ -367,6 +367,9 @@ void Starter::OnTabInteractabilityChanged(bool is_interactable) {
 }
 
 void Starter::Init() {
+  if (!platform_delegate_) {
+    return;
+  }
   if (!platform_delegate_->IsAttached()) {
     CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
     return;
@@ -447,6 +450,10 @@ void Starter::OnDependenciesInvalidated() {
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());
+
+  if (!platform_delegate_) {
+    return;
+  }
 
   // Register synthetic trial as soon as possible.
   RegisterSyntheticFieldTrials(*trigger_context);

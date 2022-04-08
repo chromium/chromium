@@ -123,4 +123,9 @@ bool FakeStarterPlatformDelegate::IsAttached() {
   return is_attached_;
 }
 
+base::WeakPtr<StarterPlatformDelegate>
+FakeStarterPlatformDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace autofill_assistant

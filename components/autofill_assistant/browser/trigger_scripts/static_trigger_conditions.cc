@@ -12,7 +12,7 @@
 namespace autofill_assistant {
 
 StaticTriggerConditions::StaticTriggerConditions(
-    StarterPlatformDelegate* delegate,
+    base::WeakPtr<StarterPlatformDelegate> delegate,
     TriggerContext* trigger_context,
     const GURL& deeplink_url)
     : delegate_(delegate),

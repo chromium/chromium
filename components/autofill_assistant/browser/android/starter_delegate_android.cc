@@ -44,7 +44,7 @@ static jlong JNI_Starter_FromWebContents(
   auto* tab_helper_android =
       StarterDelegateAndroid::FromWebContents(web_contents);
   Starter::CreateForWebContents(
-      web_contents, tab_helper_android, ukm::UkmRecorder::Get(),
+      web_contents, tab_helper_android->GetWeakPtr(), ukm::UkmRecorder::Get(),
       RuntimeManagerImpl::GetForWebContents(web_contents)->GetWeakPtr(),
       base::DefaultTickClock::GetInstance());
   return reinterpret_cast<intptr_t>(tab_helper_android);
@@ -342,6 +342,10 @@ StarterDelegateAndroid::CreateFieldTrialUtil() {
 
 bool StarterDelegateAndroid::IsAttached() {
   return !!java_object_;
+}
+
+base::WeakPtr<StarterPlatformDelegate> StarterDelegateAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterDelegateAndroid);

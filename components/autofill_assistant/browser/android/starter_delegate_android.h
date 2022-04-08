@@ -81,6 +81,7 @@ class StarterDelegateAndroid
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
+  base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(

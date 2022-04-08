@@ -95,6 +95,8 @@ class StarterPlatformDelegate {
   // The starter platform delegate should only be interacted with while attached
   // as it might not be able to perform its functions while detached.
   virtual bool IsAttached() = 0;
+
+  virtual base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill_assistant

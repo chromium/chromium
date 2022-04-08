@@ -63,6 +63,7 @@ class StarterDelegateDesktop
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
+  base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
  private:
   friend class content::WebContentsUserData<StarterDelegateDesktop>;

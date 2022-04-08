@@ -24,7 +24,7 @@ class StarterPlatformDelegate;
 class StaticTriggerConditions {
  public:
   // |delegate| and |trigger_context| must outlive this instance.
-  StaticTriggerConditions(StarterPlatformDelegate* delegate,
+  StaticTriggerConditions(base::WeakPtr<StarterPlatformDelegate> delegate,
                           TriggerContext* trigger_context,
                           const GURL& deeplink_url);
   virtual ~StaticTriggerConditions();
@@ -53,7 +53,7 @@ class StaticTriggerConditions {
   // Note: this is cached to ensure that the flag value is consistent until the
   // next call to |Update|. See b/192220992.
   bool is_first_time_user_ = false;
-  raw_ptr<StarterPlatformDelegate> delegate_ = nullptr;
+  base::WeakPtr<StarterPlatformDelegate> delegate_;
   raw_ptr<TriggerContext> trigger_context_ = nullptr;
   GURL deeplink_url_;
   base::WeakPtrFactory<StaticTriggerConditions> weak_ptr_factory_{this};

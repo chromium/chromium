@@ -101,7 +101,7 @@ class TriggerScriptCoordinatorTest : public testing::Test {
 
     SimulateNavigateToUrl(GURL(kFakeDeepLink));
     coordinator_ = std::make_unique<TriggerScriptCoordinator>(
-        &fake_platform_delegate_, web_contents(),
+        fake_platform_delegate_.GetWeakPtr(), web_contents(),
         std::move(mock_web_controller), std::move(mock_request_sender),
         GURL(kFakeServerUrl), std::move(mock_static_trigger_conditions),
         std::move(mock_dynamic_trigger_conditions), &ukm_recorder_,

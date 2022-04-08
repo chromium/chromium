@@ -35,7 +35,7 @@ class Starter : public content::WebContentsObserver,
                 public content::WebContentsUserData<Starter> {
  public:
   explicit Starter(content::WebContents* web_contents,
-                   StarterPlatformDelegate* platform_delegate,
+                   base::WeakPtr<StarterPlatformDelegate> platform_delegate,
                    ukm::UkmRecorder* ukm_recorder,
                    base::WeakPtr<RuntimeManager> runtime_manager,
                    const base::TickClock* tick_clock);
@@ -182,14 +182,14 @@ class Starter : public content::WebContentsObserver,
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
-  const raw_ptr<StarterPlatformDelegate> platform_delegate_;
+  base::WeakPtr<StarterPlatformDelegate> platform_delegate_;
   raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
   base::WeakPtr<RuntimeManager> runtime_manager_;
   bool fetch_trigger_scripts_on_navigation_ = false;
   std::unique_ptr<TriggerContext> pending_trigger_context_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
   const scoped_refptr<StarterHeuristic> starter_heuristic_;
-  raw_ptr<const base::TickClock> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtrFactory<Starter> weak_ptr_factory_{this};
 };
 

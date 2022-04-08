@@ -53,6 +53,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
+  base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Intentionally public to give tests direct access.
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -87,6 +88,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
 
   int num_install_feature_module_called_ = 0;
   int num_show_onboarding_called_ = 0;
+  base::WeakPtrFactory<FakeStarterPlatformDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill_assistant

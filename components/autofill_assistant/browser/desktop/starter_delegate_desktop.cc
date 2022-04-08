@@ -127,6 +127,10 @@ bool StarterDelegateDesktop::IsAttached() {
   return true;
 }
 
+base::WeakPtr<StarterPlatformDelegate> StarterDelegateDesktop::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterDelegateDesktop);
 
 }  // namespace autofill_assistant

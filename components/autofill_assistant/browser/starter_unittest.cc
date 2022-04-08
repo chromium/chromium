@@ -98,7 +98,7 @@ class StarterTest : public testing::Test {
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
 
     starter_ = std::make_unique<Starter>(
-        web_contents(), &fake_platform_delegate_, &ukm_recorder_,
+        web_contents(), fake_platform_delegate_.GetWeakPtr(), &ukm_recorder_,
         mock_runtime_manager_.GetWeakPtr(),
         task_environment()->GetMockTickClock());
   }
@@ -1914,12 +1914,14 @@ TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
             ]
           }
           )"}});
-  Starter starter_01(web_contents_01.get(), &fake_platform_delegate_01,
-                     &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
+  Starter starter_01(web_contents_01.get(),
+                     fake_platform_delegate_01.GetWeakPtr(), &ukm_recorder,
+                     mock_runtime_manager.GetWeakPtr(),
                      task_environment.GetMockTickClock());
   starter_01.Init();
-  Starter starter_02(web_contents_02.get(), &fake_platform_delegate_02,
-                     &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
+  Starter starter_02(web_contents_02.get(),
+                     fake_platform_delegate_02.GetWeakPtr(), &ukm_recorder,
+                     mock_runtime_manager.GetWeakPtr(),
                      task_environment.GetMockTickClock());
   starter_02.Init();
 
@@ -2036,10 +2038,10 @@ TEST_F(StarterTest, CommandLineScriptParametersAreAddedToImplicitTriggers) {
 
   // Create new instance of the starter to force the changed command line to
   // take effect.
-  starter_ = std::make_unique<Starter>(web_contents(), &fake_platform_delegate_,
-                                       &ukm_recorder_,
-                                       mock_runtime_manager_.GetWeakPtr(),
-                                       task_environment()->GetMockTickClock());
+  starter_ = std::make_unique<Starter>(
+      web_contents(), fake_platform_delegate_.GetWeakPtr(), &ukm_recorder_,
+      mock_runtime_manager_.GetWeakPtr(),
+      task_environment()->GetMockTickClock());
   starter_->Init();
 
   EXPECT_CALL(
@@ -2103,8 +2105,8 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsAllMatchingIntents) {
             ]
           }
           )"}});
-  Starter starter(web_contents.get(), &fake_platform_delegate, &ukm_recorder,
-                  mock_runtime_manager.GetWeakPtr(),
+  Starter starter(web_contents.get(), fake_platform_delegate.GetWeakPtr(),
+                  &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
                   task_environment.GetMockTickClock());
   starter.Init();
   auto service_request_sender =
