@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -118,7 +119,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   // running. This is done because it is inefficient to use
   // ensureAppLaunchedWithConfiguration for each test.
   if ([self isRunningTest:@selector
-            (DISABLED_testCachingBehaviorOnSelectOmniboxSuggestion)]) {
+            (testCachingBehaviorOnSelectOmniboxSuggestion)]) {
     // Explicitly disable feature OnDeviceHeadProviderNonIncognito, whose delay
     // (i.e. http://shortn/_o7kPJvU8ac) will otherwise cause flakiness for this
     // test in build iphone-device (crbug.com/1153136).
@@ -161,9 +162,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
 // Tests that cache is not used when selecting omnibox suggested website, even
 // though cache for that website exists.
-//
-// TODO(crbug.com/753098): Re-enable this test once grey_typeText works.
-- (void)DISABLED_testCachingBehaviorOnSelectOmniboxSuggestion {
+- (void)testCachingBehaviorOnSelectOmniboxSuggestion {
   web::test::SetUpHttpServer(std::make_unique<CacheTestResponseProvider>());
 
   // Clear the history to ensure expected omnibox autocomplete results.
@@ -179,11 +178,17 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
   // Type a search into omnnibox and select the first suggestion (second row)
   [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"omnibox suggestion 0 1"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [[[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::OmniboxPopupRow(),
+                     grey_descendant(
+                         chrome_test_util::StaticTextWithAccessibilityLabel(
+                             base::SysUTF8ToNSString(
+                                 cacheTestFirstPageURL.GetContent()))),
+                     grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
 
   // Verify title and hitCount. Cache should not be used.
   [ChromeEarlGrey waitForWebStateContainingText:"First Page"];
