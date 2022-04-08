@@ -73,7 +73,6 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
       thread_name_(thread_name),
-      thread_id_str_(base::NumberToString(base::PlatformThread::CurrentId())),
       is_test_mode_(is_test_mode),
       watched_gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   base::CurrentThread::Get()->AddTaskObserver(this);
@@ -623,10 +622,6 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   base::debug::Alias(&less_than_full_thread_time_after_capped_);
 #endif
 
-  // The watchdog currently doesn't watch multiple threads. If multiple threads
-  // are supported, use '|' to separate thread ids in "list_of_hung_threads".
-  crash_keys::list_of_hung_threads.Set(thread_id_str_);
-
   crash_keys::gpu_watchdog_crashed_in_gpu_init.Set(
       in_gpu_initialization_ ? "1" : "0");
 
@@ -672,7 +667,6 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
     base::Process::TerminateCurrentProcessImmediately(RESULT_CODE_HUNG);
     // The end of the GPU process.
   } else {
-    crash_keys::list_of_hung_threads.Clear();
     crash_keys::gpu_watchdog_crashed_in_gpu_init.Clear();
     crash_keys::gpu_watchdog_kill_after_power_resume.Clear();
     crash_keys::gpu_thread.Clear();
