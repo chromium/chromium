@@ -127,7 +127,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
   // Prevent the extension's background page from being navigated away. See
   // crbug.com/1130083.
-  if (navigation_handle()->IsInMainFrame()) {
+  if (navigation_handle()->IsInPrimaryMainFrame()) {
     ProcessManager* process_manager = ProcessManager::Get(browser_context);
     DCHECK(process_manager);
     ExtensionHost* host = process_manager->GetExtensionHostForRenderFrameHost(
