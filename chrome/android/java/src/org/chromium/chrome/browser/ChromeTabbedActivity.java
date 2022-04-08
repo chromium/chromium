@@ -952,22 +952,26 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void finishNativeInitialization() {
-        super.finishNativeInitialization();
+        try (TraceEvent te = TraceEvent.scoped("ChromeTabbedActivity.finishNativeInitialization")) {
+            super.finishNativeInitialization();
 
-        // TODO(jinsukkim): Let these classes handle the registration by themselves.
-        mCompositorViewHolder = getCompositorViewHolderSupplier().get();
-        mOverviewListLayout = (OverviewListLayout) mLayoutManager.getOverviewListLayout();
-        getTabObscuringHandler().addObserver(mCompositorViewHolder);
-        getTabObscuringHandler().addObserver(mOverviewListLayout);
+            // TODO(jinsukkim): Let these classes handle the registration by themselves.
+            mCompositorViewHolder = getCompositorViewHolderSupplier().get();
+            mOverviewListLayout = (OverviewListLayout) mLayoutManager.getOverviewListLayout();
+            getTabObscuringHandler().addObserver(mCompositorViewHolder);
+            getTabObscuringHandler().addObserver(mOverviewListLayout);
 
-        ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
-        if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
+            ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
+            if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
 
-        mNotificationPermissionController = new NotificationPermissionController(getWindowAndroid(),
-                new NotificationPermissionRationaleDialogController(this, getModalDialogManager()));
-        NotificationPermissionController.attach(
-                getWindowAndroid(), mNotificationPermissionController);
-        mNotificationPermissionController.requestPermissionIfNeeded(false /* contextual */);
+            mNotificationPermissionController =
+                    new NotificationPermissionController(getWindowAndroid(),
+                            new NotificationPermissionRationaleDialogController(
+                                    this, getModalDialogManager()));
+            NotificationPermissionController.attach(
+                    getWindowAndroid(), mNotificationPermissionController);
+            mNotificationPermissionController.requestPermissionIfNeeded(false /* contextual */);
+        }
     }
 
     @Override
