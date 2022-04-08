@@ -336,7 +336,6 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
     element_data->target_element = nullptr;
     element_data->cached_border_box_size = element_data->border_box_size;
     element_data->cached_viewport_matrix = element_data->viewport_matrix;
-    element_data->cached_device_pixel_ratio = element_data->device_pixel_ratio;
     element_data->effect_node = nullptr;
   }
   root_effect_node_ = nullptr;
@@ -494,10 +493,10 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
             document_->GetLayoutView()->GetLayoutSize(kIncludeScrollbars));
         snapshot_id = old_root_snapshot_id_;
       } else {
-        // If live data is tracking new elements then use the cached data for
+        // If live data is tracking new elements then use the cached size for
         // the pseudo element displaying snapshot of old element.
-        bool use_cached_data = HasLiveNewContent();
-        size = element_data->GetIntrinsicSize(use_cached_data);
+        size = HasLiveNewContent() ? element_data->border_box_size
+                                   : element_data->cached_border_box_size;
         snapshot_id = element_data->old_snapshot_id;
       }
       // Note that we say that this layer is not a live content
@@ -524,8 +523,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
             document_->GetLayoutView()->GetLayoutSize(kIncludeScrollbars));
         snapshot_id = new_root_snapshot_id_;
       } else {
-        bool use_cached_data = false;
-        size = element_data->GetIntrinsicSize(use_cached_data);
+        size = element_data->border_box_size;
         snapshot_id = element_data->new_snapshot_id;
       }
       auto* pseudo_element =
@@ -567,10 +565,9 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    float device_pixel_ratio = document_->DevicePixelRatio();
     TransformationMatrix viewport_matrix =
         layout_object->LocalToAbsoluteTransform();
-    viewport_matrix.Zoom(1.0 / device_pixel_ratio);
+    viewport_matrix.Zoom(1.0 / document_->DevicePixelRatio());
 
     // ResizeObserverEntry is created to reuse the logic for parsing object size
     // for different types of LayoutObjects.
@@ -585,14 +582,12 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
                          LayoutUnit(entry_size->inlineSize()));
 
     if (viewport_matrix == element_data->viewport_matrix &&
-        border_box_size == element_data->border_box_size &&
-        device_pixel_ratio == element_data->device_pixel_ratio) {
+        border_box_size == element_data->border_box_size) {
       continue;
     }
 
     element_data->viewport_matrix = viewport_matrix;
     element_data->border_box_size = border_box_size;
-    element_data->device_pixel_ratio = device_pixel_ratio;
 
     PseudoId live_content_element = HasLiveNewContent()
                                         ? kPseudoIdPageTransitionIncomingImage
@@ -602,10 +597,8 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
                 live_content_element, entry.key)) {
       // A pseudo element of type |tansition*content| must be created using
       // DocumentTransitionContentElement.
-      bool use_cached_data = false;
-      LayoutSize size = element_data->GetIntrinsicSize(use_cached_data);
       static_cast<DocumentTransitionContentElement*>(pseudo_element)
-          ->SetIntrinsicSize(size);
+          ->SetIntrinsicSize(border_box_size);
     }
 
     needs_style_invalidation = true;
@@ -876,17 +869,6 @@ void DocumentTransitionStyleTracker::Trace(Visitor* visitor) const {
 void DocumentTransitionStyleTracker::ElementData::Trace(
     Visitor* visitor) const {
   visitor->Trace(target_element);
-}
-
-LayoutSize DocumentTransitionStyleTracker::ElementData::GetIntrinsicSize(
-    bool use_cached_data) {
-  LayoutSize box_size =
-      use_cached_data ? cached_border_box_size : border_box_size;
-  float ratio =
-      use_cached_data ? cached_device_pixel_ratio : device_pixel_ratio;
-
-  box_size.Scale(ratio);
-  return box_size;
 }
 
 }  // namespace blink
