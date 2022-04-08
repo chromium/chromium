@@ -26,15 +26,14 @@ import '../../cr_elements/shared_style_css.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-interface LocalizedLinkElement {
-  $: {
-    container: HTMLElement,
-  };
-}
-
+/** @polymer */
 class LocalizedLinkElement extends PolymerElement {
   static get is() {
     return 'localized-link';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -67,6 +66,7 @@ class LocalizedLinkElement extends PolymerElement {
 
       /**
        * localizedString, with aria attributes and the optionally provided link.
+       * @private
        */
       containerInnerHTML_: {
         type: String,
@@ -77,23 +77,20 @@ class LocalizedLinkElement extends PolymerElement {
     };
   }
 
-  localizedString: string;
-  linkUrl: string;
-  linkDisabled: boolean;
-  private containerInnerHTML_: string;
-
   /**
    * Attaches aria attributes and optionally provided link to the provided
    * localizedString.
-   * @return localizedString formatted with additional ids, spans, and an
-   *     aria-labelledby tag
+   * @param {string} localizedString
+   * @param {string} linkUrl
+   * @return {string} localizedString formatted with additional ids, spans,
+   *     and an aria-labelledby tag
+   * @private
    */
-  private getAriaLabelledContent_(localizedString: string, linkUrl: string):
-      string {
+  getAriaLabelledContent_(localizedString, linkUrl) {
     const tempEl = document.createElement('div');
     tempEl.innerHTML = localizedString;
 
-    const ariaLabelledByIds: string[] = [];
+    const ariaLabelledByIds = [];
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
@@ -102,16 +99,15 @@ class LocalizedLinkElement extends PolymerElement {
         spanNode.textContent = node.textContent;
         spanNode.id = `id${index}`;
         ariaLabelledByIds.push(spanNode.id);
-        spanNode.setAttribute('aria-hidden', 'true');
+        spanNode.setAttribute('aria-hidden', true);
         node.replaceWith(spanNode);
         return;
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
       if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
-        const element = node as HTMLAnchorElement;
-        element.id = `id${index}`;
-        ariaLabelledByIds.push(element.id);
+        node.id = `id${index}`;
+        ariaLabelledByIds.push(node.id);
         return;
       }
 
@@ -119,7 +115,7 @@ class LocalizedLinkElement extends PolymerElement {
       assertNotReached('localized-link has invalid node types');
     });
 
-    const anchorTags = tempEl.querySelectorAll('a');
+    const anchorTags = tempEl.getElementsByTagName('a');
     // In the event the provided localizedString contains only text nodes,
     // populate the contents with the provided localizedString.
     if (anchorTags.length === 0) {
@@ -129,7 +125,7 @@ class LocalizedLinkElement extends PolymerElement {
     assert(
         anchorTags.length === 1,
         'localized-link should contain exactly one anchor tag');
-    const anchorTag = anchorTags[0]!;
+    const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
 
@@ -141,16 +137,23 @@ class LocalizedLinkElement extends PolymerElement {
     return tempEl.innerHTML;
   }
 
-  private setContainerInnerHTML_() {
+  /**
+   * @private
+   */
+  setContainerInnerHTML_() {
     this.$.container.innerHTML = this.containerInnerHTML_;
-    const anchorTag = this.shadowRoot!.querySelector('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (anchorTag) {
       anchorTag.addEventListener(
           'click', (event) => this.onAnchorTagClick_(event));
     }
   }
 
-  private onAnchorTagClick_(event: Event) {
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onAnchorTagClick_(event) {
     if (this.linkDisabled) {
       event.preventDefault();
       return;
@@ -165,23 +168,14 @@ class LocalizedLinkElement extends PolymerElement {
   /**
    *  Removes anchor tag from being targeted by chromeVox when link is
    *  disabled.
+   *  @private
    */
-  private updateAnchorTagTabIndex_() {
-    const anchorTag = this.shadowRoot!.querySelector('a');
+  updateAnchorTagTabIndex_() {
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (!anchorTag) {
       return;
     }
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'localized-link': LocalizedLinkElement;
   }
 }
 

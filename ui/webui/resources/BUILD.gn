@@ -152,6 +152,7 @@ generate_grd("build_ts_grdp") {
 }
 
 checked_in_dts_files = [
+  "cr_components/localized_link/localized_link.d.ts",
   "cr_elements/cr_button/cr_button.m.d.ts",
   "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
   "cr_elements/cr_container_shadow_behavior.m.d.ts",
@@ -253,7 +254,6 @@ ts_library("library") {
   if (include_polymer) {
     in_files += [
       "cr_components/iph_bubble/iph_bubble.ts",
-      "cr_components/localized_link/localized_link.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
       "cr_components/managed_dialog/managed_dialog.ts",
       "cr_elements/cr_auto_img/cr_auto_img.ts",
