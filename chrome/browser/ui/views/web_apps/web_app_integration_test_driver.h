@@ -154,6 +154,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ClosePwa();
   void DisableRunOnOsLogin(const std::string& site_mode);
   void EnableRunOnOsLogin(const std::string& site_mode);
+  void DisableWindowControlsOverlay(const std::string& site_mode);
+  void EnableWindowControlsOverlay(const std::string& site_mode);
   void InstallCreateShortcutTabbed(const std::string& site_mode);
   void InstallCreateShortcutWindowed(const std::string& site_mode);
   void InstallMenuOption(const std::string& site_mode);
@@ -163,6 +165,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
+  // These functions install apps which are tabbed and creates shortcuts.
   void ApplyRunOnOsLoginPolicyAllowed(const std::string& site_mode);
   void ApplyRunOnOsLoginPolicyBlocked(const std::string& site_mode);
   void ApplyRunOnOsLoginPolicyRunWindowed(const std::string& site_mode);
@@ -182,6 +185,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ManifestUpdateTitle(const std::string& site_mode);
   void ManifestUpdateDisplayBrowser(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
+  void ManifestUpdateDisplay(const std::string& site_mode,
+                             const std::string& display);
   void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
   void OpenInChrome();
   void SetOpenInTab(const std::string& site_mode);
@@ -224,6 +229,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
+  void CheckWindowControlsOverlay(const std::string& site_mode,
+                                  const std::string& is_on);
+  void CheckWindowControlsOverlayToggle(const std::string& site_mode,
+                                        const std::string& is_shown);
   void CheckWindowDisplayBrowser();
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayStandalone();

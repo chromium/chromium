@@ -71,6 +71,50 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
   helper_.CheckWindowDisplayMinimal();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       ManifestUpdateDisplayOverrideWindowControlsOverlay) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowControlsOverlayToggle("SiteA", "NotShown");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplay("SiteA", "WCO");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowControlsOverlayToggle("SiteA", "Shown");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WindowControlsOverlayNotEnabledWithoutWCOManifest) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowControlsOverlay("SiteA", "Off");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       ToggleWindowControlsOverlay) {
+  helper_.InstallCreateShortcutWindowed("SiteWCO");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowControlsOverlayToggle("SiteWCO", "Shown");
+  helper_.CheckWindowControlsOverlay("SiteWCO", "Off");
+  helper_.EnableWindowControlsOverlay("SiteWCO");
+  helper_.CheckWindowControlsOverlay("SiteWCO", "On");
+  helper_.DisableWindowControlsOverlay("SiteWCO");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WindowControlsOverlayStatePreservesBetweenLaunches) {
+  helper_.InstallCreateShortcutWindowed("SiteWCO");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowControlsOverlayToggle("SiteWCO", "Shown");
+  helper_.CheckWindowControlsOverlay("SiteWCO", "Off");
+  helper_.EnableWindowControlsOverlay("SiteWCO");
+  helper_.CheckWindowControlsOverlay("SiteWCO", "On");
+  helper_.ClosePwa();
+  helper_.LaunchFromChromeApps("SiteWCO");
+  helper_.CheckWindowControlsOverlayToggle("SiteWCO", "Shown");
+  helper_.CheckWindowControlsOverlay("SiteWCO", "On");
+}
+
 // Automated tests:
 
 IN_PROC_BROWSER_TEST_F(

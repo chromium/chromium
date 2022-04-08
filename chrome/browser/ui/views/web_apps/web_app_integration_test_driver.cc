@@ -6,6 +6,7 @@
 
 #include <codecvt>
 #include <ostream>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -79,6 +80,8 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
@@ -155,6 +158,7 @@ const base::flat_map<std::string, std::string>
     g_site_mode_to_relative_scope_url = {{"SiteA", "/web_apps/site_a/"},
                                          {"SiteB", "/web_apps/site_b/"},
                                          {"SiteC", "/web_apps/site_c/"},
+                                         {"SiteWCO", "/web_apps/site_wco/"},
                                          {"SiteAFoo", "/web_apps/site_a/foo/"},
                                          {"SiteABar", "/web_apps/site_a/bar/"}};
 
@@ -163,28 +167,46 @@ const base::flat_map<std::string, std::string>
         {"SiteA", "/web_apps/site_a/basic.html"},
         {"SiteB", "/web_apps/site_b/basic.html"},
         {"SiteC", "/web_apps/site_c/basic.html"},
+        {"SiteWCO", "/web_apps/site_wco/basic.html"},
         {"SiteAFoo", "/web_apps/site_a/foo/basic.html"},
         {"SiteABar", "/web_apps/site_a/bar/basic.html"}};
+
+const base::flat_map<std::string, std::string> g_display_to_manifest_url_param =
+    {{"Browser", "?manifest=manifest_browser.json"},
+     {"MinimalUI", "?manifest=manifest_minimal_ui.json"},
+     {"Standalone", "?manifest=basic.json"},
+     {"WCO", "?manifest=manifest_window_controls_overlay.json"}};
 
 const base::flat_map<std::string, std::string>
     g_site_mode_to_relative_manifest_id = {
         {"SiteA", "web_apps/site_a/basic.html"},
         {"SiteB", "web_apps/site_b/basic.html"},
         {"SiteC", "web_apps/site_c/basic.html"},
+        {"SiteWCO", "web_apps/site_wco/basic.html"},
         {"SiteAFoo", "web_apps/site_a/foo/basic.html"},
         {"SiteABar", "web_apps/site_a/bar/basic.html"}};
 
 const base::flat_map<std::string, std::string> g_site_mode_to_app_name = {
-    {"SiteA", "Site A"},
-    {"SiteB", "Site B"},
-    {"SiteC", "Site C"},
-    {"SiteAFoo", "Site A Foo"},
-    {"SiteABar", "Site A Bar"}};
+    {"SiteA", "Site A"},        {"SiteB", "Site B"},
+    {"SiteC", "Site C"},        {"SiteWCO", "Site WCO"},
+    {"SiteAFoo", "Site A Foo"}, {"SiteABar", "Site A Bar"}};
+
+// WCO disabled is the defaulting state so the title when disabled should
+// match with the app's name.
+const base::flat_map<std::string, std::u16string>
+    g_site_mode_to_wco_not_enabled_title = {
+        {"SiteA", u"Site A"},        {"SiteB", u"Site B"},
+        {"SiteC", u"Site C"},        {"SiteWCO", u"Site WCO"},
+        {"SiteAFoo", u"Site A Foo"}, {"SiteABar", u"Site A Bar"}};
 
 const base::flat_map<std::string, SkColor> g_app_name_icon_color = {
-    {"Site A", SK_ColorGREEN},       {"Site B", SK_ColorBLACK},
-    {"Site C", SK_ColorTRANSPARENT}, {"Site A Foo", SK_ColorGREEN},
-    {"Site A Bar", SK_ColorGREEN},   {"Site A - Updated name", SK_ColorGREEN}};
+    {"Site A", SK_ColorGREEN},
+    {"Site B", SK_ColorBLACK},
+    {"Site C", SK_ColorTRANSPARENT},
+    {"Site WCO", SK_ColorGREEN},
+    {"Site A Foo", SK_ColorGREEN},
+    {"Site A Bar", SK_ColorGREEN},
+    {"Site A - Updated name", SK_ColorGREEN}};
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
@@ -732,6 +754,39 @@ void WebAppIntegrationTestDriver::InstallPolicyAppWindowedShortcut(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::EnableWindowControlsOverlay(
+    const std::string& site_mode) {
+  BeforeStateChangeAction(__FUNCTION__);
+  ASSERT_TRUE(app_browser());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+
+  ASSERT_FALSE(app_view->IsWindowControlsOverlayEnabled());
+  content::TitleWatcher title_watcher(
+      app_view->GetActiveWebContents(),
+      g_site_mode_to_wco_not_enabled_title.find(site_mode)->second +
+          u": WCO Enabled");
+  app_view->ToggleWindowControlsOverlayEnabled();
+  std::ignore = title_watcher.WaitAndGetTitle();
+  ASSERT_TRUE(app_view->IsWindowControlsOverlayEnabled());
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::DisableWindowControlsOverlay(
+    const std::string& site_mode) {
+  BeforeStateChangeAction(__FUNCTION__);
+  ASSERT_TRUE(app_browser());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+
+  ASSERT_TRUE(app_view->IsWindowControlsOverlayEnabled());
+  content::TitleWatcher title_watcher(
+      app_view->GetActiveWebContents(),
+      g_site_mode_to_wco_not_enabled_title.find(site_mode)->second);
+  app_view->ToggleWindowControlsOverlayEnabled();
+  std::ignore = title_watcher.WaitAndGetTitle();
+  ASSERT_FALSE(app_view->IsWindowControlsOverlayEnabled());
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicyAllowed(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
@@ -1050,28 +1105,32 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
   AfterStateChangeAction();
 }
 
+// TODO(dmurph): Remove and use ManifestUpdateDisplay(...) directly.
 void WebAppIntegrationTestDriver::ManifestUpdateDisplayBrowser(
     const std::string& site_mode) {
-  BeforeStateChangeAction(__FUNCTION__);
-  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
-  auto start_url_path =
-      g_site_mode_to_relative_start_url.find(site_mode)->second;
-  GURL url = embedded_test_server()->GetURL(
-      base::StrCat({start_url_path, "?manifest=manifest_browser.json"}));
-  ForceUpdateManifestContents(site_mode, url);
-  AfterStateChangeAction();
+  ManifestUpdateDisplay(site_mode, "Browser");
 }
 
+// TODO(dmurph): Remove and use ManifestUpdateDisplay(...) directly.
 void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
+  ManifestUpdateDisplay(site_mode, "MinimalUI");
+}
+
+void WebAppIntegrationTestDriver::ManifestUpdateDisplay(
+    const std::string& site_mode,
+    const std::string& display) {
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
   ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
-  auto start_url_path =
+
+  std::string start_url_path =
       g_site_mode_to_relative_start_url.find(site_mode)->second;
+  std::string manifest_url_param =
+      g_display_to_manifest_url_param.find(display)->second;
   GURL url = embedded_test_server()->GetURL(
-      base::StrCat({start_url_path, "?manifest=manifest_minimal_ui.json"}));
+      base::StrCat({start_url_path, manifest_url_param}));
+
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -2319,6 +2378,26 @@ Browser* WebAppIntegrationTestDriver::browser() {
   return browser;
 }
 
+void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
+    const std::string& site_mode,
+    const std::string& is_shown) {
+  BeforeStateChangeAction(__FUNCTION__);
+  ASSERT_TRUE(app_browser());
+  EXPECT_EQ(app_browser()->app_controller()->AppUsesWindowControlsOverlay(),
+            is_shown == "Shown");
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::CheckWindowControlsOverlay(
+    const std::string& site_mode,
+    const std::string& is_on) {
+  BeforeStateChangeAction(__FUNCTION__);
+  ASSERT_TRUE(app_browser());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+  EXPECT_EQ(app_view->IsWindowControlsOverlayEnabled(), is_on == "On");
+  AfterStateChangeAction();
+}
+
 const net::EmbeddedTestServer*
 WebAppIntegrationTestDriver::embedded_test_server() {
   return delegate_->EmbeddedTestServer();
@@ -2348,6 +2427,7 @@ WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kPwaUpdateDialogForName);
   enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
+  enabled_features.push_back(features::kWebAppWindowControlsOverlay);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(chromeos::features::kLacrosPrimary);
