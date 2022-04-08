@@ -60,9 +60,9 @@ class DOMStorageContextWrapperTest : public testing::Test {
   }
 
  protected:
-  void OnBadMessage(const std::string& reason) {
+  void OnBadMessage(base::StringPiece reason) {
     bad_message_called_ = true;
-    bad_message_ = reason;
+    bad_message_ = std::string(reason);
   }
 
   mojo::ReportBadMessageCallback MakeBadMessageCallback() {

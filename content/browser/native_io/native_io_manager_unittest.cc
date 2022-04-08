@@ -294,7 +294,7 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
                           base::Unretained(this));
   }
 
-  void OnBadMessage(const std::string& reason) { NOTREACHED(); }
+  void OnBadMessage(base::StringPiece reason) { NOTREACHED(); }
 
   bool allow_set_length_ipc() { return GetParam(); }
 

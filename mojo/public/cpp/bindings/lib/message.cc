@@ -35,7 +35,7 @@ base::LazyInstance<
     base::SequenceLocalStorageSlot<internal::MessageDispatchContext*>>::Leaky
     g_sls_message_dispatch_context = LAZY_INSTANCE_INITIALIZER;
 
-void DoNotifyBadMessage(Message message, const std::string& error) {
+void DoNotifyBadMessage(Message message, base::StringPiece error) {
   message.NotifyBadMessage(error);
 }
 
@@ -425,7 +425,7 @@ ScopedMessageHandle Message::TakeMojoMessage() {
   return handle;
 }
 
-void Message::NotifyBadMessage(const std::string& error) {
+void Message::NotifyBadMessage(base::StringPiece error) {
   DCHECK(handle_.is_valid());
   mojo::NotifyBadMessage(handle_.get(), error);
 }
@@ -591,7 +591,7 @@ bool PassThroughFilter::Accept(Message* message) {
   return true;
 }
 
-void ReportBadMessage(const std::string& error) {
+void ReportBadMessage(base::StringPiece error) {
   internal::MessageDispatchContext* context =
       internal::MessageDispatchContext::current();
   DCHECK(context);

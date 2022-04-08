@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDING_STATE_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   void FlushAsync(AsyncFlusher flusher);
 
   void Close();
-  void CloseWithReason(uint32_t custom_reason, const std::string& description);
+  void CloseWithReason(uint32_t custom_reason, base::StringPiece description);
 
   void RaiseError() { endpoint_client_->RaiseError(); }
 

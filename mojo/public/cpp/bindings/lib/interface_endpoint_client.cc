@@ -506,7 +506,7 @@ void InterfaceEndpointClient::RaiseError() {
 }
 
 void InterfaceEndpointClient::CloseWithReason(uint32_t custom_reason,
-                                              const std::string& description) {
+                                              base::StringPiece description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto handle = PassHandle();

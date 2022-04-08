@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
@@ -111,7 +112,7 @@ class Receiver {
 
   // Similar to the method above, but also specifies a disconnect reason.
   void ResetWithReason(uint32_t custom_reason_code,
-                       const std::string& description) {
+                       base::StringPiece description) {
     internal_state_.CloseWithReason(custom_reason_code, description);
   }
 
@@ -285,7 +286,7 @@ class Receiver {
   // message dispatch. If you need to do asynchronous work before determining
   // the legitimacy of a message, use GetBadMessageCallback() and retain its
   // result until ready to invoke or discard it.
-  void ReportBadMessage(const std::string& error) {
+  void ReportBadMessage(base::StringPiece error) {
     GetBadMessageCallback().Run(error);
   }
 

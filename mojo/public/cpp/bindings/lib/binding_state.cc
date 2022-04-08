@@ -65,7 +65,7 @@ void BindingStateBase::Close() {
 }
 
 void BindingStateBase::CloseWithReason(uint32_t custom_reason,
-                                       const std::string& description) {
+                                       base::StringPiece description) {
   if (endpoint_client_)
     endpoint_client_->CloseWithReason(custom_reason, description);
 
@@ -75,7 +75,7 @@ void BindingStateBase::CloseWithReason(uint32_t custom_reason,
 ReportBadMessageCallback BindingStateBase::GetBadMessageCallback() {
   return base::BindOnce(
       [](ReportBadMessageCallback inner_callback,
-         base::WeakPtr<BindingStateBase> binding, const std::string& error) {
+         base::WeakPtr<BindingStateBase> binding, base::StringPiece error) {
         std::move(inner_callback).Run(error);
         if (binding)
           binding->Close();

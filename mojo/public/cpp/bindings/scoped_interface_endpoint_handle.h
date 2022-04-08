@@ -5,11 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SCOPED_INTERFACE_ENDPOINT_HANDLE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SCOPED_INTERFACE_ENDPOINT_HANDLE_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
@@ -78,7 +77,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
   void SetAssociationEventHandler(AssociationEventCallback handler);
 
   void reset();
-  void ResetWithReason(uint32_t custom_reason, const std::string& description);
+  void ResetWithReason(uint32_t custom_reason, base::StringPiece description);
 
  private:
   friend class AssociatedGroupController;
