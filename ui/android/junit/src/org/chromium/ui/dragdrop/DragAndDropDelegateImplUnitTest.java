@@ -119,9 +119,13 @@ public class DragAndDropDelegateImplUnitTest {
         final DropDataAndroid imageDropData =
                 DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, imageDropData);
-        Assert.assertEquals("Drag shadow width not match. Should do resize for image.", 60,
+        // width = scaledShadowSize + padding * 2 = 100 * 0.6 + 1 * 2 = 62
+        Assert.assertEquals(
+                "Drag shadow width not match. Should do resize for image and add 1dp border.", 62,
                 mDragAndDropDelegateImpl.getDragShadowWidth());
-        Assert.assertEquals("Drag shadow height not match. Should do resize for image.", 120,
+        // height = scaledShadowSize + padding * 2 = 200 * 0.6 + 1 * 2 = 122
+        Assert.assertEquals(
+                "Drag shadow height not match. Should do resize for image and add 1dp border.", 122,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
         Assert.assertNotNull("Cached Image bytes should not be null.",
                 DropDataContentProvider.getImageBytesForTesting());

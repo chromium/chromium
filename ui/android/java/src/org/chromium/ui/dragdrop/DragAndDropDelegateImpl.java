@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -22,7 +23,6 @@ import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -30,6 +30,8 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
@@ -222,11 +224,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             } else {
                 Pair<Integer, Integer> widthHeight = getWidthHeightForScaleDragShadow(context,
                         shadowImage.getWidth(), shadowImage.getHeight(), windowWidth, windowHeight);
-                mShadowWidth = widthHeight.first;
-                mShadowHeight = widthHeight.second;
-                imageView.setLayoutParams(new ViewGroup.LayoutParams(mShadowWidth, mShadowHeight));
-                imageView.setScaleType(ScaleType.CENTER_CROP);
-                imageView.setImageBitmap(shadowImage);
+                updateShadowImage(
+                        context, shadowImage, imageView, widthHeight.first, widthHeight.second);
             }
         } else {
             mShadowWidth = shadowImage.getWidth();
@@ -281,6 +280,29 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         }
 
         return new Pair<>(Math.round(imageWidth), Math.round(imageHeight));
+    }
+
+    /**
+     * Helper function to update the drag shadow:
+     * 1. Resize and center crop shadowImage to target size;
+     * 2. Round corners to 8dp;
+     * 3. Add 1dp border.
+     */
+    private void updateShadowImage(Context context, Bitmap shadowImage, ImageView imageView,
+            int targetWidth, int targetHeight) {
+        Resources res = context.getResources();
+        shadowImage = ThumbnailUtils.extractThumbnail(
+                shadowImage, targetWidth, targetHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(res, shadowImage);
+        drawable.setCornerRadius(
+                res.getDimensionPixelSize(R.dimen.drag_shadow_border_corner_radius));
+        imageView.setImageDrawable(drawable);
+        imageView.setBackgroundResource(R.drawable.drag_shadow_background);
+        int borderSize = res.getDimensionPixelSize(R.dimen.drag_shadow_border_size);
+        imageView.setPadding(borderSize, borderSize, borderSize, borderSize);
+        // Enlarge the ImageView to fit the border in.
+        mShadowWidth = targetWidth + borderSize * 2;
+        mShadowHeight = targetHeight + borderSize * 2;
     }
 
     private void onDragStarted(DragEvent dragStartEvent) {

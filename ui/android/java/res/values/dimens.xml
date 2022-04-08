@@ -60,6 +60,8 @@
     <dimen name="divider_height">1dp</dimen>
 
     <!-- Drag shadow dimens -->
+    <dimen name="drag_shadow_border_corner_radius">8dp</dimen>
+    <dimen name="drag_shadow_border_size">1dp</dimen>
     <dimen name="drag_shadow_min_size">48dp</dimen>
 
     <!-- Misc -->

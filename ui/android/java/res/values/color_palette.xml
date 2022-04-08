@@ -57,6 +57,7 @@
     <color name="baseline_neutral_900_with_neutral_1000_alpha_30_with_neutral_variant_400_alpha_15">#282828</color>
     <color name="baseline_neutral_1000">@android:color/black</color>
     <color name="baseline_neutral_variant_100">#E1E3E1</color>
+    <color name="baseline_neutral_variant_100_alpha_20">#33E1E3E1</color>
     <color name="baseline_neutral_variant_200">#C4C7C5</color>
     <color name="baseline_neutral_variant_200_alpha_15">#26C4C7C5</color>
     <color name="baseline_neutral_variant_400">#8E918F</color>
