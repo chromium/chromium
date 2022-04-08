@@ -35,11 +35,6 @@ namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX)
-// Aligns with other platform implementations that only support 10 items.
-constexpr int kMaxApplicationDockMenuItems = 10;
-#endif  // BUILDFLAG(IS_LINUX)
-
 // UMA metric name for shortcuts creation result.
 constexpr const char* kCreationResultMetric =
     "WebApp.Shortcuts.Creation.Result";
@@ -387,10 +382,8 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
 #if BUILDFLAG(IS_LINUX)
   const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
       app->shortcuts_menu_item_infos();
-  int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
-                             kMaxApplicationDockMenuItems);
-  for (int i = 0; i < num_entries; i++) {
-    const auto& shortcuts_menu_item_info = shortcuts_menu_item_infos[i];
+  DCHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems);
+  for (const auto& shortcuts_menu_item_info : shortcuts_menu_item_infos) {
     if (!shortcuts_menu_item_info.name.empty() &&
         !shortcuts_menu_item_info.url.is_empty()) {
       // Generates ID from the name by replacing all characters that are not

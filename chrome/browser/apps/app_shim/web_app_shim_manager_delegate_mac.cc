@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -27,9 +28,6 @@
 namespace web_app {
 
 namespace {
-
-// Align with Windows implementation which only supports 10 items.
-constexpr int kMaxApplicationDockMenuItems = 10;
 
 // Testing hook for BrowserAppLauncher::LaunchAppWithParams
 web_app::BrowserAppLauncherForTesting& GetBrowserAppLauncherForTesting() {
@@ -391,12 +389,11 @@ WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
                                        ->registrar()
                                        .GetAppShortcutsMenuItemInfos(app_id);
 
-  int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
-                             kMaxApplicationDockMenuItems);
-  for (int i = 0; i < num_entries; i++) {
+  DCHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems);
+  for (const auto& shortcuts_menu_item_info : shortcuts_menu_item_infos) {
     auto mojo_item = chrome::mojom::ApplicationDockMenuItem::New();
-    mojo_item->name = shortcuts_menu_item_infos[i].name;
-    mojo_item->url = shortcuts_menu_item_infos[i].url;
+    mojo_item->name = shortcuts_menu_item_info.name;
+    mojo_item->url = shortcuts_menu_item_info.url;
     dock_menu_items.push_back(std::move(mojo_item));
   }
 

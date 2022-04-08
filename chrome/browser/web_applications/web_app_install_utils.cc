@@ -112,6 +112,11 @@ std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
   for (const auto& shortcut : shortcuts) {
+    if (web_app_shortcut_infos.size() >= kMaxApplicationDockMenuItems) {
+      DLOG(ERROR) << "Too many shortcuts";
+      break;
+    }
+
     WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.name = shortcut.name;
     shortcut_info.url = shortcut.url;

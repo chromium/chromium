@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
 
+#include <stddef.h>
+
 #include <iosfwd>
 #include <vector>
 
@@ -139,6 +141,9 @@ enum class ExternalInstallSource {
 // Icon size in pixels.
 // Small icons are used in confirmation dialogs and app windows.
 constexpr int kWebAppIconSmall = 32;
+
+// Limit on the number of jump list entries per web app.
+constexpr size_t kMaxApplicationDockMenuItems = 10;
 
 using DisplayMode = blink::mojom::DisplayMode;
 

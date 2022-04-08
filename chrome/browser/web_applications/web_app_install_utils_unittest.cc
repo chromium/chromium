@@ -534,10 +534,28 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_TRUE(url_handler.has_origin_wildcard);
 }
 
+// Tests that we limit the number of shortcut menu items.
+TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcuts) {
+  blink::mojom::Manifest manifest;
+  const unsigned kMaxShortcuts = 10U;
+  for (unsigned int i = 1; i <= kMaxShortcuts + 1; ++i) {
+    blink::Manifest::ShortcutItem shortcut_item;
+    shortcut_item.name = kShortcutItemTestName + base::NumberToString16(i);
+    shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
+    manifest.shortcuts.push_back(shortcut_item);
+  }
+  EXPECT_LT(kMaxShortcuts, manifest.shortcuts.size());
+  WebAppInstallInfo web_app_info;
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+
+  EXPECT_EQ(kMaxShortcuts, web_app_info.shortcuts_menu_item_infos.size());
+}
+
 // Tests that we limit the number of icons declared by a site.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
   blink::mojom::Manifest manifest;
-  for (int i = 0; i < 50; ++i) {
+  for (unsigned int i = 0; i < kNumTestIcons; ++i) {
     blink::Manifest::ImageResource icon;
     icon.src = GURL("fav1.png");
     icon.purpose.push_back(Purpose::ANY);
@@ -548,6 +566,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+  ASSERT_GT(kNumTestIcons, web_app_info.manifest_icons.size());
   EXPECT_EQ(20U, web_app_info.manifest_icons.size());
 }
 
