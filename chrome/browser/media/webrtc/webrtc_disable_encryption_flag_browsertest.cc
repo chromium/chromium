@@ -50,12 +50,11 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
 
 // Makes a call and checks that there's encryption or not in the SDP offer.
 // TODO(crbug.com/910216): De-flake this for ChromeOs.
-// TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux.
+// TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux, also Windows
 // TODO(crbug.com/1211144): De-flake this for MacOS.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||                 \
-    (BUILDFLAG(IS_LINUX) &&                                        \
-     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_LINUX) &&                                             \
+     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)))
 #define MAYBE_VerifyEncryption DISABLED_VerifyEncryption
 #else
 #define MAYBE_VerifyEncryption VerifyEncryption
