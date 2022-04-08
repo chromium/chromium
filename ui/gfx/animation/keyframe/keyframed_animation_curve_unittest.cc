@@ -472,6 +472,27 @@ TEST(KeyframedAnimationCurveTest, StepsTimingFunctionStepAtEnd) {
   }
 }
 
+// A jump_both steps function has 1 extra jump. Ensure that this doesn't
+// overflow when using the maximum number of steps. In this case, the steps
+// function should be effectively the same as linear.
+// crbug.com/1313399
+TEST(KeyframedAnimationCurveTest, StepsTimingFunctionMaxSteps) {
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
+  const int num_steps = std::numeric_limits<int>::max();
+  curve->AddKeyframe(FloatKeyframe::Create(
+      base::TimeDelta(), 0.f,
+      StepsTimingFunction::Create(
+          num_steps, StepsTimingFunction::StepPosition::JUMP_BOTH)));
+  curve->AddKeyframe(FloatKeyframe::Create(base::Seconds(1.0), 1.f, nullptr));
+
+  for (int i = 0; i <= 100; i++) {
+    const float value = 0.001f * i;
+    const base::TimeDelta time = base::Seconds(value);
+    EXPECT_NEAR(value, curve->GetValue(time), 0.0001);
+  }
+}
+
 // Tests that maximum animation scale is computed as expected.
 TEST(KeyframedAnimationCurveTest, MaximumScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(

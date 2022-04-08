@@ -125,7 +125,7 @@ int StepsTimingFunction::NumberOfJumps() const {
       return steps_;
 
     case StepPosition::JUMP_BOTH:
-      return steps_ + 1;
+      return steps_ < std::numeric_limits<int>::max() ? steps_ + 1 : steps_;
 
     case StepPosition::JUMP_NONE:
       DCHECK_GT(steps_, 1);
