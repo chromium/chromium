@@ -15,6 +15,8 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
@@ -49,6 +51,7 @@ using autofill::FieldRendererId;
 @property(nonatomic, assign) BOOL selected;
 @property(nonatomic, assign) BOOL askedIfSuggestionsAvailable;
 @property(nonatomic, assign) BOOL askedForSuggestions;
+@property(nonatomic, assign) SuggestionProviderType type;
 
 // Creates a test provider with default suggesstions.
 + (instancetype)providerWithSuggestions;
@@ -89,8 +92,10 @@ using autofill::FieldRendererId;
 
 - (instancetype)initWithSuggestions:(NSArray*)suggestions {
   self = [super init];
-  if (self)
+  if (self) {
     _suggestions = [suggestions copy];
+    _type = SuggestionProviderTypeUnknown;
+  }
   return self;
 }
 
@@ -143,10 +148,6 @@ using autofill::FieldRendererId;
   _uniqueFieldID = uniqueFieldID;
   _frameID = [frameID copy];
   completion();
-}
-
-- (SuggestionProviderType)type {
-  return SuggestionProviderTypeUnknown;
 }
 
 @end
@@ -215,7 +216,7 @@ class FormSuggestionControllerTest : public PlatformTest {
                                                passwordStore:nullptr
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil
-                                           engagementTracker:nullptr];
+                                           engagementTracker:&mock_tracker_];
 
     [accessory_mediator_ injectWebState:&fake_web_state_];
     [accessory_mediator_ injectProvider:suggestion_controller_];
@@ -244,6 +245,9 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // Counter to track consumer call on |animateSuggestionLabel|.
   NSInteger call_to_animate_suggestion_label_counter_;
+
+  // The mocked feature engagement tracker.
+  feature_engagement::test::MockTracker mock_tracker_;
 };
 
 // Tests that pages whose URLs don't have a web scheme aren't processed.
@@ -507,26 +511,25 @@ TEST_F(FormSuggestionControllerTest, PasswordSuggestionHighlight) {
   ];
   TestSuggestionProvider* provider =
       [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  provider.type = SuggestionProviderTypePassword;
   SetUpController(@[ provider ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-
   autofill::FormActivityParams params;
-  params.form_name = "form";
-  params.field_identifier = "field_id";
-  params.field_type = "password";
-  params.type = "type";
-  params.value = "value";
-  params.frame_id = "frame_id";
-  params.input_missing = false;
+
+  EXPECT_CALL(
+      mock_tracker_,
+      NotifyEvent(feature_engagement::events::kPasswordSuggestionsShown))
+      .Times(testing::Exactly(1));
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
+
   EXPECT_EQ(call_to_animate_suggestion_label_counter_, 1);
 }
 
-// Tests that the suggestion highlight is disabled when suggesting something
-// else than a password.
+// Tests that the suggestion highlight is disabled when not suggesting a
+// password.
 TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoHighlight) {
   // Enable the feature flag for password suggestion highlight.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -545,17 +548,12 @@ TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoHighlight) {
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-
   autofill::FormActivityParams params;
-  params.form_name = "form";
-  params.field_identifier = "field_id";
-  params.field_type = "text";
-  params.type = "type";
-  params.value = "value";
-  params.frame_id = "frame_id";
-  params.input_missing = false;
+
+  EXPECT_CALL(mock_tracker_, NotifyEvent(testing::_)).Times(0);
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
+
   EXPECT_EQ(call_to_animate_suggestion_label_counter_, 0);
 }
 

@@ -545,21 +545,10 @@ const base::Feature kFormInputKeyboardReloadInputViews{
         self.engagementTracker) {
       self.engagementTracker->NotifyEvent(
           feature_engagement::events::kPasswordSuggestionsShown);
+      if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
+        [self.consumer animateSuggestionLabel];
+      }
     }
-    if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
-      [self highlightFirstSuggestion:suggestions.firstObject];
-    }
-  }
-}
-
-// Highlights first suggestion.
-- (void)highlightFirstSuggestion:(FormSuggestion*)suggestion {
-  if (!suggestion)
-    return;
-  // Show only if it's a password suggestion. (cf. FormSuggestion's header file)
-  const BOOL isCreditCardOrProfile = suggestion.identifier > 0;
-  if (!isCreditCardOrProfile) {
-    [self.consumer animateSuggestionLabel];
   }
 }
 
