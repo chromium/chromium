@@ -16,23 +16,23 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
                                   int max_width,
                                   absl::optional<float> percent = absl::nullopt,
                                   bool is_constrained = false) {
-    return NGTableTypes::Column{LayoutUnit(min_width),
-                                LayoutUnit(max_width),
-                                percent,
-                                /* border_padding */ LayoutUnit(),
-                                is_constrained,
-                                /* is_collapsed */ false,
-                                /* is_table_fixed */ false,
-                                /* is_mergeable */ false};
+    return {LayoutUnit(min_width),
+            LayoutUnit(max_width),
+            percent,
+            /* border_padding */ LayoutUnit(),
+            is_constrained,
+            /* is_collapsed */ false,
+            /* is_table_fixed */ false,
+            /* is_mergeable */ false};
   }
 
   NGTableTypes::Row MakeRow(int block_size,
                             bool is_constrained = false,
                             bool has_rowspan_start = false,
                             absl::optional<float> percent = absl::nullopt) {
-    return NGTableTypes::Row{
-        LayoutUnit(block_size), LayoutUnit(), percent,           0,    0,
-        is_constrained,         false,        has_rowspan_start, false};
+    return {LayoutUnit(block_size), 0,       0,
+            absl::nullopt,          percent, is_constrained,
+            has_rowspan_start,      false};
   }
 
   NGTableTypes::Section MakeSection(

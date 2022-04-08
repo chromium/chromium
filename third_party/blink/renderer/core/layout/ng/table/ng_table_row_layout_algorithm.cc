@@ -39,9 +39,9 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   const auto& row = table_data.rows[ConstraintSpace().TableRowIndex()];
 
   auto CreateCellConstraintSpace =
-      [this, &row, &table_data](
+      [this, &table_data](
           NGBlockNode cell, const NGTableConstraintSpaceData::Cell& cell_data,
-          LayoutUnit row_block_size,
+          LayoutUnit row_block_size, absl::optional<LayoutUnit> row_baseline,
           bool min_block_size_should_encompass_intrinsic_size) {
         const LayoutUnit cell_block_size =
             cell_data.rowspan_block_size != kIndefiniteSize
@@ -52,7 +52,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
             NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
                 table_data.table_writing_direction, cell, cell_data.borders,
                 table_data.column_locations, cell_block_size,
-                container_builder_.InlineSize(), row.baseline,
+                container_builder_.InlineSize(), row_baseline,
                 cell_data.start_column,
                 cell_data.is_initial_block_size_indefinite,
                 table_data.is_table_block_size_specified,
@@ -109,7 +109,8 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   EBreakBetween row_break_after;
   NGRowBaselineTabulator row_baseline_tabulator;
   HeapVector<ResultWithOffset> results;
-  auto PlaceCells = [&](LayoutUnit row_block_size) {
+  auto PlaceCells = [&](LayoutUnit row_block_size,
+                        absl::optional<LayoutUnit> row_baseline) {
     // Reset our state.
     max_cell_block_size = LayoutUnit();
     row_break_before = EBreakBetween::kAuto;
@@ -132,7 +133,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
           MinBlockSizeShouldEncompassIntrinsicSize(cell, cell_data);
 
       const auto cell_space = CreateCellConstraintSpace(
-          cell, cell_data, row_block_size,
+          cell, cell_data, row_block_size, row_baseline,
           min_block_size_should_encompass_intrinsic_size);
       const NGLayoutResult* cell_result =
           cell.Layout(cell_space, cell_break_token);
@@ -141,7 +142,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
           table_data.column_locations[cell_data.start_column].offset -
               table_data.table_border_spacing.inline_size,
           LayoutUnit());
-      if (has_block_fragmentation)
+      if (has_block_fragmentation || !row_baseline)
         results.emplace_back(cell_result, offset);
       else
         container_builder_.AddResult(*cell_result, offset);
@@ -173,12 +174,22 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     }
   };
 
-  PlaceCells(row.block_size);
+  // Determine the baseline for the table-row if we haven't been provided a
+  // cached one. This can happen if we have a %-block-size descendant which may
+  // adjust the position of the baseline.
+  //
+  // We also don't perform baseline alignment if block-fragmentation is
+  // present, as the alignment baseline may end up in another fragmentainer.
+  absl::optional<LayoutUnit> row_baseline;
+  if (!has_block_fragmentation) {
+    row_baseline = row.baseline;
+    if (!row_baseline) {
+      PlaceCells(row.block_size, absl::nullopt);
+      row_baseline = row_baseline_tabulator.ComputeBaseline(row.block_size);
+    }
+  }
 
-  // Since we always visit all cells in a row (cannot break halfway through;
-  // each cell establishes a parallel flows that needs to be examined
-  // separately), we have seen all children by now.
-  container_builder_.SetHasSeenAllChildren();
+  PlaceCells(row.block_size, row_baseline);
 
   LayoutUnit previous_consumed_row_block_size;
   if (IsResumingLayout(BreakToken())) {
@@ -198,11 +209,16 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   if (has_block_fragmentation) {
     // If we've expanded due to fragmentation, relayout with the new block-size.
     if (row.block_size != row_block_size)
-      PlaceCells(row_block_size);
+      PlaceCells(row_block_size, absl::nullopt);
 
     for (auto& result : results)
       container_builder_.AddResult(*result.result, result.offset);
   }
+
+  // Since we always visit all cells in a row (cannot break halfway through;
+  // each cell establishes a parallel flows that needs to be examined
+  // separately), we have seen all children by now.
+  container_builder_.SetHasSeenAllChildren();
 
   container_builder_.SetFragmentsTotalBlockSize(row_block_size);
   if (row.is_collapsed)

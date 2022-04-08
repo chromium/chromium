@@ -293,8 +293,8 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
     data->sections.emplace_back(section.start_row, section.row_count);
   data->rows.ReserveCapacity(rows.size());
   for (const auto& row : rows) {
-    data->rows.emplace_back(row.baseline, row.block_size, row.start_cell_index,
-                            row.cell_count, row.is_collapsed);
+    data->rows.emplace_back(row.block_size, row.start_cell_index,
+                            row.cell_count, row.baseline, row.is_collapsed);
   }
   data->cells.ReserveCapacity(cell_block_constraints.size());
   // Traversing from section is necessary to limit cell's rowspan to the
@@ -704,31 +704,19 @@ void NGTableLayoutAlgorithm::ComputeRows(
     }
   }
 
-  bool recompute_row_baselines = false;
   for (auto& row : *rows) {
+    if (!row.is_collapsed)
+      continue;
+
     // Collapsed rows get zero block-size, and shrink the minimum table size.
-    if (row.is_collapsed) {
-      // TODO(ikilpatrick): As written |minimal_table_grid_block_size| can go
-      // negative. Investigate.
-      if (*minimal_table_grid_block_size != LayoutUnit()) {
-        *minimal_table_grid_block_size -= row.block_size;
-        if (rows->size() > 1)
-          *minimal_table_grid_block_size -= border_spacing.block_size;
-      }
-      row.block_size = LayoutUnit();
+    // TODO(ikilpatrick): As written |minimal_table_grid_block_size| can go
+    // negative. Investigate.
+    if (*minimal_table_grid_block_size != LayoutUnit()) {
+      *minimal_table_grid_block_size -= row.block_size;
+      if (rows->size() > 1)
+        *minimal_table_grid_block_size -= border_spacing.block_size;
     }
-
-    // Check if we need to perform a final pass.
-    recompute_row_baselines |=
-        row.has_baseline_aligned_percentage_block_size_descendants;
-  }
-
-  // There is at least one row which needs its baseline recomputed.
-  if (recompute_row_baselines) {
-    NGTableAlgorithmUtils::RecomputeRowBaselines(
-        grouped_children, column_locations, *cell_block_constraints,
-        border_spacing, Style().GetWritingDirection(), table_grid_inline_size,
-        is_table_block_size_specified, table_borders.IsCollapsed(), rows);
+    row.block_size = LayoutUnit();
   }
 }
 

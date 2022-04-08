@@ -38,28 +38,27 @@ class NGTableConstraintSpaceData
 
   // Data needed by row layout algorithm.
   struct Row {
-    Row(LayoutUnit baseline,
-        LayoutUnit block_size,
+    Row(LayoutUnit block_size,
         wtf_size_t start_cell_index,
         wtf_size_t cell_count,
+        absl::optional<LayoutUnit> baseline,
         bool is_collapsed)
-        : baseline(baseline),
-          block_size(block_size),
+        : block_size(block_size),
           start_cell_index(start_cell_index),
           cell_count(cell_count),
+          baseline(baseline),
           is_collapsed(is_collapsed) {}
 
     bool MaySkipLayout(const Row& other) const {
       // We don't compare |start_cell_index| as this is allowed to change.
-      return baseline == other.baseline && block_size == other.block_size &&
-             cell_count == other.cell_count &&
-             is_collapsed == other.is_collapsed;
+      return block_size == other.block_size && cell_count == other.cell_count &&
+             baseline == other.baseline && is_collapsed == other.is_collapsed;
     }
 
-    const LayoutUnit baseline;
     const LayoutUnit block_size;
     const wtf_size_t start_cell_index;
     const wtf_size_t cell_count;
+    const absl::optional<LayoutUnit> baseline;
     const bool is_collapsed;
   };
 

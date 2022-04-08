@@ -184,14 +184,13 @@ class CORE_EXPORT NGTableTypes {
   struct Row {
     DISALLOW_NEW();
     LayoutUnit block_size;
-    LayoutUnit baseline;
-    absl::optional<float> percent;  // 100% is stored as 100.0f
     wtf_size_t start_cell_index;
     wtf_size_t cell_count;
+    absl::optional<LayoutUnit> baseline;
+    absl::optional<float> percent;  // 100% is stored as 100.0f
     // |is_constrained| is true if row has specified block-size, or contains
     // constrained cells.
     bool is_constrained;
-    bool has_baseline_aligned_percentage_block_size_descendants;
     bool has_rowspan_start;  // True if row originates a TD with rowspan > 1
     bool is_collapsed;
   };

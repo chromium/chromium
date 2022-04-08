@@ -299,18 +299,17 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
 
   const LayoutUnit row_block_size =
       row_baseline_tabulator.ComputeRowBlockSize(max_cell_block_size);
-  const LayoutUnit row_baseline =
-      row_baseline_tabulator.ComputeBaseline(row_block_size);
+  absl::optional<LayoutUnit> row_baseline;
+  if (!row_baseline_tabulator.BaselineDependsOnPercentageBlockDescendant())
+    row_baseline = row_baseline_tabulator.ComputeBaseline(row_block_size);
 
   return NGTableTypes::Row{
       row_block_size,
-      row_baseline,
-      row_percent,
       start_cell_index,
       cell_block_constraints->size() - start_cell_index,
+      row_baseline,
+      row_percent,
       is_constrained,
-      row_baseline_tabulator
-          .ComputeBaselineDependsOnPercentageBlockDescendant(),
       has_rowspan_start,
       /* is_collapsed */ is_section_collapsed ||
           row.Style().Visibility() == EVisibility::kCollapse};
@@ -696,74 +695,6 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
                                   section_block_size, treat_section_as_tbody));
 }
 
-// static
-void NGTableAlgorithmUtils::RecomputeRowBaselines(
-    const NGTableGroupedChildren& grouped_children,
-    const Vector<NGTableColumnLocation>& column_locations,
-    const NGTableTypes::CellBlockConstraints& cell_block_constraints,
-    const LogicalSize& border_spacing,
-    WritingDirectionMode table_writing_direction,
-    LayoutUnit cell_percentage_inline_size,
-    bool is_table_block_size_specified,
-    bool has_collapsed_borders,
-    NGTableTypes::Rows* rows) {
-  DCHECK(rows);
-
-  wtf_size_t row_index = 0;
-  for (auto section : grouped_children) {
-    for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-         row = To<NGBlockNode>(row.NextSibling()), ++row_index) {
-      // Only recompute the baseline if we have a %-block-size descendant.
-      auto& row_data = rows->at(row_index);
-      if (!row_data.has_baseline_aligned_percentage_block_size_descendants)
-        continue;
-
-      wtf_size_t cell_index = row_data.start_cell_index;
-      NGRowBaselineTabulator row_baseline_tabulator;
-      for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
-           cell = To<NGBlockNode>(cell.NextSibling()), ++cell_index) {
-        const auto& cell_block_constraint = cell_block_constraints[cell_index];
-        const auto [cell_block_size, is_initial_block_size_indefinite] =
-            ComputeCellBlockSize(cell_block_constraint, *rows, row_index,
-                                 border_spacing, is_table_block_size_specified);
-
-        // This constraint space is almost identical to the final space which
-        // we use in the row layout algorithm. Due to this we use the layout
-        // cache-slot instead of the measure cache-slot.
-        const auto cell_space =
-            NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
-                table_writing_direction, cell, cell_block_constraint.borders,
-                column_locations, cell_block_size, cell_percentage_inline_size,
-                /* row_baseline */ absl::nullopt,
-                cell_block_constraint.column_index,
-                is_initial_block_size_indefinite, is_table_block_size_specified,
-                has_collapsed_borders, NGCacheSlot::kLayout)
-                .ToConstraintSpace();
-
-        // This layout bypasses the typically tree-structure, and uses the
-        // layout cache-slot. Due to this we need to disable side-effects - as
-        // we may end up with incorrect fragments on our layout-objects.
-        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
-        if (!cell.GetLayoutBox()->NeedsLayout())
-          disable_side_effects.emplace();
-        const NGLayoutResult* layout_result = cell.Layout(cell_space);
-
-        const NGBoxFragment fragment(
-            table_writing_direction,
-            To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
-        row_baseline_tabulator.ProcessCell(
-            fragment,
-            NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign()),
-            cell_block_constraint.effective_rowspan != 1,
-            layout_result->HasDescendantThatDependsOnPercentageBlockSize());
-      }
-
-      row_data.baseline =
-          row_baseline_tabulator.ComputeBaseline(row_data.block_size);
-    }
-  }
-}
-
 void NGColspanCellTabulator::StartRow() {
   current_column_ = 0;
 }
@@ -857,8 +788,7 @@ LayoutUnit NGRowBaselineTabulator::ComputeBaseline(
   return LayoutUnit();
 }
 
-bool NGRowBaselineTabulator::
-    ComputeBaselineDependsOnPercentageBlockDescendant() {
+bool NGRowBaselineTabulator::BaselineDependsOnPercentageBlockDescendant() {
   if (max_cell_ascent_)
     return max_cell_baseline_depends_on_percentage_block_descendant_;
   if (fallback_cell_descent_)
