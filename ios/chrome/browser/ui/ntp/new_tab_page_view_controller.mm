@@ -455,6 +455,9 @@
   if (self.feedHeaderViewController) {
     [self removeFromViewHierarchy:self.feedHeaderViewController];
   }
+  if (self.headerController) {
+    [self removeFromViewHierarchy:self.headerController];
+  }
   self.contentSuggestionsHeightConstraint.active = NO;
 }
 
