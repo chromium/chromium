@@ -161,7 +161,7 @@ public class ShoppingPersistedTabDataLegacyTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(updateSemaphore);
         return ShoppingPersistedTabDataTestUtils.getTimeLastUpdatedOnUiThread(tab);
     }
-    @UiThreadTest
+
     @SmallTest
     @Test
     @CommandLineFlags.

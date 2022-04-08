@@ -109,7 +109,7 @@ public abstract class PersistedTabData implements UserData {
             if (persistedTabDataFromTab.needsUpdate()) {
                 tabDataCreator.onResult((tabData) -> {
                     if (tab.isDestroyed()) {
-                        PostTask.runOrPostTask(
+                        PostTask.postTask(
                                 UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
                         return;
                     }
@@ -117,11 +117,11 @@ public abstract class PersistedTabData implements UserData {
                     if (tabData != null) {
                         setUserData(tab, clazz, tabData);
                     }
-                    PostTask.runOrPostTask(
+                    PostTask.postTask(
                             UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(tabData); });
                 });
             } else {
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                         () -> { callback.onResult(persistedTabDataFromTab); });
             }
             return;
@@ -179,15 +179,14 @@ public abstract class PersistedTabData implements UserData {
     }
 
     private static <T extends PersistedTabData> void onPersistedTabDataResult(
-            T persistedTabData, Tab tab, Class<T> clazz, String key) {
-        if (tab.isDestroyed()) {
-            persistedTabData = null;
-        }
+            T pPersistedTabData, Tab tab, Class<T> clazz, String key) {
+        final T persistedTabData = tab.isDestroyed() ? null : pPersistedTabData;
         if (persistedTabData != null) {
             setUserData(tab, clazz, persistedTabData);
         }
         for (Callback cachedCallback : sCachedCallbacks.get(key)) {
-            cachedCallback.onResult(persistedTabData);
+            PostTask.postTask(
+                    UiThreadTaskTraits.DEFAULT, () -> cachedCallback.onResult(persistedTabData));
         }
         sCachedCallbacks.remove(key);
     }
