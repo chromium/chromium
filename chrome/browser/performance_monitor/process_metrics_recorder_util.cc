@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -33,28 +34,25 @@ constexpr int kCPUUsageHistogramBucketCount = 50;
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics) {
   base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU2.", histogram_suffix}),
+      base::JoinString({"PerformanceMonitor.AverageCPU2.", histogram_suffix},
+                       ""),
       metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
       kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#if BUILDFLAG(IS_WIN)
-  base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU3.", histogram_suffix}),
-      metrics.precise_cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
-      kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   base::UmaHistogramCounts10000(
-      base::StrCat({"PerformanceMonitor.IdleWakeups.", histogram_suffix}),
+      base::JoinString({"PerformanceMonitor.IdleWakeups.", histogram_suffix},
+                       ""),
       metrics.idle_wakeups);
 #endif
 #if BUILDFLAG(IS_MAC)
   base::UmaHistogramCounts1000(
-      base::StrCat(
-          {"PerformanceMonitor.PackageExitIdleWakeups.", histogram_suffix}),
+      base::JoinString(
+          {"PerformanceMonitor.PackageExitIdleWakeups.", histogram_suffix}, ""),
       metrics.package_idle_wakeups);
   base::UmaHistogramCounts100000(
-      base::StrCat({"PerformanceMonitor.EnergyImpact.", histogram_suffix}),
+      base::JoinString({"PerformanceMonitor.EnergyImpact.", histogram_suffix},
+                       ""),
       metrics.energy_impact);
 #endif
 }
