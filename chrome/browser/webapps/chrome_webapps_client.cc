@@ -125,7 +125,7 @@ void ChromeWebappsClient::InstallShortcut(content::WebContents* web_contents,
                                           const AddToHomescreenParams& params) {
   ShortcutHelper::AddToLauncherWithSkBitmap(
       web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon);
+      params.has_maskable_primary_icon, params.installable_status);
 }
 #endif
 

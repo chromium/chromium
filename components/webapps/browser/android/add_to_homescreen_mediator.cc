@@ -173,8 +173,10 @@ void AddToHomescreenMediator::OnUserTitleAvailable(
   SetWebAppInfo(user_title, url, is_webapk_compatible);
 }
 
-void AddToHomescreenMediator::OnDataAvailable(const ShortcutInfo& info,
-                                              const SkBitmap& display_icon) {
+void AddToHomescreenMediator::OnDataAvailable(
+    const ShortcutInfo& info,
+    const SkBitmap& display_icon,
+    const InstallableStatusCode status_code) {
   params_ = std::make_unique<AddToHomescreenParams>();
   params_->app_type = info.source == ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA
                           ? AddToHomescreenParams::AppType::WEBAPK
@@ -185,6 +187,7 @@ void AddToHomescreenMediator::OnDataAvailable(const ShortcutInfo& info,
       data_fetcher_->has_maskable_primary_icon();
   params_->install_source = InstallableMetrics::GetInstallSource(
       data_fetcher_->web_contents(), InstallTrigger::MENU);
+  params_->installable_status = status_code;
 
   // AddToHomescreenMediator::OnDataAvailable() is called in the code path
   // to show A2HS dialog from app menu. In this code path, display_icon is

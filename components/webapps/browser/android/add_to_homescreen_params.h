@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -31,6 +32,7 @@ struct AddToHomescreenParams {
   bool has_maskable_primary_icon = false;
   std::unique_ptr<ShortcutInfo> shortcut_info;
   WebappInstallSource install_source;
+  InstallableStatusCode installable_status;
   std::string native_app_package_name;
   base::android::ScopedJavaGlobalRef<jobject> native_app_data;
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -100,9 +101,10 @@ void WebApkInstallService::OnFinishedInstall(
       return;
 
     // TODO(https://crbug.com/861643): Support maskable icons here.
-    ShortcutHelper::AddToLauncherWithSkBitmap(web_contents.get(), shortcut_info,
-                                              primary_icon,
-                                              /*is_icon_maskable=*/false);
+    ShortcutHelper::AddToLauncherWithSkBitmap(
+        web_contents.get(), shortcut_info, primary_icon,
+        /*is_icon_maskable=*/false,
+        webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
   }
 }
 

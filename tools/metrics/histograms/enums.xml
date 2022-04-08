@@ -2982,54 +2982,6 @@ Unknown properties are collapsed to zero. -->
   <int value="12" label="Web app banner created"/>
 </enum>
 
-<enum name="AppBannersInstallableStatusCode">
-  <int value="0" label="No error"/>
-  <int value="1" label="Renderer exiting"/>
-  <int value="2" label="Renderer called beforeinstallprompt.preventDefault()"/>
-  <int value="3" label="User navigated before the banner was shown"/>
-  <int value="4" label="Site not loaded in main frame"/>
-  <int value="5" label="Site not served from a secure origin"/>
-  <int value="6" label="Site did not provide a manifest link"/>
-  <int value="7" label="Manifest was empty or could not be parsed"/>
-  <int value="8" label="Manifest start_url not valid"/>
-  <int value="9" label="Manifest missing name or short_name"/>
-  <int value="10" label="Manifest display not supported"/>
-  <int value="11" label="Manifest missing suitable icon"/>
-  <int value="12" label="No matching service worker"/>
-  <int value="13" label="Could not select suitable icon to download"/>
-  <int value="14" label="Could not download selected icon"/>
-  <int value="15" label="Downloaded icon was empty"/>
-  <int value="16" label="Application platform not supported on Android"/>
-  <int value="17" label="No native app id specified"/>
-  <int value="18" label="URL and manifest specified different native app ids"/>
-  <int value="19" label="Site is already installed"/>
-  <int value="20" label="Insufficient engagement"/>
-  <int value="21" label="Package name or start_url empty"/>
-  <int value="22" label="Banner was previously blocked by the user"/>
-  <int value="23" label="Banner was previously ignored by the user"/>
-  <int value="24" label="Native app banner shown"/>
-  <int value="25" label="Web app banner shown"/>
-  <int value="26" label="Site eligible, but banner creation failed"/>
-  <int value="27" label="Url is not eligible for WebAPKs"/>
-  <int value="28" label="Site loaded in incognito window (not reported)"/>
-  <int value="29" label="Service worker not offline capable"/>
-  <int value="30" label="Waiting for manifest to be fetched"/>
-  <int value="31" label="Waiting for installability check"/>
-  <int value="32"
-      label="No gesture associated with call to prompt (removed Aug 2018)"/>
-  <int value="33" label="Waiting for native data"/>
-  <int value="34" label="App install dialog shown"/>
-  <int value="35" label="Cannot check service worker for null start URL"/>
-  <int value="36" label="prefer_related_applications set to true"/>
-  <int value="37"
-      label="prefer_related_applications is only supported on Chrome Beta
-             &amp; Stable on Android"/>
-  <int value="38" label="Manifest URL was changed during fetch"/>
-  <int value="39" label="Manifest display_override value not supported"/>
-  <int value="40" label="Offline is not capable"/>
-  <int value="41" label="Pipeline should restart so it stops running one"/>
-</enum>
-
 <enum name="AppBannersInstallEvent">
   <int value="21" label="(Native app) User triggered the app install dialog"/>
   <int value="22"
@@ -47281,6 +47233,56 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Check not complete, site is a PWA"/>
   <int value="4" label="Check complete, site is not a PWA"/>
   <int value="5" label="Check complete, site is a PWA"/>
+</enum>
+
+<enum name="InstallableStatusCode">
+  <int value="0" label="No error"/>
+  <int value="1" label="Renderer exiting"/>
+  <int value="2" label="Renderer called beforeinstallprompt.preventDefault()"/>
+  <int value="3" label="User navigated before the banner was shown"/>
+  <int value="4" label="Site not loaded in main frame"/>
+  <int value="5" label="Site not served from a secure origin"/>
+  <int value="6" label="Site did not provide a manifest link"/>
+  <int value="7" label="Manifest was empty or could not be parsed"/>
+  <int value="8" label="Manifest start_url not valid"/>
+  <int value="9" label="Manifest missing name or short_name"/>
+  <int value="10" label="Manifest display not supported"/>
+  <int value="11" label="Manifest missing suitable icon"/>
+  <int value="12" label="No matching service worker"/>
+  <int value="13" label="Could not select suitable icon to download"/>
+  <int value="14" label="Could not download selected icon"/>
+  <int value="15" label="Downloaded icon was empty"/>
+  <int value="16" label="Application platform not supported on Android"/>
+  <int value="17" label="No native app id specified"/>
+  <int value="18" label="URL and manifest specified different native app ids"/>
+  <int value="19" label="Site is already installed"/>
+  <int value="20" label="Insufficient engagement"/>
+  <int value="21" label="Package name or start_url empty"/>
+  <int value="22" label="Banner was previously blocked by the user"/>
+  <int value="23" label="Banner was previously ignored by the user"/>
+  <int value="24" label="Native app banner shown"/>
+  <int value="25" label="Web app banner shown"/>
+  <int value="26" label="Site eligible, but banner creation failed"/>
+  <int value="27" label="Url is not eligible for WebAPKs"/>
+  <int value="28" label="Site loaded in incognito window (not reported)"/>
+  <int value="29" label="Service worker not offline capable"/>
+  <int value="30" label="Waiting for manifest to be fetched"/>
+  <int value="31" label="Waiting for installability check"/>
+  <int value="32"
+      label="No gesture associated with call to prompt (removed Aug 2018)"/>
+  <int value="33" label="Waiting for native data"/>
+  <int value="34" label="App install dialog shown"/>
+  <int value="35" label="Cannot check service worker for null start URL"/>
+  <int value="36" label="prefer_related_applications set to true"/>
+  <int value="37"
+      label="prefer_related_applications is only supported on Chrome Beta
+             &amp; Stable on Android"/>
+  <int value="38" label="Manifest URL was changed during fetch"/>
+  <int value="39" label="Manifest display_override value not supported"/>
+  <int value="40" label="Offline is not capable"/>
+  <int value="41" label="Pipeline should restart so it stops running one"/>
+  <int value="42" label="Timed out when fetching installable data"/>
+  <int value="43" label="WebAPK install falied"/>
 </enum>
 
 <enum name="InstallationCounterReasonEnum">

@@ -20448,6 +20448,32 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Webapp.AddToHomeScreen">
+  <owner>eirage@chromium.org&gt;</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>mwi-team-core@google.com</owner>
+  <summary>
+    A2HS usage metrics recorded when users started the add to home screen flow
+    on Android.
+  </summary>
+  <metric name="DisplayMode" enum="WebAppDisplayMode">
+    <summary>
+      Records the display mode of the added Webapp.
+    </summary>
+  </metric>
+  <metric name="SameAsManifestStartUrl" enum="Boolean">
+    <summary>
+      Record whether `start_url` for the Shortcuts is the same as the current
+      page url.
+    </summary>
+  </metric>
+  <metric name="ShortcutReason" enum="InstallableStatusCode">
+    <summary>
+      Record an StatusCode for why this site is not WebAPK compatible.
+    </summary>
+  </metric>
+</event>
+
 <event name="WebApp.DailyInteraction">
   <owner>glenrob@chromium.org</owner>
   <owner>benwells@chromium.org</owner>

@@ -137,6 +137,8 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case NO_GESTURE:
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
+    case DATA_TIMED_OUT:
+    case WEBAPK_INSTALL_FAILED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -246,6 +248,8 @@ content::InstallabilityError GetInstallabilityError(
     case NO_GESTURE:
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
+    case DATA_TIMED_OUT:
+    case WEBAPK_INSTALL_FAILED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:

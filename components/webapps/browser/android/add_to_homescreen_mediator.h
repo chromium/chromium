@@ -15,6 +15,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -84,7 +85,8 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
                             bool is_webapk_compatible) override;
 
   void OnDataAvailable(const ShortcutInfo& info,
-                       const SkBitmap& display_icon) override;
+                       const SkBitmap& display_icon,
+                       InstallableStatusCode status_code) override;
 
   void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
                              const AddToHomescreenParams& a2hs_params);

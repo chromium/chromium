@@ -219,6 +219,7 @@ void AddToHomescreenDataFetcher::OnDataTimedout() {
   if (!web_contents_)
     return;
 
+  installable_status_code_ = InstallableStatusCode::DATA_TIMED_OUT;
   observer_->OnUserTitleAvailable(shortcut_info_.user_title, shortcut_info_.url,
                                   /*is_webapk_compatible=*/false);
 
@@ -241,6 +242,9 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
   if (blink::IsEmptyManifest(data.manifest) || !data.primary_icon) {
+    DCHECK_GT(data.errors.size(), 0u);
+    if (!data.errors.empty())
+      installable_status_code_ = data.errors[0];
     observer_->OnUserTitleAvailable(shortcut_info_.user_title,
                                     shortcut_info_.url,
                                     /*is_webapk_compatible=*/false);
@@ -272,6 +276,9 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   bool webapk_compatible =
       (data.NoBlockingErrors() && data.valid_manifest && data.has_worker &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(data.manifest));
+  if (!webapk_compatible && !data.errors.empty()) {
+    installable_status_code_ = data.errors[0];
+  }
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);
@@ -372,7 +379,8 @@ void AddToHomescreenDataFetcher::OnIconCreated(bool use_for_launcher,
   if (is_icon_generated)
     shortcut_info_.best_primary_icon_url = GURL();
 
-  observer_->OnDataAvailable(shortcut_info_, icon_for_view);
+  observer_->OnDataAvailable(shortcut_info_, icon_for_view,
+                             installable_status_code_);
 }
 
 }  // namespace webapps

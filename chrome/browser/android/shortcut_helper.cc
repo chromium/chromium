@@ -15,9 +15,11 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
@@ -93,6 +95,23 @@ void AddShortcutWithSkBitmap(const webapps::ShortcutInfo& info,
                                   java_best_primary_icon_url);
 }
 
+void RecordAddToHomeScreenUKM(
+    content::WebContents* web_contents,
+    const webapps::ShortcutInfo& info,
+    webapps::InstallableStatusCode installable_status) {
+  if (!web_contents)
+    return;
+
+  ukm::SourceId source_id =
+      ukm::GetSourceIdForWebContentsDocument(web_contents);
+  ukm::builders::Webapp_AddToHomeScreen(source_id)
+      .SetDisplayMode(static_cast<int>(info.display))
+      .SetShortcutReason(static_cast<int>(installable_status))
+      .SetSameAsManifestStartUrl(info.url.spec() ==
+                                 web_contents->GetLastCommittedURL().spec())
+      .Record(ukm::UkmRecorder::Get());
+}
+
 }  // anonymous namespace
 
 // static
@@ -100,7 +119,10 @@ void ShortcutHelper::AddToLauncherWithSkBitmap(
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& info,
     const SkBitmap& icon_bitmap,
-    bool is_icon_maskable) {
+    bool is_icon_maskable,
+    webapps::InstallableStatusCode installable_status) {
+  RecordAddToHomeScreenUKM(web_contents, info, installable_status);
+
   std::string webapp_id = base::GenerateGUID();
   if (info.display == blink::mojom::DisplayMode::kStandalone ||
       info.display == blink::mojom::DisplayMode::kFullscreen ||
