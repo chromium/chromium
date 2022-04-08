@@ -2239,8 +2239,17 @@ IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
-                       AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo) {
+// TODO(crbug.com/1314591): Re-enable this test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo \
+  DISABLED_AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo
+#else
+#define MAYBE_AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo \
+  AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
+    MAYBE_AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(),
                      "video.autoPictureInPicture = true;"
