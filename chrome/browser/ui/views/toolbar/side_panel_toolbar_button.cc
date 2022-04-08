@@ -122,7 +122,8 @@ void SidePanelToolbarButton::ButtonPressed() {
         browser_view->right_aligned_side_panel()->AddChildView(
             std::move(webview));
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
-    reading_list_model_->MarkAllSeen();
+    if (reading_list_model_->loaded())
+      reading_list_model_->MarkAllSeen();
     dot_indicator_->Hide();
   }
 }
