@@ -53,14 +53,14 @@ bool ShouldOfferLinkToText(const GURL& url) {
   return true;
 }
 
-bool SupportsLinkGenerationInIframe(GURL url) {
+bool SupportsLinkGenerationInIframe(GURL main_frame_url) {
   const std::unordered_set<std::string> good_hosts = {
       "www.google.com", "m.google.com", "mobile.google.com",
       "www.bing.com",   "m.bing.com",   "mobile.bing.com"};
 
-  return url.SchemeIs(url::kHttpsScheme) &&
-         good_hosts.find(url.host()) != good_hosts.end() &&
-         base::StartsWith(url.path(), "/amp/");
+  return main_frame_url.SchemeIs(url::kHttpsScheme) &&
+         good_hosts.find(main_frame_url.host()) != good_hosts.end() &&
+         base::StartsWith(main_frame_url.path(), "/amp/");
 }
 
 }  // namespace shared_highlighting
