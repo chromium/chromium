@@ -54,6 +54,33 @@ class CONTENT_EXPORT AuctionRunner {
     std::string name;
   };
 
+  // Post auction signals (signals only available after auction completes such
+  // as winning bid) for debug loss/win reporting.
+  struct PostAuctionSignals {
+    PostAuctionSignals() = default;
+
+    // For now, top level post auction signals do not have
+    // `highest_scoring_other_bid` or `made_highest_scoring_other_bid`.
+    PostAuctionSignals(double winning_bid, bool made_winning_bid)
+        : winning_bid(winning_bid), made_winning_bid(made_winning_bid) {}
+
+    PostAuctionSignals(double winning_bid,
+                       bool made_winning_bid,
+                       double highest_scoring_other_bid,
+                       bool made_highest_scoring_other_bid)
+        : winning_bid(winning_bid),
+          made_winning_bid(made_winning_bid),
+          highest_scoring_other_bid(highest_scoring_other_bid),
+          made_highest_scoring_other_bid(made_highest_scoring_other_bid) {}
+
+    ~PostAuctionSignals() = default;
+
+    double winning_bid = 0.0;
+    bool made_winning_bid = false;
+    double highest_scoring_other_bid = 0.0;
+    bool made_highest_scoring_other_bid = false;
+  };
+
   // Invoked when a FLEDGE auction is complete.
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
@@ -212,13 +239,19 @@ class CONTENT_EXPORT AuctionRunner {
 
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in generateBid().
+    // They support post auction signal placeholders in their URL string,
+    // for example, "https://example.com/${highestScoringOtherBid}".
+    // Placeholders will be replaced by corresponding values. For a component
+    // auction, post auction signals are only from the component auction, but
+    // not the top-level auction.
     absl::optional<GURL> bidder_debug_loss_report_url;
     absl::optional<GURL> bidder_debug_win_report_url;
 
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd(). In the case
     // of a component auction, these are the values from component seller that
-    // the scored ad was created in.
+    // the scored ad was created in, and post auction signals are from the
+    // component auction.
     absl::optional<GURL> seller_debug_loss_report_url;
     absl::optional<GURL> seller_debug_win_report_url;
 
@@ -562,6 +595,21 @@ class CONTENT_EXPORT AuctionRunner {
         const absl::optional<GURL>& debug_win_report_url,
         const std::vector<std::string>& errors);
 
+    // Invoked when there's a tie for temporary top bid, to handle calculation
+    // of post auction signals.
+    void OnTopBidTie(double score,
+                     double bid_value,
+                     const url::Origin& owner,
+                     bool is_top_bid);
+    // Invoked when the bid becomes the new top bid, to handle calculation
+    // of post auction signals.
+    void OnNewTopBid();
+    // Invoked when the bid becomes the new highest scoring other bid, to handle
+    // calculation of post auction signals.
+    void OnNewHighestScoringOtherBid(double score,
+                                     double bid_value,
+                                     const url::Origin& owner);
+
     absl::optional<std::string> PerBuyerSignals(const BidState* state);
     absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
     absl::optional<base::TimeDelta> SellerTimeout();
@@ -582,7 +630,7 @@ class CONTENT_EXPORT AuctionRunner {
     // -----------------------
 
     // Sequence of asynchronous methods to call into the seller and then bidder
-    // worklet to report a a win. Will ultimately invoke
+    // worklet to report a win. Will ultimately invoke
     // `reporting_phase_callback_`, which will delete the auction.
     void ReportSellerResult(absl::optional<std::string> top_seller_signals);
     void OnReportSellerResultComplete(
@@ -639,6 +687,13 @@ class CONTENT_EXPORT AuctionRunner {
         BidState& bid_state,
         base::OnceClosure worklet_available_callback,
         AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
+
+    // Replace `${}` placeholders in debug report URLs for post auction signals
+    // if exist.
+    GURL FillPostAuctionSignals(const GURL& url,
+                                const PostAuctionSignals& signals,
+                                const absl::optional<PostAuctionSignals>&
+                                    top_level_signals = absl::nullopt);
 
     const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
     const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
@@ -731,6 +786,22 @@ class CONTENT_EXPORT AuctionRunner {
     std::unique_ptr<ScoredBid> top_bid_;
     // Number of bidders with the same score as `top_bidder`.
     size_t num_top_bids_ = 0;
+
+    // The numeric value of the bid that got the second highest score. When
+    // there's a tie for second highest score, just take the most recent one (
+    // any bid with the second highest score can be the most recent one since
+    // the order of bids getting scored is arbitrary).
+    double highest_scoring_other_bid_ = 0.0;
+    double second_highest_score_ = 0.0;
+    // Whether all bids of the highest score are from the same interest group
+    // owner.
+    bool at_most_one_top_bid_owner_ = true;
+    // Whether all bids of the second highest score are from the same interest
+    // group owner.
+    bool at_most_one_second_highest_scoring_bids_owner_ = true;
+    // Will be null in the end if there are more than one interest groups having
+    // bids getting the second highest score.
+    absl::optional<url::Origin> highest_scoring_other_bid_owner_;
 
     // Holds a reference to the SellerWorklet used by the auction.
     std::unique_ptr<AuctionWorkletManager::WorkletHandle>

@@ -189,7 +189,10 @@ interface SellerWorklet {
   // `browser_signal_bid` The numeric value of the winning bid.
   //
   // `browser_signal_desirability` The score returned by ScoreAd for the
-  //  the winning bid.
+  //  winning bid.
+  //
+  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
+  //  that got the second highest score.
   //
   // `browser_signals_component_auction_report_result_params` Extra parameters
   //  passed to the component auction's ReportResult() method. Should be null
@@ -224,6 +227,7 @@ interface SellerWorklet {
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       double browser_signal_desirability,
+      double browser_signal_highest_scoring_other_bid,
       ComponentAuctionReportResultParams?
           browser_signals_component_auction_report_result_params,
       uint32 scoring_signals_data_version,

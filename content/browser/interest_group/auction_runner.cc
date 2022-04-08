@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -364,6 +365,47 @@ void AuctionRunner::Auction::GetInterestGroupsThatBid(
   }
 }
 
+GURL AuctionRunner::Auction::FillPostAuctionSignals(
+    const GURL& url,
+    const PostAuctionSignals& signals,
+    const absl::optional<PostAuctionSignals>& top_level_signals) {
+  // TODO(qingxinwu): Round `winning_bid` and `highest_scoring_other_bid` to two
+  // most-significant digits. Maybe same to corresponding browser signals of
+  // reportWin()/reportResult().
+  std::string url_string = url.spec();
+  base::ReplaceSubstringsAfterOffset(
+      &url_string, 0, net::EscapeExternalHandlerValue("${winningBid}"),
+      base::NumberToString(signals.winning_bid));
+  base::ReplaceSubstringsAfterOffset(
+      &url_string, 0, net::EscapeExternalHandlerValue("${madeWinningBid}"),
+      signals.made_winning_bid ? "true" : "false");
+  base::ReplaceSubstringsAfterOffset(
+      &url_string, 0,
+      net::EscapeExternalHandlerValue("${highestScoringOtherBid}"),
+      base::NumberToString(signals.highest_scoring_other_bid));
+  base::ReplaceSubstringsAfterOffset(
+      &url_string, 0,
+      net::EscapeExternalHandlerValue("${madeHighestScoringOtherBid}"),
+      signals.made_highest_scoring_other_bid ? "true" : "false");
+
+  // For component auction sellers only, which get post auction signals from
+  // both their own component auctions and top level auction.
+  // For now, we're assuming top level auctions to be first-price auction only
+  // (not second-price auction) and it does not need highest_scoring_other_bid.
+  if (top_level_signals.has_value()) {
+    base::ReplaceSubstringsAfterOffset(
+        &url_string, 0,
+        net::EscapeExternalHandlerValue("${topLevelWinningBid}"),
+        base::NumberToString(top_level_signals->winning_bid));
+    base::ReplaceSubstringsAfterOffset(
+        &url_string, 0,
+        net::EscapeExternalHandlerValue("${topLevelMadeWinningBid}"),
+        top_level_signals->made_winning_bid ? "true" : "false");
+  }
+
+  return GURL(url_string);
+}
+
 void AuctionRunner::Auction::TakeDebugReportUrls(
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
@@ -377,9 +419,9 @@ void AuctionRunner::Auction::TakeDebugReportUrls(
   // auction, and we want to report that as a loss. In this case, AuctionResult
   // will be kComponentLostAuction.
   //
-  // Also for the top-level Auction in the case a component Auctions bid won,
+  // Also for the top-level auction in the case a component auctions bid won,
   // the highest bid's BidState and its reporting URLs are stored with the
-  // component auction, so the component Auction will be the one populate
+  // component auction, so the component auction will be the one populate
   // `debug_win_report_urls`.
   BidState* winner = nullptr;
   if (final_auction_result_ == AuctionResult::kSuccess &&
@@ -387,33 +429,80 @@ void AuctionRunner::Auction::TakeDebugReportUrls(
     winner = top_bid_->bid->bid_state;
   }
 
+  // `signals` includes post auction signals from current auction.
+  PostAuctionSignals signals;
+  signals.winning_bid = top_bid_ ? top_bid_->bid->bid : 0.0;
+  signals.highest_scoring_other_bid = highest_scoring_other_bid_;
+  // `top_level_signals` includes post auction signals from top level auction.
+  // Will only will be used in debug report URLs of top level seller and
+  // component sellers.
+  // For now, we're assuming top level auctions to be first-price auction only
+  // (not second-price auction) and it does not need highest_scoring_other_bid.
+  absl::optional<PostAuctionSignals> top_level_signals;
+  if (parent_) {
+    top_level_signals = PostAuctionSignals();
+    top_level_signals->winning_bid =
+        parent_->top_bid_ ? parent_->top_bid_->bid->bid : 0.0;
+  }
+
+  if (!top_bid_) {
+    DCHECK_EQ(highest_scoring_other_bid_, 0);
+    DCHECK(!highest_scoring_other_bid_owner_.has_value());
+  }
+
   for (BidState& bid_state : bid_states_) {
+    const url::Origin& owner = bid_state.bidder.interest_group.owner;
+    if (top_bid_)
+      signals.made_winning_bid = owner == top_bid_->bid->interest_group->owner;
+
+    if (highest_scoring_other_bid_owner_.has_value()) {
+      DCHECK_GT(highest_scoring_other_bid_, 0);
+      signals.made_highest_scoring_other_bid =
+          owner == highest_scoring_other_bid_owner_.value();
+    }
+    if (parent_ && parent_->top_bid_) {
+      top_level_signals->made_winning_bid =
+          owner == parent_->top_bid_->bid->interest_group->owner;
+    }
+
     if (&bid_state == winner) {
       if (winner->bidder_debug_win_report_url.has_value()) {
-        debug_win_report_urls.emplace_back(
-            std::move(winner->bidder_debug_win_report_url).value());
+        debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(winner->bidder_debug_win_report_url).value(), signals));
       }
       if (winner->seller_debug_win_report_url.has_value()) {
-        debug_win_report_urls.emplace_back(
-            std::move(winner->seller_debug_win_report_url).value());
+        debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(winner->seller_debug_win_report_url).value(), signals,
+            top_level_signals));
       }
+      // `top_level_signals` is passed as parameter `signals` for top level
+      // seller.
       if (winner->top_level_seller_debug_win_report_url.has_value()) {
-        debug_win_report_urls.emplace_back(
-            std::move(winner->top_level_seller_debug_win_report_url).value());
+        debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(winner->top_level_seller_debug_win_report_url).value(),
+            top_level_signals.value()));
       }
       continue;
     }
     if (bid_state.bidder_debug_loss_report_url.has_value()) {
-      debug_loss_report_urls.emplace_back(
-          std::move(bid_state.bidder_debug_loss_report_url).value());
+      // Losing bidders should not get highest_scoring_other_bid and
+      // made_highest_scoring_other_bid signals.
+      debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+          std::move(bid_state.bidder_debug_loss_report_url).value(),
+          PostAuctionSignals(signals.winning_bid, signals.made_winning_bid, 0.0,
+                             false)));
     }
     if (bid_state.seller_debug_loss_report_url.has_value()) {
-      debug_loss_report_urls.emplace_back(
-          std::move(bid_state.seller_debug_loss_report_url).value());
+      debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+          std::move(bid_state.seller_debug_loss_report_url).value(), signals,
+          top_level_signals));
     }
+    // `top_level_signals` is passed as parameter `signals` for top level
+    // seller.
     if (bid_state.top_level_seller_debug_loss_report_url.has_value()) {
-      debug_loss_report_urls.emplace_back(
-          std::move(bid_state.top_level_seller_debug_loss_report_url).value());
+      debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+          std::move(bid_state.top_level_seller_debug_loss_report_url).value(),
+          top_level_signals.value()));
     }
   }
 
@@ -890,23 +979,34 @@ void AuctionRunner::Auction::OnBidScored(
         std::move(debug_win_report_url);
   }
 
-  bool is_top_bid = false;
-
   // A score <= 0 means the seller rejected the bid.
-  if (score > 0) {
-    if (!top_bid_ || score > top_bid_->score) {
-      // If there's no previous top bidder, or the bidder has the highest score,
-      // need to replace the previous top bidder.
-      num_top_bids_ = 1;
+  if (score <= 0) {
+    MaybeCompleteBiddingAndScoringPhase();
+    return;
+  }
+
+  bool is_top_bid = false;
+  const url::Origin& owner = bid->interest_group->owner;
+
+  if (!top_bid_ || score > top_bid_->score) {
+    // If there's no previous top bidder, or the bidder has the highest score,
+    // need to replace the previous top bidder.
+    is_top_bid = true;
+    OnNewTopBid();
+    num_top_bids_ = 1;
+    at_most_one_top_bid_owner_ = true;
+  } else if (score == top_bid_->score) {
+    // If there's a tie, replace the top-bidder with 1-in-`num_top_bids_`
+    // chance. This is the select random value from a stream with fixed
+    // storage problem.
+    ++num_top_bids_;
+    if (1 == base::RandInt(1, num_top_bids_))
       is_top_bid = true;
-    } else if (score == top_bid_->score) {
-      // If there's a tie, replace the top-bidder with 1-in-`num_top_bidders_`
-      // chance. This is the select random value from a stream with fixed
-      // storage problem.
-      ++num_top_bids_;
-      if (1 == base::RandInt(1, num_top_bids_))
-        is_top_bid = true;
-    }
+    OnTopBidTie(score, bid->bid, owner, is_top_bid);
+  } else if (score >= second_highest_score_) {
+    // Also use this bid (the most recent one) as highest scoring other bid if
+    // there's a tie for second highest score.
+    OnNewHighestScoringOtherBid(score, bid->bid, owner);
   }
 
   if (is_top_bid) {
@@ -916,6 +1016,52 @@ void AuctionRunner::Auction::OnBidScored(
   }
 
   MaybeCompleteBiddingAndScoringPhase();
+}
+
+void AuctionRunner::Auction::OnTopBidTie(double score,
+                                         double bid_value,
+                                         const url::Origin& owner,
+                                         bool is_top_bid) {
+  // If there's a tie for top bid, the highest score is second highest score
+  // as well.
+  second_highest_score_ = score;
+  if (owner != top_bid_->bid->interest_group->owner) {
+    at_most_one_top_bid_owner_ = false;
+    at_most_one_second_highest_scoring_bids_owner_ = false;
+  }
+  if (is_top_bid) {
+    OnNewTopBid();
+  } else {
+    // Current (the most recent) bid becomes highest scoring other bid.
+    highest_scoring_other_bid_ = bid_value;
+    highest_scoring_other_bid_owner_ = owner;
+  }
+}
+
+void AuctionRunner::Auction::OnNewTopBid() {
+  if (top_bid_) {
+    // Previous top bid becomes highest scoring other bid.
+    highest_scoring_other_bid_ = top_bid_->bid->bid;
+    second_highest_score_ = top_bid_->score;
+    highest_scoring_other_bid_owner_ = top_bid_->bid->interest_group->owner;
+    at_most_one_second_highest_scoring_bids_owner_ = at_most_one_top_bid_owner_;
+  }
+}
+
+void AuctionRunner::Auction::OnNewHighestScoringOtherBid(
+    double score,
+    double bid_value,
+    const url::Origin& owner) {
+  // Current (the most recent) bid becomes highest scoring other bid.
+  highest_scoring_other_bid_ = bid_value;
+  at_most_one_second_highest_scoring_bids_owner_ = true;
+  if (score == second_highest_score_) {
+    DCHECK(highest_scoring_other_bid_owner_.has_value());
+    if (owner != highest_scoring_other_bid_owner_.value())
+      at_most_one_second_highest_scoring_bids_owner_ = false;
+  }
+  second_highest_score_ = score;
+  highest_scoring_other_bid_owner_ = owner;
 }
 
 absl::optional<std::string> AuctionRunner::Auction::PerBuyerSignals(
@@ -990,6 +1136,11 @@ void AuctionRunner::Auction::OnBiddingAndScoringComplete(
   DCHECK(bidding_and_scoring_phase_callback_);
   DCHECK(!final_auction_result_);
 
+  // `highest_scoring_other_bid_owner_` is set to null if there are more
+  // than one interest groups having bids getting the second highest score.
+  if (!at_most_one_second_highest_scoring_bids_owner_)
+    highest_scoring_other_bid_owner_.reset();
+
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
   // If this is a component auction, have to unload the seller worklet handle to
@@ -1056,6 +1207,7 @@ void AuctionRunner::Auction::ReportSellerResult(
       config_->auction_ad_config_non_shared_params.Clone(),
       GetOtherSellerParam(*top_bid_->bid), top_bid_->bid->interest_group->owner,
       top_bid_->bid->render_url, top_bid_->bid->bid, top_bid_->score,
+      highest_scoring_other_bid_,
       std::move(browser_signals_component_auction_report_result_params),
       top_bid_->scoring_signals_data_version.value_or(0),
       top_bid_->scoring_signals_data_version.has_value(),
@@ -1136,7 +1288,12 @@ void AuctionRunner::Auction::ReportBidWin(
       top_bid_->bid->interest_group->name,
       config_->auction_ad_config_non_shared_params->auction_signals,
       PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner,
-      top_bid_->bid->render_url, top_bid_->bid->bid, config_->seller,
+      top_bid_->bid->render_url, top_bid_->bid->bid,
+      /*browser_signal_highest_scoring_other_bid=*/highest_scoring_other_bid_,
+      highest_scoring_other_bid_owner_.has_value() &&
+          top_bid_->bid->interest_group->owner ==
+              highest_scoring_other_bid_owner_.value(),
+      config_->seller,
       parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       top_bid_->bid->bidding_signals_data_version.value_or(0),
       top_bid_->bid->bidding_signals_data_version.has_value(),
@@ -1308,8 +1465,8 @@ AuctionRunner::~AuctionRunner() = default;
 void AuctionRunner::FailAuction() {
   DCHECK(callback_);
 
-  // Can have loss URLs if the auction failed because the seller rejected all
-  // bids.
+  // Can have loss report URLs if the auction failed because the seller rejected
+  // all bids.
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);

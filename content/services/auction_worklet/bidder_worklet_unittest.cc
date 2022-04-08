@@ -166,6 +166,8 @@ class BidderWorkletTest : public testing::Test {
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_bid_ = 1;
+    browser_signal_highest_scoring_other_bid_ = 0.5;
+    browser_signal_made_highest_scoring_other_bid_ = false;
     data_version_.reset();
   }
 
@@ -276,6 +278,8 @@ class BidderWorkletTest : public testing::Test {
     bidder_worklet->ReportWin(
         interest_group_name_, auction_signals_, per_buyer_signals_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_highest_scoring_other_bid_,
+        browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
         base::BindOnce(
@@ -496,6 +500,8 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<uint32_t> data_version_;
   GURL browser_signal_render_url_;
   double browser_signal_bid_;
+  double browser_signal_highest_scoring_other_bid_;
+  bool browser_signal_made_highest_scoring_other_bid_;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -2310,6 +2316,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
   bidder_worklet->ReportWin(
       interest_group_name_, /*auction_signals_json=*/"0", per_buyer_signals_,
       seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_highest_scoring_other_bid_,
+      browser_signal_made_highest_scoring_other_bid_,
       browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
       data_version_.value_or(0), data_version_.has_value(),
       base::BindLambdaForTesting(
@@ -2747,6 +2755,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   bidder_worklet->ReportWin(
       interest_group_name_, auction_signals_, per_buyer_signals_,
       seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_highest_scoring_other_bid_,
+      browser_signal_made_highest_scoring_other_bid_,
       browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
       data_version_.value_or(0), data_version_.has_value(),
       base::BindOnce([](const absl::optional<GURL>& report_url,
@@ -2786,6 +2796,8 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           interest_group_name_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_highest_scoring_other_bid_,
+          browser_signal_made_highest_scoring_other_bid_,
           browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_, data_version_.value_or(0),
           data_version_.has_value(),
@@ -2827,6 +2839,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         interest_group_name_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_highest_scoring_other_bid_,
+        browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
         base::BindOnce(
@@ -2953,6 +2967,22 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalBid) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalHighestScoringOtherBid) {
+  browser_signal_highest_scoring_other_bid_ = 3;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.highestScoringOtherBid === 3)
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalIsHighestScoringOtherBidMe) {
+  browser_signal_made_highest_scoring_other_bid_ = true;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.madeHighestScoringOtherBid)
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalSeller) {
   GURL seller_raw_url = GURL("https://seller.origin.test");
   browser_signal_seller_origin_ = url::Origin::Create(seller_raw_url);
@@ -3020,6 +3050,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
     bidder_worklet->ReportWin(
         interest_group_name_, auction_signals_, per_buyer_signals_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_highest_scoring_other_bid_,
+        browser_signal_made_highest_scoring_other_bid_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         data_version_.value_or(0), data_version_.has_value(),
         base::BindLambdaForTesting(

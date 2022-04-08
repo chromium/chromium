@@ -123,13 +123,17 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
   } else {
-    if (Object.keys(browserSignals).length !== 9) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
     validateBid(browserSignals.bid);
     if (browserSignals.desirability !== 13)
       throw 'Wrong desireability ' + browserSignals.desirability;
+    if (browserSignals.highestScoringOtherBid !== 0) {
+      throw 'Wrong highestScoringOtherBid ' +
+          browserSignals.highestScoringOtherBid;
+    }
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
     if (browserSignals.modifiedBid !== 42)

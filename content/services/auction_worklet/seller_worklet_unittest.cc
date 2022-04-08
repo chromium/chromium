@@ -148,6 +148,7 @@ class SellerWorkletTest : public testing::Test {
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_desireability_ = 1;
     seller_timeout_ = absl::nullopt;
+    browser_signal_highest_scoring_other_bid_ = 0;
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -414,6 +415,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
+        browser_signal_highest_scoring_other_bid_,
         browser_signals_component_auction_report_result_params_.Clone(),
         browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
@@ -444,6 +446,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
+        browser_signal_highest_scoring_other_bid_,
         browser_signals_component_auction_report_result_params_.Clone(),
         browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
@@ -540,7 +543,7 @@ class SellerWorkletTest : public testing::Test {
   // Arguments passed to score_bid() and report_result(). Arguments common to
   // both of them use the same field.
   std::string ad_metadata_;
-  // This is a browser signal for report_result(), but a direct parameter for
+  // `bid_` is a browser signal for report_result(), but a direct parameter for
   // score_bid().
   double bid_;
   GURL decision_logic_url_;
@@ -554,6 +557,7 @@ class SellerWorkletTest : public testing::Test {
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
   double browser_signal_desireability_;
+  double browser_signal_highest_scoring_other_bid_;
   auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
       browser_signals_component_auction_report_result_params_;
   absl::optional<uint32_t> browser_signal_data_version_;
@@ -2005,6 +2009,15 @@ TEST_F(SellerWorkletTest, ReportResultDesireability) {
       absl::nullopt /* expected_report_url */);
 }
 
+TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBid) {
+  browser_signal_highest_scoring_other_bid_ = 5;
+  RunReportResultCreatedScriptExpectingResult(
+      "browserSignals.highestScoringOtherBid + typeof "
+      "browserSignals.highestScoringOtherBid",
+      std::string() /* extra_code */, R"("5number")",
+      absl::nullopt /* expected_report_url */);
+}
+
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   // Empty AuctionAdConfig, with nothing filled in, except the seller and
   // decision logic URL.
@@ -2195,6 +2208,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           bid_, browser_signal_desireability_,
+          browser_signal_highest_scoring_other_bid_,
           browser_signals_component_auction_report_result_params_.Clone(),
           browser_signal_data_version_.value_or(0),
           browser_signal_data_version_.has_value(),
@@ -2255,7 +2269,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       auction_ad_config_non_shared_params_.Clone(),
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-      browser_signal_desireability_,
+      browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_.value_or(0),
       browser_signal_data_version_.has_value(),

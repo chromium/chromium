@@ -314,6 +314,7 @@ void SellerWorklet::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    double browser_signal_highest_scoring_other_bid,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
     uint32_t scoring_signals_data_version,
@@ -340,6 +341,8 @@ void SellerWorklet::ReportResult(
   report_result_task->browser_signal_render_url = browser_signal_render_url;
   report_result_task->browser_signal_bid = browser_signal_bid;
   report_result_task->browser_signal_desirability = browser_signal_desirability;
+  report_result_task->browser_signal_highest_scoring_other_bid =
+      browser_signal_highest_scoring_other_bid;
   report_result_task->browser_signals_component_auction_report_result_params =
       std::move(browser_signals_component_auction_report_result_params);
 
@@ -659,6 +662,7 @@ void SellerWorklet::V8State::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    double browser_signal_highest_scoring_other_bid,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
     absl::optional<uint32_t> scoring_signals_data_version,
@@ -703,6 +707,8 @@ void SellerWorklet::V8State::ReportResult(
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set("desirability", browser_signal_desirability) ||
+      !browser_signals_dict.Set("highestScoringOtherBid",
+                                browser_signal_highest_scoring_other_bid) ||
       (scoring_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  scoring_signals_data_version.value()))) {
@@ -959,6 +965,7 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
           task->browser_signal_desirability,
+          task->browser_signal_highest_scoring_other_bid,
           std::move(
               task->browser_signals_component_auction_report_result_params),
           task->scoring_signals_data_version,
