@@ -898,6 +898,10 @@
                   '|ui/views/widget/desktop_aura/.*cursor'\
                   '|ui/wm/core/.*cursor',
     },
+    'custom_handlers': {
+      'filepath': 'chrome/browser/custom_handlers/|'\
+                  'components/custom_handlers/',
+    },
     'custom_proxy': {
       'filepath': 'services/network/network_service_proxy_delegate',
     },
@@ -2479,6 +2483,7 @@
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
     'cursor': ['hferreiro@igalia.com'],
+    'custom_handlers': ['jfernandez@igalia.com'],
     'custom_proxy': ['lbendig@opera.com',
                      'wdzierzanowski@opera.com'],
     'custom_tabs': ['amalova+watch@chromium.org',
