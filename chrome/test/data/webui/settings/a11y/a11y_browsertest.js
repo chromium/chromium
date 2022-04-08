@@ -51,15 +51,6 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 ].forEach(test => defineTest(...test));
 GEN('#endif');
 
-// Disable since the EDIT_DICTIONARY route does not exist on Mac.
-// TODO(crbug.com/1012370) flaky on Linux b/c assertTrue(!!languagesPage);
-// TODO(crbug.com/1012370) flaky on Win the same way
-GEN('#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)');
-defineTest(
-    'EditDictionary', 'edit_dictionary_a11y_test.js',
-    {filter: violationFilterExcludeCustomInputAndTabindex});
-GEN('#endif');
-
 function defineTest(testName, module, config) {
   const className = `SettingsA11y${testName}V3`;
   this[className] = class extends SettingsAccessibilityV3Test {

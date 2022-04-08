@@ -141,10 +141,7 @@ if (!is_chromeos) {
 }
 
 if (!is_mac && !is_chromeos_ash) {
-  non_preprocessed_files += [
-    "a11y/edit_dictionary_a11y_test.ts",
-    "edit_dictionary_page_test.ts",
-  ]
+  non_preprocessed_files += [ "edit_dictionary_page_test.ts" ]
 }
 
 if (is_chromeos_ash) {
