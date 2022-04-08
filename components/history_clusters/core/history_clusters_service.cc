@@ -507,15 +507,9 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // Record keyword phrase & keyword counts for the appropriate cache.
   if (cache == &all_keywords_cache_) {
     base::UmaHistogramCounts100000(
-        "History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount",
-        static_cast<int>(keyword_accumulator->size()));
-    base::UmaHistogramCounts100000(
         "History.Clusters.Backend.KeywordCache.AllKeywordsCount",
         static_cast<int>(cache->size()));
   } else {
-    base::UmaHistogramCounts100000(
-        "History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount",
-        static_cast<int>(keyword_accumulator->size()));
     base::UmaHistogramCounts100000(
         "History.Clusters.Backend.KeywordCache.ShortKeywordsCount",
         static_cast<int>(cache->size()));

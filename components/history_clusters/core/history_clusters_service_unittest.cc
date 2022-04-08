@@ -782,11 +782,7 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("penguin"));
 
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount", 5, 1);
-  histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.KeywordCache.AllKeywordsCount", 5, 1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount", 0);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.KeywordCache.ShortKeywordsCount", 0);
 }

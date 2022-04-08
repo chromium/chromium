@@ -540,7 +540,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount"
-    units="count" expires_after="2022-09-11">
+    units="count" expires_after="2022-04-06">
+  <obsolete>
+    Deprecated 04/2022 because we no longer break keywords apart before storing
+    in the cache.
+  </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -560,10 +564,8 @@ chromium-metrics-reviews@google.com.
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
-    Logs the number of keywords stored in the primary cache.
-
-    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
-    more words.
+    Logs the number of keywords stored in the primary cache. Each keyword may
+    actually be multiple words.
 
     Logged each time the primary cache is refreshed, i.e. on omnibox key stroke
     limited to at most once every 2 hours, though clearing history items will
@@ -572,7 +574,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount"
-    units="count" expires_after="2022-09-11">
+    units="count" expires_after="2022-04-06">
+  <obsolete>
+    Deprecated 04/2022 because we no longer break keywords apart before storing
+    in the cache.
+  </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -591,7 +597,8 @@ chromium-metrics-reviews@google.com.
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
-    Logs the number of keyword phrases stored in the short cache.
+    Logs the number of keyword stored in the short cache. Each keyword may
+    actually be multiple words.
 
     Each cluster can have multiple keyword phrases; each phrase consists of 1 or
     more words.
