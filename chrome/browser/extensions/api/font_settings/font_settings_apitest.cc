@@ -39,4 +39,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsIncognito) {
                        {.allow_in_incognito = true}));
 }
 
+// Test the list of generic font families.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsGenericFamilies) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  // TODO(crbug.com/122303): Test generic font families added to CSS Fonts
+  // Module Level 4.
+  prefs->SetString(prefs::kWebKitStandardFontFamily, "default_standard");
+  prefs->SetString(prefs::kWebKitSansSerifFontFamily, "default_sansserif");
+  prefs->SetString(prefs::kWebKitSerifFontFamily, "default_serif");
+  prefs->SetString(prefs::kWebKitCursiveFontFamily, "default_cursive");
+  prefs->SetString(prefs::kWebKitFantasyFontFamily, "default_fantasy");
+  prefs->SetString(prefs::kWebKitFixedFontFamily, "default_fixed");
+  EXPECT_TRUE(RunExtensionTest("font_settings/generic_families")) << message_;
+}
+
 }  // namespace extensions
