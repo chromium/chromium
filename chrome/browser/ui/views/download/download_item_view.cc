@@ -1264,11 +1264,13 @@ bool DownloadItemView::GetDropdownPressed() const {
 }
 
 void DownloadItemView::UpdateDropdownButtonImage() {
-  views::SetImageFromVectorIcon(
+  const ui::ColorProvider* cp = GetColorProvider();
+  views::SetImageFromVectorIconWithColor(
       dropdown_button_,
       dropdown_pressed_ ? vector_icons::kCaretDownIcon
                         : vector_icons::kCaretUpIcon,
-      GetColorProvider()->GetColor(kColorToolbarText));
+      cp->GetColor(kColorToolbarButtonIcon),
+      cp->GetColor(kColorToolbarButtonIconInactive));
   dropdown_button_->SizeToPreferredSize();
 }
 

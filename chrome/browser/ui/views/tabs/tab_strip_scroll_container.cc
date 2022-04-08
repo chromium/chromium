@@ -244,11 +244,14 @@ void TabStripScrollContainer::ScrollTowardsTrailingTab() {
 void TabStripScrollContainer::FrameColorsChanged() {
   SkColor foreground_color =
       tab_strip_->GetTabForegroundColor(TabActive::kInactive);
+  /* Use placeholder color for disabled state because these buttons should
+     never be disabled (they are hidden when the tab strip is not full) */
   views::SetImageFromVectorIconWithColor(
-      leading_scroll_button_, kScrollingTabstripLeadingIcon, foreground_color);
-  views::SetImageFromVectorIconWithColor(trailing_scroll_button_,
-                                         kScrollingTabstripTrailingIcon,
-                                         foreground_color);
+      leading_scroll_button_, kScrollingTabstripLeadingIcon, foreground_color,
+      gfx::kPlaceholderColor);
+  views::SetImageFromVectorIconWithColor(
+      trailing_scroll_button_, kScrollingTabstripTrailingIcon, foreground_color,
+      gfx::kPlaceholderColor);
   left_overflow_indicator_->SchedulePaint();
   right_overflow_indicator_->SchedulePaint();
 }

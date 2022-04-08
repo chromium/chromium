@@ -60,9 +60,10 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
 void ReadAnythingToolbarView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  views::SetImageFromVectorIcon(
+  const auto* const cp = GetColorProvider();
+  views::SetImageFromVectorIconWithColor(
       settings_button_, vector_icons::kSettingsIcon, kIconSize,
-      GetColorProvider()->GetColor(ui::kColorPrimaryForeground));
+      cp->GetColor(ui::kColorIcon), cp->GetColor(ui::kColorIconDisabled));
 }
 
 void ReadAnythingToolbarView::OnSettingsClicked() {

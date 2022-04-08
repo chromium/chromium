@@ -17,6 +17,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -268,12 +269,10 @@ void DownloadShelfView::RemoveDownloadView(View* view) {
 }
 
 void DownloadShelfView::ConfigureButtonForTheme(views::MdTextButton* button) {
-  const auto* const tp = GetThemeProvider();
-  DCHECK(tp);
-  button->SetBgColorOverride(
-      tp->GetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND));
-  button->SetEnabledTextColors(
-      tp->GetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT));
+  const auto* const cp = GetColorProvider();
+  DCHECK(cp);
+  button->SetBgColorOverride(cp->GetColor(kColorDownloadShelfButtonBackground));
+  button->SetEnabledTextColors(cp->GetColor(kColorDownloadShelfButtonText));
 }
 
 void DownloadShelfView::DoShowDownload(
@@ -352,8 +351,7 @@ void DownloadShelfView::DoUnhide() {
 void DownloadShelfView::OnPaintBorder(gfx::Canvas* canvas) {
   canvas->FillRect(
       gfx::Rect(0, 0, width(), 1),
-      GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR));
+      GetColorProvider()->GetColor(kColorDownloadShelfContentAreaSeparator));
 }
 
 void DownloadShelfView::OnThemeChanged() {
@@ -362,12 +360,13 @@ void DownloadShelfView::OnThemeChanged() {
   ConfigureButtonForTheme(show_all_view_);
 
   SetBackground(views::CreateSolidBackground(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF)));
+      GetColorProvider()->GetColor(kColorDownloadShelfBackground)));
 
-  views::SetImageFromVectorIcon(
+  const ui::ColorProvider* cp = GetColorProvider();
+  views::SetImageFromVectorIconWithColor(
       close_button_, vector_icons::kCloseRoundedIcon,
-      GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_DOWNLOAD_SHELF_FOREGROUND));
+      cp->GetColor(kColorDownloadShelfButtonIcon),
+      cp->GetColor(kColorDownloadShelfButtonIconDisabled));
 }
 
 views::View* DownloadShelfView::GetDefaultFocusableChild() {

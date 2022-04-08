@@ -211,7 +211,7 @@ class CollapsibleListView : public views::View {
         color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(
         expand_collapse_button_, vector_icons::kCaretDownIcon,
-        ui::TableModel::kIconSize, icon_color);
+        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
     views::SetToggledImageFromVectorIconWithColor(
         expand_collapse_button_, vector_icons::kCaretUpIcon,
         ui::TableModel::kIconSize, icon_color, disabled_icon_color);

@@ -80,6 +80,10 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorLinkForegroundPressed] = {kColorLinkForeground};
   mixer[kColorLiveCaptionBubbleBackgroundDefault] = {
       SkColorSetA(gfx::kGoogleGrey900, 0xE6)};
+  mixer[kColorLiveCaptionBubbleButtonIcon] =
+      ui::DeriveDefaultIconColor(kColorLiveCaptionBubbleForegroundDefault);
+  mixer[kColorLiveCaptionBubbleButtonIconDisabled] = ui::SetAlpha(
+      kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =
       GetColorWithMaxContrast(kColorLiveCaptionBubbleBackgroundDefault);
   mixer[kColorLiveCaptionBubbleLink] = {gfx::kGoogleBlue300};

@@ -63,6 +63,8 @@
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
   E(kColorDownloadShelfButtonText, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
+  E_CPONLY(kColorDownloadShelfButtonIcon) \
+  E_CPONLY(kColorDownloadShelfButtonIconDisabled) \
   E(kColorDownloadShelfContentAreaSeparator, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
   E(kColorDownloadShelfForeground, \
@@ -102,6 +104,8 @@
     ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND) \
   /* Find bar colors. */ \
   E_CPONLY(kColorFindBarBackground) \
+  E_CPONLY(kColorFindBarButtonIcon) \
+  E_CPONLY(kColorFindBarButtonIconDisabled) \
   E_CPONLY(kColorFindBarForeground) \
   E_CPONLY(kColorFindBarMatchCount) \
   E_CPONLY(kColorFindBarSeparator) \
@@ -117,6 +121,8 @@
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
   /* InfoBar colors. */ \
   E(kColorInfoBarBackground, ThemeProperties::COLOR_INFOBAR) \
+  E_CPONLY(kColorInfoBarButtonIcon) \
+  E_CPONLY(kColorInfoBarButtonIconDisabled) \
   E(kColorInfoBarContentAreaSeparator, \
     ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR) \
   E(kColorInfoBarForeground, ThemeProperties::COLOR_INFOBAR_TEXT) \
@@ -124,6 +130,8 @@
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   E(kColorLocationBarBorderOpaque, \
     ThemeProperties::COLOR_LOCATION_BAR_BORDER_OPAQUE) \
+  E_CPONLY(kColorLocationBarClearAllButtonIcon) \
+  E_CPONLY(kColorLocationBarClearAllButtonIconDisabled) \
   /* Media router colors. */ \
   E_CPONLY(kColorMediaRouterIconActive) \
   E_CPONLY(kColorMediaRouterIconError) \
@@ -201,6 +209,9 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  /* Page Info colors */ \
+  E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
+  E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \
   E_CPONLY(kColorPaymentsFeedbackTipBorder) \
@@ -212,6 +223,8 @@
   E_CPONLY(kColorPaymentsPromoCodeForegroundHovered) \
   E_CPONLY(kColorPaymentsPromoCodeForegroundPressed) \
   E_CPONLY(kColorPaymentsPromoCodeInkDrop) \
+  E_CPONLY(kColorPaymentsRequestBackArrowButtonIcon) \
+  E_CPONLY(kColorPaymentsRequestBackArrowButtonIconDisabled) \
   E_CPONLY(kColorPaymentsRequestRowBackgroundHighlighted) \
   /* Picture-in-Picture window colors. */ \
   E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
@@ -232,7 +245,8 @@
   E_CPONLY(kColorPwaTabBarTopSeparator) \
   E_CPONLY(kColorPwaTheme) \
   E_CPONLY(kColorPwaToolbarBackground) \
-  E_CPONLY(kColorPwaToolbarForeground) \
+  E_CPONLY(kColorPwaToolbarButtonIcon) \
+  E_CPONLY(kColorPwaToolbarButtonIconDisabled) \
   /* QR code colors. */ \
   E_CPONLY(kColorQrCodeBackground) \
   E_CPONLY(kColorQrCodeBorder) \
@@ -392,6 +406,7 @@
   E(kColorToolbarButtonBorder, ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E_CPONLY(kColorToolbarButtonIconDefault) \
+  E_CPONLY(kColorToolbarButtonIconDisabled) \
   E(kColorToolbarButtonIconHovered, \
     ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED) \
   E(kColorToolbarButtonIconInactive, \
@@ -409,11 +424,15 @@
   E_CPONLY(kColorToolbarSeparatorDefault) \
   E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT) \
   E_CPONLY(kColorToolbarTextDefault) \
+  E_CPONLY(kColorToolbarTextDisabled) \
+  E_CPONLY(kColorToolbarTextDisabledDefault) \
   E(kColorToolbarTopSeparatorFrameActive, \
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE) \
   E(kColorToolbarTopSeparatorFrameInactive, \
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE) \
   /* WebAuthn colors. */ \
+  E_CPONLY(kColorWebAuthnBackArrowButtonIcon) \
+  E_CPONLY(kColorWebAuthnBackArrowButtonIconDisabled) \
   E_CPONLY(kColorWebAuthnPinTextfieldBottomBorder) \
   E_CPONLY(kColorWebAuthnProgressRingBackground) \
   E_CPONLY(kColorWebAuthnProgressRingForeground) \
