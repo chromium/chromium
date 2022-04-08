@@ -311,8 +311,8 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
           decltype(input->end_of_stream()),
           decltype(
               media::stable::mojom::DecoderBuffer::is_end_of_stream)>::value,
-      "Unexpected type for media::DecoderBuffer::is_end_of_stream(). If you "
-      "need to change this assertion, please contact "
+      "Unexpected type for media::DecoderBuffer::end_of_stream(). If you need "
+      "to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
   return input->end_of_stream();
 }
@@ -376,6 +376,13 @@ StructTraits<media::stable::mojom::DecoderBufferDataView,
                 "Unexpected type for media::DecoderBuffer::decrypt_config(). "
                 "If you need to change this assertion, please contact "
                 "chromeos-gfx-video@google.com.");
+  static_assert(
+      std::is_same<
+          decltype(input->decrypt_config()->Clone()),
+          decltype(media::stable::mojom::DecoderBuffer::decrypt_config)>::value,
+      "Unexpected type for media::DecoderBuffer::decrypt_config()->Clone(). If "
+      "you need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
   if (input->end_of_stream() || !input->decrypt_config())
     return nullptr;
   std::unique_ptr<media::DecryptConfig> decrypt_config =
@@ -388,6 +395,11 @@ StructTraits<media::stable::mojom::DecoderBufferDataView,
 base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
                              scoped_refptr<media::DecoderBuffer>>::
     front_discard(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->discard_padding()),
+                   const std::pair<base::TimeDelta, base::TimeDelta>&>::value,
+      "Unexpected type for input->discard_padding(). If you need to change "
+      "this assertion, please contact chromeos-gfx-video@google.com.");
   static_assert(
       std::is_same<
           decltype(input->discard_padding().first),
@@ -403,6 +415,11 @@ base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
 base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
                              scoped_refptr<media::DecoderBuffer>>::
     back_discard(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->discard_padding()),
+                   const std::pair<base::TimeDelta, base::TimeDelta>&>::value,
+      "Unexpected type for input->discard_padding(). If you need to change "
+      "this assertion, please contact chromeos-gfx-video@google.com.");
   static_assert(
       std::is_same<
           decltype(input->discard_padding().second),
