@@ -130,58 +130,61 @@ def main(argv):
   parser.add_argument('--resource-path-prefix')
   args = parser.parse_args(argv)
 
-  grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
-  begin_template = GRDP_BEGIN_TEMPLATE if args.out_grd.endswith('.grdp') else \
-      GRD_BEGIN_TEMPLATE
-  grd_file.write(begin_template.format(prefix=args.grd_prefix,
-      out_dir=args.output_files_base_dir))
+  grd_path = os.path.normpath(os.path.join(_CWD, args.out_grd))
+  with open(grd_path, 'w',
+            newline='') if sys.version_info.major == 3 else open(
+                grd_path, 'wb') as grd_file:
+    begin_template = GRDP_BEGIN_TEMPLATE if args.out_grd.endswith('.grdp') else \
+        GRD_BEGIN_TEMPLATE
+    grd_file.write(begin_template.format(prefix=args.grd_prefix,
+        out_dir=args.output_files_base_dir))
 
-  if args.grdp_files != None:
-    for grdp_file in args.grdp_files:
-      grdp_path = os.path.relpath(grdp_file, os.path.dirname(args.out_grd))
-      grd_file.write(_generate_part_row(grdp_path))
+    if args.grdp_files != None:
+      for grdp_file in args.grdp_files:
+        grdp_path = os.path.relpath(grdp_file, os.path.dirname(args.out_grd)).replace('\\', '/')
+        grd_file.write(_generate_part_row(grdp_path))
 
-  resource_path_rewrites = {}
-  if args.resource_path_rewrites != None:
-    for r in args.resource_path_rewrites:
-      [original, rewrite] = r.split("|")
-      resource_path_rewrites[original] = rewrite
+    resource_path_rewrites = {}
+    if args.resource_path_rewrites != None:
+      for r in args.resource_path_rewrites:
+        [original, rewrite] = r.split("|")
+        resource_path_rewrites[original] = rewrite
 
-  if args.input_files != None:
-    assert(args.input_files_base_dir)
-    args.input_files_base_dir = args.input_files_base_dir.replace('\\', '/')
-    args.root_gen_dir = args.root_gen_dir.replace('\\', '/')
+    if args.input_files != None:
+      assert(args.input_files_base_dir)
+      args.input_files_base_dir = args.input_files_base_dir.replace('\\', '/')
+      args.root_gen_dir = args.root_gen_dir.replace('\\', '/')
 
-    # Detect whether the input files reside under $root_src_dir or
-    # $root_gen_dir.
-    base_dir = os.path.join('${root_src_dir}', args.input_files_base_dir)
-    if args.input_files_base_dir.startswith(args.root_gen_dir + '/'):
-      base_dir = args.input_files_base_dir.replace(
-          args.root_gen_dir + '/', '${root_gen_dir}/')
+      # Detect whether the input files reside under $root_src_dir or
+      # $root_gen_dir.
+      base_dir = os.path.join('${root_src_dir}', args.input_files_base_dir)
+      if args.input_files_base_dir.startswith(args.root_gen_dir + '/'):
+        base_dir = args.input_files_base_dir.replace(
+            args.root_gen_dir + '/', '${root_gen_dir}/')
 
-    for filename in args.input_files:
-      filepath = os.path.join(base_dir, filename).replace('\\', '/')
-      grd_file.write(_generate_include_row(
-          args.grd_prefix, filename, filepath,
-          resource_path_rewrites, args.resource_path_prefix))
+      for filename in args.input_files:
+        filepath = os.path.join(base_dir, filename).replace('\\', '/')
+        grd_file.write(_generate_include_row(
+            args.grd_prefix, filename, filepath,
+            resource_path_rewrites, args.resource_path_prefix))
 
-  if args.manifest_files != None:
-    for manifest_file in args.manifest_files:
-      manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
-      with open(manifest_path, 'r') as f:
-        data = json.load(f)
-        base_dir= os.path.normpath(os.path.join(_CWD, data['base_dir']))
-        for filename in data['files']:
-          filepath = os.path.join(base_dir, filename).replace('\\', '/')
-          rebased_path = os.path.relpath(filepath, args.root_gen_dir)
-          grd_file.write(_generate_include_row(
-              args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
-              resource_path_rewrites, args.resource_path_prefix))
+    if args.manifest_files != None:
+      for manifest_file in args.manifest_files:
+        manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
+        with open(manifest_path, 'r') as f:
+          data = json.load(f)
+          base_dir= os.path.normpath(os.path.join(_CWD, data['base_dir']))
+          for filename in data['files']:
+            filepath = os.path.join(base_dir, filename)
+            rebased_path = os.path.relpath(filepath, args.root_gen_dir).replace('\\', '/')
+            grd_file.write(_generate_include_row(
+                args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
+                resource_path_rewrites, args.resource_path_prefix))
 
-  end_template = GRDP_END_TEMPLATE if args.out_grd.endswith('.grdp') else \
-      GRD_END_TEMPLATE
-  grd_file.write(end_template)
-  return
+    end_template = GRDP_END_TEMPLATE if args.out_grd.endswith('.grdp') else \
+        GRD_END_TEMPLATE
+    grd_file.write(end_template)
+    return
 
 
 if __name__ == '__main__':

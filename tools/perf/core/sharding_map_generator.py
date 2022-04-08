@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import collections
-import sys
 
 import core.path_util
 import core.cli_utils
@@ -115,7 +114,7 @@ def generate_sharding_map(benchmarks_to_shard,
 
   sharding_map = collections.OrderedDict()
   num_stories = total_story
-  min_shard_time = sys.maxsize
+  min_shard_time = 0x7fffffff  # maxint
   min_shard_index = None
   max_shard_time = 0
   max_shard_index = None

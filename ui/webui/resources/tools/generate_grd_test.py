@@ -6,6 +6,7 @@
 import generate_grd
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 
@@ -48,7 +49,11 @@ class GenerateGrdTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    return open(os.path.join(self._out_folder, file_name), 'rb').read()
+    file_path = os.path.join(self._out_folder, file_name)
+    with open(file_path, 'r',
+              newline='') if sys.version_info.major == 3 else open(
+                  file_path, 'rb') as f:
+      return f.read()
 
   def _run_test_(self, grd_expected,
                  out_grd='test_resources.grd',
@@ -95,8 +100,11 @@ class GenerateGrdTest(unittest.TestCase):
 
     actual_grd = self._read_out_file(out_grd)
     if (grd_expected.endswith('.grd') or grd_expected.endswith('.grdp')):
-      expected_grd_content = open(
-          os.path.join(_HERE_DIR, 'tests', grd_expected), 'rb').read()
+      expected_grd_path = os.path.join(_HERE_DIR, 'tests', grd_expected)
+      with open(expected_grd_path, 'r',
+                newline='') if sys.version_info.major == 3 else open(
+                    expected_grd_path, 'rb') as f:
+        expected_grd_content = f.read()
       self.assertMultiLineEqual(expected_grd_content, actual_grd)
     else:
       self.assertMultiLineEqual(grd_expected, actual_grd)
