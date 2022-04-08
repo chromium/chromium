@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/ambient/util/ambient_util.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -59,8 +60,14 @@ gfx::Size SummarizeImageAssetSizes(
   int largest_height_observed = kDimensionInvalid;
   float aspect_ratio_sum = 0.f;
   int num_assets_found = 0;
-  for (const auto& [_, asset_metadata] : resource_metadata.asset_storage()) {
-    if (!asset_metadata.size.has_value() ||
+  for (const auto& [asset_id, asset_metadata] :
+       resource_metadata.asset_storage()) {
+    // IMAX photos are only assigned to dynamic image assets in the animation,
+    // so static image assets should be ignored when calculating.
+    ambient::util::ParsedDynamicAssetId parsed_dynamic_asset_id;
+    bool is_dynamic_image_asset = ambient::util::ParseDynamicLottieAssetId(
+        asset_id, parsed_dynamic_asset_id);
+    if (!is_dynamic_image_asset || !asset_metadata.size.has_value() ||
         IsPortrait(*asset_metadata.size) != is_portrait) {
       continue;
     }
