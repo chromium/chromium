@@ -210,7 +210,8 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   EXPECT_TRUE(test_view()->GetVisible());
 }
 
-TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
+// TODO(crbug.com/1314693): Flaky.
+TEST_F(TrayBackgroundViewTest, DISABLED_SecondaryDisplay) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
