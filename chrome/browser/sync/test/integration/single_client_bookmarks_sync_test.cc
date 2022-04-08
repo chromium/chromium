@@ -1819,8 +1819,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add enough bookmarks to deplete quota in the initial cycle.
-  const BookmarkNode* folder = AddFolder(
-      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  const BookmarkNode* folder = GetOtherNode(kSingleProfileIndex);
   // The quota is fully depleted in 3 messages. As the default number of
   // entities per message on the client is 25, that requires 25*2+1 entities.
   for (int i = 0; i < (25 * 2 + 1); i++) {
@@ -1855,8 +1854,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add enough bookmarks to deplete quota in the initial cycle.
-  const BookmarkNode* folder = AddFolder(
-      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  const BookmarkNode* folder = GetOtherNode(kSingleProfileIndex);
   // The quota is fully depleted in 3 messages. As the default number of
   // entities per message on the client is 25, that requires 25*2+1 entities.
   // If the browser commits 100 more entities, this means 4 more commits hit
@@ -1892,8 +1890,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add not enough bookmarks to deplete quota in the initial cycle.
-  const BookmarkNode* folder = AddFolder(
-      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  const BookmarkNode* folder = GetOtherNode(kSingleProfileIndex);
   // The quota is still not fully depleted after 3 messages. As the default
   // number of entities per message on the client is 25, sending 2 messages
   // requires 25+1 entities. One extra message is sent later.
@@ -1939,8 +1936,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add enough bookmarks to deplete quota in the initial cycle.
-  const BookmarkNode* folder = AddFolder(
-      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  const BookmarkNode* folder = GetOtherNode(kSingleProfileIndex);
   // The quota is fully depleted in 3 messages. As the default number of
   // entities per message on the client is 25, that requires 25*2+1 entities.
   for (int i = 0; i < (25 * 2 + 1); i++) {
