@@ -94,10 +94,10 @@ constexpr int kSearchRatingStarSize = 16;
 constexpr int kKeyboardShortcutTopMargin = 6;
 constexpr int kAnswerCardBorderMargin = 12;
 constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin);
-constexpr auto kBigTitleBorder =
-    gfx::Insets::TLBR(0, 0, 0, kAnswerCardBorderMargin);
-// The superscript container has a 4px left margin and 3px top margin.
-constexpr auto kBigTitleSuperscriptBorder = gfx::Insets::TLBR(3, 4, 0, 0);
+// The superscript container has a 3px top margin to shift the text up so the
+// it lines up with the text in `big_title_main_text_container_`.
+constexpr auto kBigTitleSuperscriptBorder =
+    gfx::Insets::TLBR(3, 4, 0, kAnswerCardBorderMargin);
 
 // The fraction of total text space allocated to the details label when both the
 // title and the details label need to be elided.
@@ -309,7 +309,6 @@ SearchResultView::SearchResultView(
   big_title_container_ =
       text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   big_title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  big_title_container_->SetBorder(views::CreateEmptyBorder(kBigTitleBorder));
   big_title_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   big_title_main_text_container_ = big_title_container_->AddChildView(
@@ -323,8 +322,6 @@ SearchResultView::SearchResultView(
       std::make_unique<views::FlexLayoutView>());
   big_title_superscript_container_->SetCrossAxisAlignment(
       views::LayoutAlignment::kStretch);
-  big_title_superscript_container_->SetBorder(
-      views::CreateEmptyBorder(kBigTitleSuperscriptBorder));
   big_title_superscript_container_->SetOrientation(
       views::LayoutOrientation::kHorizontal);
 
@@ -444,6 +441,7 @@ void SearchResultView::ClearBigTitleContainer() {
   big_title_superscript_container_->RemoveAllChildViews();
   big_title_superscript_label_tags_.clear();
   big_title_superscript_container_->SetVisible(false);
+  big_title_superscript_container_->SetBorder(views::CreateEmptyBorder(0));
 }
 
 views::LayoutOrientation SearchResultView::TitleAndDetailsOrientationForTest() {
@@ -731,6 +729,8 @@ void SearchResultView::UpdateBigTitleSuperscriptContainer() {
         LabelType::kBigTitleSuperscript, has_keyboard_shortcut_contents_);
     StyleBigTitleSuperscriptContainer();
     big_title_superscript_container_->SetVisible(true);
+    big_title_superscript_container_->SetBorder(
+        views::CreateEmptyBorder(kBigTitleSuperscriptBorder));
   }
 }
 
