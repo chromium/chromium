@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -598,6 +599,14 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // Objects inside an SVG <style> are irrelevant.
   if (Traversal<SVGStyleElement>::FirstAncestor(*node))
     return false;
+  // Elements inside of a frame/iframe are irrelevant unless inside a document
+  // that is a child of the frame. In the case where descendants are allowed,
+  // they will be in a different document.
+  for (const Node* ancestor = node; ancestor;
+       ancestor = ancestor->parentNode()) {
+    if (IsA<HTMLFrameElementBase>(ancestor))
+      return false;
+  }
 
   // All other objects are relevant, even if hidden.
   return true;

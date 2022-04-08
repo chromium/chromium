@@ -1,15 +1,4 @@
-# FIXME(crbug.com/1264765): The nodes added as children of the iframe in JS
-# code should not appear in the accessibility tree, because they aren't
-# rendered either. This should be the expected tree:
-# rootWebArea name='done'
-# ++genericContainer ignored
-# ++++genericContainer
-# ++++++iframe name='Empty iframe'
 rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer
 ++++++iframe name='Empty iframe'
-++++++++labelText ignored
-++++++++++staticText ignored name='label'
-++++++++++textField ignored
-++++++++++++genericContainer ignored

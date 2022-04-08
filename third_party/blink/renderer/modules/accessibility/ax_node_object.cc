@@ -4009,6 +4009,11 @@ void AXNodeObject::AddNodeChildren() {
   if (!node_)
     return;
 
+  // Ignore DOM children of frame/iframe: they do not act as fallbacks and
+  // are never part of layout.
+  if (IsA<HTMLFrameElementBase>(GetNode()))
+    return;
+
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     AddNodeChild(child);
@@ -4206,6 +4211,12 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
       << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
       << "\nShouldCreateAXMenuListOptionFor()="
       << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child_node);
+
+  DCHECK(!IsA<HTMLFrameElementBase>(GetNode()) ||
+         IsA<Document>(child->GetNode()))
+      << "Cannot have a non-document child of a frame or iframe."
+      << "\nChild: " << child->ToString(true, true)
+      << "\nParent: " << child->ParentObject()->ToString(true, true);
 }
 #endif
 

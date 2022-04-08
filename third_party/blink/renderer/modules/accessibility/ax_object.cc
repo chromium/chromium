@@ -636,6 +636,13 @@ void AXObject::Init(AXObject* parent) {
     AXObjectCache().MaybeNewRelationTarget(*GetNode(), this);
 
   UpdateCachedAttributeValuesIfNeeded(false);
+
+  SANITIZER_CHECK(!parent_ ||
+                  parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
+                  RoleValue() == ax::mojom::blink::Role::kDocument)
+      << "An iframe can only have a document child."
+      << "\n* Child = " << ToString(true, true)
+      << "\n* Parent =  " << parent_->ToString(true, true);
 }
 
 void AXObject::Detach() {
@@ -723,6 +730,7 @@ void AXObject::SetParent(AXObject* new_parent) const {
     // Ideally we will also ensure |this| is in the parent's children now, so
     // that ClearChildren() can later find the child to detach from the parent.
   }
+
 #endif
   parent_ = new_parent;
 }
@@ -747,6 +755,13 @@ void AXObject::RepairMissingParent() const {
   DCHECK(IsMissingParent());
 
   SetParent(ComputeParent());
+
+  SANITIZER_CHECK(!parent_ ||
+                  parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
+                  RoleValue() == ax::mojom::blink::Role::kDocument)
+      << "An iframe can only have a document child."
+      << "\n* Child = " << ToString(true, true)
+      << "\n* Parent =  " << parent_->ToString(true, true);
 }
 
 // In many cases, ComputeParent() is not called, because the parent adding
