@@ -96,7 +96,7 @@ ClientStatus SelectorObserver::Start(base::OnceClosure finished_callback) {
     auto result =
         user_data::ResolveSelectorUserData(&selector.second.proto, user_data_);
     if (!result.ok()) {
-      EnterState(State::ERROR);
+      EnterState(State::ERROR_STATE);
       return result;
     }
   }
@@ -216,7 +216,7 @@ void SelectorObserver::FailWithError(const ClientStatus& status) {
     std::move(get_elements_callback_).Run(status, get_elements_response_);
   }
   timeout_timer_.reset();
-  EnterState(State::ERROR);
+  EnterState(State::ERROR_STATE);
 }
 
 template <typename T>
@@ -258,7 +258,7 @@ void SelectorObserver::EnterState(State new_state) {
   VLOG(2) << " status " << static_cast<int>(state_) << " -> "
           << static_cast<int>(new_state);
   state_ = new_state;
-  if ((state_ == State::TERMINATED || state_ == State::ERROR) &&
+  if ((state_ == State::TERMINATED || state_ == State::ERROR_STATE) &&
       finished_callback_) {
     std::move(finished_callback_).Run();
   }

@@ -2021,6 +2021,7 @@ static_library("browser") {
     "//components/assist_ranker",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
+    "//components/autofill_assistant/browser/",
     "//components/autofill_assistant/browser/public:public",
     "//components/autofill_assistant/content/browser",
     "//components/autofill_assistant/content/common:mojo_interfaces",

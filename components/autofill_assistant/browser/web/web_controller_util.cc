@@ -7,6 +7,11 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
+// Necessary to avoid a type collision while building for Windows.
+#if defined(GetClassName)
+#undef GetClassName
+#endif  // defined(GetClassName)
+
 namespace autofill_assistant {
 
 ClientStatus UnexpectedErrorStatus(const std::string& file, int line) {

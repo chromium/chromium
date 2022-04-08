@@ -255,6 +255,8 @@ static_library("browser") {
     "suppress_keyboard_raii.h",
     "switches.cc",
     "switches.h",
+    "tab_helper.cc",
+    "tab_helper.h",
     "top_padding.cc",
     "top_padding.h",
     "trigger_context.cc",

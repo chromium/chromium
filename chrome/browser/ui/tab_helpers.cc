@@ -196,6 +196,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_helper.h"
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
+#include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/tab_helper.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -543,6 +545,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SharedHighlightingPromo::CreateForWebContents(web_contents);
   if (user_notes::IsUserNotesEnabled() && !profile->IsOffTheRecord()) {
     user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          autofill_assistant::features::kAutofillAssistantDesktop)) {
+    autofill_assistant::CreateForWebContents(web_contents);
   }
 #endif
 

@@ -17,21 +17,19 @@
            internal_comment="TODO(wnwen): Remove duplication in chrome/android/features/autofill_assistant/strings/android_chrome_autofill_assistant_strings.grd">
     Sorry I'm not able to help, please continue on your own.
   </message>
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_ASSISTANT_MAYBE_GIVE_UP" desc="Text label shown next to an UNDO button when user action indicate they want to continue on their own.">
-      Continue manually?
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_DETAILS_DIFFER" desc="Shown as Status Message when details differ.">
-      The screening is different from what you selected. Continue?
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_CONTINUE_BUTTON" desc="Generic label for a button to continue to the next screen.">
-      Continue
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_STOPPED" desc="Text label that is shown when stopping the Autofill Assistant.">
-      Google Assistant in Chrome stopping
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_SEND_FEEDBACK" desc="Option shown in the menu when clicking the Autofill Assistant profile icon. Clicking this option will open a feedback sharing dialog.">
-      Send feedback
-    </message>
-  </if>
+  <message name="IDS_AUTOFILL_ASSISTANT_MAYBE_GIVE_UP" desc="Text label shown next to an UNDO button when user action indicate they want to continue on their own.">
+    Continue manually?
+  </message>
+  <message name="IDS_AUTOFILL_ASSISTANT_DETAILS_DIFFER" desc="Shown as Status Message when details differ.">
+    The screening is different from what you selected. Continue?
+  </message>
+  <message name="IDS_AUTOFILL_ASSISTANT_CONTINUE_BUTTON" desc="Generic label for a button to continue to the next screen.">
+    Continue
+  </message>
+  <message name="IDS_AUTOFILL_ASSISTANT_STOPPED" desc="Text label that is shown when stopping the Autofill Assistant.">
+    Google Assistant in Chrome stopping
+  </message>
+  <message name="IDS_AUTOFILL_ASSISTANT_SEND_FEEDBACK" desc="Option shown in the menu when clicking the Autofill Assistant profile icon. Clicking this option will open a feedback sharing dialog.">
+    Send feedback
+  </message>
 </grit-part>

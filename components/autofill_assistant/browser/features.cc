@@ -111,5 +111,9 @@ const base::Feature kAutofillAssistantProactiveHelp{
 const base::Feature kAutofillAssistantUrlHeuristics{
     "AutofillAssistantUrlHeuristics", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether Autofill Assistant is enabled on desktop.
+const base::Feature kAutofillAssistantDesktop{"AutofillAssistantDesktop",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant

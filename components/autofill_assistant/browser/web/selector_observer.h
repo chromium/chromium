@@ -140,7 +140,7 @@ class SelectorObserver : public WebControllerWorker {
     RUNNING = 1,
     FETCHING_ELEMENTS = 2,
     TERMINATED = 3,
-    ERROR = 4,
+    ERROR_STATE = 4,
   };
   State state_ = State::INITIALIZED;
   const base::TimeDelta periodic_check_interval_;
