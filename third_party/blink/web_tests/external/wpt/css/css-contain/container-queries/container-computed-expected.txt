@@ -2,17 +2,17 @@ This is a testharness.js-based test.
 PASS Property container value 'initial'
 PASS Property container value 'inherit'
 PASS Property container value 'unset'
-PASS Property container value 'inline-size'
-PASS Property container value 'size'
+PASS Property container value 'none / inline-size'
+PASS Property container value 'none / size'
 PASS Property container value 'inline-size / inline-size'
-PASS Property container value 'size / block-size'
-FAIL Property container value 'size style / name' assert_true: 'size style / name' is a supported value for container. expected true got false
-FAIL Property container value 'inline-size style/ name' assert_true: 'inline-size style/ name' is a supported value for container. expected true got false
-PASS Property container value 'inline-size / foo'
-PASS Property container value 'inline-size /foo'
-PASS Property container value 'inline-size/ foo'
-PASS Property container value 'inline-size/foo'
-PASS Property container value 'size / FoO'
-PASS Property container value 'size / foo bar'
+PASS Property container value 'block-size / size'
+FAIL Property container value 'name / size style' assert_true: 'name / size style' is a supported value for container. expected true got false
+FAIL Property container value 'name /inline-size style' assert_true: 'name /inline-size style' is a supported value for container. expected true got false
+PASS Property container value 'foo / inline-size'
+PASS Property container value 'foo /inline-size'
+PASS Property container value 'foo/ inline-size'
+PASS Property container value 'foo/inline-size'
+PASS Property container value 'FoO / size'
+PASS Property container value 'foo bar / size'
 Harness: the test ran to completion.
 

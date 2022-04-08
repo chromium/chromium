@@ -5265,10 +5265,10 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  while (!range.AtEnd()) {
+  while (true) {
     CSSValue* value = ConsumeSingleContainerName(range, context);
     if (!value)
-      return nullptr;
+      break;
     list->Append(*value);
   }
 

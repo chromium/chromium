@@ -2950,27 +2950,27 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
     bool allow_visited_style) {
   CHECK_EQ(containerShorthand().length(), 2u);
   CHECK_EQ(containerShorthand().properties()[0],
-           &GetCSSPropertyContainerType());
-  CHECK_EQ(containerShorthand().properties()[1],
            &GetCSSPropertyContainerName());
+  CHECK_EQ(containerShorthand().properties()[1],
+           &GetCSSPropertyContainerType());
 
   CSSValueList* list = CSSValueList::CreateSlashSeparated();
 
-  const CSSValue* type =
-      GetCSSPropertyContainerType().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
   const CSSValue* name =
       GetCSSPropertyContainerName().CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style);
+  const CSSValue* type =
+      GetCSSPropertyContainerType().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
 
-  DCHECK(type);
   DCHECK(name);
+  DCHECK(type);
 
-  list->Append(*type);
+  list->Append(*name);
 
-  if (!(IsA<CSSIdentifierValue>(name) &&
-        To<CSSIdentifierValue>(*name).GetValueID() == CSSValueID::kNone)) {
-    list->Append(*name);
+  if (!(IsA<CSSIdentifierValue>(type) &&
+        To<CSSIdentifierValue>(*type).GetValueID() == CSSValueID::kNone)) {
+    list->Append(*type);
   }
 
   return list;

@@ -9,7 +9,7 @@ Test CSS.getMatchedStylesForNode and CSS.setContainerQueryText methods for conta
 @container (max-width: 300px) {
   .item { font-size: 1px; }
 }
-#named-container { width: 300px; container: inline-size / container-1; }
+#named-container { width: 300px; container: container-1 / inline-size; }
 @container container-1 (max-width: 300px) {
   .item { color: rgb(170, 187, 204); }
 }
@@ -34,7 +34,7 @@ Dumping inherited rules:
 }
 *#named-container* {    regular
     width: 300px; @[4:19-4:32]
-    container: inline-size / container-1; @[4:33-4:70]
+    container: container-1 / inline-size; @[4:33-4:70]
     width: 300px; @[undefined-undefined]
     container-name: container-1; @[undefined-undefined]
     container-type: inline-size; @[undefined-undefined]

@@ -6373,7 +6373,7 @@
     {
       name: "container",
       longhands: [
-        "container-type", "container-name"
+        "container-name", "container-type"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSContainerQueries",

@@ -900,13 +900,14 @@ bool Container::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 256>& properties) const {
-  const CSSValue* type = css_parsing_utils::ConsumeContainerType(range);
-  if (!type)
+  const CSSValue* name =
+      css_parsing_utils::ConsumeContainerName(range, context);
+  if (!name)
     return false;
 
-  const CSSValue* name = CSSIdentifierValue::Create(CSSValueID::kNone);
+  const CSSValue* type = CSSIdentifierValue::Create(CSSValueID::kNone);
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    if (!(name = css_parsing_utils::ConsumeContainerName(range, context)))
+    if (!(type = css_parsing_utils::ConsumeContainerType(range)))
       return false;
   }
 
@@ -914,12 +915,12 @@ bool Container::ParseShorthand(
     return false;
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kContainerType, CSSPropertyID::kContainer, *type,
+      CSSPropertyID::kContainerName, CSSPropertyID::kContainer, *name,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kContainerName, CSSPropertyID::kContainer, *name,
+      CSSPropertyID::kContainerType, CSSPropertyID::kContainer, *type,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 

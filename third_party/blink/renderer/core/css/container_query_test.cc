@@ -540,7 +540,7 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        container: inline-size;
+        container-type: inline-size;
         width: 20px;
       }
       #target {
@@ -611,7 +611,7 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        container: inline-size;
+        container-type: inline-size;
         width: 20px;
       }
       #target {
@@ -684,7 +684,7 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        container: inline-size;
+        container-type: inline-size;
         width: 20px;
       }
       #target {
@@ -758,7 +758,7 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
         to { height: 100px; }
       }
       #container {
-        container: inline-size;
+        container-type: inline-size;
         width: 10px;
       }
       @container (width: 120px) {
@@ -834,7 +834,7 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
         to { height: 100px; }
       }
       #container {
-        container: inline-size;
+        container-type: inline-size;
         width: 10px;
       }
       #target {
