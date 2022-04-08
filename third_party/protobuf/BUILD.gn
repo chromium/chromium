@@ -223,10 +223,6 @@ static_library("protobuf_full") {
     # requires descriptors & reflection; testonly.
     "//third_party/libprotobuf-mutator:*",
 
-    # The traffic_annotation tool is not part of Chrome itself, and needs to
-    # parse human-readable protobufs.
-    "//tools/traffic_annotation/*",
-
     # Chromecast requires descriptors and reflection.
     "//chromecast/*",
 
