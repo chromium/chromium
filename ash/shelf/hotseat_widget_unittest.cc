@@ -502,6 +502,47 @@ TEST_P(HotseatWidgetTest, CloseLastWindowOpenedInTabletMode) {
   GetAppListTestHelper()->CheckVisibility(true);
 }
 
+// Verifies removing a shelf item by dragging it off the extended hotseat.
+TEST_P(HotseatWidgetTest, DragItemOffExtendedHotseat) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  ShelfTestUtil::AddAppShortcut("app_id_1", TYPE_PINNED_APP);
+  ShelfTestUtil::AddAppShortcut("app_id_2", TYPE_PINNED_APP);
+
+  ShelfView* shelf_view = GetPrimaryShelf()
+                              ->hotseat_widget()
+                              ->scrollable_shelf_view()
+                              ->shelf_view();
+  EXPECT_EQ(2, shelf_view->view_model_for_test()->view_size());
+
+  // Show the in-app shelf.
+  SwipeUpOnShelf();
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+
+  // Start mouse drag on a shelf item.
+  ShelfAppButton* dragged_button =
+      ShelfViewTestAPI(shelf_view).GetButton(/*index=*/0);
+  GetEventGenerator()->MoveMouseTo(
+      dragged_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  EXPECT_TRUE(dragged_button->FireDragTimerForTest());
+  EXPECT_TRUE(shelf_view->drag_view());
+
+  // Move mouse. Verify that the hotseat is still extended.
+  GetEventGenerator()->MoveMouseBy(/*x=*/0, /*y=*/-80);
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+
+  // Release the mouse press. Verify that:
+  // 1. Shelf item count decreases by one; and
+  // 2. Hotseat is still extended.
+  GetEventGenerator()->ReleaseLeftButton();
+  EXPECT_EQ(1, shelf_view->view_model_for_test()->view_size());
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+}
+
 // Tests that swiping up on an autohidden shelf shows the hotseat, and swiping
 // down hides it.
 TEST_P(HotseatWidgetTest, ShowingAndHidingAutohiddenShelf) {
