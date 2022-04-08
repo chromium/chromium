@@ -64,6 +64,7 @@
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
+#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -187,7 +188,7 @@ namespace {
 static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
-const syncer::SyncService* GetSyncService(Profile* profile) {
+const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
   return nullptr;
@@ -262,7 +263,9 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
     // page, and there is no API to access (or dismiss) UI bubbles/infobars.
     return false;
   }
-  return *saving_passwords_enabled_ && !IsIncognito() && IsFillingEnabled(url);
+  return password_manager_util::IsSavingPasswordsEnabled(GetPrefs(),
+                                                         GetSyncService()) &&
+         !IsIncognito() && IsFillingEnabled(url);
 }
 
 bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
@@ -615,6 +618,10 @@ void ChromePasswordManagerClient::TriggerSignIn(
 
 PrefService* ChromePasswordManagerClient::GetPrefs() const {
   return profile_->GetPrefs();
+}
+
+const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
+  return GetSyncServiceForProfile(profile_);
 }
 
 password_manager::PasswordStoreInterface*
@@ -1232,7 +1239,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       credentials_filter_(
           this,
-          base::BindRepeating(&GetSyncService, profile_),
+          base::BindRepeating(&GetSyncServiceForProfile, profile_),
           DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
       account_storage_auth_helper_(
           IdentityManagerFactory::GetForProfile(profile_),
@@ -1245,7 +1252,9 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
               },
               web_contents)),
 #else
-      credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
+      credentials_filter_(
+          this,
+          base::BindRepeating(&GetSyncServiceForProfile, profile_)),
 #endif
       helper_(this) {
   ContentPasswordManagerDriverFactory::CreateForWebContents(web_contents, this,
@@ -1259,8 +1268,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           &ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability,
           base::Unretained(driver_factory_)));
 
-  saving_passwords_enabled_.Init(
-      password_manager::prefs::kCredentialsEnableService, GetPrefs());
   driver_factory_->RequestSendLoggingAvailability();
 
   auto* autofill_assistant_manager =

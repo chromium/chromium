@@ -15,16 +15,40 @@ namespace prefs {
 
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API.
+//
+// IMPORTANT: This pref is neither querried nor updated on Android if the
+// unified password manager is enabled.
+// Use `password_manager_util::IsAutoSignInEnabled` to check
+// the value of this setting instead.
 extern const char kCredentialsEnableAutosignin[];
 
 // The value of this preference controls whether the Password Manager will save
 // credentials. When it is false, it doesn't ask if you want to save passwords
 // but will continue to fill passwords.
-// TODO(melandory): Preference should also control autofill behavior for the
-// passwords.
+//
+// IMPORTANT: This pref is neither querried nor updated on Android if the
+// unified password manager is enabled.
+// Use `password_manager_util::IsSavingPasswordsEnabled` to check the value of
+// this setting instead.
 extern const char kCredentialsEnableService[];
 
 #if BUILDFLAG(IS_ANDROID)
+// Boolean controlling whether the password manager allows automatic signing in
+// through Credential Management API. This pref is not synced. Its value is set
+// by fetching the latest value from Google Mobile Services. Except for
+// migration steps, it should not be modified in Chrome.
+extern const char kAutoSignInEnabledGMS[];
+
+// Boolean controlling whether the password manager offers to save passwords.
+// If false, the password manager will not save credentials, but it will still
+// fill previously saved ones. This pref is not synced. Its value is set
+// by fetching the latest value from Google Mobile Services. Except for
+// migration steps, it should not be modified in Chrome.
+//
+// This pref doesn't have a policy mapped to it directly, instead, the policy
+// mapped to `kCredentialEnableService` will be applied.
+extern const char kOfferToSavePasswordsEnabledGMS[];
+
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
 extern const char kCurrentMigrationVersionToGoogleMobileServices[];

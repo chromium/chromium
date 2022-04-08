@@ -66,6 +66,10 @@ PrefService* StubPasswordManagerClient::GetPrefs() const {
   return nullptr;
 }
 
+const syncer::SyncService* StubPasswordManagerClient::GetSyncService() const {
+  return nullptr;
+}
+
 PasswordStoreInterface* StubPasswordManagerClient::GetProfilePasswordStore()
     const {
   return nullptr;

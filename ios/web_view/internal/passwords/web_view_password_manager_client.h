@@ -88,6 +88,7 @@ class WebViewPasswordManagerClient
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
   PrefService* GetPrefs() const override;
+  const syncer::SyncService* GetSyncService() const override;
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;
   password_manager::PasswordStoreInterface* GetAccountPasswordStore()
@@ -132,7 +133,6 @@ class WebViewPasswordManagerClient
   bool IsAutofillAssistantUIVisible() const override;
 
   void set_bridge(id<PasswordManagerClientBridge> bridge) { bridge_ = bridge; }
-  const syncer::SyncService* GetSyncService();
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;

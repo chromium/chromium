@@ -188,6 +188,11 @@ PrefService* WebViewPasswordManagerClient::GetPrefs() const {
   return pref_service_;
 }
 
+const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService()
+    const {
+  return sync_service_;
+}
+
 PasswordStoreInterface* WebViewPasswordManagerClient::GetProfilePasswordStore()
     const {
   return profile_store_;
@@ -319,10 +324,6 @@ WebViewPasswordManagerClient::GetFieldInfoManager() const {
 
 bool WebViewPasswordManagerClient::IsAutofillAssistantUIVisible() const {
   return false;
-}
-
-const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService() {
-  return sync_service_;
 }
 
 safe_browsing::PasswordProtectionService*

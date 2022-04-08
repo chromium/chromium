@@ -82,9 +82,6 @@ class CredentialManagerImpl
 
   raw_ptr<PasswordManagerClient> client_;
 
-  // Set to false to disable automatic signing in.
-  BooleanPrefMember auto_signin_enabled_;
-
   // Used to store or update a credential. Calls OnProvisionalSaveComplete
   // on this delegate.
   std::unique_ptr<CredentialManagerPasswordFormManager> form_manager_;

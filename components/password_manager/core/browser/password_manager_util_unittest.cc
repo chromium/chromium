@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -24,7 +25,12 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -286,6 +292,166 @@ using password_manager::UnorderedPasswordFormElementsAre;
 using testing::_;
 using testing::DoAll;
 using testing::Return;
+
+class PasswordManagerUtilTest : public testing::Test {
+ public:
+  PasswordManagerUtilTest() {
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableService, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableAutosignin, true);
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kAutoSignInEnabledGMS, true);
+#endif
+  }
+
+ protected:
+  TestingPrefServiceSimple pref_service_;
+  syncer::TestSyncService sync_service_;
+};
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerUtilTest, SavePasswordsSettingNoUPM) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+
+  pref_service_.SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                            base::Value(true));
+  pref_service_.SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(false));
+  EXPECT_TRUE(password_manager_util::IsSavingPasswordsEnabled(&pref_service_,
+                                                              &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, SavePasswordsSettingNotSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(false, {});
+  pref_service_.SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                            base::Value(true));
+  pref_service_.SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(false));
+  EXPECT_TRUE(password_manager_util::IsSavingPasswordsEnabled(&pref_service_,
+                                                              &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, SavePasswordsSettingSyncingUPMManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  pref_service_.SetManagedPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(false));
+  pref_service_.SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  EXPECT_FALSE(password_manager_util::IsSavingPasswordsEnabled(&pref_service_,
+                                                               &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, SavePasswordsSettingSyncingUPMNotManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  pref_service_.SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                            base::Value(true));
+  pref_service_.SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(false));
+  EXPECT_FALSE(password_manager_util::IsSavingPasswordsEnabled(&pref_service_,
+                                                               &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, AutoSignInSettingNoUPM) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+
+  pref_service_.SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin, base::Value(true));
+  pref_service_.SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                            base::Value(false));
+  EXPECT_TRUE(password_manager_util::IsAutoSignInEnabled(&pref_service_,
+                                                         &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, AutoSignInSettingNotSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(false, {});
+  pref_service_.SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin, base::Value(true));
+  pref_service_.SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                            base::Value(false));
+  EXPECT_TRUE(password_manager_util::IsAutoSignInEnabled(&pref_service_,
+                                                         &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, AutoSignInSettingSyncingUPMManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  pref_service_.SetManagedPref(
+      password_manager::prefs::kCredentialsEnableAutosignin,
+      base::Value(false));
+  pref_service_.SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                            base::Value(true));
+  EXPECT_FALSE(password_manager_util::IsAutoSignInEnabled(&pref_service_,
+                                                          &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, AutoSignInSettingSyncingUPMNotManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  pref_service_.SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin, base::Value(true));
+  pref_service_.SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                            base::Value(false));
+  EXPECT_FALSE(password_manager_util::IsAutoSignInEnabled(&pref_service_,
+                                                          &sync_service_));
+}
+#else   // !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerUtilTest, SavePasswordsSettingNotAndroid) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+
+  pref_service_.SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                            base::Value(false));
+  EXPECT_FALSE(password_manager_util::IsSavingPasswordsEnabled(&pref_service_,
+                                                               &sync_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, AutoSignInSettingNotAndroid) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+
+  pref_service_.SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin,
+      base::Value(false));
+  EXPECT_FALSE(password_manager_util::IsAutoSignInEnabled(&pref_service_,
+                                                          &sync_service_));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
   std::vector<std::unique_ptr<PasswordForm>> forms;

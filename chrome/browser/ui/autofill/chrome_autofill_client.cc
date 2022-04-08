@@ -61,6 +61,7 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -867,8 +868,8 @@ bool ChromeAutofillClient::IsAutocompleteEnabled() {
 }
 
 bool ChromeAutofillClient::IsPasswordManagerEnabled() {
-  return GetPrefs()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableService);
+  return password_manager_util::IsSavingPasswordsEnabled(GetPrefs(),
+                                                         GetSyncService());
 }
 
 void ChromeAutofillClient::PropagateAutofillPredictions(

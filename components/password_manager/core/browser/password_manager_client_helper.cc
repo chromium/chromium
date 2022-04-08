@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -98,8 +99,8 @@ bool PasswordManagerClientHelper::ShouldPromptToEnableAutoSignIn() const {
   return password_bubble_experiment::
              ShouldShowAutoSignInPromptFirstRunExperience(
                  delegate_->GetPrefs()) &&
-         delegate_->GetPrefs()->GetBoolean(
-             password_manager::prefs::kCredentialsEnableAutosignin) &&
+         password_manager_util::IsAutoSignInEnabled(
+             delegate_->GetPrefs(), delegate_->GetSyncService()) &&
          !delegate_->IsIncognito();
 }
 

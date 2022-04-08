@@ -61,7 +61,8 @@ using password_manager::SyncState;
 
 namespace {
 
-const syncer::SyncService* GetSyncService(ChromeBrowserState* browser_state) {
+const syncer::SyncService* GetSyncServiceForBrowserState(
+    ChromeBrowserState* browser_state) {
   return SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
 }
 
@@ -70,12 +71,13 @@ const syncer::SyncService* GetSyncService(ChromeBrowserState* browser_state) {
 IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     id<IOSChromePasswordManagerClientBridge> bridge)
     : bridge_(bridge),
-      password_feature_manager_(GetPrefs(),
-                                GetSyncService(bridge_.browserState)),
+      password_feature_manager_(
+          GetPrefs(),
+          GetSyncServiceForBrowserState(bridge_.browserState)),
       password_reuse_detection_manager_(this),
-      credentials_filter_(
-          this,
-          base::BindRepeating(&GetSyncService, bridge_.browserState)),
+      credentials_filter_(this,
+                          base::BindRepeating(&GetSyncServiceForBrowserState,
+                                              bridge_.browserState)),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -177,6 +179,11 @@ IOSChromePasswordManagerClient::GetPasswordFeatureManager() const {
 
 PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
   return (bridge_.browserState)->GetPrefs();
+}
+
+const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
+    const {
+  return GetSyncServiceForBrowserState(bridge_.browserState);
 }
 
 PasswordStoreInterface*

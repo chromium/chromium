@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/sync/driver/sync_service.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -275,6 +276,9 @@ class PasswordManagerClient {
 
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
+
+  // Gets the sync service associated with this client.
+  virtual const syncer::SyncService* GetSyncService() const = 0;
 
   // Returns the profile PasswordStore associated with this instance.
   virtual PasswordStoreInterface* GetProfilePasswordStore() const = 0;
