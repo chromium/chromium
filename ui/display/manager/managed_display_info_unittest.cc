@@ -101,6 +101,16 @@ TEST_F(DisplayInfoTest, CreateFromSpec) {
   EXPECT_FALSE(info.display_modes()[2].native());
   EXPECT_FALSE(info.display_modes()[3].native());
   EXPECT_TRUE(info.display_modes()[4].native());
+
+  info = ManagedDisplayInfo::CreateFromSpecWithID(
+      "250x200*2#300x200|250x200*1.25|150x100", 10);
+
+  EXPECT_EQ(gfx::Size(150, 100), info.display_modes()[0].size());
+  EXPECT_EQ(gfx::Size(300, 200), info.display_modes()[1].size());
+  EXPECT_EQ(gfx::Size(250, 200), info.display_modes()[2].size());
+  EXPECT_EQ(2.0f, info.display_modes()[0].device_scale_factor());
+  EXPECT_EQ(2.0f, info.display_modes()[1].device_scale_factor());
+  EXPECT_EQ(1.25f, info.display_modes()[2].device_scale_factor());
 }
 
 }  // namespace display

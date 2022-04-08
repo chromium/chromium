@@ -122,7 +122,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, DisplayBoundsChange) {
 
   // When the display resolution changes the panel still sits at the top of the
   // screen.
-  UpdateDisplay("1234,567");
+  UpdateDisplay("1200x700,1300x800");
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect expected_bounds(0, 0, screen->GetPrimaryDisplay().bounds().width(),
                             kDefaultPanelHeight);

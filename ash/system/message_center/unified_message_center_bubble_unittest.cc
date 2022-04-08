@@ -335,7 +335,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
 
 TEST_P(UnifiedMessageCenterBubbleTest, BubbleBounds) {
   // Set display size where the message center is not collapsed.
-  UpdateDisplay("0+0-1280×1024");
+  UpdateDisplay("0+0-1280x1024");
 
   // Ensure message center is not collapsed.
   GetPrimaryUnifiedSystemTray()->ShowBubble();
