@@ -57,6 +57,19 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
     // can exceed 100% in multi-thread processes running on multi-core systems.
     double cpu_usage = 0.0;
 
+#if BUILDFLAG(IS_WIN)
+    // The percentage of time spent executing, across all threads of the
+    // process, in the interval since the last time the metric was sampled. This
+    // can exceed 100% in multi-thread processes running on multi-core systems.
+    //
+    // Calculated using the more precise QueryProcessCycleTime.
+    //
+    // TODO(pmonette): Replace the regular version of |cpu_usage| with the
+    // precise one and remove the extra field once we've validated that the
+    // precise version is indeed better.
+    double precise_cpu_usage = 0.0;
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
     // Returns the number of average idle cpu wakeups per second since the last

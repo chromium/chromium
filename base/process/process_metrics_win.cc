@@ -160,6 +160,22 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
          TimeDelta::FromFileTime(user_time);
 }
 
+TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
+  ULONG64 process_cycle_time = 0;
+  if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
+    NOTREACHED();
+    return TimeDelta();
+  }
+
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
+  if (tsc_ticks_per_second == 0) {
+    return TimeDelta();
+  }
+
+  const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
+  return Seconds(process_time_seconds);
+}
+
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
   if (!process_.is_valid())
     return false;

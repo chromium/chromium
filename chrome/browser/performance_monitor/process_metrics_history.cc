@@ -38,6 +38,9 @@ ProcessMonitor::Metrics ProcessMetricsHistory::SampleMetrics() {
   ProcessMonitor::Metrics metrics;
 
   metrics.cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
+#if BUILDFLAG(IS_WIN)
+  metrics.precise_cpu_usage = process_metrics_->GetPreciseCPUUsage();
+#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   metrics.idle_wakeups = process_metrics_->GetIdleWakeupsPerSecond();
