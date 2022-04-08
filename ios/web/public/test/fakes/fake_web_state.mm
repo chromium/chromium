@@ -81,11 +81,24 @@ base::WeakPtr<WebState> FakeWebState::GetWeakPtr() {
 }
 
 void FakeWebState::LoadSimulatedRequest(const GURL& url,
-                                        NSString* response_html_string) {}
+                                        NSString* response_html_string) {
+  SetCurrentURL(url);
+  mime_type_ = base::SysNSStringToUTF8(@"text/html");
+  last_loaded_data_ =
+      [response_html_string dataUsingEncoding:NSUTF8StringEncoding];
+  // LoadSimulatedRequest is always a success. Send the event accordingly.
+  OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+}
 
 void FakeWebState::LoadSimulatedRequest(const GURL& url,
                                         NSData* response_data,
-                                        NSString* mime_type) {}
+                                        NSString* mime_type) {
+  SetCurrentURL(url);
+  mime_type_ = base::SysNSStringToUTF8(mime_type);
+  last_loaded_data_ = response_data;
+  // LoadSimulatedRequest is always a success. Send the event accordingly.
+  OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+}
 
 bool FakeWebState::IsWebUsageEnabled() const {
   return web_usage_enabled_;

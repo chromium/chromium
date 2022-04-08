@@ -157,6 +157,8 @@ void OfflinePageTabHelper::LoadOfflineData(web::WebState* web_state,
                                            const std::string& data) {
   DCHECK(web::features::IsLoadSimulatedRequestAPIEnabled());
 
+  presenting_offline_page_ = true;
+
   if (is_pdf) {
     NSData* ns_data = [NSData dataWithBytes:data.c_str() length:data.size()];
     web_state->LoadSimulatedRequest(url, ns_data, @"application/pdf");
