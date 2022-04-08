@@ -249,7 +249,8 @@ OverviewHighlightController::GetTraversableViews() const {
         // Desks templates buttons are only present if the feature is enabled.
         if (auto* desks_templates_button =
                 bar_view->zero_state_desks_templates_button()) {
-          traversable_views.push_back(desks_templates_button);
+          if (desks_templates_button->GetVisible())
+            traversable_views.push_back(desks_templates_button);
         }
       } else {
         for (auto* mini_view : bar_view->mini_views()) {
@@ -266,8 +267,10 @@ OverviewHighlightController::GetTraversableViews() const {
                 bar_view->expanded_state_desks_templates_button()) {
           auto* inner_desks_templates_button =
               desks_templates_button->inner_button();
-          if (inner_desks_templates_button->GetEnabled())
+          if (desks_templates_button->GetVisible() &&
+              inner_desks_templates_button->GetEnabled()) {
             traversable_views.push_back(inner_desks_templates_button);
+          }
         }
       }
     }

@@ -1609,6 +1609,50 @@ TEST_F(DesksTemplatesTest, OverviewTabbing) {
   EXPECT_EQ(second_item->name_view(), GetHighlightedView());
 }
 
+// Tests that if the templates button is invisible, it is not part of the
+// tabbing order. Regression test for https://crbug.com/1313761.
+TEST_F(DesksTemplatesTest, TabbingInvisibleTemplatesButton) {
+  // First test the case there are no templates.
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  auto* overview_grid = GetOverviewSession()->GetGridWithRootWindow(
+      Shell::GetPrimaryRootWindow());
+  ZeroStateIconButton* button =
+      overview_grid->desks_bar_view()->zero_state_desks_templates_button();
+  ASSERT_TRUE(button);
+  ASSERT_FALSE(button->GetVisible());
+
+  // Test that we do not highlight the templates button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_NE(button, GetHighlightedView());
+
+  // Test the case where it was visible at one point, but became invisible (last
+  // template was deleted).
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
+
+  // Add an entry to delete later.
+  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  AddEntry(uuid, "template", base::Time::Now());
+  OpenOverviewAndShowTemplatesGrid();
+
+  DeleteTemplate(uuid, /*expected_current_item_count=*/1);
+  // `NativeWidgetAura::Close()`, which is the underlying class for a dialog
+  // widget is on a post task so flush that task.
+  base::RunLoop().RunUntilIdle();
+
+  overview_grid = GetOverviewSession()->GetGridWithRootWindow(
+      Shell::GetPrimaryRootWindow());
+  button = overview_grid->desks_bar_view()->zero_state_desks_templates_button();
+  ASSERT_TRUE(button);
+  ASSERT_FALSE(button->GetVisible());
+
+  // Test that we do not highlight the templates button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_NE(button, GetHighlightedView());
+}
+
 // Tests that the desks bar returns to zero state if the second-to-last desk is
 // deleted while viewing the templates grid. Also verifies that the zero state
 // buttons are visible. Regression test for https://crbug.com/1264989.

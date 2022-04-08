@@ -956,6 +956,17 @@ void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
   expanded_state_desks_templates_button_->SetVisible(should_show_ui &&
                                                      !is_zero_state);
 
+  // Removes the button from the tabbing order if it becomes invisible.
+  auto* highlight_controller = GetHighlightController();
+  if (!zero_state_desks_templates_button_->GetVisible()) {
+    highlight_controller->OnViewDestroyingOrDisabling(
+        zero_state_desks_templates_button_);
+  }
+  if (!expanded_state_desks_templates_button_->GetVisible()) {
+    highlight_controller->OnViewDestroyingOrDisabling(
+        expanded_state_desks_templates_button_->inner_button());
+  }
+
   const int begin_x = GetFirstMiniViewXOffset();
   Layout();
 
