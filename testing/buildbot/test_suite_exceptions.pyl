@@ -1561,6 +1561,12 @@
       },
     },
   },
+  'dawn_perf_tests': {
+    'remove_from': [
+      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x86 Release (Intel HD 630)',
+    ],
+  },
   'device_unittests': {
     'modifications': {
       'android-12-x64-rel': {
