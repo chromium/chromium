@@ -135,9 +135,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
         // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
-        // TODO(crbug.com/1071377): SyncTrustedVaultProxyActivity is the only one to add
-        // extras to the intent, so it should probably be responsible for passing
-        // FLAG_UPDATE_CURRENT.
         PendingIntentProvider pendingIntent =
                 PendingIntentProvider.getActivity(ContextUtils.getApplicationContext(), 0,
                         intentTriggeredOnClick, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -222,9 +219,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         // Check/set |mTrustedVaultNotificationShownOrCreating| here to ensure the notification is
         // not shown again immediately after cancelling (Sync state might be changed often) and
         // there is only one asynchronous createKeyRetrievalIntent() attempt at a time.
-        // TODO(crbug.com/1071377): If the user dismissed the notification, it will reappear only
-        // after browser restart or disable-enable Sync action. This is sub-optimal behavior and
-        // it's better to find a way to show it more often, but not on each Sync state change.
         if (primaryAccountInfo == null || mTrustedVaultNotificationShownOrCreating) {
             return;
         }
@@ -240,8 +234,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 // Cf. SyncTrustedVaultProxyActivity as to why use a proxy intent.
-                // TODO(crbug.com/1071377): Sync state might have changed by the time |realIntent|
-                // is available, so showing the notification won't make sense.
                 .then((realIntent)
                                 -> showNotification(notificationTitle, notificationTextBody,
                                         SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
