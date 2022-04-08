@@ -6196,7 +6196,7 @@ void WebContentsImpl::OnPageScaleFactorChanged(PageImpl& source) {
 
   if (source.IsPrimary()) {
     observers_.NotifyObservers(&WebContentsObserver::OnPageScaleFactorChanged,
-                               source.page_scale_factor());
+                               source.GetPageScaleFactor());
   }
 }
 

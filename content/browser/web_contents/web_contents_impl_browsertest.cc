@@ -1218,6 +1218,55 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ChangePageScale) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Test that when navigating between pages with the same non-one initial scale,
+// the browser tracks the correct scale value.
+// This test is only relevant for Android, since desktop would always have one
+// as the initial scale.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       SameInitialScaleAcrossNavigations) {
+  // Scale value comparisons don't need to be precise.
+  constexpr double kEpsilon = 0.01;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  auto* contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Navigate to a page with a non-one initial scale, then determine what the
+  // renderer and browser each think the scale is.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  double initial_renderer_scale_1 =
+      EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
+  double initial_browser_scale_1 =
+      contents->GetPrimaryPage().GetPageScaleFactor();
+
+  // Now navigate to another page and record the scales again. Note that this
+  // navigation could reuse the RenderFrameHost and in that case the renderer
+  // will not inform the browser of the scale again. This was the case in
+  // https://crbug.com/1301879
+  const auto rfh_id_1 = contents->GetMainFrame()->GetGlobalId();
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  const auto rfh_id_2 = contents->GetMainFrame()->GetGlobalId();
+  SCOPED_TRACE(testing::Message()
+               << "CanSameSiteMainFrameNavigationsChangeRenderFrameHosts = "
+               << CanSameSiteMainFrameNavigationsChangeRenderFrameHosts());
+  SCOPED_TRACE(testing::Message()
+               << "Did change RenderFrameHost? " << (rfh_id_1 != rfh_id_2));
+  double initial_renderer_scale_2 =
+      EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
+  double initial_browser_scale_2 =
+      contents->GetPrimaryPage().GetPageScaleFactor();
+
+  // Ensure both pages are scaled to the same non-one value.
+  ASSERT_LT(initial_renderer_scale_1, 1.0 - kEpsilon);
+  ASSERT_NEAR(initial_renderer_scale_1, initial_renderer_scale_2, kEpsilon);
+
+  // Test that the browser and renderer agree on the scale.
+  EXPECT_NEAR(initial_browser_scale_1, initial_renderer_scale_1, kEpsilon);
+  EXPECT_NEAR(initial_browser_scale_2, initial_renderer_scale_2, kEpsilon);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Test that a direct navigation to a view-source URL works.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ViewSourceDirectNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());

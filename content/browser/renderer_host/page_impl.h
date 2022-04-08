@@ -155,13 +155,12 @@ class CONTENT_EXPORT PageImpl : public Page {
                                   cc::BrowserControlsState current,
                                   bool animate);
 
+  float GetPageScaleFactor() const;
+
   void set_load_progress(double load_progress) {
     load_progress_ = load_progress;
   }
   double load_progress() const { return load_progress_; }
-
-  void set_page_scale_factor(float scale) { page_scale_factor_ = scale; }
-  float page_scale_factor() const { return page_scale_factor_; }
 
   void set_virtual_keyboard_overlays_content(bool vk_overlays_content) {
     virtual_keyboard_overlays_content_ = vk_overlays_content;
@@ -265,12 +264,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // TODO(falken): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
   absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
-
-  // The most recent page scale factor sent by the main frame's renderer.
-  // Note that the renderer uses a different mechanism to persist its page
-  // scale factor when performing session history navigations (see
-  // blink::PageState).
-  float page_scale_factor_ = 1.f;
 
   // If true, then the Virtual keyboard rectangle that occludes the content is
   // sent to the VirtualKeyboard API where it fires overlaygeometrychange JS

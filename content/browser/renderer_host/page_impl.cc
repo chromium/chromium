@@ -80,7 +80,7 @@ base::WeakPtr<PageImpl> PageImpl::GetWeakPtrImpl() {
 }
 
 bool PageImpl::IsPageScaleFactorOne() {
-  return page_scale_factor_ == 1.f;
+  return GetPageScaleFactor() == 1.f;
 }
 
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
@@ -252,6 +252,10 @@ void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
 
   GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
       constraints, current, animate);
+}
+
+float PageImpl::GetPageScaleFactor() const {
+  return GetMainDocument().GetPageScaleFactor();
 }
 
 void PageImpl::UpdateEncoding(const std::string& encoding_name) {

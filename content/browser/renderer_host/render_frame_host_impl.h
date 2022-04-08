@@ -2456,6 +2456,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsFencedFrameRootNoStatus();
   bool IsInFencedFrameTree();
 
+  float GetPageScaleFactor() const;
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -4185,6 +4187,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.
   bool needs_ax_root_id_ = true;
+
+  // The most recent page scale factor sent by the main frame's renderer.
+  // Note that the renderer uses a different mechanism to persist its page
+  // scale factor when performing session history navigations (see
+  // blink::PageState).
+  // Conceptually this should be per-PageImpl, since it is only non-one for main
+  // frames, but we need to store it here due to how the renderer sends page
+  // scale change notifications. If a cross-page, same-RenderFrameHost
+  // navigation occurs where both pages have the same initial scale, we will
+  // not get another notification.
+  // TODO(crbug.com/936696): Revisit after RenderDocument ships.
+  float page_scale_factor_ = 1.f;
 
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
