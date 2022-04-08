@@ -267,7 +267,6 @@ mojom("url_loader_base") {
     "devtools_observer.mojom",
     "early_hints.mojom",
     "fetch_api.mojom",
-    "http_cache_backend_file_operations.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
     "ip_address_space.mojom",
@@ -895,6 +894,7 @@ mojom("mojom") {
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "host_resolver.mojom",
+    "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
@@ -1091,6 +1091,24 @@ mojom("mojom") {
       ]
       traits_sources = [
         "//services/network/public/cpp/transferable_directory_mojom_traits.cc",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.FileEnumerationEntry"
+          cpp = "::disk_cache::BackendFileOperations::FileEnumerationEntry"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/file_enumeration_entry_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/network/public/cpp/file_enumeration_entry_mojom_traits.cc",
+      ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:cpp_base",
       ]
     },
   ]

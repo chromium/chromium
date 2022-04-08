@@ -22,8 +22,11 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
+#include "net/disk_cache/simple/simple_file_enumerator.h"
 
 namespace {
+
+using FileEnumerator = disk_cache::BackendFileOperations::FileEnumerator;
 
 // Builds an instance of the backend depending on platform, type, experiments
 // etc. Takes care of the retry state. This object will self-destroy when
@@ -216,6 +219,24 @@ void CacheCreator::OnIOComplete(int result) {
   int rv = Run();
   DCHECK_EQ(net::ERR_IO_PENDING, rv);
 }
+
+class TrivialFileEnumerator final : public FileEnumerator {
+ public:
+  using FileEnumerationEntry =
+      disk_cache::BackendFileOperations::FileEnumerationEntry;
+
+  explicit TrivialFileEnumerator(const base::FilePath& path)
+      : enumerator_(path) {}
+  ~TrivialFileEnumerator() override = default;
+
+  absl::optional<FileEnumerationEntry> Next() override {
+    return enumerator_.Next();
+  }
+  bool HasError() const override { return enumerator_.HasError(); }
+
+ private:
+  disk_cache::SimpleFileEnumerator enumerator_;
+};
 
 }  // namespace
 
@@ -481,6 +502,11 @@ absl::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
     return absl::nullopt;
   }
   return file_info;
+}
+
+std::unique_ptr<FileEnumerator> TrivialFileOperations::EnumerateFiles(
+    const base::FilePath& path) {
+  return std::make_unique<TrivialFileEnumerator>(path);
 }
 
 }  // namespace disk_cache

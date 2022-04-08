@@ -563,6 +563,38 @@ constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
 // All the paths must be absolute paths.
 class BackendFileOperations {
  public:
+  struct FileEnumerationEntry {
+    FileEnumerationEntry() = default;
+    FileEnumerationEntry(base::FilePath path,
+                         int64_t size,
+                         base::Time last_accessed,
+                         base::Time last_modified)
+        : path(std::move(path)),
+          size(size),
+          last_accessed(last_accessed),
+          last_modified(last_modified) {}
+
+    base::FilePath path;
+    int64_t size = 0;
+    base::Time last_accessed;
+    base::Time last_modified;
+  };
+
+  // An interface to enumerate files in a directory.
+  // Indirect descendants are not listed, and directories are not listed.
+  class FileEnumerator {
+   public:
+    virtual ~FileEnumerator() = default;
+
+    // Returns the next file in the directory, if any. Returns nullopt if there
+    // are no further files (including the error case). The path of the
+    // returned entry should be a full path.
+    virtual absl::optional<FileEnumerationEntry> Next() = 0;
+
+    // Returns true if we've found an error during traversal.
+    virtual bool HasError() const = 0;
+  };
+
   virtual ~BackendFileOperations() = default;
 
   // Creates a directory with the given path and returns whether that succeeded.
@@ -584,6 +616,11 @@ class BackendFileOperations {
 
   // Returns information about the given path.
   virtual absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) = 0;
+
+  // Creates an object that can be used to enumerate files in the specified
+  // directory.
+  virtual std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) = 0;
 };
 
@@ -616,6 +653,8 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
                    const base::FilePath& to_path,
                    base::File::Error* error) override;
   absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) override;
+  std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) override;
 
  private:

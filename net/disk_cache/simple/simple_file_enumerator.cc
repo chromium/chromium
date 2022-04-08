@@ -8,8 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-using Entry = disk_cache::SimpleFileEnumerator::Entry;
-
 // We have an optimized implementation for POSIX, and a fallback
 // implementation for other platforms.
 
@@ -29,7 +27,7 @@ bool SimpleFileEnumerator::HasError() const {
   return has_error_;
 }
 
-absl::optional<Entry> SimpleFileEnumerator::Next() {
+absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
   if (!dir_) {
     return absl::nullopt;
   }
@@ -82,7 +80,7 @@ bool SimpleFileEnumerator::HasError() const {
   return enumerator_.GetError() != base::File::FILE_OK;
 }
 
-absl::optional<Entry> SimpleFileEnumerator::Next() {
+absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
   base::FilePath path = enumerator_.Next();
   if (path.empty()) {
     return absl::nullopt;

@@ -573,8 +573,8 @@ void SimpleIndexFile::SyncRestoreFromDisk(net::CacheType cache_type,
   SimpleIndex::EntrySet* entries = &out_result->entries;
 
   SimpleFileEnumerator enumerator(cache_directory);
-  using Entry = SimpleFileEnumerator::Entry;
-  while (absl::optional<Entry> entry = enumerator.Next()) {
+  while (absl::optional<SimpleFileEnumerator::Entry> entry =
+             enumerator.Next()) {
     ProcessEntryFile(cache_type, entries, entry->path, entry->last_accessed,
                      entry->last_modified, entry->size);
   }

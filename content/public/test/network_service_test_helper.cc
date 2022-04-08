@@ -17,6 +17,8 @@
 #include "base/metrics/field_trial.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -360,6 +362,42 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
                 base::OnceCallback<void(bool)> callback) override {
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     std::move(callback).Run(file.IsValid());
+  }
+
+  void EnumerateFiles(
+      const base::FilePath& path,
+      mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+          factory_remote,
+      EnumerateFilesCallback callback) override {
+    auto task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+    auto factory =
+        base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
+            std::move(factory_remote));
+    auto ops = factory->Create(task_runner);
+
+    using Entry = disk_cache::BackendFileOperations::FileEnumerationEntry;
+
+    task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::FilePath& path,
+               std::unique_ptr<disk_cache::BackendFileOperations> ops) {
+              base::ScopedAllowBaseSyncPrimitivesForTesting scope;
+              auto enumerator = ops->EnumerateFiles(path);
+              std::vector<Entry> entries;
+              while (auto entry = enumerator->Next()) {
+                entries.push_back(std::move(*entry));
+              }
+              return std::make_pair(entries, enumerator->HasError());
+            },
+            path, std::move(ops)),
+        base::BindOnce(
+            [](EnumerateFilesCallback callback,
+               std::pair<std::vector<Entry>, bool> arg) {
+              std::move(callback).Run(arg.first, arg.second);
+            },
+            std::move(callback)));
   }
 
   void CreateSimpleCache(

@@ -35,6 +35,8 @@ class MojoBackendFileOperations final
                    base::File::Error* error) override;
   absl::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) override;
+  std::unique_ptr<disk_cache::BackendFileOperations::FileEnumerator>
+  EnumerateFiles(const base::FilePath& path) override;
 
  private:
   mojo::Remote<mojom::HttpCacheBackendFileOperations> remote_;

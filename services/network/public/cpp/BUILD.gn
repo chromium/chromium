@@ -427,6 +427,7 @@ source_set("tests") {
     "devtools_observer_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
     "empty_url_loader_client_unittest.cc",
+    "file_enumeration_entry_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",

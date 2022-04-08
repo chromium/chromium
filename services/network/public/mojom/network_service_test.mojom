@@ -153,6 +153,11 @@ interface NetworkServiceTest {
   // Opens a file with the given `path`, and returns whether it is valid.
   OpenFile(mojo_base.mojom.FilePath path) => (bool result);
 
+  // Enumerate files in the specified directory.
+  EnumerateFiles(mojo_base.mojom.FilePath path,
+                 pending_remote<HttpCacheBackendFileOperationsFactory> factory)
+      => (array<FileEnumerationEntry> entries, bool error);
+
   // Creates a "simple" backend for an HTTP cache.
   // Returns the created cache if succeeded, and null otherwise.
   CreateSimpleCache(

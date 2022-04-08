@@ -8,6 +8,54 @@
 
 namespace network {
 
+namespace {
+
+class FileEnumeratorImpl final
+    : public disk_cache::BackendFileOperations::FileEnumerator {
+ public:
+  using FileEnumerationEntry =
+      disk_cache::BackendFileOperations::FileEnumerationEntry;
+
+  explicit FileEnumeratorImpl(mojo::PendingRemote<mojom::FileEnumerator> remote)
+      : remote_(std::move(remote)) {}
+  ~FileEnumeratorImpl() override = default;
+
+  absl::optional<FileEnumerationEntry> Next() override {
+    if (has_seen_end_) {
+      return absl::nullopt;
+    }
+    if (index_ >= entries_.size()) {
+      index_ = 0;
+      entries_.clear();
+      remote_->GetNext(kNumEntries, &entries_, &has_seen_end_, &has_error_);
+    }
+    if (entries_.empty()) {
+      if (has_seen_end_) {
+        return absl::nullopt;
+      }
+      has_error_ = true;
+      has_seen_end_ = true;
+      return absl::nullopt;
+    }
+    DCHECK_LT(index_, entries_.size());
+    return absl::make_optional<FileEnumerationEntry>(
+        std::move(entries_[index_++]));
+  }
+
+  bool HasError() const override { return has_error_; }
+
+ private:
+  mojo::Remote<mojom::FileEnumerator> remote_;
+  std::vector<FileEnumerationEntry> entries_;
+  bool has_seen_end_ = false;
+  bool has_error_ = false;
+  size_t index_ = 0;
+
+  static constexpr uint32_t kNumEntries = 1000;
+};
+
+}  // namespace
+
 MojoBackendFileOperations::MojoBackendFileOperations(
     mojo::PendingRemote<mojom::HttpCacheBackendFileOperations> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -61,6 +109,13 @@ absl::optional<base::File::Info> MojoBackendFileOperations::GetFileInfo(
   absl::optional<base::File::Info> info;
   remote_->GetFileInfo(path, &info);
   return info;
+}
+
+std::unique_ptr<disk_cache::BackendFileOperations::FileEnumerator>
+MojoBackendFileOperations::EnumerateFiles(const base::FilePath& path) {
+  mojo::PendingRemote<mojom::FileEnumerator> remote;
+  remote_->EnumerateFiles(path, remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<FileEnumeratorImpl>(std::move(remote));
 }
 
 }  // namespace network

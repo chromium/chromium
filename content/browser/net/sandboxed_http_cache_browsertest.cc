@@ -4,8 +4,10 @@
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/net/http_cache_backend_file_operations_factory.h"
 #include "content/public/browser/browser_thread.h"
@@ -13,6 +15,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,6 +35,8 @@ namespace {
 
 using network::mojom::SimpleCache;
 using network::mojom::SimpleCacheEntry;
+using FileEnumerationEntry =
+    disk_cache::BackendFileOperations::FileEnumerationEntry;
 
 class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
@@ -114,6 +119,73 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
   run_loop.Run();
 
   EXPECT_EQ(result, absl::make_optional(false));
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       EnumerateFilesOnNonExistingDirectory) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::RunLoop run_loop;
+
+  base::FilePath root;
+  base::PathService::Get(content::DIR_TEST_DATA, &root);
+  root =
+      root.Append(FILE_PATH_LITERAL("net")).Append(FILE_PATH_LITERAL("cache"));
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  HttpCacheBackendFileOperationsFactory factory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), root);
+
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  const base::FilePath path = root.Append(FILE_PATH_LITERAL("not-found"));
+  std::vector<FileEnumerationEntry> entries;
+  bool has_error = false;
+
+  network_service_test()->EnumerateFiles(
+      path, std::move(factory_remote),
+      base::BindLambdaForTesting(
+          [&](const std::vector<FileEnumerationEntry>& in_entries,
+              bool in_has_error) {
+            entries = in_entries;
+            has_error = in_has_error;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(entries.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, EnumerateFiles) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::RunLoop run_loop;
+
+  base::FilePath root;
+  base::PathService::Get(content::DIR_TEST_DATA, &root);
+  root =
+      root.Append(FILE_PATH_LITERAL("net")).Append(FILE_PATH_LITERAL("cache"));
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  HttpCacheBackendFileOperationsFactory factory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), root);
+
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  const base::FilePath path = root.Append(FILE_PATH_LITERAL("file_enumerator"));
+  std::vector<FileEnumerationEntry> entries;
+  bool has_error = false;
+
+  network_service_test()->EnumerateFiles(
+      path, std::move(factory_remote),
+      base::BindLambdaForTesting(
+          [&](const std::vector<FileEnumerationEntry>& in_entries,
+              bool in_has_error) {
+            entries = in_entries;
+            has_error = in_has_error;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_FALSE(has_error);
+  const FileEnumerationEntry entry = entries[0];
+  EXPECT_EQ(entry.path, path.Append(FILE_PATH_LITERAL("test.txt")));
+  EXPECT_EQ(entry.size, 13);
 }
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateSimpleCache) {

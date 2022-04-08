@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/disk_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -27,24 +28,10 @@ namespace disk_cache {
 // https://crbug.com/270762 and https://codereview.chromium.org/22927018.
 class NET_EXPORT SimpleFileEnumerator final {
  public:
+  using Entry = BackendFileOperations::FileEnumerationEntry;
+
   explicit SimpleFileEnumerator(const base::FilePath& root_path);
   ~SimpleFileEnumerator();
-
-  struct Entry {
-    Entry(base::FilePath path,
-          int64_t size,
-          base::Time last_accessed,
-          base::Time last_modified)
-        : path(std::move(path)),
-          size(size),
-          last_accessed(last_accessed),
-          last_modified(last_modified) {}
-
-    base::FilePath path;
-    int64_t size;
-    base::Time last_accessed;
-    base::Time last_modified;
-  };
 
   // Returns true if we've found an error during enumeration.
   bool HasError() const;

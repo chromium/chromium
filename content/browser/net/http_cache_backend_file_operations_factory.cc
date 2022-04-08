@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/disk_cache/simple/simple_file_enumerator.h"
 
 namespace content {
 
@@ -20,6 +21,30 @@ static_assert(static_cast<uint32_t>(OpenFileFlags::kOpenAndRead) ==
 static_assert(static_cast<uint32_t>(OpenFileFlags::kCreateAndWrite) ==
                   (base::File::FLAG_CREATE | base::File::FLAG_WRITE),
               "kCreateAndWrite");
+
+class FileEnumerator final : public network::mojom::FileEnumerator {
+ public:
+  explicit FileEnumerator(const base::FilePath& path) : enumerator_(path) {}
+  ~FileEnumerator() override = default;
+
+  void GetNext(uint32_t num_entries, GetNextCallback callback) override {
+    std::vector<disk_cache::BackendFileOperations::FileEnumerationEntry>
+        entries;
+    bool end = false;
+    for (uint32_t i = 0; i < num_entries; ++i) {
+      if (auto entry = enumerator_.Next()) {
+        entries.push_back(std::move(*entry));
+      } else {
+        end = true;
+        break;
+      }
+    }
+    std::move(callback).Run(entries, end, enumerator_.HasError());
+  }
+
+ private:
+  disk_cache::SimpleFileEnumerator enumerator_;
+};
 
 class HttpCacheBackendFileOperations final
     : public network::mojom::HttpCacheBackendFileOperations {
@@ -117,6 +142,17 @@ class HttpCacheBackendFileOperations final
 
     std::move(callback).Run(ok ? absl::make_optional(file_info)
                                : absl::nullopt);
+  }
+
+  void EnumerateFiles(
+      const base::FilePath& path,
+      mojo::PendingReceiver<network::mojom::FileEnumerator> receiver) override {
+    if (!IsValid(path, "EnumerateFiles")) {
+      return;
+    }
+    DVLOG(1) << "EnumerateFiles: path = " << path;
+    mojo::MakeSelfOwnedReceiver(std::make_unique<FileEnumerator>(path),
+                                std::move(receiver));
   }
 
  private:

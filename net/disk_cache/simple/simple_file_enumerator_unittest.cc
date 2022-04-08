@@ -12,8 +12,6 @@
 namespace disk_cache {
 namespace {
 
-using Entry = SimpleFileEnumerator::Entry;
-
 base::FilePath GetRoot() {
   base::FilePath root;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &root);
