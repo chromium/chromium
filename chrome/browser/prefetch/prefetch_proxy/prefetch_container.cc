@@ -119,7 +119,8 @@ void PrefetchContainer::SetNoStatePrefetchStatus(
 void PrefetchContainer::CreateNetworkContextForPrefetch(Profile* profile) {
   network_context_ = std::make_unique<PrefetchProxyNetworkContext>(
       profile, prefetch_type_.IsIsolatedNetworkContextRequired(),
-      prefetch_type_.IsProxyRequired());
+      prefetch_type_.IsProxyRequired() &&
+          !prefetch_type_.IsProxyBypassedForTest());
 }
 
 std::unique_ptr<PrefetchProxyNetworkContext>

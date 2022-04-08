@@ -4,6 +4,8 @@
 
 // Resolved URL to find this script.
 const SR_PREFETCH_UTILS_URL = new URL(document.currentScript.src, document.baseURI);
+// Hostname for cross origin urls.
+const PREFETCH_PROXY_BYPASS_HOST = "{{hosts[alt][]}}";
 
 class PrefetchAgent extends RemoteContext {
   constructor(uuid, t) {
@@ -11,9 +13,18 @@ class PrefetchAgent extends RemoteContext {
     this.t = t;
   }
 
-  getExecutorURL(extra = {}) {
+  getExecutorURL(options = {}) {
+    let {hostname, protocol, ...extra} = options;
     let params = new URLSearchParams({uuid: this.context_id, ...extra});
-    return new URL(`executor.sub.html?${params}`, SR_PREFETCH_UTILS_URL);
+    let url = new URL(`executor.sub.html?${params}`, SR_PREFETCH_UTILS_URL);
+    if(hostname !== undefined) {
+      url.hostname = hostname;
+    }
+    if(protocol !== undefined) {
+      url.protocol = protocol;
+      url.port = protocol === "https" ? "{{ports[https][0]}}" : "{{ports[http][0]}}";
+    }
+    return url;
   }
 
   // Requests prefetch via speculation rules.
@@ -21,10 +32,10 @@ class PrefetchAgent extends RemoteContext {
   // In the future, this should also use browser hooks to force the prefetch to
   // occur despite heuristic matching, etc., and await the completion of the
   // prefetch.
-  async forceSinglePrefetch(url) {
-    await this.execute_script((url) => {
-      insertSpeculationRules({ prefetch: [{source: 'list', urls: [url]}] });
-    }, [url]);
+  async forceSinglePrefetch(url, extra = {}) {
+    await this.execute_script((url, extra) => {
+      insertSpeculationRules({ prefetch: [{source: 'list', urls: [url], ...extra}] });
+    }, [url, extra]);
     return new Promise(resolve => this.t.step_timeout(resolve, 2000));
   }
 
@@ -47,9 +58,9 @@ class PrefetchAgent extends RemoteContext {
 }
 
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
-async function spawnWindow(t) {
+async function spawnWindow(t, extra = {}) {
   let agent = new PrefetchAgent(token(), t);
-  let w = window.open(agent.getExecutorURL());
+  let w = window.open(agent.getExecutorURL(), extra);
   t.add_cleanup(() => w.close());
   return agent;
 }
@@ -59,4 +70,14 @@ function insertSpeculationRules(body) {
   script.type = 'speculationrules';
   script.textContent = JSON.stringify(body);
   document.head.appendChild(script);
+}
+
+function assert_prefetched (requestHeaders, description) {
+  assert_in_array(requestHeaders.purpose, ["", "prefetch"], "The vendor-specific header Purpose, if present, must be 'prefetch'.");
+  assert_equals(requestHeaders.sec_purpose, "prefetch", description);
+}
+
+function assert_not_prefetched (requestHeaders, description){
+  assert_equals(requestHeaders.purpose, "", description);
+  assert_equals(requestHeaders.sec_purpose, "", description);
 }

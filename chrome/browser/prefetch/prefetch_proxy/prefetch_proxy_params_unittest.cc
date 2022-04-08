@@ -123,3 +123,12 @@ TEST(PrefetchProxyParamsTest, NoDecoysForMSBB) {
         PrefetchProxySendDecoyRequestForIneligiblePrefetch(&pref_service));
   }
 }
+
+TEST(PrefetchProxyParamsTest, BypassProxyForHost) {
+  EXPECT_FALSE(PrefetchProxyBypassProxyForHost().has_value());
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "bypass-prefetch-proxy-for-host", "www.www1.hostname.test");
+  EXPECT_TRUE(PrefetchProxyBypassProxyForHost().has_value());
+  EXPECT_EQ(PrefetchProxyBypassProxyForHost().value(),
+            "www.www1.hostname.test");
+}

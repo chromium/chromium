@@ -5135,6 +5135,7 @@ test("unit_tests") {
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator_unittest.cc",
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper_unittest.cc",
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor_unittest.cc",
+    "../browser/prefetch/prefetch_proxy/prefetch_type_unittest.cc",
     "../browser/prefs/chrome_command_line_pref_store_proxy_unittest.cc",
     "../browser/prefs/chrome_command_line_pref_store_ssl_manager_unittest.cc",
     "../browser/prefs/chrome_command_line_pref_store_unittest.cc",

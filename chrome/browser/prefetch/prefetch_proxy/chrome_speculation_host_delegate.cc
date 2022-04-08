@@ -117,6 +117,14 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
                                 should_process_entry);
   candidates.erase(new_end, candidates.end());
 
+  if (const auto& bypass_for_host = PrefetchProxyBypassProxyForHost()) {
+    for (auto& [prefetch_url, prefetch_type] : prefetches) {
+      if (prefetch_type.IsProxyRequired() &&
+          prefetch_url.host() == *bypass_for_host)
+        prefetch_type.SetProxyBypassedForTest();
+    }
+  }
+
   // TODO(ryansturm): Handle CSP prefetch-src. https://crbug.com/1192857
   if (prefetches.size()) {
     prefetch_proxy_tab_helper->PrefetchSpeculationCandidates(

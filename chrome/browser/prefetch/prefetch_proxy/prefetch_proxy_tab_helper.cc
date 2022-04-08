@@ -993,9 +993,11 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
 
     // Verifies that the request was made using the prefetch proxy if required,
     // or made directly if the proxy was not required.
-    DCHECK(
-        !head->proxy_server.is_direct() ==
-        prefetch_container_iter->second->GetPrefetchType().IsProxyRequired());
+    DCHECK(prefetch_container_iter->second->GetPrefetchType()
+               .IsProxyBypassedForTest() ||
+           !head->proxy_server.is_direct() ==
+               prefetch_container_iter->second->GetPrefetchType()
+                   .IsProxyRequired());
 
     HandlePrefetchResponse(prefetch_container_iter->second.get(),
                            isolation_info, std::move(head), std::move(body));
@@ -1416,7 +1418,8 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(
   // While a registry-controlled domain could still resolve to a non-publicly
   // routable IP, this allows hosts which are very unlikely to work via the
   // proxy to be discarded immediately.
-  if (prefetch_type.IsProxyRequired() &&
+  if (!prefetch_type.IsProxyBypassedForTest() &&
+      prefetch_type.IsProxyRequired() &&
       (g_host_non_unique_filter
            ? g_host_non_unique_filter(url.HostNoBracketsPiece())
            : net::IsHostnameNonUnique(url.HostNoBrackets()))) {
