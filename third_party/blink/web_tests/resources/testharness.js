@@ -425,6 +425,53 @@
     };
 
     /*
+     * Shadow realms.
+     * https://github.com/tc39/proposal-shadowrealm
+     *
+     * This class is used as the test_environment when testharness is running
+     * inside a shadow realm.
+     */
+    function ShadowRealmTestEnvironment() {
+        WorkerTestEnvironment.call(this);
+        this.all_loaded = false;
+        this.on_loaded_callback = null;
+    }
+
+    ShadowRealmTestEnvironment.prototype = Object.create(WorkerTestEnvironment.prototype);
+
+    /**
+     * Signal to the test environment that the tests are ready and the on-loaded
+     * callback should be run.
+     *
+     * Shadow realms are not *really* a DOM context: they have no `onload` or similar
+     * event for us to use to set up the test environment; so, instead, this method
+     * is manually triggered from the incubating realm
+     *
+     * @param {Function} message_destination - a function that receives JSON-serializable
+     * data to send to the incubating realm, in the same format as used by RemoteContext
+     */
+    ShadowRealmTestEnvironment.prototype.begin = function(message_destination) {
+        if (this.all_loaded) {
+            throw new Error("Tried to start a shadow realm test environment after it has already started");
+        }
+        var fakeMessagePort = {};
+        fakeMessagePort.postMessage = message_destination;
+        this._add_message_port(fakeMessagePort);
+        this.all_loaded = true;
+        if (this.on_loaded_callback) {
+            this.on_loaded_callback();
+        }
+    };
+
+    ShadowRealmTestEnvironment.prototype.add_on_loaded_callback = function(callback) {
+        if (this.all_loaded) {
+            callback();
+        } else {
+            this.on_loaded_callback = callback;
+        }
+    };
+
+    /*
      * JavaScript shells.
      *
      * This class is used as the test_environment when testharness is running
@@ -487,6 +534,17 @@
         if ('WorkerGlobalScope' in global_scope &&
             global_scope instanceof WorkerGlobalScope) {
             return new DedicatedWorkerTestEnvironment();
+        }
+        /* Shadow realm global objects are _ordinary_ objects (i.e. their prototype is
+         * Object) so we don't have a nice `instanceof` test to use; instead, we
+         * can look for the presence of web APIs that wouldn't be available in
+         * environments not listed above:
+         *
+         * As long as, within the shadow realm, we load the testharness before
+         * other libraries, this won't have any false positives, even in e.g. node
+         */
+        if ('AbortController' in global_scope) {
+            return new ShadowRealmTestEnvironment();
         }
 
         return new ShellTestEnvironment();
@@ -3786,6 +3844,45 @@
     expose(fetch_tests_from_window, 'fetch_tests_from_window');
 
     /**
+     * Get test results from a shadow realm and include them in the current test.
+     *
+     * @param {ShadowRealm} realm - A shadow realm also running the test harness
+     * @returns {Promise} - A promise that's resolved once all the remote tests are complete.
+     */
+    function fetch_tests_from_shadow_realm(realm) {
+        var chan = new MessageChannel();
+        function receiveMessage(msg_json) {
+            chan.port1.postMessage(JSON.parse(msg_json));
+        }
+        var done = tests.fetch_tests_from_worker(chan.port2);
+        realm.evaluate("begin_shadow_realm_tests")(receiveMessage);
+        chan.port2.start();
+        return done;
+    }
+    expose(fetch_tests_from_shadow_realm, 'fetch_tests_from_shadow_realm');
+
+    /**
+     * Begin running tests in this shadow realm test harness.
+     *
+     * To be called after all tests have been loaded; it is an error to call
+     * this more than once or in a non-Shadow Realm environment
+     *
+     * @param {Function} postMessage - A function to send test updates to the
+     * incubating realm-- accepts JSON-encoded messages in the format used by
+     * RemoteContext
+     */
+    function begin_shadow_realm_tests(postMessage) {
+        if (!(test_environment instanceof ShadowRealmTestEnvironment)) {
+            throw new Error("beign_shadow_realm_tests called in non-Shadow Realm environment");
+        }
+
+        test_environment.begin(function (msg) {
+            postMessage(JSON.stringify(msg));
+        });
+    }
+    expose(begin_shadow_realm_tests, 'begin_shadow_realm_tests');
+
+    /**
      * Timeout the tests.
      *
      * This only has an effect when ``explict_timeout`` has been set
@@ -3963,7 +4060,7 @@
 
     Output.prototype.show_status = function() {
         if (this.phase < this.STARTED) {
-            this.init();
+            this.init({});
         }
         if (!this.enabled || this.phase === this.COMPLETE) {
             return;
