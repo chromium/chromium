@@ -12,7 +12,29 @@
 
 namespace ash {
 
-TestWallpaperControllerClient::TestWallpaperControllerClient() = default;
+// static
+const std::string TestWallpaperControllerClient::kDummyCollectionId =
+    "testCollectionId";
+
+TestWallpaperControllerClient::TestWallpaperControllerClient() {
+  std::vector<backdrop::Image>& images = variations_[kDummyCollectionId];
+  backdrop::Image image1;
+  image1.set_asset_id(1);
+  image1.set_image_url("https://best_wallpaper/1");
+  image1.add_attribution()->set_text("test");
+  image1.set_unit_id(1);
+  image1.set_image_type(backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  images.push_back(image1);
+
+  backdrop::Image image2;
+  image2.set_asset_id(2);
+  image2.set_image_url("https://best_wallpaper/2");
+  image2.add_attribution()->set_text("test");
+  image2.set_unit_id(1);
+  image2.set_image_type(backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  images.push_back(image2);
+}
+
 TestWallpaperControllerClient::~TestWallpaperControllerClient() = default;
 
 void TestWallpaperControllerClient::ResetCounts() {
@@ -52,46 +74,28 @@ void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp(
 void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {
+  auto iter = variations_.find(collection_id);
   fetch_daily_refresh_wallpaper_param_ = collection_id;
-  if (fetch_daily_refresh_info_fails_) {
+  if (fetch_daily_refresh_info_fails_ || iter == variations_.end()) {
     std::move(callback).Run(/*success=*/false, std::move(backdrop::Image()));
-  } else {
-    backdrop::Image image;
-    image.set_asset_id(1);
-    image.set_image_url("http://example.com");
-    image.add_attribution()->set_text("test");
-    image.set_unit_id(1);
-    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
-    std::move(callback).Run(/*success=*/true, std::move(image));
+    return;
   }
+
+  backdrop::Image image(iter->second.back());
+  std::move(callback).Run(/*success=*/true, std::move(image));
 }
 
 void TestWallpaperControllerClient::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
-  if (fetch_images_for_collection_fails_) {
+  auto iter = variations_.find(collection_id);
+  if (fetch_images_for_collection_fails_ || iter == variations_.end()) {
     std::move(callback).Run(/*success=*/false, std::vector<backdrop::Image>());
-  } else {
-    std::vector<backdrop::Image> images;
-
-    backdrop::Image image1;
-    image1.set_asset_id(1);
-    image1.set_image_url("https://best_wallpaper/1");
-    image1.add_attribution()->set_text("test");
-    image1.set_unit_id(1);
-    image1.set_image_type(backdrop::Image::IMAGE_TYPE_DARK_MODE);
-    images.push_back(image1);
-
-    backdrop::Image image2;
-    image2.set_asset_id(2);
-    image2.set_image_url("https://best_wallpaper/2");
-    image2.add_attribution()->set_text("test");
-    image2.set_unit_id(1);
-    image2.set_image_type(backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
-    images.push_back(image2);
-
-    std::move(callback).Run(/*success=*/true, std::move(images));
+    return;
   }
+
+  std::vector<backdrop::Image> images = iter->second;
+  std::move(callback).Run(/*success=*/true, std::move(images));
 }
 
 void TestWallpaperControllerClient::FetchGooglePhotosPhoto(

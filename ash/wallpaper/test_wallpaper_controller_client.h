@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
+#include "base/containers/flat_map.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -17,6 +18,10 @@ namespace ash {
 // A test wallpaper controller client class.
 class TestWallpaperControllerClient : public WallpaperControllerClient {
  public:
+  // A preconfigured collection of wallpaper variants that will return some
+  // usable values.
+  static const std::string kDummyCollectionId;
+
   TestWallpaperControllerClient();
   TestWallpaperControllerClient(const TestWallpaperControllerClient&) = delete;
   TestWallpaperControllerClient& operator=(
@@ -106,6 +111,8 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   bool fetch_images_for_collection_fails_ = false;
   bool fetch_google_photos_photo_fails_ = false;
   bool google_photo_has_been_deleted_ = false;
+
+  base::flat_map<std::string, std::vector<backdrop::Image>> variations_;
 };
 
 }  // namespace ash
