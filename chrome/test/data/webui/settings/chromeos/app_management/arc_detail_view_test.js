@@ -129,7 +129,7 @@ suite('<app-management-arc-detail-view>', () => {
   });
 
   test('No permissions requested label', async () => {
-    expectTrue(isHiddenByDomIf(
+    assertTrue(isHiddenByDomIf(
         arcPermissionView.root.querySelector('#no-permissions')));
 
     // Create an ARC app without any permissions.
@@ -143,7 +143,7 @@ suite('<app-management-arc-detail-view>', () => {
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
     await flushTasks();
 
-    expectFalse(isHiddenByDomIf(
+    assertFalse(isHiddenByDomIf(
         arcPermissionView.root.querySelector('#no-permissions')));
   });
 });

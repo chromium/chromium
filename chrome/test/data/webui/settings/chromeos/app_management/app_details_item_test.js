@@ -42,7 +42,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Web App');
   });
@@ -68,7 +68,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Android App');
   });
@@ -94,7 +94,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome App');
   });
@@ -120,7 +120,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome App installed from Chrome Web Store');
   });
@@ -146,7 +146,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Android App installed from Google Play Store');
   });
@@ -171,7 +171,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'System App');
   });
@@ -196,7 +196,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome OS System App');
   });
@@ -222,7 +222,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 17.2');
   });
@@ -248,7 +248,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 13.1.52');
   });

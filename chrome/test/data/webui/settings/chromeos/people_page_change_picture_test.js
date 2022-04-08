@@ -199,9 +199,9 @@ suite('ChangePictureTests', function() {
       changePicture.async(resolve);
     });
     let camera = crPicturePane.$$('#camera');
-    expectFalse(crPicturePane.cameraPresent);
-    expectFalse(crPicturePane.cameraActive_);
-    expectFalse(!!camera && camera.hidden);
+    assertFalse(crPicturePane.cameraPresent);
+    assertFalse(crPicturePane.cameraActive_);
+    assertFalse(!!camera && camera.hidden);
 
     cr.webUIListenerCallback('camera-presence-changed', true);
     flush();
@@ -209,9 +209,9 @@ suite('ChangePictureTests', function() {
       changePicture.async(resolve);
     });
     camera = crPicturePane.$$('#camera');
-    expectTrue(crPicturePane.cameraPresent);
-    expectFalse(crPicturePane.cameraActive_);
-    expectFalse(!!camera && camera.hidden);
+    assertTrue(crPicturePane.cameraPresent);
+    assertFalse(crPicturePane.cameraActive_);
+    assertFalse(!!camera && camera.hidden);
 
     const cameraImage = crPictureList.$.cameraImage;
     cameraImage.click();
@@ -220,44 +220,44 @@ suite('ChangePictureTests', function() {
       changePicture.async(resolve);
     });
     camera = crPicturePane.$$('#camera');
-    expectTrue(crPicturePane.cameraActive_);
+    assertTrue(crPicturePane.cameraActive_);
     assertTrue(!!camera && !camera.hidden);
-    expectEquals(
+    assertEquals(
         CrPicture.SelectionTypes.CAMERA,
         changePicture.selectedItem_.dataset.type);
     const discard = crPicturePane.$$('#discard');
-    expectTrue(!discard || discard.hidden);
+    assertTrue(!discard || discard.hidden);
 
     // Ensure that the camera is deactivated if user navigates away.
     changePicture.currentRouteChanged(routes.BASIC);
     await new Promise(function(resolve) {
       changePicture.async(resolve);
     });
-    expectFalse(crPicturePane.cameraActive_);
+    assertFalse(crPicturePane.cameraActive_);
   });
 
   test('ChangePictureProfileImage', async function() {
     const profileImage = crPictureList.$.profileImage;
     assertTrue(!!profileImage);
 
-    expectEquals(null, changePicture.selectedItem_);
+    assertEquals(null, changePicture.selectedItem_);
     profileImage.click();
 
     await browserProxy.whenCalled('selectProfileImage');
     flush();
 
-    expectEquals(
+    assertEquals(
         CrPicture.SelectionTypes.PROFILE,
         changePicture.selectedItem_.dataset.type);
-    expectFalse(crPicturePane.cameraActive_);
+    assertFalse(crPicturePane.cameraActive_);
     const discard = crPicturePane.$$('#discard');
-    expectTrue(!discard || discard.hidden);
+    assertTrue(!discard || discard.hidden);
 
     // Ensure that the selection is restored after navigating away and
     // then back to the subpage.
     changePicture.currentRouteChanged(routes.BASIC);
     changePicture.currentRouteChanged(routes.CHANGE_PICTURE);
-    expectEquals(null, changePicture.selectedItem_);
+    assertEquals(null, changePicture.selectedItem_);
   });
 
   test('ChangePictureDeprecatedImage', async function() {
@@ -266,13 +266,13 @@ suite('ChangePictureTests', function() {
     flush();
 
     // Expect the deprecated image is presented in picture pane.
-    expectEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
+    assertEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
     const image = crPicturePane.$$('#image');
     assertTrue(!!image);
-    expectFalse(image.hidden);
+    assertFalse(image.hidden);
     const discard = crPicturePane.$$('#discard');
     assertTrue(!!discard);
-    expectTrue(discard.hidden);
+    assertTrue(discard.hidden);
   });
 
   test('ChangePictureDeprecatedImageWithSourceInfo', async function() {
@@ -286,13 +286,13 @@ suite('ChangePictureTests', function() {
     flush();
 
     // Expect the deprecated image is presented in picture pane.
-    expectEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
+    assertEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
     const image = crPicturePane.$$('#image');
     assertTrue(!!image);
-    expectFalse(image.hidden);
+    assertFalse(image.hidden);
     const discard = crPicturePane.$$('#discard');
     assertTrue(!!discard);
-    expectTrue(discard.hidden);
+    assertTrue(discard.hidden);
     const sourceInfo = changePicture.$$('#sourceInfo');
     assertTrue(!!sourceInfo);
     assertFalse(sourceInfo.hidden);
@@ -317,13 +317,13 @@ suite('ChangePictureTests', function() {
     assertTrue(!!changePicture.selectedItem_);
     // Expect the old image to be selected once an old image is sent via
     // the native interface.
-    expectEquals(
+    assertEquals(
         CrPicture.SelectionTypes.OLD, changePicture.selectedItem_.dataset.type);
-    expectFalse(oldImage.hidden);
-    expectFalse(crPicturePane.cameraActive_);
+    assertFalse(oldImage.hidden);
+    assertFalse(crPicturePane.cameraActive_);
     const discard = crPicturePane.$$('#discard');
     assertTrue(!!discard);
-    expectFalse(discard.hidden);
+    assertFalse(discard.hidden);
     // Ensure the file image does not show the source info.
     const sourceInfo = changePicture.$$('#sourceInfo');
     assertTrue(!sourceInfo || sourceInfo.hidden);
@@ -336,22 +336,22 @@ suite('ChangePictureTests', function() {
     firstDefaultImage.click();
 
     let imageUrl = await browserProxy.whenCalled('selectDefaultImage');
-    expectEquals('chrome://foo/2.png', imageUrl);
+    assertEquals('chrome://foo/2.png', imageUrl);
 
     flush();
-    expectEquals(
+    assertEquals(
         CrPicture.SelectionTypes.DEFAULT,
         changePicture.selectedItem_.dataset.type);
-    expectEquals(firstDefaultImage, changePicture.selectedItem_);
-    expectFalse(crPicturePane.cameraActive_);
+    assertEquals(firstDefaultImage, changePicture.selectedItem_);
+    assertFalse(crPicturePane.cameraActive_);
     const discard = crPicturePane.$$('#discard');
-    expectTrue(!discard || discard.hidden);
+    assertTrue(!discard || discard.hidden);
 
     // Now verify that arrow keys actually select the new image.
     browserProxy.resetResolver('selectDefaultImage');
     pressAndReleaseKeyOn(changePicture.selectedItem_, RIGHT_KEY_CODE);
     imageUrl = await browserProxy.whenCalled('selectDefaultImage');
-    expectEquals('chrome://foo/3.png', imageUrl);
+    assertEquals('chrome://foo/3.png', imageUrl);
   });
 
   test('ChangePictureRestoreImageAfterDiscard', async function() {
@@ -362,12 +362,12 @@ suite('ChangePictureTests', function() {
 
     await browserProxy.whenCalled('selectDefaultImage');
     flush();
-    expectEquals(firstDefaultImage, changePicture.selectedItem_);
+    assertEquals(firstDefaultImage, changePicture.selectedItem_);
 
     cr.webUIListenerCallback('old-image-changed', 'fake-old-image.jpg');
 
     flush();
-    expectEquals(
+    assertEquals(
         CrPicture.SelectionTypes.OLD, changePicture.selectedItem_.dataset.type);
 
     const discardButton = crPicturePane.$$('#discard cr-icon-button');
@@ -377,23 +377,23 @@ suite('ChangePictureTests', function() {
     flush();
     const profileImage = crPictureList.$.profileImage;
     assertTrue(!!profileImage);
-    expectEquals(profileImage, changePicture.selectedItem_);
+    assertEquals(profileImage, changePicture.selectedItem_);
   });
 
   test('ChangePictureImagePendingStateCheck', async function() {
     // oldImagePending_ should be false when no camera photo pending.
-    expectFalse(changePicture.oldImagePending_);
-    expectEquals(crPictureList.oldImageUrl_, '');
+    assertFalse(changePicture.oldImagePending_);
+    assertEquals(crPictureList.oldImageUrl_, '');
     // Simulate photo taken event.
     crPicturePane.fire('photo-taken', {photoDataUrl: 'camera-image.jpg'});
     flush();
     // oldImagePending_ should be true due to pending camera image.
-    expectTrue(changePicture.oldImagePending_);
+    assertTrue(changePicture.oldImagePending_);
 
     cr.webUIListenerCallback('old-image-changed', 'camera-image.jpg');
     flush();
     // oldImagePending_ should be false after the image has been received.
-    expectFalse(changePicture.oldImagePending_);
-    expectEquals(crPictureList.oldImageUrl_, 'camera-image.jpg');
+    assertFalse(changePicture.oldImagePending_);
+    assertEquals(crPictureList.oldImageUrl_, 'camera-image.jpg');
   });
 });

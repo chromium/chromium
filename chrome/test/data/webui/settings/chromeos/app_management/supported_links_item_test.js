@@ -45,7 +45,7 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'preferred');
 
@@ -53,10 +53,10 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.whenCalled('setPreferredApp');
     await flushTasks();
 
-    expectFalse(
+    assertFalse(
         AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
 
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'browser');
   });
@@ -83,7 +83,7 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'browser');
 
@@ -91,10 +91,10 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.whenCalled('setPreferredApp');
     await flushTasks();
 
-    expectTrue(
+    assertTrue(
         AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
 
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'preferred');
   });
@@ -250,9 +250,9 @@ suite('<app-management-supported-links-item>', () => {
 
     assertFalse(
         !!supportedLinksItem.shadowRoot.querySelector('#overlap-dialog'));
-    expectFalse(
+    assertFalse(
         AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'browser');
   });
@@ -302,9 +302,9 @@ suite('<app-management-supported-links-item>', () => {
 
     assertFalse(
         !!supportedLinksItem.shadowRoot.querySelector('#overlap-dialog'));
-    expectTrue(
+    assertTrue(
         AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
-    expectEquals(
+    assertEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'preferred');
   });
@@ -330,7 +330,7 @@ suite('<app-management-supported-links-item>', () => {
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app1.id));
     await fakeHandler.flushPipesForTesting();
 
-    expectTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
     supportedLinksItem.app = app1;
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -362,8 +362,8 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
-    expectTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
-    expectTrue(!!AppManagementStore.getInstance().data.apps[app2.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app2.id]);
     supportedLinksItem.app = app1;
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();

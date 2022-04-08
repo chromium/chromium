@@ -286,24 +286,24 @@ suite('UsbInternalsUITest', function() {
 
     // Totally 2 tables: 'TestDevice' table and 'Device' table.
     const tables = app.shadowRoot.querySelectorAll('table');
-    expectEquals(2, tables.length);
+    assertEquals(2, tables.length);
 
     // Only 2 tabs after loading page.
     const tabs = app.shadowRoot.querySelectorAll('tab');
-    expectEquals(2, tabs.length);
+    assertEquals(2, tabs.length);
     const tabPanels = app.shadowRoot.querySelectorAll('tabpanel');
-    expectEquals(2, tabPanels.length);
+    assertEquals(2, tabPanels.length);
 
     // The second is the devices table, which has 8 columns.
     const devicesTable = app.shadowRoot.querySelectorAll('table')[1];
     const columns = devicesTable.querySelector('thead')
                         .querySelector('tr')
                         .querySelectorAll('th');
-    expectEquals(8, columns.length);
+    assertEquals(8, columns.length);
 
     await deviceManagerGetDevicesResolver.promise;
     const devices = devicesTable.querySelectorAll('tbody tr');
-    expectEquals(EXPECT_DEVICES_NUM, devices.length);
+    assertEquals(EXPECT_DEVICES_NUM, devices.length);
   });
 
   test('DeviceTabAdded', function() {
@@ -313,23 +313,23 @@ suite('UsbInternalsUITest', function() {
     devicesTable.querySelectorAll('button')[0].click();
     assertEquals(3, app.shadowRoot.querySelectorAll('tab').length);
     assertEquals(3, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
 
     // Check that clicking the inspect button for another device will open a
     // new tabpanel.
     devicesTable.querySelectorAll('button')[1].click();
     assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
     assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
-    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
+    assertFalse(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
 
     // Check that clicking the inspect button for the same device a second
     // time will open the same tabpanel.
     devicesTable.querySelectorAll('button')[0].click();
     assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
     assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
-    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
+    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertFalse(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
   });
 
   test('RenderDeviceInfoTree', function() {
@@ -349,7 +349,7 @@ suite('UsbInternalsUITest', function() {
       'WebUSB Landing Page: http://google.com', 'Active Configuration: 1'
     ];
     labels.forEach((label, i) => {
-      expectEquals(
+      assertEquals(
           label, treeItems[i].querySelector('.tree-label').textContent);
     });
   });
@@ -366,8 +366,8 @@ suite('UsbInternalsUITest', function() {
 
     await deviceDescriptorRenderResolver.promise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
-    expectEquals(1, panel.querySelectorAll('descriptorpanel').length);
-    expectEquals(0, panel.querySelectorAll('error').length);
+    assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
+    assertEquals(0, panel.querySelectorAll('error').length);
     const treeItems = panel.querySelectorAll('.tree-item');
     assertEquals(14, treeItems.length);
 
@@ -380,45 +380,45 @@ suite('UsbInternalsUITest', function() {
       'Serial Number Index: 0', 'Number of Configurations: 1'
     ];
     labels.forEach((label, i) => {
-      expectEquals(
+      assertEquals(
           label, treeItems[i].querySelector('.tree-label').textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
-    expectEquals(18, byteElements.length);
-    expectEquals(
+    assertEquals(18, byteElements.length);
+    assertEquals(
         '12010002000000405010EF17210301020001',
         panel.querySelector('.raw-data-byte-view').textContent);
 
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
     treeItems[0].querySelector('.tree-row').click();
-    expectTrue(treeItems[0].selected);
-    expectTrue(byteElements[0].classList.contains('selected-field'));
+    assertTrue(treeItems[0].selected);
+    assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (Vendor ID) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
     treeItems[7].querySelector('.tree-row').click();
-    expectFalse(treeItems[0].selected);
-    expectTrue(treeItems[7].selected);
-    expectFalse(byteElements[0].classList.contains('selected-field'));
-    expectTrue(byteElements[8].classList.contains('selected-field'));
-    expectTrue(byteElements[9].classList.contains('selected-field'));
+    assertFalse(treeItems[0].selected);
+    assertTrue(treeItems[7].selected);
+    assertFalse(byteElements[0].classList.contains('selected-field'));
+    assertTrue(byteElements[8].classList.contains('selected-field'));
+    assertTrue(byteElements[9].classList.contains('selected-field'));
     // Click a single byte element (Descriptor Type) and check that both the
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    expectFalse(treeItems[7].selected);
-    expectTrue(treeItems[1].selected);
-    expectTrue(byteElements[1].classList.contains('selected-field'));
+    assertFalse(treeItems[7].selected);
+    assertTrue(treeItems[1].selected);
+    assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (Product ID) and check
     // that both the bytes and the related item are highlighted, and other
     // items and bytes are not highlighted.
     byteElements[11].click();
-    expectFalse(treeItems[1].selected);
-    expectTrue(treeItems[8].selected);
-    expectTrue(byteElements[10].classList.contains('selected-field'));
-    expectTrue(byteElements[11].classList.contains('selected-field'));
+    assertFalse(treeItems[1].selected);
+    assertTrue(treeItems[8].selected);
+    assertTrue(byteElements[10].classList.contains('selected-field'));
+    assertTrue(byteElements[11].classList.contains('selected-field'));
   });
 
   test('RenderShortDeviceDescriptor', async function() {
@@ -436,11 +436,11 @@ suite('UsbInternalsUITest', function() {
     await deviceDescriptorRenderResolver.promise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
 
-    expectEquals(1, panel.querySelectorAll('descriptorpanel').length);
+    assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
     const errors = panel.querySelectorAll('error');
     assertEquals(2, errors.length);
-    expectEquals('Field at offset 8 is invalid.', errors[0].textContent);
-    expectEquals('Descriptor is too short.', errors[1].textContent);
+    assertEquals('Field at offset 8 is invalid.', errors[0].textContent);
+    assertEquals('Descriptor is too short.', errors[1].textContent);
     // For the short response, the returned data should still be rendered.
     const treeItems = panel.querySelectorAll('.tree-item');
     assertEquals(7, treeItems.length);
@@ -451,13 +451,13 @@ suite('UsbInternalsUITest', function() {
       'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64'
     ];
     labels.forEach((label, i) => {
-      expectEquals(
+      assertEquals(
           label, treeItems[i].querySelector('.tree-label').textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
-    expectEquals(9, byteElements.length);
-    expectEquals(
+    assertEquals(9, byteElements.length);
+    assertEquals(
         '120100020000004050',
         panel.querySelector('.raw-data-byte-view').textContent);
 
@@ -465,38 +465,38 @@ suite('UsbInternalsUITest', function() {
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
     treeItems[0].querySelector('.tree-row').click();
-    expectTrue(treeItems[0].selected);
-    expectTrue(byteElements[0].classList.contains('selected-field'));
+    assertTrue(treeItems[0].selected);
+    assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (USB Version) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
     treeItems[2].querySelector('.tree-row').click();
-    expectFalse(treeItems[0].selected);
-    expectTrue(treeItems[2].selected);
-    expectFalse(byteElements[0].classList.contains('selected-field'));
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
+    assertFalse(treeItems[0].selected);
+    assertTrue(treeItems[2].selected);
+    assertFalse(byteElements[0].classList.contains('selected-field'));
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
     // Click a single byte element (Descriptor Type) and check that both the
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    expectFalse(treeItems[2].selected);
-    expectTrue(treeItems[1].selected);
-    expectTrue(byteElements[1].classList.contains('selected-field'));
+    assertFalse(treeItems[2].selected);
+    assertTrue(treeItems[1].selected);
+    assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (USB Version) and
     // check that both the bytes and the related item are highlighted, and
     // other items and bytes are not highlighted.
     byteElements[3].click();
-    expectFalse(treeItems[1].selected);
-    expectTrue(treeItems[2].selected);
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
+    assertFalse(treeItems[1].selected);
+    assertTrue(treeItems[2].selected);
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
     // Click the invalid field's byte (Vendor ID) will do nothing, check the
     // highlighted item and bytes are not changed.
     byteElements[8].click();
-    expectTrue(treeItems[2].selected);
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
-    expectFalse(byteElements[8].classList.contains('selected-field'));
+    assertTrue(treeItems[2].selected);
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
+    assertFalse(byteElements[8].classList.contains('selected-field'));
   });
 });
