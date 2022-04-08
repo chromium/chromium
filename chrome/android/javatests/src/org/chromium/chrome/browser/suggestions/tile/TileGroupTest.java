@@ -15,6 +15,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -102,6 +103,7 @@ public class TileGroupTest {
 
     @Before
     public void setUp() {
+        Assume.assumeFalse(sActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
@@ -135,7 +137,9 @@ public class TileGroupTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test

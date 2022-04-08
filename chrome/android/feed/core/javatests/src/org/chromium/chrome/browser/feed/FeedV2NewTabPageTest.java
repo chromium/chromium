@@ -49,6 +49,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -211,6 +212,8 @@ public class FeedV2NewTabPageTest {
 
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
+        Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
+
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -229,8 +232,10 @@ public class FeedV2NewTabPageTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
-        mFeedServer.shutdown();
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+            mFeedServer.shutdown();
+        }
     }
 
     private void openNewTabPage() {
