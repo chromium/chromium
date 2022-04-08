@@ -92,7 +92,9 @@
     "twitch_2018": {
       "ci_095": 8.128,
       "avg": 19.797,
-      "cpu_wall_time_ratio": 0.386
+      "cpu_wall_time_ratio": 0.386,
+      "experimental": true,
+      "_comment": "crbug.com/1312722"
     },
     "balls_javascript_canvas": {
       "ci_095": 1.227,
