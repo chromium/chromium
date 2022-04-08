@@ -287,6 +287,7 @@ if (!is_ios) {
       "//crypto",
       "//mojo/core/test:test_support",
       "//testing/gtest",
+      "//third_party/ipcz/src:ipcz_tests_sources_chromium",
     ]
 
     if (is_mac) {

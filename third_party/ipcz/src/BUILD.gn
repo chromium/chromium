@@ -5,14 +5,136 @@
 import("//build_overrides/ipcz.gni")
 import("//testing/test.gni")
 
-test("ipcz_tests") {
-  sources = [ "test/run_all_tests.cc" ]
+# This template emits two source_set targets for a target "foo": one named
+# "foo_standalone" for use in standalone ipcz library builds with no Chromium
+# dependencies; and one named "foo_chromium" for integration into the Chromium
+# build, with dependencies on //base.
+#
+# ipcz_source_set targets can express dependencies on each other with the
+# ipcz_deps and ipcz_public_deps variables, which automatically expand to the
+# same variant as the dependent source_set. Apart from this the targets are
+# roughly equivalent to a plain source_set.
+template("ipcz_source_set") {
+  source_set("${target_name}_standalone") {
+    forward_variables_from(invoker,
+                           [
+                             "visibility",
+                             "public",
+                             "sources",
+                             "deps",
+                             "public_deps",
+                             "public_configs",
+                             "testonly",
+                           ])
 
-  deps = [ "//testing/gtest" ]
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
 
-  if (build_ipcz_standalone) {
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
+    public_deps += [ "${ipcz_src_root}/standalone" ]
+    if (defined(invoker.ipcz_public_deps)) {
+      foreach(dep, invoker.ipcz_public_deps) {
+        public_deps += [ "${dep}_standalone" ]
+      }
+    }
+
+    if (defined(invoker.ipcz_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      foreach(dep, invoker.ipcz_deps) {
+        deps += [ "${dep}_standalone" ]
+      }
+    }
+
     defines = [ "IPCZ_STANDALONE" ]
   }
+
+  # We can only emit the Chromium variant if we're in the Chromium build.
+  if (!build_ipcz_standalone) {
+    source_set("${target_name}_chromium") {
+      forward_variables_from(invoker,
+                             [
+                               "visibility",
+                               "public",
+                               "sources",
+                               "deps",
+                               "public_deps",
+                               "public_configs",
+                               "testonly",
+                             ])
+
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
+
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += [ "//base" ]
+      if (defined(invoker.ipcz_public_deps)) {
+        foreach(dep, invoker.ipcz_public_deps) {
+          public_deps += [ "${dep}_chromium" ]
+        }
+      }
+
+      if (defined(invoker.ipcz_deps)) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        foreach(dep, invoker.ipcz_deps) {
+          deps += [ "${dep}_chromium" ]
+        }
+      }
+    }
+  }
+}
+
+ipcz_source_set("util") {
+  visibility = [ ":*" ]
+
+  public = [
+    "util/log.h",
+    "util/stack_trace.h",
+  ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+config("ipcz_include_src_dir") {
+  include_dirs = [ "${ipcz_src_root}" ]
+}
+
+ipcz_source_set("ipcz_tests_sources") {
+  testonly = true
+
+  sources = [ "util/stack_trace_test.cc" ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+  ipcz_deps = [ ":util" ]
+
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+# In Chromium builds, ipcz tests are built into the //ipc:ipc_tests test suite
+# by linking ":ipcz_test_sources_chromium" directly into that target. The
+# standalone ipcz_tests executable is still defined in Chromium builds though so
+# that it gets compile coverage from Chromium infrastructure.
+test("ipcz_tests") {
+  sources = [ "test/run_all_tests.cc" ]
+  deps = [
+    ":ipcz_tests_sources_standalone",
+    "${ipcz_src_root}/standalone",
+    "//testing/gtest",
+  ]
+  configs += [ ":ipcz_include_src_dir" ]
 }
 
 group("all") {
