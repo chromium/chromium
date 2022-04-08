@@ -43,6 +43,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/sender/audio_sender.h"
+#include "media/cast/sender/external_video_encoder.h"
 #include "media/cast/sender/video_sender.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
@@ -138,46 +139,6 @@ int NumberOfEncodeThreads() {
   // with only 1 or 2 cores, use only one thread for encoding. On systems with
   // more cores, allow half of the cores to be used for encoding.
   return std::min(8, (base::SysInfo::NumberOfProcessors() + 1) / 2);
-}
-
-// Scan profiles for hardware VP8 encoder support.
-bool IsHardwareVP8EncodingSupported(
-    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-        profiles) {
-  for (const auto& vea_profile : profiles) {
-    if (vea_profile.profile >= media::VP8PROFILE_MIN &&
-        vea_profile.profile <= media::VP8PROFILE_MAX) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Scan profiles for hardware H.264 encoder support.
-bool IsHardwareH264EncodingSupported(
-    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-        profiles) {
-// TODO(b/169533953): Look into chromecast fails to decode bitstreams produced
-// by the AMD HW encoder.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
-  if (is_amd)
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
-// broken.
-// TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
-  for (const auto& vea_profile : profiles) {
-    if (vea_profile.profile >= media::H264PROFILE_MIN &&
-        vea_profile.profile <= media::H264PROFILE_MAX) {
-      return true;
-    }
-  }
-#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
-  return false;
 }
 
 // Helper to add |config| to |config_list| with given |aes_key|.
@@ -884,7 +845,10 @@ void Session::CreateAndSendOffer() {
   if (session_params_.type != SessionType::AUDIO_ONLY) {
     const int32_t video_ssrc = base::RandInt(kVideoSsrcMin, kVideoSsrcMax);
     if (state_ == MIRRORING) {
-      if (IsHardwareVP8EncodingSupported(GetSupportedVeaProfiles())) {
+      // First, check if hardware VP8 and H264 are available.
+      if (media::cast::ExternalVideoEncoder::IsRecommended(
+              Codec::CODEC_VIDEO_VP8, session_params_.receiver_model_name,
+              GetSupportedVeaProfiles())) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         config.use_external_encoder = true;
@@ -893,7 +857,9 @@ void Session::CreateAndSendOffer() {
         AddStreamObject(stream_index++, "VP8", video_configs.back(),
                         mirror_settings_, &stream_list);
       }
-      if (IsHardwareH264EncodingSupported(GetSupportedVeaProfiles())) {
+      if (media::cast::ExternalVideoEncoder::IsRecommended(
+              Codec::CODEC_VIDEO_H264, session_params_.receiver_model_name,
+              GetSupportedVeaProfiles())) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_H264, Codec::CODEC_VIDEO_H264);
         config.use_external_encoder = true;
@@ -902,24 +868,28 @@ void Session::CreateAndSendOffer() {
         AddStreamObject(stream_index++, "H264", video_configs.back(),
                         mirror_settings_, &stream_list);
       }
+
+      // Then add software AV1 and VP9 if enabled.
+      // TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
       if (mirroring::features::IsCastStreamingAV1Enabled()) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_AV1, Codec::CODEC_VIDEO_AV1);
-        config.use_external_encoder = false;
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "AV1", video_configs.back(),
                         mirror_settings_, &stream_list);
       }
+      if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
+        FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
+            RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
+        AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
+                        &video_configs);
+        AddStreamObject(stream_index++, "VP9", video_configs.back(),
+                        mirror_settings_, &stream_list);
+      }
+
+      // Worst case, default to offering software VP8.
       if (video_configs.empty()) {
-        if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
-          FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-              RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
-          AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
-                          &video_configs);
-          AddStreamObject(stream_index++, "VP9", video_configs.back(),
-                          mirror_settings_, &stream_list);
-        }
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
@@ -927,6 +897,7 @@ void Session::CreateAndSendOffer() {
         AddStreamObject(stream_index++, "VP8", video_configs.back(),
                         mirror_settings_, &stream_list);
       }
+
     } else /* REMOTING */ {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::REMOTE_VIDEO, Codec::CODEC_VIDEO_REMOTE);

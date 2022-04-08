@@ -191,6 +191,10 @@ source_set("sender") {
 
     deps += [ "//third_party/libaom" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//third_party/re2" ]
+  }
 }
 
 source_set("test_receiver") {

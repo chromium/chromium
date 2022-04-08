@@ -9,6 +9,12 @@
 #include <sstream>
 #include <utility>
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/cpu.h"                     // nogncheck
+#include "base/no_destructor.h"           // nogncheck
+#include "third_party/re2/src/re2/re2.h"  // nogncheck
+#endif
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -60,10 +66,65 @@ constexpr int kBacklogRedlineThreshold = 4;
 // histograms must encompass the range [-255, 255] (inclusive).
 constexpr int kQuantizationHistogramSize = 511;
 
+// Scan profiles for hardware VP8 encoder support.
+bool IsHardwareVP8EncodingSupported(
+    base::StringPiece receiver_model_name,
+    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
+        profiles) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // NOTE: the hardware encoder on some Chrome OS devices does not play well
+  // with Vizio TVs. See https://crbug.com/1238774 for more information.
+  // Vizio uses the TV model string for the receiver model name.
+  const char* kVizioRegex =
+      R"(^(?i)(([DEMPV]|OLED)\d\d\w*-[A-Z]\w*)|(.*Vizio.*)$)";
+
+  if (RE2::FullMatch(re2::StringPiece(receiver_model_name.data(),
+                                      receiver_model_name.size()),
+                     RE2(kVizioRegex))) {
+    return false;
+  }
+#endif
+
+  for (const auto& vea_profile : profiles) {
+    if (vea_profile.profile >= media::VP8PROFILE_MIN &&
+        vea_profile.profile <= media::VP8PROFILE_MAX) {
+      return true;
+    }
+  }
+
+  return false;
 }  // namespace
 
-namespace media {
-namespace cast {
+// Scan profiles for hardware H.264 encoder support.
+bool IsHardwareH264EncodingSupported(
+    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
+        profiles) {
+// TODO(b/169533953): Look into chromecast fails to decode bitstreams produced
+// by the AMD HW encoder.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
+  if (is_amd)
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
+// broken.
+// TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+  for (const auto& vea_profile : profiles) {
+    if (vea_profile.profile >= media::H264PROFILE_MIN &&
+        vea_profile.profile <= media::H264PROFILE_MAX) {
+      return true;
+    }
+  }
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+  return false;
+}
+
+}  // namespace
+
+namespace media::cast {
 
 // Container for the associated data of a video frame being processed.
 struct InProgressExternalVideoFrameEncode {
@@ -634,6 +695,21 @@ bool ExternalVideoEncoder::IsSupported(const FrameSenderConfig& video_config) {
   return video_config.use_external_encoder;
 }
 
+// static
+bool ExternalVideoEncoder::IsRecommended(
+    Codec codec,
+    base::StringPiece receiver_model_name,
+    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
+        profiles) {
+  if (codec == CODEC_VIDEO_VP8)
+    return IsHardwareVP8EncodingSupported(receiver_model_name, profiles);
+
+  if (codec == CODEC_VIDEO_H264)
+    return IsHardwareH264EncodingSupported(profiles);
+
+  return false;
+}
+
 ExternalVideoEncoder::ExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
@@ -948,5 +1024,4 @@ double QuantizerEstimator::ToQuantizerEstimate(double shannon_entropy) {
   return quantizer;
 }
 
-}  //  namespace cast
-}  //  namespace media
+}  //  namespace media::cast

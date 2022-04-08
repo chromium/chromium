@@ -10,8 +10,11 @@
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace cast {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/cpu.h"  // nogncheck
+#endif
+
+namespace media::cast {
 
 namespace {
 
@@ -31,9 +34,20 @@ scoped_refptr<VideoFrame> CreateFrame(const uint8_t* y_plane_data,
   return result;
 }
 
+static const std::vector<media::VideoEncodeAccelerator::SupportedProfile>
+    kValidVeaProfiles{
+        VideoEncodeAccelerator::SupportedProfile(media::VP8PROFILE_MIN,
+                                                 gfx::Size(1920, 1080)),
+        VideoEncodeAccelerator::SupportedProfile(media::H264PROFILE_MIN,
+                                                 gfx::Size(1920, 1080)),
+    };
+
+constexpr std::array<const char*, 3> kFirstPartyModelNames{
+    {"Chromecast", "Eureka Dongle", "Chromecast Ultra"}};
+
 } // namespace
 
-TEST(QuantizerEstimator, EstimatesForTrivialFrames) {
+TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   QuantizerEstimator qe;
 
   const gfx::Size frame_size(320, 180);
@@ -80,5 +94,57 @@ TEST(QuantizerEstimator, EstimatesForTrivialFrames) {
   }
 }
 
-}  // namespace cast
-}  // namespace media
+// The decoder on Vizio TVs doesn't play well with Chrome OS hardware encoders.
+// See https://crbug.com/1238774 for more context.
+TEST(ExternalVideoEncoderTest,
+     DoesntRecommendExternalVp8EncoderForVizioOnChromeOS) {
+  constexpr std::array<const char*, 10> kVizioTvModelNames{
+      {"e43u-d2", "e60-e3", "OLED55-H1", "M50-D1", "E65-F1", "E50-F2", "M55-D0",
+       "Vizio P-Series Quantum 4K", "M55-E0", "V435-H1"}};
+
+  for (const char* model_name : kVizioTvModelNames) {
+    constexpr bool should_recommend =
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+        false;
+#else
+        true;
+#endif
+    EXPECT_EQ(should_recommend,
+              ExternalVideoEncoder::IsRecommended(
+                  CODEC_VIDEO_VP8, std::string(model_name), kValidVeaProfiles))
+        << model_name;
+  }
+}
+
+TEST(ExternalVideoEncoderTest, RecommendsExternalVp8EncoderForChromecast) {
+  for (const char* model_name : kFirstPartyModelNames) {
+    EXPECT_TRUE(ExternalVideoEncoder::IsRecommended(
+        CODEC_VIDEO_VP8, std::string(model_name), kValidVeaProfiles));
+  }
+}
+
+TEST(ExternalVideoEncoderTest, RecommendsH264HardwareEncoderProperly) {
+  for (const char* model_name : kFirstPartyModelNames) {
+// On ChromeOS only, disable hardware encoder on AMD chipsets due to
+// failure on Chromecast chipsets to decode.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::CPU().vendor_name() == "AuthenticAMD") {
+      EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
+          CODEC_VIDEO_H264, std::string(model_name), kValidVeaProfiles));
+      break;
+    }
+#endif
+
+    constexpr bool should_recommend =
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+        true;
+#else
+        false;
+#endif
+    EXPECT_EQ(should_recommend, ExternalVideoEncoder::IsRecommended(
+                                    CODEC_VIDEO_H264, std::string(model_name),
+                                    kValidVeaProfiles));
+  }
+}
+
+}  // namespace media::cast
