@@ -10,8 +10,10 @@ assistant_auto_imports = [
   # to overcome a limitation of the Polymer moduliser tooling when the folder structure does not
   # perfectly match the resource paths used in the WebUI.
   "chrome/browser/resources/chromeos/components/behaviors/oobe_i18n_behavior.html|OobeI18nBehavior,OobeI18nBehaviorInterface",
+  "chrome/browser/resources/chromeos/components/behaviors/oobe_dialog_host_behavior.html|OobeDialogHostBehavior",
   "chrome/browser/resources/chromeos/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
   "chrome/browser/resources/chromeos/assistant_optin/browser_proxy.html|BrowserProxyImpl",
+  "chrome/browser/resources/chromeos/assistant_optin/utils.html|HtmlSanitizer,webviewStripLinksContentScript",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,mixinBehaviors",
   "ui/webui/resources/html/util.html|announceAccessibleMessage",
 ]

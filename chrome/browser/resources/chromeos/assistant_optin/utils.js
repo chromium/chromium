@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /* Script used to strip anchor links from webview */
-const webviewStripLinksContentScript = {
+/* #export */ const webviewStripLinksContentScript = {
   name: 'stripLinks',
   matches: ['<all_urls>'],
   js: {
@@ -16,7 +16,7 @@ const webviewStripLinksContentScript = {
 /**
  * Sanitizer which filters the html snippet with a set of whitelisted tags.
  */
-class HtmlSanitizer {
+/* #export */ class HtmlSanitizer {
   constructor() {
     // initialize set of whitelisted tags.
     this.allowedTags = new Set(['b', 'i', 'br', 'p', 'a', 'ul', 'li', 'div']);

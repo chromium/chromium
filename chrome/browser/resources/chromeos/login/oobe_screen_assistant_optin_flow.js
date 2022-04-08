@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../assistant_optin/assistant_optin_flow.js">
-
 /**
  * @fileoverview Oobe Assistant OptIn Flow screen implementation.
  */

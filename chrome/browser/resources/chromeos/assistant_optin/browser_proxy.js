@@ -7,6 +7,8 @@
  * to interact with the browser.
  */
 
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
 cr.define('assistant', function() {
   var requestPrefix = 'login.AssistantOptInFlowScreen.';
 
@@ -42,7 +44,7 @@ cr.define('assistant', function() {
   }
 
   /** @implements {assistant.BrowserProxy} */
-  class BrowserProxyImpl {
+  /* #export */ class BrowserProxyImpl {
     /** @override */
     userActed(screenId, action) {
       chrome.send(requestPrefix + screenId + '.userActed', action);
