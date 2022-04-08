@@ -142,7 +142,6 @@ class OverviewFocusButton : public views::Button {
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      active_window_before_overview_(window_util::GetActiveWindow()),
       overview_start_time_(base::Time::Now()),
       highlight_controller_(
           std::make_unique<OverviewHighlightController>(this)),
@@ -176,6 +175,8 @@ void OverviewSession::Init(const WindowList& windows,
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
       std::move(hide_windows), /*force_hidden=*/false);
+
+  active_window_before_overview_ = window_util::GetActiveWindow();
   if (active_window_before_overview_)
     active_window_before_overview_->AddObserver(this);
 
