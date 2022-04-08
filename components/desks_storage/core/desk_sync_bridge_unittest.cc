@@ -49,6 +49,8 @@ using BrowserAppWindow = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow;
 using ChromeApp = sync_pb::WorkspaceDeskSpecifics_ChromeApp;
 using Desk = sync_pb::WorkspaceDeskSpecifics_Desk;
 using ProgressiveWebApp = sync_pb::WorkspaceDeskSpecifics_ProgressiveWebApp;
+using SyncDeskType = sync_pb::WorkspaceDeskSpecifics_DeskType;
+using DeskType = ash::DeskTemplateType;
 using WindowBound = sync_pb::WorkspaceDeskSpecifics_WindowBound;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
 using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
@@ -110,7 +112,7 @@ const std::string kPolicyWithTwoTemplates =
     "\",\"name\":\""
     "Example Template"
     "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
-    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
@@ -122,7 +124,7 @@ const std::string kPolicyWithTwoTemplates =
     "\",\"name\":\""
     "Example Template 2"
     "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
-    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://google.com\",\"title\":\"Example "
@@ -237,7 +239,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
     const std::string uuid,
     const std::string template_name,
     base::Time created_time = base::Time::Now(),
-    int number_of_tabs = 2) {
+    int number_of_tabs = 2,
+    SyncDeskType desk_type =
+        SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL) {
   WorkspaceDeskSpecifics specifics;
   specifics.set_uuid(uuid);
   specifics.set_name(template_name);
@@ -247,6 +251,7 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
       (created_time + base::Minutes(5))
           .ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
+  specifics.set_desk_type(desk_type);
   Desk* desk = specifics.mutable_desk();
   FillExampleBrowserAppWindow(desk->add_apps(), number_of_tabs);
   FillExampleArcAppWindow(desk->add_apps());
@@ -261,6 +266,14 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(
   return ExampleWorkspaceDeskSpecifics(
       base::StringPrintf(kUuidFormat, templateIndex),
       base::StringPrintf(kNameFormat, templateIndex), created_time);
+}
+
+WorkspaceDeskSpecifics CreateUnkownDeskType() {
+  return ExampleWorkspaceDeskSpecifics(
+      kTestUuid1.AsLowercaseString(), base::StringPrintf(kNameFormat, 1),
+      base::Time::Now(),
+      /*number_of_tabs=*/2,
+      SyncDeskType::WorkspaceDeskSpecifics_DeskType_UNKNOWN_TYPE);
 }
 
 std::unique_ptr<ash::DeskTemplate> CreateTemplateWithBrowserFromScratch(
@@ -295,6 +308,8 @@ WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
       base::StringPrintf(kNameFormat, template_index));
   expected_desk_specifics.set_created_time_windows_epoch_micros(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  expected_desk_specifics.set_desk_type(
+      SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(kBrowserWindowId);
@@ -742,6 +757,16 @@ TEST_F(DeskSyncBridgeTest, EnsureBrowserWindowsSavedProperly) {
       CreateBrowserTemplateExpectedValue(kDefaultTemplateIndex, created_time);
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+}
+
+// Tests that the sync bridge appropriately handles all unknown desks as
+// templates by default.
+TEST_F(DeskSyncBridgeTest, EnsureGracefulHandlingOfUnkownDeskTypes) {
+  WorkspaceDeskSpecifics unknown_desk = CreateUnkownDeskType();
+  std::unique_ptr<DeskTemplate> desk_template =
+      DeskSyncBridge::FromSyncProto(unknown_desk);
+
+  EXPECT_EQ(desk_template->type(), DeskType::kTemplate);
 }
 
 TEST_F(DeskSyncBridgeTest, IsBridgeReady) {

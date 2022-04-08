@@ -736,6 +736,18 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, DeskType, UNKNOWN_TYPE,
+                     SAVE_AND_RECALL);
+  switch (type) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_TYPE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, TEMPLATE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_AND_RECALL);
+  }
+  NOTREACHED();
+  return "";
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

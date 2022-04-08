@@ -40,7 +40,7 @@ const std::string kValidTemplateBrowser =
     "{\"version\":1,\"uuid\":\"" + kTestUuidBrowser + "\",\"name\":\"" +
     kBrowserTemplateName +
     "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
-    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
@@ -52,7 +52,8 @@ const std::string kValidTemplateChromeAndProgressive =
     "{\"version\":1,\"uuid\":\"" + kTestUuidChromeAndProgressive +
     "\",\"name\":\"" + kChromePwaTemplateName +
     "\",\"created_time_usec\":\"1633535632000\",\"updated_time_usec\": "
-    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\"1633535632\",\"desk_type\":\"SAVE_AND_RECALL\",\"desk\":{\"apps\":[{"
+    "\"window_"
     "bound\":{"
     "\"left\":200,\"top\":200,\"height\":1000,\"width\":1000},\"window_state\":"
     "\"NORMAL\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":\"" +
@@ -64,6 +65,18 @@ const std::string kValidTemplateChromeAndProgressive =
     kProgressiveAppid +
     "\",\"window_id\":1,\"display_id\":"
     "\"100\",\"event_flag\":0,\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+const std::string kTemplateWithoutType =
+    "{\"version\":1,\"uuid\":\"" + kTestUuidBrowser + "\",\"name\":\"" +
+    kBrowserTemplateName +
+    "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "\"url\":\"https://example.com/\"},{\"url\":\"https://"
+    "example.com/"
+    "2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
+    "\"NORMAL\"}]}}";
 
 apps::AppPtr MakeApp(const char* app_id,
                      const char* name,
@@ -282,6 +295,21 @@ TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
       desk_template_conversion::ParseDeskTemplateFromPolicy(
           parsed_json.value.value());
   EXPECT_TRUE(dt == nullptr);
+}
+
+TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
+  base::StringPiece raw_json = base::StringPiece(kTemplateWithoutType);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+
+  EXPECT_TRUE(parsed_json.value.has_value());
+  EXPECT_TRUE(parsed_json.value->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> dt =
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
+  EXPECT_TRUE(dt);
+  EXPECT_EQ(ash::DeskTemplateType::kTemplate, dt->type());
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {

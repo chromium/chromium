@@ -162,6 +162,8 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WebauthnCredentialSpecifics::PaymentsSupport payments_support);
 
+const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_

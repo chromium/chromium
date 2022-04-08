@@ -42,7 +42,7 @@ int64_t TimeToProtoTime(const base::Time& t);
 // The returned desk template will have source set to
 // |ash::DeskTemplateSource::kPolicy|.
 std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
-    const base::Value& policyJson);
+    const base::Value& policy_json);
 
 base::Value SerializeDeskTemplateAsPolicy(
     const ash::DeskTemplate* desk_template,

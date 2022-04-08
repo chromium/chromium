@@ -34,6 +34,9 @@ message WorkspaceDeskSpecifics {
 
   optional Desk desk = 4;
 
+  // The type of a desk.
+  optional DeskType desk_type = 6;
+
   // Represent a snapshot of the information on a desk.
   message Desk {
     // The apps in this template.
@@ -206,5 +209,13 @@ message WorkspaceDeskSpecifics {
     SWITCH_TO_TAB = 10;
     // creates a new document picture-in-picture window showing a child WebView.
     NEW_PICTURE_IN_PICTURE = 11;
+  }
+
+  // Enumerates the type of desk, namely to differentiate desks between desks
+  // saved for desk templates and desks saved for save and recall.
+  enum DeskType {
+    UNKNOWN_TYPE = 0;
+    TEMPLATE = 1;
+    SAVE_AND_RECALL = 2;
   }
 }

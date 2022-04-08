@@ -40,6 +40,9 @@ constexpr char kAppTypeArc[] = "ARC";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kCreatedTime[] = "created_time_usec";
 constexpr char kDesk[] = "desk";
+constexpr char kDeskType[] = "desk_type";
+constexpr char kDeskTypeTemplate[] = "TEMPLATE";
+constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
 constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
 constexpr char kLaunchContainer[] = "launch_container";
@@ -88,6 +91,10 @@ constexpr char kWindowStateFullscreen[] = "FULLSCREEN";
 constexpr char kWindowStatePrimarySnapped[] = "PRIMARY_SNAPPED";
 constexpr char kWindowStateSecondarySnapped[] = "SECONDARY_SNAPPED";
 constexpr char kZIndex[] = "z_index";
+
+// Valid value sets.
+const std::set<std::string> kValidDeskTypes = {kDeskTypeTemplate,
+                                               kDeskTypeSaveAndRecall};
 
 // Version number.
 constexpr int kVersionNum = 1;
@@ -716,6 +723,25 @@ base::Value ConvertRestoreDataToValue(
   return apps;
 }
 
+std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
+  switch (desk_type) {
+    case ash::DeskTemplateType::kTemplate:
+      return kDeskTypeTemplate;
+    case ash::DeskTemplateType::kSaveAndRecall:
+      return kDeskTypeSaveAndRecall;
+  }
+}
+
+bool IsValidDeskTemplateType(const std::string& desk_template_type) {
+  return base::Contains(kValidDeskTypes, desk_template_type);
+}
+
+ash::DeskTemplateType GetDeskTypeFromString(const std::string& desk_type) {
+  DCHECK(IsValidDeskTemplateType(desk_type));
+  return desk_type == kDeskTypeTemplate ? ash::DeskTemplateType::kTemplate
+                                        : ash::DeskTemplateType::kSaveAndRecall;
+}
+
 }  // namespace
 
 namespace desks_storage {
@@ -734,8 +760,8 @@ int64_t TimeToProtoTime(const base::Time& t) {
 }
 
 std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
-    const base::Value& policyJson) {
-  if (!policyJson.is_dict())
+    const base::Value& policy_json) {
+  if (!policy_json.is_dict())
     return nullptr;
 
   int version;
@@ -745,17 +771,24 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
   std::string updated_time_usec_str;
   int64_t created_time_usec;
   int64_t updated_time_usec;
-  const base::Value* desk = policyJson.FindDictKey(kDesk);
-  if (!desk || !GetInt(policyJson, kVersion, &version) ||
-      !GetString(policyJson, kUuid, &uuid) ||
-      !GetString(policyJson, kName, &name) ||
-      !GetString(policyJson, kCreatedTime, &created_time_usec_str) ||
+  const base::Value* desk = policy_json.FindDictKey(kDesk);
+  if (!desk || !GetInt(policy_json, kVersion, &version) ||
+      !GetString(policy_json, kUuid, &uuid) ||
+      !GetString(policy_json, kName, &name) ||
+      !GetString(policy_json, kCreatedTime, &created_time_usec_str) ||
       !base::StringToInt64(created_time_usec_str, &created_time_usec) ||
-      !GetString(policyJson, kUpdatedTime, &updated_time_usec_str) ||
+      !GetString(policy_json, kUpdatedTime, &updated_time_usec_str) ||
       !base::StringToInt64(updated_time_usec_str, &updated_time_usec) ||
       uuid.empty() || !base::GUID::ParseCaseInsensitive(uuid).is_valid() ||
       name.empty() || created_time_usec_str.empty() ||
-      updated_time_usec_str.empty()) {
+      updated_time_usec_str.empty())
+    return nullptr;
+
+  // Set default value for the desk type to template.
+  std::string desk_type_string;
+  if (!GetString(policy_json, kDeskType, &desk_type_string)) {
+    desk_type_string = kDeskTypeTemplate;
+  } else if (!IsValidDeskTemplateType(desk_type_string)) {
     return nullptr;
   }
 
@@ -768,6 +801,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
 
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
+  desk_template->set_type(GetDeskTypeFromString(desk_type_string));
 
   return desk_template;
 }
@@ -780,6 +814,8 @@ base::Value SerializeDeskTemplateAsPolicy(const ash::DeskTemplate* desk,
   desk_dict.SetKey(kName, base::Value(desk->template_name()));
   desk_dict.SetKey(kCreatedTime, base::TimeToValue(desk->created_time()));
   desk_dict.SetKey(kUpdatedTime, base::TimeToValue(desk->GetLastUpdatedTime()));
+  desk_dict.SetKey(kDeskType,
+                   base::Value(SerializeDeskTypeAsString(desk->type())));
 
   desk_dict.SetKey(
       kDesk, ConvertRestoreDataToValue(desk->desk_restore_data(), app_cache));

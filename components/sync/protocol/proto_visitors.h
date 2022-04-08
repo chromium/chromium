@@ -1241,6 +1241,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
   VISIT(created_time_windows_epoch_micros);
   VISIT(updated_time_windows_epoch_micros);
   VISIT(desk);
+  VISIT_ENUM(desk_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {

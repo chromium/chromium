@@ -52,6 +52,8 @@ using ArcApp = sync_pb::WorkspaceDeskSpecifics_ArcApp;
 using ArcAppWindowSize = sync_pb::WorkspaceDeskSpecifics_ArcApp_WindowSize;
 using ash::DeskTemplate;
 using ash::DeskTemplateSource;
+using ash::DeskTemplateType;
+using SyncDeskType = sync_pb::WorkspaceDeskSpecifics_DeskType;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
 using WindowBound = sync_pb::WorkspaceDeskSpecifics_WindowBound;
 using LaunchContainer = sync_pb::WorkspaceDeskSpecifics_LaunchContainer;
@@ -646,6 +648,36 @@ void FillWorkspaceDeskSpecifics(
   }
 }
 
+// Fill a desk template `out_entry_proto` with the type of desk based on the
+// desk's type field.
+void FillDeskType(sync_pb::WorkspaceDeskSpecifics* out_entry_proto,
+                  const DeskTemplate* desk_template) {
+  switch (desk_template->type()) {
+    case DeskTemplateType::kTemplate:
+      out_entry_proto->set_desk_type(
+          SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+      return;
+    case DeskTemplateType::kSaveAndRecall:
+      out_entry_proto->set_desk_type(
+          SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL);
+      return;
+  }
+}
+
+// Takes in the Proto enum for a desk type `proto_type` and returns it's
+// DeskTemplateType equivalent.
+DeskTemplateType GetDeskTemplateTypeFromProtoType(
+    const SyncDeskType& proto_type) {
+  switch (proto_type) {
+    // Treat unknown desk types as templates.
+    case SyncDeskType::WorkspaceDeskSpecifics_DeskType_UNKNOWN_TYPE:
+    case SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE:
+      return DeskTemplateType::kTemplate;
+    case SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL:
+      return DeskTemplateType::kSaveAndRecall;
+  }
+}
+
 }  // namespace
 
 DeskSyncBridge::DeskSyncBridge(
@@ -679,6 +711,13 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
   if (pb_entry.has_updated_time_windows_epoch_micros()) {
     desk_template->set_updated_time(desk_template_conversion::ProtoTimeToTime(
         pb_entry.updated_time_windows_epoch_micros()));
+  }
+
+  if (pb_entry.has_desk_type()) {
+    desk_template->set_type(
+        GetDeskTemplateTypeFromProtoType(pb_entry.desk_type()));
+  } else {
+    desk_template->set_type(DeskTemplateType::kTemplate);
   }
 
   desk_template->set_desk_restore_data(ConvertToRestoreData(pb_entry));
@@ -1007,6 +1046,8 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   DCHECK(cache);
 
   sync_pb::WorkspaceDeskSpecifics pb_entry;
+
+  FillDeskType(&pb_entry, desk_template);
 
   pb_entry.set_uuid(desk_template->uuid().AsLowercaseString());
   pb_entry.set_name(base::UTF16ToUTF8(desk_template->template_name()));
