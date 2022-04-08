@@ -220,6 +220,10 @@ class PasswordManager : public PasswordManagerInterface {
   // and the new password in that form is the same as the old one.
   bool HasSubmittedManagerWithSamePassword() const;
 
+  // Returns the submitted PasswordForm if there exists one.
+  // TODO (crbug.com/1310169): Eliminate "HasSubmittedManager".
+  absl::optional<PasswordForm> GetSubmittedCredentials();
+
   // Saves the current submitted password to the disk. Password manager must
   // have a submitted manager.
   void SaveSubmittedManager();

@@ -9,6 +9,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/save_password_leak_detection_delegate.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,11 +20,14 @@ const char kUsername[] = "username";
 
 namespace autofill_assistant {
 
+using ::base::test::RunOnceCallback;
 using password_manager::MockPasswordChangeSuccessTracker;
 using password_manager::PasswordChangeSuccessTracker;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::StrictMock;
+using ::testing::WithArg;
 
 class SaveSubmittedPasswordActionTest : public testing::Test {
  public:
@@ -36,17 +40,20 @@ class SaveSubmittedPasswordActionTest : public testing::Test {
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
+
+    // Trigger a leak detection check by default.
+    proto_.mutable_save_submitted_password()->set_leak_detection_timeout_ms(0);
   }
 
  protected:
   void Run() {
-    ActionProto action_proto;
-    SaveSubmittedPasswordAction action(&mock_action_delegate_, action_proto);
+    SaveSubmittedPasswordAction action(&mock_action_delegate_, proto_);
     action.ProcessAction(callback_.Get());
   }
 
+  ActionProto proto_;
   MockActionDelegate mock_action_delegate_;
-  MockWebsiteLoginManager mock_website_login_manager_;
+  StrictMock<MockWebsiteLoginManager> mock_website_login_manager_;
   MockPasswordChangeSuccessTracker mock_password_change_success_tracker_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   UserData user_data_;
@@ -57,6 +64,7 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
 
   EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
       .WillOnce(Return(true));
+  // Check for password equality.
   EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
       .WillOnce(Return(false));
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
@@ -65,6 +73,13 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
       OnChangePasswordFlowCompleted(
           GURL(kOrigin), kUsername,
           PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+
+  // Check for leaked credentials.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .WillOnce(RunOnceCallback<0>(
+          LeakDetectionStatus(LeakDetectionStatusCode::SUCCESS), false));
+
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
@@ -72,7 +87,12 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
           Property(
               &ProcessedActionProto::save_submitted_password_result,
               Property(&SaveSubmittedPasswordProto::Result::used_same_password,
-                       false))))));
+                       false)),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(
+                  &SaveSubmittedPasswordProto::Result::used_leaked_credential,
+                  false))))));
   Run();
 }
 
@@ -89,6 +109,12 @@ TEST_F(SaveSubmittedPasswordActionTest, AttemptToSaveSameSubmittedPassword) {
   // flag is set in the returned proto.
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword).Times(0);
 
+  // Check for leaked credentials and assume that the old one was not leaked.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .WillOnce(RunOnceCallback<0>(
+          LeakDetectionStatus(LeakDetectionStatusCode::SUCCESS), false));
+
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
@@ -96,7 +122,126 @@ TEST_F(SaveSubmittedPasswordActionTest, AttemptToSaveSameSubmittedPassword) {
           Property(
               &ProcessedActionProto::save_submitted_password_result,
               Property(&SaveSubmittedPasswordProto::Result::used_same_password,
-                       true))))));
+                       true)),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(
+                  &SaveSubmittedPasswordProto::Result::used_leaked_credential,
+                  false))))));
+  Run();
+}
+
+TEST_F(SaveSubmittedPasswordActionTest, SaveLeakedNewSubmittedPassword) {
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
+
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
+      .WillOnce(Return(true));
+  // Check for password equality.
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
+  EXPECT_CALL(
+      mock_password_change_success_tracker_,
+      OnChangePasswordFlowCompleted(
+          GURL(kOrigin), kUsername,
+          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+
+  // Check for leaked credentials.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .WillOnce(RunOnceCallback<0>(
+          LeakDetectionStatus(LeakDetectionStatusCode::SUCCESS), true));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(&SaveSubmittedPasswordProto::Result::used_same_password,
+                       false)),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(
+                  &SaveSubmittedPasswordProto::Result::used_leaked_credential,
+                  true))))));
+  Run();
+}
+
+TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordLeakError) {
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
+
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
+      .WillOnce(Return(true));
+  // Check for password equality.
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
+  EXPECT_CALL(
+      mock_password_change_success_tracker_,
+      OnChangePasswordFlowCompleted(
+          GURL(kOrigin), kUsername,
+          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+
+  // Check for leaked credentials.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .WillOnce(RunOnceCallback<0>(
+          LeakDetectionStatus(LeakDetectionStatusCode::INCOGNITO_MODE), false));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(&SaveSubmittedPasswordProto::Result::used_same_password,
+                       false)),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(
+                  &SaveSubmittedPasswordProto::Result::used_leaked_credential,
+                  false))))));
+  Run();
+}
+
+TEST_F(SaveSubmittedPasswordActionTest,
+       SaveSubmittedPasswordNoLeakCheckSpecified) {
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
+
+  // Prevent a leak warning.
+  proto_.mutable_save_submitted_password()->clear_leak_detection_timeout_ms();
+
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
+      .WillOnce(Return(true));
+  // Check for password equality.
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
+  EXPECT_CALL(
+      mock_password_change_success_tracker_,
+      OnChangePasswordFlowCompleted(
+          GURL(kOrigin), kUsername,
+          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+
+  // Since no timeout was submitted in the action, no leak check is performed.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .Times(0);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(&SaveSubmittedPasswordProto::Result::used_same_password,
+                       false)),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(
+                  &SaveSubmittedPasswordProto::Result::used_leaked_credential,
+                  false))))));
   Run();
 }
 

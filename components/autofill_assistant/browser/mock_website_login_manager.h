@@ -79,6 +79,11 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
 
   MOCK_METHOD(bool, SubmittedPasswordIsSame, (), (override));
 
+  MOCK_METHOD(void,
+              CheckWhetherSubmittedCredentialIsLeaked,
+              (SavePasswordLeakDetectionDelegate::Callback, base::TimeDelta),
+              (override));
+
   MOCK_METHOD(bool, SaveSubmittedPassword, (), (override));
 };
 

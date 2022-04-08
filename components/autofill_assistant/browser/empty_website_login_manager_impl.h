@@ -52,6 +52,9 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
   void ResetPendingCredentials() override;
   bool ReadyToSaveSubmittedPassword() override;
   bool SubmittedPasswordIsSame() override;
+  void CheckWhetherSubmittedCredentialIsLeaked(
+      SavePasswordLeakDetectionDelegate::Callback callback,
+      base::TimeDelta timeout) override;
   bool SaveSubmittedPassword() override;
 };
 

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill_assistant/browser/save_password_leak_detection_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -106,6 +107,15 @@ class WebsiteLoginManager {
   // false if the submitted password update is the same as the previously used
   // password.
   virtual bool SubmittedPasswordIsSame() = 0;
+
+  // Checks whether the submitted credential is leaked. The result is returned
+  // by calling a SavePasswordLeakDetectionDelegate::Callback with the first
+  // parameter indicating whether the credential check was performed
+  // successfully and the second parameter indicating whether the credential is
+  // known to be leaked.
+  virtual void CheckWhetherSubmittedCredentialIsLeaked(
+      SavePasswordLeakDetectionDelegate::Callback callback,
+      base::TimeDelta timeout) = 0;
 
   // Saves the current submitted password to the disk. Returns true if a
   // submitted password exist (e.g. ReadyToSaveSubmittedPassword) and it is

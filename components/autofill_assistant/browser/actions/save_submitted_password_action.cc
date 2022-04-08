@@ -7,6 +7,7 @@
 #include <utility>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
@@ -14,6 +15,10 @@
 using password_manager::PasswordChangeSuccessTracker;
 
 namespace autofill_assistant {
+
+// Default time out for a leak credential check
+constexpr base::TimeDelta kLeakDetectionDefaultTimeout =
+    base::Milliseconds(2000);
 
 SaveSubmittedPasswordAction::SaveSubmittedPasswordAction(
     ActionDelegate* delegate,
@@ -37,17 +42,46 @@ void SaveSubmittedPasswordAction::InternalProcessAction(
   // registered, then the new password must be the same as the previous one.
   // In that case, set a flag in the response so that scripts can retrigger
   // the flow.
-  if (!delegate_->GetWebsiteLoginManager()->SubmittedPasswordIsSame()) {
+  if (delegate_->GetWebsiteLoginManager()->SubmittedPasswordIsSame()) {
+    processed_action_proto_->mutable_save_submitted_password_result()
+        ->set_used_same_password(true);
+  } else {
     delegate_->GetWebsiteLoginManager()->SaveSubmittedPassword();
     delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
         delegate_->GetUserData()->selected_login_->origin,
         delegate_->GetUserData()->selected_login_->username,
         PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow);
-  } else {
-    processed_action_proto_->mutable_save_submitted_password_result()
-        ->set_used_same_password(true);
   }
 
+  // If a timeout is specified, perform a leak check.
+  if (proto_.save_submitted_password().has_leak_detection_timeout_ms()) {
+    base::TimeDelta timeout = base::Milliseconds(
+        proto_.save_submitted_password().leak_detection_timeout_ms());
+    // If the specified timeout is zero, use the default.
+    if (timeout.is_zero()) {
+      timeout = kLeakDetectionDefaultTimeout;
+    }
+    delegate_->GetWebsiteLoginManager()
+        ->CheckWhetherSubmittedCredentialIsLeaked(
+            base::BindOnce(&SaveSubmittedPasswordAction::OnLeakCheckComplete,
+                           weak_ptr_factory_.GetWeakPtr()),
+            timeout);
+    return;
+  }
+
+  EndAction(ClientStatus(ACTION_APPLIED));
+}
+
+void SaveSubmittedPasswordAction::OnLeakCheckComplete(
+    LeakDetectionStatus status,
+    bool is_leaked) {
+  if (status.IsSuccess()) {
+    processed_action_proto_->mutable_save_submitted_password_result()
+        ->set_used_leaked_credential(is_leaked);
+  } else {
+    // TODO (crbug.com/1310169): Add proper logging/ UMA metrics.
+    VLOG(1) << "SaveSubmittedPasswordAction: Leak check was not successful.";
+  }
   EndAction(ClientStatus(ACTION_APPLIED));
 }
 

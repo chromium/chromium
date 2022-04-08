@@ -1197,6 +1197,13 @@ void PasswordManager::SaveSubmittedManager() {
   submitted_manager->Save();
 }
 
+absl::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
+  PasswordFormManager* submitted_manager = GetSubmittedManager();
+  if (submitted_manager)
+    return submitted_manager->GetPendingCredentials();
+  return absl::nullopt;
+}
+
 void PasswordManager::ResetSubmittedManager() {
   if (owned_submitted_form_manager_) {
     owned_submitted_form_manager_.reset();

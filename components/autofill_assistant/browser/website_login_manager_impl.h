@@ -66,6 +66,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   bool SubmittedPasswordIsSame() override;
 
+  void CheckWhetherSubmittedCredentialIsLeaked(
+      SavePasswordLeakDetectionDelegate::Callback callback,
+      base::TimeDelta timeout) override;
+
   bool SaveSubmittedPassword() override;
 
  private:
@@ -76,6 +80,7 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   class PendingDeletePasswordRequest;
   class PendingEditPasswordRequest;
   class PendingFetchLastTimePasswordUseRequest;
+  class WebsiteLeakDetectionDelegate;
 
   void OnRequestFinished(const PendingRequest* request);
 
@@ -91,6 +96,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   // Fetch requests owned by the password manager, released when they are
   // finished.
   std::vector<std::unique_ptr<PendingRequest>> pending_requests_;
+
+  // LeakDetection requests are created, owned and their results received by
+  // a SavePasswordLeakDetectionDelegate.
+  std::unique_ptr<SavePasswordLeakDetectionDelegate> leak_delegate_;
 
   // Needs to be the last member.
   base::WeakPtrFactory<WebsiteLoginManagerImpl> weak_ptr_factory_;

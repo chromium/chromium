@@ -36,6 +36,8 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+components/prefs",
+    "+components/safe_browsing/core/common",
     "+third_party/blink/public/common/features.h",
   ]
 }

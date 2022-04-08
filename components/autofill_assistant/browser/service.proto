@@ -2902,12 +2902,21 @@ message ResetPendingCredentialsProto {}
 // Saves the current submitted password to the password store. The action
 // fails if the password manager has no record of a submitted password.
 message SaveSubmittedPasswordProto {
+  // If leak_detection_timeout_ms is specified, the action performs a
+  // leak check for the submitted credential. If leak_detection_timeout_ms is
+  // specified, but zero, the default value in SaveSubmittedPasswordAction
+  // is used.
+  optional int32 leak_detection_timeout_ms = 1;
   message Result {
     // If the same password was used and therefore the credential is still
     // insecure, the action succeeds to avoid script termination.
     // Instead it returns a result flagging the re-use of the
     // password so that the Autobot flow can try again.
     optional bool used_same_password = 1;
+    // If the new credential is still leaked, return a result flag that states
+    // this. The flow can choose to react to this, e.g. prompting the user
+    // to user another password.
+    optional bool used_leaked_credential = 2;
   }
 }
 

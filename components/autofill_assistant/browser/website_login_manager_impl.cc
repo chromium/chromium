@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -374,7 +375,11 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
 WebsiteLoginManagerImpl::WebsiteLoginManagerImpl(
     password_manager::PasswordManagerClient* client,
     content::WebContents* web_contents)
-    : client_(client), web_contents_(web_contents), weak_ptr_factory_(this) {}
+    : client_(client),
+      web_contents_(web_contents),
+      leak_delegate_(
+          std::make_unique<SavePasswordLeakDetectionDelegate>(client_)),
+      weak_ptr_factory_(this) {}
 
 WebsiteLoginManagerImpl::~WebsiteLoginManagerImpl() = default;
 
@@ -505,6 +510,22 @@ bool WebsiteLoginManagerImpl::ReadyToSaveSubmittedPassword() {
 
 bool WebsiteLoginManagerImpl::SubmittedPasswordIsSame() {
   return client_->GetPasswordManager()->HasSubmittedManagerWithSamePassword();
+}
+
+void WebsiteLoginManagerImpl::CheckWhetherSubmittedCredentialIsLeaked(
+    SavePasswordLeakDetectionDelegate::Callback callback,
+    base::TimeDelta timeout) {
+  absl::optional<password_manager::PasswordForm> credentials =
+      client_->GetPasswordManager()->GetSubmittedCredentials();
+
+  if (!credentials.has_value()) {
+    std::move(callback).Run(
+        LeakDetectionStatus(LeakDetectionStatusCode::NO_USERNAME), false);
+    return;
+  }
+
+  leak_delegate_->StartLeakCheck(credentials.value(), std::move(callback),
+                                 timeout);
 }
 
 bool WebsiteLoginManagerImpl::SaveSubmittedPassword() {

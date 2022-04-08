@@ -79,6 +79,13 @@ bool EmptyWebsiteLoginManagerImpl::SubmittedPasswordIsSame() {
   return false;
 }
 
+void EmptyWebsiteLoginManagerImpl::CheckWhetherSubmittedCredentialIsLeaked(
+    SavePasswordLeakDetectionDelegate::Callback callback,
+    base::TimeDelta timeout) {
+  std::move(callback).Run(
+      LeakDetectionStatus(LeakDetectionStatusCode::DISABLED), false);
+}
+
 bool EmptyWebsiteLoginManagerImpl::SaveSubmittedPassword() {
   return false;
 }

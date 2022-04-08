@@ -4193,6 +4193,30 @@ TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
   EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
 }
 
+TEST_P(PasswordManagerTest, GetSubmittedCredentials) {
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), form)));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // The user updates the password and submits the form.
+  FormData updated_data(form.form_data);
+  updated_data.fields[1].value = u"new_password";
+  manager()->OnInformAboutUserInput(&driver_, updated_data);
+  OnPasswordFormSubmitted(updated_data);
+
+  absl::optional<PasswordForm> submitted_credentials =
+      manager()->GetSubmittedCredentials();
+  ASSERT_TRUE(submitted_credentials.has_value());
+  EXPECT_EQ(submitted_credentials.value().password_value,
+            updated_data.fields[1].value);
+  EXPECT_EQ(submitted_credentials.value().username_value, form.username_value);
+  EXPECT_EQ(submitted_credentials.value().url, form.url);
+}
+
 TEST_P(PasswordManagerTest, SaveSubmittedManager) {
   PasswordForm form(MakeSimpleForm());
   std::vector<FormData> observed = {form.form_data};
@@ -4215,7 +4239,6 @@ TEST_P(PasswordManagerTest, SaveSubmittedManager) {
   OnPasswordFormSubmitted(updated_data);
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
 
-  PasswordForm saved_form;
   EXPECT_CALL(*store_, AddLogin(_)).Times(0);
   EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey).Times(0);
   PasswordForm expected_form(form);
@@ -4361,7 +4384,6 @@ TEST_P(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
 // Tests that check for leaks happens even if there are muted credentials for
 // the same domain, but with different username.
 TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
-
   auto mock_factory =
       std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
   MockLeakDetectionCheckFactory* weak_factory = mock_factory.get();
