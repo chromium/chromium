@@ -63,7 +63,9 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
 ProjectorClientImpl::ProjectorClientImpl()
     : ProjectorClientImpl(ash::ProjectorController::Get()) {}
 
-ProjectorClientImpl::~ProjectorClientImpl() = default;
+ProjectorClientImpl::~ProjectorClientImpl() {
+  controller_->SetClient(nullptr);
+}
 
 void ProjectorClientImpl::StartSpeechRecognition() {
   // ProjectorController should only request for speech recognition after it
