@@ -130,7 +130,7 @@ public class InstantStartToolbarTest {
     @SmallTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1263928")
+    @DisabledTest(message = "https://crbug.com/1314462")
     public void renderSingleAsHomepage_NoTab_scrollToolbarToTop() throws IOException {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

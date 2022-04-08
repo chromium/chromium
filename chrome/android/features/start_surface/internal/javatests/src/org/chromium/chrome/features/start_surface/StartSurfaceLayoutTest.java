@@ -999,63 +999,6 @@ public class StartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    @Feature("NewTabTile")
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
-    @CommandLineFlags.Add({BASE_PARAMS + "/tab_grid_layout_android_new_tab_tile/NewTabTile"
-            + "/tab_grid_layout_android_new_tab/false"})
-    @DisabledTest(message = "https://crbug.com/1051961")
-    public void testNewTabTile() throws InterruptedException {
-        // clang-format on
-        // TODO(yuezhanggg): Modify TabUiTestHelper.verifyTabSwitcherCardCount so that it can be
-        // used here to verify card count. Right now it doesn't work because when switching between
-        // normal/incognito, the tab list fading-in animation has not finished when check happens.
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(2, 0, null);
-
-        // New tab tile should be showing.
-        enterGTSWithThumbnailChecking();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(3));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-        verifyTabModelTabCount(cta, 2, 0);
-
-        // Clicking new tab tile in normal mode should create a normal tab.
-        onView(withId(R.id.new_tab_tile)).perform(click());
-        CriteriaHelper.pollUiThread(() -> !cta.getOverviewModeBehavior().overviewVisible());
-        enterGTSWithThumbnailChecking();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(4));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-        verifyTabModelTabCount(cta, 3, 0);
-
-        // New tab tile should be showing in incognito mode.
-        switchTabModel(cta, true);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-
-        // Clicking new tab tile in incognito mode should create an incognito tab.
-        onView(withId(R.id.new_tab_tile)).perform(click());
-        CriteriaHelper.pollUiThread(() -> !cta.getOverviewModeBehavior().overviewVisible());
-        enterGTSWithThumbnailChecking();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-        verifyTabModelTabCount(cta, 3, 1);
-
-        // Close all normal tabs and incognito tabs, the new tab tile should still show in both
-        // modes.
-        switchTabModel(cta, false);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(4));
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), cta, R.id.close_all_tabs_menu_id);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-        switchTabModel(cta, true);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.new_tab_tile)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
     @Feature("TabSuggestion")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
@@ -1495,7 +1438,7 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
-    @DisabledTest
+    @DisabledTest(message = "https://crbug.com/1130212")
     public void testCloseTabViaCloseButton() throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
