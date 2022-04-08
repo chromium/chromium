@@ -461,25 +461,24 @@ class TestFuchsiaCdmContext : public media::CdmContext,
   // media::FuchsiaCdmContext implementation.
   std::unique_ptr<media::SysmemBufferStream> CreateStreamDecryptor(
       bool secure_mode) override {
+    ++num_decryptors_;
     return std::make_unique<AsyncSysmemBufferStream>();
   }
+
+  size_t num_decryptors() { return num_decryptors_; }
+
+ private:
+  size_t num_decryptors_ = 0;
 };
 
 }  // namespace
 
-struct RendererTestConfig {
-  bool simulate_fuchsia_cdm;
-};
-
-class WebEngineAudioRendererTest
-    : public testing::Test,
-      public testing::WithParamInterface<RendererTestConfig> {
+class WebEngineAudioRendererTestBase : public testing::Test {
  public:
-  WebEngineAudioRendererTest() = default;
-  ~WebEngineAudioRendererTest() override = default;
+  WebEngineAudioRendererTestBase() = default;
+  ~WebEngineAudioRendererTestBase() override = default;
 
   void CreateUninitializedRenderer();
-  void CreateTestDemuxerStream();
   void InitializeRenderer();
   void CreateAndInitializeRenderer();
   void ProduceDemuxerPacket(base::TimeDelta duration);
@@ -495,17 +494,20 @@ class WebEngineAudioRendererTest
                      fuchsia::media::AudioSampleFormat fuchsia_sample_format,
                      size_t bytes_per_sample_output);
 
-  // Starts playback from |start_time| at the specified |playback_rate| and
+  // Starts playback from `start_time` at the specified `playback_rate` and
   // verifies that the clock works correctly.
   void StartPlaybackAndVerifyClock(base::TimeDelta start_time,
                                    float playback_rate);
+
+  // Returns initial config for the `demuxer_stream_`.
+  virtual media::AudioDecoderConfig GetStreamConfig() = 0;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<media::CdmContext> cdm_context_;
+  TestFuchsiaCdmContext cdm_context_;
   std::unique_ptr<TestAudioConsumer> audio_consumer_;
   std::unique_ptr<TestStreamSink> stream_sink_;
   std::unique_ptr<TestDemuxerStream> demuxer_stream_;
@@ -516,7 +518,7 @@ class WebEngineAudioRendererTest
   base::TimeDelta demuxer_stream_pos_;
 };
 
-void WebEngineAudioRendererTest::CreateUninitializedRenderer() {
+void WebEngineAudioRendererTestBase::CreateUninitializedRenderer() {
   fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer_handle;
   audio_consumer_ =
       std::make_unique<TestAudioConsumer>(audio_consumer_handle.NewRequest());
@@ -525,28 +527,15 @@ void WebEngineAudioRendererTest::CreateUninitializedRenderer() {
   time_source_ = audio_renderer_->GetTimeSource();
 }
 
-void WebEngineAudioRendererTest::CreateTestDemuxerStream() {
-  media::AudioDecoderConfig config(
-      media::AudioCodec::kPCM, media::kSampleFormatF32,
-      media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, {},
-      media::EncryptionScheme::kUnencrypted);
-
-  if (GetParam().simulate_fuchsia_cdm) {
-    config.SetIsEncrypted(true);
-    cdm_context_ = std::make_unique<TestFuchsiaCdmContext>();
+void WebEngineAudioRendererTestBase::InitializeRenderer() {
+  if (!demuxer_stream_) {
+    demuxer_stream_ = std::make_unique<TestDemuxerStream>(GetStreamConfig());
   }
-
-  demuxer_stream_ = std::make_unique<TestDemuxerStream>(config);
-}
-
-void WebEngineAudioRendererTest::InitializeRenderer() {
-  if (!demuxer_stream_)
-    CreateTestDemuxerStream();
 
   base::RunLoop run_loop;
   media::PipelineStatus pipeline_status;
   audio_renderer_->Initialize(
-      demuxer_stream_.get(), cdm_context_.get(), &client_,
+      demuxer_stream_.get(), &cdm_context_, &client_,
       base::BindLambdaForTesting(
           [&run_loop, &pipeline_status](media::PipelineStatus s) {
             pipeline_status = s;
@@ -561,12 +550,12 @@ void WebEngineAudioRendererTest::InitializeRenderer() {
   task_environment_.RunUntilIdle();
 }
 
-void WebEngineAudioRendererTest::CreateAndInitializeRenderer() {
+void WebEngineAudioRendererTestBase::CreateAndInitializeRenderer() {
   CreateUninitializedRenderer();
   InitializeRenderer();
 }
 
-void WebEngineAudioRendererTest::ProduceDemuxerPacket(
+void WebEngineAudioRendererTestBase::ProduceDemuxerPacket(
     base::TimeDelta duration) {
   // Create a dummy packet that contains just 1 byte.
   const size_t kBufferSize = 1;
@@ -578,14 +567,15 @@ void WebEngineAudioRendererTest::ProduceDemuxerPacket(
   demuxer_stream_->QueueReadResult(TestDemuxerStream::ReadResult(buffer));
 }
 
-void WebEngineAudioRendererTest::FillDemuxerStream(base::TimeDelta end_pos) {
+void WebEngineAudioRendererTestBase::FillDemuxerStream(
+    base::TimeDelta end_pos) {
   EXPECT_LT(demuxer_stream_pos_, end_pos);
   while (demuxer_stream_pos_ < end_pos) {
     ProduceDemuxerPacket(kPacketDuration);
   }
 }
 
-void WebEngineAudioRendererTest::FillBuffer() {
+void WebEngineAudioRendererTestBase::FillBuffer() {
   if (!stream_sink_) {
     stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
   }
@@ -612,7 +602,7 @@ void WebEngineAudioRendererTest::FillBuffer() {
   EXPECT_EQ(client_.buffering_state(), media::BUFFERING_HAVE_ENOUGH);
 }
 
-void WebEngineAudioRendererTest::StartPlayback(base::TimeDelta start_time) {
+void WebEngineAudioRendererTestBase::StartPlayback(base::TimeDelta start_time) {
   EXPECT_FALSE(audio_consumer_->started());
   time_source_->SetMediaTime(start_time);
 
@@ -626,7 +616,7 @@ void WebEngineAudioRendererTest::StartPlayback(base::TimeDelta start_time) {
   task_environment_.RunUntilIdle();
 }
 
-void WebEngineAudioRendererTest::CheckGetWallClockTimes(
+void WebEngineAudioRendererTestBase::CheckGetWallClockTimes(
     absl::optional<base::TimeDelta> media_timestamp,
     base::TimeTicks expected_wall_clock,
     bool is_time_moving) {
@@ -639,7 +629,7 @@ void WebEngineAudioRendererTest::CheckGetWallClockTimes(
   EXPECT_EQ(result, is_time_moving);
 }
 
-void WebEngineAudioRendererTest::StartPlaybackAndVerifyClock(
+void WebEngineAudioRendererTestBase::StartPlaybackAndVerifyClock(
     base::TimeDelta start_time,
     float playback_rate) {
   time_source_->SetMediaTime(start_time);
@@ -681,6 +671,78 @@ void WebEngineAudioRendererTest::StartPlaybackAndVerifyClock(
                          start_wall_clock + 2.0 * kTimeStep / playback_rate,
                          true);
 }
+
+void WebEngineAudioRendererTestBase::TestPcmStream(
+    media::SampleFormat sample_format,
+    size_t bytes_per_sample_input,
+    fuchsia::media::AudioSampleFormat fuchsia_sample_format,
+    size_t bytes_per_sample_output) {
+  media::AudioDecoderConfig config(
+      media::AudioCodec::kPCM, sample_format, media::CHANNEL_LAYOUT_STEREO,
+      kDefaultSampleRate, {}, media::EncryptionScheme::kUnencrypted);
+
+  demuxer_stream_ = std::make_unique<TestDemuxerStream>(config);
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
+  stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
+  EXPECT_EQ(stream_sink_->stream_type().sample_format, fuchsia_sample_format);
+
+  // Create a dummy packet that contains 1 sample.
+  const size_t kNumSamples = 10;
+  const size_t kChannels = 2;
+  size_t input_buffer_size = kNumSamples * kChannels * bytes_per_sample_input;
+  scoped_refptr<media::DecoderBuffer> buffer =
+      new media::DecoderBuffer(input_buffer_size);
+  buffer->set_timestamp(demuxer_stream_pos_);
+  buffer->set_duration(kPacketDuration);
+  for (size_t i = 0; i < input_buffer_size; ++i) {
+    buffer->writable_data()[i] = i;
+  }
+  demuxer_stream_->QueueReadResult(TestDemuxerStream::ReadResult(buffer));
+
+  // Start playback. The renderer will process the packet queued above.
+  audio_renderer_->StartPlaying();
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(stream_sink_->received_packets()->size(), 1U);
+  auto packet = stream_sink_->received_packets()->at(0);
+
+  // Read and verify packet content
+  size_t output_size = kNumSamples * kChannels * bytes_per_sample_output;
+  EXPECT_EQ(packet.payload_size, output_size);
+  uint8_t data[output_size];
+  zx_status_t result = stream_sink_->buffers()[packet.payload_buffer_id].read(
+      data, 0, output_size);
+  ZX_CHECK(result == ZX_OK, result);
+
+  for (size_t i = 0; i < output_size; ++i) {
+    size_t pos_within_sample = i % bytes_per_sample_output;
+    uint8_t expected_value =
+        (pos_within_sample < bytes_per_sample_input)
+            ? (i / bytes_per_sample_output * bytes_per_sample_input +
+               pos_within_sample)
+            : 0;
+    EXPECT_EQ(data[i], expected_value);
+  }
+}
+
+struct RendererTestConfig {
+  bool simulate_fuchsia_cdm;
+};
+
+class WebEngineAudioRendererTest
+    : public WebEngineAudioRendererTestBase,
+      public testing::WithParamInterface<RendererTestConfig> {
+ public:
+  media::AudioDecoderConfig GetStreamConfig() final {
+    auto encryption_scheme = GetParam().simulate_fuchsia_cdm
+                                 ? media::EncryptionScheme::kCenc
+                                 : media::EncryptionScheme::kUnencrypted;
+    return media::AudioDecoderConfig(
+        media::AudioCodec::kPCM, media::kSampleFormatF32,
+        media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, {}, encryption_scheme);
+  }
+};
 
 // Run all WebEngineAudioRendererTests with CDM enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(Unencrypted,
@@ -790,7 +852,53 @@ TEST_P(WebEngineAudioRendererTest, Seek) {
             kSeekPos.ToZxDuration());
 }
 
-TEST_P(WebEngineAudioRendererTest, ChangeConfig) {
+TEST_F(WebEngineAudioRendererTest, PcmU8Stream) {
+  TestPcmStream(media::kSampleFormatU8, 1,
+                fuchsia::media::AudioSampleFormat::UNSIGNED_8, 1);
+}
+
+TEST_F(WebEngineAudioRendererTest, PcmS16Stream) {
+  TestPcmStream(media::kSampleFormatS16, 2,
+                fuchsia::media::AudioSampleFormat::SIGNED_16, 2);
+}
+
+TEST_F(WebEngineAudioRendererTest, PcmS24Stream) {
+  TestPcmStream(media::kSampleFormatS24, 3,
+                fuchsia::media::AudioSampleFormat::SIGNED_24_IN_32, 4);
+}
+
+TEST_F(WebEngineAudioRendererTest, PcmF32Stream) {
+  TestPcmStream(media::kSampleFormatF32, 4,
+                fuchsia::media::AudioSampleFormat::FLOAT, 4);
+}
+
+struct ConfigChangeTestConfig {
+  bool encrypted_head;
+  bool encrypted_tail;
+};
+
+class WebEngineAudioRendererConfgChangeTest
+    : public WebEngineAudioRendererTestBase,
+      public testing::WithParamInterface<ConfigChangeTestConfig> {
+  media::AudioDecoderConfig GetStreamConfig() final {
+    auto encryption_scheme = GetParam().encrypted_head
+                                 ? media::EncryptionScheme::kCenc
+                                 : media::EncryptionScheme::kUnencrypted;
+    return media::AudioDecoderConfig(
+        media::AudioCodec::kPCM, media::kSampleFormatF32,
+        media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, {}, encryption_scheme);
+  }
+};
+
+// Run all WebEngineAudioRendererTests with CDM enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(ConfigChange,
+                         WebEngineAudioRendererConfgChangeTest,
+                         testing::Values(ConfigChangeTestConfig{false, false},
+                                         ConfigChangeTestConfig{false, true},
+                                         ConfigChangeTestConfig{true, false},
+                                         ConfigChangeTestConfig{true, true}));
+
+TEST_P(WebEngineAudioRendererConfgChangeTest, ConfigChange) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
@@ -799,23 +907,40 @@ TEST_P(WebEngineAudioRendererTest, ChangeConfig) {
   // Queue packets up to kConfigChangePos.
   FillDemuxerStream(kConfigChangePos);
 
+  // Verify that decryptor was initialized only if the beginning of the stream
+  // is encrypted.
+  EXPECT_EQ(cdm_context_.num_decryptors(), GetParam().encrypted_head ? 1U : 0U);
+
+  // New Config
   const size_t kNewSampleRate = 44100;
   const std::vector<uint8_t> kArbitraryExtraData = {1, 2, 3};
+  auto mew_encryption_scheme = GetParam().encrypted_tail
+                                   ? media::EncryptionScheme::kCenc
+                                   : media::EncryptionScheme::kUnencrypted;
   media::AudioDecoderConfig updated_config(
       media::AudioCodec::kOpus, media::kSampleFormatF32,
       media::CHANNEL_LAYOUT_STEREO, kNewSampleRate, kArbitraryExtraData,
-      media::EncryptionScheme::kUnencrypted);
+      mew_encryption_scheme);
+
   demuxer_stream_->QueueReadResult(
       TestDemuxerStream::ReadResult(updated_config));
 
   // Queue one more packet with the new config.
-  ProduceDemuxerPacket(kPacketDuration);
+  ProduceDemuxerPacket(kPacketDuration * 2);
 
   task_environment_.FastForwardBy(kConfigChangePos);
 
   // The renderer should have created new StreamSink when config was changed.
-  auto new_stream_sink = audio_consumer_->TakeStreamSink();
+  auto new_stream_sink = audio_consumer_->WaitStreamSinkConnected();
   ASSERT_TRUE(new_stream_sink);
+
+  task_environment_.RunUntilIdle();
+
+  // Verify that decryptor was re-created if the stream is encrypted after
+  // the config change.
+  EXPECT_EQ(cdm_context_.num_decryptors(),
+            (GetParam().encrypted_head ? 1U : 0U) +
+                (GetParam().encrypted_tail ? 1U : 0U));
 
   ASSERT_TRUE(client_.last_config_change().has_value());
   EXPECT_TRUE(client_.last_config_change()->Matches(updated_config));
@@ -996,7 +1121,7 @@ TEST_P(WebEngineAudioRendererTest, SetVolumeBeforeInitialize) {
 // StartPlaying() is handled correctly. AudioConsumer::Start() should be sent
 // only after CreateStreamSink(). See crbug.com/1219147 .
 TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
-  CreateTestDemuxerStream();
+  demuxer_stream_ = std::make_unique<TestDemuxerStream>(GetStreamConfig());
   const auto kStreamLength = base::Milliseconds(100);
   FillDemuxerStream(kStreamLength);
   demuxer_stream_->QueueReadResult(
@@ -1015,78 +1140,4 @@ TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
   audio_consumer_->WaitStarted();
   stream_sink_ = audio_consumer_->TakeStreamSink();
   EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
-}
-
-void WebEngineAudioRendererTest::TestPcmStream(
-    media::SampleFormat sample_format,
-    size_t bytes_per_sample_input,
-    fuchsia::media::AudioSampleFormat fuchsia_sample_format,
-    size_t bytes_per_sample_output) {
-  media::AudioDecoderConfig config(
-      media::AudioCodec::kPCM, sample_format, media::CHANNEL_LAYOUT_STEREO,
-      kDefaultSampleRate, {}, media::EncryptionScheme::kUnencrypted);
-
-  demuxer_stream_ = std::make_unique<TestDemuxerStream>(config);
-
-  ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
-  stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
-  EXPECT_EQ(stream_sink_->stream_type().sample_format, fuchsia_sample_format);
-
-  // Create a dummy packet that contains 1 sample.
-  const size_t kNumSamples = 10;
-  const size_t kChannels = 2;
-  size_t input_buffer_size = kNumSamples * kChannels * bytes_per_sample_input;
-  scoped_refptr<media::DecoderBuffer> buffer =
-      new media::DecoderBuffer(input_buffer_size);
-  buffer->set_timestamp(demuxer_stream_pos_);
-  buffer->set_duration(kPacketDuration);
-  for (size_t i = 0; i < input_buffer_size; ++i) {
-    buffer->writable_data()[i] = i;
-  }
-  demuxer_stream_->QueueReadResult(TestDemuxerStream::ReadResult(buffer));
-
-  // Start playback. The renderer will process the packet queued above.
-  audio_renderer_->StartPlaying();
-  task_environment_.RunUntilIdle();
-
-  ASSERT_EQ(stream_sink_->received_packets()->size(), 1U);
-  auto packet = stream_sink_->received_packets()->at(0);
-
-  // Read and verify packet content
-  size_t output_size = kNumSamples * kChannels * bytes_per_sample_output;
-  EXPECT_EQ(packet.payload_size, output_size);
-  uint8_t data[output_size];
-  zx_status_t result = stream_sink_->buffers()[packet.payload_buffer_id].read(
-      data, 0, output_size);
-  ZX_CHECK(result == ZX_OK, result);
-
-  for (size_t i = 0; i < output_size; ++i) {
-    size_t pos_within_sample = i % bytes_per_sample_output;
-    uint8_t expected_value =
-        (pos_within_sample < bytes_per_sample_input)
-            ? (i / bytes_per_sample_output * bytes_per_sample_input +
-               pos_within_sample)
-            : 0;
-    EXPECT_EQ(data[i], expected_value);
-  }
-}
-
-TEST_F(WebEngineAudioRendererTest, PcmU8Stream) {
-  TestPcmStream(media::kSampleFormatU8, 1,
-                fuchsia::media::AudioSampleFormat::UNSIGNED_8, 1);
-}
-
-TEST_F(WebEngineAudioRendererTest, PcmS16Stream) {
-  TestPcmStream(media::kSampleFormatS16, 2,
-                fuchsia::media::AudioSampleFormat::SIGNED_16, 2);
-}
-
-TEST_F(WebEngineAudioRendererTest, PcmS24Stream) {
-  TestPcmStream(media::kSampleFormatS24, 3,
-                fuchsia::media::AudioSampleFormat::SIGNED_24_IN_32, 4);
-}
-
-TEST_F(WebEngineAudioRendererTest, PcmF32Stream) {
-  TestPcmStream(media::kSampleFormatF32, 4,
-                fuchsia::media::AudioSampleFormat::FLOAT, 4);
 }
