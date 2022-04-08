@@ -67,17 +67,19 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
     const char* name;
     bool* setting;
   } kFeatures[] = {
-  {% for feature in features %}
+  {% for feature in features|sort(attribute='name') %}
     {"{{feature.name}}", &{{feature.data_member_name}}},
   {% endfor %}
   };
-  for (const auto& feature : kFeatures) {
-    if (name == feature.name) {
-      *feature.setting = enable;
-      return;
-    }
-  }
-  DLOG(ERROR) << "RuntimeEnabledFeature not recognized: " << name;
+
+  auto feature = std::lower_bound(std::begin(kFeatures), std::end(kFeatures), name, [](const auto& feature, const std::string& name) {
+    return feature.name < name;
+  });
+
+  if (feature != std::end(kFeatures) && feature->name == name)
+    *feature->setting = enable;
+  else
+    DLOG(ERROR) << "RuntimeEnabledFeature not recognized: " << name;
 }
 
 {% for feature in origin_trial_controlled_features %}
