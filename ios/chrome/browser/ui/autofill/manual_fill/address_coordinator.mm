@@ -100,13 +100,8 @@
 
 - (void)openAddressSettings {
   __weak id<AddressCoordinatorDelegate> weakDelegate = self.delegate;
-  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakDelegate openAddressSettings];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Settings close the popover but don't send a message to reopen it.
-      [weakDelegate fallbackCoordinatorDidDismissPopover:weakSelf];
-    }
   }];
 }
 

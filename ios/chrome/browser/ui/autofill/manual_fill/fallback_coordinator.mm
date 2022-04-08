@@ -49,6 +49,9 @@
   } else {
     if (completion) {
       completion();
+      if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
+        [self.delegate fallbackCoordinatorDidDismissPopover:self];
+      }
     }
     return NO;
   }

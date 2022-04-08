@@ -110,25 +110,15 @@
 
 - (void)openCardSettings {
   __weak id<CardCoordinatorDelegate> weakDelegate = self.delegate;
-  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakDelegate openCardSettings];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Settings close the popover but don't send a message to reopen it.
-      [weakDelegate fallbackCoordinatorDidDismissPopover:weakSelf];
-    }
   }];
 }
 
 - (void)openAddCreditCard {
   __weak id<CardCoordinatorDelegate> weakDelegate = self.delegate;
-  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakDelegate openAddCreditCard];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Settings close the popover but don't send a message to reopen it.
-      [weakDelegate fallbackCoordinatorDidDismissPopover:weakSelf];
-    }
   }];
 }
 
