@@ -89,6 +89,9 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
   // Gets the color corresponding with |background_type|.
   SkColor GetBackgroundColor(ShelfBackgroundType background_type) const;
 
+  // Drives the current animation to the end.
+  void CompleteAnimationForTesting();
+
  protected:
   // ShelfObserver:
   void OnBackgroundTypeChanged(ShelfBackgroundType background_type,

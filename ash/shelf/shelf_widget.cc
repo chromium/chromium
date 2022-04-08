@@ -94,32 +94,68 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
   ui::Layer* const layer_;
 };
 
-class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
+class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
+                                     public ui::LayerDelegate {
  public:
-  explicit ShelfBackgroundLayerDelegate(ui::Layer* layer) : layer_(layer) {}
+  ShelfBackgroundLayerDelegate(Shelf* shelf, bool draw_highlight_border)
+      : shelf_(shelf), draw_highlight_border_(draw_highlight_border) {}
+
   ShelfBackgroundLayerDelegate(const ShelfBackgroundLayerDelegate&) = delete;
   ShelfBackgroundLayerDelegate& operator=(const ShelfBackgroundLayerDelegate&) =
       delete;
   ~ShelfBackgroundLayerDelegate() override {}
 
+  void Initialize() {
+    // If the shelf does not have highlight border, it will be monochromatic, so
+    // it can use a solid color layer.
+    SetLayer(std::make_unique<ui::Layer>(
+        draw_highlight_border_ ? ui::LAYER_TEXTURED : ui::LAYER_SOLID_COLOR));
+  }
+
+  // Sets the shelf background color.
   void SetBackgroundColor(SkColor color) {
     background_color_ = color;
-    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+
+    if (draw_highlight_border_) {
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    } else {
+      layer()->SetColor(color);
+    }
   }
+
+  // Sets the highlight border type to use if shelf uses highlight border.
+  // No-op if `draw_highlight_border_` is false.
   void SetBorderType(HighlightBorder::Type type) {
+    if (!draw_highlight_border_)
+      return;
+
     highlight_border_type_ = type;
-    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
-  void SetRoundedCornerRadius(int corner_radius) {
-    corner_radius_ = corner_radius;
-    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+
+  // Sets the rounded corners used by the shelf.
+  void SetRoundedCornerRadius(float radius) {
+    corner_radius_ = radius;
+    layer()->SetRoundedCornerRadius({
+        shelf_->SelectValueForShelfAlignment(radius, 0.0f, radius),
+        shelf_->SelectValueForShelfAlignment(radius, radius, 0.0f),
+        shelf_->SelectValueForShelfAlignment(0.0f, radius, 0.0f),
+        shelf_->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
+    });
+
+    // Schedule paint to repaint the highlight border.
+    if (draw_highlight_border_)
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
+
   void SetLoginShelfView(LoginShelfView* view) { login_shelf_view_ = view; }
+
+  SkColor background_color() const { return background_color_; }
 
  private:
   // views::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, layer_->size());
+    ui::PaintRecorder recorder(context, layer()->size());
     gfx::Canvas* canvas = recorder.canvas();
 
     // cc::PaintFlags flags for the background.
@@ -127,26 +163,28 @@ class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
     flags.setColor(background_color_);
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius_, flags);
+    canvas->DrawRoundRect(gfx::Rect(layer()->size()), corner_radius_, flags);
 
     // Don't draw highlight border in login screen.
     if (login_shelf_view_ && login_shelf_view_->GetVisible())
       return;
 
-    HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer_->size()),
+    HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer()->size()),
                                          corner_radius_, highlight_border_type_,
                                          false);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
-    layer_->SchedulePaint(layer_->bounds());
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
-  ui::Layer* const layer_;
+  Shelf* const shelf_;
+  const bool draw_highlight_border_;
+
   LoginShelfView* login_shelf_view_ = nullptr;
   SkColor background_color_;
-  int corner_radius_ = 0;
+  float corner_radius_ = 0.0f;
   HighlightBorder::Type highlight_border_type_ =
       HighlightBorder::Type::kHighlightBorder1;
 };
@@ -181,8 +219,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   LoginShelfView* AddLoginShelfView(
       std::unique_ptr<LoginShelfView> login_shelf_view) {
     login_shelf_view_ = AddChildView(std::move(login_shelf_view));
-    if (background_delegate_)
-      background_delegate_->SetLoginShelfView(login_shelf_view_);
+    opaque_background_.SetLoginShelfView(login_shelf_view_);
     return login_shelf_view_;
   }
 
@@ -232,10 +269,11 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
   SkColor GetShelfBackgroundColor() const;
 
-  ui::Layer* opaque_background() { return opaque_background_.layer(); }
-  ShelfBackgroundLayerDelegate* background_delegate() {
-    return background_delegate_.get();
+  ui::Layer* opaque_background_layer() { return opaque_background_.layer(); }
+  ShelfBackgroundLayerDelegate* opaque_background() {
+    return &opaque_background_;
   }
+
   ui::Layer* animating_background() { return &animating_background_; }
   ui::Layer* animating_drag_handle() { return &animating_drag_handle_; }
   DragHandle* drag_handle() { return drag_handle_; }
@@ -254,11 +292,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
   // A background layer that may be visible depending on a
   // ShelfBackgroundAnimator.
-  ui::LayerOwner opaque_background_;
-
-  // The layer delegate that helps drawing the highlight border on
-  // `opaque_background_`.
-  std::unique_ptr<ShelfBackgroundLayerDelegate> background_delegate_;
+  ShelfBackgroundLayerDelegate opaque_background_;
 
   // A background layer used to animate hotseat transitions.
   ui::Layer animating_background_;
@@ -280,20 +314,15 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
 ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
-      opaque_background_(std::make_unique<ui::Layer>(
-          features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
-                                             : ui::LAYER_SOLID_COLOR)),
+      opaque_background_(
+          shelf,
+          /*draw_highlight_border=*/features::IsDarkLightModeEnabled()),
       animating_background_(ui::LAYER_SOLID_COLOR),
       animating_drag_handle_(ui::LAYER_SOLID_COLOR) {
-  if (features::IsDarkLightModeEnabled()) {
-    background_delegate_ =
-        std::make_unique<ShelfBackgroundLayerDelegate>(opaque_background());
-    opaque_background()->set_delegate(background_delegate_.get());
-    opaque_background()->SetFillsBoundsOpaquely(false);
-  }
-  opaque_background()->SetName("shelf/Background");
   animating_background_.SetName("shelf/Animation");
   animating_background_.Add(&animating_drag_handle_);
+
+  opaque_background_.Initialize();
 
   DCHECK(shelf_widget_);
   SetOwnedByWidget(true);
@@ -319,7 +348,7 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
 ShelfWidget::DelegateView::~DelegateView() = default;
 
 void ShelfWidget::DelegateView::SetParentLayer(ui::Layer* layer) {
-  layer->Add(opaque_background());
+  layer->Add(opaque_background_layer());
   ReorderLayers();
   // Animating background is only shown during hotseat state transitions to
   // animate the background from below the shelf. At the same time the shelf
@@ -332,7 +361,7 @@ void ShelfWidget::DelegateView::SetParentLayer(ui::Layer* layer) {
 
 void ShelfWidget::DelegateView::HideOpaqueBackground() {
   hide_background_for_transitions_ = true;
-  opaque_background()->SetVisible(false);
+  opaque_background_layer()->SetVisible(false);
   drag_handle_->SetVisible(false);
 }
 
@@ -360,7 +389,7 @@ bool ShelfWidget::DelegateView::CanActivate() const {
 
 void ShelfWidget::DelegateView::ReorderChildLayers(ui::Layer* parent_layer) {
   views::View::ReorderChildLayers(parent_layer);
-  parent_layer->StackAtBottom(opaque_background());
+  parent_layer->StackAtBottom(opaque_background_layer());
 }
 
 void ShelfWidget::DelegateView::OnWidgetInitialized() {
@@ -372,14 +401,14 @@ void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
     return;
   // Blur only if the background is visible.
   const bool should_blur_background =
-      opaque_background()->visible() &&
+      opaque_background_layer()->visible() &&
       shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground();
   if (should_blur_background == background_is_currently_blurred_)
     return;
 
-  opaque_background()->SetBackgroundBlur(
+  opaque_background_layer()->SetBackgroundBlur(
       should_blur_background ? kShelfBlurRadius : 0);
-  opaque_background()->SetBackdropFilterQuality(
+  opaque_background_layer()->SetBackdropFilterQuality(
       ColorProvider::kBackgroundBlurQuality);
 
   background_is_currently_blurred_ = should_blur_background;
@@ -401,8 +430,8 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
   bool show_opaque_background = !tablet_mode || in_app;
-  if (show_opaque_background != opaque_background()->visible())
-    opaque_background()->SetVisible(show_opaque_background);
+  if (show_opaque_background != opaque_background_layer()->visible())
+    opaque_background_layer()->SetVisible(show_opaque_background);
 
   // Extend the opaque layer a little bit to handle "overshoot" gestures
   // gracefully (the user drags the shelf further than it can actually go).
@@ -426,25 +455,14 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   if (background_type == ShelfBackgroundType::kMaximized ||
       background_type == ShelfBackgroundType::kInApp ||
       (tablet_mode && in_app)) {
-    opaque_background()->SetRoundedCornerRadius({0, 0, 0, 0});
-    if (background_delegate_)
-      background_delegate_->SetRoundedCornerRadius(0);
+    opaque_background_.SetRoundedCornerRadius(0);
   } else {
-    opaque_background()->SetRoundedCornerRadius({
-        shelf->SelectValueForShelfAlignment(radius, 0.0f, radius),
-        shelf->SelectValueForShelfAlignment(radius, radius, 0.0f),
-        shelf->SelectValueForShelfAlignment(0.0f, radius, 0.0f),
-        shelf->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
-    });
-    if (background_delegate_)
-      background_delegate_->SetRoundedCornerRadius(radius);
+    opaque_background_.SetRoundedCornerRadius(radius);
   }
-  opaque_background()->SetBounds(opaque_background_bounds);
+  opaque_background_layer()->SetBounds(opaque_background_bounds);
 
   UpdateDragHandle();
   UpdateBackgroundBlur();
-  if (background_delegate_)
-    opaque_background()->SchedulePaint(opaque_background_bounds);
   SchedulePaint();
 }
 
@@ -507,11 +525,7 @@ void ShelfWidget::DelegateView::Layout() {
 }
 
 void ShelfWidget::DelegateView::UpdateShelfBackground(SkColor color) {
-  if (background_delegate_)
-    background_delegate_->SetBackgroundColor(color);
-  else
-    opaque_background()->SetColor(color);
-
+  opaque_background_.SetBackgroundColor(color);
   UpdateOpaqueBackground();
 }
 
@@ -542,7 +556,7 @@ void ShelfWidget::DelegateView::ShowAnimatingBackground(bool show) {
 }
 
 SkColor ShelfWidget::DelegateView::GetShelfBackgroundColor() const {
-  return opaque_background_.layer()->background_color();
+  return opaque_background_.background_color();
 }
 
 bool ShelfWidget::GetHitTestRects(aura::Window* target,
@@ -613,7 +627,7 @@ void ShelfWidget::ClearLoginShelfSwipeHandler() {
 }
 
 ui::Layer* ShelfWidget::GetOpaqueBackground() {
-  return delegate_view_->opaque_background();
+  return delegate_view_->opaque_background_layer();
 }
 
 ui::Layer* ShelfWidget::GetAnimatingBackground() {
@@ -830,15 +844,11 @@ void ShelfWidget::OnHotseatStateChanged(HotseatState old_state,
     return;
   hotseat_transition_animator_->OnHotseatStateChanged(old_state, new_state);
 
-  // Update the highlight border color on the shelf background.
-  if (!delegate_view_->background_delegate())
-    return;
-
   if (new_state == HotseatState::kExtended) {
-    delegate_view_->background_delegate()->SetBorderType(
+    delegate_view_->opaque_background()->SetBorderType(
         HighlightBorder::Type::kHighlightBorder2);
   } else {
-    delegate_view_->background_delegate()->SetBorderType(
+    delegate_view_->opaque_background()->SetBorderType(
         HighlightBorder::Type::kHighlightBorder1);
   }
 }

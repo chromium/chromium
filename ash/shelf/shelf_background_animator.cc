@@ -247,6 +247,11 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
   return shelf_target_color;
 }
 
+void ShelfBackgroundAnimator::CompleteAnimationForTesting() {
+  if (animator_)
+    animator_->End();
+}
+
 void ShelfBackgroundAnimator::SetAnimationValues(double t) {
   DCHECK_GE(t, 0.0);
   DCHECK_LE(t, 1.0);
