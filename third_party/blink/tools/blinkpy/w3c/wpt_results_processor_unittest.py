@@ -37,7 +37,9 @@ class MockResultSink(object):
                 'actual': result.actual,
                 'expected': result.expected,
                 'unexpected': result.unexpected,
-                'artifacts': result.artifacts
+                'took': result.took,
+                'flaky': result.flaky,
+                'artifacts': result.artifacts,
             },
         })
 
@@ -160,6 +162,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'actual': 'FAIL',
                 'expected': {'PASS', 'FAIL'},
                 'unexpected': False,
+                'took': 0,
+                'flaky': False,
                 'artifacts': {
                     'actual_text': [path_from_out_dir],
                 },
@@ -199,9 +203,55 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'actual': 'FAIL',
                 'expected': {'PASS'},
                 'unexpected': True,
+                'took': 0,
+                'flaky': False,
                 'artifacts': {
                     'actual_text': [path_from_out_dir],
                 },
+            },
+        }])
+
+    def test_result_sink_for_multiple_runs(self):
+        json_dict = {
+            'tests': {
+                'fail': {
+                    'test.html': {
+                        'expected': 'PASS',
+                        'actual': 'PASS FAIL',
+                        'times': [2, 3],
+                        'artifacts': {},
+                    },
+                },
+            },
+            'path_delimiter': '/',
+        }
+        self._create_json_output(json_dict)
+
+        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
+        test_name = self.fs.join('external', 'wpt', 'fail', 'test.html')
+        test_abs_path = self.fs.join(self.processor.web_tests_dir, 'external',
+                                     'wpt', 'fail', 'test.html')
+        self.assertEqual(self.processor.sink.sink_requests, [{
+            'test': test_name,
+            'test_path': test_abs_path,
+            'result': {
+                'actual': 'PASS',
+                'expected': {'PASS'},
+                'unexpected': False,
+                'took': 2,
+                'flaky': True,
+                'artifacts': {},
+            },
+        }, {
+            'test': test_name,
+            'test_path': test_abs_path,
+            'result': {
+                'actual': 'FAIL',
+                'expected': {'PASS'},
+                'unexpected': True,
+                'took': 3,
+                'flaky': True,
+                'artifacts': {},
             },
         }])
 
@@ -237,6 +287,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'actual': 'FAIL',
                     'expected': {'PASS'},
                     'unexpected': True,
+                    'took': 0,
+                    'flaky': False,
                     'artifacts': {
                         'actual_text': [path_from_out_dir],
                     },

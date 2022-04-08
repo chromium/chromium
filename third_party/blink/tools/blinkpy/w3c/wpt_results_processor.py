@@ -222,7 +222,7 @@ class WPTResultsProcessor(object):
         if 'actual' in current_node:
             # Leaf node detected.
             if 'artifacts' not in current_node:
-                return
+                return []
             artifacts = current_node['artifacts']
             artifacts.pop('wpt_actual_status', None)
             artifacts.pop('wpt_subtest_failure', None)
@@ -462,17 +462,10 @@ class WPTResultsProcessor(object):
 
     def _add_result_to_sink(self, node, test_name):
         """Add test results to the result sink."""
-        actual = node['actual']
-        if len(actual.split()) != 1:
-            _log.error(
-                'Test %s should have only one result, '
-                'but has the following: %s', test_name, actual)
-            return
-        # Test timeouts are a special case of aborts. We must report "ABORT" to
-        # result sink for tests that timed out.
-        if actual == 'TIMEOUT':
-            actual = 'ABORT'
+        actual_statuses = node['actual'].split()
+        flaky = len(set(actual_statuses)) > 1
         expected = set(node['expected'].split())
+        durations = node.get('times') or [0] * len(actual_statuses)
 
         artifacts = Artifacts(
             output_dir=self.results_dir,
@@ -480,28 +473,38 @@ class WPTResultsProcessor(object):
             artifacts_base_dir=self.fs.relpath(self.artifacts_dir,
                                                self.results_dir),
         )
-
         for name, paths in (node.get('artifacts') or {}).items():
             for path in paths:
                 artifacts.AddArtifact(name, path)
-
-        test_duration = node.get('time', 0)
-        result = Result(
-            name=test_name,
-            actual=actual,
-            started=self.host.time() - test_duration,
-            took=test_duration,
-            worker=0,
-            expected=expected,
-            unexpected=actual not in expected,
-            artifacts=artifacts.artifacts,
-        )
-
         test_path = self.fs.join(self.web_tests_dir,
                                  self._remove_query_params(test_name))
-        self.sink.report_individual_test_result(test_name, result,
-                                                self.results_dir, None,
-                                                test_path)
+
+        for iteration, (actual,
+                        duration) in enumerate(zip(actual_statuses,
+                                                   durations)):
+            # Test timeouts are a special case of aborts. We must report "ABORT"
+            # to result sink for tests that timed out.
+            if actual == 'TIMEOUT':
+                actual = 'ABORT'
+
+            result = Result(
+                name=test_name,
+                actual=actual,
+                started=self.host.time() - duration,
+                took=duration,
+                worker=0,
+                expected=expected,
+                unexpected=actual not in expected,
+                flaky=flaky,
+                # TODO(crbug/1314847): wptrunner merges output from all runs
+                # together. Until it outputs per-test-run artifacts instead, we
+                # just upload the artifacts on the first result. No need to
+                # upload the same artifacts multiple times.
+                artifacts=(artifacts.artifacts if iteration == 0 else {}),
+            )
+            self.sink.report_individual_test_result(test_name, result,
+                                                    self.results_dir, None,
+                                                    test_path)
 
     def _trim_to_regressions(self, current_node):
         """Recursively remove non-regressions from the test results trie.
