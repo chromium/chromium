@@ -24,6 +24,7 @@ export enum SupportToolPageIndex {
   DATA_COLLECTOR_SELECTION,
   SPINNER,
   PII_SELECTION,
+  EXPORT_SPINNER,
 }
 
 export interface SupportToolElement {
@@ -71,6 +72,12 @@ export class SupportToolElement extends SupportToolElementBase {
     this.addWebUIListener(
         'data-collection-cancelled',
         this.onDataCollectionCancelled_.bind(this));
+    this.addWebUIListener(
+        'support-data-export-started', this.onDataExportStarted_.bind(this));
+  }
+
+  private onDataExportStarted_() {
+    this.selectedPage_ = SupportToolPageIndex.EXPORT_SPINNER;
   }
 
   private onDataCollectionCompleted_(piiItems: PIIDataItem[]) {

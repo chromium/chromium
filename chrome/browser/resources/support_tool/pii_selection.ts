@@ -51,7 +51,7 @@ export class PIISelectionElement extends PolymerElement {
   }
 
   private onExportClick_() {
-    // TODO(b/200511640): Show file selection pop-up here.
+    this.browserProxy_.startDataExport(this.detectedPIIItems_);
   }
 
   private onSelectAllChanged_() {

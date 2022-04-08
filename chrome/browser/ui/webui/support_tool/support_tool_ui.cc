@@ -12,8 +12,12 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +26,7 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/support_tool_resources.h"
@@ -35,6 +40,8 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
 const char kSupportCaseIDQuery[] = "case_id";
@@ -239,6 +246,40 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
   return detected_pii_data_items;
 }
 
+// Returns the current time in YYYY_MM_DD_HH_mm format.
+std::string GetTimestampString(base::Time timestamp) {
+  base::Time::Exploded tex;
+  timestamp.LocalExplode(&tex);
+  return base::StringPrintf("%04d_%02d_%02d_%02d_%02d", tex.year, tex.month,
+                            tex.day_of_month, tex.hour, tex.minute);
+}
+
+base::FilePath GetDefaultFileToExport(const std::string& case_id,
+                                      base::Time timestamp) {
+  std::string timestamp_string = GetTimestampString(timestamp);
+  std::string filename =
+      case_id.empty()
+          ? base::StringPrintf("support_packet_%s", timestamp_string.c_str())
+          : base::StringPrintf("support_packet_%s_%s", case_id.c_str(),
+                               timestamp_string.c_str());
+  return base::FilePath::FromASCII(filename);
+}
+
+std::set<feedback::PIIType> GetSelectedPIIToKeep(
+    const base::Value::List* pii_items) {
+  std::set<feedback::PIIType> pii_to_keep;
+  for (const auto& item : *pii_items) {
+    const base::Value::Dict* item_as_dict = item.GetIfDict();
+    DCHECK(item_as_dict);
+    absl::optional<bool> keep = item_as_dict->FindBool("keep");
+    if (keep && keep.value()) {
+      pii_to_keep.insert(static_cast<feedback::PIIType>(
+          item_as_dict->FindInt("piiType").value()));
+    }
+  }
+  return pii_to_keep;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +289,8 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // The handler for Javascript messages related to Support Tool.
-class SupportToolMessageHandler : public content::WebUIMessageHandler {
+class SupportToolMessageHandler : public content::WebUIMessageHandler,
+                                  public ui::SelectFileDialog::Listener {
  public:
   SupportToolMessageHandler() = default;
 
@@ -269,13 +311,27 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler {
 
   void HandleCancelDataCollection(const base::Value::List& args);
 
+  void HandleStartDataExport(const base::Value::List& args);
+
+  // SelectFileDialog::Listener implementation.
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override;
+
+  void FileSelectionCanceled(void* params) override;
+
  private:
   base::Value::List GetAccountsList();
 
   void OnDataCollectionDone(const PIIMap& detected_pii,
                             std::set<SupportToolError> errors);
 
+  void OnDataExportDone(base::FilePath path, std::set<SupportToolError> errors);
+
+  std::set<feedback::PIIType> selected_pii_to_keep_;
+  base::Time data_collection_time_;
   std::unique_ptr<SupportToolHandler> handler_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::WeakPtrFactory<SupportToolMessageHandler> weak_ptr_factory_{this};
 };
 
@@ -297,6 +353,10 @@ void SupportToolMessageHandler::RegisterMessages() {
       base::BindRepeating(
           &SupportToolMessageHandler::HandleCancelDataCollection,
           weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "startDataExport",
+      base::BindRepeating(&SupportToolMessageHandler::HandleStartDataExport,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 base::Value::List SupportToolMessageHandler::GetAccountsList() {
@@ -350,6 +410,9 @@ void SupportToolMessageHandler::HandleStartDataCollection(
                             *issue_details->FindString("emailAddress"),
                             *issue_details->FindString("issueDescription"),
                             GetIncludedDataCollectorTypes(data_collectors));
+  // TODO(b/214196981): Add data collection timestamp as a class field to
+  // SupportToolHandler.
+  data_collection_time_ = base::Time::NowFromSystemTime();
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -369,6 +432,56 @@ void SupportToolMessageHandler::HandleCancelDataCollection(
   // Deleting the SupportToolHandler object will stop data collection.
   this->handler_.reset();
   FireWebUIListener("data-collection-cancelled");
+}
+
+void SupportToolMessageHandler::HandleStartDataExport(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value::List* pii_items = args[0].GetIfList();
+  DCHECK(pii_items);
+  selected_pii_to_keep_ = GetSelectedPIIToKeep(pii_items);
+
+  AllowJavascript();
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  gfx::NativeWindow owning_window =
+      web_contents ? web_contents->GetTopLevelNativeWindow()
+                   : gfx::kNullNativeWindow;
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this,
+      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
+
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      /*title=*/std::u16string(),
+      /*default_path=*/
+      GetDefaultFileToExport(handler_->GetCaseID(), data_collection_time_),
+      /*file_types=*/nullptr,
+      /*file_type_index=*/0,
+      /*default_extension=*/base::FilePath::StringType(), owning_window,
+      /*params=*/nullptr);
+}
+
+void SupportToolMessageHandler::FileSelected(const base::FilePath& path,
+                                             int index,
+                                             void* params) {
+  FireWebUIListener("support-data-export-started");
+  select_file_dialog_.reset();
+  this->handler_->ExportCollectedData(
+      std::move(selected_pii_to_keep_), path,
+      base::BindOnce(&SupportToolMessageHandler::OnDataExportDone,
+                     weak_ptr_factory_.GetWeakPtr(), path));
+}
+
+void SupportToolMessageHandler::FileSelectionCanceled(void* params) {
+  selected_pii_to_keep_.clear();
+  select_file_dialog_.reset();
+}
+
+void SupportToolMessageHandler::OnDataExportDone(
+    base::FilePath path,
+    std::set<SupportToolError> errors) {
+  // TODO(b/227328957): Fire WebUIListener to notify UI that the data export is
+  // done.
 }
 
 ////////////////////////////////////////////////////////////////////////////////

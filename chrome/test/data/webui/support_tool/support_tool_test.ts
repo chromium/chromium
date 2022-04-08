@@ -68,6 +68,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'getDataCollectors',
       'startDataCollection',
       'cancelDataCollection',
+      'startDataExport',
     ]);
   }
 
@@ -89,6 +90,10 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   cancelDataCollection() {
     this.methodCalled('cancelDataCollection');
+  }
+
+  startDataExport(piiDataItems: PIIDataItem[]) {
+    this.methodCalled('startDataExport', [piiDataItems]);
   }
 }
 
@@ -160,20 +165,6 @@ suite('SupportToolTest', function() {
     }
   });
 
-  test('data collector selection page', () => {
-    // Check the contents of data collectors page.
-    const ironListItems =
-        supportTool.$.dataCollectors.shadowRoot!.querySelector(
-                                                    'iron-list')!.items!;
-    assertEquals(ironListItems.length, DATA_COLLECTORS.length);
-    for (let i = 0; i < ironListItems.length; i++) {
-      const listItem = ironListItems[i];
-      assertEquals(listItem.name, DATA_COLLECTORS[i]!.name);
-      assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
-      assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
-    }
-  });
-
   test('spinner page', () => {
     // Check the contents of spinner page.
     const spinner = supportTool.$.spinnerPage;
@@ -190,7 +181,7 @@ suite('SupportToolTest', function() {
     assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
   });
 
-  test('PII selection page', () => {
+  test('PII selection page', async () => {
     // Go to the data collector selection page and start data collection by
     // clicking continue button twice so that the PII selection page gets
     // filled.
@@ -209,5 +200,12 @@ suite('SupportToolTest', function() {
       assertEquals(items, PII_ITEMS);
     });
     assertEquals(browserProxy.getCallCount('startDataCollection'), 1);
+    piiSelection.shadowRoot!.getElementById('exportButton')!.click();
+    await browserProxy.whenCalled('startDataExport');
+    webUIListenerCallback('support-data-export-started');
+    flush();
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        SupportToolPageIndex.EXPORT_SPINNER);
   });
 });

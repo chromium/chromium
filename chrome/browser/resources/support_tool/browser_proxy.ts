@@ -38,6 +38,8 @@ export interface BrowserProxy {
       selectedDataCollectors: DataCollectorItem[]): void;
 
   cancelDataCollection(): void;
+
+  startDataExport(piiItems: PIIDataItem[]): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -56,6 +58,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   cancelDataCollection() {
     chrome.send('cancelDataCollection');
+  }
+
+  startDataExport(piiItems: PIIDataItem[]) {
+    chrome.send('startDataExport', [piiItems]);
   }
 
   static getInstance(): BrowserProxy {

@@ -19,6 +19,16 @@ export class SpinnerPageElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      pageTitle: {
+        type: String,
+        value: '',
+      }
+    };
+  }
+
+  pageTitle: string;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private onCancelClick_() {

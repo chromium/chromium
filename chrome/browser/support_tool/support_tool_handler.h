@@ -77,6 +77,9 @@ class SupportToolHandler {
                      std::string issue_description);
   ~SupportToolHandler();
 
+  // Returns the support case ID.
+  const std::string& GetCaseID();
+
   // Adds `collector` to the list of DataCollectors the SupportToolHandler
   // will collect data from.
   void AddDataCollector(std::unique_ptr<DataCollector> collector);

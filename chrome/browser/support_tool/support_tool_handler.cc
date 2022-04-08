@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -92,6 +93,10 @@ void SupportToolHandler::CleanUp() {
                        std::move(temp_dir_)));
     temp_dir_.clear();
   }
+}
+
+const std::string& SupportToolHandler::GetCaseID() {
+  return case_id_;
 }
 
 void SupportToolHandler::AddDataCollector(
