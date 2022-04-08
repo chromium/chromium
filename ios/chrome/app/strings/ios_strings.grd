@@ -168,7 +168,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON" desc="Title of the button to skip the selection of an account. [Length: 20em] [iOS only]">
         Cancel
       </message>
-      <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT" desc="Title of the button to add a new account, the user will be able to use the added account to sign-in [Length: 16em] [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT" desc="In Title Case: Button is displayed in the account picker dialog. Users can click it to add another account to the device, which can be used to sign in to Chrome. [iOS only]">
         Add Account…
       </message>
       <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT" desc="Label at the top an account list. The user has to select one of the accounts to sign-in. [Length: 20em] [iOS only]">
@@ -982,7 +982,7 @@ See your search engine’s instructions for deleting your search history, if app
         Continue as <ph name="FIRST_RUN_ACCOUNT_NAME">$1<ex>Jessica</ex></ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="In Title Case: Button on the very first screen of Chrome to continue without signing into Chrome. [iOS only]">
-        Don't Sign In
+        Don’t Sign In
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="In Title Case: Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
         Sign In…

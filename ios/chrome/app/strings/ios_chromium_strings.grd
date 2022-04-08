@@ -301,7 +301,7 @@ locale.  The strings in this file are specific to iOS.
         Your organization requires you to sign in to use Chromium.
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" desc="In Title Case: Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
-          Sign In to Chromium
+        Sign In to Chromium
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. [iOS only]">
         Make Chromium Your Own
@@ -314,13 +314,13 @@ locale.  The strings in this file are specific to iOS.
 <ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chromium better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
 
 Things to consider:
-<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied you.
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied to you.
 
   • If Chromium crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
       </message>
-      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="Title to explain how the user can help to improve Chrome by accepting the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION. [iOS only]">
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="In Title Case: Title of the dialog where users can change their Chrome metrics sharing settings, like usage data. The title communicates that allowing Chrome to see this data can improve Chrome; this happens because we can better invent/improve features based on usage. This appears when they open the Chrome app for the first time on their phone. [iOS only]">
         Make Chromium Better
         </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT" desc="The label next to the metrics reporting consent checkbox of the welcome screen presented to the user on First Run [iOS only]">
@@ -330,7 +330,7 @@ Things to consider:
         Get More Done with Chromium
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE" desc="The subtitle of the welcome screen presented to the user on First Run [iOS only]">
-        Get more done with a simple, secure and faster-than-ever Chromium.
+        Get more done with a simple, secure, and faster-than-ever Chromium.
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE_ENTERPRISE" desc="The subtitle of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
         Chromium is simple, secure and faster-than-ever
@@ -345,7 +345,7 @@ Things to consider:
         Welcome to Chromium
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Make sure 'usage' and 'crash' are translated consistently with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). The ‘Manage’ link opens a dialog to change the corresponding setting. [iOS only]">
-        To help improve the app, Chromium sends usage and crash reports to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Manage<ph name="END_LINK">END_LINK</ph>
+        To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Manage<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
         Help Improve Chromium's Features and Performance
