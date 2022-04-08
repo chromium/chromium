@@ -87,7 +87,10 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
   // blocked in earlier releases because there is a fallback. Constant expanded
   // from
   // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:external/kernel-headers/original/uapi/linux/android_alarm.h;l=57.
-  const int kAndroidAlarmGetTimeElapsedRealtime = 0x40086134;
+  // The size is a `struct timespec`, which has a different width on 32- and
+  // 64-bit systems, so handle both.
+  const int kAndroidAlarmGetTimeElapsedRealtime32 = 0x40086134;
+  const int kAndroidAlarmGetTimeElapsedRealtime64 = 0x40106134;
 
   return Switch(request)
       .CASES((
@@ -106,7 +109,9 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
                  UFFDIO_ZEROPAGE, UFFDIO_CONTINUE),
              If(BoolConst(allow_userfaultfd_ioctls), Allow())
                  .Else(RestrictIoctl()))
-      .CASES((kAndroidAlarmGetTimeElapsedRealtime), Error(EINVAL))
+      .CASES((kAndroidAlarmGetTimeElapsedRealtime32,
+              kAndroidAlarmGetTimeElapsedRealtime64),
+             Error(EINVAL))
       .Default(RestrictIoctl());
 }
 

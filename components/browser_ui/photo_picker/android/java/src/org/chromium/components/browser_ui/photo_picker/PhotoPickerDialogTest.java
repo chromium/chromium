@@ -31,7 +31,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -651,7 +650,6 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisabledTest(message = "https://crbug.com/1313904")
     public void testBorderPersistence() throws Exception {
         setupTestFilesWith80ColoredSquares();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
