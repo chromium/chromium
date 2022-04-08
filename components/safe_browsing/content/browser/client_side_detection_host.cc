@@ -545,6 +545,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
+    VLOG(2) << "Visual model scores:";
+    for (const ClientPhishingRequest::CategoryScore& label_and_value :
+         verdict->tflite_model_scores()) {
+      VLOG(2) << label_and_value.label() << ": " << label_and_value.value();
+    }
 
     if (HasDebugFeatureDirectory()) {
       base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
