@@ -67,13 +67,6 @@ void MetricIntegrationTest::Load(const std::string& relative_url) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
-void MetricIntegrationTest::WaitUntilHTMLLoadedAndTitleChanged() {
-  std::u16string ready_title(u"ready");
-  content::TitleWatcher watcher(web_contents(), ready_title);
-  const std::u16string title = watcher.WaitAndGetTitle();
-  EXPECT_EQ(title, ready_title);
-}
-
 void MetricIntegrationTest::LoadHTML(const std::string& content) {
   Serve("/test.html", content);
   Start();

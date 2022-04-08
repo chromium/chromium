@@ -8,32 +8,35 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCountsForMouseClick) {
+#if defined(USE_AURA)
+// TODO(crbug.com/1311383) Fix flakiness and reenable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EventCounts DISABLED_EventCounts
+#else
+#define MAYBE_EventCounts EventCounts
+#endif
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script type="text/javascript">
-    var eventCounts = {mouseup: 0, pointerup: 0, click: 0};
-
-    const eventPromise = new Promise(resolve => {
-      for (var evt in eventCounts) {
-        document.addEventListener(evt, function(e) {
-          eventCounts[e.type]++;
-          if (eventCounts.click == 2 && eventCounts.pointerup == 2 &&
-                eventCounts.mouseup == 2) {
-            resolve(true);
-          }
-        });
-      }
-    });
-
-    runtest = async () => {
-      return await eventPromise;
-    };
-    document.title='ready';
+    window.eventCounts =
+        {mouseup: 0, touchend: 0, pointerup: 0, click: 0};
+    function recordEvent(e) {
+        eventCounts[e.type]++;
+    }
+    for (var evt in eventCounts) {
+        document.addEventListener(evt, recordEvent);
+    }
     </script>
   )HTML");
 
-  WaitUntilHTMLLoadedAndTitleChanged();
+  // Simulate tap on screen.
+  content::SimulateTouchEventAt(web_contents(), ui::ET_TOUCH_PRESSED,
+                                gfx::Point(30, 60));
+  content::SimulateTapDownAt(web_contents(), gfx::Point(30, 60));
+  content::SimulateTapAt(web_contents(), gfx::Point(30, 60));
+  content::SimulateTouchEventAt(web_contents(), ui::ET_TOUCH_RELEASED,
+                                gfx::Point(30, 60));
 
   // Simulate clicks.
   content::SimulateMouseClick(web_contents(), 0,
@@ -41,7 +44,14 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCountsForMouseClick) {
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
-  ASSERT_TRUE(EvalJs(web_contents(), "runtest()").ExtractBool());
+  while (EvalJs(web_contents(), "window.eventCounts.click").ExtractInt() < 3 &&
+         EvalJs(web_contents(), "window.eventCounts.pointerup").ExtractInt() <
+             3) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
 
   // Check event counts.
   int expected_pointerdown =
@@ -60,10 +70,19 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCountsForMouseClick) {
   int expected_click =
       EvalJs(web_contents(), "window.performance.eventCounts.get('click')")
           .ExtractInt();
+  int expected_touchstart =
+      EvalJs(web_contents(), "window.performance.eventCounts.get('touchstart')")
+          .ExtractInt();
+  int expected_touchend =
+      EvalJs(web_contents(), "window.performance.eventCounts.get('touchend')")
+          .ExtractInt();
 
-  EXPECT_EQ(expected_pointerdown, 2);
-  EXPECT_EQ(expected_pointerup, 2);
-  EXPECT_EQ(expected_mousedown, 2);
-  EXPECT_EQ(expected_mouseup, 2);
-  EXPECT_EQ(expected_click, 2);
+  EXPECT_EQ(expected_pointerdown, 3);
+  EXPECT_EQ(expected_pointerup, 3);
+  EXPECT_EQ(expected_mousedown, 3);
+  EXPECT_EQ(expected_mouseup, 3);
+  EXPECT_EQ(expected_click, 3);
+  EXPECT_EQ(expected_touchstart, 1);
+  EXPECT_EQ(expected_touchend, 1);
 }
+#endif
