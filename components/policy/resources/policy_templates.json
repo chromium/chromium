@@ -21694,7 +21694,7 @@
       'supported_on': ['chrome_os:69-'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True
+        'per_profile': False
       },
       'example_value': {
         'time_window_limit': {
@@ -23349,7 +23349,7 @@
       'supported_on': ['chrome_os:73-'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True
+        'per_profile': False
       },
       'example_value': {
         'current_config': {
@@ -25990,7 +25990,7 @@
       'supported_on': ['chrome_os: 80-'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True
+        'per_profile': False
       },
       'example_value': {
         'app_limits': [
@@ -26501,7 +26501,7 @@
       'id': 658,
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True
+        'per_profile': False
       },
       'deprecated': True,
       'type':  'dict',
@@ -26575,7 +26575,7 @@
       'id': 762,
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True
+        'per_profile': False
       },
       'type':  'dict',
       'schema': {
@@ -27934,7 +27934,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'tags': [],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True,
+        'per_profile': False,
       },
       'example_value': '333024512',
       'id': 790,
