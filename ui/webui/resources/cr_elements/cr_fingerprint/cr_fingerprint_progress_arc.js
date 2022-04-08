@@ -34,11 +34,11 @@
     'rgba(95, 99, 104, 1.0)';
 
 /**
- * The light-mode color of the progress circle background: Google Grey 300.
+ * The light-mode color of the progress circle background: Google Grey 200.
  * @type {string}
  */
 /* #export */ const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT =
-    'rgba(218, 220, 224, 1.0)';
+    'rgba(232, 234, 237, 1.0)';
 
 /**
  * The dark-mode color of the setup progress arc: Google Blue 400.
@@ -358,8 +358,9 @@ Polymer({
           FINGERPRINT_TICK_LIGHT_URL;
       return;
     }
-    scanningAnimation.animationUrl =
-        'chrome://theme/IDR_FINGERPRINT_ICON_ANIMATION';
+    scanningAnimation.animationUrl = this.isDarkModeActive_ ?
+        'chrome://theme/IDR_FINGERPRINT_ICON_ANIMATION_DARK' :
+        'chrome://theme/IDR_FINGERPRINT_ICON_ANIMATION_LIGHT';
   },
 
   /**
@@ -410,7 +411,9 @@ Polymer({
    */
   animateScanProgress_() {
     this.$.fingerprintScanned.hidden = false;
+    this.$.scanningAnimation.hidden = true;
     this.updateTimerId_ = window.setTimeout(() => {
+      this.$.scanningAnimation.hidden = false;
       this.$.fingerprintScanned.hidden = true;
     }, FINGERPRINT_SCAN_SUCCESS_MS);
   },
