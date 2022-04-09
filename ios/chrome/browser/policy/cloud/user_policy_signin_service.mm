@@ -16,6 +16,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -86,7 +87,10 @@ void UserPolicySigninService::TryInitialize() {
   // (http://crbug.com/316229).
   scoped_identity_manager_observation_.Observe(identity_manager());
 
-  if (!CanApplyPolicies(/*check_for_refresh_token=*/false)) {
+  if (!IsUserPolicyEnabled() ||
+      !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
+    // Clear existing user policies if the feature is disabled or if policies
+    // can no longer be applied.
     ShutdownUserCloudPolicyManager();
     return;
   }

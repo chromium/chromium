@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -40,6 +41,8 @@ enum AuthenticationState {
   CLEAR_DATA,
   SIGN_IN,
   COMMIT_SYNC,
+  REGISTER_FOR_USER_POLICY,
+  FETCH_USER_POLICY,
   COMPLETE_WITH_SUCCESS,
   COMPLETE_WITH_FAILURE,
   CLEANUP_BEFORE_DONE,
@@ -100,9 +103,17 @@ enum AuthenticationState {
   // includes sync.
   BOOL _shouldShowManagedConfirmation;
   BOOL _shouldCommitSync;
+  // YES if user policies have to be fetched.
+  BOOL _shouldFetchUserPolicy;
+
   Browser* _browser;
   ChromeIdentity* _identityToSignIn;
   NSString* _identityToSignInHostedDomain;
+
+  // Token to have access to user policies from dmserver.
+  NSString* _dmToken;
+  // ID of the client that is registered for user policy.
+  NSString* _clientID;
 
   // This AuthenticationFlow keeps a reference to |self| while a sign-in flow is
   // is in progress to ensure it outlives any attempt to destroy it in
@@ -180,6 +191,8 @@ enum AuthenticationState {
     case CLEAR_DATA:
     case SIGN_IN:
     case COMMIT_SYNC:
+    case REGISTER_FOR_USER_POLICY:
+    case FETCH_USER_POLICY:
       return COMPLETE_WITH_FAILURE;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -242,6 +255,17 @@ enum AuthenticationState {
       else
         return COMPLETE_WITH_SUCCESS;
     case COMMIT_SYNC:
+      if (policy::IsUserPolicyEnabled() && _shouldFetchUserPolicy)
+        return REGISTER_FOR_USER_POLICY;
+      return COMPLETE_WITH_SUCCESS;
+    case REGISTER_FOR_USER_POLICY:
+      if ([_dmToken length] == 0) {
+        // Skip fetching user policies when registration failed.
+        return COMPLETE_WITH_SUCCESS;
+      }
+      // Fetch user policies when registration is successful.
+      return FETCH_USER_POLICY;
+    case FETCH_USER_POLICY:
       return COMPLETE_WITH_SUCCESS;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -315,6 +339,18 @@ enum AuthenticationState {
     case COMMIT_SYNC:
       [_performer commitSyncForBrowserState:browserState];
       [self continueSignin];
+      return;
+
+    case REGISTER_FOR_USER_POLICY:
+      [_performer registerUserPolicy:browserState
+                         forIdentity:_identityToSignIn];
+      return;
+
+    case FETCH_USER_POLICY:
+      [_performer fetchUserPolicy:browserState
+                      withDmToken:_dmToken
+                         clientID:_clientID
+                         identity:_identityToSignIn];
       return;
 
     case COMPLETE_WITH_SUCCESS:
@@ -473,6 +509,7 @@ enum AuthenticationState {
       [hostedDomain length] > 0 &&
       (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
   _identityToSignInHostedDomain = hostedDomain;
+  _shouldFetchUserPolicy = YES;
   [self continueSignin];
 }
 
@@ -495,6 +532,22 @@ enum AuthenticationState {
 
 - (void)didCancelManagedConfirmation {
   [self cancelFlow];
+}
+
+- (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
+                                   clientID:(NSString*)clientID {
+  DCHECK_EQ(REGISTER_FOR_USER_POLICY, _state);
+  DCHECK(clientID.length);
+
+  _dmToken = dmToken;
+  _clientID = clientID;
+  [self continueSignin];
+}
+
+- (void)didFetchUserPolicyWithSuccess:(BOOL)success {
+  DCHECK_EQ(FETCH_USER_POLICY, _state);
+  DLOG_IF(ERROR, !success) << "Error fetching policy for user";
+  [self continueSignin];
 }
 
 - (void)dismissPresentingViewControllerAnimated:(BOOL)animated

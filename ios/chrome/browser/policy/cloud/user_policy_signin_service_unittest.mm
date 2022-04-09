@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -19,7 +20,6 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -31,6 +31,7 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/test/testing_application_context.h"
@@ -109,6 +110,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
   }
 
   void SetUp() override {
+    command_line_ = std::make_unique<base::test::ScopedCommandLine>();
+    policy::EnableUserPolicy();
+
     device_management_service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
@@ -125,7 +129,6 @@ class UserPolicySigninServiceTest : public PlatformTest {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterBrowserStatePrefs(prefs->registry());
-    prefs->registry()->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
 
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(
@@ -281,6 +284,8 @@ class UserPolicySigninServiceTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<base::test::ScopedCommandLine> command_line_;
+
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<MockUserCloudPolicyStore> mock_store_ = nullptr;  // Not owned.
   SchemaRegistry schema_registry_;
@@ -366,6 +371,31 @@ TEST_F(UserPolicySigninServiceTest,
   // Expect that the UserCloudPolicyManager isn't initialized because the user
   // was signed in with a managed account but not syncing, hence not eligible
   // for user policy.
+  EXPECT_FALSE(manager_->core()->service());
+}
+
+// Tests that the user policy manager isn't initialized when the user policy
+// feature is disabled despite the account being eligible for user policy.
+TEST_F(UserPolicySigninServiceTest,
+       DontRegisterDuringInitializationBecauseFeatureDisabled) {
+  // Disable the user policy feature by clearing the commandline arguments.
+  command_line_.reset();
+
+  // Set the user as syncing with a managed account.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(kManagedTestUser);
+  identity_test_env()->SetPrimaryAccount(kManagedTestUser,
+                                         signin::ConsentLevel::kSync);
+
+  // Initialize UserPolicySigninService when the feature is disabled which
+  // will result in shutting down the manager and clearing the store.
+  EXPECT_CALL(*mock_store_, Clear());
+  InitUserPolicySigninService();
+  Mock::VerifyAndClearExpectations(mock_store_);
+
+  // Expect that the UserCloudPolicyManager isn't initialized because the user
+  // was signed in with a managed account but the user policy feature was
+  // disabled.
   EXPECT_FALSE(manager_->core()->service());
 }
 

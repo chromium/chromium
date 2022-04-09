@@ -24,6 +24,8 @@ source_set("policy") {
     "cloud/user_policy_signin_service.mm",
     "cloud/user_policy_signin_service_factory.h",
     "cloud/user_policy_signin_service_factory.mm",
+    "cloud/user_policy_switch.h",
+    "cloud/user_policy_switch.mm",
     "cloud_policy_client_observer_bridge.h",
     "cloud_policy_client_observer_bridge.mm",
     "configuration_policy_handler_list_factory.h",

@@ -562,6 +562,13 @@ class CloudPolicyClientTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void VerifyQueryParameter() {
+#if !BUILDFLAG(IS_IOS)
+    EXPECT_THAT(query_params_,
+                Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+#endif
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   DeviceManagementService::JobConfiguration::JobType job_type_;
   DeviceManagementService::JobConfiguration::ParameterMap query_params_;
@@ -639,8 +646,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -708,8 +714,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetRegistrationRequest().SerializePartialAsString());
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -748,8 +753,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetRegistrationRequest().SerializePartialAsString());
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -761,8 +765,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -855,8 +858,7 @@ TEST_F(CloudPolicyClientTest, RegistrationParametersPassedThrough) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             registration_request.SerializePartialAsString());
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(kClientID, client_id_);
 }
 
@@ -878,8 +880,7 @@ TEST_F(CloudPolicyClientTest, RegistrationNoToken) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetRegistrationRequest().SerializePartialAsString());
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_FALSE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
@@ -1144,8 +1145,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             policy_request.SerializePartialAsString());
   CheckPolicyResponse(policy_response);
@@ -1503,8 +1503,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWithOAuthToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadStatusRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -1523,8 +1522,10 @@ TEST_F(CloudPolicyClientTest, UploadStatusWithOAuthToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+#if !BUILDFLAG(IS_IOS)
   EXPECT_THAT(query_params_,
               Not(Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken))));
+#endif
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadStatusRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -2358,8 +2359,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermission) {
                 TYPE_ATTRIBUTE_UPDATE_PERMISSION,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_permission_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -2390,8 +2390,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdate) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE,
             job_type_);
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_request.SerializePartialAsString());
@@ -2456,8 +2455,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetReregistrationRequest().SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
@@ -2500,8 +2498,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  EXPECT_THAT(query_params_,
-              Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
+  VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetReregistrationRequest().SerializePartialAsString());
   EXPECT_FALSE(client_->is_registered());

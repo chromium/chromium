@@ -48,6 +48,15 @@
                      animated:(BOOL)animated
                    completion:(ProceduralBlock)completion;
 
+// Indicates the account of the user was registered for user policy. `dmToken`
+// is empty when registration failed.
+- (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
+                                   clientID:(NSString*)clientID;
+
+// Indicates that user policies were fetched. `success` is true when the fetch
+// was successful.
+- (void)didFetchUserPolicyWithSuccess:(BOOL)success;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
 
-
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
@@ -81,6 +80,14 @@ class ChromeBrowserState;
                  withCompletion:(ProceduralBlock)callback
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser;
+
+- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+               forIdentity:(ChromeIdentity*)identity;
+
+- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+            withDmToken:(NSString*)dmToken
+               clientID:(NSString*)clientID
+               identity:(ChromeIdentity*)identity;
 
 @property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>
     delegate;

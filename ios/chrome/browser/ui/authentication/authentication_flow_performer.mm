@@ -22,6 +22,9 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -40,6 +43,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/web/public/web_state.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -443,6 +447,61 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     return;
   }
   _alertCoordinator = nil;
+}
+
+- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+               forIdentity:(ChromeIdentity*)identity {
+  // Should only fetch user policies when the feature is enabled.
+  DCHECK(policy::IsUserPolicyEnabled());
+
+  std::string userEmail = base::SysNSStringToUTF8([identity userEmail]);
+  CoreAccountId accountID =
+      IdentityManagerFactory::GetForBrowserState(browserState)
+          ->PickAccountIdForAccount(base::SysNSStringToUTF8([identity gaiaID]),
+                                    userEmail);
+
+  policy::UserPolicySigninService* userPolicyService =
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+
+  __weak __typeof(self) weakSelf = self;
+  userPolicyService->RegisterForPolicyWithAccountId(
+      userEmail, accountID,
+      base::BindOnce(^(const std::string& dmToken,
+                       const std::string& clientID) {
+        [weakSelf.delegate
+            didRegisterForUserPolicyWithDMToken:base::SysUTF8ToNSString(dmToken)
+                                       clientID:base::SysUTF8ToNSString(
+                                                    clientID)];
+      }));
+}
+
+- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+            withDmToken:(NSString*)dmToken
+               clientID:(NSString*)clientID
+               identity:(ChromeIdentity*)identity {
+  // Should only fetch user policies when the feature is enabled.
+  DCHECK(policy::IsUserPolicyEnabled());
+
+  // Need a `dmToken` and a `clientID` to fetch user policies.
+  DCHECK([dmToken length] > 0);
+  DCHECK([clientID length] > 0);
+
+  policy::UserPolicySigninService* policy_service =
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+  const std::string userEmail = base::SysNSStringToUTF8([identity userEmail]);
+
+  AccountId accountID = AccountId::FromUserEmailGaiaId(
+      gaia::CanonicalizeEmail(userEmail),
+      base::SysNSStringToUTF8([identity gaiaID]));
+
+  __weak __typeof(self) weakSelf = self;
+  policy_service->FetchPolicyForSignedInUser(
+      accountID, base::SysNSStringToUTF8(dmToken),
+      base::SysNSStringToUTF8(clientID),
+      browserState->GetSharedURLLoaderFactory(),
+      base::BindOnce(^(bool success) {
+        [weakSelf.delegate didFetchUserPolicyWithSuccess:success];
+      }));
 }
 
 #pragma mark - ImportDataControllerDelegate

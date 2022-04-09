@@ -23,6 +23,10 @@ class UserPolicySigninService;
 
 // Singleton that owns all UserPolicySigninServices and creates/deletes them as
 // new BrowserStates are created/shutdown.
+//
+// Warning: ONLY use the service when Enterprise Policy is enabled where
+// the policy system objects are enabled (eg. the BrowserPolicyConnector object
+// was instantiated).
 class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   // Returns an instance of the UserPolicySigninServiceFactory singleton.
@@ -51,6 +55,9 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:
+  bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
+
   friend struct base::DefaultSingletonTraits<UserPolicySigninServiceFactory>;
 
   UserPolicySigninServiceFactory();

@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -59,12 +60,20 @@ void UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
 std::unique_ptr<KeyedService>
 UserPolicySigninServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
+  // Check that the service is only created when Enterprise Policy is enabled.
+  DCHECK(IsEnterprisePolicyEnabled());
+
   BrowserPolicyConnector* connector =
       GetApplicationContext()->GetBrowserPolicyConnector();
+  // Consistency check to make sure that the BrowserPolicyConnector is available
+  // when Enterprise Policy is enabled.
+  DCHECK(connector);
+
   DeviceManagementService* device_management_service =
       g_device_management_service_for_testing
           ? g_device_management_service_for_testing
           : connector->device_management_service();
+  DCHECK(device_management_service);
 
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
@@ -80,6 +89,18 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
 void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
+}
+
+bool UserPolicySigninServiceFactory::ServiceIsCreatedWithBrowserState() const {
+  // When Enterprise Policy is enabled, initialize the UserPolicySigninService
+  // early when creating the BrowserState. This will make sure that the user
+  // polices are fetched if there is no cache at startup when the account is
+  // already syncing and eligible for user policy.
+  return IsEnterprisePolicyEnabled();
+}
+
+bool UserPolicySigninServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace policy
