@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1001033507375626788">یہ نیٹ ورک آپ کے ساتھ اشتراک کردہ ہے</translation>
-<translation id="1001307489511021749">‏آپ کی ایپس، ترتیبات اور دیگر حسب ضرورت تبدیلیاں ان تمام Chrome OS آلات میں مطابقت پذیری کی جائے گی جن میں آپ اپنے Google اکاؤنٹ کے ساتھ سائن ان ہیں۔</translation>
 <translation id="1003088604756913841">لنک کو نئی <ph name="APP" /> ونڈو میں کھولیں</translation>
 <translation id="100323615638474026">‏USB آلہ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">سائٹ تک رسائی</translation>
@@ -450,7 +449,6 @@
 <translation id="1429300045468813835">سبھی کو صاف کر دیا گیا</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1431188203598586230">فائنل سافٹ ویئر کی اپ ڈیٹ</translation>
-<translation id="1431432486300429272">‏تلاش اور دیگر Google سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی براؤزنگ سرگزشت کا استعمال کر سکتا ہے۔ آپ اور آپ کے والدین کسی بھی وقت اسے myaccount.google.com/activitycontrols/search پر تبدیل کر سکتے ہیں</translation>
 <translation id="1432581352905426595">سرچ انجنز کا نظم کریں</translation>
 <translation id="1433811987160647649">رسائی حاصل کرنے سے پہلے پوچھیں</translation>
 <translation id="1434696352799406980">یہ آپ کے ابتدائی صفحہ، نئے ٹیب کے صفحہ، سرچ انجن اور پن کردہ ٹیبز کو دوبارہ ترتیب دے گا۔ یہ سبھی ایکسٹینشنز کو غیر فعال اور کوکیز جیسے عارضی ڈیٹا کو صاف بھی کر دے گا۔ آپ کے بُک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز کو صاف نہیں کیا جائے گا۔</translation>
@@ -781,6 +779,7 @@
 <translation id="1736419249208073774">دریافت کریں</translation>
 <translation id="1737968601308870607">فائل بگ</translation>
 <translation id="1739684185846730053">رازداری سینڈ باکس ٹرائلز کا ڈیولپمنٹ ابھی بھی جاری ہے اور یہ منتخب علاقوں میں دستیاب ہیں۔ ابھی کے لئے، سائٹس فریق ثالث کوکیز جیسی موجودہ ویب ٹیکنالوجیز کا استعمال جاری رکھتے ہوئے رازداری سینڈ باکس کو آزما کر دیکھ سکتی ہیں۔</translation>
+<translation id="1741190788710022490">اڈاپٹیو چارجنگ</translation>
 <translation id="174123615272205933">حسب ضرورت</translation>
 <translation id="1741314857973421784">جاری رکھیں</translation>
 <translation id="1743970419083351269">ڈاؤن لوڈز بار بند کریں</translation>
@@ -797,7 +796,6 @@
 <translation id="175196451752279553">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
 <translation id="1753067873202720523">‏آن ہونے پر ممکن ہے آپ کی Chromebook چارج نہ ہو۔</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
-<translation id="1755395545337105369">‏ChromeOS Flex کی ترتیبات کی مطابقت پذیری</translation>
 <translation id="1755601632425835748">متن کا سائز</translation>
 <translation id="1755872274219796698">پاس ورڈز منتقل کریں</translation>
 <translation id="1757132445735080748">‏Linux کا سیٹ اپ مکمل کرنے کیلئے، ChromeOS Flex کو اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</translation>
@@ -1621,6 +1619,7 @@
 <translation id="2530166226437958497">ٹربل شوٹنگ</translation>
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />کچھ غلط ہو گیا اور <ph name="DEVICE_OS" /> انسٹال نہیں کیا جا سکا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کے ليے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532144599248877204">آپ کی بیٹری کو تقریباً %80 رکھ کر بیٹری لائف بڑھاتا ہے۔ عام طور پر آپ کے پاور سے غیر منسلک ہونے سے پہلے بیٹری مکمل طور پر چارج ہو جائے گی۔</translation>
 <translation id="2532198298278778531">‏ChromeOS Flex کی ترتیبات میں محفوظ DNS کا نظم کریں</translation>
 <translation id="2532589005999780174">زیادہ تضاد وضع</translation>
 <translation id="2533649878691950253">اس سائٹ کو آپ کا قطعی مقام جاننے سے روک دیا گیا تھا کیونکہ آپ عام طور پر اس کی اجازت نہیں دیتے ہیں</translation>
@@ -2265,7 +2264,6 @@
 <translation id="3162853326462195145">اسکول کا اکاؤنٹ</translation>
 <translation id="3162899666601560689">سائٹس آپ کے براؤزنگ کے تجربہ کو، مثال کے طور پر، آپ کو سائن ان رکھنے یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنے کے لیے، بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> وینڈر کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
-<translation id="3163254451837720982">مندرجہ ذیل سروسز آپ کے ڈیٹا کو محفوظ اور مامون رکھنے میں مدد کرتی ہیں۔ آپ ان خصوصیات کو کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="3163511056918491211">‏آسانی سے کسی بھی وقت اپنا ڈیٹا بحال یا آلات سوئچ کریں۔ آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
 <translation id="3164329792803560526">اس ٹیب کا اشتراک<ph name="APP_NAME" /> کے ساتھ کیا جا رہا ہے</translation>
 <translation id="3165390001037658081">کچھ کیریئر اس خصوصیت کو مسدود کر سکتے ہیں۔</translation>
@@ -2492,7 +2490,6 @@
 <translation id="3423858849633684918">براہ کرم <ph name="PRODUCT_NAME" /> کو دوبارہ لانچ کریں</translation>
 <translation id="3424969259347320884">بتائیں کہ ٹیب کے ناکام ہونے پر آپ کیا کر رہے تھے</translation>
 <translation id="3427092606871434483">اجازت دیں (ڈیفالٹ)</translation>
-<translation id="3428419049384081277">آپ سائن ان ہیں!</translation>
 <translation id="3429086384982427336">ذیل میں درج ایپس کبھی بھی پروٹوکول لنکس کو ہینڈل نہیں کریں گی۔</translation>
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3429271624041785769">ویب مواد کی زبانیں</translation>
@@ -4370,6 +4367,7 @@
 <translation id="5278823018825269962">‏اسٹیٹس Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> کیلئے اسناد اپ ڈیٹ کریں</translation>
 <translation id="5280243692621919988">سبھی ونڈوز بند کرنے پر کوکیز اور سائٹ کا ڈیٹا صاف کریں</translation>
+<translation id="5280335021886535443">اس بلبلے پر فوکس کرنے کے لیے |<ph name="ACCELERATOR" />| دبائیں۔</translation>
 <translation id="5280426389926346830">شارٹ کٹ بنائیں؟</translation>
 <translation id="5281013262333731149">اس میں کھلتا ہے: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">‏Android ایپس ڈاؤن لوڈ اور استعمال کرنے کیلئے، پہلے آپ کو یہ مطلوبہ اپ ڈیٹ انسٹال کرنا ہوگا۔ آپ کا <ph name="DEVICE_TYPE" /> آلہ اپ ڈیٹ ہونے کے دوران، آپ اس کا استعمال نہیں کر سکتے۔ انسٹالیشن مکمل ہونے کے بعد، آپ کا <ph name="DEVICE_TYPE" /> ری اسٹارٹ ہوگا۔</translation>
@@ -4803,7 +4801,6 @@
 <translation id="5692183275898619210">پرنٹنگ مکمل ہو گئی</translation>
 <translation id="5695184138696833495">‏Linux Android ایپ ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" کی جانب سے بیجا استعمال کی اطلاع دیں</translation>
-<translation id="5696177755977520104">‏Chrome OS کی ترتیبات کی مطابقت پذیری</translation>
 <translation id="5696679855467848181">‏موجودہ PPD فائل زیر استعمال ہے: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ایموجی منتخب کنندہ</translation>
 <translation id="570043786759263127">‏Google Play ایپس اور سروسز</translation>
@@ -5215,7 +5212,6 @@
 <translation id="6104068876731806426">‏Google اکاؤنٹس</translation>
 <translation id="6104311680260824317">‏ڈومین میں آلہ کو شامل نہیں کیا جا سکا۔ سرور متعین Kerberos مرموز کاری کی اقسام کو سپورٹ نہیں کرتا ہے۔ مرموز کاری کی ترتیبات کے لیے "مزید احتیارات" چیک کریں۔</translation>
 <translation id="6104796831253957966">پرنٹر کی قطار فُل ہے</translation>
-<translation id="6105994589138235234">‏Chrome براؤزر کی مطابقت پذیری</translation>
 <translation id="6111972606040028426">‏Google اسسٹنٹ کو فعال کریں</translation>
 <translation id="6112294629795967147">سائز تبدیل کرنے کے لیے ٹچ کریں</translation>
 <translation id="6112727384379533756">ٹکٹ شامل کریں</translation>
@@ -5326,6 +5322,7 @@
 <translation id="622537739776246443">پروفائل حذف کر دیا جائے گا</translation>
 <translation id="6225475702458870625">آپ کے <ph name="PHONE_NAME" /> سے ڈیٹا کنکشن دستیاب ہے</translation>
 <translation id="6226777517901268232">نجی کلیدی فائل (اختیاری)</translation>
+<translation id="6227002569366039565">اس بلبلے پر فوکس کرنے کے لیے |<ph name="ACCELERATOR" />| دبائیں اور جس عنصر پر یہ اشارہ کر رہا ہے اس کی طرف فوکس کرنے کے لیے اسے دوبارہ دبائیں۔</translation>
 <translation id="6227280783235722609">ایکسٹینشن</translation>
 <translation id="6229849828796482487">‏Wi-Fi نیٹ ورک کو غیر منسلک کریں</translation>
 <translation id="6231782223312638214">تجویز کردہ</translation>
@@ -5352,6 +5349,7 @@
 <translation id="6243774244933267674">سرور دستیاب نہیں ہے</translation>
 <translation id="6244245036423700521">‏ONC فائل درآمد کریں</translation>
 <translation id="6246790815526961700">آلے سے اپ لوڈ کریں</translation>
+<translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6247620186971210352">کوئی ایپ نہیں ملی</translation>
 <translation id="6247708409970142803">‎<ph name="PERCENTAGE" />%‎</translation>
 <translation id="6247802389331535091">سسٹم: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -5426,7 +5424,6 @@
 <translation id="6313950457058510656">فوری ٹیدرنگ آف کریں</translation>
 <translation id="6314819609899340042">آپ نے اس <ph name="IDS_SHORT_PRODUCT_NAME" /> آلہ پر ڈیبگ کرنے کی خصوصیت کامیابی کے ساتھ فعال کر دی ہے۔</translation>
 <translation id="6315493146179903667">سب کو آگے لائیں</translation>
-<translation id="6317318380444133405">مزید تعاون یافتہ نہیں ہے۔</translation>
 <translation id="6317369057005134371">ایپلیکیشن ونڈو کا انتظار ہے…</translation>
 <translation id="6318125393809743217">‏پالیسی کنفیگریشنز کے ساتھ policies.json فائل شامل کریں۔</translation>
 <translation id="6318407754858604988">ڈاؤن لوڈ شروع ہو گیا</translation>
@@ -5622,7 +5619,6 @@
 <translation id="6514565641373682518">اس صفحہ نے آپ کے ماؤس کرسر کو غیر فعال کر دیا ہے۔</translation>
 <translation id="6518014396551869914">تصویر &amp;کاپی کریں</translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
-<translation id="6519304021460270639">‏آپ کی ایپس، ترتیبات، اور دیگر کسٹمائزیشنز آپ کے Google اکاؤنٹ کے ساتھ سائن ان کردہ تمام ChromeOS Flex آلات پر مطابقت پذیر ہو جائیں گے۔</translation>
 <translation id="651942933739530207">کیا آپ چاہتے ہیں کہ <ph name="APP_NAME" /> آپ کی اسکرین اور آڈیو آؤٹ پٹ کا اشتراک کرے؟</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5651,7 +5647,6 @@
 <translation id="653920215766444089">پوائنٹنگ آلات کی تلاش کی جا رہی ہے</translation>
 <translation id="653983593749614101">دوبارہ شروع ہو رہا ہے...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> صرف اس وقت فعال کریں جب آپ کو معلوم ہو کہ آپ کیا کر رہے ہیں یا اگر آپ سے ایسا کرنے کو کہا گیا ہو، کیونکہ ڈیٹا جمع کرنے سے کارکردگی کم ہو سکتی ہے۔</translation>
-<translation id="6540672086173674880">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی براؤزنگ کی سرگزشت کا استعمال کر سکتا ہے۔ آپ myaccount.google.com/activitycontrols/search پر اسے کسی بھی وقت تبدیل کر سکتے ہيں</translation>
 <translation id="6541638731489116978">اس سائٹ کو آپ کے موشن سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="6545665334409411530">تکرار کی شرح</translation>
 <translation id="6545867563032584178">‏Mac سسٹم کی ترجیحات میں مائیکروفون آف ہے</translation>
@@ -5758,7 +5753,6 @@
 <translation id="6644512095122093795">پاس ورڈز محفوظ کرنے کی پیشکش کریں</translation>
 <translation id="6644513150317163574">‏URL کا غلط فارمیٹ۔ SSO کی تصدیق استعمال کیے جانے پر ایک میزبان نام کے طور پر سرور کا تعین ہونا ضروری ہے۔</translation>
 <translation id="6644846457769259194">آپ کے آلہ کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6645437135153136856">‏منتخب کردہ Google کلاؤڈ پرنٹ آلہ مزید تعاون یافتہ نہیں ہے۔ <ph name="BR" /> اپنے کمپیوٹر کے سسٹم کی ترتیبات میں پرنٹر کو سیٹ کر کے آزمائيں۔</translation>
 <translation id="6646476869708241165">فاسٹ پئیر آف کریں</translation>
 <translation id="6647228709620733774">‏Netscape سرٹیفکیشن اتھارٹی کا منسوخی URL</translation>
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
@@ -6247,7 +6241,6 @@
 <translation id="7121728544325372695">اسمارٹ ڈیشز</translation>
 <translation id="7123030151043029868">خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کی اجازت ہے</translation>
 <translation id="7123302939607518173">اگر آپ کو لگتا ہے کہ آئٹم سے متعلقہ اشتہارات آپ کے لیے مفید ہوں گے تو کسی دلچسپی یا سائٹ کو شامل کریں۔</translation>
-<translation id="7123360114020465152">مزید تعاون یافتہ نہیں ہے</translation>
 <translation id="7124013154139278147">"پچھلے" کیلئے سوئچ تفویض کریں</translation>
 <translation id="7125029162161377569">رازداری سینڈ باکس کے ٹرائلز کے ساتھ، سائٹس آپ کی کم معلومات کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کر سکتی ہیں۔ اس کا مطلب ہے کہ آپ کے لیے زیادہ رازداری اور کم کراس سائٹ ٹریکنگ۔ نئے ٹرائلز کے تیار ہوتے ہی ہم انہیں شامل کر دیں گے۔</translation>
 <translation id="7125148293026877011">‏Crostini حذف کریں</translation>
@@ -6321,7 +6314,6 @@
 <translation id="7219473482981809164">ہمیں ڈاؤن لوڈ کے لیے متعدد دستیاب پروفائلز ملی ہیں۔ آگے بڑھنے سے پہلے اس ایک کو منتخب کریں جسے آپ ڈاؤن لوڈ کرنا چاہتے ہیں۔</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{کوئی کمزور پاس ورڈ نہیں}=1{1 کمزور پاس ورڈ}other{{NUM_WEAK} کمزور پاس ورڈز}}</translation>
 <translation id="7220019174139618249">پاس ورڈ کو "<ph name="FOLDER" />" پر برآمد نہیں کر سکتے</translation>
-<translation id="722055596168483966">‏Google سروسز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="722099540765702221">چارجنگ کا ماخذ</translation>
 <translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="7222204278952406003">‏Chrome آپ کا ڈیفالٹ براؤزر ہے</translation>
@@ -6354,6 +6346,8 @@
 <translation id="7251346854160851420">ڈیفالٹ وال پیپر</translation>
 <translation id="7251635775446614726">آپ کے منتظم کے مطابق: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467">‏<ph name="WEBSITE" /> نے آپ کی سیکیورٹی کلید جاری کی اور اس کا ID نمبر جاننا چاہتی ہے۔ سائٹ کو واضح طور پر معلوم ہو جائے گا کہ آپ کون سی سیکیورٹی کلید کا استعمال کر رہے ہیں۔</translation>
+<translation id="7252023374029588426">ہدایات کے ساتھ ٹیوٹوریل بلبلوں کا ایک سلسلہ دکھایا جائے گا۔
+          کسی بلبلے پر فوکس کرنے کے لیے |<ph name="ACCELERATOR" />| دبائیں اور جس عنصر پر یہ اشارہ کر رہا ہے اس کی طرف فوکس کرنے کے لیے اسے دوبارہ دبائیں۔</translation>
 <translation id="7253521419891527137">مزید &amp;جانیں</translation>
 <translation id="7254951428499890870">کیا آپ واقعی "<ph name="APP_NAME" />" کو تشخیصی وضع میں شروع کرنا چاہتے ہیں؟</translation>
 <translation id="725497546968438223">بُک مارک فولڈر بٹن</translation>
@@ -6943,7 +6937,6 @@
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
 <translation id="7818135753970109980">نیا تھیم شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
-<translation id="7819992334107904369">Chrome Sync</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
 <translation id="782057141565633384">ویڈیو پتہ کا&amp;پی کریں</translation>
 <translation id="7822187537422052256">کیا آپ واقعی اس پتے کو ہٹانا چاہتے ہیں؟</translation>
@@ -7011,7 +7004,6 @@
 <translation id="7881483672146086348">اکاؤنٹ دیکھیں</translation>
 <translation id="7883792253546618164">کسی بھی وقت اَن سبسکرائب کریں۔</translation>
 <translation id="788453346724465748">اکاؤنٹ کی معلومات لوڈ ہورہی ہے...</translation>
-<translation id="7885253890047913815">حالیہ منزلیں</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ایک آئٹم}other{# آئٹمز}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">کلیدی رازداری اور سیکیورٹی کنٹرولز کا ایک زیر رہنمائی ٹور کریں۔ مزید اختیارات کے لیے، انفرادی ترتیبات پر جائیں۔</translation>
@@ -7473,6 +7465,7 @@
 <translation id="8330617762701840933">ان ویب سائٹس کی فہرست جو متبادل براؤزر پر ری ڈائریکٹ ہوتی ہیں۔</translation>
 <translation id="8330689128072902965">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ تبدیل کرنے کے لیے کلک کریں۔</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{تعاون یافتہ فائل کی قسم: <ph name="FILE_TYPE1" />}=2{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />}=3{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />}=4{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" />}other{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />اور {OVERFLOW_COUNT} مزید<ph name="END_LINK" />)}}</translation>
+<translation id="8331822764922665615">‏اپنے گروپ کو نام دیں، ایک رنگ منتخب کریں پھر Esc دبائیں</translation>
 <translation id="833256022891467078">‏Crostini کے اشتراک کردہ فولڈرز</translation>
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
 <translation id="8336407002559723354">اپ ڈیٹس <ph name="MONTH_AND_YEAR" /> کو ختم ہو جائیں گی</translation>
@@ -7547,6 +7540,7 @@
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
 <translation id="8413385045638830869">پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="8414249071344507766">دو دنوں کے لیے مخفی میموریز</translation>
+<translation id="8414685983518053656">نوٹس</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (کیس)</translation>
 <translation id="8417548266957501132">والد/والدہ کا پاس ورڈ</translation>
 <translation id="8418445294933751433">ٹیب کے بطور &amp;دکھائیں</translation>
@@ -7921,7 +7915,6 @@
 <translation id="8795916974678578410">نئی ونڈو</translation>
 <translation id="8797459392481275117">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
-<translation id="8800004011501252845">منزلیں دکھائی جا رہی ہیں برائے</translation>
 <translation id="8800034312320686233">سائٹ کام نہیں کر رہی ہے؟</translation>
 <translation id="8803526663383843427">آن ہونے پر</translation>
 <translation id="8803953437405899238">ایک کلک سے ایک نیا ٹیب کھولیں</translation>
@@ -8122,7 +8115,6 @@
 <translation id="8991520179165052608">سائٹ آپ کا مائیکروفون استعمال کر سکتی ہے</translation>
 <translation id="899384117894244799">محدود صارف کو ہٹائیں</translation>
 <translation id="899403249577094719">‏Netscape سرٹیفکیٹ بیس URL</translation>
-<translation id="8996526648899750015">اکاؤنٹ شامل کریں…</translation>
 <translation id="899657321862108550">‏آپ کا Chrome، ہر جگہ ہے</translation>
 <translation id="899676909165543803">فنگر پرنٹ سینسر آپ کے کی بورڈ پر سب سے نیچے دائیں ہاتھ کی کلید ہے۔ اسے کسی بھی انگلی سے ہلکے سے ٹچ کریں۔</translation>
 <translation id="8999560016882908256">سیکشن کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
@@ -8361,7 +8353,6 @@
 <translation id="934244546219308557">اس گروپ کو نام دیں</translation>
 <translation id="934503638756687833">‏ضرورت پڑنے پر، یہاں غیر مندرج آئٹمز کو بھی ہٹا دیا جائے گا۔ Chrome رازداری کے وہائٹ پیپر میں &lt;a href‎="<ph name="URL" />"‎&gt;غیر مطلوبہ سافٹ وئیر کے تحفظ&lt;/a&gt; کے بارے میں مزید جانیں۔</translation>
 <translation id="93480724622239549">بگ یا خرابی</translation>
-<translation id="935490618240037774">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری کی جائے گی تاکہ آپ انہیں اپنے سبھی آلات پر استعمال کر سکیں۔</translation>
 <translation id="935854577147268200">‏Smart Lock کا فون تبدیل ہو گيا ہے۔ Smart Lock اپ ڈیٹ کرنے کے لیے اپنا پاس ورڈ درج کریں۔ اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں</translation>
 <translation id="93610034168535821">سائٹس کے ذریعے استعمال کردہ کل اسٹوریج:</translation>
 <translation id="936646668635477464">کیمرا اور مائیکروفون</translation>

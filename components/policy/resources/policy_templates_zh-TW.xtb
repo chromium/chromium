@@ -1797,6 +1797,9 @@
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
 <translation id="2959469725686993410">解析時區時一律將 Wi-Fi 存取點傳送至伺服器</translation>
+<translation id="2959527429632925933">如果這項政策不存在 (例如，對於未受管理的使用者來說)，系統會啟用 Terminal System App 中的 SSH (安全殼層) 外送用戶端連線功能 (預設為 True)。
+      如果是受管理的使用者，且這項政策設為停用或未設定，則系統會在 Terminal 中停用這項功能。
+      如果將這項政策設為啟用，受管理的使用者就能在 Terminal 中建立外送用戶端 SSH 連線。</translation>
 <translation id="2959898425599642200">Proxy 略過規則</translation>
 <translation id="2960013482187484833">將最近使用的印表機設為列印預覽中的預設選項</translation>
 <translation id="2960128438010718932">分階段套用更新的時程</translation>
@@ -3530,6 +3533,7 @@
 <translation id="4988291787868618635">在達到閒置延遲時間時要採取的動作</translation>
 <translation id="4996068111491152684">使用者無法利用 <ph name="PRODUCT_OS_NAME" />登入憑證進行網路驗證。</translation>
 <translation id="4996086761250834365">允許 <ph name="PLUGIN_VM_NAME" /> 產品分析</translation>
+<translation id="4996161752665479028">啟用 Terminal System App 中的 SSH</translation>
 <translation id="4997074784107449343">在 PDF 文件的列印預覽畫面中，「以圖片形式列印」不是預設選項 (如果有)。</translation>
 <translation id="500149597848135831">啟用所有變化版本</translation>
 <translation id="5017369989680827157">如果將這項政策設為 True 或不設定，使用者即可控制 UI 中的地址自動填入功能。
@@ -4704,6 +4708,7 @@
 <translation id="6368403635025849609">允許這些網站的 JavaScript</translation>
 <translation id="6371561334154580937">在最後一個關閉的視窗上顯示登出對話方塊。</translation>
 <translation id="6372105930898423193">允許重新啟用 AppCache 功能 (即使預設值為停用)。</translation>
+<translation id="6376540107659524656">停用 Terminal System App 中的 SSH</translation>
 <translation id="6376659517206731212">可強制實行</translation>
 <translation id="6377031865393559909">允許使用者使用桌面範本</translation>
 <translation id="6378076389057087301">指定會影響電源管理的音訊活動</translation>
@@ -5090,7 +5095,6 @@
 <translation id="6819838337315703072">在 <ph name="LINUX_OS_NAME" /> 應用程式支援功能開啟的情況下，如果將這項政策設為啟用，系統會將 <ph name="LINUX_OS_NAME" /> 應用程式使用情況相關資訊傳回伺服器。
 
       如果將這項政策設為停用或不設定，則系統不會回報使用資訊。</translation>
-<translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />與「儲存至 Google 雲端硬碟」的目的地</translation>
 <translation id="6823711520976094072">如果設為 1 MB 以下的值或不設定，針對擁有多位使用者的單一裝置，<ph name="PRODUCT_OS_NAME" />會使用 256 MiB 的預設大小快取要安裝的應用程式和擴充功能，讓每位使用者不必重新下載每個應用程式和擴充功能。</translation>
 <translation id="6833023569065717572">如果將這項政策設為 True，裝置登入畫面將使用 24 小時制的時鐘格式。
 
@@ -5793,6 +5797,7 @@
 <translation id="7529332889403151669">指定當裝置從休眠或全黑螢幕回到一般使用狀態時，是否要顯示全螢幕警示。
 
       如果未設定這項政策或設為 True，系統將顯示警示，提醒使用者先結束全螢幕模式再輸入密碼。如果將這項政策設為 False，系統不會顯示警示。</translation>
+<translation id="7531630046107845550">允許 Terminal System App 中的 SSH 外送用戶端連線</translation>
 <translation id="7534199150025803530">這項政策對 Android Google 雲端硬碟應用程式沒有影響。如要禁止透過行動網路連線使用 Google 雲端硬碟，則必須禁止安裝 Android Google 雲端硬碟應用程式。</translation>
 <translation id="7538583957913002726">這項政策預設為啟用，已註冊的裝置會回報 CPU 型號名稱、架構和最高時脈速度；如果搭載 M96 以上版本則會進一步提供 CPU 使用率和溫度資訊。
 
@@ -6858,17 +6863,6 @@
 <translation id="8749536858950505376">將這項政策設為 True 時，系統會將大型游標保持在啟用狀態。將這項政策設為 False 時，系統會將大型游標保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用大型游標，但使用者隨時可以啟用。</translation>
-<translation id="8749803771700374502">系統不會搜尋拒絕清單上列出的印表機類型，也不會擷取這類印表機可支援的列印功能。
-
-      在拒絕清單上列出所有印表機類型的效果與停用列印功能相同，因為這樣一來，系統傳送文件進行列印時，就沒有目的地可供使用。
-
-      在拒絕清單上加入「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」的作用等同於將「<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />」政策設定為 False。如要讓系統搜尋到 <ph name="CLOUD_PRINT_NAME" /> 目的地，「<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />」政策必須設為 True，且拒絕清單中不得包含「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」。
-
-     如果不設定這項政策或將其設為空白，系統將可搜尋到所有印表機類型。
-
-      擴充印表機也稱為列印服務提供者目的地，其中包含所有屬於 <ph name="PRODUCT_NAME" /> 擴充功能的目的地。
-
-      本機印表機也稱為原生列印目的地，其中包含可供本機電腦和共用網路印表機使用的目的地。</translation>
 <translation id="875152232570912762">
       如果在電腦層級將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統會強制將所有受管理帳戶變更為主要帳戶。
       如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統一律會將該帳戶變更為主要帳戶，但其設定檔中可包含次要帳戶。

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1001033507375626788">已与您共享该网络</translation>
-<translation id="1001307489511021749">您的应用、设置和其他自定义项会在您使用 Google 帐号登录的所有 Chrome 操作系统设备上保持同步。</translation>
 <translation id="1003088604756913841">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="100323615638474026">USB 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">有权访问的网站</translation>
@@ -450,7 +449,6 @@
 <translation id="1429300045468813835">已全部清除</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
-<translation id="1431432486300429272">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您或您的家长可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433811987160647649">使用前先询问</translation>
 <translation id="1434696352799406980">这将重置您的启动页、“打开新的标签页”页面、搜索引擎和固定标签页，同时还会停用所有扩展程序并清除临时数据（例如 Cookie）。但是，系统不会清除您的书签、历史记录和保存的密码。</translation>
@@ -792,7 +790,6 @@
 <translation id="175196451752279553">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="1753067873202720523">您的 Chromebook 在处于打开状态时可能无法充电。</translation>
 <translation id="1753905327828125965">常去网站</translation>
-<translation id="1755395545337105369">ChromeOS Flex 设置同步</translation>
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1755872274219796698">移动密码</translation>
 <translation id="1757132445735080748">若要完成 Linux 安装，请更新 ChromeOS Flex 并重试。</translation>
@@ -1121,7 +1118,7 @@
 <translation id="2076269580855484719">隐藏此插件</translation>
 <translation id="2076672359661571384">中（推荐）</translation>
 <translation id="2077129598763517140">使用硬件加速模式（如果可用）</translation>
-<translation id="2078019350989722914">退出前提示 (<ph name="KEY_EQUIVALENT" />)</translation>
+<translation id="2078019350989722914">退出前先发提醒信息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果您删除了自己的某个证书，则不能再用该证书标识自己的身份。</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080070583977670716">更多设置</translation>
@@ -2257,7 +2254,6 @@
 <translation id="3162853326462195145">学校帐号</translation>
 <translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
-<translation id="3163254451837720982">以下服务有助于确保您的数据安全稳妥。您可以随时关闭这些功能。</translation>
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
@@ -2484,7 +2480,6 @@
 <translation id="3423858849633684918">请重新启动 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">请说明此标签页崩溃时您在做什么</translation>
 <translation id="3427092606871434483">允许（默认）</translation>
-<translation id="3428419049384081277">您已登录！</translation>
 <translation id="3429086384982427336">下列应用绝不会处理协议链接。</translation>
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
@@ -4789,7 +4784,6 @@
 <translation id="5692183275898619210">打印完成</translation>
 <translation id="5695184138696833495">Linux Android 应用 ADB</translation>
 <translation id="5696143504434933566">举报“<ph name="EXTENSION_NAME" />”的滥用行为</translation>
-<translation id="5696177755977520104">Chrome 操作系统设置同步</translation>
 <translation id="5696679855467848181">当前正在使用的 PPD 文件：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">表情符号选择器</translation>
 <translation id="570043786759263127">Google Play 应用和服务</translation>
@@ -5200,7 +5194,6 @@
 <translation id="6104068876731806426">Google 帐号</translation>
 <translation id="6104311680260824317">无法将此设备加入到该网域中。相应服务器不支持所指定的 Kerberos 加密类型。请前往“更多选项”以检查加密设置。</translation>
 <translation id="6104796831253957966">打印机队列已满</translation>
-<translation id="6105994589138235234">Chrome 浏览器同步</translation>
 <translation id="6111972606040028426">启用 Google 助理</translation>
 <translation id="6112294629795967147">触摸即可调整大小</translation>
 <translation id="6112727384379533756">添加票据</translation>
@@ -5411,7 +5404,6 @@
 <translation id="6313950457058510656">关闭“即时网络共享”</translation>
 <translation id="6314819609899340042">已在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上成功启用调试功能。</translation>
 <translation id="6315493146179903667">前置全部窗口</translation>
-<translation id="6317318380444133405">已不再受支持。</translation>
 <translation id="6317369057005134371">等待应用窗口…</translation>
 <translation id="6318125393809743217">添加一个包含政策配置的 policies.json 文件。</translation>
 <translation id="6318407754858604988">已开始下载</translation>
@@ -5607,7 +5599,6 @@
 <translation id="6514565641373682518">此网页已隐藏鼠标指针。</translation>
 <translation id="6518014396551869914">复制图片(&amp;Y)</translation>
 <translation id="6518133107902771759">验证</translation>
-<translation id="6519304021460270639">您的应用、设置和其他自定义项会在您使用 Google 帐号登录的所有 ChromeOS Flex 设备上保持同步。</translation>
 <translation id="651942933739530207">您是否想让 <ph name="APP_NAME" /> 共享您的屏幕和音频输出？</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5636,7 +5627,6 @@
 <translation id="653920215766444089">正在搜索指控设备</translation>
 <translation id="653983593749614101">正在恢复…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
-<translation id="6540672086173674880">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6545867563032584178">已在 Mac 系统偏好设置中关闭麦克风</translation>
@@ -5743,7 +5733,6 @@
 <translation id="6644512095122093795">提示保存密码</translation>
 <translation id="6644513150317163574">网址格式无效。使用 SSO 身份验证时，必须将服务器指定为主机名。</translation>
 <translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6645437135153136856">所选的 Google 云打印设备已不再受支持。<ph name="BR" />请尝试在您计算机的系统设置中设置打印机。</translation>
 <translation id="6646476869708241165">关闭快速配对</translation>
 <translation id="6647228709620733774">Netscape 证书授权中心吊销网址</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
@@ -6232,7 +6221,6 @@
 <translation id="7121728544325372695">智能破折号</translation>
 <translation id="7123030151043029868">允许自动下载多个文件</translation>
 <translation id="7123302939607518173">如果您认为与某项兴趣或某个网站相关的广告对您有用，可以添加该兴趣或网站。</translation>
-<translation id="7123360114020465152">已不再受支持</translation>
 <translation id="7124013154139278147">为“上一项”操作分配开关</translation>
 <translation id="7125029162161377569">Privacy Sandbox 试用计划推出后，网站既能减少使用您的信息，又能提供同样出色的浏览体验。这意味着您的隐私会受到更好的保护，而且跨网站跟踪也会减少。一旦新的功能可供试用，我们即会添加相应功能。</translation>
 <translation id="7125148293026877011">删除 Crostini</translation>
@@ -6306,7 +6294,6 @@
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{没有任何安全系数低的密码}=1{有 1 个安全系数低的密码}other{有 {NUM_WEAK} 个安全系数低的密码}}</translation>
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
-<translation id="722055596168483966">对 Google 服务进行个性化设置</translation>
 <translation id="722099540765702221">电源</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
@@ -6928,7 +6915,6 @@
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
 <translation id="7818135753970109980">已添加新主题背景（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
-<translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
 <translation id="7822187537422052256">确定要移除此地址吗？</translation>
@@ -6996,7 +6982,6 @@
 <translation id="7881483672146086348">查看帐号</translation>
 <translation id="7883792253546618164">可随时退订。</translation>
 <translation id="788453346724465748">正在加载帐号信息…</translation>
-<translation id="7885253890047913815">近期使用过的目标打印机</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 项内容}other{# 项内容}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
@@ -7907,7 +7892,6 @@
 <translation id="8795916974678578410">打开新的窗口</translation>
 <translation id="8797459392481275117">一律不翻译此网站</translation>
 <translation id="8798099450830957504">默认</translation>
-<translation id="8800004011501252845">目前显示的是以下帐号的目标打印机：</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8803953437405899238">只需点击一下，即可打开一个新标签页</translation>
@@ -8108,7 +8092,6 @@
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
-<translation id="8996526648899750015">添加帐号…</translation>
 <translation id="899657321862108550">您的“专属”Chrome 浏览器，走到哪带到哪</translation>
 <translation id="899676909165543803">指纹传感器就是键盘右下角的那个按键。请用任一手指轻触该按键。</translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
@@ -8347,7 +8330,6 @@
 <translation id="934244546219308557">为此组命名</translation>
 <translation id="934503638756687833">如有必要，此处未列出的内容也会被移除。请参阅 Chrome 隐私权政策白皮书，详细了解&lt;a href="<ph name="URL" />"&gt;垃圾软件防护&lt;/a&gt;。</translation>
 <translation id="93480724622239549">问题或错误</translation>
-<translation id="935490618240037774">您的书签、历史记录、密码及其他设置均将同步到您的 Google 帐号，以便您在自己所有的设备上使用。</translation>
 <translation id="935854577147268200">Smart Lock 所用的配对手机已更改。请输入您的密码以更新 Smart Lock。下次，您就能使用新的配对手机解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="93610034168535821">网站占用的总存储空间：</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>

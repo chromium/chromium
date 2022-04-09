@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1001033507375626788">Questa rete è condivisa con te</translation>
-<translation id="1001307489511021749">Le app, le impostazioni e le altre personalizzazioni verranno sincronizzate su tutti i dispositivi Chrome OS su cui hai eseguito l'accesso con il tuo Account Google.</translation>
 <translation id="1003088604756913841">Apri link in nuova finestra di <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Accesso al sito</translation>
@@ -450,7 +449,6 @@
 <translation id="1429300045468813835">Tutte le voci cancellate</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1431188203598586230">Aggiornamento software finale</translation>
-<translation id="1431432486300429272">Google può utilizzare la tua cronologia di navigazione per personalizzare la Ricerca e altri servizi Google. Tu o uno dei tuoi genitori potete cambiare questa impostazione in qualsiasi momento all'indirizzo myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
 <translation id="1433811987160647649">Chiedi prima di accedere</translation>
 <translation id="1434696352799406980">L'operazione reimposterà la pagina iniziale, la pagina Nuova scheda, il motore di ricerca e le schede bloccate. Inoltre, disattiverà tutte le estensioni e rimuoverà i dati temporanei, come i cookie. La cronologia, le password salvate e i preferiti non saranno invece cancellati.</translation>
@@ -797,7 +795,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="175196451752279553">R&amp;iapri scheda chiusa</translation>
 <translation id="1753067873202720523">Il Chromebook potrebbe non ricaricarsi mentre è acceso.</translation>
 <translation id="1753905327828125965">Più visitati</translation>
-<translation id="1755395545337105369">Sincronizzazione delle impostazioni di Chrome OS Flex</translation>
 <translation id="1755601632425835748">Dimensioni testo</translation>
 <translation id="1755872274219796698">Sposta password</translation>
 <translation id="1757132445735080748">Per completare la configurazione di Linux, aggiorna Chrome OS Flex e riprova.</translation>
@@ -2266,7 +2263,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3162853326462195145">Account della scuola</translation>
 <translation id="3162899666601560689">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello</translation>
 <translation id="3163201441334626963">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
-<translation id="3163254451837720982">I seguenti servizi aiutano a mantenere i tuoi dati protetti e sicuri. Puoi disattivare questa funzionalità in qualsiasi momento.</translation>
 <translation id="3163511056918491211">Ripristina i dati o cambia dispositivo facilmente in qualsiasi momento. Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
 <translation id="3164329792803560526">Condivisione di questa scheda con <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">La funzione potrebbe essere bloccata da alcuni operatori.</translation>
@@ -2493,7 +2489,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3423858849633684918">Riavvia <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Descrivi cosa stavi facendo quando la scheda si è arrestata in modo anomalo</translation>
 <translation id="3427092606871434483">Consenti (predefinita)</translation>
-<translation id="3428419049384081277">Hai eseguito l'accesso.</translation>
 <translation id="3429086384982427336">Le app elencate di seguito non gestiranno mai link protocollo.</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3429271624041785769">Lingue contenuti web</translation>
@@ -4801,7 +4796,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5692183275898619210">Stampa completata</translation>
 <translation id="5695184138696833495">ADB app Android su Linux</translation>
 <translation id="5696143504434933566">Segnala illecito per "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="5696177755977520104">Sincronizzazione impostazioni di Chrome OS</translation>
 <translation id="5696679855467848181">File PPD attualmente in uso: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Selettore di emoji</translation>
 <translation id="570043786759263127">Servizi e app Google Play</translation>
@@ -5212,7 +5206,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6104068876731806426">Account Google</translation>
 <translation id="6104311680260824317">Impossibile aggiungere il dispositivo al dominio. Il server non supporta i tipi di crittografia Kerberos specificati. Consulta "Altre opzioni" per le impostazioni di crittografia.</translation>
 <translation id="6104796831253957966">La coda della stampante è piena</translation>
-<translation id="6105994589138235234">Sincronizzazione del browser Chrome</translation>
 <translation id="6111972606040028426">Abilitare l'Assistente Google</translation>
 <translation id="6112294629795967147">Tocca per ridimensionare</translation>
 <translation id="6112727384379533756">Aggiungi una richiesta</translation>
@@ -5423,7 +5416,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6313950457058510656">Disattiva tethering istantaneo</translation>
 <translation id="6314819609899340042">Hai attivato le funzioni di debug su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315493146179903667">Porta tutto in primo piano</translation>
-<translation id="6317318380444133405">La stampante non è più supportata.</translation>
 <translation id="6317369057005134371">In attesa della finestra dell'applicazione...</translation>
 <translation id="6318125393809743217">Includi un file policies.json con le configurazioni dei criteri.</translation>
 <translation id="6318407754858604988">Download iniziato</translation>
@@ -5619,7 +5611,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6514565641373682518">Questa pagina ha disattivato il puntatore del mouse.</translation>
 <translation id="6518014396551869914">Cop&amp;ia immagine</translation>
 <translation id="6518133107902771759">Verifica</translation>
-<translation id="6519304021460270639">Le app, le impostazioni e le altre personalizzazioni verranno sincronizzate su tutti i dispositivi Chrome OS Flex su cui hai eseguito l'accesso con il tuo Account Google.</translation>
 <translation id="651942933739530207">Vuoi consentire a <ph name="APP_NAME" /> di condividere il tuo schermo e l'uscita audio?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5648,7 +5639,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="653920215766444089">Ricerca del dispositivo di puntamento in corso…</translation>
 <translation id="653983593749614101">Ripresa dell'operazione in corso…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota.<ph name="END_BOLD" /> Attiva questa opzione soltanto se sei sicuro di ciò che fai o se ti è stato chiesto di farlo perché la raccolta di dati potrebbe peggiorare il rendimento.</translation>
-<translation id="6540672086173674880">Google potrebbe usare la tua cronologia di navigazione per personalizzare la Ricerca e altri servizi Google. Puoi modificare l'impostazione in qualsiasi momento all'indirizzo myaccount.google.com/activitycontrols/search.</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>
 <translation id="6545665334409411530">Frequenza ripetizione</translation>
 <translation id="6545867563032584178">Il microfono è disattivato nelle Preferenze di Sistema del Mac</translation>
@@ -5755,7 +5745,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6644512095122093795">Chiedi di salvare le password</translation>
 <translation id="6644513150317163574">Formato URL non valido. Il server deve essere specificato come nome host quando viene utilizzata l'autenticazione SSO.</translation>
 <translation id="6644846457769259194">Aggiornamento del dispositivo in corso (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6645437135153136856">Il dispositivo Google Cloud Print selezionato non è più supportato. <ph name="BR" /> Prova a configurare la stampante nelle impostazioni di sistema del computer.</translation>
 <translation id="6646476869708241165">Disattiva l'Accoppiamento rapido</translation>
 <translation id="6647228709620733774">URL di revoca dell'autorità di certificazione Netscape</translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
@@ -6244,7 +6233,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7121728544325372695">Trattini smart</translation>
 <translation id="7123030151043029868">Possono scaricare automaticamente più file</translation>
 <translation id="7123302939607518173">Consenti l'aggiunta di un interesse o di un sito se ritieni che gli annunci relativi all'elemento ti sarebbero utili.</translation>
-<translation id="7123360114020465152">La stampante non è più supportata</translation>
 <translation id="7124013154139278147">Assegna sensore per "Precedente"</translation>
 <translation id="7125029162161377569">Con le prove di Privacy Sandbox, i siti possono offrire la stessa esperienza di navigazione utilizzando meno informazioni personali. Ciò significa più privacy per te e meno tracciamento tra siti. Aggiungeremo nuove prove quando saranno pronte per i test.</translation>
 <translation id="7125148293026877011">Eliminare Crostini</translation>
@@ -6318,7 +6306,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7219473482981809164">Sono stati trovati più profili disponibili per il download. Seleziona quelli che vuoi scaricare prima di continuare.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nessuna password inefficace}=1{1 password inefficace}other{{NUM_WEAK} password inefficaci}}</translation>
 <translation id="7220019174139618249">Impossibile esportare le password in "<ph name="FOLDER" />"</translation>
-<translation id="722055596168483966">Personalizza i servizi Google</translation>
 <translation id="722099540765702221">Fonte di ricarica</translation>
 <translation id="7221869452894271364">Ricarica questa pagina</translation>
 <translation id="7222204278952406003">Chrome è il browser predefinito</translation>
@@ -6940,7 +6927,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
 <translation id="7818135753970109980">Nuovo tema aggiunto (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Bloccato dalla tua organizzazione</translation>
-<translation id="7819992334107904369">Sincronizzazione Chrome</translation>
 <translation id="7820561748632634942">Vuoi assegnare sensori aggiuntivi?</translation>
 <translation id="782057141565633384">C&amp;opia l'indirizzo del video</translation>
 <translation id="7822187537422052256">Vuoi rimuovere questo indirizzo?</translation>
@@ -7009,7 +6995,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7881483672146086348">Visualizza account</translation>
 <translation id="7883792253546618164">Puoi annullare l'iscrizione in qualsiasi momento.</translation>
 <translation id="788453346724465748">Caricamento dei dati dell'account in corso…</translation>
-<translation id="7885253890047913815">Destinazioni recenti</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementi}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
@@ -7920,7 +7905,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8795916974678578410">Nuova finestra</translation>
 <translation id="8797459392481275117">Non tradurre mai questo sito</translation>
 <translation id="8798099450830957504">Predefinito</translation>
-<translation id="8800004011501252845">Destinazioni per</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
 <translation id="8803953437405899238">Apri una nuova scheda con un clic</translation>
@@ -8121,7 +8105,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8991520179165052608">Il sito può usare il microfono</translation>
 <translation id="899384117894244799">Rimuovere utente con limitazioni</translation>
 <translation id="899403249577094719">URL di base certificato Netscape</translation>
-<translation id="8996526648899750015">Aggiungi account...</translation>
 <translation id="899657321862108550">Il tuo Chrome, ovunque</translation>
 <translation id="899676909165543803">Il sensore di impronte digitali è il tasto in basso a destra della tastiera. Toccalo leggermente con un dito.</translation>
 <translation id="8999560016882908256">Errore di sintassi in una sezione: <ph name="ERROR_LINE" /></translation>
@@ -8360,7 +8343,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="934244546219308557">Assegna un nome a questo gruppo</translation>
 <translation id="934503638756687833">Se necessario verranno rimossi anche elementi non elencati qui. Leggi ulteriori informazioni sulla &lt;a href="<ph name="URL" />"&gt;protezione da software indesiderato&lt;/a&gt; nel whitepaper sulla privacy di Chrome.</translation>
 <translation id="93480724622239549">Bug o errore</translation>
-<translation id="935490618240037774">I tuoi preferiti, la cronologia, le password e altre impostazioni verranno sincronizzati con il tuo Account Google per consentirti di utilizzarli su tutti i tuoi dispositivi.</translation>
 <translation id="935854577147268200">Telefono con Smart Lock cambiato. Inserisci la password per aggiornare Smart Lock. La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni</translation>
 <translation id="93610034168535821">Spazio di archiviazione totale usato dai siti:</translation>
 <translation id="936646668635477464">Videocamera e microfono</translation>

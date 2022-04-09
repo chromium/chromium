@@ -380,6 +380,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ће и даље моћи да се пријави касније.</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
 <translation id="3339826665088060472">Снимање екрана, алатке за прављење снимака и видео снимака екрана</translation>
+<translation id="3340978935015468852">подешавања</translation>
 <translation id="3341303451326249809">Снимак екрана је направљен</translation>
 <translation id="334252345105450327">Направи снимак екрана</translation>
 <translation id="3351879221545518001">Тренутно пребацујете екран.</translation>
@@ -958,7 +959,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
-<translation id="6880133753431418782">Већ сте тражили овај упит. Ако избришете ову претрагу из историје, трајно ћете је уклонити са Google налога на свим уређајима.</translation>
 <translation id="6884665277231944629">Вратите се на данас</translation>
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>
@@ -1044,7 +1044,6 @@
 <translation id="742594950370306541">Камера се користи.</translation>
 <translation id="742608627846767349">Добро јутро,</translation>
 <translation id="743058460480092004">Камера и микрофон се користе.</translation>
-<translation id="7430878839542012341">Желите ли да избришете ову претрагу из историје?</translation>
 <translation id="7434543979546293336">Означено као кључна идеја</translation>
 <translation id="7452560014878697800">Апликација користи камеру</translation>
 <translation id="7461924472993315131">Закачи</translation>

@@ -380,6 +380,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
 <translation id="3339826665088060472">Skermskoot, nutsgoed om skermskote en skermopnames te neem</translation>
+<translation id="3340978935015468852">instellings</translation>
 <translation id="3341303451326249809">Skermkiekie is geneem</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
 <translation id="3351879221545518001">Jy saai tans die skerm uit.</translation>
@@ -591,6 +592,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4481530544597605423">Losgemaakte toestelle</translation>
 <translation id="4505050298327493054">Aktiewe lessenaar.</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
+<translation id="4516867700536986208">Alle programme; navigeer met links- of afpyl om toegang tot alle programme te kry</translation>
 <translation id="4518404433291145981">Ontsluit eers jou foon as jy jou Chromebook wil ontsluit</translation>
 <translation id="4527045527269911712">Bluetooth-toestel "<ph name="DEVICE_NAME" />" wil graag toestemming hê om saam te bind.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot vol</translation>
@@ -958,7 +960,6 @@ Nuwe installasie</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Een syfer bly oor}other{# syfers bly oor}}</translation>
 <translation id="6867938213751067702">Aflaai is onderbreek <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortpad is afgeskakel</translation>
-<translation id="6880133753431418782">Jy het voorheen vir hierdie navraag gesoek. As jy dit in jou geskiedenis uitvee, sal dit permanent op al jou toestelle van jou Google-rekening af uitgevee word.</translation>
 <translation id="6884665277231944629">Gaan terug na vandag</translation>
 <translation id="6886172995547742638">Jou <ph name="DEVICE_TYPE" /> kan dalk laer werkverrigting ervaar. Gebruik 'n gesertifiseerde <ph name="PREFERRED_MINIMUM_POWER" />W- of hoër USB-C-kragprop.</translation>
 <translation id="688631446150864480">Druk die afpyl om tussen vensters te wissel</translation>
@@ -1021,6 +1022,7 @@ Nuwe installasie</translation>
 <translation id="7302889331339392448">Intydse onderskrifte is af.</translation>
 <translation id="7303365578352795231">Antwoord tans op 'n ander toestel.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Onlangse programme; navigeer met linkspyl om toegang tot alle onlangse programme te kry</translation>
 <translation id="7313193732017069507">Vou kamera uit</translation>
 <translation id="731589979057211264">Rakgroep is aan</translation>
 <translation id="7319740667687257810">Lanseerder, gedeeltelike aansig</translation>
@@ -1043,7 +1045,6 @@ Nuwe installasie</translation>
 <translation id="742594950370306541">Kamera word gebruik.</translation>
 <translation id="742608627846767349">Goeiemôre</translation>
 <translation id="743058460480092004">Kamera en mikrofoon word gebruik.</translation>
-<translation id="7430878839542012341">Vee hierdie soektog in jou geskiedenis uit?</translation>
 <translation id="7434543979546293336">Gemerk as 'n sleutelidee</translation>
 <translation id="7452560014878697800">'n Program gebruik tans jou kamera</translation>
 <translation id="7461924472993315131">Pin</translation>

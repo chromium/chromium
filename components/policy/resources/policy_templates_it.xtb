@@ -5178,7 +5178,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6819838337315703072">Se le app <ph name="LINUX_OS_NAME" /> sono supportate, l'impostazione del criterio su Attivato consente di inviare al server le informazioni relative all'utilizzo delle app <ph name="LINUX_OS_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
-<translation id="6821268164692776674">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive"</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
 <translation id="6833023569065717572">Se il criterio viene impostato su Vero, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 24 ore.
 
@@ -6964,17 +6963,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8749536858950505376">Se il criterio è impostato su True, il cursore grande rimane attivato. Se il criterio è impostato su False, il cursore grande rimane disattivato.
 
       Se imposti il criterio, gli utenti non possono modificare la funzionalità. Se il criterio non è impostato, il cursore grande risulta disattivato all'inizio, ma gli utenti possono attivarlo in qualsiasi momento.</translation>
-<translation id="8749803771700374502">Per le stampanti dei tipi inseriti nell'elenco di tipi non consentiti verranno disattivati il rilevamento o il recupero delle relative funzionalità.
-
-      L'inserimento di tutti i tipi di stampanti nell'elenco di tipi non consentiti comporta essenzialmente la disattivazione della stampa, perché non ci sarebbero destinazioni disponibili a cui inviare un documento da stampare.
-
-      L'inserimento del valore <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> nell'elenco di tipi non consentiti equivale all'impostazione del valore false per il criterio <ph name="POLICY_CLOUDPRINTSUBMITENABLED" />. Per mantenere rilevabili le destinazioni <ph name="CLOUD_PRINT_NAME" />, il criterio <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> deve essere impostato su true e il valore <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> non deve essere nell'elenco di tipi non consentiti.
-
-      Se il criterio non viene impostato o se viene impostato su un elenco vuoto, potranno essere rilevati tutti i tipi di stampanti.
-
-      Le stampanti estensione sono note anche come destinazioni dei provider di stampa e includono le eventuali destinazioni appartenenti a un'estensione di <ph name="PRODUCT_NAME" />.
-
-      Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di computer locali e le stampanti di rete condivise.</translation>
 <translation id="875152232570912762">
       Se questo criterio è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di macchina, tutti gli account gestiti vengono forzati come principali.
       Se è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di account, quell'account sarà sempre considerato principale, ma potrà avere account secondari nel suo profilo.

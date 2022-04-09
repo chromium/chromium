@@ -380,6 +380,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
 <translation id="3339826665088060472">Ekran tasviri vositalari skrinshot olish va ekranni yozib olish uchun ishlatiladi</translation>
+<translation id="3340978935015468852">sozlamalar</translation>
 <translation id="3341303451326249809">Skrinshot olindi</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
@@ -865,7 +866,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: faollashtirilmoqda...</translation>
 <translation id="6283712521836204486">Bezovta qilinmasin rejimi oʻchiq.</translation>
 <translation id="6284232397434400372">Piksellar sig‘imi o‘zgardi</translation>
-<translation id="6286007831750548130">Qidiruv tarixi natijasi oʻchirildi</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> hisobini keyinroq ota-ona ruxsati bilan qayta kiritish mumkin.</translation>
 <translation id="6291221004442998378">Quvvat olmayapti</translation>
 <translation id="6315170314923504164">Ovoz</translation>
@@ -959,7 +959,6 @@ yangi oʻrnatilgan</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
 <translation id="6867938213751067702">Yuklab olish pauza qilindi: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Yorliq yoqilmagan</translation>
-<translation id="6880133753431418782">Avval bu soʻrov bilan qidirgansiz. Bu qidiruv oʻchirilsa, uning tarixi barcha qurilmalaringizdagi Google hisobingizdan butunlay olib tashlanadi.</translation>
 <translation id="6884665277231944629">Bugunga qaytish</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ishlashi sekinlashishi mumkin. <ph name="PREFERRED_MINIMUM_POWER" />W sertifikatiga ega yoki kuchliroq USB-C quvvat adapteridan foydalaning.</translation>
 <translation id="688631446150864480">Oynalarni almashtirish uchun pastga strelkani bosing</translation>
@@ -1045,7 +1044,6 @@ yangi oʻrnatilgan</translation>
 <translation id="742594950370306541">Kamera ish faoliyatida.</translation>
 <translation id="742608627846767349">Xayrli tong,</translation>
 <translation id="743058460480092004">Kamera va mikrofon ishlatilmoqda.</translation>
-<translation id="7430878839542012341">Bu qidiruv qaydi tarixingizdan olib tashlansinmi?</translation>
 <translation id="7434543979546293336">Asosiy gʻoya sifatida belgilandi</translation>
 <translation id="7452560014878697800">Ilova kamerangizni ishlatmoqda</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>

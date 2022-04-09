@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1001033507375626788">У вас есть доступ к этой сети</translation>
-<translation id="1001307489511021749">Приложения и настройки будут синхронизироваться на всех устройствах с Chrome OS, на которых вы вошли в аккаунт Google.</translation>
 <translation id="1003088604756913841">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="100323615638474026">USB-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Доступ к сайтам</translation>
@@ -453,7 +452,6 @@
 <translation id="1429300045468813835">Все записи удалены.</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1431188203598586230">Последнее обновление ПО</translation>
-<translation id="1431432486300429272">Google может использовать историю браузера для персонализации Поиска и других своих сервисов. Ваши родители или вы сами можете в любой момент отключить эту функцию на странице myaccount.google.com/activitycontrols/search.</translation>
 <translation id="1432581352905426595">Управление поисковыми системами</translation>
 <translation id="1433811987160647649">Запрашивать разрешение на доступ</translation>
 <translation id="1434696352799406980">Будут сброшены настройки главной страницы, страницы быстрого доступа и поисковой системы, а также откреплены все вкладки. Кроме того, система отключит все расширения и удалит все временные данные, такие как файлы cookie. Ваши закладки, история просмотров и пароли будут сохранены.</translation>
@@ -797,7 +795,6 @@
 <translation id="175196451752279553">От&amp;крыть закрытую вкладку</translation>
 <translation id="1753067873202720523">Возможны проблемы при зарядке Chromebook.</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
-<translation id="1755395545337105369">Синхронизация настроек Chrome OS Flex</translation>
 <translation id="1755601632425835748">Размер шрифта</translation>
 <translation id="1755872274219796698">Перенести пароли</translation>
 <translation id="1757132445735080748">Чтобы завершить настройку Linux, обновите Chrome OS Flex и повторите попытку.</translation>
@@ -882,7 +879,6 @@
 <translation id="1823098433522728610">Этот документ содержит деликатный контент.</translation>
 <translation id="18245044880483936">Резервные копии не занимают места на Google Диске ребенка.</translation>
 <translation id="1825565032302550710">Номер порта должен быть в диапазоне 1024–65535.</translation>
-<translation id="18260074040409954">Вы можете использовать сохраненные пароли на любом устройстве. Место хранения для аккаунта <ph name="EMAIL" />: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1826192255355608658">Синхронизируйте закладки, пароли, историю и другие данные в браузере Chrome</translation>
 <translation id="1826516787628120939">Проверка</translation>
 <translation id="1827738518074806965">Галерея</translation>
@@ -2263,7 +2259,6 @@
 <translation id="3162853326462195145">Учебный аккаунт</translation>
 <translation id="3162899666601560689">Сайты могут использовать файлы cookie, чтобы сделать работу в браузере более удобной, например запоминая товары в корзине или информацию о том, что вы уже вошли в аккаунт</translation>
 <translation id="3163201441334626963">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /></translation>
-<translation id="3163254451837720982">Эти сервисы помогают обеспечивать безопасность вашей информации. Отключить их можно в любое время.</translation>
 <translation id="3163511056918491211">Вы можете легко восстановить свои данные или в любой момент перенести их на новое устройство. Резервные копии загружаются в Google и шифруются с помощью пароля вашего аккаунта Google.</translation>
 <translation id="3164329792803560526">Отправка вкладки в приложение "<ph name="APP_NAME" />"…</translation>
 <translation id="3165390001037658081">Некоторые операторы могут блокировать эту функцию.</translation>
@@ -2488,7 +2483,6 @@
 <translation id="3423858849633684918">Перезапустите <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="3427092606871434483">Разрешать (по умолчанию)</translation>
-<translation id="3428419049384081277">Вы вошли в аккаунт</translation>
 <translation id="3429086384982427336">Указанные ниже приложения не будут обрабатывать ссылки на протоколы.</translation>
 <translation id="3429160811076349561">Функции отключены</translation>
 <translation id="3429271624041785769">Языки веб-контента</translation>
@@ -4795,7 +4789,6 @@
 <translation id="5692183275898619210">Печать завершена</translation>
 <translation id="5695184138696833495">Инструмент adb для Android-приложений в Linux</translation>
 <translation id="5696143504434933566">Пожаловаться на расширение "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="5696177755977520104">Синхронизация настроек Chrome OS</translation>
 <translation id="5696679855467848181">PPD-файл, используемый сейчас: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Окно выбора эмодзи</translation>
 <translation id="570043786759263127">Приложения и сервисы Google Play</translation>
@@ -5204,7 +5197,6 @@
 <translation id="6104068876731806426">Аккаунты Google</translation>
 <translation id="6104311680260824317">Не удалось подключить устройство к домену. Сервер не поддерживает выбранные типы шифрования Kerberos. В настройках шифрования установите флажок "Другие параметры".</translation>
 <translation id="6104796831253957966">Очередь печати заполнена.</translation>
-<translation id="6105994589138235234">Синхронизация браузера Chrome</translation>
 <translation id="6111972606040028426">Включить Google Ассистента</translation>
 <translation id="6112294629795967147">Коснитесь для изменения размера</translation>
 <translation id="6112727384379533756">Добавить билет</translation>
@@ -5417,7 +5409,6 @@
 <translation id="6313950457058510656">Отключить мгновенную точку доступа</translation>
 <translation id="6314819609899340042">Функции отладки на устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /> включены.</translation>
 <translation id="6315493146179903667">Переместить все на передний план</translation>
-<translation id="6317318380444133405">Принтер больше не поддерживается.</translation>
 <translation id="6317369057005134371">Запуск приложения…</translation>
 <translation id="6318125393809743217">Включить файл policies.json в правила</translation>
 <translation id="6318407754858604988">Скачивание началось</translation>
@@ -5612,7 +5603,6 @@
 <translation id="6514565641373682518">Эта страница скрыла курсор.</translation>
 <translation id="6518014396551869914">Коп&amp;ировать картинку</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
-<translation id="6519304021460270639">Приложения и настройки будут синхронизироваться на всех устройствах Chrome OS Flex, на которых вы вошли в аккаунт Google.</translation>
 <translation id="651942933739530207">Предоставить приложению "<ph name="APP_NAME" />" доступ к вашему экрану и звуку?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5641,7 +5631,6 @@
 <translation id="653920215766444089">Поиск указывающего устройства</translation>
 <translation id="653983593749614101">Возобновление скачивания…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Данную функцию следует включать только при необходимости, поскольку сбор данных может замедлить работу системы.</translation>
-<translation id="6540672086173674880">Google может использовать историю браузера для персонализации Поиска и других сервисов. Чтобы настроить эту функцию, перейдите на страницу myaccount.google.com/activitycontrols/search.</translation>
 <translation id="6541638731489116978">Этому сайту закрыт доступ к датчикам движения.</translation>
 <translation id="6545665334409411530">Скорость повтора</translation>
 <translation id="6545867563032584178">Микрофон отключен в системных настройках macOS</translation>
@@ -5745,7 +5734,6 @@
 <translation id="6644512095122093795">Предлагать сохранение паролей</translation>
 <translation id="6644513150317163574">Неверный формат URL. Если используется система единого входа, то в качестве имени хоста необходимо указать сервер.</translation>
 <translation id="6644846457769259194">Обновление устройства (<ph name="PROGRESS_PERCENT" />)…</translation>
-<translation id="6645437135153136856">Устройство, подключенное к сервису "Google Виртуальный принтер", больше не поддерживается.<ph name="BR" />Укажите новый принтер в системных настройках компьютера.</translation>
 <translation id="6646476869708241165">Отключить Быстрое подключение</translation>
 <translation id="6647228709620733774">URL отзыва ЦС Netscape</translation>
 <translation id="6647441008198474441">Чтобы предсказать ваши дальнейшие запросы, URL посещенных вами страниц отправляются в Google.</translation>
@@ -6230,7 +6218,6 @@
 <translation id="7121728544325372695">Умные переносы</translation>
 <translation id="7123030151043029868">Разрешить сайтам автоматически скачивать несколько файлов</translation>
 <translation id="7123302939607518173">Вы можете разрешить добавление интереса или сайта, если хотите видеть связанную с ними рекламу.</translation>
-<translation id="7123360114020465152">Принтер больше не поддерживается.</translation>
 <translation id="7124013154139278147">Назначьте переключатель для действия "Назад"</translation>
 <translation id="7125029162161377569">В рамках тестирования пробных функций Privacy Sandbox сайты могут работать в обычном режиме, собирая меньше данных о вас. При этом повышается ваша конфиденциальность и ограничивается межсайтовое отслеживание. Мы добавим новые пробные функции, как только они будут готовы.</translation>
 <translation id="7125148293026877011">Удалить Crostini с устройства</translation>
@@ -6304,7 +6291,6 @@
 <translation id="7219473482981809164">Доступно несколько профилей. Выберите, какие нужно скачать.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Нет простых паролей}=1{1 простой пароль}one{{NUM_WEAK} простой пароль}few{{NUM_WEAK} простых пароля}many{{NUM_WEAK} простых паролей}other{{NUM_WEAK} простого пароля}}</translation>
 <translation id="7220019174139618249">Не удалось экспортировать пароли в папку "<ph name="FOLDER" />"</translation>
-<translation id="722055596168483966">Персонализация сервисов Google</translation>
 <translation id="722099540765702221">Источник зарядки</translation>
 <translation id="7221869452894271364">Обновить эту страницу</translation>
 <translation id="7222204278952406003">Chrome используется как браузер по умолчанию</translation>
@@ -6927,7 +6913,6 @@
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819992334107904369">Синхронизация Chrome</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
 <translation id="782057141565633384">&amp;Копировать URL видео</translation>
 <translation id="7822187537422052256">Удалить этот адрес?</translation>
@@ -6995,7 +6980,6 @@
 <translation id="7881483672146086348">Просмотреть аккаунт</translation>
 <translation id="7883792253546618164">Отказаться от рассылки можно в любой момент.</translation>
 <translation id="788453346724465748">Загрузка данных аккаунта…</translation>
-<translation id="7885253890047913815">Недавние места назначения</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Узнайте об основных настройках конфиденциальности и безопасности. Больше информации вы найдете в соответствующих разделах.</translation>
@@ -7908,7 +7892,6 @@
 <translation id="8795916974678578410">Новое окно</translation>
 <translation id="8797459392481275117">Никогда не переводить этот сайт</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
-<translation id="8800004011501252845">Поиск мест назначения для</translation>
 <translation id="8800034312320686233">Сайт не работает?</translation>
 <translation id="8803526663383843427">Функция включена</translation>
 <translation id="8803953437405899238">Открывайте новые вкладки одним нажатием</translation>
@@ -8109,7 +8092,6 @@
 <translation id="8991520179165052608">Сайт может использовать микрофон</translation>
 <translation id="899384117894244799">Удалить пользователя с ограниченным доступом</translation>
 <translation id="899403249577094719">URL базы сертификатов Netscape</translation>
-<translation id="8996526648899750015">Добавить аккаунт</translation>
 <translation id="899657321862108550">Синхронизация Chrome на всех устройствах</translation>
 <translation id="899676909165543803">Сканер отпечатков пальцев – это клавиша в правом нижнем углу клавиатуры. Слегка коснитесь ее любым пальцем.</translation>
 <translation id="8999560016882908256">Ошибка синтаксиса раздела: <ph name="ERROR_LINE" />.</translation>
@@ -8347,7 +8329,6 @@
 <translation id="934244546219308557">Введите название группы вкладок</translation>
 <translation id="934503638756687833">Объекты, не перечисленные здесь, также будут удалены при необходимости. Подробнее &lt;a href="<ph name="URL" />"&gt;о защите от нежелательного ПО&lt;/a&gt;…</translation>
 <translation id="93480724622239549">Ошибка</translation>
-<translation id="935490618240037774">Пароли, закладки, история и другие параметры будут синхронизированы с аккаунтом Google, чтобы у вас был доступ к ним на любом устройстве.</translation>
 <translation id="935854577147268200">Телефон для снятия блокировки был изменен. Чтобы обновить параметры Smart Lock, введите пароль. После этого вы сможете снимать блокировку устройства <ph name="DEVICE_TYPE" /> с помощью телефона. Чтобы выключить Smart Lock, перейдите в настройки.</translation>
 <translation id="93610034168535821">Объем хранилища, занятый сайтами:</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>

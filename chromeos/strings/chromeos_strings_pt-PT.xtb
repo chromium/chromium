@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
 <translation id="2695514675076754339">Introduzir o código de desbloqueio de 8 carateres</translation>
 <translation id="2712812801627182647">Chave de autenticação TLS</translation>
+<translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
 <translation id="2783010256799387990">APROVADO</translation>
@@ -376,6 +377,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Ativar modo de cor clara</translation>
 <translation id="5264277876637023664">Executar teste da CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Executar novamente as Rotinas</translation>
@@ -486,6 +488,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Aceda às definições da conta</translation>
 <translation id="6456394469623773452">Boa</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">PUU</translation>
@@ -569,6 +572,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Alterar proteção de ecrã</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="7656388927906093505">O dispositivo é um rato.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7665800271478495366">Alterar avatar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Ativar modo de cor automática</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>

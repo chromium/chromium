@@ -380,6 +380,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> bado anaweza kuingia katika akaunti baadaye.</translation>
 <translation id="3321628682574733415">Msimbo wa mzazi si sahihi</translation>
 <translation id="3339826665088060472">Kurekodi skrini, zana za kupiga picha za skrini na kunasa video za skrini</translation>
+<translation id="3340978935015468852">mipangilio</translation>
 <translation id="3341303451326249809">Picha ya skrini imepigwa</translation>
 <translation id="334252345105450327">Piga picha ya skrini</translation>
 <translation id="3351879221545518001">Kwa sasa unatuma skrini.</translation>
@@ -957,7 +958,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Imesalia tarakimu moja}other{Zimesalia tarakimu #}}</translation>
 <translation id="6867938213751067702">Imesitisha kupakua <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Njia ya mkato imezimwa</translation>
-<translation id="6880133753431418782">Ulitafuta hoja hii hapo awali. Kitendo cha kufuta hoja hii ya utafutaji kwenye historia yako, kitaiondoa kabisa kwenye Akaunti yako ya Google katika vifaa vyako vyote.</translation>
 <translation id="6884665277231944629">Rudi kwenye tarehe ya leo</translation>
 <translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
 <translation id="688631446150864480">Bonyeza kitufe cha kishale cha Chini ili ubadilishe madirisha</translation>
@@ -1042,7 +1042,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="742594950370306541">Kamera inatumika.</translation>
 <translation id="742608627846767349">Habari za asubuhi,</translation>
 <translation id="743058460480092004">Kamera na maikrofoni zinatumiwa.</translation>
-<translation id="7430878839542012341">Ungependa kufuta utafutaji huu kwenye historia yako?</translation>
 <translation id="7434543979546293336">Imetiwa alama kuwa ni hoja kuu</translation>
 <translation id="7452560014878697800">Kuna proramu inayotumia kamera yako</translation>
 <translation id="7461924472993315131">Bana</translation>

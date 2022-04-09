@@ -380,6 +380,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="3339826665088060472">Skärmbild/skärminspelning, verktyg att ta skärmbilder och göra skärminspelningar med</translation>
+<translation id="3340978935015468852">inställningar</translation>
 <translation id="3341303451326249809">Skärmbilden har tagits</translation>
 <translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
@@ -957,7 +958,6 @@ Nyligen installerad</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
-<translation id="6880133753431418782">Du har sökt efter detta tidigare. Om du raderar sökningen från historiken tas den bort permanent från Google-kontot på alla dina enheter.</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Tryck på nedåtpilen på tangentbordet för att byta fönster</translation>
@@ -1042,7 +1042,6 @@ Nyligen installerad</translation>
 <translation id="742594950370306541">Kameran används.</translation>
 <translation id="742608627846767349">Hej!</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
-<translation id="7430878839542012341">Vill du radera den här sökningen från historiken?</translation>
 <translation id="7434543979546293336">Markerat som nyckelbegrepp</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
 <translation id="7461924472993315131">Fäst</translation>

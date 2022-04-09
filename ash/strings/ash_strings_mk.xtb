@@ -380,6 +380,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> сепак ќе може да се најави подоцна.</translation>
 <translation id="3321628682574733415">Неточен код на родител</translation>
 <translation id="3339826665088060472">Снимање на екранот, алатки за правење слики од екранот и снимање на екранот</translation>
+<translation id="3340978935015468852">поставки</translation>
 <translation id="3341303451326249809">Направена е слика од екранот</translation>
 <translation id="334252345105450327">Направи слика од екранот</translation>
 <translation id="3351879221545518001">Во моментов емитувате екран.</translation>
@@ -959,7 +960,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6867938213751067702">Преземањето на <ph name="FILENAME" /> е паузирано</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
-<translation id="6880133753431418782">Пребарувавте за поимов претходно. Со бришење на пребарувањево од историјата трајно ќе се отстрани од вашата сметка на Google на сите ваши уреди.</translation>
 <translation id="6884665277231944629">Вратете се на денешниот датум</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>
@@ -1045,7 +1045,6 @@
 <translation id="742594950370306541">Фотоапаратот е во употреба.</translation>
 <translation id="742608627846767349">Добро утро,</translation>
 <translation id="743058460480092004">Се користат фотоапаратот и микрофонот.</translation>
-<translation id="7430878839542012341">Да се избрише пребарувањево од историјата?</translation>
 <translation id="7434543979546293336">Означено како клучна идеја</translation>
 <translation id="7452560014878697800">Една апликација ја користи камерата</translation>
 <translation id="7461924472993315131">Закачи</translation>

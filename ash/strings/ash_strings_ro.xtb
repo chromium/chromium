@@ -380,6 +380,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
 <translation id="3339826665088060472">Captură de ecran, instrumente pentru realizarea capturilor de ecran și a înregistrărilor ecranului</translation>
+<translation id="3340978935015468852">setări</translation>
 <translation id="3341303451326249809">Captură de ecran realizată</translation>
 <translation id="334252345105450327">Fă o captură de ecran</translation>
 <translation id="3351879221545518001">În prezent proiectezi ecranul.</translation>
@@ -957,7 +958,6 @@ Instalare nouă</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>
 <translation id="6867938213751067702">Descărcarea a fost întreruptă pentru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
-<translation id="6880133753431418782">Ai mai căutat acest termen. Dacă ștergi căutarea din istoric, ea va fi eliminată definitiv din Contul tău Google, de pe toate dispozitivele.</translation>
 <translation id="6884665277231944629">Revino la ziua de azi</translation>
 <translation id="6886172995547742638">Dispozitivul <ph name="DEVICE_TYPE" /> poate avea o performanță mai slabă. Folosește un adaptor de curent USB-C certificat de minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Apasă tasta săgeată în jos pentru a comuta între ferestre</translation>
@@ -1042,7 +1042,6 @@ Instalare nouă</translation>
 <translation id="742594950370306541">Camera foto este în uz.</translation>
 <translation id="742608627846767349">Bună dimineața!</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
-<translation id="7430878839542012341">Ștergi această căutare din istoric?</translation>
 <translation id="7434543979546293336">Marcată ca idee importantă</translation>
 <translation id="7452560014878697800">O aplicație folosește camera</translation>
 <translation id="7461924472993315131">Fixează</translation>

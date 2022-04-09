@@ -377,6 +377,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
 <translation id="3339826665088060472">螢幕畫面擷取、擷取螢幕截圖和錄製螢幕畫面的工具</translation>
+<translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">已擷取螢幕截圖</translation>
 <translation id="334252345105450327">擷取螢幕畫面</translation>
 <translation id="3351879221545518001">你目前正在投放畫面。</translation>
@@ -862,7 +863,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用...</translation>
 <translation id="6283712521836204486">零打擾模式已關閉。</translation>
 <translation id="6284232397434400372">解析度已變更</translation>
-<translation id="6286007831750548130">搜尋記錄結果已刪除</translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -955,7 +955,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
-<translation id="6880133753431418782">你過去曾搜尋這個查詢項目。如果將這項搜尋從記錄中刪除，該項目將從你所有裝置上的 Google 帳戶記錄中永久移除。</translation>
 <translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
 <translation id="688631446150864480">按下向下鍵即可切換視窗</translation>
@@ -1041,7 +1040,6 @@
 <translation id="742594950370306541">攝影機正在使用中。</translation>
 <translation id="742608627846767349">早安，</translation>
 <translation id="743058460480092004">攝影機和麥克風正在使用中。</translation>
-<translation id="7430878839542012341">要將這個搜尋從你的記錄中刪除嗎？</translation>
 <translation id="7434543979546293336">已標示為重要提案</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝影機</translation>
 <translation id="7461924472993315131">固定</translation>

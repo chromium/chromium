@@ -380,6 +380,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="3339826665088060472">螢幕截圖，用嚟擷取螢幕截圖同埋錄影螢幕嘅工具</translation>
+<translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
 <translation id="3351879221545518001">您目前正在投放畫面。</translation>
@@ -864,7 +865,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>
 <translation id="6283712521836204486">「請勿騷擾」已關閉。</translation>
 <translation id="6284232397434400372">解像度已變更</translation>
-<translation id="6286007831750548130">搜尋記錄結果已刪除</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -957,7 +957,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
 <translation id="6867938213751067702">暫停咗下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
-<translation id="6880133753431418782">您之前曾搜尋此查詢項目。如果從記錄中刪除此搜尋項目，該項目將從您所有裝置上的 Google 帳戶中永久移除。</translation>
 <translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">您的 <ph name="DEVICE_TYPE" /> 效能或會降低。請使用 <ph name="PREFERRED_MINIMUM_POWER" />W 或以上且符合標準的 USB-C 電源適配器。</translation>
 <translation id="688631446150864480">㩒向下箭咀掣就可以轉換視窗</translation>
@@ -1043,7 +1042,6 @@
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
-<translation id="7430878839542012341">要從記錄中刪除此搜尋嗎？</translation>
 <translation id="7434543979546293336">已標記為重要想法</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
 <translation id="7461924472993315131">Pin</translation>

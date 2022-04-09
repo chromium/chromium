@@ -380,6 +380,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> усе одно зможе ввійти в обліковий запис.</translation>
 <translation id="3321628682574733415">Неправильний код доступу батьків</translation>
 <translation id="3339826665088060472">Запис екрана, інструменти для знімків екрана та запису відео з екрана</translation>
+<translation id="3340978935015468852">налаштування</translation>
 <translation id="3341303451326249809">Знімок екрана зроблено</translation>
 <translation id="334252345105450327">Зробити знімок екрана</translation>
 <translation id="3351879221545518001">Зараз ви транслюєте екран.</translation>
@@ -957,7 +958,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
 <translation id="6867938213751067702">Завантаження файлу <ph name="FILENAME" /> призупинено</translation>
 <translation id="6878400149835617132">Комбінацію клавіш вимкнено</translation>
-<translation id="6880133753431418782">Ви раніше шукали за цим запитом. Якщо видалити його з історії, запит назавжди зникне з вашого облікового запису Google на всіх пристроях.</translation>
 <translation id="6884665277231944629">Повернутися до сьогоднішнього дня</translation>
 <translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
 <translation id="688631446150864480">Щоб переходити між вікнами, використовуйте клавішу зі стрілкою вниз</translation>
@@ -1042,7 +1042,6 @@
 <translation id="742594950370306541">Камера використовується.</translation>
 <translation id="742608627846767349">Доброго ранку!</translation>
 <translation id="743058460480092004">Камера та мікрофон використовуються.</translation>
-<translation id="7430878839542012341">Видалити цей пошуковий запит з історії?</translation>
 <translation id="7434543979546293336">Позначено як ключову ідею</translation>
 <translation id="7452560014878697800">Додаток використовує вашу камеру</translation>
 <translation id="7461924472993315131">Закріпити</translation>

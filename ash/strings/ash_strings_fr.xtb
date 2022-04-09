@@ -380,6 +380,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pourra toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="3339826665088060472">Capture d'écran : outils de capture et d'enregistrement d'écran</translation>
+<translation id="3340978935015468852">paramètres</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Faire une capture d'écran</translation>
 <translation id="3351879221545518001">Vous êtes actuellement en train de caster l'écran.</translation>
@@ -957,7 +958,6 @@ Nouvelle installation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6867938213751067702">Téléchargement du fichier <ph name="FILENAME" /> suspendu</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
-<translation id="6880133753431418782">Vous avez effectué cette recherche précédemment. Si vous la supprimez de votre historique, la requête sera définitivement supprimée de votre compte Google sur tous vos appareils.</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
@@ -1042,7 +1042,6 @@ Nouvelle installation</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
-<translation id="7430878839542012341">Supprimer cette recherche de votre historique ?</translation>
 <translation id="7434543979546293336">Indiquée comme idée principale</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
 <translation id="7461924472993315131">Épingler</translation>

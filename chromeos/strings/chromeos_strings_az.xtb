@@ -154,6 +154,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
 <translation id="2695514675076754339">8 simvoldan ibarət kilid açma kodunu daxil edin</translation>
 <translation id="2712812801627182647">TLS doğrulama açarı</translation>
+<translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
 <translation id="2783010256799387990">KEÇDİ</translation>
@@ -374,6 +375,7 @@
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5252456968953390977">Rominq</translation>
+<translation id="5257811368506016604">Açıq rəng rejimini aktiv edin</translation>
 <translation id="5264277876637023664">CPU testi icra edin</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rejimləri yenidən işə salın</translation>
@@ -484,6 +486,7 @@
 <translation id="641081527798843608">Subyekt uyğunluğu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zəif (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Hesab ayarlarına keçin</translation>
 <translation id="6456394469623773452">Yaxşı</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Səhifə yenidən skanlansın?}=1{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}other{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}}</translation>
 <translation id="6472207088655375767">Birdəfəlik parol (OTP)</translation>
@@ -566,6 +569,7 @@
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Ekran qoruyucunu dəyişdirin</translation>
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -588,6 +592,7 @@
 <translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
 <translation id="7656388927906093505">Cihaz mausdur.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7665800271478495366">Avatarı dəyişdirin</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -615,6 +620,7 @@
 <translation id="7994702968232966508">EAP üsulu</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>

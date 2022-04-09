@@ -380,6 +380,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pot iniciar la sessió més tard.</translation>
 <translation id="3321628682574733415">Codi parental incorrecte</translation>
 <translation id="3339826665088060472">Captura de pantalla, eines per fer captures i gravacions de pantalla</translation>
+<translation id="3340978935015468852">configuració</translation>
 <translation id="3341303451326249809">La pantalla s'ha capturat</translation>
 <translation id="334252345105450327">Fes una captura de pantalla</translation>
 <translation id="3351879221545518001">Estàs emetent la pantalla.</translation>
@@ -957,7 +958,6 @@ Instal·lació nova</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6867938213751067702">La baixada del fitxer <ph name="FILENAME" /> s'ha posat en pausa</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
-<translation id="6880133753431418782">Has cercat aquesta consulta anteriorment. En suprimir-la de l'historial, també se suprimirà permanentment del teu Compte de Google en tots els dispositius.</translation>
 <translation id="6884665277231944629">Torna a avui</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>
@@ -1042,7 +1042,6 @@ Instal·lació nova</translation>
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
 <translation id="742608627846767349">Bon dia,</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
-<translation id="7430878839542012341">Vols suprimir aquesta cerca de l'historial?</translation>
 <translation id="7434543979546293336">S'ha marcat com a idea clau</translation>
 <translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
 <translation id="7461924472993315131">Fixa</translation>

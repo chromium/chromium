@@ -5166,7 +5166,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="6819838337315703072">Si la prise en charge des applications <ph name="LINUX_OS_NAME" /> est activée et que vous activez cette règle, des informations sur l'utilisation des applications <ph name="LINUX_OS_NAME" /> sont renvoyées au serveur.
 
       Si vous désactivez cette règle, ou si vous ne la configurez pas, aucune information d'utilisation n'est transmise.</translation>
-<translation id="6821268164692776674">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive"</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
 <translation id="6833023569065717572">Si cette règle est définie sur "True", le format 24 heures est utilisé sur l'écran de connexion de l'appareil.
 
@@ -6961,17 +6960,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8749536858950505376">Définissez cette règle sur "True" pour maintenir le grand curseur activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier. Si elle n'est pas définie, le grand curseur est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="8749803771700374502">Si vous ajoutez des types d'imprimantes à la liste deny, vous ne pourrez plus les voir ni récupérer leurs fonctionnalités.
-
-      Lorsque vous placez tous les types d'imprimantes sur la liste deny, vous désactivez l'impression. En effet, plus aucune destination n'est alors disponible lorsque vous envoyez un document pour impression.
-
-      Inclure le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" dans la liste deny revient à définir la règle "<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />" sur "False". Pour que les destinations <ph name="CLOUD_PRINT_NAME" /> restent visibles, la règle "<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />" doit être définie sur "True", et le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" ne doit pas figurer sur la liste deny.
-
-      Si cette règle n'est pas configurée ou si elle est définie sur une liste vide, tous les types d'imprimantes seront visibles.
-
-      Les extensions permettant d'imprimer depuis un navigateur, ou destinations des fournisseurs d'impression, englobent toutes les destinations appartenant à une extension <ph name="PRODUCT_NAME" />.
-
-      Les imprimantes locales, ou destinations d'impression native, englobent les destinations disponibles sur l'ordinateur local et les imprimantes réseau partagées.</translation>
 <translation id="875152232570912762">
       Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau de l'ordinateur, tous les comptes gérés seront obligatoirement des comptes principaux.
       Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau d'un compte, ce compte sera toujours un compte principal, qui pourra avoir des comptes secondaires dans son profil.

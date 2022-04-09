@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selected</translation>
 <translation id="2695514675076754339">Enter the 8-character unlock code</translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
+<translation id="2717139507051041123">Enable dark colour mode</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
 <translation id="2783010256799387990">PASSED</translation>
@@ -376,6 +377,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Enable light colour mode</translation>
 <translation id="5264277876637023664">Run CPU test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rerun routines</translation>
@@ -486,6 +488,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6423239382391657905">Open VPN</translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Go to account settings</translation>
 <translation id="6456394469623773452">Fine</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{Rescan page {PAGE_NUMBER}?}other{Rescan page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +572,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Change screensaver</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7665800271478495366">Change avatar</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7994702968232966508">EAP method</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Enable auto colour mode</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>

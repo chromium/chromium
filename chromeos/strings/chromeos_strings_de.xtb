@@ -209,6 +209,7 @@
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
+<translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
@@ -527,6 +528,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließe sie und versuche es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6935486296377631201">Bildschirmschoner</translation>
+<translation id="6943893908656559156">Remote-Identität (optional)</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
 <translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1001033507375626788">Ky rrjet është ndarë me ty</translation>
-<translation id="1001307489511021749">Aplikacionet, cilësimet dhe personalizimet e tua të tjera do të sinkronizohen nëpër të gjitha pajisjet me Chrome OS ku je identifikuar me "Llogarinë tënde të Google".</translation>
 <translation id="1003088604756913841">Hape lidhjen në një dritare të re të <ph name="APP" /></translation>
 <translation id="100323615638474026">Pajisja USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Qasja në sajt</translation>
@@ -450,7 +449,6 @@
 <translation id="1429300045468813835">U pastruan të gjitha</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1431188203598586230">Përditësimi përfundimtar i softuerit</translation>
-<translation id="1431432486300429272">Google mund ta përdorë historikun tënd të shfletimit për të personalizuar "Kërko me Google" dhe shërbime të tjera të Google. Ti ose prindi yt mund ta ndryshosh këtë në çdo kohë te myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433811987160647649">Pyet para se të hysh</translation>
 <translation id="1434696352799406980">Ky funksion do të rivendosë faqen e parë, faqen e skedës së re, motorin e kërkimit dhe skedat e gozhduara. Ai do të çaktivizojë po ashtu të gjitha shtesat dhe do të pastrojë të dhënat e përkohshme si kukit. Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të pastrohen.</translation>
@@ -794,7 +792,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="175196451752279553">&amp;Hap përsëri skedën e mbyllur</translation>
 <translation id="1753067873202720523">Chromebook mund të mos ngarkohet kur është i ndezur.</translation>
 <translation id="1753905327828125965">Më të vizituara</translation>
-<translation id="1755395545337105369">Sinkronizimi i cilësimeve të Chrome OS Flex</translation>
 <translation id="1755601632425835748">Madhësia e tekstit</translation>
 <translation id="1755872274219796698">Zhvendos fjalëkalimet</translation>
 <translation id="1757132445735080748">Për të përfunduar konfigurimin e Linux, përditëso Chrome OS Flex dhe provo përsëri.</translation>
@@ -2263,7 +2260,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3162853326462195145">Llogaria e shkollës</translation>
 <translation id="3162899666601560689">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
-<translation id="3163254451837720982">Shërbimet e mëposhtme të ndihmojnë që t'i mbash të dhënat të mbrojtura dhe të sigurta. Këto veçori mund t'i çaktivizosh në çdo kohë.</translation>
 <translation id="3163511056918491211">Restauro të dhënat e tua ose ndërro pajisjet në çdo kohë me lehtësi. Rezervimet e tua ngarkohen te Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë sate të Google".</translation>
 <translation id="3164329792803560526">Po ndan këtë skedë në <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Disa operatorë celularë mund ta bllokojnë këtë funksion.</translation>
@@ -2490,7 +2486,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3423858849633684918">Hap përsëri <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Përshkruaj çfarë po bëje kur skeda pësoi një ndërprerje aksidentale</translation>
 <translation id="3427092606871434483">Lejo (parazgjedhja)</translation>
-<translation id="3428419049384081277">Je i identifikuar!</translation>
 <translation id="3429086384982427336">Aplikacionet e listuara më poshtë nuk do të menaxhojnë asnjëherë lidhje protokolli.</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
@@ -4800,7 +4795,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5692183275898619210">Printimi përfundoi</translation>
 <translation id="5695184138696833495">ADB-ja e aplikacionit Android për Linux</translation>
 <translation id="5696143504434933566">Raporto abuzimin nga "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="5696177755977520104">Sinkronizimi i cilësimeve të Chrome OS</translation>
 <translation id="5696679855467848181">Skedari aktual PPD është në përdorim: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Zgjedhësi i emoji-ve</translation>
 <translation id="570043786759263127">Aplikacionet dhe shërbimet e Google Play</translation>
@@ -5212,7 +5206,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6104068876731806426">Llogaritë e Google</translation>
 <translation id="6104311680260824317">Pajisja nuk mund t'i bashkohet domenit. Serveri nuk i mbështet llojet e përcaktuara të enkpriptimit Kerberos. Kontrollo te "Më shumë opsione" për cilësimet e enkriptimit.</translation>
 <translation id="6104796831253957966">Radha në printer është plot</translation>
-<translation id="6105994589138235234">Sinkronizimi i shfletuesit Chrome</translation>
 <translation id="6111972606040028426">Aktivizo "Asistentin e Google"</translation>
 <translation id="6112294629795967147">Prek për të ndryshuar madhësinë</translation>
 <translation id="6112727384379533756">Shto një biletë</translation>
@@ -5423,7 +5416,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6313950457058510656">Çaktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="6314819609899340042">Ke aktivizuar me sukses funksionet e korrigjimit në këtë pajisje të <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315493146179903667">Silli të gjitha përpara</translation>
-<translation id="6317318380444133405">Nuk mbështetet më.</translation>
 <translation id="6317369057005134371">Po pret për dritaren e aplikacionit...</translation>
 <translation id="6318125393809743217">Përfshi një skedar policies.json me konfigurimet e politikës.</translation>
 <translation id="6318407754858604988">Shkarkimi filloi</translation>
@@ -5619,7 +5611,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6514565641373682518">Kjo faqe ka çaktivizuar kursorin e miut.</translation>
 <translation id="6518014396551869914">Kopj&amp;o imazhin</translation>
 <translation id="6518133107902771759">Verifiko</translation>
-<translation id="6519304021460270639">Aplikacionet, cilësimet dhe personalizimet e tua të tjera do të sinkronizohen nëpër të gjitha pajisjet me Chrome OS Flex ku je identifikuar me "Llogarinë tënde të Google".</translation>
 <translation id="651942933739530207">Dëshiron që <ph name="APP_NAME" /> të ndajë ekranin tënd dhe daljet audio?</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
@@ -5648,7 +5639,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="653920215766444089">Po kërkon për pajisjen treguese</translation>
 <translation id="653983593749614101">Po rifillon...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Aktivizoje vetëm nëse e di e çfarë po bën ose nëse të është kërkuar ta bësh këtë, sepse grumbullimi të dhënave mund të ulë rendimentin.</translation>
-<translation id="6540672086173674880">Google mund ta përdorë historikun tënd të shfletimit për të personalizuar "Kërko" dhe shërbime të tjera të Google. Këtë mund ta ndryshosh në çdo kohë te myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Kjo faqe nuk lejohet të t'i hapë sensorët e lëvizjes.</translation>
 <translation id="6545665334409411530">Shpejtësia e përsëritjes</translation>
 <translation id="6545867563032584178">Mikrofoni është çaktivizuar te Mac System Preferences</translation>
@@ -5755,7 +5745,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6644512095122093795">Ofro të ruhen fjalëkalimet</translation>
 <translation id="6644513150317163574">Format i pavlefshëm URL-je. Serveri duhet të specifikohet si emër pritësi kur përdoret vërtetimi SSO.</translation>
 <translation id="6644846457769259194">Po përditëson pajisjen (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6645437135153136856">Pajisja e zgjedhur e "Printimit në renë kompjuterike të Google" nuk mbështetet më. <ph name="BR" /> Provo të konfigurosh printerin në cilësimet e sistemit të kompjuterit tënd.</translation>
 <translation id="6646476869708241165">Çaktivizo "Çiftimin e shpejtë"</translation>
 <translation id="6647228709620733774">URL-ja e revokimit të autoritetit të certifikimit të Netscape</translation>
 <translation id="6647441008198474441">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim</translation>
@@ -6244,7 +6233,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7121728544325372695">Vizat inteligjente</translation>
 <translation id="7123030151043029868">Lejohen të shkarkojnë automatikisht shumë skedarë</translation>
 <translation id="7123302939607518173">Shto një interes ose sajt nëse mendon se reklamat e lidhura me artikullin do të ishin të dobishme për ty.</translation>
-<translation id="7123360114020465152">Nuk mbështetet më</translation>
 <translation id="7124013154139278147">Cakto çelësin për veprimin “Pas”</translation>
 <translation id="7125029162161377569">Me provat e Privacy Sandbox, sajtet mund të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua. Kjo nënkupton më shumë privatësi për ty dhe më pak gjurmim nëpër sajte. Do të shtojmë prova të reja sapo ato të jenë gati për testim.</translation>
 <translation id="7125148293026877011">Fshi Crostini</translation>
@@ -6318,7 +6306,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7219473482981809164">Kemi gjetur disa profile të disponueshme për t'u shkarkuar. Zgjidh ata që dëshiron të shkarkosh përpara se të vazhdosh.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Asnjë fjalëkalim i dobët}=1{1 fjalëkalim i dobët}other{{NUM_WEAK} fjalëkalime të dobëta}}</translation>
 <translation id="7220019174139618249">Fjalëkalimet nuk mund të eksportohen te "<ph name="FOLDER" />"</translation>
-<translation id="722055596168483966">Personalizo shërbimet e Google</translation>
 <translation id="722099540765702221">Burimi i karikimit</translation>
 <translation id="7221869452894271364">Ringarkoje këtë faqe</translation>
 <translation id="7222204278952406003">Chrome është shfletuesi yt i parazgjedhur</translation>
@@ -6939,7 +6926,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7817361223956157679">Tastiera në ekran nuk funksionin ende në aplikacionet e Linux</translation>
 <translation id="7818135753970109980">U shtua një temë e re (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Bllokuar nga organizata jote</translation>
-<translation id="7819992334107904369">Sinkronizimi i Chrome</translation>
 <translation id="7820561748632634942">Të caktohen çelësa të tjerë?</translation>
 <translation id="782057141565633384">K&amp;opjo adresën e videos</translation>
 <translation id="7822187537422052256">Je i sigurt që dëshiron ta heqësh këtë adresë?</translation>
@@ -7007,7 +6993,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7881483672146086348">Shiko llogarinë</translation>
 <translation id="7883792253546618164">Çregjistrohu në çdo kohë.</translation>
 <translation id="788453346724465748">Informacionet e llogarisë po ngarkohen...</translation>
-<translation id="7885253890047913815">Destinacionet e fundit</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{një artikull}other{# artikuj}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Bëj një turne udhëzues për kontrollet kryesore të privatësisë dhe sigurisë. Për më shumë opsione, shko te cilësimet individuale.</translation>
@@ -7917,7 +7902,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8795916974678578410">Dritare e re</translation>
 <translation id="8797459392481275117">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
-<translation id="8800004011501252845">Po shfaq destinacionet për</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8803526663383843427">Kur është e aktive</translation>
 <translation id="8803953437405899238">Hap një skedë të re me një klikim</translation>
@@ -8118,7 +8102,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8991520179165052608">Sajti mund të përdorë mikrofonin tënd</translation>
 <translation id="899384117894244799">Hiq përdoruesin e kufizuar</translation>
 <translation id="899403249577094719">URL-ja e bazës së certifikatës së Netscape</translation>
-<translation id="8996526648899750015">Shto llogari...</translation>
 <translation id="899657321862108550">Chrome, i yti kudo</translation>
 <translation id="899676909165543803">Sensori i gjurmës së gishtit është tasti poshtë djathtas në tastierë. Preke lehtë me një gisht.</translation>
 <translation id="8999560016882908256">Gabim i sintaksës së seksionit: <ph name="ERROR_LINE" /></translation>
@@ -8357,7 +8340,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="934244546219308557">Emërtoje këtë grup</translation>
 <translation id="934503638756687833">Do të hiqen edhe artikuj që nuk janë listuar këtu, nëse është e nevojshme. Mëso më shumë për &lt;a href="<ph name="URL" />"&gt;mbrojtjen ndaj softuerëve të padëshiruar&lt;/a&gt; në dokumentin informues të privatësisë së Chrome.</translation>
 <translation id="93480724622239549">Defekt në kod ose gabim</translation>
-<translation id="935490618240037774">Faqeshënuesit e tu, historiku, fjalëkalimet dhe cilësimet e tjera do të sinkronizohen te llogaria jote e Google që të mund t'i përdorësh në të gjitha pajisjet e tua.</translation>
 <translation id="935854577147268200">Telefoni i Smart Lock ndryshoi. Fut fjalëkalimin për të përditësuar Smart Lock. Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund të çaktivizosh Smart Lock te "Cilësimet"</translation>
 <translation id="93610034168535821">Hapësira ruajtëse në total e përdorur nga sajtet:</translation>
 <translation id="936646668635477464">Kamera dhe mikrofoni</translation>

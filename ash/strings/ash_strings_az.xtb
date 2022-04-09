@@ -224,6 +224,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2302092602801625023">Bu hesab Family Link tərəfindən idarə olunur</translation>
 <translation id="2303600792989757991">Pəncərə ümumi görünüşünə keçirin</translation>
 <translation id="2318576281648121272">Bu gün <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, axtarış nəticəsi kateqoriyası</translation>
 <translation id="2322173485024759474">Hərf üzrə geri qayıdın</translation>
 <translation id="2339073806695260576">Qeyd götürmək, skrinşot çəkmək assistent, lazer göstəricisi və ya lupadan istifadə etmək üçün fırça düyməsinə klikləyin.</translation>
 <translation id="2341729377289034582">Şaquli formada kilidləndi</translation>
@@ -380,6 +381,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sonradan yenə daxil ola biləcək.</translation>
 <translation id="3321628682574733415">Yanlış valideyn kodu</translation>
 <translation id="3339826665088060472">Ekran çəkilişi, skrinşot və ekran qeydləri çəkmək üçün alətlər</translation>
+<translation id="3340978935015468852">ayarlar</translation>
 <translation id="3341303451326249809">Skrinşot çəkildi</translation>
 <translation id="334252345105450327">Skrinşot çəkin</translation>
 <translation id="3351879221545518001">Hazırda ekranı paylaşırsınız.</translation>
@@ -920,6 +922,7 @@ Yeni quraşdırma</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> mikrofondan istifadə etmək istəyir</translation>
 <translation id="6637729079642709226">Vaxtı dəyişin</translation>
 <translation id="6641720045729354415">Canlı Altyazını keçirin. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Ad üzrə çeşidləmə sırasını ləğv edin</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" cihazı cütlənmək üçün icazə istəyir. Bu parolu həmin cihazda daxil edin: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -958,7 +961,6 @@ Yeni quraşdırma</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rəqəm qalıb}other{# rəqəm qalıb}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> endirilməsi durdurulub</translation>
 <translation id="6878400149835617132">Qısayol deaktiv edildi</translation>
-<translation id="6880133753431418782">Bu sorğunu daha əvvəl axtarmısınız. Tarixçədənbu sorğunu silsəniz o, bütün cihazlardakı Google Hesabınızdan həmişəlik silinəcək.</translation>
 <translation id="6884665277231944629">Bugünə qayıdın</translation>
 <translation id="6886172995547742638">Sizin <ph name="DEVICE_TYPE" /> aşağı performans göstərə bilər. Sertifikatlı <ph name="PREFERRED_MINIMUM_POWER" />W və ya daha yüksək USB-C cərəyan yuvasından istifadə edin.</translation>
 <translation id="688631446150864480">Pəncərələri dəyişdirmək üçün Aşağı ox düyməsini basın</translation>
@@ -1044,7 +1046,6 @@ Yeni quraşdırma</translation>
 <translation id="742594950370306541">Kamera istifadə olunur.</translation>
 <translation id="742608627846767349">Sabahınız xeyir,</translation>
 <translation id="743058460480092004">Kamera və mikrofon istifadə olunur.</translation>
-<translation id="7430878839542012341">Bu axtarış tarixçədən silinsin?</translation>
 <translation id="7434543979546293336">Əsas ideya olaraq işarələnib</translation>
 <translation id="7452560014878697800">Tətbiq kameranızı işlədir</translation>
 <translation id="7461924472993315131">Pin</translation>
@@ -1228,6 +1229,8 @@ Yeni quraşdırma</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>
 <translation id="851458219935658693">Mövcud masadan pəncərələri göstərin, radio düyməsi seçilib</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız aktiv olan zaman elektrik yığmaya bilər.</translation>
+<translation id="8535393432370007982">Rəng üzrə çeşidləmə sırasını ləğv edin</translation>
+<translation id="8546059259582788728">Çeşidləmənin ləğvi uğurlu oldu</translation>
 <translation id="8551588720239073785">Tarix və vaxt ayarları</translation>
 <translation id="8553395910833293175">Artıq bütün masalara təyin olunub.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> cihazını güncəlləməyinizi tövsiyə edir</translation>

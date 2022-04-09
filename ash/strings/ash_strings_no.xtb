@@ -380,6 +380,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
+<translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
 <translation id="3351879221545518001">Du caster for øyeblikket skjermen.</translation>
@@ -957,7 +958,6 @@ Nylig installert</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ett siffer gjenstår}other{# sifre gjenstår}}</translation>
 <translation id="6867938213751067702">Nedlastingen av <ph name="FILENAME" /> er satt på pause</translation>
 <translation id="6878400149835617132">Snarveien er avslått</translation>
-<translation id="6880133753431418782">Du har utført dette søket før. Hvis du sletter dette søket fra loggen, blir det fjernet permanent fra Google-kontoen din på alle enhetene dine.</translation>
 <translation id="6884665277231944629">Gå tilbake til i dag</translation>
 <translation id="6886172995547742638">Ytelsen til <ph name="DEVICE_TYPE" /> kan svekkes. Bruk en sertifisert USB-C-strømadapter på <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Trykk på nedoverpiltasten for å bytte vindu</translation>
@@ -1042,7 +1042,6 @@ Nylig installert</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
-<translation id="7430878839542012341">Vil du slette dette søket fra loggen?</translation>
 <translation id="7434543979546293336">Merket som nøkkelidé</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
 <translation id="7461924472993315131">Fest</translation>

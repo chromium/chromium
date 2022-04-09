@@ -380,6 +380,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> joprojām varēs pierakstīties vēlāk.</translation>
 <translation id="3321628682574733415">Nepareizs vecāku kods</translation>
 <translation id="3339826665088060472">Ekrānuzņēmuma izveide, rīki ekrānuzņēmumu izveidei un ekrāna ierakstu uzņemšanai</translation>
+<translation id="3340978935015468852">Iestatījumi</translation>
 <translation id="3341303451326249809">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="334252345105450327">Iegūt ekrānuzņēmumu</translation>
 <translation id="3351879221545518001">Jūsu ekrānā šobrīd tiek veikta apraide.</translation>
@@ -957,7 +958,6 @@ Jauna instalācija</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6867938213751067702">Faila <ph name="FILENAME" /> lejupielāde ir pārtraukta</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
-<translation id="6880133753431418782">Jūs iepriekš esat meklējis šo vaicājumu. Dzēšot šo vaicājumu no vēstures, tas tiks neatgriezeniski noņemts no jūsu Google konta visās jūsu ierīcēs.</translation>
 <translation id="6884665277231944629">Atgriezties uz šodienu</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bulttaustiņu.</translation>
@@ -1042,7 +1042,6 @@ Jauna instalācija</translation>
 <translation id="742594950370306541">Kamera tiek lietota.</translation>
 <translation id="742608627846767349">Labrīt!</translation>
 <translation id="743058460480092004">Kamera un mikrofons tiek lietoti.</translation>
-<translation id="7430878839542012341">Vai dzēst šo meklēšanas vaicājumu no vēstures?</translation>
 <translation id="7434543979546293336">Atzīmēta kā svarīga ideja</translation>
 <translation id="7452560014878697800">Jūsu kameru izmanto lietojumprogramma</translation>
 <translation id="7461924472993315131">Piespraust</translation>

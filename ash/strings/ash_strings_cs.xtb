@@ -380,6 +380,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se i nadále bude moci přihlásit.</translation>
 <translation id="3321628682574733415">Nesprávný kód rodiče</translation>
 <translation id="3339826665088060472">Záznam obrazovky, nástroje k pořizování snímků a záznamu obrazovky</translation>
+<translation id="3340978935015468852">nastavení</translation>
 <translation id="3341303451326249809">Snímek obrazovky byl pořízen</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="3351879221545518001">Právě odesíláte obrazovku.</translation>
@@ -865,7 +866,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>
 <translation id="6283712521836204486">Režim Nerušit je vypnutý.</translation>
 <translation id="6284232397434400372">Rozlišení se změnilo</translation>
-<translation id="6286007831750548130">Výsledek historie vyhledávání byl smazán</translation>
 <translation id="6288235558961782912">Adresu <ph name="USER_EMAIL_ADDRESS" /> můžete s povolením rodiče přidat později</translation>
 <translation id="6291221004442998378">Nenabíjí se</translation>
 <translation id="6315170314923504164">Hlas</translation>
@@ -959,7 +959,6 @@ Nová instalace</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
 <translation id="6867938213751067702">Bylo pozastaveno stahování souboru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
-<translation id="6880133753431418782">Tento dotaz jste již dříve hledali. Pokud toto vyhledávání smažete z historie, odstraníte ho tím ze svého účtu Google na všech zařízeních.</translation>
 <translation id="6884665277231944629">Zpět na dnešek</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
 <translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>
@@ -1045,7 +1044,6 @@ Nová instalace</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
 <translation id="742608627846767349">Dobré ráno,</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
-<translation id="7430878839542012341">Vymazat toto vyhledávání z historie?</translation>
 <translation id="7434543979546293336">Označeno jako hlavní myšlenka</translation>
 <translation id="7452560014878697800">Váš fotoaparát používá nějaká aplikace</translation>
 <translation id="7461924472993315131">Připnout</translation>

@@ -380,6 +380,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> tetap dapat login di lain waktu.</translation>
 <translation id="3321628682574733415">Kode induk salah</translation>
 <translation id="3339826665088060472">Screenshot, alat untuk mengambil screenshot dan merekam layar</translation>
+<translation id="3340978935015468852">setelan</translation>
 <translation id="3341303451326249809">Screenshot diambil</translation>
 <translation id="334252345105450327">Ambil screenshot</translation>
 <translation id="3351879221545518001">Anda sedang mentransmisi layar.</translation>
@@ -958,7 +959,6 @@ Baru diinstal</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Satu digit lagi}other{# digit lagi}}</translation>
 <translation id="6867938213751067702">Download <ph name="FILENAME" /> dijeda</translation>
 <translation id="6878400149835617132">Pintasan dinonaktifkan</translation>
-<translation id="6880133753431418782">Anda menelusuri kueri ini sebelumnya. Menghapus penelusuran ini dari histori akan menghapusnya secara permanen dari Akun Google Anda di semua perangkat.</translation>
 <translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> Anda mungkin mengalami penurunan performa. Gunakan adaptor daya USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W atau lebih tinggi yang tersertifikasi.</translation>
 <translation id="688631446150864480">Tekan tombol Panah bawah untuk beralih jendela</translation>
@@ -1044,7 +1044,6 @@ Baru diinstal</translation>
 <translation id="742594950370306541">Kamera sedang digunakan.</translation>
 <translation id="742608627846767349">Selamat pagi,</translation>
 <translation id="743058460480092004">Kamera dan mikrofon sedang digunakan.</translation>
-<translation id="7430878839542012341">Hapus penelusuran ini dari histori Anda?</translation>
 <translation id="7434543979546293336">Ditandai sebagai ide kunci</translation>
 <translation id="7452560014878697800">Aplikasi sedang menggunakan kamera Anda</translation>
 <translation id="7461924472993315131">Sematkan</translation>

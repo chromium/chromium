@@ -380,6 +380,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
 <translation id="3339826665088060472">Ekran görüntüsü, ekranının görüntüsünü ve kaydını almaya yarayan araçlar</translation>
+<translation id="3340978935015468852">ayarlar</translation>
 <translation id="3341303451326249809">Ekran görüntüsü alındı</translation>
 <translation id="334252345105450327">Ekran görüntüsü al</translation>
 <translation id="3351879221545518001">Şu anda ekranı yayınlıyorsunuz.</translation>
@@ -957,7 +958,6 @@ Yeni yüklenmiş</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
-<translation id="6880133753431418782">Daha önce bu sorguyla ilgili arama yaptınız. Bu aramayı geçmişinizden sildiğinizde bu arama tüm cihazlardaki Google Hesabınızdan kalıcı olarak kaldırılır.</translation>
 <translation id="6884665277231944629">Bugüne geri dönün</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>
@@ -1042,7 +1042,6 @@ Yeni yüklenmiş</translation>
 <translation id="742594950370306541">Kamera kullanımda.</translation>
 <translation id="742608627846767349">Günaydın,</translation>
 <translation id="743058460480092004">Kamera ve mikrofon kullanımda.</translation>
-<translation id="7430878839542012341">Bu arama, geçmişinizden silinsin mi?</translation>
 <translation id="7434543979546293336">Temel fikir olarak işaretlendi</translation>
 <translation id="7452560014878697800">Bir uygulama kameranızı kullanıyor</translation>
 <translation id="7461924472993315131">Sabitle</translation>

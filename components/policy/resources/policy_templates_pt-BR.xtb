@@ -5206,7 +5206,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6819838337315703072">Se a compatibilidade com apps <ph name="LINUX_OS_NAME" /> estiver ativada, definir a política como "Ativada" enviará informações sobre o uso dos apps <ph name="LINUX_OS_NAME" /> ao servidor.
 
       Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>
-<translation id="6821268164692776674">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive"</translation>
 <translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
 <translation id="6833023569065717572">Se a política for definida como verdadeira, a tela de login do dispositivo terá um relógio no formato de 24 horas.
 
@@ -6998,17 +6997,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8749536858950505376">Se esta política for definida como verdadeira, o cursor grande será ativado. Se esta política for definida como falsa, o cursor grande será desativado.
 
       Se você definir a política, os usuários não poderão mudar o recurso. Se a política não for definida, o cursor grande será desativado inicialmente, mas os usuários poderão ativá-lo quando quiserem.</translation>
-<translation id="8749803771700374502">Se o tipo da impressora estiver na lista de proibições, não será possível descobrir esse equipamento ou buscar suas funcionalidades.
-
-      Colocar todos os tipos de impressora na lista de proibições desativa a impressão de modo eficaz porque não há destinos disponíveis para enviar um documento para impressão.
-
-      Incluir <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> na lista de proibições tem o mesmo efeito que definir a política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> como falsa. Para que os destinos da <ph name="CLOUD_PRINT_NAME" /> continuem disponíveis, é necessário que a política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> seja definida como verdadeira e que <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> não esteja na lista de proibições.
-
-      Se a política não for configurada ou for configurada como uma lista vazia, todos os tipos de impressora estarão disponíveis para descoberta.
-
-      As impressoras de extensão também são conhecidas como "destinos de provedores de impressão" e incluem qualquer destino que pertença a uma extensão do <ph name="PRODUCT_NAME" />.
-
-      As impressoras locais também são conhecidas como "destinos de impressão nativos" e incluem os destinos disponíveis para as impressoras de rede compartilhada e de máquinas locais.</translation>
 <translation id="875152232570912762">
       Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
       Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> em uma conta, ela sempre será a principal, mas poderá ter contas secundárias no perfil.

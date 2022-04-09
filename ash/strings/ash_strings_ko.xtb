@@ -380,6 +380,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="3339826665088060472">화면 캡처, 스크린샷을 찍고 화면을 녹화하는 도구</translation>
+<translation id="3340978935015468852">설정</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
 <translation id="334252345105450327">스크린샷 찍기</translation>
 <translation id="3351879221545518001">현재 화면을 전송하고 있습니다.</translation>
@@ -957,7 +958,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 다운로드가 일시중지되었습니다</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
-<translation id="6880133753431418782">이전에 검색한 쿼리입니다. 기록에서 이 검색어를 삭제하면 모든 기기의 Google 계정에서 검색어가 완전히 삭제됩니다.</translation>
 <translation id="6884665277231944629">오늘로 돌아가기</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
@@ -1042,7 +1042,6 @@
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
 <translation id="742608627846767349">좋은 아침이에요</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
-<translation id="7430878839542012341">기록에서 검색어를 삭제하시겠습니까?</translation>
 <translation id="7434543979546293336">핵심 아이디어로 표시됨</translation>
 <translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
 <translation id="7461924472993315131">고정</translation>

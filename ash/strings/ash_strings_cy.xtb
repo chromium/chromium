@@ -380,6 +380,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3308453408813785101">Gall <ph name="USER_EMAIL_ADDRESS" /> fewngofnodi'n nes ymlaen.</translation>
 <translation id="3321628682574733415">Cod rhiant anghywir</translation>
 <translation id="3339826665088060472">Ciplun, offer i gymryd sgrinluniau a recordiadau sgrîn</translation>
+<translation id="3340978935015468852">gosodiadau</translation>
 <translation id="3341303451326249809">Wedi tynnu sgrinlun</translation>
 <translation id="334252345105450327">Tynnu sgrinlun</translation>
 <translation id="3351879221545518001">Rydych yn castio'r sgrîn ar hyn o bryd.</translation>
@@ -957,7 +958,6 @@ Gosodiad newydd</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Un digid yn weddill}zero{# digid yn weddill}two{# ddigid yn weddill}few{# digid yn weddill}many{# digid yn weddill}other{# digid yn weddill}}</translation>
 <translation id="6867938213751067702">Wedi seibio lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Mae'r llwybr byr wedi'i ddiffodd</translation>
-<translation id="6880133753431418782">Gwnaethoch chwilio am yr ymholiad hwn o'r blaen. Bydd dileu'r chwiliad hwn o'ch hanes yn ei dynnu'n barhaol o'ch Cyfrif Google ar draws eich holl ddyfeisiau.</translation>
 <translation id="6884665277231944629">Mynd yn ôl i heddiw</translation>
 <translation id="6886172995547742638">Mae'n bosib y bydd eich <ph name="DEVICE_TYPE" /> yn profi perfformiad is. Defnyddiwch addasydd pŵer USB-C ardystiedig <ph name="PREFERRED_MINIMUM_POWER" />W neu uwch.</translation>
 <translation id="688631446150864480">Pwyswch y fysell Saeth i lawr i newid ffenestri</translation>
@@ -1042,7 +1042,6 @@ Gosodiad newydd</translation>
 <translation id="742594950370306541">Mae'r camera'n cael ei ddefnyddio.</translation>
 <translation id="742608627846767349">Bore da,</translation>
 <translation id="743058460480092004">Mae'r camera a'r meicroffon yn cael eu defnyddio.</translation>
-<translation id="7430878839542012341">Dileu'r chwiliad hwn o'ch hanes?</translation>
 <translation id="7434543979546293336">Marciwyd fel syniad allweddol</translation>
 <translation id="7452560014878697800">Mae ap yn defnyddio'ch camera</translation>
 <translation id="7461924472993315131">Pinio</translation>

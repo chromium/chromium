@@ -5166,7 +5166,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6819838337315703072"><ph name="LINUX_OS_NAME" /> uygulama desteği açıksa politika, Etkin değerine ayarlandığında <ph name="LINUX_OS_NAME" /> uygulamalarının kullanımıyla ilgili bilgiyi sunucuya geri gönderir.
 
       Politika, Devre Dışı olarak ayarlanır veya ayarlanmadan bırakılırsa hiçbir kullanım bilgisi raporlanmaz.</translation>
-<translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" /> ve "Google Drive'a kaydet" hedefleri</translation>
 <translation id="6823711520976094072">1 MB'tan daha düşük bir değere ayarlandığında veya ayarlanmamış olarak bırakıldığında, <ph name="PRODUCT_OS_NAME" /> tek bir cihazın birden fazla kullanıcısı tarafından yüklenmek üzere uygulamaları ve uzantıları önbelleğe almak için 256 MiB olan varsayılan boyutu kullanır. Bu şekilde, uygulamaları ve uzantıları her kullanıcı için yeniden indirme ihtiyacını ortadan kaldırır.</translation>
 <translation id="6833023569065717572">Politikayı Doğru değerine ayarlarsanız cihazın oturum açma ekranında 24 saatlik saat biçimi kullanılır.
 
@@ -6955,17 +6954,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8749536858950505376">Politikayı True (Doğru) değerine ayarlamak, büyük imleci açık tutar. Politikayı False (Yanlış) değerine ayarlamak, büyük imleci kapalı tutar.
 
       Bu politikayı ayarlarsanız kullanıcılar özelliği değiştiremez. Ayarlanmazsa büyük imleç ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>
-<translation id="8749803771700374502">Reddetme listesine yerleştirilen yazıcı türlerinin bulunması veya işlevlerinin alınması devre dışı bırakılır.
-
-      Tüm yazıcı türlerini reddetme listesine yerleştirmek, bir dokümanı yazdırmak için gönderilecek kullanılabilir hedef olmayacağından yazdırma işlevini etkin bir şekilde devre dışı bırakır.
-
-      Reddetme listesine <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> eklemek, <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> politikasını false (yanlış) değerine ayarlamakla aynı etkiye sahiptir. <ph name="CLOUD_PRINT_NAME" /> hedeflerini bulunabilir tutmak için <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> politikanın true (doğru) değerine ayarlanması ve reddetme listesine <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> eklenmemesi gerekir.
-
-      Bu politika ayarlanmaz veya boş bir listeye ayarlanırsa tüm yazıcı türleri bulunmak için kullanılabilir.
-
-      Uzantı yazıcıları ayrıca yazdırma sağlayıcı hedefleri olarak da bilinir ve <ph name="PRODUCT_NAME" /> uzantısına ait olan herhangi bir hedefi içerir.
-
-      Yerel yazıcılar ayrıca yerel yazdırma hedefleri olarak da bilinir ve yerel makineler ile paylaşılan ağ yazıcılarının kullanabildiği hedefleri içerir.</translation>
 <translation id="875152232570912762">
       Bu politika, makine düzeyinde <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> değerine ayarlanırsa tüm yönetilen hesapların birincil hesap olması zorunlu hale gelir.
       Bu politika bir hesapta <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> değerine ayarlanırsa o hesap, her zaman birincil hesap olur ancak profilinde ikincil hesaplar bulundurabilir.
