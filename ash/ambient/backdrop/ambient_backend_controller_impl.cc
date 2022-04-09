@@ -328,12 +328,11 @@ class BackdropURLLoader {
       response_code = simple_loader_->ResponseInfo()->headers->response_code();
     }
 
-    DVLOG(2) << "Downloading Backdrop proto failed with error code: "
-             << response_code << " with network error"
-             << simple_loader_->NetError();
+    LOG(ERROR) << "Downloading Backdrop proto failed with error code: "
+               << response_code << " with network error"
+               << simple_loader_->NetError();
     simple_loader_.reset();
     std::move(callback).Run(std::make_unique<std::string>());
-    return;
   }
 
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
@@ -449,7 +448,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     const std::string& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
-    DVLOG(2) << "Failed to fetch access token";
+    LOG(ERROR) << "Failed to fetch access token for ScreenUpdate";
     // Returns an empty instance to indicate the failure.
     std::move(callback).Run(ash::ScreenUpdate());
     return;
