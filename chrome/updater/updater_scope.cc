@@ -40,10 +40,13 @@ UpdaterScope GetUpdaterScopeForCommandLine(
     DCHECK_EQ(tag_args->apps.size(), size_t{1});
     switch (*tag_args->apps.front().needs_admin) {
       case tagging::AppArgs::NeedsAdmin::kYes:
-      case tagging::AppArgs::NeedsAdmin::kPrefers:
         return UpdaterScope::kSystem;
       case tagging::AppArgs::NeedsAdmin::kNo:
         return UpdaterScope::kUser;
+      case tagging::AppArgs::NeedsAdmin::kPrefers:
+        return command_line.HasSwitch(kCmdLinePrefersUser)
+                   ? UpdaterScope::kUser
+                   : UpdaterScope::kSystem;
     }
   }
 

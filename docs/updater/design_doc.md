@@ -95,7 +95,7 @@ commands the server process to install the application the user desired.
 
 Online installers are composed of three parts: a *tag*, a *metainstaller*, and
 an *updater resource*. The metainstaller is a lightweight executable that
-uncompresses its updater resource into a safe temporary directory and then 
+uncompresses its updater resource into a safe temporary directory and then
 launches the updater's setup client process (`--install`). It passes along the
 tag, an unsigned (and untrusted) piece of data that is embedded in the
 executable which communicates the installation parameters for the software the
@@ -142,7 +142,7 @@ up that they should transition out of the `Active` state and uninstall
 themselves.
 
 ##### Qualification
-Before activating, unqualified instances of the updater first perform a 
+Before activating, unqualified instances of the updater first perform a
 self-test. The instance registers a "qualification app" with itself and checks
 for updates to that application with the production update server. The
 production server responds with an update, and the updater downloads the update
@@ -228,6 +228,42 @@ TODO(crbug.com/1035895): Document relevant enterprise policies.
 TODO(crbug.com/1035895): Document registration API.
 
 #### Dynamic Install Parameters
+
+##### `needsadmin`
+
+`needsadmin` is one of the install parameters that can be specified for
+first installs via the
+[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+`needsadmin` is used to indicate whether the application needs admin rights to
+install.
+
+For example, here is a command line for the Updater on Windows that includes:
+```
+UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+```
+
+In this case, the updater client understands that the application installer
+needs to install the application on a per-user basis for the current user.
+
+`needsadmin` has the following supported values:
+* `true`: the application supports being installed systemwide and once
+installed, is available to all users on the system.
+* `false`: the application supports only user installs.
+* `prefers`: the application installation is first attempted systemwide. If the
+user refuses the
+[UAC prompt](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
+however, the application is then only installed for the current user. The
+application installer needs to be able to support the installation as system, or
+per-user, or both modes.
+
+When `UpdaterSetup` encounters `needsadmin`, it does the following, based on the
+`needsadmin` value:
+* `true`: runs the application installer as `system`, with any
+[elevation prompts](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
+that may be required to run as system first.
+* `false`: runs the application installer as the current user.
+* `prefers`: attempts to run the application installation as system first. If
+elevation fails however, runs the application installer as the current user.
 
 ##### `installdataindex`
 

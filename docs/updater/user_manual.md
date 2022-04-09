@@ -13,6 +13,33 @@ updater setup failed to elevate itself when trying to install a system app.
 
 ## Dynamic Install Parameters
 
+### `needsadmin`
+
+`needsadmin` is one of the install parameters that can be specified for
+first installs via the
+[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+`needsadmin` is used to indicate whether the application needs admin rights to
+install.
+
+For example, here is a command line for the Updater on Windows that includes:
+```
+UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+```
+
+In this case, the updater client understands that the application installer
+needs to install the application on a per-user basis for the current user.
+
+`needsadmin` has the following supported values:
+* `true`: the application supports being installed systemwide and once
+installed, is available to all users on the system.
+* `false`: the application supports only user installs.
+* `prefers`: the application installation is first attempted systemwide. If the
+user refuses the
+[UAC prompt](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
+however, the application is then only installed for the current user. The
+application installer needs to be able to support the installation as system, or
+per-user, or both modes.
+
 ### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for

@@ -486,6 +486,8 @@ bool IsCurrentOrParentDirectory(const wchar_t* dir) {
 
 ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   DCHECK(!::IsUserAnAdmin());
+  DCHECK(!command_line.HasSwitch(kCmdLinePrefersUser));
+
   if (command_line.HasSwitch(kCmdLineExpectElevated)) {
     VLOG(1) << __func__ << "Unexpected elevation loop! "
             << command_line.GetCommandLineString();
@@ -520,9 +522,19 @@ ProcessExitResult WMain(HMODULE module) {
       cmd_line.append(cmd_line_args.get()) &&
       GetUpdaterScopeForCommandLine(base::CommandLine::FromString(
           cmd_line.get())) == UpdaterScope::kSystem) {
-    // TODO(crbug.com/1311354) : Handle needsadmin prefers.
-    return HandleRunElevated(
-        base::CommandLine::FromString(::GetCommandLineW()));
+    ProcessExitResult run_elevated_result =
+        HandleRunElevated(base::CommandLine::FromString(::GetCommandLineW()));
+    if (run_elevated_result.exit_code !=
+        RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS) {
+      return run_elevated_result;
+    }
+
+    // Could not elevate. So fall through to install as a per-user app.
+    if (!cmd_line_args.append(L" --") ||
+        !cmd_line_args.append(
+            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
   }
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);

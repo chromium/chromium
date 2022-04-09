@@ -169,6 +169,10 @@ extern const char kHandoffSwitch[];
 // to install on a standard user account with UAC disabled.
 extern const char kCmdLineExpectElevated[];
 
+// The "prefers-user" switch indicates that updater setup could not elevate, and
+// is now trying to install the app per-user.
+extern const char kCmdLinePrefersUser[];
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

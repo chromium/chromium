@@ -65,6 +65,8 @@ const char kHandoffSwitch[] = "handoff";
 
 const char kCmdLineExpectElevated[] = "expect-elevated";
 
+const char kCmdLinePrefersUser[] = "prefers-user";
+
 // Path names.
 const char kAppsDir[] = "apps";
 const char kUninstallScript[] = "uninstall.cmd";
