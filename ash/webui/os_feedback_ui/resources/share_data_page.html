@@ -76,10 +76,10 @@
     </div>
     <!-- User e-mail -->
     <div id="user-email" class="text-field-container"
-        hidden$="[[!hasEmail_(email)]]">
+        hidden$="[[!hasEmail_(feedbackContext)]]">
       <label id="user-email-label">Email</label>
       <select id="user-email-drop-down" aria-labelledby="user-email-label">
-        <option value$="[[email]]">[[email]]</option>
+        <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
         <option value="">Don't include email address</option>
       </select>
     </div>
@@ -92,7 +92,7 @@
             aria-labelledby="page-url-label" checked>
         <label id="page-url-label">share url:</label>
         <input id="page-url-text" aria-labelledby="page-url-label" type="text"
-            dir="ltr">
+            value$="[[feedbackContext.pageUrl.url]]" dir="ltr">
       </div>
       <!-- System Information -->
       <div id="sys-info-container" class="checkbox-field-container">

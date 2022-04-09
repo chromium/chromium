@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeExternalEmail} from 'chrome://os-feedback/fake_data.js';
+import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -88,7 +88,7 @@ export function shareDataPageTestSuite() {
   // Test that the email drop down is populated with two options.
   test('emailDropdownPopulated', async () => {
     await initializePage();
-    page.email = fakeExternalEmail;
+    page.feedbackContext = fakeFeedbackContext;
 
     const emailDropdown = getElement('#user-email-drop-down');
     assertTrue(!!emailDropdown);
@@ -111,11 +111,18 @@ export function shareDataPageTestSuite() {
   // Test that the email section is hidden when there is no email.
   test('emailSectionHiddenWithoutEmail', async () => {
     await initializePage();
-    page.email = '';
+    page.feedbackContext = fakeEmptyFeedbackContext;
 
     // The user email section should be hidden.
     const userEmailElement = getElement('#user-email');
     assertTrue(!!userEmailElement);
     assertFalse(isVisible(userEmailElement));
+  });
+
+  test('pageUrlPopulated', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    assertEquals('chrome://tab/', getElement('#page-url-text').value);
   });
 }

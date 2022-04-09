@@ -8,7 +8,7 @@ import './search_page.js';
 import './share_data_page.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FeedbackServiceProviderInterface} from './feedback_types.js';
+import {FeedbackContext, FeedbackServiceProviderInterface} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -37,7 +37,7 @@ export class FeedbackFlowElement extends PolymerElement {
   static get properties() {
     return {
       currentState_: {type: FeedbackFlowState},
-      email_: String,
+      feedbackContext_: {type: FeedbackContext, readonly: false, notify: true},
     };
   }
 
@@ -51,11 +51,11 @@ export class FeedbackFlowElement extends PolymerElement {
     this.currentState_ = FeedbackFlowState.SEARCH;
 
     /**
-     * The email of the signed in user if any.
-     * @type {string}
+     * The feedback context.
+     * @type {?FeedbackContext}
      * @protected
      */
-    this.email_ = '';
+    this.feedbackContext_ = null;
 
     /** @private {!FeedbackServiceProviderInterface} */
     this.feedbackServiceProvider_ = getFeedbackServiceProvider();
@@ -64,8 +64,8 @@ export class FeedbackFlowElement extends PolymerElement {
   ready() {
     super.ready();
 
-    this.feedbackServiceProvider_.getUserEmail().then((response) => {
-      this.email_ = response.email;
+    this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
+      this.feedbackContext_ = response.feedbackContext;
     });
   }
 

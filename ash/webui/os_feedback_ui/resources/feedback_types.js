@@ -69,10 +69,21 @@ export const HelpContentProviderInterface =
 export const HelpContentProvider = ash.osFeedbackUi.mojom.HelpContentProvider;
 
 /**
+ * Type alias for feedback context. It contains context information such as
+ * the signed user email, the URL of active page, etc.
+ * @typedef {{
+ *   email: string,
+ *   pageUrl: url.mojom.Url
+ * }}
+ */
+export let FeedbackContext;
+
+/**
  * Type alias for the FeedbackServiceProviderInterface.
  * TODO(xiangdongkong): Replace with a real mojo type when implemented.
  * @typedef {{
- *   getUserEmail: !function(): !Promise<{email: !string}>,
+ *   getFeedbackContext: !function(): !Promise<{
+ *       feedbackContext: !FeedbackContext}>,
  * }}
  */
 export let FeedbackServiceProviderInterface;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
-import {HelpContentList, HelpContentType, SearchRequest, SearchResponse} from './feedback_types.js';
+import {FeedbackContext, HelpContentList, HelpContentType, SearchRequest, SearchResponse} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -67,5 +67,14 @@ export const fakeSearchResponse = {
   totalResults: 10,
 };
 
-/** @type {!string} */
-export const fakeExternalEmail = 'test.user2@test.com';
+/** @type {!FeedbackContext} */
+export const fakeFeedbackContext = {
+  email: 'test.user2@test.com',
+  pageUrl: {url: 'chrome://tab/'},
+};
+
+/** @type {!FeedbackContext} */
+export const fakeEmptyFeedbackContext = {
+  email: '',
+  pageUrl: {url: ''},
+};
