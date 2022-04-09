@@ -23,15 +23,12 @@
 
 namespace {
 
-constexpr base::FilePath::CharType kDesktopScreenshotEditorBinaryPbFileName[] =
-    FILE_PATH_LITERAL("image_editor_app");
-
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: kdbdaidmledpgkihpopchgmjikgkjclh
 constexpr uint8_t kDesktopScreenshotEditorPublicKeySHA256[32] = {
-    0x82, 0x30, 0x22, 0x02, 0x0d, 0x30, 0x09, 0x06, 0x86, 0x2a, 0x86,
-    0x48, 0x0d, 0xf7, 0x01, 0x01, 0x05, 0x01, 0x03, 0x00, 0x02, 0x82,
-    0x00, 0x0f, 0x82, 0x30, 0x0a, 0x02, 0x82, 0x02, 0x01, 0x02};
+    0xa3, 0x13, 0x08, 0x3c, 0xb4, 0x3f, 0x6a, 0x87, 0xfe, 0xf2, 0x76,
+    0xc9, 0x8a, 0x6a, 0x92, 0xb7, 0xf5, 0xd5, 0x97, 0x31, 0x3f, 0x07,
+    0x7b, 0x87, 0xd0, 0x3c, 0x5c, 0xc2, 0x1b, 0x7a, 0xac, 0x12};
 
 const char kDesktopScreenshotEditorManifestName[] =
     "Desktop Screenshot Editor App";
@@ -59,12 +56,6 @@ DesktopScreenshotEditorComponentInstallerPolicy::OnCustomInstall(
 
 void DesktopScreenshotEditorComponentInstallerPolicy::OnCustomUninstall() {}
 
-base::FilePath
-DesktopScreenshotEditorComponentInstallerPolicy::GetInstalledPath(
-    const base::FilePath& base) {
-  return base.Append(kDesktopScreenshotEditorBinaryPbFileName);
-}
-
 void DesktopScreenshotEditorComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
@@ -77,14 +68,16 @@ void DesktopScreenshotEditorComponentInstallerPolicy::ComponentReady(
 bool DesktopScreenshotEditorComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  // TODO(skare): We could enforce some sanity checks that files are present.
-  // Otherwise, this is a bundle of files that web contents load.
-  return base::PathExists(GetInstalledPath(install_dir));
+  // The component installs as a zip of resources.
+  // We check for an index.html which should always be present.
+  // TODO(skare): Extend once we have cross-project library names determined.
+  base::FilePath index_path = install_dir.AppendASCII("index.html");
+  return base::PathExists(index_path);
 }
 
 base::FilePath
 DesktopScreenshotEditorComponentInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(FILE_PATH_LITERAL("DesktopScreenshotEditor"));
+  return base::FilePath(FILE_PATH_LITERAL("ScreenshotImageEditor"));
 }
 
 void DesktopScreenshotEditorComponentInstallerPolicy::GetHash(
