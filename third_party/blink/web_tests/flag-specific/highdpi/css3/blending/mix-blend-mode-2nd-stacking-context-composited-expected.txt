@@ -9,7 +9,6 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
       "bounds": [240, 135],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 1
     },

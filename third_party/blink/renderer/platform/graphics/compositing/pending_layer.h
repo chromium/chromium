@@ -183,6 +183,7 @@ class PLATFORM_EXPORT PendingLayer {
   bool has_text_ = false;
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
+  bool has_decomposited_blend_mode_ = false;
   PaintChunkSubset chunks_;
   PropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;

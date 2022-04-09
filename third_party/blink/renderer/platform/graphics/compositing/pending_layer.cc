@@ -177,8 +177,11 @@ gfx::RectF PendingLayer::VisualRectForOverlapTesting(
 
 void PendingLayer::Upcast(const PropertyTreeState& new_state) {
   DCHECK(!ChunkRequiresOwnLayer());
-  if (property_tree_state_ == new_state)
-    return;
+  DCHECK_EQ(&new_state.Effect(),
+            property_tree_state_.Effect().UnaliasedParent());
+
+  if (property_tree_state_.Effect().BlendMode() != SkBlendMode::kSrcOver)
+    has_decomposited_blend_mode_ = true;
 
   FloatClipRect float_clip_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
@@ -234,7 +237,8 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   // to the merged state, we can merge the guest immediately without needing to
   // update any bounds at all. This simple merge fast-path avoids the cost of
   // mapping the visual rects, below.
-  if (merged_visibility_limit && *merged_visibility_limit == bounds_ &&
+  if (!guest.has_decomposited_blend_mode_ && merged_visibility_limit &&
+      *merged_visibility_limit == bounds_ &&
       merged_state == property_tree_state_ &&
       rect_known_to_be_opaque_.Contains(bounds_)) {
     if (!dry_run) {
@@ -268,26 +272,34 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (merged_bounds.size().GetArea() - sum_area > kMergeSparsityAreaTolerance)
     return false;
 
-  gfx::RectF merged_rect_known_to_be_opaque =
-      gfx::MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
-                              guest.MapRectKnownToBeOpaque(*merged_state));
-  bool merged_text_known_to_be_on_opaque_background =
-      text_known_to_be_on_opaque_background_;
-  if (text_known_to_be_on_opaque_background_ !=
-      guest.text_known_to_be_on_opaque_background_) {
-    if (!text_known_to_be_on_opaque_background_) {
-      if (merged_rect_known_to_be_opaque.Contains(new_home_bounds.Rect()))
-        merged_text_known_to_be_on_opaque_background = true;
-    } else if (!guest.text_known_to_be_on_opaque_background_) {
-      if (!merged_rect_known_to_be_opaque.Contains(new_guest_bounds.Rect()))
-        merged_text_known_to_be_on_opaque_background = false;
+  // The guest's blend mode may make the merged layer not opaque.
+  gfx::RectF merged_rect_known_to_be_opaque;
+  bool merged_text_known_to_be_on_opaque_background = false;
+  if (!guest.has_decomposited_blend_mode_) {
+    merged_rect_known_to_be_opaque =
+        gfx::MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
+                                guest.MapRectKnownToBeOpaque(*merged_state));
+    merged_text_known_to_be_on_opaque_background =
+        text_known_to_be_on_opaque_background_;
+    if (text_known_to_be_on_opaque_background_ !=
+        guest.text_known_to_be_on_opaque_background_) {
+      if (!text_known_to_be_on_opaque_background_) {
+        if (merged_rect_known_to_be_opaque.Contains(new_home_bounds.Rect()))
+          merged_text_known_to_be_on_opaque_background = true;
+      } else if (!guest.text_known_to_be_on_opaque_background_) {
+        if (!merged_rect_known_to_be_opaque.Contains(new_guest_bounds.Rect()))
+          merged_text_known_to_be_on_opaque_background = false;
+      }
     }
-  }
-  if (prefers_lcd_text && !merged_text_known_to_be_on_opaque_background) {
-    if (has_text_ && text_known_to_be_on_opaque_background_)
-      return false;
-    if (guest.has_text_ && guest.text_known_to_be_on_opaque_background_)
-      return false;
+    // This is in the 'if' block because if guest.has_decomposited_blend_mode_
+    // is true, we'll lose LCD text anyway due to the exotic blend mode
+    // regardless of whether it's decomposited.
+    if (prefers_lcd_text && !merged_text_known_to_be_on_opaque_background) {
+      if (has_text_ && text_known_to_be_on_opaque_background_)
+        return false;
+      if (guest.has_text_ && guest.text_known_to_be_on_opaque_background_)
+        return false;
+    }
   }
 
   if (!dry_run) {
