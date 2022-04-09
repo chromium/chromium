@@ -22,8 +22,8 @@ int InvRecenterNonneg(int v, int m) {
 }
 
 // 6.3.5 Inv remap prob syntax, inv_remap_prob().
-Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
-  static uint8_t inv_map_table[kVp9MaxProb] = {
+Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob, bool have_context) {
+  static const uint8_t inv_map_table[kVp9MaxProb] = {
       7,   20,  33,  46,  59,  72,  85,  98,  111, 124, 137, 150, 163, 176,
       189, 202, 215, 228, 241, 254, 1,   2,   3,   4,   5,   6,   8,   9,
       10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  21,  22,  23,  24,
@@ -43,18 +43,20 @@ Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
       222, 223, 224, 225, 226, 227, 229, 230, 231, 232, 233, 234, 235, 236,
       237, 238, 239, 240, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251,
       252, 253, 253};
-  uint8_t m = prob;
   uint8_t v = delta_prob;
-  DCHECK_GE(m, 1);
-  DCHECK_LE(m, kVp9MaxProb);
   DCHECK_LT(v, std::size(inv_map_table));
   v = inv_map_table[v];
+  if (!have_context)
+    return v;
+
+  uint8_t m = prob;
+  DCHECK_LE(m, kVp9MaxProb);
+  DCHECK_GE(m, 1);
   m--;
   if ((m << 1) <= kVp9MaxProb) {
     return 1 + InvRecenterNonneg(v, m);
-  } else {
-    return kVp9MaxProb - InvRecenterNonneg(v, kVp9MaxProb - 1 - m);
   }
+  return kVp9MaxProb - InvRecenterNonneg(v, kVp9MaxProb - 1 - m);
 }
 
 }  // namespace
@@ -113,12 +115,8 @@ void Vp9CompressedHeaderParser::DiffUpdateProb(Vp9Prob* prob) {
   if (!must_update_probabilities)
     return;
 
-  if (have_frame_context_) {
-    uint8_t delta_prob = DecodeTermSubexp();
-    *prob = InvRemapProb(delta_prob, *prob);
-  } else {
-    *prob = DecodeTermSubexp();
-  }
+  uint8_t delta_prob = DecodeTermSubexp();
+  *prob = InvRemapProb(delta_prob, *prob, have_frame_context_);
 }
 
 // Helper function to DiffUpdateProb an array of probs.
