@@ -53,13 +53,20 @@ void CheckThatSlotOffsetIsZero(uintptr_t address);
 
 class PartitionStatsDumper;
 
+template <bool thread_safe = internal::ThreadSafe>
+struct PartitionRoot;
+
+using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
+
 }  // namespace partition_alloc
 
 namespace base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
+using ::partition_alloc::PartitionRoot;
 using ::partition_alloc::PartitionStatsDumper;
+using ::partition_alloc::ThreadSafePartitionRoot;
 using ::partition_alloc::internal::kAlignment;
 
 namespace internal {
@@ -74,20 +81,7 @@ using ::partition_alloc::internal::CheckThatSlotOffsetIsZero;
 
 }  // namespace internal
 
-template <bool thread_safe = true>
-struct PartitionRoot;
-
-using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
-
 }  // namespace base
-
-namespace partition_alloc {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::base::PartitionRoot;
-
-}  // namespace partition_alloc
 
 // From https://clang.llvm.org/docs/AttributeReference.html#malloc:
 //

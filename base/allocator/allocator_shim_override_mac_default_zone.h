@@ -20,14 +20,16 @@
 #include "base/bits.h"
 #include "base/logging.h"
 
-namespace base {
+namespace partition_alloc {
 
 // Defined in base/allocator/partition_allocator/partition_root.cc
 void PartitionAllocMallocHookOnBeforeForkInParent();
 void PartitionAllocMallocHookOnAfterForkInParent();
 void PartitionAllocMallocHookOnAfterForkInChild();
 
-namespace allocator {
+}  // namespace partition_alloc
+
+namespace base::allocator {
 
 namespace {
 
@@ -66,12 +68,12 @@ void MallocIntrospectionLog(malloc_zone_t* zone, void* address) {
 
 void MallocIntrospectionForceLock(malloc_zone_t* zone) {
   // Called before fork(2) to acquire the lock.
-  PartitionAllocMallocHookOnBeforeForkInParent();
+  partition_alloc::PartitionAllocMallocHookOnBeforeForkInParent();
 }
 
 void MallocIntrospectionForceUnlock(malloc_zone_t* zone) {
   // Called in the parent process after fork(2) to release the lock.
-  PartitionAllocMallocHookOnAfterForkInParent();
+  partition_alloc::PartitionAllocMallocHookOnAfterForkInParent();
 }
 
 void MallocIntrospectionStatistics(malloc_zone_t* zone,
@@ -111,7 +113,7 @@ void MallocIntrospectionEnumerateDischargedPointers(
 
 void MallocIntrospectionReinitLock(malloc_zone_t* zone) {
   // Called in a child process after fork(2) to re-initialize the lock.
-  PartitionAllocMallocHookOnAfterForkInChild();
+  partition_alloc::PartitionAllocMallocHookOnAfterForkInChild();
 }
 
 void MallocIntrospectionPrintTask(task_t task,
@@ -372,5 +374,4 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
 
 }  // namespace
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace base::allocator
