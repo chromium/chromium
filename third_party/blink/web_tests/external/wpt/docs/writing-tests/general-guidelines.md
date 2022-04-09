@@ -159,12 +159,12 @@ should be used.
 
 ### Be Self-Contained
 
-Tests must not depend on external network resources, including
-w3c-test.org. When these tests are run on CI systems they are
-typically configured with access to external resources disabled, so
-tests that try to access them will fail. Where tests want to use
-multiple hosts this is possible through a known set of subdomains and
-the [text substitution features of wptserve](server-features).
+Tests must not depend on external network resources. When these tests
+are run on CI systems, they are typically configured with access to
+external resources disabled, so tests that try to access them will
+fail. Where tests want to use multiple hosts, this is possible through
+a known set of subdomains and the [text substitution features of
+wptserve](server-features).
 
 
 ### Be Self-Describing
