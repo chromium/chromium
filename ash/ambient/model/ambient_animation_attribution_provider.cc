@@ -5,6 +5,7 @@
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -108,10 +109,19 @@ void AmbientAnimationAttributionProvider::OnDynamicImageAssetsRefreshed(
   auto attribution_node_ids_iter = attribution_node_ids_.begin();
   for (; attribution_node_ids_iter != attribution_node_ids_.end();
        ++new_topics_iter, ++attribution_node_ids_iter) {
-    const std::string& attribution_text = new_topics_iter->second.get().details;
     cc::SkottieResourceIdHash attribution_node_id = *attribution_node_ids_iter;
     DCHECK(animation_->text_map().contains(attribution_node_id));
-    animation_->text_map().at(attribution_node_id).SetText(attribution_text);
+    const PhotoWithDetails& new_topic = new_topics_iter->second.get();
+    if (new_topic.topic_type == ::ambient::kPersonal) {
+      // Per UX: Don't display attribution text (which is just the album name)
+      // for personal photos in animations.
+      //
+      // The attribution node's previous contents (if any) still need to be
+      // cleared though.
+      animation_->text_map().at(attribution_node_id).SetText("");
+    } else {
+      animation_->text_map().at(attribution_node_id).SetText(new_topic.details);
+    }
   }
 }
 

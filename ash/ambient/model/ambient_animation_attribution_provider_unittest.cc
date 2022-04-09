@@ -14,6 +14,7 @@
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,6 +40,10 @@ using ImageAsset = ::cc::SkottieFrameDataProvider::ImageAsset;
 // Has 2 assets and 2 text nodes.
 class AmbientAnimationAttributionProviderTest : public ::testing::Test {
  protected:
+  // Default topic type is any arbitrary one for which attribution should
+  // be displayed.
+  static constexpr ::ambient::TopicType kDefaultTopicType = ::ambient::kCurated;
+
   AmbientAnimationAttributionProviderTest(std::string attribution_node_0,
                                           std::string attribution_node_1,
                                           std::string asset_id_0,
@@ -68,7 +73,8 @@ class AmbientAnimationAttributionProviderTest : public ::testing::Test {
 
   void RefreshDynamicImageAssets(
       absl::optional<std::string> asset_0_attribution,
-      absl::optional<std::string> asset_1_attribution) {
+      absl::optional<std::string> asset_1_attribution,
+      ::ambient::TopicType topic_type = kDefaultTopicType) {
     gfx::ImageSkia test_image =
         gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
     base::flat_map<ambient::util::ParsedDynamicAssetId,
@@ -82,6 +88,7 @@ class AmbientAnimationAttributionProviderTest : public ::testing::Test {
                                                      parsed_asset_id));
       topic_0.photo = test_image;
       topic_0.details = std::move(*asset_0_attribution);
+      topic_0.topic_type = topic_type;
       new_topics.emplace(parsed_asset_id, std::cref(topic_0));
     }
 
@@ -91,6 +98,7 @@ class AmbientAnimationAttributionProviderTest : public ::testing::Test {
                                                      parsed_asset_id));
       topic_1.photo = test_image;
       topic_1.details = std::move(*asset_1_attribution);
+      topic_1.topic_type = topic_type;
       new_topics.emplace(parsed_asset_id, std::cref(topic_1));
     }
 
@@ -218,6 +226,19 @@ TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution,
                            std::string(cc::kLottieDataWith2TextNode1Text))),
                   Pair(cc::HashSkottieResourceId(attribution_node_1_),
                        cc::SkottieTextPropertyValue("attribution_text_0"))));
+}
+
+TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
+       DoesNotSetTextForPersonalPhotos) {
+  RefreshDynamicImageAssets("attribution_text_0_a", "attribution_text_1_a");
+  RefreshDynamicImageAssets("attribution_text_0_b", "attribution_text_1_b",
+                            ::ambient::kPersonal);
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                cc::SkottieTextPropertyValue("")),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                cc::SkottieTextPropertyValue(""))));
 }
 
 }  // namespace ash
