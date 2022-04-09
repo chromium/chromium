@@ -79,6 +79,9 @@ const base::Feature kFeedStamp{"FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
+const base::Feature kWebFeedAwareness{"WebFeedAwareness",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kWebFeedOnboarding{"WebFeedOnboarding",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

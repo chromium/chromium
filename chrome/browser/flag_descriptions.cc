@@ -3605,9 +3605,13 @@ const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";
 
+const char kWebFeedAwarenessName[] = "Web Feed Awareness";
+const char kWebFeedAwarenessDescription[] =
+    "Helps the user discover the web feed.";
+
 const char kWebFeedOnboardingName[] = "Web Feed Onboarding";
 const char kWebFeedOnboardingDescription[] =
-    "Helps the user discover and use the web feed.";
+    "Helps the user understand how to use the web feed.";
 
 const char kWebFeedSortName[] = "Web Feed Sort";
 const char kWebFeedSortDescription[] =

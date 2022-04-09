@@ -536,9 +536,10 @@ public abstract class ChromeFeatureList {
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";
     public static final String WEB_AUTH_PHONE_SUPPORT = "WebAuthenticationPhoneSupport";
     public static final String WEB_FEED = "WebFeed";
-    public static final String WEBNOTES_DYNAMIC_TEMPLATES = "WebNotesDynamicTemplates";
+    public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";
     public static final String WEB_FEED_ONBOARDING = "WebFeedOnboarding";
     public static final String WEB_FEED_SORT = "WebFeedSort";
+    public static final String WEBNOTES_DYNAMIC_TEMPLATES = "WebNotesDynamicTemplates";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =
             "WebApkInstallCompleteNotification";

@@ -85,8 +85,10 @@ extern const base::Feature kFeedBackToTop;
 // Feature that enables StAMP cards in the feed.
 extern const base::Feature kFeedStamp;
 
-// Feature that provides the user assistance in discovering and using the web
-// feed.
+// Feature that provides the user assistance in discovering the web feed.
+extern const base::Feature kWebFeedAwareness;
+
+// Feature that provides the user assistance in using the web feed.
 extern const base::Feature kWebFeedOnboarding;
 
 // Feature that enables sorting by different heuristics in the web feed.

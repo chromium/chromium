@@ -52033,6 +52033,7 @@ from previous Chrome versions.
   <int value="-2058656447" label="ContextualSearchUrlActions:enabled"/>
   <int value="-2057927571"
       label="AutofillEnableSendingBcnInGetUploadDetails:enabled"/>
+  <int value="-2056436874" label="WebFeedAwareness:disabled"/>
   <int value="-2056351013" label="AutofillUpdatedCardUnmaskPromptUi:enabled"/>
   <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
   <int value="-2054871630"
@@ -54637,6 +54638,7 @@ from previous Chrome versions.
   <int value="-329807250" label="EnableNeuralPalmRejectionBetaModel:disabled"/>
   <int value="-329727402" label="disable-files-quick-view"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
+  <int value="-328339709" label="WebFeedAwareness:enabled"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
