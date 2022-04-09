@@ -14,7 +14,9 @@
 
 namespace {
 
-void SetPref(crosapi::mojom::PrefPath path, base::Value value) {
+using quick_answers::prefs::ConsentStatus;
+
+void SetPref(crosapi::mojom::PrefPath path, const base::Value& value) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
       !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
@@ -57,6 +59,14 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
       crosapi::mojom::PrefPath::kPreferredLanguages,
       base::BindRepeating(&QuickAnswersStateLacros::OnPreferredLanguagesChanged,
                           base::Unretained(this)));
+  impression_count_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
+      base::BindRepeating(&QuickAnswersStateLacros::OnImpressionCountChanged,
+                          base::Unretained(this)));
+  impression_duration_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionDuration,
+      base::BindRepeating(&QuickAnswersStateLacros::OnImpressionDurationChanged,
+                          base::Unretained(this)));
 
   prefs_initialized_ = true;
 
@@ -65,7 +75,58 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
 
 QuickAnswersStateLacros::~QuickAnswersStateLacros() = default;
 
-void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
+void QuickAnswersStateLacros::StartConsent() {
+  consent_start_time_ = base::TimeTicks::Now();
+}
+
+void QuickAnswersStateLacros::OnConsentResult(ConsentResultType result) {
+  DCHECK(!consent_start_time_.is_null());
+  auto duration = base::TimeTicks::Now() - consent_start_time_;
+
+  auto new_impression_count = impression_count_;
+
+  // Only increase the counter and record the impression if the minimum duration
+  // has been reached.
+  if (duration.InSeconds() >= kConsentImpressionMinimumDuration) {
+    ++new_impression_count;
+    // Increments impression count.
+    SetPref(crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
+            base::Value(new_impression_count));
+    RecordConsentResult(result, new_impression_count, duration);
+  }
+
+  switch (result) {
+    case ConsentResultType::kAllow:
+      SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
+              base::Value(ConsentStatus::kAccepted));
+      // Enable Quick Answers if the user accepted the consent.
+      SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
+              base::Value(true));
+      break;
+    case ConsentResultType::kNoThanks:
+      SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
+              base::Value(ConsentStatus::kRejected));
+      SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
+              base::Value(false));
+      break;
+    case ConsentResultType::kDismiss:
+      // If the impression count cap is reached, set the consented status to
+      // false;
+      bool impression_cap_reached =
+          new_impression_count >= kConsentImpressionCap;
+      if (impression_cap_reached) {
+        SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
+                base::Value(ConsentStatus::kRejected));
+        SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
+                base::Value(false));
+      }
+  }
+
+  consent_start_time_ = base::TimeTicks();
+}
+
+void QuickAnswersStateLacros::OnSettingsEnabledChanged(
+    const base::Value& value) {
   DCHECK(value.is_bool());
   bool settings_enabled = value.GetBool();
 
@@ -85,49 +146,32 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
     observer.OnSettingsEnabled(settings_enabled_);
 }
 
-void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
+void QuickAnswersStateLacros::OnConsentStatusChanged(const base::Value& value) {
   DCHECK(value.is_int());
-
-  auto consent_status =
+  consent_status_ =
       static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
-  if (consent_status_ == consent_status) {
-    return;
-  }
-  consent_status_ = consent_status;
 }
 
-void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {
+void QuickAnswersStateLacros::OnDefinitionEnabledChanged(
+    const base::Value& value) {
   DCHECK(value.is_bool());
-  bool definition_enabled = value.GetBool();
-
-  if (definition_enabled_ == definition_enabled) {
-    return;
-  }
-  definition_enabled_ = definition_enabled;
+  definition_enabled_ = value.GetBool();
 }
 
-void QuickAnswersStateLacros::OnTranslationEnabledChanged(base::Value value) {
+void QuickAnswersStateLacros::OnTranslationEnabledChanged(
+    const base::Value& value) {
   DCHECK(value.is_bool());
-  bool translation_enabled = value.GetBool();
-
-  if (translation_enabled_ == translation_enabled) {
-    return;
-  }
-  translation_enabled_ = translation_enabled;
+  translation_enabled_ = value.GetBool();
 }
 
 void QuickAnswersStateLacros::OnUnitConversionEnabledChanged(
-    base::Value value) {
+    const base::Value& value) {
   DCHECK(value.is_bool());
-  bool unit_conversion_enabled = value.GetBool();
-
-  if (unit_conversion_enabled_ == unit_conversion_enabled) {
-    return;
-  }
-  unit_conversion_enabled_ = unit_conversion_enabled;
+  unit_conversion_enabled_ = value.GetBool();
 }
 
-void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
+void QuickAnswersStateLacros::OnApplicationLocaleChanged(
+    const base::Value& value) {
   DCHECK(value.is_string());
   auto locale = value.GetString();
 
@@ -154,12 +198,20 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
   UpdateEligibility();
 }
 
-void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
+void QuickAnswersStateLacros::OnPreferredLanguagesChanged(
+    const base::Value& value) {
   DCHECK(value.is_string());
-  auto preferred_languages = value.GetString();
+  preferred_languages_ = value.GetString();
+}
 
-  if (preferred_languages_ == preferred_languages) {
-    return;
-  }
-  preferred_languages_ = preferred_languages;
+void QuickAnswersStateLacros::OnImpressionCountChanged(
+    const base::Value& value) {
+  DCHECK(value.is_int());
+  impression_count_ = value.GetInt();
+}
+
+void QuickAnswersStateLacros::OnImpressionDurationChanged(
+    const base::Value& value) {
+  DCHECK(value.is_int());
+  impression_duration_ = value.GetInt();
 }
