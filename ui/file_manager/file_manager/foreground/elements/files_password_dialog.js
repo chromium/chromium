@@ -120,7 +120,7 @@ export class FilesPasswordDialog extends HTMLElement {
           this.input_.invalid = false;
         }
         this.showModal_(filename);
-        this.input_.focus();
+        this.input_.inputElement.select();
       });
     } finally {
       mutexUnlock();
