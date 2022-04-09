@@ -173,14 +173,8 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1312008): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NotBindingInFencedFrame DISABLED_NotBindingInFencedFrame
-#else
-#define MAYBE_NotBindingInFencedFrame NotBindingInFencedFrame
-#endif
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
-                       MAYBE_NotBindingInFencedFrame) {
+                       NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
@@ -188,18 +182,13 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  // Create a fenced frame.
+  // Create a fenced frame and a fenced frame should not be bound.
   const GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
-  base::RunLoop run_loop;
-  if (test_browser_client.WaitForBinding(fenced_frame_host,
-                                         run_loop.QuitClosure())) {
-    run_loop.Run();
-  }
-  // Fenced frame should not be bound.
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
 
   content::SetBrowserClientForTesting(old_browser_client);
