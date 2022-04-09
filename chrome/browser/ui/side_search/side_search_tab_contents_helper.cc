@@ -95,8 +95,13 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
     // navigation completes.
     last_search_url_ = url;
 
-    if (!config->is_side_panel_srp_available())
-      TestSRPAvailability();
+    // If the navigation to a search results page succeeds we should update the
+    // side panel availability bit accordingly.
+    // TODO(tluk): If we continue to use a service check for side search SRP
+    // availability independent of successfully committing to the search page
+    // in the main tab it should be done during idle time to avoid regressing
+    // page load metrics.
+    config->set_is_side_panel_srp_available(true);
 
     if (side_panel_contents_)
       UpdateSideContentsNavigation();
