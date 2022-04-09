@@ -497,7 +497,6 @@ bool PrintJobWorker::Start() {
 void PrintJobWorker::CheckDocumentSpoolingComplete() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(page_number_, PageNumber::npos());
-  DCHECK(document_);
   // PrintJob must own this, because only PrintJob can send notifications.
   DCHECK(print_job_);
 }
@@ -515,6 +514,7 @@ void PrintJobWorker::OnDocumentDone() {
 }
 
 void PrintJobWorker::FinishDocumentDone(int job_id) {
+  DCHECK(document_);
   print_job_->PostTask(
       FROM_HERE, base::BindOnce(&DocDoneNotificationCallback,
                                 base::RetainedRef(print_job_.get()), job_id,
