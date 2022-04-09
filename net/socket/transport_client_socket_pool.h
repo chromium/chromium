@@ -265,25 +265,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
  private:
   // Entry for a persistent socket which became idle at time |start_time|.
-  struct IdleSocket {
-    IdleSocket() : socket(nullptr) {}
-
-    // An idle socket can't be used if it is disconnected or has been used
-    // before and has received data unexpectedly (hence no longer idle).  The
-    // unread data would be mistaken for the beginning of the next response if
-    // we were to use the socket for a new request.
-    //
-    // Note that a socket that has never been used before (like a preconnected
-    // socket) may be used even with unread data.  This may be, e.g., a SPDY
-    // SETTINGS frame.
-    //
-    // If the socket is not usable, |net_log_reason_utf8| is set to a string
-    // indicating why the socket is not usable.
-    bool IsUsable(const char** net_log_reason_utf8) const;
-
-    StreamSocket* socket;
-    base::TimeTicks start_time;
-  };
+  struct IdleSocket;
 
   using RequestQueue = PriorityQueue<std::unique_ptr<Request>>;
 

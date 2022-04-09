@@ -112,6 +112,24 @@ ConnectJob* TransportClientSocketPool::Request::ReleaseJob() {
   return job;
 }
 
+struct TransportClientSocketPool::IdleSocket {
+  // An idle socket can't be used if it is disconnected or has been used
+  // before and has received data unexpectedly (hence no longer idle).  The
+  // unread data would be mistaken for the beginning of the next response if
+  // we were to use the socket for a new request.
+  //
+  // Note that a socket that has never been used before (like a preconnected
+  // socket) may be used even with unread data.  This may be, e.g., a SPDY
+  // SETTINGS frame.
+  //
+  // If the socket is not usable, |net_log_reason_utf8| is set to a string
+  // indicating why the socket is not usable.
+  bool IsUsable(const char** net_log_reason_utf8) const;
+
+  std::unique_ptr<StreamSocket> socket;
+  base::TimeTicks start_time;
+};
+
 TransportClientSocketPool::TransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
@@ -473,7 +491,6 @@ bool TransportClientSocketPool::AssignIdleSocketToRequest(
           NetLogEventType::SOCKET_POOL_CLOSING_SOCKET, "reason",
           net_log_reason_utf8);
       DecrementIdleCount();
-      delete it->socket;
       it = idle_sockets->erase(it);
       continue;
     }
@@ -496,21 +513,21 @@ bool TransportClientSocketPool::AssignIdleSocketToRequest(
     DecrementIdleCount();
     base::TimeDelta idle_time =
         base::TimeTicks::Now() - idle_socket_it->start_time;
-    IdleSocket idle_socket = *idle_socket_it;
+    std::unique_ptr<StreamSocket> socket = std::move(idle_socket_it->socket);
     idle_sockets->erase(idle_socket_it);
     // TODO(davidben): If |idle_time| is under some low watermark, consider
     // treating as UNUSED rather than UNUSED_IDLE. This will avoid
     // HttpNetworkTransaction retrying on some errors.
     ClientSocketHandle::SocketReuseType reuse_type =
-        idle_socket.socket->WasEverUsed() ? ClientSocketHandle::REUSED_IDLE
-                                          : ClientSocketHandle::UNUSED_IDLE;
+        socket->WasEverUsed() ? ClientSocketHandle::REUSED_IDLE
+                              : ClientSocketHandle::UNUSED_IDLE;
 
     // If this socket took multiple attempts to obtain, don't report those
     // every time it's reused, just to the first user.
-    if (idle_socket.socket->WasEverUsed())
-      idle_socket.socket->ClearConnectionAttempts();
+    if (socket->WasEverUsed())
+      socket->ClearConnectionAttempts();
 
-    HandOutSocket(std::unique_ptr<StreamSocket>(idle_socket.socket), reuse_type,
+    HandOutSocket(std::move(socket), reuse_type,
                   LoadTimingInfo::ConnectTiming(), request.handle(), idle_time,
                   group, request.net_log());
     return true;
@@ -915,7 +932,6 @@ void TransportClientSocketPool::CleanupIdleSocketsInGroup(
       idle_socket_it->socket->NetLog().AddEventWithStringParams(
           NetLogEventType::SOCKET_POOL_CLOSING_SOCKET, "reason",
           reason_for_closing_socket);
-      delete idle_socket_it->socket;
       idle_socket_it = group->mutable_idle_sockets()->erase(idle_socket_it);
       DecrementIdleCount();
     } else {
@@ -1174,10 +1190,10 @@ void TransportClientSocketPool::AddIdleSocket(
     Group* group) {
   DCHECK(socket);
   IdleSocket idle_socket;
-  idle_socket.socket = socket.release();
+  idle_socket.socket = std::move(socket);
   idle_socket.start_time = base::TimeTicks::Now();
 
-  group->mutable_idle_sockets()->push_back(idle_socket);
+  group->mutable_idle_sockets()->push_back(std::move(idle_socket));
   IncrementIdleCount();
 }
 
@@ -1248,7 +1264,6 @@ bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
     std::list<IdleSocket>* idle_sockets = group->mutable_idle_sockets();
 
     if (!idle_sockets->empty()) {
-      delete idle_sockets->front().socket;
       idle_sockets->pop_front();
       DecrementIdleCount();
       if (group->IsEmpty())
