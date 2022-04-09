@@ -745,6 +745,7 @@ if (is_android) {
         "//base:base_java",
         "//chromecast/browser/android:cast_browser_java",
         "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+        "//components/viz/service:service_java",
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       ]
 
