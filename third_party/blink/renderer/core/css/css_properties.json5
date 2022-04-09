@@ -3452,6 +3452,8 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "visible",
+      // This is to allow us to gather metrics when overflow is explicitly set.
+      style_builder_custom_functions: ["initial", "inherit", "value"],
       type_name: "EOverflow",
       logical_property_group: {
         name: "overflow",
@@ -3474,6 +3476,8 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "visible",
+      // This is to allow us to gather metrics when overflow is explicitly set.
+      style_builder_custom_functions: ["initial", "inherit", "value"],
       type_name: "EOverflow",
       logical_property_group: {
         name: "overflow",

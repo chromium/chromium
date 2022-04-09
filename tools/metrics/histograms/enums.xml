@@ -37773,6 +37773,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4198" label="OldConstraintNotReported"/>
   <int value="4199" label="OldConstraintRejected"/>
   <int value="4200" label="OldConstraintIgnored"/>
+  <int value="4201" label="ExplicitOverflowVisibleOnReplacedElement"/>
+  <int value="4202"
+      label="ExplicitOverflowVisibleOnReplacedElementWithObjectProp"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

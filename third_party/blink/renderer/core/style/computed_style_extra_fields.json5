@@ -1109,5 +1109,21 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "HasExplicitOverflowXVisible",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      computed_style_custom_functions: ["setter"],
+    },
+    {
+      name: "HasExplicitOverflowYVisible",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      computed_style_custom_functions: ["setter"],
+    }
   ],
 }

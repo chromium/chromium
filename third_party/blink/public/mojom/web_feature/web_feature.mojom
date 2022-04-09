@@ -3519,6 +3519,8 @@ enum WebFeature {
   kOldConstraintNotReported = 4198,
   kOldConstraintRejected = 4199,
   kOldConstraintIgnored = 4200,
+  kExplicitOverflowVisibleOnReplacedElement = 4201,
+  kExplicitOverflowVisibleOnReplacedElementWithObjectProp = 4202,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -1764,6 +1764,96 @@ TEST_F(DocumentTest, DocumentDefiningElementWithMultipleBodies) {
   EXPECT_FALSE(body2->GetLayoutBox()->GetScrollableArea());
 }
 
+TEST_F(DocumentTest, LayoutReplacedUseCounterNoStyles) {
+  SetHtmlInnerHTML(R"HTML(
+    <img>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterExplicitlyHidden) {
+  SetHtmlInnerHTML(R"HTML(
+    <style> .tag { overflow: hidden } </style>
+    <img class=tag>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterExplicitlyVisible) {
+  SetHtmlInnerHTML(R"HTML(
+    <style> .tag { overflow: visible } </style>
+    <img class=tag>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterExplicitlyVisibleWithObjectFit) {
+  SetHtmlInnerHTML(R"HTML(
+    <style> .tag { overflow: visible; object-fit: cover; } </style>
+    <img class=tag>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterExplicitlyVisibleLaterHidden) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      img { overflow: visible; }
+      .tag { overflow: hidden; }
+    </style>
+    <img class=tag>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterIframe) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      iframe { overflow: visible; }
+    </style>
+    <iframe></iframe>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
+TEST_F(DocumentTest, LayoutReplacedUseCounterSvg) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      svg { overflow: visible; }
+    </style>
+    <svg></svg>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
+}
+
 // https://crbug.com/1311370
 TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
   SimRequest::Params main_params;
