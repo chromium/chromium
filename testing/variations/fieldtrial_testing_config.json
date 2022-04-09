@@ -2434,7 +2434,7 @@
             ],
             "experiments": [
                 {
-                    "name": "ContentSuggestionsUIViewControllerMigration",
+                    "name": "Enabled",
                     "enable_features": [
                         "ContentSuggestionsHeaderMigration",
                         "ContentSuggestionsUIViewControllerMigration"
