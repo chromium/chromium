@@ -1048,17 +1048,35 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::ET_KEY_PRESSED)
     return;
 
+  // We create an owned heap-allocated boolean to pass it to `deferred_runner`
+  // and hold a pointer to the boolean to be able to change its value to control
+  // whether the deferred runner should call `MaybeUpdateCaptureUisOpacity` or
+  // not.
+  auto should_update_opacity = std::make_unique<bool>(false);
+  auto* should_update_opacity_ptr = should_update_opacity.get();
+
+  // Run at the exit of this function to update opacity of capture UIs when
+  // necessary.
+  base::ScopedClosureRunner deferred_runner(base::BindOnce(
+      [](base::WeakPtr<CaptureModeSession> session,
+         std::unique_ptr<bool> should_update_opacity) {
+        if (should_update_opacity && session)
+          session->MaybeUpdateCaptureUisOpacity();
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(should_update_opacity)));
+
   ui::KeyboardCode key_code = event->key_code();
   switch (key_code) {
     case ui::VKEY_ESCAPE: {
       event->StopPropagation();
+      *should_update_opacity_ptr = true;
 
       if (capture_mode_settings_widget_)
         SetSettingsMenuShown(false);
       else if (focus_cycler_->HasFocus())
         focus_cycler_->ClearFocus();
       else if (can_exit_on_escape_)
-        controller_->Stop();  // |this| is destroyed here.
+        controller_->Stop();  // `this` is destroyed here.
 
       return;
     }
@@ -1074,8 +1092,10 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       event->SetHandled();
 
-      if (focus_cycler_->OnSpacePressed())
+      if (focus_cycler_->OnSpacePressed()) {
+        *should_update_opacity_ptr = true;
         return;
+      }
 
       // Create a default region if we are in region mode and there is no
       // existing region.
@@ -1090,6 +1110,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       event->SetHandled();
       focus_cycler_->AdvanceFocus(/*reverse=*/event->IsShiftDown());
+      *should_update_opacity_ptr = true;
       return;
     }
 
@@ -1373,6 +1394,14 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
         opacity = 0.f;
         continue;
       }
+
+      if (focus_cycler_->CaptureBarFocused())
+        continue;
+    }
+
+    if (widget == capture_label_widget_.get() &&
+        focus_cycler_->CaptureLabelFocused()) {
+      continue;
     }
 
     if (IsWidgetOverlappedWithCameraPreview(widget))
