@@ -303,6 +303,10 @@ void WebRuntimeFeatures::EnablePictureInPictureAPI(bool enable) {
   RuntimeEnabledFeatures::SetPictureInPictureAPIEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnablePictureInPictureV2(bool enable) {
+  RuntimeEnabledFeatures::SetPictureInPictureV2Enabled(enable);
+}
+
 void WebRuntimeFeatures::EnablePointerLockOptions(bool enable) {
   RuntimeEnabledFeatures::SetPointerLockOptionsEnabled(enable);
 }

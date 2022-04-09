@@ -256,6 +256,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePercentBasedScrolling, features::kPercentBasedScrolling},
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
     {wf::EnablePictureInPicture, media::kPictureInPicture},
+    {wf::EnablePictureInPictureV2, features::kPictureInPictureV2,
+     kSetOnlyIfOverridden},
     {wf::EnablePointerLockOptions, features::kPointerLockOptions},
     {wf::EnablePortals, blink::features::kPortals, kSetOnlyIfOverridden},
     {wf::EnablePrerender2, blink::features::kPrerender2, kSetOnlyIfOverridden},
