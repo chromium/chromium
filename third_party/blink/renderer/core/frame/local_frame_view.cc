@@ -2152,23 +2152,12 @@ void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
   local_frame_view_root->UpdateLifecyclePhases(
       DocumentLifecycle::kPrePaintClean, DocumentUpdateReason::kPrinting);
 
-  auto* detached_frame_view = this;
-  while (detached_frame_view->IsAttached() &&
-         detached_frame_view != local_frame_view_root) {
-    detached_frame_view = detached_frame_view->ParentFrameView();
-    CHECK(detached_frame_view);
+  if (local_frame_view_root != this && !IsAttached()) {
+    // We are printing a detached frame which is not reached above. Make sure
+    // the frame is ready for painting.
+    UpdateLifecyclePhases(DocumentLifecycle::kPrePaintClean,
+                          DocumentUpdateReason::kPrinting);
   }
-
-  if (detached_frame_view == local_frame_view_root)
-    return;
-  DCHECK(!detached_frame_view->IsAttached());
-
-  // We are printing a detached frame or a descendant of a detached frame which
-  // was not reached in some phases during during |local_frame_view_root->
-  // UpdateLifecyclePhases()|. We need the subtree to be ready for
-  // painting.
-  detached_frame_view->UpdateLifecyclePhases(DocumentLifecycle::kPrePaintClean,
-                                             DocumentUpdateReason::kPrinting);
 }
 
 bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
