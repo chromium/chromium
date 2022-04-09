@@ -82,11 +82,11 @@ enum CreateImageBitmapSource {
 gfx::Rect NormalizedCropRect(int x, int y, int width, int height) {
   if (width < 0) {
     x = base::ClampAdd(x, width);
-    width = -width;
+    width = base::ClampSub(0, width);
   }
   if (height < 0) {
     y = base::ClampAdd(y, height);
-    height = -height;
+    height = base::ClampSub(0, height);
   }
   return gfx::Rect(x, y, width, height);
 }
