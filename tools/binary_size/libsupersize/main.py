@@ -8,6 +8,7 @@ import argparse
 import atexit
 import distutils.spawn
 import logging
+import pathlib
 import platform
 import resource
 import sys
@@ -34,6 +35,22 @@ def _AddCommonArguments(parser):
                       default=0,
                       action='count',
                       help='Verbose level (multiple times for more)')
+
+
+class _PathResolver:
+  def __init__(self, parent_path):
+    self._parent_path = pathlib.Path(parent_path)
+
+  def __call__(self, subpath):
+    # Use dict to de-dupe while keeping order.
+    candidates = list({
+        self._parent_path / subpath: 0,
+        self._parent_path / pathlib.PosixPath(subpath).name: 0,
+    })
+    for p in candidates:
+      if p.exists():
+        return p
+    raise Exception('Paths do not exist: ' + ', '.join(candidates))
 
 
 class _DiffAction:
@@ -107,8 +124,9 @@ class _SaveDiffAction:
       after_size_info.build_config[models.BUILD_CONFIG_URL] = args.url
     delta_size_info = diff.Diff(before_size_info, after_size_info)
     if args.save_disassembly:
-      dex_disassembly.AddDisassembly(delta_size_info, args.before_directory,
-                                     args.after_directory)
+      dex_disassembly.AddDisassembly(delta_size_info,
+                                     _PathResolver(args.before_directory),
+                                     _PathResolver(args.after_directory))
       native_disassembly.AddDisassembly(delta_size_info, args.before_directory,
                                         args.after_directory)
 
