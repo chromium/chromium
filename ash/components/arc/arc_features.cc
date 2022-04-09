@@ -227,4 +227,9 @@ const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB{
 const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
                                                          "reclaim_kib", 322560};
 
+// Controls experimental key GMS Core and related services protection against to
+// be killed by low memory killer in ARCVM.
+const base::Feature kVmGmsCoreLowMemoryKillerProtection{
+    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace arc

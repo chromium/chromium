@@ -1989,6 +1989,34 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
                      "androidboot.disable_download_provider=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
+                                    false);
+
+  SetValidUserInfo();
+  StartMiniArc();
+
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  for (const auto& param : req.params()) {
+    EXPECT_EQ(std::string::npos,
+              param.find("arc_enable_gmscore_lmk_protection"));
+  }
+}
+
+TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
+                                    true);
+
+  SetValidUserInfo();
+  StartMiniArc();
+
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(
+      req.params(), "androidboot.arc_enable_gmscore_lmk_protection=1"));
+}
+
 TEST_F(ArcVmClientAdapterTest, TrimVmMemory_Success) {
   SetValidUserInfo();
 

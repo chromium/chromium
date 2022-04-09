@@ -365,6 +365,9 @@ std::vector<std::string> GenerateKernelCmdline(
   if (start_params.disable_download_provider)
     result.push_back("androidboot.disable_download_provider=1");
 
+  if (base::FeatureList::IsEnabled(arc::kVmGmsCoreLowMemoryKillerProtection))
+    result.push_back("androidboot.arc_enable_gmscore_lmk_protection=1");
+
   return result;
 }
 

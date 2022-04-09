@@ -53,6 +53,7 @@ extern const base::Feature kVmBalloonPolicy;
 extern const base::FeatureParam<int> kVmBalloonPolicyModerateKiB;
 extern const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB;
 extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
+extern const base::Feature kVmGmsCoreLowMemoryKillerProtection;
 
 }  // namespace arc
 
