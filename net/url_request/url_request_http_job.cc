@@ -356,11 +356,10 @@ void URLRequestHttpJob::Kill() {
   URLRequestJob::Kill();
 }
 
-void URLRequestHttpJob::GetConnectionAttempts(ConnectionAttempts* out) const {
+ConnectionAttempts URLRequestHttpJob::GetConnectionAttempts() const {
   if (transaction_)
-    transaction_->GetConnectionAttempts(out);
-  else
-    out->clear();
+    return transaction_->GetConnectionAttempts();
+  return {};
 }
 
 void URLRequestHttpJob::CloseConnectionOnDestruction() {

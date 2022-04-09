@@ -306,9 +306,9 @@ int ThrottlingNetworkTransaction::ResumeNetworkStart() {
   return network_transaction_->ResumeNetworkStart();
 }
 
-void ThrottlingNetworkTransaction::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  network_transaction_->GetConnectionAttempts(out);
+net::ConnectionAttempts ThrottlingNetworkTransaction::GetConnectionAttempts()
+    const {
+  return network_transaction_->GetConnectionAttempts();
 }
 
 void ThrottlingNetworkTransaction::CloseConnectionOnDestruction() {

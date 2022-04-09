@@ -576,7 +576,7 @@ class HttpNetworkTransactionTest : public PlatformTest,
     // The total number of sent bytes should not have changed.
     EXPECT_EQ(out.total_sent_bytes, trans.GetTotalSentBytes());
 
-    trans.GetConnectionAttempts(&out.connection_attempts);
+    out.connection_attempts = trans.GetConnectionAttempts();
     return out;
   }
 
@@ -18595,8 +18595,7 @@ TEST_F(HttpNetworkTransactionTest, HttpSyncConnectError) {
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
 
-  ConnectionAttempts attempts;
-  trans.GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = trans.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, IsError(ERR_NAME_NOT_RESOLVED));
 
@@ -18628,8 +18627,7 @@ TEST_F(HttpNetworkTransactionTest, HttpAsyncConnectError) {
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
 
-  ConnectionAttempts attempts;
-  trans.GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = trans.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, IsError(ERR_NAME_NOT_RESOLVED));
 

@@ -1176,11 +1176,10 @@ void URLRequest::RecordReferrerGranularityMetrics(
   }
 }
 
-void URLRequest::GetConnectionAttempts(ConnectionAttempts* out) const {
+ConnectionAttempts URLRequest::GetConnectionAttempts() const {
   if (job_)
-    job_->GetConnectionAttempts(out);
-  else
-    out->clear();
+    return job_->GetConnectionAttempts();
+  return {};
 }
 
 void URLRequest::SetRequestHeadersCallback(RequestHeadersCallback callback) {

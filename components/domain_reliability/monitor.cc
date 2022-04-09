@@ -195,10 +195,10 @@ DomainReliabilityMonitor::RequestInfo::RequestInfo(
       // This ignores cookie blocking by the NetworkDelegate, but probably
       // should not. Unclear if it's worth fixing.
       allow_credentials(request.allow_credentials()),
+      connection_attempts(request.GetConnectionAttempts()),
       upload_depth(
           DomainReliabilityUploader::GetURLRequestUploadDepth(request)) {
   request.GetLoadTimingInfo(&load_timing_info);
-  request.GetConnectionAttempts(&connection_attempts);
   request.PopulateNetErrorDetails(&details);
   if (!request.GetTransactionRemoteEndpoint(&remote_endpoint))
     remote_endpoint = net::IPEndPoint();

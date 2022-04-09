@@ -607,17 +607,16 @@ int HttpCache::Transaction::ResumeNetworkStart() {
   return ERR_UNEXPECTED;
 }
 
-void HttpCache::Transaction::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  ConnectionAttempts new_connection_attempts;
+ConnectionAttempts HttpCache::Transaction::GetConnectionAttempts() const {
+  ConnectionAttempts attempts;
   const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
   if (transaction)
-    transaction->GetConnectionAttempts(&new_connection_attempts);
+    attempts = transaction->GetConnectionAttempts();
 
-  out->swap(new_connection_attempts);
-  out->insert(out->begin(),
-              network_transaction_info_.old_connection_attempts.begin(),
-              network_transaction_info_.old_connection_attempts.end());
+  attempts.insert(attempts.begin(),
+                  network_transaction_info_.old_connection_attempts.begin(),
+                  network_transaction_info_.old_connection_attempts.end());
+  return attempts;
 }
 
 void HttpCache::Transaction::CloseConnectionOnDestruction() {
@@ -3564,8 +3563,7 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
       transaction.GetTotalReceivedBytes();
   network_transaction_info_.total_sent_bytes += transaction.GetTotalSentBytes();
 
-  ConnectionAttempts attempts;
-  transaction.GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transaction.GetConnectionAttempts();
   for (const auto& attempt : attempts)
     network_transaction_info_.old_connection_attempts.push_back(attempt);
   network_transaction_info_.old_remote_endpoint = IPEndPoint();

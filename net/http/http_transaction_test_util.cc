@@ -574,9 +574,9 @@ int MockNetworkTransaction::ResumeNetworkStart() {
   return ERR_IO_PENDING;
 }
 
-void MockNetworkTransaction::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
+ConnectionAttempts MockNetworkTransaction::GetConnectionAttempts() const {
   NOTIMPLEMENTED();
+  return {};
 }
 
 void MockNetworkTransaction::CloseConnectionOnDestruction() {

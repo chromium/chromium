@@ -124,7 +124,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                          SSLCertRequestInfo* cert_info) override;
 
   void OnQuicBroken() override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest, ResetStateForRestart);

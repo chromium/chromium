@@ -205,7 +205,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // Resumes the transaction after being deferred.
   virtual int ResumeNetworkStart() = 0;
 
-  virtual void GetConnectionAttempts(ConnectionAttempts* out) const = 0;
+  virtual ConnectionAttempts GetConnectionAttempts() const = 0;
 
   // Configures the transaction to close the network connection, if any, on
   // destruction. Intended for cases where keeping the socket alive may leak

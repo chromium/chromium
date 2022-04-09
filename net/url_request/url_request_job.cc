@@ -271,8 +271,8 @@ IPEndPoint URLRequestJob::GetResponseRemoteEndpoint() const {
 void URLRequestJob::NotifyURLRequestDestroyed() {
 }
 
-void URLRequestJob::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
+ConnectionAttempts URLRequestJob::GetConnectionAttempts() const {
+  return {};
 }
 
 void URLRequestJob::CloseConnectionOnDestruction() {}

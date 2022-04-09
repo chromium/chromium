@@ -708,7 +708,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Gets the connection attempts made in the process of servicing this
   // URLRequest. Only guaranteed to be valid if called after the request fails
   // or after the response headers are received.
-  void GetConnectionAttempts(ConnectionAttempts* out) const;
+  ConnectionAttempts GetConnectionAttempts() const;
 
   const NetworkTrafficAnnotationTag& traffic_annotation() const {
     return traffic_annotation_;

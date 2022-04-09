@@ -231,10 +231,10 @@ class NET_EXPORT URLRequestJob {
   // canceled by an explicit NetworkDelegate::NotifyURLRequestDestroyed() call.
   virtual void NotifyURLRequestDestroyed();
 
-  // Populates |out| with the connection attempts made at the socket layer in
-  // the course of executing the URLRequestJob. Should be called after the job
-  // has failed or the response headers have been received.
-  virtual void GetConnectionAttempts(ConnectionAttempts* out) const;
+  // Returns the connection attempts made at the socket layer in the course of
+  // executing the URLRequestJob. Should be called after the job has failed or
+  // the response headers have been received.
+  virtual ConnectionAttempts GetConnectionAttempts() const;
 
   // Sets a callback that will be invoked each time the request is about to
   // be actually sent and will receive actual request headers that are about

@@ -165,7 +165,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void SetEarlyResponseHeadersCallback(
       ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
 
   // Invoked when parallel validation cannot proceed due to response failure

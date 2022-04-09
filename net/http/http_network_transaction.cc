@@ -678,9 +678,8 @@ void HttpNetworkTransaction::OnQuicBroken() {
   net_error_details_.quic_broken = true;
 }
 
-void HttpNetworkTransaction::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  *out = connection_attempts_;
+ConnectionAttempts HttpNetworkTransaction::GetConnectionAttempts() const {
+  return connection_attempts_;
 }
 
 bool HttpNetworkTransaction::IsSecureRequest() const {

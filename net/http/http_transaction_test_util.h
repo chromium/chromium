@@ -251,7 +251,7 @@ class MockNetworkTransaction
 
   int ResumeNetworkStart() override;
 
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
   void CloseConnectionOnDestruction() override;
 
