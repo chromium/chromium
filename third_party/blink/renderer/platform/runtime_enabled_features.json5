@@ -700,6 +700,7 @@
     {
       name: "CSSObjectViewBoxAndOverflow",
       status: "experimental",
+      implied_by: ["DocumentTransition"],
     },
     {
       name: "CSSOffsetPathRay",

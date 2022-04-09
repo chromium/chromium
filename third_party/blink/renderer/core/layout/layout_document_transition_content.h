@@ -9,6 +9,7 @@
 #include "cc/layers/document_transition_content_layer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 
 namespace blink {
@@ -26,7 +27,7 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
 
  protected:
   PaintLayerType LayerTypeRequired() const override;
-
+  void IntrinsicSizeChanged() override { NOT_DESTROYED(); }
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 

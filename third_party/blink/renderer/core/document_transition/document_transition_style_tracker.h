@@ -7,6 +7,7 @@
 
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
@@ -127,6 +128,8 @@ class DocumentTransitionStyleTracker
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
+    LayoutSize GetIntrinsicSize(bool use_cached_data);
+
     // The element in the current DOM whose state is being tracked and mirrored
     // into the corresponding container pseudo element.
     Member<Element> target_element;
@@ -135,10 +138,12 @@ class DocumentTransitionStyleTracker
     // |target_element|. This information is mirrored into the UA stylesheet.
     LayoutSize border_box_size;
     TransformationMatrix viewport_matrix;
+    float device_pixel_ratio = 1.f;
 
     // Computed info cached before the DOM switches to the new state.
     LayoutSize cached_border_box_size;
     TransformationMatrix cached_viewport_matrix;
+    float cached_device_pixel_ratio = 1.f;
 
     // Valid if there is an element in the old DOM generating a snapshot.
     viz::SharedElementResourceId old_snapshot_id;

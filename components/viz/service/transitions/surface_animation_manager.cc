@@ -169,13 +169,15 @@ void ReplaceSharedElementWithRenderPass(
       target_render_pass->CreateAndAppendSharedQuadState();
   *copied_quad_state = *shared_element_quad.shared_quad_state;
 
-  copied_quad_state->quad_to_target_transform.PostTranslate(
-      -shared_pass_output_rect.x(), -shared_pass_output_rect.y());
-  copied_quad_state->quad_to_target_transform.PostScale(
-      shared_element_quad.rect.width() /
-          static_cast<SkScalar>(shared_pass_output_rect.width()),
-      shared_element_quad.rect.height() /
-          static_cast<SkScalar>(shared_pass_output_rect.height()));
+  gfx::Transform transform;
+  transform.Scale(shared_element_quad.rect.width() /
+                      static_cast<SkScalar>(shared_pass_output_rect.width()),
+                  shared_element_quad.rect.height() /
+                      static_cast<SkScalar>(shared_pass_output_rect.height()));
+  transform.Translate(-shared_pass_output_rect.x(),
+                      -shared_pass_output_rect.y());
+
+  copied_quad_state->quad_to_target_transform.PreconcatTransform(transform);
 
   auto* render_pass_quad =
       target_render_pass

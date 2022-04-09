@@ -19,6 +19,10 @@ html::page-transition-container(*) {
   top: 0;
   left: 0;
   will-change: transform;
+
+  /* The transform applied to the container includes any translation necessary
+     for the original element's transform-origin. */
+  transform-origin: top left;
 }
 
 html::page-transition-container(root) {
