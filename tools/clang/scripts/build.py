@@ -196,21 +196,14 @@ def AddCMakeToPath(args):
     return
 
   if sys.platform == 'win32':
-    zip_name = 'cmake-3.17.1-win64-x64.zip'
-    dir_name = ['cmake-3.17.1-win64-x64', 'bin']
+    zip_name = 'cmake-3.23.0-windows-x86_64.zip'
+    dir_name = ['cmake-3.23.0-windows-x86_64', 'bin']
   elif sys.platform == 'darwin':
-    if platform.machine() == 'arm64':
-      # TODO(thakis): Move to 3.20 everywhere.
-      zip_name = 'cmake-3.20.0-macos-universal.tar.gz'
-      dir_name = [
-          'cmake-3.20.0-macos-universal', 'CMake.app', 'Contents', 'bin'
-      ]
-    else:
-      zip_name = 'cmake-3.17.1-Darwin-x86_64.tar.gz'
-      dir_name = ['cmake-3.17.1-Darwin-x86_64', 'CMake.app', 'Contents', 'bin']
+    zip_name = 'cmake-3.23.0-macos-universal.tar.gz'
+    dir_name = ['cmake-3.23.0-macos-universal', 'CMake.app', 'Contents', 'bin']
   else:
-    zip_name = 'cmake-3.17.1-Linux-x86_64.tar.gz'
-    dir_name = ['cmake-3.17.1-Linux-x86_64', 'bin']
+    zip_name = 'cmake-3.23.0-linux-x86_64.tar.gz'
+    dir_name = ['cmake-3.23.0-linux-x86_64', 'bin']
 
   cmake_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, *dir_name)
   if not os.path.exists(cmake_dir):
