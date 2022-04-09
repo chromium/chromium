@@ -53,6 +53,8 @@ group("cast_core_integration_test") {
   data = [
     "//chromecast/cast_core/test/",
     "//testing/scripts/run_cast_core_tests.py",
+    "//third_party/cast_core/prebuilts/",
+    "//third_party/cast_web_runtime/",
   ]
   data_deps = [
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
