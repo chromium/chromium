@@ -4,6 +4,7 @@
 
 #include "printing/common/metafile_utils.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "printing/buildflags/buildflags.h"
@@ -218,16 +219,18 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
 
 namespace printing {
 
-sk_sp<SkDocument> MakePdfDocument(const std::string& creator,
+sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
                                   const ui::AXTreeUpdate& accessibility_tree,
                                   SkWStream* stream) {
   SkPDF::Metadata metadata;
   SkTime::DateTime now = TimeToSkTime(base::Time::Now());
   metadata.fCreation = now;
   metadata.fModified = now;
+  // TODO(crbug.com/691162): Switch to SkString's string_view constructor when
+  // possible.
   metadata.fCreator = creator.empty()
                           ? SkString("Chromium")
-                          : SkString(creator.c_str(), creator.size());
+                          : SkString(creator.data(), creator.size());
   metadata.fRasterDPI = 300.0f;
 
   SkPDF::StructureElementNode tag_root = {};

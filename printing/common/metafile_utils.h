@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/unguessable_token.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -37,7 +36,7 @@ using PictureSerializationContext = ContentToProxyTokenMap;
 // Stores the set of typeface unique ids used by the picture frame content.
 using TypefaceSerializationContext = ContentProxySet;
 
-sk_sp<SkDocument> MakePdfDocument(const std::string& creator,
+sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
                                   const ui::AXTreeUpdate& accessibility_tree,
                                   SkWStream* stream);
 
