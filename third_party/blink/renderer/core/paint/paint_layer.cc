@@ -1244,7 +1244,7 @@ void PaintLayer::CollectFragments(
     PaintLayerFragments& fragments,
     const PaintLayer* root_layer,
     ShouldRespectOverflowClipType respect_overflow_clip,
-    const FragmentData* root_fragment) const {
+    const FragmentData* root_fragment_arg) const {
   PaintLayerFragment fragment;
   const auto& first_fragment_data = GetLayoutObject().FirstFragment();
   const auto& first_root_fragment_data =
@@ -1272,14 +1272,17 @@ void PaintLayer::CollectFragments(
   wtf_size_t physical_fragment_idx = 0u;
   for (auto* fragment_data = &first_fragment_data; fragment_data;
        fragment_data = fragment_data->NextFragment(), physical_fragment_idx++) {
-    if (root_fragment &&
-        !root_fragment->LocalBorderBoxProperties().Transform().IsAncestorOf(
-            fragment_data->LocalBorderBoxProperties().Transform())) {
-      continue;
-    }
-
-    const FragmentData* root_fragment_data;
-    if (root_layer == this) {
+    const FragmentData* root_fragment_data = nullptr;
+    if (root_fragment_arg) {
+      DCHECK(this != root_layer);
+      if (!root_fragment_arg->ContentsProperties().Transform().IsAncestorOf(
+              fragment_data->LocalBorderBoxProperties().Transform())) {
+        // We only want to collect fragments that are descendants of
+        // |root_fragment_arg|.
+        continue;
+      }
+      root_fragment_data = root_fragment_arg;
+    } else if (root_layer == this) {
       root_fragment_data = fragment_data;
     } else if (should_match_fragments) {
       for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
@@ -1662,7 +1665,7 @@ PaintLayer* PaintLayer::HitTestLayer(
     if (container_fragment_data) {
       container_fragment_for_transform_state = container_fragment_data;
       const auto& container_transform =
-          container_fragment_data->LocalBorderBoxProperties().Transform();
+          container_fragment_data->ContentsProperties().Transform();
       while (local_fragment_for_transform_state) {
         // Find the first local fragment that is a descendant of
         // container_fragment.
