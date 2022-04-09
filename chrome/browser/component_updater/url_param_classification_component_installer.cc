@@ -26,7 +26,7 @@ using component_updater::ComponentUpdateService;
 namespace {
 
 const base::FilePath::CharType kUrlParamClassificationsFileName[] =
-    FILE_PATH_LITERAL("url-param-filter-list.textproto");
+    FILE_PATH_LITERAL("list.pb");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: dnhnnofocefcglhjeigmkhcgfoaipbaa
