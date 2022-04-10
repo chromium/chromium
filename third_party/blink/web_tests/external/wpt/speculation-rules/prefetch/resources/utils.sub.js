@@ -57,6 +57,22 @@ class PrefetchAgent extends RemoteContext {
   }
 }
 
+// Produces n URLs with unique UUIDs which will record when they are prefetched.
+function getPrefetchUrlList(n) {
+  let urls = [];
+  for (let i=0; i<n; i++) {
+    let params = new URLSearchParams({uuid: token()});
+    urls.push(new URL(`prefetch.py?${params}`, SR_PREFETCH_UTILS_URL));
+  }
+  return urls;
+}
+
+async function isUrlPrefetched(url) {
+  let response = await fetch(url);
+  assert_true(response.ok);
+  return response.json();
+}
+
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
 async function spawnWindow(t, extra = {}) {
   let agent = new PrefetchAgent(token(), t);
