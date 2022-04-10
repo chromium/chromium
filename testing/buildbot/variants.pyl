@@ -596,8 +596,8 @@
   'CROS_ATLAS_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '101.0.4951.13',
-      'cros_img': 'atlas-release/R101-14588.23.0',
+      'cros_chrome_version': '102.0.4975.0',
+      'cros_img': 'atlas-release/R102-14658.0.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_DEV',
@@ -632,8 +632,8 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '101.0.4951.13',
-      'cros_img': 'eve-release/R101-14588.23.0',
+      'cros_chrome_version': '102.0.4975.0',
+      'cros_img': 'eve-release/R102-14658.0.0',
     },
     'enabled': False,
     'identifier': 'EVE_DEV',
