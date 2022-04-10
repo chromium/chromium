@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_FINAL_STATUS_H_
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_FINAL_STATUS_H_
 
-#include "components/no_state_prefetch/common/prerender_origin.h"
-
 namespace prerender {
 
 // FinalStatus indicates whether |this| was used, or why it was cancelled.

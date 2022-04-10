@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_CLIENT_H_
 #define COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_CLIENT_H_
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/public/web/web_no_state_prefetch_client.h"
 #include "third_party/blink/public/web/web_view_observer.h"
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONTENTS_DELEGATE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONTENTS_DELEGATE_H_
 
-#include "content/public/browser/render_frame_host.h"
-
 namespace content {
 class WebContents;
 }

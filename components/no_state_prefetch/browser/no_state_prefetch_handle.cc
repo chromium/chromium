@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
