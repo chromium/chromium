@@ -179,9 +179,26 @@ chromium-metrics-reviews@google.com.
   <summary>The time elapsed for booting up the ARC instance.</summary>
 </histogram>
 
-<histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2022-05-01">
+<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    ANR rate separated by {AnrPeriod} as ANR count happened in this period.
+  </summary>
+  <token key="AnrPeriod">
+    <variant name="First10MinutesAfterStart"
+        summary="10 minutes after ARC start."/>
+    <variant name="Per4Hours"
+        summary="Regular per 4 hours of ARC active session including session
+                 restarts. This also includes period First10MinutesAfterStart"/>
+  </token>
+</histogram>
+
+<histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2022-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>alanding@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Counts ANR events in the system separated by ANR type and {AnrSource}.
   </summary>

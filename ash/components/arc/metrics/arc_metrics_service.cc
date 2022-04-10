@@ -10,6 +10,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_anr.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -25,7 +26,6 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/exo/wm_helper.h"
 #include "components/metrics/psi_memory_parser.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
@@ -54,16 +54,6 @@ constexpr char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
 // Interval for collecting UMA "Arc.App.LowMemoryKills.*Count10Minutes" metrics.
 constexpr base::TimeDelta kRequestKillCountPeriod = base::Minutes(10);
 
-// App types to report.
-constexpr char kAppTypeArcAppLauncher[] = "ArcAppLauncher";
-constexpr char kAppTypeArcOther[] = "ArcOther";
-constexpr char kAppTypeFirstParty[] = "FirstParty";
-constexpr char kAppTypeGmsCore[] = "GmsCore";
-constexpr char kAppTypePlayStore[] = "PlayStore";
-constexpr char kAppTypeSystemServer[] = "SystemServer";
-constexpr char kAppTypeSystem[] = "SystemApp";
-constexpr char kAppTypeOther[] = "Other";
-
 // Memory pressure histograms.
 const char kPSIMemoryPressureSomeARC[] = "ChromeOS.CWP.PSIMemPressure.ArcSome";
 const char kPSIMemoryPressureFullARC[] = "ChromeOS.CWP.PSIMemPressure.ArcFull";
@@ -77,30 +67,6 @@ template <typename T>
 void LogStabilityUmaEnum(const std::string& name, T sample) {
   base::UmaHistogramEnumeration(name, sample);
   VLOG(1) << name << ": " << static_cast<std::underlying_type_t<T>>(sample);
-}
-
-std::string AnrSourceToTableName(mojom::AnrSource value) {
-  switch (value) {
-    case mojom::AnrSource::OTHER:
-      return kAppTypeOther;
-    case mojom::AnrSource::SYSTEM_SERVER:
-      return kAppTypeSystemServer;
-    case mojom::AnrSource::SYSTEM_APP:
-      return kAppTypeSystem;
-    case mojom::AnrSource::GMS_CORE:
-      return kAppTypeGmsCore;
-    case mojom::AnrSource::PLAY_STORE:
-      return kAppTypePlayStore;
-    case mojom::AnrSource::FIRST_PARTY:
-      return kAppTypeFirstParty;
-    case mojom::AnrSource::ARC_OTHER:
-      return kAppTypeArcOther;
-    case mojom::AnrSource::ARC_APP_LAUNCHER:
-      return kAppTypeArcAppLauncher;
-    default:
-      LOG(ERROR) << "Unrecognized source ANR " << value;
-      return kAppTypeOther;
-  }
 }
 
 std::string BootTypeToString(mojom::BootType boot_type) {
@@ -214,6 +180,7 @@ ArcMetricsService::~ArcMetricsService() {
 }
 
 void ArcMetricsService::Shutdown() {
+  metrics_anr_.reset();
   for (auto& obs : app_kill_observers_)
     obs.OnArcMetricsServiceDestroyed();
   app_kill_observers_.Clear();
@@ -563,9 +530,13 @@ void ArcMetricsService::ReportClipboardDragDropEvent(
 
 void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramEnumeration("Arc.Anr.Overall", anr->type);
-  LogStabilityUmaEnum("Arc.Anr." + AnrSourceToTableName(anr->source),
-                      anr->type);
+
+  if (!metrics_anr_) {
+    LOG(ERROR) << "ANR is reported when no ANR metric service is connected";
+    return;
+  }
+
+  metrics_anr_->Report(std::move(anr));
 }
 
 void ArcMetricsService::ReportLowLatencyStylusLibApiUsage(
@@ -715,6 +686,16 @@ void ArcMetricsService::OnTaskDestroyed(int32_t task_id) {
   }
   task_ids_.erase(it);
   guest_os_engagement_metrics_.SetBackgroundActive(!task_ids_.empty());
+}
+
+void ArcMetricsService::OnArcStarted() {
+  DCHECK(prefs_);
+
+  metrics_anr_ = std::make_unique<ArcMetricsAnr>(prefs_);
+}
+
+void ArcMetricsService::OnArcSessionStopped() {
+  metrics_anr_.reset();
 }
 
 void ArcMetricsService::AddAppKillObserver(AppKillObserver* obs) {
