@@ -30,7 +30,7 @@
 
 namespace blink {
 
-class LayoutIFrame final : public LayoutEmbeddedContent {
+class CORE_EXPORT LayoutIFrame : public LayoutEmbeddedContent {
  public:
   explicit LayoutIFrame(HTMLFrameOwnerElement*);
 

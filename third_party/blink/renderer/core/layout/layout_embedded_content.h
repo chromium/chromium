@@ -79,7 +79,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
  protected:
   // The size of the child frame when it should be "frozen"; i.e., it should not
   // change even when the size of |this| changes.
-  const absl::optional<PhysicalSize> FrozenFrameSize() const;
+  virtual const absl::optional<PhysicalSize> FrozenFrameSize() const;
   ObjectFit EmbeddedContentTransform() const;
 
   PaintLayerType LayerTypeRequired() const override;

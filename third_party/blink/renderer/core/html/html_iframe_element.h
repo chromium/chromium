@@ -35,9 +35,8 @@
 namespace blink {
 class DOMFeaturePolicy;
 
-class CORE_EXPORT HTMLIFrameElement final
-    : public HTMLFrameElementBase,
-      public Supplementable<HTMLIFrameElement> {
+class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
+                                      public Supplementable<HTMLIFrameElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
