@@ -130,6 +130,8 @@ blink_modules_sources("webaudio") {
     "offline_audio_worklet_thread.h",
     "oscillator_node.cc",
     "oscillator_node.h",
+    "panner_handler.cc",
+    "panner_handler.h",
     "panner_node.cc",
     "panner_node.h",
     "periodic_wave.cc",

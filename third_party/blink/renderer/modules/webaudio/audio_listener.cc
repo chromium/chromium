@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
-#include "third_party/blink/renderer/modules/webaudio/panner_node.h"
+#include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
