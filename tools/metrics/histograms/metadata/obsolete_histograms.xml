@@ -12006,6 +12006,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToTakeTpmOwnership" units="ms"
+    expires_after="2022-03-20">
+  <obsolete>
+    Removed 04/2022 as it is not used since crrev.com/c/2637147 (02/2021)
+  </obsolete>
+  <owner>apronin@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time (ms) for Chrome OS cryptohome daemon to take ownership of
+    the TPM.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.DynamicModule.CreateActivityDelegateTime"
     units="ms" expires_after="2020-02-29">
   <obsolete>
@@ -57911,6 +57924,16 @@ chromium-metrics-reviews@google.com.
     http://crbug.com/338657 and http://crosbug.com/p/16009. Note that we log
     retries on all 7 FETs even though we've only ever seen failures of FET1.
   </summary>
+</histogram>
+
+<histogram name="Platform.U2F.LegacyCommand" enum="Cr50U2FCommands"
+    expires_after="2021-12-21">
+  <obsolete>
+    Removed 04/2022 as it is not used since crrev.com/c/1755785 (09/2019)
+  </obsolete>
+  <owner>cylai@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>Records occurrences of legacy U2F commands sent to cr50.</summary>
 </histogram>
 
 <histogram name="PlatformFile.FlushTime" units="ms" expires_after="2016-07-22">

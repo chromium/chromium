@@ -1198,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.AuthFailCommand.Auth2Fail"
-    enum="TPM12CommandOrdinal" expires_after="2021-10-10">
+    enum="TPM12CommandOrdinal" expires_after="2022-10-08">
   <owner>cylai@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.AuthFailCommand.AuthFail"
-    enum="TPM12CommandOrdinal" expires_after="2021-10-10">
+    enum="TPM12CommandOrdinal" expires_after="2022-10-08">
   <owner>cylai@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1275,8 +1275,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.HardwareAlerts" enum="PlatformTPMHardwareAlerts"
-    expires_after="M85">
+    expires_after="2022-10-08">
   <owner>anatol@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     Trusted Platform Module hardware alerts that signal about the chip abnormal
     situation.
@@ -1333,7 +1334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingTime" units="seconds"
-    expires_after="2022-04-17">
+    expires_after="2022-10-08">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>System uptime when first timeout writing TPM command occurs</summary>
@@ -1350,17 +1351,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
-    expires_after="2022-02-20">
+    expires_after="2022-10-08">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of U2F commands sent to cr50.</summary>
-</histogram>
-
-<histogram name="Platform.U2F.LegacyCommand" enum="Cr50U2FCommands"
-    expires_after="2021-12-21">
-  <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
-  <summary>Records occurrences of legacy U2F commands sent to cr50.</summary>
 </histogram>
 
 <histogram name="Platform.UnaggregatedUsageTime" units="seconds"

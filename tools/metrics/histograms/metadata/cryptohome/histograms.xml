@@ -587,16 +587,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.TimeToTakeTpmOwnership" units="ms"
-    expires_after="2022-03-20">
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The amount of time (ms) for Chrome OS cryptohome daemon to take ownership of
-    the TPM.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.TpmResults" enum="CryptohomeTpmResults"
     expires_after="2022-08-28">
   <owner>afakhry@chromium.org</owner>
