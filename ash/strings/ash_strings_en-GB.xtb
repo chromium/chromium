@@ -22,6 +22,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1081015718268701546">Linux apps aren’t currently supported. Other apps will be saved.</translation>
 <translation id="108486256082349153">Mobile: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Good afternoon <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Search your <ph name="CATEGORY" />, files, apps and more. Use the arrow keys to navigate your apps.</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
@@ -179,6 +180,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
 <translation id="1998100899771863792">Current desk</translation>
+<translation id="2001444736072756133">Search your <ph name="CATEGORY" />, files, apps and more.</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
@@ -264,6 +266,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
+<translation id="2620016719323068571">Search your <ph name="CATEGORY" />, files, apps and more…</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="263399434338050016">'Select all'</translation>
@@ -621,6 +624,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Change device to previous version within a day}other{Change device to previous version within # days}}</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
+<translation id="4657775630156561295">The following suggestion will be permanently removed from your account’s suggestion history:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4665114317261903604">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
@@ -943,6 +949,7 @@ New install</translation>
 <translation id="6751052314767925245">Enforced by your administrator</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">tabs</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">No media playing</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
@@ -1048,6 +1055,7 @@ New install</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
 <translation id="7434543979546293336">Marked as a key idea</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
+<translation id="7453330308669753048">Search history result removed</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
@@ -1104,6 +1112,7 @@ New install</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749640678855296659">Your microphone is currently turned off</translation>
 <translation id="776344839111254542">Click to view update details</translation>
+<translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
 <translation id="7796735576426975947">New notification hidden</translation>
@@ -1166,6 +1175,7 @@ New install</translation>
 <translation id="8120151603115102514">Your phone doesn’t have a lock screen. To unlock your Chromebook, enter password.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8131994907636310308">Close sort toast</translation>
 <translation id="8132487352815776550">Stop closed captions</translation>
 <translation id="8132793192354020517">Connected to <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialising...</translation>

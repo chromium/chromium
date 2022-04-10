@@ -154,6 +154,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> (<ph name="DESC" />) albuma hautatu da</translation>
 <translation id="2695514675076754339">Idatzi zortzi karaktere dituen desblokeatzeko kodea</translation>
 <translation id="2712812801627182647">TLS autentifikazio-gakoa</translation>
+<translation id="2717139507051041123">Gaitu kolore ilunaren modua</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
 <translation id="2783010256799387990">GAINDITUTA</translation>
@@ -375,6 +376,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5252456968953390977">Ibiltaritza</translation>
+<translation id="5257811368506016604">Gaitu kolore argiaren modua</translation>
 <translation id="5264277876637023664">Egin PUZaren proba</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Berrabiarazi errutinak</translation>
@@ -485,6 +487,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>
 <translation id="6423239382391657905">VPN irekia</translation>
 <translation id="6439505561246192797">Ahula (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>
 <translation id="6456394469623773452">Normala</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Berriro eskaneatu nahi duzu orria?}=1{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}other{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}}</translation>
 <translation id="6472207088655375767">EBP</translation>
@@ -567,6 +570,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Aldatu pantaila-babeslea</translation>
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +593,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7648838807254605802">HTTPS eskaeren latentzia luzea</translation>
 <translation id="7656388927906093505">Gailua sagu bat da.</translation>
 <translation id="7658239707568436148">Utzi</translation>
+<translation id="7665800271478495366">Aldatu abatarra</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7705524343798198388">VPNa</translation>
@@ -616,6 +621,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>
