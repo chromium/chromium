@@ -545,7 +545,7 @@ def _CombineConfigs(configs,
 
     ret.extend(format_config_contents(config, contents))
 
-  for path, contents in sorted(embedded_configs.items(), key=lambda x: x[0]):
+  for path, contents in sorted(embedded_configs.items()):
     ret.extend(format_config_contents(path, contents))
 
 
@@ -577,17 +577,27 @@ def _CreateDynamicConfig(options):
   return '\n'.join(ret)
 
 
-def _ExtractEmbeddedConfigs(jar_paths):
-  embedded_configs = {}
-  for jar_path in jar_paths:
-    with zipfile.ZipFile(jar_path) as z:
-      for info in z.infolist():
-        if info.is_dir():
-          continue
-        if info.filename.startswith('META-INF/proguard/'):
-          config_path = '{}:{}'.format(jar_path, info.filename)
-          embedded_configs[config_path] = z.read(info).decode('utf-8').rstrip()
-  return embedded_configs
+def _ExtractEmbeddedConfigs(jar_path, embedded_configs):
+  with zipfile.ZipFile(jar_path) as z:
+    proguard_names = []
+    r8_names = []
+    for info in z.infolist():
+      if info.is_dir():
+        continue
+      if info.filename.startswith('META-INF/proguard/'):
+        proguard_names.append(info.filename)
+      elif info.filename.startswith('META-INF/com.android.tools/r8/'):
+        r8_names.append(info.filename)
+      elif info.filename.startswith('META-INF/com.android.tools/r8-from'):
+        # Assume our version of R8 is always latest.
+        if '-upto-' not in info.filename:
+          r8_names.append(info.filename)
+
+    # Give preference to r8-from-*, then r8/, then proguard/.
+    active = r8_names or proguard_names
+    for filename in active:
+      config_path = '{}:{}'.format(jar_path, filename)
+      embedded_configs[config_path] = z.read(filename).decode('utf-8').rstrip()
 
 
 def _ContainsDebuggingConfig(config_str):
@@ -669,7 +679,10 @@ def main():
     # If a jar is part of input no need to include it as library jar.
     if p not in libraries and p not in options.input_paths:
       libraries.append(p)
-  embedded_configs = _ExtractEmbeddedConfigs(options.input_paths + libraries)
+
+  embedded_configs = {}
+  for jar_path in options.input_paths + libraries:
+    _ExtractEmbeddedConfigs(jar_path, embedded_configs)
 
   # ProGuard configs that are derived from flags.
   merged_configs = _CombineConfigs(proguard_configs,
@@ -692,6 +705,15 @@ def main():
                      options.keep_rules_targets_regex,
                      options.keep_rules_output_path)
     return
+
+  # TODO(agrieve): Stop appending to dynamic_config_data once R8 natively
+  #     supports finding configs the "tools" directory.
+  #     https://issuetracker.google.com/227983179
+  tools_configs = {
+      k: v
+      for k, v in embedded_configs.items() if 'com.android.tools' in k
+  }
+  dynamic_config_data += '\n' + _CombineConfigs([], None, tools_configs)
 
   split_contexts_by_name = _OptimizeWithR8(options, proguard_configs, libraries,
                                            dynamic_config_data, print_stdout)
