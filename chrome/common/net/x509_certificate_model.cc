@@ -509,6 +509,59 @@ absl::optional<std::string> ProcessGeneralNamesTlv(
   return ProcessGeneralNames(*alt_names);
 }
 
+absl::optional<std::string> ProcessGeneralNamesValue(
+    net::der::Input general_names_value) {
+  net::CertErrors unused_errors;
+  std::unique_ptr<net::GeneralNames> alt_names =
+      net::GeneralNames::CreateFromValue(general_names_value, &unused_errors);
+  if (!alt_names)
+    return absl::nullopt;
+  return ProcessGeneralNames(*alt_names);
+}
+
+absl::optional<std::string> ProcessSubjectKeyId(
+    net::der::Input extension_data) {
+  net::der::Input subject_key_identifier;
+  if (!net::ParseSubjectKeyIdentifier(extension_data, &subject_key_identifier))
+    return absl::nullopt;
+  return l10n_util::GetStringFUTF8(
+      IDS_CERT_KEYID_FORMAT,
+      base::ASCIIToUTF16(ProcessRawBytes(subject_key_identifier)));
+}
+
+absl::optional<std::string> ProcessAuthorityKeyId(
+    net::der::Input extension_data) {
+  net::ParsedAuthorityKeyIdentifier authority_key_id;
+  if (!net::ParseAuthorityKeyIdentifier(extension_data, &authority_key_id))
+    return absl::nullopt;
+
+  std::string rv;
+  if (authority_key_id.key_identifier) {
+    rv += l10n_util::GetStringFUTF8(
+        IDS_CERT_KEYID_FORMAT,
+        base::ASCIIToUTF16(ProcessRawBytes(*authority_key_id.key_identifier)));
+    rv += '\n';
+  }
+  if (authority_key_id.authority_cert_issuer) {
+    absl::optional<std::string> s =
+        ProcessGeneralNamesValue(*authority_key_id.authority_cert_issuer);
+    if (!s)
+      return absl::nullopt;
+    rv += l10n_util::GetStringFUTF8(IDS_CERT_ISSUER_FORMAT,
+                                    base::UTF8ToUTF16(*s));
+    rv += '\n';
+  }
+  if (authority_key_id.authority_cert_serial_number) {
+    rv += l10n_util::GetStringFUTF8(
+        IDS_CERT_SERIAL_NUMBER_FORMAT,
+        base::ASCIIToUTF16(
+            ProcessRawBytes(*authority_key_id.authority_cert_serial_number)));
+    rv += '\n';
+  }
+
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -761,6 +814,10 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
   }
   if (extension.oid == net::der::Input(kIssuerAltNameOid))
     return ProcessGeneralNamesTlv(extension.value);
+  if (extension.oid == net::der::Input(net::kSubjectKeyIdentifierOid))
+    return ProcessSubjectKeyId(extension.value);
+  if (extension.oid == net::der::Input(net::kAuthorityKeyIdentifierOid))
+    return ProcessAuthorityKeyId(extension.value);
   return ProcessRawBytes(extension.value);
 }
 
