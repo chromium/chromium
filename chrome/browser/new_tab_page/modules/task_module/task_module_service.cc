@@ -31,78 +31,47 @@
 namespace {
 const char kXSSIResponsePreamble[] = ")]}'";
 
-const char* GetPath(task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "/async/newtab_recipe_tasks";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "/async/newtab_shopping_tasks";
-  }
+const char* GetPath() {
+  return "/async/newtab_recipe_tasks";
 }
 
 // We return a reference so that base::FeatureList::CheckFeatureIdentity
 // succeeds.
-const base::Feature& GetFeature(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return ntp_features::kNtpRecipeTasksModule;
-    case task_module::mojom::TaskModuleType::kShopping:
-      return ntp_features::kNtpShoppingTasksModule;
-  }
+const base::Feature& GetFeature() {
+  return ntp_features::kNtpRecipeTasksModule;
 }
 
-const char* GetDataParam(task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return ntp_features::kNtpRecipeTasksModuleDataParam;
-    case task_module::mojom::TaskModuleType::kShopping:
-      return ntp_features::kNtpShoppingTasksModuleDataParam;
-  }
+const char* GetDataParam() {
+  return ntp_features::kNtpRecipeTasksModuleDataParam;
 }
 
-const char* GetCacheMaxAgeSParam(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return ntp_features::kNtpRecipeTasksModuleCacheMaxAgeSParam;
-    case task_module::mojom::TaskModuleType::kShopping:
-      return ntp_features::kNtpShoppingTasksModuleCacheMaxAgeSParam;
-  }
+const char* GetCacheMaxAgeSParam() {
+  return ntp_features::kNtpRecipeTasksModuleCacheMaxAgeSParam;
 }
 
-const char* GetExperimentGroupParam(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return ntp_features::kNtpRecipeTasksModuleExperimentGroupParam;
-    case task_module::mojom::TaskModuleType::kShopping:
-      return ntp_features::kNtpShoppingTasksModuleExperimentGroupParam;
-  }
+const char* GetExperimentGroupParam() {
+  return ntp_features::kNtpRecipeTasksModuleExperimentGroupParam;
 }
 
-GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
-               const std::string& application_locale) {
+GURL GetApiUrl(const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
   if (!google_base_url.is_valid()) {
     google_base_url = GURL(google_util::kGoogleHomepageURL);
   }
-  auto url = net::AppendQueryParameter(
-      google_base_url.Resolve(GetPath(task_module_type)), "hl",
-      application_locale);
-  if (base::GetFieldTrialParamValueByFeature(GetFeature(task_module_type),
-                                             GetDataParam(task_module_type)) ==
+  auto url = net::AppendQueryParameter(google_base_url.Resolve(GetPath()), "hl",
+                                       application_locale);
+  if (base::GetFieldTrialParamValueByFeature(GetFeature(), GetDataParam()) ==
       "fake") {
     url = google_util::AppendToAsyncQueryParam(url, "fake_data", "1");
   }
   int cache_max_age_s = base::GetFieldTrialParamByFeatureAsInt(
-      GetFeature(task_module_type), GetCacheMaxAgeSParam(task_module_type), 0);
+      GetFeature(), GetCacheMaxAgeSParam(), 0);
   if (cache_max_age_s > 0) {
     url = google_util::AppendToAsyncQueryParam(
         url, "cache_max_age_s", base::NumberToString(cache_max_age_s));
   }
   auto experiment_group = base::GetFieldTrialParamValueByFeature(
-      GetFeature(task_module_type), GetExperimentGroupParam(task_module_type));
+      GetFeature(), GetExperimentGroupParam());
   if (!experiment_group.empty()) {
     url = google_util::AppendToAsyncQueryParam(url, "experiment_group",
                                                experiment_group);
@@ -110,62 +79,28 @@ GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
   return url;
 }
 
-const char* GetTasksKey(task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "recipe_tasks";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "shopping_tasks";
-  }
+const char* GetTasksKey() {
+  return "recipe_tasks";
 }
 
-const char* GetTaskItemsKey(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "recipes";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "products";
-  }
+const char* GetTaskItemsKey() {
+  return "recipes";
 }
 
-const char* GetTaskItemsName(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "Recipes";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "Products";
-  }
+const char* GetTaskItemsName() {
+  return "Recipes";
 }
 
-const char* GetDismissedTasksPrefName(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "NewTabPage.DismissedRecipeTasks";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "NewTabPage.DismissedShoppingTasks";
-  }
+const char* GetDismissedTasksPrefName() {
+  return "NewTabPage.DismissedRecipeTasks";
 }
 
-const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "RecipeTasks";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "ShoppingTasks";
-  }
+const char* GetModuleName() {
+  return "RecipeTasks";
 }
 
-std::string GetRecommendedItemText(
-    task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return l10n_util::GetStringUTF8(IDS_NTP_MODULES_RECIPE_TASKS_RECOMMENDED);
-    case task_module::mojom::TaskModuleType::kShopping:
-      return l10n_util::GetStringUTF8(IDS_NTP_MODULES_SHOPPING_TASKS_RELATED);
-  }
+std::string GetRecommendedItemText() {
+  return l10n_util::GetStringUTF8(IDS_NTP_MODULES_RECIPE_TASKS_RECOMMENDED);
 }
 }  // namespace
 
@@ -181,28 +116,22 @@ TaskModuleService::~TaskModuleService() = default;
 
 // static
 void TaskModuleService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(
-      GetDismissedTasksPrefName(task_module::mojom::TaskModuleType::kRecipe));
-  registry->RegisterListPref(
-      GetDismissedTasksPrefName(task_module::mojom::TaskModuleType::kShopping));
+  registry->RegisterListPref(GetDismissedTasksPrefName());
 }
 
 void TaskModuleService::Shutdown() {}
 
-void TaskModuleService::GetPrimaryTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    TaskModuleCallback callback) {
+void TaskModuleService::GetPrimaryTask(TaskModuleCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("task_module_service", R"(
         semantics {
-          sender: "Task Module Service"
-          description: "This service downloads tasks, which is information "
-            "related to the user's currently active search journeys such as "
-            "visited and recommended task items, such as products to purchase "
-            "or recipes. "
-            "Tasks will be displayed on the new tab page to help the  user to "
-            "continue their search journey. Tasks are queried on every new tab "
-            "page load."
+          sender: "Recipe Module Service"
+          description: "This service downloads recipes, which is information "
+            "related to the user's currently active cooking recipe search "
+            "journeys such as visited and recommended recipes."
+            "Recipes will be displayed on the new tab page to help the user "
+            "to continue their search journey. Recipes are queried on every "
+            "new tab page load."
           trigger:
             "Displaying the new tab page on Desktop, if Google is the "
             "configured search provider and the user is signed in."
@@ -229,7 +158,7 @@ void TaskModuleService::GetPrimaryTask(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetApiUrl(task_module_type, application_locale_);
+  resource_request->url = GetApiUrl(application_locale_);
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->request_initiator =
@@ -244,34 +173,26 @@ void TaskModuleService::GetPrimaryTask(
   loaders_.back()->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&TaskModuleService::OnDataLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), task_module_type,
-                     loaders_.back().get(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), loaders_.back().get(),
+                     std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void TaskModuleService::DismissTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(),
-                        GetDismissedTasksPrefName(task_module_type));
+void TaskModuleService::DismissTask(const std::string& task_name) {
+  ListPrefUpdate update(profile_->GetPrefs(), GetDismissedTasksPrefName());
   base::Value task_name_value(task_name);
   if (!base::Contains(update->GetListDeprecated(), task_name_value))
     update->Append(std::move(task_name_value));
 }
 
-void TaskModuleService::RestoreTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(),
-                        GetDismissedTasksPrefName(task_module_type));
+void TaskModuleService::RestoreTask(const std::string& task_name) {
+  ListPrefUpdate update(profile_->GetPrefs(), GetDismissedTasksPrefName());
   update->EraseListValue(base::Value(task_name));
 }
 
-void TaskModuleService::OnDataLoaded(
-    task_module::mojom::TaskModuleType task_module_type,
-    network::SimpleURLLoader* loader,
-    TaskModuleCallback callback,
-    std::unique_ptr<std::string> response) {
+void TaskModuleService::OnDataLoaded(network::SimpleURLLoader* loader,
+                                     TaskModuleCallback callback,
+                                     std::unique_ptr<std::string> response) {
   auto net_error = loader->NetError();
   bool loaded_from_cache = loader->LoadedFromCache();
   base::EraseIf(loaders_, [loader](const auto& target) {
@@ -279,9 +200,8 @@ void TaskModuleService::OnDataLoaded(
   });
 
   if (!loaded_from_cache) {
-    base::UmaHistogramSparse(
-        "NewTabPage.Modules.DataRequest",
-        base::PersistentHash(GetTasksKey(task_module_type)));
+    base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                             base::PersistentHash(GetTasksKey()));
   }
 
   if (net_error != net::OK || !response) {
@@ -295,23 +215,23 @@ void TaskModuleService::OnDataLoaded(
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *response, base::BindOnce(&TaskModuleService::OnJsonParsed,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                task_module_type, std::move(callback)));
+      *response,
+      base::BindOnce(&TaskModuleService::OnJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TaskModuleService::OnJsonParsed(
-    task_module::mojom::TaskModuleType task_module_type,
     TaskModuleCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     std::move(callback).Run(nullptr);
     return;
   }
+
   // We receive a list of tasks ordered from highest to lowest priority. We only
   // support showing a single task though. Therefore, pick the first task.
   auto* tasks = result.value->FindListPath(
-      base::StringPrintf("update.%s", GetTasksKey(task_module_type)));
+      base::StringPrintf("update.%s", GetTasksKey()));
   if (!tasks || tasks->GetListDeprecated().size() == 0) {
     std::move(callback).Run(nullptr);
     return;
@@ -320,29 +240,24 @@ void TaskModuleService::OnJsonParsed(
   for (const auto& task : tasks->GetListDeprecated()) {
     auto* title = task.FindStringPath("title");
     auto* task_name = task.FindStringPath("task_name");
-    auto* task_items = task.FindListPath(GetTaskItemsKey(task_module_type));
+    auto* task_items = task.FindListPath(GetTaskItemsKey());
     auto* related_searches = task.FindListPath("related_searches");
     if (!title || !task_name || !task_items || !related_searches ||
         task_items->GetListDeprecated().size() == 0) {
       continue;
     }
-    if (IsTaskDismissed(task_module_type, *task_name)) {
+    if (IsTaskDismissed(*task_name)) {
       continue;
     }
     std::vector<task_module::mojom::TaskItemPtr> mojo_task_items;
     for (const auto& task_item : task_items->GetListDeprecated()) {
       const auto* name = task_item.FindStringPath("name");
       const auto* image_url = task_item.FindStringPath("image_url");
-      const auto* price = task_item.FindStringPath("price");
       const absl::optional<int> viewed_timestamp =
           task_item.FindIntPath("viewed_timestamp.seconds");
       const auto* site_name = task_item.FindStringPath("site_name");
       const auto* target_url = task_item.FindStringPath("target_url");
       if (!name || !image_url || !target_url) {
-        continue;
-      }
-      if (task_module::mojom::TaskModuleType::kShopping == task_module_type &&
-          !price) {
         continue;
       }
       auto mojom_task_item = task_module::mojom::TaskItem::New();
@@ -352,15 +267,11 @@ void TaskModuleService::OnJsonParsed(
       mojom_task_item->info =
           viewed_timestamp ? GetViewedItemText(base::Time::UnixEpoch() +
                                                base::Seconds(*viewed_timestamp))
-                           : GetRecommendedItemText(task_module_type);
-      if (task_module_type == task_module::mojom::TaskModuleType::kRecipe &&
-          site_name) {
+                           : GetRecommendedItemText();
+      if (site_name) {
         mojom_task_item->site_name = *site_name;
       }
       mojom_task_item->target_url = GURL(*target_url);
-      if (task_module_type == task_module::mojom::TaskModuleType::kShopping) {
-        mojom_task_item->price = *price;
-      }
       mojo_task_items.push_back(std::move(mojom_task_item));
     }
     std::vector<task_module::mojom::RelatedSearchPtr> mojo_related_searches;
@@ -379,14 +290,13 @@ void TaskModuleService::OnJsonParsed(
     mojo_task->title = *title;
     mojo_task->name = *task_name;
     base::UmaHistogramCounts100(
-        base::StringPrintf("NewTabPage.%s.%sDownloadCount",
-                           GetModuleName(task_module_type),
-                           GetTaskItemsName(task_module_type)),
+        base::StringPrintf("NewTabPage.%s.%sDownloadCount", GetModuleName(),
+                           GetTaskItemsName()),
         mojo_task_items.size());
     mojo_task->task_items = std::move(mojo_task_items);
     base::UmaHistogramCounts100(
         base::StringPrintf("NewTabPage.%s.RelatedSearchDownloadCount",
-                           GetModuleName(task_module_type)),
+                           GetModuleName()),
         mojo_related_searches.size());
     mojo_task->related_searches = std::move(mojo_related_searches);
 
@@ -396,14 +306,12 @@ void TaskModuleService::OnJsonParsed(
   std::move(callback).Run(nullptr);
 }
 
-bool TaskModuleService::IsTaskDismissed(
-    task_module::mojom::TaskModuleType task_module_type,
-    const std::string& task_name) {
+bool TaskModuleService::IsTaskDismissed(const std::string& task_name) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     return false;
   }
-  const base::Value* dismissed_tasks = profile_->GetPrefs()->GetList(
-      GetDismissedTasksPrefName(task_module_type));
+  const base::Value* dismissed_tasks =
+      profile_->GetPrefs()->GetList(GetDismissedTasksPrefName());
   DCHECK(dismissed_tasks);
   return base::Contains(dismissed_tasks->GetListDeprecated(),
                         base::Value(task_name));

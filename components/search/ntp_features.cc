@@ -83,10 +83,6 @@ const base::Feature kNtpModulesLoad{"NtpModulesLoad",
 const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, shopping tasks module will be shown.
-const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, chrome cart module will be shown.
 const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -141,15 +137,9 @@ const base::Feature kNtpModulesFirstRunExperience{
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";
-const char kNtpShoppingTasksModuleDataParam[] =
-    "NtpShoppingTasksModuleDataParam";
 const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
-const char kNtpShoppingTasksModuleCacheMaxAgeSParam[] =
-    "NtpShoppingTasksModuleCacheMaxAgeSParam";
 const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
     "NtpRecipeTasksModuleCacheMaxAgeSParam";
-const char kNtpShoppingTasksModuleExperimentGroupParam[] =
-    "NtpShoppingTasksModuleExperimentGroupParam";
 const char kNtpRecipeTasksModuleExperimentGroupParam[] =
     "NtpRecipeTasksModuleExperimentGroupParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";

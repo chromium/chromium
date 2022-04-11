@@ -11,7 +11,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {RelatedSearch, Task, TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
+import {RelatedSearch, Task, TaskItem} from '../../task_module.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -43,31 +43,25 @@ export class TaskModuleElement extends I18nMixin
 
   static get properties() {
     return {
-      taskModuleType: {
-        type: Number,
-        observer: 'onTaskModuleTypeChange_',
-      },
-
       task: Object,
 
       title_: {
         type: String,
-        computed: 'computeTitle_(taskModuleType, task)',
+        computed: 'computeTitle_(task)',
       },
 
       dismissName_: {
         type: String,
-        computed: 'computeDismissName_(taskModuleType, task)',
+        computed: 'computeDismissName_(task)',
       },
 
       disableName_: {
         type: String,
-        computed: 'computeDisableName_(taskModuleType)',
+        computed: 'computeDisableName_()',
       },
     };
   }
 
-  taskModuleType: TaskModuleType;
   task: Task;
   private title_: string;
   private dismissName_: string;
@@ -76,68 +70,26 @@ export class TaskModuleElement extends I18nMixin
   private intersectionObserver_: IntersectionObserver|null = null;
 
   private computeTitle_(): string {
-    switch (this.taskModuleType) {
-      case TaskModuleType.kRecipe:
-        return loadTimeData.getString('modulesRecipeTasksSentence');
-      case TaskModuleType.kShopping:
-        return this.task.title;
-      default:
-        return '';
-    }
+    return loadTimeData.getString('modulesRecipeTasksSentence');
   }
 
   private computeDismissName_(): string {
-    switch (this.taskModuleType) {
-      case TaskModuleType.kRecipe:
-        return loadTimeData.getString('modulesRecipeTasksLowerThese');
-      case TaskModuleType.kShopping:
-        return this.task.name;
-      default:
-        return '';
-    }
+    return loadTimeData.getString('modulesRecipeTasksLowerThese');
   }
 
   private computeDisableName_(): string {
-    switch (this.taskModuleType) {
-      case TaskModuleType.kRecipe:
-        return loadTimeData.getString('modulesRecipeTasksLower');
-      case TaskModuleType.kShopping:
-        return loadTimeData.getString('modulesShoppingTasksLower');
-      default:
-        return '';
-    }
-  }
-
-  private isRecipe_(): boolean {
-    return this.taskModuleType === TaskModuleType.kRecipe;
-  }
-
-  private isShopping_(): boolean {
-    return this.taskModuleType === TaskModuleType.kShopping;
-  }
-
-  private onTaskModuleTypeChange_() {
-    switch (this.taskModuleType) {
-      case TaskModuleType.kRecipe:
-        this.toggleAttribute('recipe');
-        break;
-      case TaskModuleType.kShopping:
-        this.toggleAttribute('shopping');
-        break;
-    }
+    return loadTimeData.getString('modulesRecipeTasksLower');
   }
 
   private onTaskItemClick_(e: DomRepeatEvent<TaskItem>) {
     const index = e.model.index;
-    TaskModuleHandlerProxy.getHandler().onTaskItemClicked(
-        this.taskModuleType, index);
+    TaskModuleHandlerProxy.getHandler().onTaskItemClicked(index);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   private onPillClick_(e: DomRepeatEvent<RelatedSearch>) {
     const index = e.model.index;
-    TaskModuleHandlerProxy.getHandler().onRelatedSearchClicked(
-        this.taskModuleType, index);
+    TaskModuleHandlerProxy.getHandler().onRelatedSearchClicked(index);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
@@ -146,17 +98,8 @@ export class TaskModuleElement extends I18nMixin
   }
 
   private onDismissButtonClick_() {
-    TaskModuleHandlerProxy.getHandler().dismissTask(
-        this.taskModuleType, this.task.name);
-    let taskName = '';
-    switch (this.taskModuleType) {
-      case TaskModuleType.kRecipe:
-        taskName = loadTimeData.getString('modulesRecipeTasksSentence');
-        break;
-      case TaskModuleType.kShopping:
-        taskName = this.task.name;
-        break;
-    }
+    TaskModuleHandlerProxy.getHandler().dismissTask(this.task.name);
+    const taskName = loadTimeData.getString('modulesRecipeTasksSentence');
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,
@@ -179,8 +122,7 @@ export class TaskModuleElement extends I18nMixin
   }
 
   private onRestore_() {
-    TaskModuleHandlerProxy.getHandler().restoreTask(
-        this.taskModuleType, this.task.name);
+    TaskModuleHandlerProxy.getHandler().restoreTask(this.task.name);
   }
 
   private onDomChange_() {
@@ -202,15 +144,12 @@ export class TaskModuleElement extends I18nMixin
 
 customElements.define(TaskModuleElement.is, TaskModuleElement);
 
-async function createModule(taskModuleType: TaskModuleType):
-    Promise<HTMLElement|null> {
-  const {task} =
-      await TaskModuleHandlerProxy.getHandler().getPrimaryTask(taskModuleType);
+async function createModule(): Promise<HTMLElement|null> {
+  const {task} = await TaskModuleHandlerProxy.getHandler().getPrimaryTask();
   if (!task) {
     return null;
   }
   const element = new TaskModuleElement();
-  element.taskModuleType = taskModuleType;
   element.task = task;
   return element;
 }
@@ -218,9 +157,4 @@ async function createModule(taskModuleType: TaskModuleType):
 export const recipeTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
-    createModule.bind(null, TaskModuleType.kRecipe));
-
-export const shoppingTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id=*/ 'shopping_tasks',
-    /*name=*/ loadTimeData.getString('modulesShoppingTasksSentence'),
-    createModule.bind(null, TaskModuleType.kShopping));
+    createModule);

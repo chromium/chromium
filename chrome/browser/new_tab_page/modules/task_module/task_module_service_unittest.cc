@@ -62,7 +62,7 @@ class TaskModuleServiceTest : public testing::Test {
 };
 
 // Verifies correct parsing of well-formed JSON.
-TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
+TEST_F(TaskModuleServiceTest, GoodRecipeResponse) {
   auto fiveMonthsAgoTimestamp =
       (base::Time::Now() - base::Days(165) - base::Time::UnixEpoch())
           .InSeconds();
@@ -72,46 +72,49 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
   auto inTwoDaysTimestamp =
       (base::Time::Now() + base::Days(2) - base::Time::UnixEpoch()).InSeconds();
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       base::StringPrintf(R"()]}'
 {
   "update": {
-    "shopping_tasks": [
+    "recipe_tasks": [
       {
         "title": "hello world",
         "task_name": "hello world",
-        "products": [
+        "recipes": [
           {
             "name": "foo",
             "image_url": "https://foo.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": %s
             },
+            "site_name": "foox",
             "target_url": "https://google.com/foo"
-          },{
+          },
+          {
             "name": "bar",
             "image_url": "https://bar.com",
-            "price": "$400",
             "viewed_timestamp": {
               "seconds": %s
             },
+            "site_name": "barx",
             "target_url": "https://google.com/bar"
-          },{
+          },
+          {
             "name": "baz",
             "image_url": "https://baz.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": %s
             },
+            "site_name": "bax",
             "target_url": "https://google.com/baz"
-          },{
+          },
+          {
             "name": "blub",
             "image_url": "https://blub.com",
-            "price": "$600",
             "viewed_timestamp": {
               "seconds": %s
             },
+            "site_name": "blubx",
             "target_url": "https://google.com/blub"
           }
         ],
@@ -142,8 +145,7 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
         result = std::move(arg);
       }));
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback.Get());
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(result);
@@ -152,13 +154,13 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
   EXPECT_EQ(2ul, result->related_searches.size());
   EXPECT_EQ("foo", result->task_items[0]->name);
   EXPECT_EQ("https://foo.com/", result->task_items[0]->image_url.spec());
-  EXPECT_EQ("$500", result->task_items[0]->price);
   EXPECT_EQ("Viewed previously", result->task_items[0]->info);
+  EXPECT_EQ("foox", result->task_items[0]->site_name);
   EXPECT_EQ("https://google.com/foo", result->task_items[0]->target_url.spec());
   EXPECT_EQ("bar", result->task_items[1]->name);
   EXPECT_EQ("https://bar.com/", result->task_items[1]->image_url.spec());
-  EXPECT_EQ("$400", result->task_items[1]->price);
   EXPECT_EQ("Viewed in the past week", result->task_items[1]->info);
+  EXPECT_EQ("barx", result->task_items[1]->site_name);
   EXPECT_EQ("https://google.com/bar", result->task_items[1]->target_url.spec());
   EXPECT_EQ("baz", result->related_searches[0]->text);
   EXPECT_EQ("https://google.com/baz",
@@ -168,7 +170,7 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
             result->related_searches[1]->target_url.spec());
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
   EXPECT_EQ("Viewed today", result->task_items[2]->info);
   EXPECT_EQ("Viewed today", result->task_items[3]->info);
 }
@@ -176,22 +178,22 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
 // Verifies service can handle multiple in flight requests.
 TEST_F(TaskModuleServiceTest, MultiRequest) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
-    "shopping_tasks": [
+    "recipe_tasks": [
       {
         "title": "hello world",
         "task_name": "hello world",
-        "products": [
+        "recipes": [
           {
             "name": "foo",
             "image_url": "https://foo.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": 123
             },
+            "site_name": "bar",
             "target_url": "https://google.com/foo"
           }
         ],
@@ -213,8 +215,7 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
       .WillOnce(testing::Invoke([&result1](task_module::mojom::TaskPtr arg) {
         result1 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback1.Get());
+  service_->GetPrimaryTask(callback1.Get());
 
   task_module::mojom::TaskPtr result2;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback2;
@@ -223,8 +224,7 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
       .WillOnce(testing::Invoke([&result2](task_module::mojom::TaskPtr arg) {
         result2 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback2.Get());
+  service_->GetPrimaryTask(callback2.Get());
 
   base::RunLoop().RunUntilIdle();
 
@@ -232,13 +232,13 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
   EXPECT_TRUE(result2);
   ASSERT_EQ(2, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
 // Verifies error if JSON is malformed.
-TEST_F(TaskModuleServiceTest, BadShoppingResponse) {
+TEST_F(TaskModuleServiceTest, BadRecipeResponse) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       ")]}'{\"update\":{\"promotions\":{}}}");
 
   task_module::mojom::TaskPtr result;
@@ -249,28 +249,27 @@ TEST_F(TaskModuleServiceTest, BadShoppingResponse) {
         result = std::move(arg);
       }));
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback.Get());
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
 // Verifies error if no products.
 TEST_F(TaskModuleServiceTest, NoTaskItems) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
-    "shopping_tasks": [
+    "recipe_tasks": [
       {
         "title": "hello world",
         "task_name": "hello world",
-        "products": [],
+        "recipes": [],
         "related_searches": [
           {
             "text": "baz",
@@ -290,20 +289,19 @@ TEST_F(TaskModuleServiceTest, NoTaskItems) {
         result = std::move(arg);
       }));
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback.Get());
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
 // Verifies error if download fails.
 TEST_F(TaskModuleServiceTest, ErrorResponse) {
   test_url_loader_factory_.AddResponse(
-      GURL("https://www.google.com/async/newtab_shopping_tasks?hl=en-US"),
+      GURL("https://www.google.com/async/newtab_recipe_tasks?hl=en-US"),
       network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
 
@@ -315,36 +313,35 @@ TEST_F(TaskModuleServiceTest, ErrorResponse) {
         result = std::move(arg);
       }));
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback.Get());
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
-// Verifies shopping tasks can be dismissed and restored and that the service
+// Verifies recipe tasks can be dismissed and restored and that the service
 // remembers not to return dismissed tasks.
 TEST_F(TaskModuleServiceTest, DismissTasks) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
-    "shopping_tasks": [
+    "recipe_tasks": [
       {
         "title": "task 1 title",
         "task_name": "task 1 name",
-        "products": [
+        "recipes": [
           {
             "name": "foo",
             "image_url": "https://foo.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": 123
             },
+            "site_name": "bar",
             "target_url": "https://google.com/foo"
           }
         ],
@@ -358,14 +355,14 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       {
         "title": "task 2 title",
         "task_name": "task 2 name",
-        "products": [
+        "recipes": [
           {
             "name": "foo",
             "image_url": "https://foo.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": 123
             },
+            "site_name": "bar",
             "target_url": "https://google.com/foo"
           }
         ],
@@ -387,14 +384,12 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       .WillOnce(testing::Invoke([&result1](task_module::mojom::TaskPtr arg) {
         result1 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback1.Get());
+  service_->GetPrimaryTask(callback1.Get());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result1);
   EXPECT_EQ("task 1 name", result1->name);
 
-  service_->DismissTask(task_module::mojom::TaskModuleType::kShopping,
-                        "task 1 name");
+  service_->DismissTask("task 1 name");
 
   task_module::mojom::TaskPtr result2;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback2;
@@ -403,14 +398,12 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       .WillOnce(testing::Invoke([&result2](task_module::mojom::TaskPtr arg) {
         result2 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback2.Get());
+  service_->GetPrimaryTask(callback2.Get());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result2);
   EXPECT_EQ("task 2 name", result2->name);
 
-  service_->DismissTask(task_module::mojom::TaskModuleType::kShopping,
-                        "task 2 name");
+  service_->DismissTask("task 2 name");
 
   task_module::mojom::TaskPtr result3;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback3;
@@ -419,13 +412,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       .WillOnce(testing::Invoke([&result3](task_module::mojom::TaskPtr arg) {
         result3 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback3.Get());
+  service_->GetPrimaryTask(callback3.Get());
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(result3);
 
-  service_->RestoreTask(task_module::mojom::TaskModuleType::kShopping,
-                        "task 2 name");
+  service_->RestoreTask("task 2 name");
 
   task_module::mojom::TaskPtr result4;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback4;
@@ -434,14 +425,12 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       .WillOnce(testing::Invoke([&result4](task_module::mojom::TaskPtr arg) {
         result4 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback4.Get());
+  service_->GetPrimaryTask(callback4.Get());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result4);
   EXPECT_EQ("task 2 name", result4->name);
 
-  service_->RestoreTask(task_module::mojom::TaskModuleType::kShopping,
-                        "task 1 name");
+  service_->RestoreTask("task 1 name");
 
   task_module::mojom::TaskPtr result5;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback5;
@@ -450,27 +439,25 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
       .WillOnce(testing::Invoke([&result5](task_module::mojom::TaskPtr arg) {
         result5 = std::move(arg);
       }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback5.Get());
+  service_->GetPrimaryTask(callback5.Get());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result5);
   EXPECT_EQ("task 1 name", result5->name);
 
   ASSERT_EQ(5, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
 // Verifies caching param is added if requested.
 TEST_F(TaskModuleServiceTest, CachingParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{ntp_features::kNtpShoppingTasksModule,
-        {{ntp_features::kNtpShoppingTasksModuleCacheMaxAgeSParam, "123"}}}},
+      {{ntp_features::kNtpRecipeTasksModule,
+        {{ntp_features::kNtpRecipeTasksModuleCacheMaxAgeSParam, "123"}}}},
       {});
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           TaskModuleService::TaskModuleCallback());
+  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -481,8 +468,7 @@ TEST_F(TaskModuleServiceTest, CachingParam) {
 
 // Verifies no caching param is added if not requested.
 TEST_F(TaskModuleServiceTest, NoCachingParam) {
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           TaskModuleService::TaskModuleCallback());
+  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -495,12 +481,11 @@ TEST_F(TaskModuleServiceTest, NoCachingParam) {
 TEST_F(TaskModuleServiceTest, ExperimentGroupParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{ntp_features::kNtpShoppingTasksModule,
-        {{ntp_features::kNtpShoppingTasksModuleExperimentGroupParam, "foo"}}}},
+      {{ntp_features::kNtpRecipeTasksModule,
+        {{ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "foo"}}}},
       {});
 
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           TaskModuleService::TaskModuleCallback());
+  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -514,23 +499,23 @@ TEST_F(TaskModuleServiceTest, NoLogIfCached) {
   network::URLLoaderCompletionStatus status;
   status.exists_in_cache = true;
   test_url_loader_factory_.AddResponse(
-      GURL("https://www.google.com/async/newtab_shopping_tasks?hl=en-US"),
+      GURL("https://www.google.com/async/newtab_recipe_tasks?hl=en-US"),
       network::CreateURLResponseHead(net::HTTP_OK),
       R"()]}'
 {
   "update": {
-    "shopping_tasks": [
+    "recipe_tasks": [
       {
-        "title": "hello world",
-        "task_name": "hello world",
-        "products": [
+        "title": "task title",
+        "task_name": "task name",
+        "recipes": [
           {
             "name": "foo",
             "image_url": "https://foo.com",
-            "price": "$500",
             "viewed_timestamp": {
               "seconds": 123
             },
+            "site_name": "bar",
             "target_url": "https://google.com/foo"
           }
         ],
@@ -554,14 +539,13 @@ TEST_F(TaskModuleServiceTest, NoLogIfCached) {
           [&received_response](task_module::mojom::TaskPtr arg) {
             received_response = static_cast<bool>(arg);
           }));
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
-                           callback.Get());
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(received_response);
   EXPECT_EQ(0, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
-                   base::PersistentHash("shopping_tasks")));
+                   base::PersistentHash("recipe_tasks")));
 }
 
 class TaskModuleServiceModulesRedesignedTest : public TaskModuleServiceTest {
@@ -616,10 +600,8 @@ TEST_F(TaskModuleServiceModulesRedesignedTest, IgnoresDismiss) {
             passed_data = (arg.get() != nullptr);
           }));
 
-  service_->DismissTask(task_module::mojom::TaskModuleType::kRecipe,
-                        "task name");
-  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kRecipe,
-                           callback.Get());
+  service_->DismissTask("task name");
+  service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(passed_data);

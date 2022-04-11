@@ -118,7 +118,7 @@ class NewTabPageUI
           pending_receiver);
 
   // Instantiates the implementor of the
-  // shopping_tasks::mojom::ShoppingTasksHandler mojo interface passing the
+  // recipe_tasks::mojom::RecipeTasksHandler mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<task_module::mojom::TaskModuleHandler>

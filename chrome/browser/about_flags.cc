@@ -1544,13 +1544,6 @@ const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
      std::size(kNtpRecipeTasksModuleFakeData), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpShoppingTasksModuleFakeData[] = {
-    {ntp_features::kNtpShoppingTasksModuleDataParam, "fake"}};
-const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
-    {"- Fake Data", kNtpShoppingTasksModuleFakeData,
-     std::size(kNtpShoppingTasksModuleFakeData), nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
     {ntp_features::kNtpDriveModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpDriveModuleManagedUsersOnly[] = {
@@ -5324,13 +5317,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule,
                                     kNtpRecipeTasksModuleVariations,
-                                    "DesktopNtpModules")},
-
-    {"ntp-shopping-tasks-module",
-     flag_descriptions::kNtpShoppingTasksModuleName,
-     flag_descriptions::kNtpShoppingTasksModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpShoppingTasksModule,
-                                    kNtpShoppingTasksModuleVariations,
                                     "DesktopNtpModules")},
 
     {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,

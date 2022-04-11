@@ -4298,11 +4298,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "ntp-shopping-tasks-module",
-    "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 98

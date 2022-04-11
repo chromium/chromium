@@ -28,13 +28,6 @@
     outline: none;
     position: relative;
     text-decoration: none;
-  }
-
-  :host([shopping]) .task-item {
-    width: 120px;
-  }
-
-  :host([recipe]) .task-item {
     width: 165px;
   }
 
@@ -68,13 +61,7 @@
     padding: 10px;
   }
 
-  :host([shopping]) img {
-    height: 100%;
-    object-fit: contain;
-    width: 100%;
-  }
-
-  :host([recipe]) img {
+  .task-item img {
     border-radius: 4px;
     height: 136px;
     margin-bottom: 8px;
@@ -111,16 +98,6 @@
     line-height: 20px;
     margin-bottom: 4px;
     overflow: hidden;
-  }
-
-  :host([shopping]) .name {
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    height: 40px;
-  }
-
-  :host([recipe]) .name {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -210,25 +187,12 @@
         on-dom-change="onDomChange_">
       <a class="task-item" href="[[item.targetUrl.url]]"
           on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
-        <template is="dom-if" if="[[isShopping_(taskModuleType)]]">
-          <div class="image-background">
-            <div class="image-container">
-              <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
-                  draggable="false"></img>
-            </div>
-          </div>
-          <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
-          <div class="name" title="[[item.name]]">[[item.name]]</div>
-          <div class="secondary">[[item.info]]</div>
-        </template>
-        <template is="dom-if" if="[[isRecipe_(taskModuleType)]]">
-          <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
-              draggable="false">
-          </img>
-          <div class="tag">[[item.info]]</div>
-          <div class="name" title="[[item.name]]">[[item.name]]</div>
-          <div class="secondary">[[item.siteName]]</div>
-        </template>
+        <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+            draggable="false">
+        </img>
+        <div class="tag">[[item.info]]</div>
+        <div class="name" title="[[item.name]]">[[item.name]]</div>
+        <div class="secondary">[[item.siteName]]</div>
       </a>
     </template>
   </div>

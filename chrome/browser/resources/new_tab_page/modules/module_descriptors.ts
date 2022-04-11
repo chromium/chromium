@@ -20,15 +20,11 @@ import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
-import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
+import {recipeTasksDescriptor} from './task_module/module.js';
 
 export const descriptors: ModuleDescriptor[] = [];
 
 export const descriptorsV2: ModuleDescriptorV2[] = [];
-
-if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
-  descriptors.push(shoppingTasksDescriptor);
-}
 
 if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
   if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {

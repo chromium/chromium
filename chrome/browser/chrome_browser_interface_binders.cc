@@ -856,8 +856,7 @@ void PopulateChromeWebUIFrameBinders(
                                            NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule) ||
-      base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule)) {
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule)) {
     RegisterWebUIControllerInterfaceBinder<
         task_module::mojom::TaskModuleHandler, NewTabPageUI>(map);
   }

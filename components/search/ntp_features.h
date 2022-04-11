@@ -36,7 +36,6 @@ extern const base::Feature kNtpMiddleSlotPromo;
 extern const base::Feature kModules;
 extern const base::Feature kNtpModulesLoad;
 extern const base::Feature kNtpRecipeTasksModule;
-extern const base::Feature kNtpShoppingTasksModule;
 extern const base::Feature kNtpChromeCartModule;
 extern const base::Feature kNtpModulesRedesigned;
 extern const base::Feature kNtpModulesRedesignedLayout;
@@ -59,19 +58,11 @@ extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the module order.
 extern const char kNtpModulesOrderParam[];
-// Parameter determining the type of shopping data to request.
-extern const char kNtpShoppingTasksModuleDataParam[];
 // Parameter determining the type of recipe data to request.
 extern const char kNtpRecipeTasksModuleDataParam[];
-// Parameter determining the max age in seconds of the cache for shopping tasks
-// data.
-extern const char kNtpShoppingTasksModuleCacheMaxAgeSParam[];
 // Parameter determining the max age in seconds of the cache for recipe tasks
 // data.
 extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
-// Parameter for communicating the experiment group of the shopping tasks module
-// experiment.
-extern const char kNtpShoppingTasksModuleExperimentGroupParam[];
 // Parameter for communicating the experiment group of the recipe tasks module
 // experiment.
 extern const char kNtpRecipeTasksModuleExperimentGroupParam[];

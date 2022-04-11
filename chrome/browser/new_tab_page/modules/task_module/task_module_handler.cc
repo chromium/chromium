@@ -11,15 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
-const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      return "RecipeTasks";
-    case task_module::mojom::TaskModuleType::kShopping:
-      return "ShoppingTasks";
-    default:
-      NOTREACHED();
-  }
+const char* GetModuleName() {
+  return "RecipeTasks";
 }
 }  // namespace
 
@@ -31,53 +24,29 @@ TaskModuleHandler::TaskModuleHandler(
 
 TaskModuleHandler::~TaskModuleHandler() = default;
 
-void TaskModuleHandler::GetPrimaryTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    GetPrimaryTaskCallback callback) {
+void TaskModuleHandler::GetPrimaryTask(GetPrimaryTaskCallback callback) {
   TaskModuleServiceFactory::GetForProfile(profile_)->GetPrimaryTask(
-      task_module_type, std::move(callback));
+      std::move(callback));
 }
 
-void TaskModuleHandler::DismissTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    const std::string& task_name) {
-  TaskModuleServiceFactory::GetForProfile(profile_)->DismissTask(
-      task_module_type, task_name);
+void TaskModuleHandler::DismissTask(const std::string& task_name) {
+  TaskModuleServiceFactory::GetForProfile(profile_)->DismissTask(task_name);
 }
 
-void TaskModuleHandler::RestoreTask(
-    task_module::mojom::TaskModuleType task_module_type,
-    const std::string& task_name) {
-  TaskModuleServiceFactory::GetForProfile(profile_)->RestoreTask(
-      task_module_type, task_name);
+void TaskModuleHandler::RestoreTask(const std::string& task_name) {
+  TaskModuleServiceFactory::GetForProfile(profile_)->RestoreTask(task_name);
 }
 
-void TaskModuleHandler::OnTaskItemClicked(
-    task_module::mojom::TaskModuleType task_module_type,
-    uint32_t index) {
-  std::string task_item_name;
-  switch (task_module_type) {
-    case task_module::mojom::TaskModuleType::kRecipe:
-      task_item_name = "Recipe";
-      break;
-    case task_module::mojom::TaskModuleType::kShopping:
-      task_item_name = "Product";
-      break;
-    default:
-      NOTREACHED();
-  }
+void TaskModuleHandler::OnTaskItemClicked(uint32_t index) {
+  std::string task_item_name = "Recipe";
   base::UmaHistogramCounts100(
-      base::StringPrintf("NewTabPage.%s.%sClick",
-                         GetModuleName(task_module_type),
+      base::StringPrintf("NewTabPage.%s.%sClick", GetModuleName(),
                          task_item_name.c_str()),
       index);
 }
 
-void TaskModuleHandler::OnRelatedSearchClicked(
-    task_module::mojom::TaskModuleType task_module_type,
-    uint32_t index) {
+void TaskModuleHandler::OnRelatedSearchClicked(uint32_t index) {
   base::UmaHistogramCounts100(
-      base::StringPrintf("NewTabPage.%s.RelatedSearchClick",
-                         GetModuleName(task_module_type)),
+      base::StringPrintf("NewTabPage.%s.RelatedSearchClick", GetModuleName()),
       index);
 }

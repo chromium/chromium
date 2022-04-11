@@ -23,17 +23,11 @@ class TaskModuleHandler : public task_module::mojom::TaskModuleHandler {
   ~TaskModuleHandler() override;
 
   // task_module::mojom::TaskModuleHandler:
-  void GetPrimaryTask(task_module::mojom::TaskModuleType task_module_type,
-                      GetPrimaryTaskCallback callback) override;
-  void DismissTask(task_module::mojom::TaskModuleType task_module_type,
-                   const std::string& task_name) override;
-  void RestoreTask(task_module::mojom::TaskModuleType task_module_type,
-                   const std::string& task_name) override;
-  void OnTaskItemClicked(task_module::mojom::TaskModuleType task_module_type,
-                         uint32_t index) override;
-  void OnRelatedSearchClicked(
-      task_module::mojom::TaskModuleType task_module_type,
-      uint32_t index) override;
+  void GetPrimaryTask(GetPrimaryTaskCallback callback) override;
+  void DismissTask(const std::string& task_name) override;
+  void RestoreTask(const std::string& task_name) override;
+  void OnTaskItemClicked(uint32_t index) override;
+  void OnRelatedSearchClicked(uint32_t index) override;
 
  private:
   mojo::Receiver<task_module::mojom::TaskModuleHandler> receiver_;
