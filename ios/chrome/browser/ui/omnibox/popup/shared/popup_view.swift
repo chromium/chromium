@@ -4,6 +4,20 @@
 
 import SwiftUI
 
+/// A preference key which is meant to compute the minimum `minY` value of multiple elements.
+struct MinYPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat? = nil
+  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    if let nextValue = nextValue() {
+      if let currentValue = value {
+        value = min(currentValue, nextValue)
+      } else {
+        value = nextValue
+      }
+    }
+  }
+}
+
 /// Utility which provides a way to treat the `simultaneousGesture` view modifier as a value.
 struct SimultaneousGestureModifier<T: Gesture>: ViewModifier {
   let gesture: T
@@ -44,6 +58,11 @@ struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
     static let selfSizingListBottomMargin: CGFloat = 40
+    // Any scrolling offset outside of this range is not treated as user drag gesture.
+    static let acceptableScrollingOffsetDeltaRange = 1.5...10
+    // If distance between current and initial scrolling offset is less than this value,
+    // it is probably an automatic scroll-to-top so we do not consider it to be user drag gesture.
+    static let initialScrollingOffsetDifferenceThreshold: CGFloat = 0.1
   }
 
   /// Custom modifier for the background of the list.
@@ -114,32 +133,46 @@ struct PopupView: View {
     }
   }
 
+  /// Memory of scrolling offset, so as to be able to tell the difference between user drag gesture and automatic scroll-to-top on new matches
+  @State private var initialScrollingOffset: CGFloat? = nil
+  @State private var scrollingOffset: CGFloat? = nil
+
   @ViewBuilder
   var listView: some View {
     let listModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
-    .concat(SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) }))
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
     .concat(ListBackgroundModifier())
 
-    if shouldSelfSize {
-      SelfSizingList(
-        bottomMargin: Dimensions.selfSizingListBottomMargin,
-        listModifier: listModifier,
-        content: {
+    GeometryReader { geometry in
+      if shouldSelfSize {
+        SelfSizingList(
+          bottomMargin: Dimensions.selfSizingListBottomMargin,
+          listModifier: listModifier,
+          content: {
+            listContent
+              .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
+          },
+          emptySpace: {
+            PopupEmptySpaceView()
+          }
+        ).frame(width: geometry.size.width, height: geometry.size.height)
+      } else {
+        List {
           listContent
-        },
-        emptySpace: {
-          PopupEmptySpaceView()
+            .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
         }
-      )
-    } else {
-      List {
-        listContent
+        .modifier(listModifier)
+        .ignoresSafeArea(.keyboard)
+        .frame(width: geometry.size.width, height: geometry.size.height)
       }
-      .modifier(listModifier)
-      .ignoresSafeArea(.keyboard)
+    }
+    .onPreferenceChange(MinYPreferenceKey.self) { newScrollingOffset in
+      if let newScrollingOffset = newScrollingOffset {
+        onNewScrollingOffset(
+          oldScrollingOffset: scrollingOffset, newScrollingOffset: newScrollingOffset)
+      }
     }
   }
 
@@ -161,7 +194,7 @@ struct PopupView: View {
     }
   }
 
-  func onDrag(_ dragValue: DragGesture.Value) {
+  func onScroll() {
     model.highlightedMatchIndexPath = nil
     model.delegate?.autocompleteResultConsumerDidScroll(model)
   }
@@ -169,6 +202,28 @@ struct PopupView: View {
   func onNewMatches(matches: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
     // Scroll to the very top of the list.
     scrollProxy.scrollTo(0, anchor: UnitPoint(x: 0, y: -.infinity))
+  }
+
+  func onNewScrollingOffset(oldScrollingOffset: CGFloat?, newScrollingOffset: CGFloat) {
+    guard let initialScrollingOffset = initialScrollingOffset else {
+      initialScrollingOffset = newScrollingOffset
+      scrollingOffset = newScrollingOffset
+      return
+    }
+
+    guard let oldScrollingOffset = oldScrollingOffset else { return }
+
+    scrollingOffset = newScrollingOffset
+    // Scrolling offset variation is interpreted as drag gesture from user iff:
+    // 1. the variation is contained within an acceptable range
+    // 2. the new scrolling offset is not too close to the top of the list.
+    let scrollingOffsetDelta = abs(oldScrollingOffset - newScrollingOffset)
+    let distToInitialScrollingOffset = abs(newScrollingOffset - initialScrollingOffset)
+    if Dimensions.acceptableScrollingOffsetDeltaRange.contains(scrollingOffsetDelta)
+      && distToInitialScrollingOffset > Dimensions.initialScrollingOffsetDifferenceThreshold
+    {
+      onScroll()
+    }
   }
 }
 
