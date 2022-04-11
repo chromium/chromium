@@ -17,6 +17,7 @@
 
 namespace ash {
 
+class Desk;
 class DeskTemplate;
 class OverviewSession;
 enum class DeskTemplateType;
@@ -106,6 +107,13 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
       aura::Window* const root_window,
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<DeskTemplate> entry);
+
+  // Callback after creating a new desk for launching a template.
+  void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
+                                   base::Time time_launch_started,
+                                   base::TimeDelta delay,
+                                   aura::Window* root_window,
+                                   const Desk* new_desk);
 
   // Callback after adding or updating an entry. Will then call
   // `AddOrUpdateUIEntries` to update the UI by adding or updating the template.
