@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -63,7 +63,7 @@ suite(destination_item_test_cros.suiteName, function() {
         document.body.querySelector<PrintPreviewDestinationListItemElement>(
             '#listItem')!;
     listItem.destination = new Destination(
-        'One', DestinationType.LOCAL, DestinationOrigin.CROS, 'Destination One',
+        'One', DestinationOrigin.CROS, 'Destination One',
         DestinationConnectionStatus.ONLINE, {description: 'ABC'});
     flush();
   });
@@ -87,9 +87,8 @@ suite(destination_item_test_cros.suiteName, function() {
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
         listItem.destination = new Destination(
-            'Two', DestinationType.LOCAL, DestinationOrigin.CROS,
-            'Destination Two', DestinationConnectionStatus.ONLINE,
-            {description: 'ABC'});
+            'Two', DestinationOrigin.CROS, 'Destination Two',
+            DestinationConnectionStatus.ONLINE, {description: 'ABC'});
 
         return waitBeforeNextRender(listItem).then(() => {
           assertEquals('print-preview:printer-status-red', icon.icon);
@@ -111,9 +110,8 @@ suite(destination_item_test_cros.suiteName, function() {
         // Simulate destination_list updating and switching the destination
         // after the request for the original destination was already sent out.
         listItem.destination = new Destination(
-            'Two', DestinationType.LOCAL, DestinationOrigin.CROS,
-            'Destination Two', DestinationConnectionStatus.ONLINE,
-            {description: 'ABC'});
+            'Two', DestinationOrigin.CROS, 'Destination Two',
+            DestinationConnectionStatus.ONLINE, {description: 'ABC'});
 
         return firstDestinationStatusRequestPromise.then(() => {
           // PrinterState should stay the same because the destination in the

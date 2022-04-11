@@ -5,7 +5,7 @@
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {Destination, DestinationConnectionStatus, DestinationOptionalParams, DestinationOrigin, DestinationProvisionalType, DestinationType} from './destination.js';
+import {Destination, DestinationConnectionStatus, DestinationOptionalParams, DestinationOrigin, DestinationProvisionalType} from './destination.js';
 import {PrinterType} from './destination_match.js';
 
 type ObjectMap = {
@@ -67,7 +67,7 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
         });
   }
   return new Destination(
-      destinationInfo.deviceName, DestinationType.LOCAL,
+      destinationInfo.deviceName,
       (isChromeOS || isLacros) ? DestinationOrigin.CROS :
                                  DestinationOrigin.LOCAL,
       destinationInfo.printerName, DestinationConnectionStatus.ONLINE, options);
@@ -84,8 +84,8 @@ export function parseExtensionDestination(
       DestinationProvisionalType.NONE;
 
   return new Destination(
-      destinationInfo.id, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-      destinationInfo.name, DestinationConnectionStatus.ONLINE, {
+      destinationInfo.id, DestinationOrigin.EXTENSION, destinationInfo.name,
+      DestinationConnectionStatus.ONLINE, {
         description: destinationInfo.description || '',
         extensionId: destinationInfo.extensionId,
         extensionName: destinationInfo.extensionName || '',

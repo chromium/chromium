@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -129,8 +129,7 @@ suite(printer_status_test_cros.suiteName, function() {
       id: string, displayName: string,
       destinationOrigin: DestinationOrigin): Destination {
     return new Destination(
-        id, DestinationType.LOCAL, destinationOrigin, displayName,
-        DestinationConnectionStatus.ONLINE);
+        id, destinationOrigin, displayName, DestinationConnectionStatus.ONLINE);
   }
 
   function escapeForwardSlahes(value: string): string {
@@ -331,7 +330,7 @@ suite(printer_status_test_cros.suiteName, function() {
       const localNonCrosPrinter =
           createDestination('ID2', 'Two', DestinationOrigin.LOCAL);
       const crosEnterprisePrinter = new Destination(
-          'ID5', DestinationType.LOCAL, DestinationOrigin.CROS, 'Five',
+          'ID5', DestinationOrigin.CROS, 'Five',
           DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true});
       const saveToDrive = getGoogleDriveDestination();
       const saveAsPdf = getSaveAsPdfDestination();

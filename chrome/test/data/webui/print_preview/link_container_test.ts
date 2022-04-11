@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 
@@ -33,8 +33,8 @@ suite(link_container_test.suiteName, function() {
 
     /** Set inputs to some defaults. */
     const fooDestination = new Destination(
-        'FooPrinter', DestinationType.LOCAL, DestinationOrigin.LOCAL,
-        'Foo Printer', DestinationConnectionStatus.ONLINE);
+        'FooPrinter', DestinationOrigin.LOCAL, 'Foo Printer',
+        DestinationConnectionStatus.ONLINE);
     fooDestination.capabilities =
         getCddTemplate(fooDestination.id).capabilities;
     linkContainer.destination = fooDestination;

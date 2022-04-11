@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,21 +27,21 @@ suite(destination_list_test.suiteName, function() {
     // Create destinations
     const destinations = [
       new Destination(
-          'id1', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'One',
+          'id1', DestinationOrigin.LOCAL, 'One',
           DestinationConnectionStatus.ONLINE, {description: 'ABC'}),
       new Destination(
-          'id2', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Two',
+          'id2', DestinationOrigin.LOCAL, 'Two',
           DestinationConnectionStatus.ONLINE, {description: 'XYZ'}),
       new Destination(
-          'id3', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Three',
+          'id3', DestinationOrigin.LOCAL, 'Three',
           DestinationConnectionStatus.ONLINE,
           {description: 'ABC', tags: ['__cp__location=123']}),
       new Destination(
-          'id4', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Four',
+          'id4', DestinationOrigin.LOCAL, 'Four',
           DestinationConnectionStatus.ONLINE,
           {description: 'XYZ', tags: ['__cp__location=123']}),
       new Destination(
-          'id5', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Five',
+          'id5', DestinationOrigin.LOCAL, 'Five',
           DestinationConnectionStatus.ONLINE,
           {description: 'XYZ', tags: ['__cp__location=123']})
     ];

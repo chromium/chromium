@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -34,8 +34,8 @@ suite(destination_item_test.suiteName, function() {
 
     // Create destination
     item.destination = new Destination(
-        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-        printerName, DestinationConnectionStatus.ONLINE,
+        printerId, DestinationOrigin.EXTENSION, printerName,
+        DestinationConnectionStatus.ONLINE,
         {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     item.searchQuery = null;
     document.body.appendChild(item);
@@ -71,8 +71,8 @@ suite(destination_item_test.suiteName, function() {
     }
     twoMonthsAgo.setMonth(month);
     item.destination = new Destination(
-        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-        printerName, DestinationConnectionStatus.OFFLINE, {
+        printerId, DestinationOrigin.EXTENSION, printerName,
+        DestinationConnectionStatus.OFFLINE, {
           extensionId: 'aaa111',
           extensionName: 'myPrinterExtension',
         });
@@ -121,8 +121,8 @@ suite(destination_item_test.suiteName, function() {
       extensionName: 'myPrinterExtension',
     };
     item.destination = new Destination(
-        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-        printerName, DestinationConnectionStatus.ONLINE, params);
+        printerId, DestinationOrigin.EXTENSION, printerName,
+        DestinationConnectionStatus.ONLINE, params);
     item.searchQuery = /(ABC)/ig;
 
     // No highlighting on name.

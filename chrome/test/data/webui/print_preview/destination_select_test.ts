@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -47,14 +47,14 @@ suite(destination_select_test.suiteName, function() {
   function populateRecentDestinationList() {
     recentDestinationList = [
       new Destination(
-          'ID1', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'One',
+          'ID1', DestinationOrigin.LOCAL, 'One',
           DestinationConnectionStatus.ONLINE),
       new Destination(
-          'ID2', DestinationType.LOCAL, DestinationOrigin.EXTENSION, 'Two',
+          'ID2', DestinationOrigin.EXTENSION, 'Two',
           DestinationConnectionStatus.OFFLINE,
           {extensionId: '222', extensionName: 'Extension2'}),
       new Destination(
-          'ID4', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Four',
+          'ID4', DestinationOrigin.LOCAL, 'Four',
           DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true}),
     ];
   }

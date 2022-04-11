@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {PinModeRestriction} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -36,7 +36,7 @@ suite('ModelSettingsPolicyTest', function() {
 
     // Create a test destination.
     model.destination = new Destination(
-        'FooDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'FooName',
+        'FooDevice', DestinationOrigin.LOCAL, 'FooName',
         DestinationConnectionStatus.ONLINE);
     model.set(
         'destination.capabilities',

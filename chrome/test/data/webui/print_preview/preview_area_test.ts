@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -44,7 +44,7 @@ suite(preview_area_test.suiteName, function() {
     previewArea.settings = model.settings;
     fakeDataBind(model, previewArea, 'settings');
     previewArea.destination = new Destination(
-        'FooDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'FooName',
+        'FooDevice', DestinationOrigin.LOCAL, 'FooName',
         DestinationConnectionStatus.ONLINE);
     previewArea.destination.capabilities =
         getCddTemplate('FooDevice').capabilities;
@@ -84,8 +84,8 @@ suite(preview_area_test.suiteName, function() {
       // If destination capabilities fetch fails, the invalid printer error
       // will be set by the destination settings.
       previewArea.destination = new Destination(
-          'InvalidDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL,
-          'InvalidName', DestinationConnectionStatus.ONLINE);
+          'InvalidDevice', DestinationOrigin.LOCAL, 'InvalidName',
+          DestinationConnectionStatus.ONLINE);
       previewArea.state = State.ERROR;
       previewArea.error = Error.INVALID_PRINTER;
       assertEquals(PreviewAreaState.ERROR, previewArea.previewState);

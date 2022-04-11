@@ -14,7 +14,7 @@ import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
 // </if>
 import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption} from './cdd.js';
-import {Destination, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
 import {DocumentSettings} from './document_info.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
@@ -956,11 +956,6 @@ export class PrintPreviewModelElement extends PolymerElement {
                 defaultOption.type!),
             true);
       }
-    } else if (
-        !this.settings.color.available &&
-        (this.destination.id === GooglePromotedDestinationId.DOCS ||
-         this.destination.type === DestinationType.MOBILE)) {
-      this.setSettingPath_('color.unavailableValue', true);
     } else if (
         !this.settings.color.available && caps && caps.color &&
         caps.color.option && caps.color.option.length > 0) {

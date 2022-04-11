@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -242,7 +242,7 @@ export function getDestinations(localDestinations: LocalDestinationInfo[]):
    {deviceName: 'FooDevice', printerName: 'FooName'}]
       .forEach(info => {
         const destination = new Destination(
-            info.deviceName, DestinationType.LOCAL, origin, info.printerName,
+            info.deviceName, origin, info.printerName,
             DestinationConnectionStatus.ONLINE);
         localDestinations.push(info);
         destinations.push(destination);
@@ -321,17 +321,16 @@ export function createDestinationStore(): DestinationStore {
  */
 export function getGoogleDriveDestination(): Destination {
   return new Destination(
-      'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
-      'Save to Google Drive', DestinationConnectionStatus.ONLINE);
+      'Save to Drive CrOS', DestinationOrigin.LOCAL, 'Save to Google Drive',
+      DestinationConnectionStatus.ONLINE);
 }
 // </if>
 
 /** @return The Save as PDF destination. */
 export function getSaveAsPdfDestination(): Destination {
   return new Destination(
-      GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
-      DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
-      DestinationConnectionStatus.ONLINE);
+      GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
+      loadTimeData.getString('printToPDF'), DestinationConnectionStatus.ONLINE);
 }
 
 /**

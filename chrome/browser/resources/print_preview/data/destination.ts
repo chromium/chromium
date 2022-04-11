@@ -19,16 +19,6 @@ import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} fr
 // </if>
 
 /**
- * Enumeration of the types of destinations.
- */
-export enum DestinationType {
-  GOOGLE = 'google',
-  GOOGLE_PROMOTED = 'google_promoted',
-  LOCAL = 'local',
-  MOBILE = 'mobile',
-}
-
-/**
  * Enumeration of the origin types for destinations.
  */
 export enum DestinationOrigin {
@@ -139,11 +129,6 @@ export class Destination {
   private id_: string;
 
   /**
-   * Type of the destination.
-   */
-  private type_: DestinationType;
-
-  /**
    * Origin of the destination.
    */
   private origin_: DestinationOrigin;
@@ -243,11 +228,10 @@ export class Destination {
       ['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'];
 
   constructor(
-      id: string, type: DestinationType, origin: DestinationOrigin,
-      displayName: string, connectionStatus: DestinationConnectionStatus,
+      id: string, origin: DestinationOrigin, displayName: string,
+      connectionStatus: DestinationConnectionStatus,
       params?: DestinationOptionalParams) {
     this.id_ = id;
-    this.type_ = type;
     this.origin_ = origin;
     this.displayName_ = displayName || '';
     this.tags_ = (params && params.tags) || [];
@@ -268,10 +252,6 @@ export class Destination {
 
   get id(): string {
     return this.id_;
-  }
-
-  get type(): DestinationType {
-    return this.type_;
   }
 
   get origin(): DestinationOrigin {

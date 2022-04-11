@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,8 +41,8 @@ suite(header_test.suiteName, function() {
     model.set('settings.duplex.value', false);
 
     header.destination = new Destination(
-        'FooDevice', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-        'FooName', DestinationConnectionStatus.ONLINE,
+        'FooDevice', DestinationOrigin.EXTENSION, 'FooName',
+        DestinationConnectionStatus.ONLINE,
         {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     header.state = State.READY;
     header.managed = false;
@@ -55,8 +55,8 @@ suite(header_test.suiteName, function() {
     header.set(
         'destination',
         new Destination(
-            GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
-            DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
+            GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
+            loadTimeData.getString('printToPDF'),
             DestinationConnectionStatus.ONLINE));
   }
 

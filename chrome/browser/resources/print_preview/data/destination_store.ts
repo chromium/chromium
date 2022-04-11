@@ -13,7 +13,7 @@ import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../nat
 
 // </if>
 import {Cdd, MediaSizeOption} from './cdd.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationProvisionalType} from './destination.js';
 // </if>
@@ -847,8 +847,8 @@ export class DestinationStore extends EventTarget {
   private createLocalPdfPrintDestination_() {
     if (this.pdfPrinterEnabled_) {
       this.insertDestination_(new Destination(
-          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
-          DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
+          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
+          loadTimeData.getString('printToPDF'),
           DestinationConnectionStatus.ONLINE));
     }
     if (this.typesToSearch_.has(PrinterType.PDF_PRINTER)) {
@@ -862,8 +862,8 @@ export class DestinationStore extends EventTarget {
    */
   private createLocalDrivePrintDestination_() {
     this.insertDestination_(new Destination(
-        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationType.LOCAL,
-        DestinationOrigin.LOCAL, loadTimeData.getString('printToGoogleDrive'),
+        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
+        loadTimeData.getString('printToGoogleDrive'),
         DestinationConnectionStatus.ONLINE));
   }
   // </if>
