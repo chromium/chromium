@@ -9,6 +9,14 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
+struct UnzipOptions {
+  // Explicit encoding or set to "auto" to auto-detect from the ZIP file.
+  // Default unpack encoding uses UTF-8.
+  string encoding;
+};
+
+// UnzipFilter is used to call back into the caller to check if
+// the supplied |path| should be unpacked.
 interface UnzipFilter {
   [Sync]
   ShouldUnzipFile(mojo_base.mojom.FilePath path) => (bool result);
@@ -20,12 +28,14 @@ interface UnzipFilter {
 interface Unzipper {
   // Unzip |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
+  // |options| contains unpacking information such as filename encoding.
   // If provided, |filter| is called for each entry of the archive (which incurs
   // one IPC for each entry) and only the entries for which it returns true are
   // extracted.
   Unzip(
       mojo_base.mojom.ReadOnlyFile zip_file,
       pending_remote<filesystem.mojom.Directory> output_dir,
+      UnzipOptions options,
       pending_remote<UnzipFilter>? filter) => (bool result);
 
   // Detects the encoding of filenames stored in the ZIP archive.

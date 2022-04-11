@@ -154,38 +154,11 @@ UnzipperImpl::UnzipperImpl(mojo::PendingReceiver<mojom::Unzipper> receiver)
 
 UnzipperImpl::~UnzipperImpl() = default;
 
-void UnzipperImpl::Unzip(
-    base::File zip_file,
-    mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
-    mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
-    UnzipCallback callback) {
-  DCHECK(zip_file.IsValid());
-
-  mojo::Remote<filesystem::mojom::Directory> output_dir(
-      std::move(output_dir_remote));
-
-  zip::FilterCallback filter_cb;
-  if (filter_remote) {
-    filter_cb = base::BindRepeating(
-        &Filter, mojo::Remote<mojom::UnzipFilter>(std::move(filter_remote)));
-  }
-
-  std::move(callback).Run(
-      zip::Unzip(zip_file.GetPlatformFile(),
-                 base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
-                 base::BindRepeating(&CreateDirectory, output_dir.get()),
-                 {.filter = std::move(filter_cb)}));
-}
-
-void UnzipperImpl::DetectEncoding(base::File zip_file,
-                                  DetectEncodingCallback callback) {
-  DCHECK(zip_file.IsValid());
-
+Encoding GetEncoding(const base::File& zip_file) {
   // Accumulate raw filenames.
   const std::string all_names = GetRawFileNamesFromZip(zip_file);
   if (all_names.empty()) {
-    std::move(callback).Run(UNKNOWN_ENCODING);
-    return;
+    return UNKNOWN_ENCODING;
   }
 
   // Detect encoding.
@@ -205,6 +178,47 @@ void UnzipperImpl::DetectEncoding(base::File zip_file,
   LOG_IF(ERROR, encoding == UNKNOWN_ENCODING)
       << "Cannot detect encoding of filenames in ZIP archive";
 
+  return encoding;
+}
+
+void UnzipperImpl::Unzip(
+    base::File zip_file,
+    mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
+    mojom::UnzipOptionsPtr set_options,
+    mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
+    UnzipCallback callback) {
+  DCHECK(zip_file.IsValid());
+
+  mojo::Remote<filesystem::mojom::Directory> output_dir(
+      std::move(output_dir_remote));
+
+  zip::FilterCallback filter_cb;
+  if (filter_remote) {
+    filter_cb = base::BindRepeating(
+        &Filter, mojo::Remote<mojom::UnzipFilter>(std::move(filter_remote)));
+  }
+
+  std::string encoding_name;
+  if (set_options->encoding == "auto") {
+    Encoding encoding = GetEncoding(zip_file);
+    if (IsShiftJisOrVariant(encoding) || encoding == RUSSIAN_CP866) {
+      encoding_name = MimeEncodingName(encoding);
+    }
+  } else {
+    encoding_name = set_options->encoding;
+  }
+  std::move(callback).Run(zip::Unzip(
+      zip_file.GetPlatformFile(),
+      base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
+      base::BindRepeating(&CreateDirectory, output_dir.get()),
+      {.encoding = std::move(encoding_name), .filter = std::move(filter_cb)}));
+}
+
+void UnzipperImpl::DetectEncoding(base::File zip_file,
+                                  DetectEncodingCallback callback) {
+  DCHECK(zip_file.IsValid());
+
+  const Encoding encoding = GetEncoding(zip_file);
   std::move(callback).Run(encoding);
 }
 

@@ -83,6 +83,30 @@ class UnzipTest : public testing::Test {
     return result;
   }
 
+  // Unzips |zip_file| into |output_dir| and returns true if the unzip was
+  // successful. |options| hosts parameters for the unpack.
+  bool DoUnzipWithOptions(const base::FilePath& zip_file,
+                          const base::FilePath& output_dir,
+                          mojom::UnzipOptions options = {}) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    bool result = false;
+
+    UnzipCallback result_callback =
+        base::BindLambdaForTesting([&](const bool success) {
+          result = success;
+          run_loop.QuitClosure().Run();
+        });
+
+    Unzip(std::move(unzipper), zip_file, output_dir,
+          std::move(result_callback));
+
+    run_loop.Run();
+    return result;
+  }
+
   Encoding DoDetectEncoding(const base::FilePath& zip_file) {
     mojo::PendingRemote<mojom::Unzipper> unzipper;
     receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
@@ -201,6 +225,15 @@ TEST_F(UnzipTest, DetectEncodingSjis) {
     EXPECT_EQ(Encoding::JAPANESE_SHIFT_JIS,
               DoDetectEncoding(GetArchivePath(name)));
   }
+}
+
+TEST_F(UnzipTest, UnzipWithOptions) {
+  EXPECT_TRUE(
+      DoUnzipWithOptions(GetArchivePath("good_archive.zip"), unzip_dir_));
+
+  // 8 files should have been extracted.
+  bool some_files_empty = false;
+  EXPECT_EQ(8, CountFiles(unzip_dir_, &some_files_empty));
 }
 
 }  // namespace

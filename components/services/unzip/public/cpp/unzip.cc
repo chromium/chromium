@@ -116,6 +116,7 @@ void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
              const base::FilePath& zip_path,
              const base::FilePath& output_dir,
              UnzipFilterCallback filter_callback,
+             mojom::UnzipOptionsPtr options,
              UnzipCallback result_callback) {
   base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!zip_file.IsValid()) {
@@ -146,7 +147,7 @@ void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
   }
 
   unzip_params->unzipper()->Unzip(
-      std::move(zip_file), std::move(directory_remote),
+      std::move(zip_file), std::move(directory_remote), std::move(options),
       std::move(filter_remote),
       base::BindOnce(&UnzipParams::InvokeCallback, unzip_params));
 }
@@ -186,6 +187,25 @@ void Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
                   UnzipFilterCallback(), std::move(callback));
 }
 
+void Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
+           const base::FilePath& zip_file,
+           const base::FilePath& output_dir,
+           mojom::UnzipOptionsPtr options,
+           UnzipCallback result_callback) {
+  DCHECK(!result_callback.is_null());
+
+  const scoped_refptr<base::SequencedTaskRunner> runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DoUnzip, std::move(unzipper), zip_file, output_dir,
+                     UnzipFilterCallback(), std::move(options),
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(result_callback))));
+}
+
 void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
                      const base::FilePath& zip_path,
                      const base::FilePath& output_dir,
@@ -200,7 +220,7 @@ void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
   runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DoUnzip, std::move(unzipper), zip_path, output_dir,
-                     filter_callback,
+                     filter_callback, unzip::mojom::UnzipOptions::New(),
                      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
                                         std::move(result_callback))));
 }

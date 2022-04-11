@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "components/services/unzip/content/unzip_service.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "third_party/zlib/google/redact.h"
 
 namespace file_manager {
@@ -53,7 +56,10 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     base::FilePath source_file,
     bool created_ok) {
   if (created_ok) {
+    unzip::mojom::UnzipOptionsPtr options =
+        unzip::mojom::UnzipOptions::New("auto");
     unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
+                 std::move(options),
                  base::BindOnce(&ExtractIOTask::ZipExtractCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
   } else {
