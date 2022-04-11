@@ -11,6 +11,7 @@ sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_device_info_sync_test.cc",
   "../browser/sync/test/integration/single_client_history_delete_directives_sync_test.cc",
   "../browser/sync/test/integration/single_client_offer_sync_test.cc",
+  "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
   "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
   "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
 ]
@@ -35,7 +36,6 @@ if (!is_android) {
     "../browser/sync/test/integration/single_client_sessions_sync_test.cc",
     "../browser/sync/test/integration/single_client_sharing_message_sync_test.cc",
     "../browser/sync/test/integration/single_client_standalone_transport_sync_test.cc",
-    "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
     "../browser/sync/test/integration/single_client_themes_sync_test.cc",
     "../browser/sync/test/integration/single_client_user_consents_sync_test.cc",
     "../browser/sync/test/integration/single_client_user_events_sync_test.cc",

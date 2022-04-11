@@ -365,6 +365,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                    .invalidations_out_of_sync());
 }
 
+// PRE_* tests aren't supported on Android browser tests.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
   ASSERT_TRUE(SetupSync());
@@ -430,8 +432,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_EQ(2u, observer.num_nudged_get_updates_for_data_type());
 #else
   EXPECT_EQ(1u, observer.num_nudged_get_updates_for_data_type());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
     : public SyncTest {
@@ -568,7 +571,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // On Lacros, signout is not supported with Mirror account consistency.
 // TODO(https://crbug.com/1260291): Enable this test once signout is supported.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1315138): Enable test on Android once signout is supported.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_SignoutAndSignin DISABLED_SignoutAndSignin
 #else
 #define MAYBE_SignoutAndSignin SignoutAndSignin
@@ -634,6 +638,8 @@ class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
   base::test::ScopedFeatureList features_override_;
 };
 
+// PRE_* tests aren't supported on Android browser tests.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes,
     PRE_ShouldResendDeviceInfoWithInterestedDataTypes) {
@@ -656,5 +662,6 @@ IN_PROC_BROWSER_TEST_F(
                   ElementsAre(InterestedDataTypesContain(syncer::NIGORI)))
                   .Wait());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
