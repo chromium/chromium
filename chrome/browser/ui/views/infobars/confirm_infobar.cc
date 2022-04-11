@@ -21,8 +21,6 @@
 ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     : InfoBarView(std::move(delegate)) {
   auto* delegate_ptr = GetDelegate();
-  title_ = AddChildView(CreateTitle(delegate_ptr->GetTitleText()));
-
   label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
 
@@ -94,19 +92,11 @@ void ConfirmInfoBar::Layout() {
 
   int x = GetStartX();
   Views views;
-  views.push_back(title_);
   views.push_back(label_);
   views.push_back(link_);
   AssignWidths(&views, std::max(0, GetEndX() - x - NonLabelWidth()));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-
-  title_->SetPosition(gfx::Point(x, OffsetY(title_)));
-  if (!title_->GetText().empty()) {
-    x = title_->bounds().right() +
-        layout_provider->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  }
 
   label_->SetPosition(gfx::Point(x, OffsetY(label_)));
   if (!label_->GetText().empty()) {
@@ -147,8 +137,8 @@ ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
 }
 
 int ConfirmInfoBar::GetContentMinimumWidth() const {
-  return title_->GetMinimumSize().width() + label_->GetMinimumSize().width() +
-         link_->GetMinimumSize().width() + NonLabelWidth();
+  return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
+         NonLabelWidth();
 }
 
 int ConfirmInfoBar::NonLabelWidth() const {
@@ -159,12 +149,9 @@ int ConfirmInfoBar::NonLabelWidth() const {
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  int width = ((title_->GetText().empty() && label_->GetText().empty()) ||
-               (!ok_button_ && !cancel_button_))
+  int width = (label_->GetText().empty() || (!ok_button_ && !cancel_button_))
                   ? 0
                   : label_spacing;
-  if (!title_->GetText().empty() && !label_->GetText().empty())
-    width += label_spacing;
   if (ok_button_)
     width += ok_button_->width() + (cancel_button_ ? button_spacing : 0);
   width += cancel_button_ ? cancel_button_->width() : 0;

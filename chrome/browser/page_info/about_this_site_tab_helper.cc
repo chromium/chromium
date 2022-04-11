@@ -23,9 +23,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/page_info/about_this_site_message_delegate_android.h"
-#else
-#include "chrome/browser/ui/page_info/about_this_site_infobar_delegate.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #endif
 
 using page_info::about_this_site_validation::AboutThisSiteStatus;
@@ -166,13 +163,8 @@ void AboutThisSiteTabHelper::ShowBanner(
   AboutThisSiteMessageDelegateAndroid::Create(
       web_contents(), std::move(banner_info), std::move(on_dimiss),
       std::move(on_url_opened));
-#else
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents());
-  AboutThisSiteInfoBarDelegate::Create(infobar_manager, std::move(banner_info),
-                                       std::move(on_dimiss),
-                                       std::move(on_url_opened));
 #endif
+  // TODO(crbug.com/1307295): Implement desktop UI.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

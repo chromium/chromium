@@ -46811,7 +46811,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="109" label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS"/>
   <int value="110"
       label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
-  <int value="111" label="ABOUT_THIS_SITE_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">

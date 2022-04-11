@@ -41,7 +41,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -246,14 +245,6 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
       Contains(focused_now)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
   }
-}
-
-std::unique_ptr<views::Label> InfoBarView::CreateTitle(
-    const std::u16string& text) const {
-  auto title = std::make_unique<views::Label>(
-      text, views::style::CONTEXT_DIALOG_BODY_TEXT, STYLE_EMPHASIZED);
-  SetLabelDetails(title.get());
-  return title;
 }
 
 std::unique_ptr<views::Label> InfoBarView::CreateLabel(

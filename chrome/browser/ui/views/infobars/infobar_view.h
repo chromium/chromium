@@ -51,9 +51,6 @@ class InfoBarView : public infobars::InfoBar,
  protected:
   using Labels = std::vector<views::Label*>;
 
-  // Creates a title with the appropriate font and color for an infobar.
-  std::unique_ptr<views::Label> CreateTitle(const std::u16string& text) const;
-
   // Creates a label with the appropriate font and color for an infobar.
   std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) const;
 
