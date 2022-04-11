@@ -483,6 +483,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipCreateFileDrive").FilesSwa(),
         TestCase("zipCreateFileUsb"),
         TestCase("zipCreateFileUsb").FilesSwa(),
+        TestCase("zipExtractA11y").ExtractArchive().FilesSwa(),
         TestCase("zipExtractCheckContent").ExtractArchive().FilesSwa(),
         TestCase("zipExtractCheckDuplicates").ExtractArchive().FilesSwa(),
         TestCase("zipExtractCheckEncodings").ExtractArchive().FilesSwa(),

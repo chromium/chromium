@@ -153,7 +153,7 @@ testcase.fileListSelectLastFocusedItem = async () => {
  * @param {?string=} expectedMessage
  * @return {!Promise<string>} Latest a11y message.
  */
-async function countAndCheckLatestA11yMessage(
+export async function countAndCheckLatestA11yMessage(
     appId, expectedCount, expectedMessage) {
   const a11yMessages =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);

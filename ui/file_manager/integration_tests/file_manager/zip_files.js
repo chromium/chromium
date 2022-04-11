@@ -600,3 +600,31 @@ testcase.zipExtractCheckEncodings = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="新しいフォルダ"]');
 };
+
+/**
+ * Tests extract option menu item has proper a11y labels.
+ */
+testcase.zipExtractA11y = async () => {
+  const entry = ENTRIES.zipArchive;
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Select the file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entry.nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Check: Extract all menu item is properly labelled for ARIA.
+  // NB: It's sufficient to check the ARIA role attribute is set correctly.
+  await remoteCall.waitForElement(
+      appId, '[command="#extract-all"][role="menuitem"]');
+};
