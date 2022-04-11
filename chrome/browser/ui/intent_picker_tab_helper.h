@@ -34,12 +34,14 @@ class IntentPickerTabHelper
 
   ~IntentPickerTabHelper() override;
 
-  // Shows or hides the intent picker icon for |web_contents|.
+  // Shows or hides the intent picker icon for |web_contents|. Always shows a
+  // generic picker icon, even if ShowIconForApps() had previously applied
+  // app-specific customizations.
   static void ShowOrHideIcon(content::WebContents* web_contents,
                              bool should_show_icon);
 
-  // Shows or hides the intent picker icon for this tab based on the given
-  // |apps|.
+  // Shows or hides the intent picker icon for this tab a list of |apps| which
+  // can handle a link intent.
   void ShowIconForApps(const std::vector<apps::IntentPickerAppInfo>& apps);
 
   bool should_show_icon() const { return should_show_icon_; }
@@ -77,10 +79,13 @@ class IntentPickerTabHelper
                    IntentPickerIconLoaderCallback callback,
                    size_t index);
 
+  void UpdateCollapsedState(bool should_show_icon);
   void OnAppIconLoadedForChip(const std::string& app_id,
                               apps::IconValuePtr icon);
+  // Shows or hides the intent icon, with customizations specific to link intent
+  // handling.
+  void ShowIconForLinkIntent(bool should_show_icon);
   void ShowOrHideIconInternal(bool should_show_icon);
-  void UpdateCollapsedState();
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

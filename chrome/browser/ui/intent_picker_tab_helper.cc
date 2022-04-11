@@ -30,6 +30,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
@@ -101,6 +102,14 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
   IntentPickerTabHelper* tab_helper = FromWebContents(web_contents);
   if (!tab_helper)
     return;
+
+  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+    tab_helper->app_icon_ = ui::ImageModel();
+    tab_helper->should_show_collapsed_chip_ = false;
+    tab_helper->last_shown_app_id_ = std::string();
+    tab_helper->last_shown_origin_ = url::Origin();
+  }
+
   tab_helper->ShowOrHideIconInternal(should_show_icon);
 }
 
@@ -126,7 +135,7 @@ void IntentPickerTabHelper::ShowIconForApps(
     }
   }
 
-  ShowOrHideIconInternal(!apps.empty());
+  ShowIconForLinkIntent(!apps.empty());
 }
 
 IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
@@ -194,14 +203,15 @@ void IntentPickerTabHelper::LoadAppIcon(
                                    std::move(callback), index));
 }
 
-void IntentPickerTabHelper::UpdateCollapsedState() {
-  if (!should_show_icon_) {
+void IntentPickerTabHelper::UpdateCollapsedState(bool should_show_icon) {
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  if (!should_show_icon || url.is_empty()) {
     should_show_collapsed_chip_ = false;
     last_shown_origin_ = url::Origin();
     return;
   }
 
-  GURL url = web_contents()->GetLastCommittedURL();
   url::Origin origin = url::Origin::Create(url);
 
   // Determine whether to show the Chip as expanded/collapsed whenever the
@@ -230,10 +240,10 @@ void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
     app_icon_ = ui::ImageModel();
   }
 
-  ShowOrHideIconInternal(true);
+  ShowIconForLinkIntent(true);
 }
 
-void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
+void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (should_show_icon && !should_show_icon_) {
     // This point doesn't exactly match when the icon is shown in the UI (e.g.
@@ -244,11 +254,15 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   }
 #endif
 
-  should_show_icon_ = should_show_icon;
-
   if (apps::features::LinkCapturingUiUpdateEnabled()) {
-    UpdateCollapsedState();
+    UpdateCollapsedState(should_show_icon);
   }
+
+  ShowOrHideIconInternal(should_show_icon);
+}
+
+void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
+  should_show_icon_ = should_show_icon;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (!browser)
