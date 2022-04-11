@@ -29,7 +29,7 @@ const STATUS_TEXT_KEY_MAP = {
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
 const STATUS_IMG_MAP = {
   [UpdateRoFirmwareStatus.kWaitUsb]: 'insert_usb',
-  [UpdateRoFirmwareStatus.kFileNotFound]: '',
+  [UpdateRoFirmwareStatus.kFileNotFound]: 'error',
   [UpdateRoFirmwareStatus.kRebooting]: 'downloading',
   [UpdateRoFirmwareStatus.kComplete]: 'downloading',
 };
