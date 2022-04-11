@@ -821,7 +821,6 @@ polymer_modulizer("parental_handoff") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
-  ignore_imports = [ "//oobe/custom_elements.html" ]
 }
 
 polymer_modulizer("pin_setup") {

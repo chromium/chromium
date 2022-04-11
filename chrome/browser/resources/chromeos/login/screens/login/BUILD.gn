@@ -161,7 +161,6 @@ polymer_modulizer("encryption_migration") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
-  ignore_imports = [ "//oobe/custom_elements.html" ]
 }
 
 polymer_modulizer("gaia_password_changed") {

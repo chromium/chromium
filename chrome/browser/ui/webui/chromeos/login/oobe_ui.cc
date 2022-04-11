@@ -157,7 +157,6 @@ constexpr char kArcPlaystoreJSPath[] = "playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kCustomElementsHTMLPath[] = "custom_elements.html";
-constexpr char kCustomElementsJSPath[] = "custom_elements.js";
 constexpr char kDebuggerJSPath[] = "debug/debug.js";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
 constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
@@ -308,7 +307,6 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_OOBE_HTML);
     }
-    source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
   }
   source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
 }
@@ -329,8 +327,6 @@ void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
       source->AddResourcePath(kCustomElementsHTMLPath,
                               IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
     }
-    source->AddResourcePath(kCustomElementsJSPath,
-                            IDR_CUSTOM_ELEMENTS_LOGIN_JS);
   }
 
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);

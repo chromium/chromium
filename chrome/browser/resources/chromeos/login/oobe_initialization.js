@@ -56,7 +56,6 @@ console.warn('1082670 : cr_ui loaded');
 HTMLImports.whenReady(() => {
   // TODO(crbug.com/1111387) - Remove excessive logging.
   console.warn('HTMLImports ready.');
-  loadCommonComponents();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeOobe);
