@@ -1152,6 +1152,10 @@ const base::Feature kProjectorTutorialVideoView(
     "ProjectorTutorialVideoView",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether Projector use custom thumbnail in gallery page.
+const base::Feature kProjectorCustomThumbnail("kProjectorCustomThumbnail",
+                                              base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2005,6 +2009,10 @@ bool IsProjectorExcludeTranscriptEnabled() {
 
 bool IsProjectorTutorialVideoViewEnabled() {
   return base::FeatureList::IsEnabled(kProjectorTutorialVideoView);
+}
+
+bool IsProjectorCustomThumbnailEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorCustomThumbnail);
 }
 
 bool IsQuickDimEnabled() {

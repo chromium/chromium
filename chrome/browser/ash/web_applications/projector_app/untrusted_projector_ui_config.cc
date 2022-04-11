@@ -26,6 +26,8 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
                      ash::features::IsProjectorExcludeTranscriptEnabled());
   source->AddBoolean("isTutorialVideoViewEnabled",
                      ash::features::IsProjectorTutorialVideoViewEnabled());
+  source->AddBoolean("isCustomThumbnailEnabled",
+                     ash::features::IsProjectorCustomThumbnailEnabled());
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 
