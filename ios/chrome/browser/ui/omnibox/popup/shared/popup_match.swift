@@ -8,12 +8,12 @@ import Foundation
   // The underlying suggestion backing all the data.
   let suggestion: AutocompleteSuggestion
 
-  var text: String {
-    return suggestion.text?.string ?? ""
+  var text: NSAttributedString {
+    return suggestion.text ?? NSAttributedString(string: "")
   }
 
-  var detailText: String? {
-    return suggestion.detailText?.string
+  var detailText: NSAttributedString? {
+    return suggestion.detailText
   }
 
   /// Some suggestions can be appended to omnibox text in order to refine the
@@ -46,7 +46,7 @@ import Foundation
   }
 
   public var id: String {
-    return text
+    return text.string
   }
 }
 

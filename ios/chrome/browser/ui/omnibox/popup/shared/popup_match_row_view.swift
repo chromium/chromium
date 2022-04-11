@@ -37,8 +37,8 @@ struct PopupMatchRowView: View {
           self.isPressed = isPressed
         }
         .accessibilityElement()
-        .accessibilityLabel(match.text)
-        .accessibilityValue(match.detailText ?? "")
+        .accessibilityLabel(match.text.string)
+        .accessibilityValue(match.detailText?.string ?? "")
         .accessibilityAction(
           named: match.isTabMatch
             ? L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB)
@@ -58,13 +58,13 @@ struct PopupMatchRowView: View {
         }.frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
-            Text(match.text)
+            OmniboxText(match.text)
               .lineLimit(1)
               .truncatedWithGradient(colored: backgroundColor)
               .accessibilityHidden(true)
 
-            if let subtitle = match.detailText, !subtitle.isEmpty {
-              Text(subtitle)
+            if let subtitle = match.detailText, !subtitle.string.isEmpty {
+              OmniboxText(subtitle)
                 .font(.footnote)
                 .foregroundColor(Color.gray)
                 .lineLimit(1)
