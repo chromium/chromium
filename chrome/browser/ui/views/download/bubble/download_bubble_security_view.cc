@@ -76,7 +76,8 @@ void DownloadBubbleSecurityView::AddHeader() {
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
-  navigation_handler_->CloseDialog();
+  navigation_handler_->CloseDialog(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void DownloadBubbleSecurityView::OnCheckboxClicked() {

@@ -409,10 +409,12 @@ void DownloadBubbleRowView::OnDownloadOpened() {
 void DownloadBubbleRowView::OnDownloadDestroyed() {
   // This will return ownership and destroy this object at the end of the
   // method.
-  // Save navigation handler in case row_view_ptr is removed by the compiler.
-  auto navigation_handler = navigation_handler_;
   auto row_view_ptr = row_list_view_->RemoveChildViewT(this);
-  navigation_handler->ResizeDialog();
+  if (row_list_view_->children().empty()) {
+    navigation_handler_->CloseDialog(views::Widget::ClosedReason::kUnspecified);
+  } else {
+    navigation_handler_->ResizeDialog();
+  }
 }
 
 void DownloadBubbleRowView::ShowContextMenuForViewImpl(

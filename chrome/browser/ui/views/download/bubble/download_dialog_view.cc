@@ -34,7 +34,8 @@
 #include "ui/views/window/vector_icons/vector_icons.h"
 
 void DownloadDialogView::CloseBubble() {
-  navigation_handler_->CloseDialog();
+  navigation_handler_->CloseDialog(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void DownloadDialogView::ShowAllDownloads() {

@@ -25,7 +25,7 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenPrimaryDialog() = 0;
   virtual void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
                                   DownloadUIModel::BubbleUIInfo info) = 0;
-  virtual void CloseDialog() = 0;
+  virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
 };
 
@@ -59,7 +59,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenPrimaryDialog() override;
   void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
                           DownloadUIModel::BubbleUIInfo info) override;
-  void CloseDialog() override;
+  void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
 
   DownloadBubbleUIController* bubble_controller() {

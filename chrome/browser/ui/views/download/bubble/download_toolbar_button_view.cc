@@ -199,9 +199,9 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
   bubble_delegate_->SizeToContents();
 }
 
-void DownloadToolbarButtonView::CloseDialog() {
-  bubble_delegate_->GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+void DownloadToolbarButtonView::CloseDialog(
+    views::Widget::ClosedReason reason) {
+  bubble_delegate_->GetWidget()->CloseWithReason(reason);
 }
 
 void DownloadToolbarButtonView::ResizeDialog() {
