@@ -98,6 +98,12 @@ namespace {
 
 using ::testing::HasSubstr;
 
+content::ServiceWorkerContext* GetServiceWorkerContext(
+    content::BrowserContext* browser_context) {
+  return browser_context->GetDefaultStoragePartition()
+      ->GetServiceWorkerContext();
+}
+
 class WebContentsLoadStopObserver : content::WebContentsObserver {
  public:
   explicit WebContentsLoadStopObserver(content::WebContents* web_contents)
@@ -248,10 +254,7 @@ class ServiceWorkerTest : public ExtensionApiTest {
 
   size_t GetWorkerRefCount(const blink::StorageKey& key) {
     content::ServiceWorkerContext* sw_context =
-        browser()
-            ->profile()
-            ->GetDefaultStoragePartition()
-            ->GetServiceWorkerContext();
+        GetServiceWorkerContext(browser()->profile());
     return sw_context->CountExternalRequestsForTest(key);
   }
 };
@@ -1905,10 +1908,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Stop the service worker.
   {
     base::RunLoop run_loop;
-    content::ServiceWorkerContext* context = browser()
-                                                 ->profile()
-                                                 ->GetDefaultStoragePartition()
-                                                 ->GetServiceWorkerContext();
+    content::ServiceWorkerContext* context =
+        GetServiceWorkerContext(browser()->profile());
     // The service worker is registered at the root scope.
     content::StopServiceWorkerForScope(context, extension->url(),
                                        run_loop.QuitClosure());
@@ -2225,10 +2226,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // Regression test for https://crbug.com/1019161.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        WorkerStartFailureClearsPendingTasks) {
-  content::StoragePartition* storage_partition =
-      browser()->profile()->GetDefaultStoragePartition();
   content::ServiceWorkerContext* context =
-      storage_partition->GetServiceWorkerContext();
+      GetServiceWorkerContext(browser()->profile());
 
   const ExtensionId test_extension_id("iegclhlplifhodhkoafiokenjoapiobj");
   // Set up an observer to wait for worker to start and then stop.
@@ -2710,8 +2709,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
   // Unregister the extension service worker.
   {
     base::RunLoop run_loop;
-    content::ServiceWorkerContext* context =
-        profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
+    content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
 
     // The service worker is registered at the root scope.
     context->UnregisterServiceWorker(
@@ -2814,9 +2812,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLazyBackgroundTest, ConsoleLogging) {
     ConsoleMessageObserver(content::BrowserContext* browser_context,
                            const std::string& expected_message)
         : expected_message_(base::UTF8ToUTF16(expected_message)) {
-      content::StoragePartition* partition =
-          browser_context->GetDefaultStoragePartition();
-      scoped_observation_.Observe(partition->GetServiceWorkerContext());
+      scoped_observation_.Observe(GetServiceWorkerContext(browser_context));
     }
 
     ConsoleMessageObserver(const ConsoleMessageObserver&) = delete;
