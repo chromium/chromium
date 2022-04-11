@@ -79,6 +79,11 @@ template("weblayer_shell_apk_helper") {
       ":weblayer_shell_java",
     ]
     apk_name = invoker.apk_name
+
+    # Adding an "_incremental" suffix to the APK name confuses wrapper scripts
+    # so for simplicity just disable incremental builds for WebLayer Shell.
+    never_incremental = true
+
     android_manifest = _weblayer_shell_manifest
     min_sdk_version = default_min_sdk_version
     target_sdk_version = 28
