@@ -539,6 +539,44 @@ TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
   runMochaSuite('PrivacyGuideDialog');
 });
 
+var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/cookies_page_test.js&host=webui-test';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'features::kConsolidatedSiteStorageControls',
+      ]
+    };
+  }
+};
+
+// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
+GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))');
+GEN('#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest');
+GEN('#else');
+GEN('#define MAYBE_CookiesPageTest CookiesPageTest');
+GEN('#endif');
+TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
+  runMochaSuite('CrSettingsCookiesPageTest');
+});
+
+// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
+GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))');
+GEN('#define MAYBE_ConsolidatedControlsEnabled DISABLED_ConsolidatedControlsEnabled');
+GEN('#else');
+GEN('#define MAYBE_ConsolidatedControlsEnabled ConsolidatedControlsEnabled');
+GEN('#endif');
+TEST_F(
+    'CrSettingsCookiesPageTest', 'MAYBE_ConsolidatedControlsEnabled',
+    function() {
+      runMochaSuite('CrSettingsCookiesPageTest_consolidatedControlsEnabled');
+    });
+
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -680,12 +718,6 @@ GEN('#endif');
 // Timeout on Linux dbg bots: https://crbug.com/1311163
 GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
 [['AllSites', 'all_sites_tests.js'], ].forEach(test => registerTest(...test));
-GEN('#endif');
-
-// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
-GEN('#if (!BUILDFLAG(IS_MAC)) && (!BUILDFLAG(IS_LINUX) || defined(NDEBUG))');
-[['CookiesPage', 'cookies_page_test.js'],
-].forEach(test => registerTest(...test));
 GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)');

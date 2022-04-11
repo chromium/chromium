@@ -283,12 +283,6 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsCookiesPageElement;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      consolidatedSiteStorageControlsEnabled: true,
-    });
-  });
-
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
