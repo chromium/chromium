@@ -6,10 +6,6 @@ import SwiftUI
 
 /// A button view to act as the trailing button of a popup match and provide an additional action for a match.
 struct PopupMatchTrailingButton: View {
-  enum Colors {
-    static let trailingButtonColor = Color(red: 0.769, green: 0.769, blue: 0.769)
-  }
-
   enum Dimensions {
     static let extendedTouchTargetDiameter: CGFloat = 44
     static let trailingButtonSize: CGFloat = 24
@@ -21,7 +17,7 @@ struct PopupMatchTrailingButton: View {
   var body: some View {
     Button(action: action) {
       Image(systemName: match.isTabMatch ? "arrow.right.square" : "arrow.up.backward")
-        .foregroundColor(Colors.trailingButtonColor)
+        .foregroundColor(Color.cr_blue)
         .aspectRatio(contentMode: .fit)
         .frame(
           width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
