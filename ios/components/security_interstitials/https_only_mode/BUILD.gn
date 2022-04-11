@@ -20,6 +20,7 @@ source_set("https_only_mode") {
     "//base",
     "//components/security_interstitials/core",
     "//ios/components/security_interstitials",
+    "//ios/web/public:public",
   ]
 }
 
@@ -29,4 +30,20 @@ source_set("feature") {
     "feature.h",
   ]
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "https_only_mode_blocking_page_unittest.mm" ]
+  deps = [
+    ":https_only_mode",
+    "//base/test:test_support",
+    "//components/security_interstitials/core",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+  ]
 }

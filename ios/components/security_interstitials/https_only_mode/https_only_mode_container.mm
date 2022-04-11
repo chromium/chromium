@@ -40,7 +40,7 @@ void HttpsOnlyModeContainer::RecordBlockingPageParams(
 }
 
 void HttpsOnlyModeContainer::SetHttpUrl(const GURL& http_url) {
-  http_url_ = url;
+  http_url_ = http_url;
 }
 
 GURL HttpsOnlyModeContainer::http_url() const {
