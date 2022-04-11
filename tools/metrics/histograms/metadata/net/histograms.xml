@@ -1851,19 +1851,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.MainFrameNoStore" enum="MainFrameStorable"
-    expires_after="M87">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The distribution of storable vs &quot;cache-control: no-store&quot;
-    main-frame resources.
-
-    Counted after response headers have completed and before the content has
-    completed. Redirects are counted. All HTTP cache transactions are counted,
-    not just those that require the network.
-  </summary>
-</histogram>
-
 <histogram name="Net.MediaCache.Response.EnabledOrDisabled"
     enum="MediaResponseCacheType" expires_after="2020-12-31">
   <owner>morlovich@chromium.org</owner>

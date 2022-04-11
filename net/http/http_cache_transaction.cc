@@ -73,15 +73,6 @@ bool NonErrorResponse(int status_code) {
   return status_code_range == 2 || status_code_range == 3;
 }
 
-void RecordNoStoreHeaderHistogram(int load_flags,
-                                  const HttpResponseInfo* response) {
-  if (load_flags & LOAD_MAIN_FRAME_DEPRECATED) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Net.MainFrameNoStore",
-        response->headers->HasHeaderValue("cache-control", "no-store"));
-  }
-}
-
 bool IsOnBatteryPower() {
   if (base::PowerMonitor::IsInitialized())
     return base::PowerMonitor::IsOnBatteryPower();
@@ -1885,8 +1876,6 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
     cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key,
                                 request_->is_subframe_document_resource);
   }
-
-  RecordNoStoreHeaderHistogram(request_->load_flags, new_response_);
 
   if (new_response_->headers->response_code() == 416 &&
       (method_ == "GET" || method_ == "POST")) {
