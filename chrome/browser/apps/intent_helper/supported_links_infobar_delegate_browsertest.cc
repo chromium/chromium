@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -27,6 +28,11 @@ class SupportedLinksInfoBarDelegateBrowserTest
 
     InstallTestWebApp();
     app_service_proxy()->PreferredAppsList().AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    web_app::test::UninstallWebApp(profile(), test_web_app_id());
+    web_app::WebAppNavigationBrowserTest::TearDownOnMainThread();
   }
 
   infobars::InfoBar* GetInfoBar(content::WebContents* contents) {
