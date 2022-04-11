@@ -160,8 +160,10 @@ async function renderUsageAndQuotaStats() {
       storageKey: entry.storageKey,
       name: entry.name,
       useCount: entry.useCount.toString(),
-      lastAccessed: convertMojoTimeToJS(entry.lastAccessed).toTimeString(),
-      lastModified: convertMojoTimeToJS(entry.lastModified).toTimeString()
+      lastAccessed: convertMojoTimeToJS(entry.lastAccessed)
+                        .toLocaleString('en-US', {timeZoneName: 'short'}),
+      lastModified: convertMojoTimeToJS(entry.lastModified)
+                        .toLocaleString('en-US', {timeZoneName: 'short'}),
     };
 
     if (!(entry.host in bucketTableEntriesByHost)) {

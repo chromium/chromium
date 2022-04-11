@@ -21,7 +21,7 @@
           <!-- Summary -->
           <h2>Summary</h2>
           <h3>Disk Availability</h3>
-          <table>
+          <table class="disk-availability-table">
             <thead>
               <th>Total Space</th>
               <th>Available Space</th>
@@ -30,8 +30,8 @@
           </table>
 
           <h3>Eviction Statistics</h3>
-          <table>
-            <thead>
+          <table class="eviction-statistics-table">
+            <thead class="eviction-statistics-header">
               <th>Errors on Getting Usage and Quota</th>
               <th>Evicted Buckets</th>
               <th>Eviction Rounds</th>
@@ -40,17 +40,18 @@
             <tbody id="eviction-tbody"></tbody>
           </table>
 
-          <h2>Test Storage Pressure Behavior</h2>
-            <form>
-              <label>Origin to test: </label>
-              <input type="url" name="origin-to-test" id="origin-to-test"
-                  placeholder="https://example.com" pattern="https://.*"
-                  size="30" required>
-              <button name="trigger-notification" id="trigger-notification"
-                  type="submit">
-                Trigger Storage Pressure Notification
-              </button>
-            </form>
+          <h2 class="test-storage-pressure-header">
+            Test Storage Pressure Behavior</h2>
+          <form>
+            <label>Origin to test: </label>
+            <input type="url" name="origin-to-test" id="origin-to-test"
+                placeholder="https://example.com" pattern="https://.*"
+                size="30" required>
+            <button name="trigger-notification" id="trigger-notification"
+                type="submit">
+              Trigger Storage Pressure Notification
+            </button>
+          </form>
         </tabpanel>
 
         <tabpanel id="usage-tabpanel">
@@ -80,7 +81,7 @@
       </tr>
     </template>
     <template id="eviction-row">
-      <tr>
+      <tr class="eviction-tr">
         <td class="errors-on-getting-usage-and-quota"></td>
         <td class="evicted-buckets"></td>
         <td class="eviction-rounds"></td>
