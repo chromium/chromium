@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
+#include "chrome/browser/ui/app_list/search/personalization_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
@@ -184,6 +185,15 @@ std::unique_ptr<SearchController> CreateSearchController(
     size_t games_group_id = controller->AddGroup(kGenericMaxResults);
     controller->AddProvider(games_group_id, std::make_unique<GameProvider>(
                                                 profile, list_controller));
+  }
+
+  if (ash::features::IsPersonalizationHubEnabled() &&
+      !profile->IsGuestSession()) {
+    size_t personalization_app_group_id =
+        controller->AddGroup(kGenericMaxResults);
+
+    controller->AddProvider(personalization_app_group_id,
+                            std::make_unique<PersonalizationProvider>(profile));
   }
 
   return controller;

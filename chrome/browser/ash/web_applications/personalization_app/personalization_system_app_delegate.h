@@ -22,6 +22,7 @@ class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
   bool ShouldAnimateThemeChanges() const override;
 };
 

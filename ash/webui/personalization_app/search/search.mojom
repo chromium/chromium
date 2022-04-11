@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.personalization_app.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// A result to display in launcher search that represents a personalization
+// feature or page.
+struct SearchResult {
+    // The display text of the search result.
+    mojo_base.mojom.String16 text;
+
+    // The relative url, including query parameters, to open when the search
+    // result is selected.
+    string relative_url;
+
+    // The score of the search result for ranking purposes.
+    double relevance_score;
+};
+
+// Handles search queries and may respond with Personalization results.
+interface SearchHandler {
+    // Run a search from user input and reply with a list of results. Returns
+    // empty list on error or no relevant results.
+    Search(mojo_base.mojom.String16 query) => (array<SearchResult> results);
+};

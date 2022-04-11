@@ -36,6 +36,7 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kOsSettings:
     case ash::AppListSearchResultType::kInternalPrivacyInfo:
     case ash::AppListSearchResultType::kAssistantText:
+    case ash::AppListSearchResultType::kPersonalization:
     // Types that are only shown in the productivity launcher:
     case ash::AppListSearchResultType::kHelpApp:
     case ash::AppListSearchResultType::kKeyboardShortcut:

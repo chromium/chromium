@@ -133,6 +133,8 @@ enum SearchResultType {
   NO_RESULT,
   // A game search result.
   GAME_SEARCH,
+  // A search result for OS personalization options.
+  PERSONALIZATION,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_MANAGER_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_MANAGER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
@@ -16,6 +18,8 @@ namespace ash {
 class HatsNotificationController;
 
 namespace personalization_app {
+
+class SearchHandler;
 
 enum class HatsSurveyType {
   kAvatar,
@@ -44,15 +48,22 @@ class PersonalizationAppManager : public KeyedService {
   // Personalization survey during this session.
   void MaybeStartHatsTimer(HatsSurveyType hats_survey_type);
 
+  SearchHandler* search_handler() { return search_handler_.get(); }
+
  private:
   // Callback to |hats_timer_|. Will show the given survey type.
   void OnHatsTimerDone(HatsSurveyType hats_survey_type);
 
+  // KeyedService:
+  void Shutdown() override;
+
   raw_ptr<content::BrowserContext> context_;
 
   base::OneShotTimer hats_timer_;
-
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
+
+  // Handles running search queries for Personalization App features.
+  std::unique_ptr<SearchHandler> search_handler_;
 };
 
 }  // namespace personalization_app

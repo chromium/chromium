@@ -348,8 +348,9 @@ enum class AppListSearchResultType {
   kKeyboardShortcut,       // Keyboard shortcut search results.
   kOpenTab,                // Open tab search results.
   kGames,                  // Game sarch results.
+  kPersonalization,        // Personalization search results.
   // Add new values here.
-  kMaxValue = kGames,
+  kMaxValue = kPersonalization,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(

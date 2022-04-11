@@ -113,6 +113,10 @@ const char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
 const char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "chrome://personalization/"))
+const char kPersonalizationAppId[] = "glenkcidjgckcomnliblmkokolehpckn";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://books.google.com/ebooks/app"))
 const char kPlayBooksAppId[] = "jglfhlbohpgcbefmhdmpancnijacbbji";
 

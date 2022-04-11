@@ -29,6 +29,7 @@ test("ash_webui_unittests") {
     "//ash/webui/file_manager:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/os_feedback_ui/backend:unit_tests",
+    "//ash/webui/personalization_app:unit_tests",
     "//ash/webui/projector_app:unit_tests",
     "//ash/webui/scanning:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",

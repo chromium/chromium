@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
+#include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -33,7 +36,7 @@ const HatsConfig& GetHatsConfig(HatsSurveyType hats_survey_type) {
 
 PersonalizationAppManager::PersonalizationAppManager(
     content::BrowserContext* context)
-    : context_(context) {}
+    : context_(context), search_handler_(std::make_unique<SearchHandler>()) {}
 
 PersonalizationAppManager::~PersonalizationAppManager() = default;
 
@@ -66,6 +69,10 @@ void PersonalizationAppManager::OnHatsTimerDone(
   hats_notification_controller_ =
       base::MakeRefCounted<::ash::HatsNotificationController>(
           profile, config, product_specific_data);
+}
+
+void PersonalizationAppManager::Shutdown() {
+  search_handler_.reset();
 }
 
 }  // namespace personalization_app

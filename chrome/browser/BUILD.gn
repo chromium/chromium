@@ -2471,6 +2471,7 @@ static_library("browser") {
       "//ash/webui/os_feedback_ui/mojom",
       "//ash/webui/personalization_app",
       "//ash/webui/personalization_app/mojom",
+      "//ash/webui/personalization_app/search:mojo_bindings",
       "//ash/webui/print_management",
       "//ash/webui/print_management/mojom",
       "//ash/webui/scanning",

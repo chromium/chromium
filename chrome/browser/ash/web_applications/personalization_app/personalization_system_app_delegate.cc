@@ -65,6 +65,11 @@ bool PersonalizationSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
+bool PersonalizationSystemAppDelegate::ShouldShowInSearch() const {
+  // Search is implemented by //ash/webui/personalization_app/search.
+  return false;
+}
+
 bool PersonalizationSystemAppDelegate::ShouldAnimateThemeChanges() const {
   return true;
 }

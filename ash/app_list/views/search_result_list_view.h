@@ -59,7 +59,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
     kWeb,
     // kFiles list view contains relevant local and Google Drive files.
     kFiles,
-    // kSettings list view contains relevant system settings.
+    // kSettings list view contains relevant system settings and personalization
+    // settings.
     kSettings,
     // kHelp list view contains help articles from Showoff and Keyboard
     // Shortcuts.

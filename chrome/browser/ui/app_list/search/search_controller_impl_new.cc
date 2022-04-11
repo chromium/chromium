@@ -69,6 +69,7 @@ bool IsPartOfContinueSection(ProviderType type) {
     case ash::AppListSearchResultType::kKeyboardShortcut:
     case ash::AppListSearchResultType::kOpenTab:
     case ash::AppListSearchResultType::kGames:
+    case ash::AppListSearchResultType::kPersonalization:
       return false;
   }
 }

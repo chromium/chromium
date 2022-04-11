@@ -17,15 +17,20 @@ static_library("personalization_app") {
     "personalization_app_url_constants.h",
     "personalization_app_user_provider.h",
     "personalization_app_wallpaper_provider.h",
+    "search/search_handler.cc",
+    "search/search_handler.h",
   ]
 
   deps = [
+    "search:mojo_bindings",
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/resources:personalization_app_resources",
     "//chromeos/strings",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//content/public/browser",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/resources:webui_generated_resources_grd_grit",
@@ -71,4 +76,19 @@ source_set("browser_test_support") {
   ]
 
   data = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search/search_handler_unittest.cc" ]
+  deps = [
+    ":personalization_app",
+    "search:mojo_bindings",
+    "//ash/constants:constants",
+    "//base/test:test_support",
+    "//chromeos/strings:strings_grit",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
 }

@@ -50,6 +50,7 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kDriveSearch:
       return Category::kFiles;
     case ResultType::kOsSettings:
+    case ResultType::kPersonalization:
       return Category::kSettings;
     case ResultType::kHelpApp:
     case ResultType::kKeyboardShortcut:
