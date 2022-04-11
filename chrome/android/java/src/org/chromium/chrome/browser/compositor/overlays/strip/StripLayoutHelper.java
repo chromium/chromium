@@ -172,6 +172,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private Context mContext;
 
+    // After a tab closure was undone, this identifies if the tab was selected before being closed.
+    private Boolean mClosedTabWasSelected;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      * @param context         The current Android {@link Context}.
@@ -578,6 +581,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public void tabClosureCancelled(long time, int id) {
         final boolean selected = TabModelUtils.getCurrentTabId(mModel) == id;
         tabCreated(time, id, Tab.INVALID_TAB_ID, selected);
+        if (mClosedTabWasSelected != null && mClosedTabWasSelected) {
+            TabModelUtils.setIndex(mModel, TabModelUtils.getTabIndexById(mModel, id), false);
+            mClosedTabWasSelected = null;
+        }
     }
 
     /**
@@ -1658,6 +1665,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (present || postIfNotPresent) {
             mStripTabEventHandler.sendEmptyMessageAtTime(MESSAGE_RESIZE, RESIZE_DELAY_MS);
         }
+    }
+
+    protected void willCloseTab(int tabId) {
+        mClosedTabWasSelected = tabId == mModel.getTabAt(mModel.index()).getId();
+    }
+
+    protected void tabClosureCommited() {
+        mClosedTabWasSelected = null;
     }
 
     @SuppressLint("HandlerLeak")
