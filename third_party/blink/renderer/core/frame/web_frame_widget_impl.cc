@@ -2446,8 +2446,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   DCHECK(!WebInputEvent::IsTouchEventType(input_event.GetType()));
   CHECK(LocalRootImpl());
 
-  // Only record metrics for the main frame.
-  if (ForMainFrame()) {
+  // Only record metrics for the root frame.
+  if (ForTopMostMainFrame()) {
     GetPage()->GetVisualViewport().StartTrackingPinchStats();
   }
 

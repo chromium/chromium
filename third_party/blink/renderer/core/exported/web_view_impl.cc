@@ -1201,7 +1201,7 @@ void WebViewImpl::DidUpdateBrowserControls() {
   // restored by the first commit, since the state is checked in every call to
   // ApplyScrollAndScale().
   WebLocalFrameImpl* main_frame = MainFrameImpl();
-  if (!main_frame)
+  if (!main_frame || main_frame->IsInFencedFrameTree())
     return;
 
   WebFrameWidgetImpl* widget = main_frame->LocalRootFrameWidget();

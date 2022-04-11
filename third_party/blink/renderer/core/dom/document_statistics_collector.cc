@@ -192,7 +192,7 @@ WebDistillabilityFeatures DocumentStatisticsCollector::CollectStatistics(
 
   WebDistillabilityFeatures features = WebDistillabilityFeatures();
 
-  if (!document.GetFrame() || !document.GetFrame()->IsMainFrame())
+  if (!document.GetFrame() || !document.GetFrame()->IsOutermostMainFrame())
     return features;
 
   DCHECK(document.HasFinishedParsing());

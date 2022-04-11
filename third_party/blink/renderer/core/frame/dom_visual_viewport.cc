@@ -61,7 +61,7 @@ ExecutionContext* DOMVisualViewport::GetExecutionContext() const {
 
 float DOMVisualViewport::offsetLeft() const {
   LocalFrame* frame = window_->GetFrame();
-  if (!frame || !frame->IsMainFrame())
+  if (!frame || !frame->IsOutermostMainFrame())
     return 0;
 
   if (Page* page = frame->GetPage())
@@ -72,7 +72,7 @@ float DOMVisualViewport::offsetLeft() const {
 
 float DOMVisualViewport::offsetTop() const {
   LocalFrame* frame = window_->GetFrame();
-  if (!frame || !frame->IsMainFrame())
+  if (!frame || !frame->IsOutermostMainFrame())
     return 0;
 
   if (Page* page = frame->GetPage())
@@ -114,6 +114,10 @@ float DOMVisualViewport::pageTop() const {
   if (!view || !view->LayoutViewport())
     return 0;
 
+  // TODO(bokan): This is wrong for iframes, we shouldn't be adding the visual
+  // viewport offset from the page to the iframe's scroll offset.
+  // https://crbug.com/1313970.
+
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   float viewport_y = page->GetVisualViewport().GetScrollOffset().y() +
                      view->LayoutViewport()->GetScrollOffset().y();
@@ -126,7 +130,7 @@ double DOMVisualViewport::width() const {
   if (!frame)
     return 0;
 
-  if (!frame->IsMainFrame()) {
+  if (!frame->IsOutermostMainFrame()) {
     // Update layout to ensure scrollbars are up-to-date.
     frame->GetDocument()->UpdateStyleAndLayout(
         DocumentUpdateReason::kJavaScript);
@@ -148,7 +152,7 @@ double DOMVisualViewport::height() const {
   if (!frame)
     return 0;
 
-  if (!frame->IsMainFrame()) {
+  if (!frame->IsOutermostMainFrame()) {
     // Update layout to ensure scrollbars are up-to-date.
     frame->GetDocument()->UpdateStyleAndLayout(
         DocumentUpdateReason::kJavaScript);
@@ -170,7 +174,7 @@ double DOMVisualViewport::scale() const {
   if (!frame)
     return 0;
 
-  if (!frame->IsMainFrame())
+  if (!frame->IsOutermostMainFrame())
     return 1;
 
   if (Page* page = window_->GetFrame()->GetPage())
@@ -182,7 +186,7 @@ double DOMVisualViewport::scale() const {
 absl::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments()
     const {
   LocalFrame* frame = window_->GetFrame();
-  if (!frame || !frame->IsMainFrame())
+  if (!frame || !frame->IsOutermostMainFrame())
     return absl::nullopt;
 
   WebVector<gfx::Rect> web_segments =

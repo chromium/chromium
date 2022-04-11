@@ -7743,6 +7743,8 @@ crbug.com/1314314 virtual/percent-based-scrolling/fast/scrolling/scrollbars/mous
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Skip ]
 crbug.com/1095540 [ Mac10.14 ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
 
+crbug.com/1313970 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/visual-viewport.https.html [ Failure ]
+
 # Sheriff 2022-04-08
 crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-1.html [ Failure Pass ]
 crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]

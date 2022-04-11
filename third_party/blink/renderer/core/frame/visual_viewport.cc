@@ -233,29 +233,31 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     state.max_scroll_offset_affected_by_page_scale = true;
     state.compositor_element_id = GetScrollElementId();
 
-    if (LocalMainFrame() && LocalMainFrame()->GetDocument()) {
-      Document* document = LocalMainFrame()->GetDocument();
-      bool uses_default_root_scroller =
-          &document->GetRootScrollerController().EffectiveRootScroller() ==
-          document;
+    if (IsActiveViewport()) {
+      if (const Document* document = LocalMainFrame().GetDocument()) {
+        bool uses_default_root_scroller =
+            &document->GetRootScrollerController().EffectiveRootScroller() ==
+            document;
 
-      // All position: fixed elements will chain scrolling directly up to the
-      // visual viewport's scroll node. In the case of a default root scroller
-      // (i.e. the LayoutView), we actually want to scroll the "full viewport".
-      // i.e. scrolling from the position: fixed element should cause the page
-      // to scroll. This is not the case when we have a different root
-      // scroller. We set |prevent_viewport_scrolling_from_inner| so the
-      // compositor can know to use the correct chaining behavior. This would be
-      // better fixed by setting the correct scroll_tree_index in PAC::Update on
-      // the fixed layer but that's a larger change. See
-      // https://crbug.com/977954 for details.
-      state.prevent_viewport_scrolling_from_inner = !uses_default_root_scroller;
-    }
+        // All position: fixed elements will chain scrolling directly up to the
+        // visual viewport's scroll node. In the case of a default root scroller
+        // (i.e. the LayoutView), we actually want to scroll the "full
+        // viewport". i.e. scrolling from the position: fixed element should
+        // cause the page to scroll. This is not the case when we have a
+        // different root scroller. We set
+        // |prevent_viewport_scrolling_from_inner| so the compositor can know to
+        // use the correct chaining behavior. This would be better fixed by
+        // setting the correct scroll_tree_index in PAC::Update on the fixed
+        // layer but that's a larger change. See https://crbug.com/977954 for
+        // details.
+        state.prevent_viewport_scrolling_from_inner =
+            !uses_default_root_scroller;
+      }
 
-    if (LocalMainFrame() &&
-        !LocalMainFrame()->GetSettings()->GetThreadedScrollingEnabled()) {
-      state.main_thread_scrolling_reasons =
-          cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
+      if (!LocalMainFrame().GetSettings()->GetThreadedScrollingEnabled()) {
+        state.main_thread_scrolling_reasons =
+            cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
+      }
     }
 
     if (!scroll_node_) {
@@ -361,8 +363,9 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
       PropertyTreeStateOrAlias(*transform_parent, *clip_parent, *effect_parent);
 
   if (change == PaintPropertyChangeType::kNodeAddedOrRemoved &&
-      LocalMainFrame()) {
-    LocalMainFrame()->View()->SetVisualViewportOrOverlayNeedsRepaint();
+      IsActiveViewport()) {
+    DCHECK(LocalMainFrame().View());
+    LocalMainFrame().View()->SetVisualViewportOrOverlayNeedsRepaint();
   }
 
   return change;
@@ -377,21 +380,15 @@ void VisualViewport::Trace(Visitor* visitor) const {
   ScrollableArea::Trace(visitor);
 }
 
-void VisualViewport::UpdateStyleAndLayout(DocumentUpdateReason reason) const {
-  if (!LocalMainFrame())
-    return;
-
-  if (Document* document = LocalMainFrame()->GetDocument())
-    document->UpdateStyleAndLayout(reason);
-}
-
 void VisualViewport::EnqueueScrollEvent() {
-  if (Document* document = LocalMainFrame()->GetDocument())
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
     document->EnqueueVisualViewportScrollEvent();
 }
 
 void VisualViewport::EnqueueResizeEvent() {
-  if (Document* document = LocalMainFrame()->GetDocument())
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
     document->EnqueueVisualViewportResizeEvent();
 }
 
@@ -407,15 +404,15 @@ void VisualViewport::SetSize(const gfx::Size& size) {
   TRACE_EVENT_INSTANT1("loading", "viewport", TRACE_EVENT_SCOPE_THREAD, "data",
                        ViewportToTracedValue());
 
-  if (!LocalMainFrame())
+  if (!IsActiveViewport())
     return;
 
   // Need to re-compute sizes for the overlay scrollbars.
-  if (scrollbar_layer_horizontal_) {
+  if (scrollbar_layer_horizontal_ && LocalMainFrame().View()) {
     DCHECK(scrollbar_layer_vertical_);
     UpdateScrollbarLayer(kHorizontalScrollbar);
     UpdateScrollbarLayer(kVerticalScrollbar);
-    LocalMainFrame()->View()->SetVisualViewportOrOverlayNeedsRepaint();
+    LocalMainFrame().View()->SetVisualViewportOrOverlayNeedsRepaint();
   }
 
   EnqueueResizeEvent();
@@ -471,30 +468,34 @@ void VisualViewport::SetScale(float scale) {
 }
 
 double VisualViewport::OffsetLeft() const {
-  if (!LocalMainFrame())
-    return 0;
-
-  UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-
-  return VisibleRect().x() / LocalMainFrame()->PageZoomFactor();
+  // Offset{Left|Top} and Width|Height are used by the DOMVisualViewport to
+  // expose values to JS. We'll only ever ask the visual viewport for these
+  // values for the outermost main frame. All other cases are based on layout
+  // of subframes.
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  return VisibleRect().x() / LocalMainFrame().PageZoomFactor();
 }
 
 double VisualViewport::OffsetTop() const {
-  if (!LocalMainFrame())
-    return 0;
-
-  UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-
-  return VisibleRect().y() / LocalMainFrame()->PageZoomFactor();
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  return VisibleRect().y() / LocalMainFrame().PageZoomFactor();
 }
 
 double VisualViewport::Width() const {
-  UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   return VisibleWidthCSSPx();
 }
 
 double VisualViewport::Height() const {
-  UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  DCHECK(IsActiveViewport());
+  if (Document* document = LocalMainFrame().GetDocument())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   return VisibleHeightCSSPx();
 }
 
@@ -506,8 +507,12 @@ void VisualViewport::SetScaleAndLocation(float scale,
                                          bool is_pinch_gesture_active,
                                          const gfx::PointF& location) {
   if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location)) {
+    // In remote or nested main frame cases, the visual viewport is inert so it
+    // cannot be moved or scaled. This is enforced by setting page scale
+    // constraints.
+    DCHECK(IsActiveViewport());
     NotifyRootFrameViewport();
-    Document* document = LocalMainFrame()->GetDocument();
+    Document* document = LocalMainFrame().GetDocument();
     if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
       cache->HandleScaleAndLocationChanged(document);
     }
@@ -515,19 +520,19 @@ void VisualViewport::SetScaleAndLocation(float scale,
 }
 
 double VisualViewport::VisibleWidthCSSPx() const {
-  if (!LocalMainFrame())
+  if (!IsActiveViewport())
     return 0;
 
-  float zoom = LocalMainFrame()->PageZoomFactor();
+  float zoom = LocalMainFrame().PageZoomFactor();
   float width_css_px = VisibleRect().width() / zoom;
   return width_css_px;
 }
 
 double VisualViewport::VisibleHeightCSSPx() const {
-  if (!LocalMainFrame())
+  if (!IsActiveViewport())
     return 0;
 
-  float zoom = LocalMainFrame()->PageZoomFactor();
+  float zoom = LocalMainFrame().PageZoomFactor();
   float height_css_px = VisibleRect().height() / zoom;
   return height_css_px;
 }
@@ -535,7 +540,7 @@ double VisualViewport::VisibleHeightCSSPx() const {
 bool VisualViewport::DidSetScaleOrLocation(float scale,
                                            bool is_pinch_gesture_active,
                                            const gfx::PointF& location) {
-  if (!LocalMainFrame()) {
+  if (!IsActiveViewport()) {
     is_pinch_gesture_active_ = is_pinch_gesture_active;
     // The VisualViewport for a remote mainframe must always be 1.0 or else
     // event targeting will fail.
@@ -576,6 +581,8 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
     return false;
 
   if (clamped_offset != offset_) {
+    DCHECK(LocalMainFrame().View());
+
     offset_ = clamped_offset;
     GetScrollAnimator().SetCurrentOffset(offset_);
 
@@ -583,20 +590,20 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
     // ScrollingCoordinator.
     if (auto* coordinator = GetPage().GetScrollingCoordinator()) {
       if (scroll_layer_)
-        coordinator->UpdateCompositorScrollOffset(*LocalMainFrame(), *this);
+        coordinator->UpdateCompositorScrollOffset(LocalMainFrame(), *this);
     }
 
     EnqueueScrollEvent();
 
-    LocalMainFrame()->View()->DidChangeScrollOffset();
+    LocalMainFrame().View()->DidChangeScrollOffset();
     values_changed = true;
   }
 
   if (!values_changed)
     return false;
 
-  probe::DidChangeViewport(LocalMainFrame());
-  LocalMainFrame()->Loader().SaveScrollState();
+  probe::DidChangeViewport(&LocalMainFrame());
+  LocalMainFrame().Loader().SaveScrollState();
 
   ClampToBoundaries();
 
@@ -628,10 +635,10 @@ void VisualViewport::CreateLayers() {
 
   InitializeScrollbars();
 
-  if (LocalMainFrame()) {
+  if (IsActiveViewport()) {
     ScrollingCoordinator* coordinator = GetPage().GetScrollingCoordinator();
     DCHECK(coordinator);
-    coordinator->UpdateCompositorScrollOffset(*LocalMainFrame(), *this);
+    coordinator->UpdateCompositorScrollOffset(LocalMainFrame(), *this);
   }
 }
 
@@ -653,14 +660,15 @@ void VisualViewport::InitializeScrollbars() {
   // Ensure existing LocalFrameView scrollbars are removed if the visual
   // viewport scrollbars are now supplied, or created if the visual viewport no
   // longer supplies scrollbars.
-  LocalFrame* frame = LocalMainFrame();
-  if (frame && frame->View())
-    frame->View()->SetVisualViewportOrOverlayNeedsRepaint();
+  if (IsActiveViewport()) {
+    if (LocalFrameView* frame_view = LocalMainFrame().View())
+      frame_view->SetVisualViewportOrOverlayNeedsRepaint();
+  }
 }
 
 EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
-  if (LocalFrame* main_frame = LocalMainFrame()) {
-    if (Document* main_document = main_frame->GetDocument())
+  if (IsActiveViewport()) {
+    if (Document* main_document = LocalMainFrame().GetDocument())
       return main_document->GetLayoutView()->StyleRef().ScrollbarWidth();
   }
 
@@ -706,7 +714,7 @@ bool VisualViewport::VisualViewportSuppliesScrollbars() const {
 }
 
 const Document* VisualViewport::GetDocument() const {
-  return LocalMainFrame() ? LocalMainFrame()->GetDocument() : nullptr;
+  return IsActiveViewport() ? LocalMainFrame().GetDocument() : nullptr;
 }
 
 CompositorElementId VisualViewport::GetScrollElementId() const {
@@ -722,9 +730,9 @@ ChromeClient* VisualViewport::GetChromeClient() const {
 }
 
 SmoothScrollSequencer* VisualViewport::GetSmoothScrollSequencer() const {
-  if (!LocalMainFrame())
+  if (!IsActiveViewport())
     return nullptr;
-  return &LocalMainFrame()->GetSmoothScrollSequencer();
+  return &LocalMainFrame().GetSmoothScrollSequencer();
 }
 
 void VisualViewport::SetScrollOffset(
@@ -794,7 +802,7 @@ gfx::Vector2d VisualViewport::MaximumScrollOffsetInt() const {
 }
 
 ScrollOffset VisualViewport::MaximumScrollOffset() const {
-  if (!LocalMainFrame())
+  if (!IsActiveViewport())
     return ScrollOffset();
 
   // TODO(bokan): We probably shouldn't be storing the bounds in a float.
@@ -820,10 +828,12 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
 
 gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
                                                       float scale) {
-  if (!LocalMainFrame() || !LocalMainFrame()->View())
+  if (!IsActiveViewport())
     return gfx::Point();
 
-  LocalFrameView* view = LocalMainFrame()->View();
+  LocalFrameView* view = LocalMainFrame().View();
+  if (!view)
+    return gfx::Point();
 
   gfx::SizeF scaled_size(ExcludeScrollbars(size_));
   scaled_size.Scale(1 / scale);
@@ -856,11 +866,12 @@ float VisualViewport::BrowserControlsAdjustment() const {
 }
 
 bool VisualViewport::UserInputScrollable(ScrollbarOrientation) const {
+  if (!IsActiveViewport())
+    return true;
+
   // If there is a non-root fullscreen element, prevent the viewport from
   // scrolling.
-  Document* main_document =
-      LocalMainFrame() ? LocalMainFrame()->GetDocument() : nullptr;
-  if (main_document) {
+  if (Document* main_document = LocalMainFrame().GetDocument()) {
     Element* fullscreen_element =
         Fullscreen::FullscreenElementFrom(*main_document);
     if (fullscreen_element)
@@ -870,11 +881,14 @@ bool VisualViewport::UserInputScrollable(ScrollbarOrientation) const {
 }
 
 gfx::Size VisualViewport::ContentsSize() const {
-  LocalFrame* frame = LocalMainFrame();
-  if (!frame || !frame->View())
+  if (!IsActiveViewport())
     return gfx::Size();
 
-  return frame->View()->Size();
+  LocalFrameView* frame_view = LocalMainFrame().View();
+  if (!frame_view)
+    return gfx::Size();
+
+  return frame_view->Size();
 }
 
 gfx::Rect VisualViewport::VisibleContentRect(
@@ -884,12 +898,13 @@ gfx::Rect VisualViewport::VisibleContentRect(
 
 scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
     const {
-  return LocalMainFrame()->GetTaskRunner(TaskType::kInternalDefault);
+  DCHECK(IsActiveViewport());
+  return LocalMainFrame().GetTaskRunner(TaskType::kInternalDefault);
 }
 
 mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
-  if (LocalFrame* main_frame = LocalMainFrame()) {
-    if (Document* main_document = main_frame->GetDocument())
+  if (IsActiveViewport()) {
+    if (Document* main_document = LocalMainFrame().GetDocument())
       return main_document->GetLayoutView()->StyleRef().UsedColorScheme();
   }
   return mojom::blink::ColorScheme::kLight;
@@ -918,16 +933,25 @@ cc::Layer* VisualViewport::LayerForVerticalScrollbar() const {
 }
 
 RootFrameViewport* VisualViewport::GetRootFrameViewport() const {
-  if (!LocalMainFrame() || !LocalMainFrame()->View())
+  if (!IsActiveViewport())
     return nullptr;
 
-  return LocalMainFrame()->View()->GetRootFrameViewport();
+  LocalFrameView* frame_view = LocalMainFrame().View();
+  if (!frame_view)
+    return nullptr;
+
+  return frame_view->GetRootFrameViewport();
 }
 
-LocalFrame* VisualViewport::LocalMainFrame() const {
-  return GetPage().MainFrame() && GetPage().MainFrame()->IsLocalFrame()
-             ? GetPage().DeprecatedLocalMainFrame()
-             : nullptr;
+bool VisualViewport::IsActiveViewport() const {
+  Frame* main_frame = GetPage().MainFrame();
+  return main_frame && main_frame->IsOutermostMainFrame() &&
+         main_frame->IsLocalFrame();
+}
+
+LocalFrame& VisualViewport::LocalMainFrame() const {
+  DCHECK(IsActiveViewport());
+  return *To<LocalFrame>(GetPage().MainFrame());
 }
 
 gfx::Size VisualViewport::ExcludeScrollbars(const gfx::Size& size) const {
@@ -940,7 +964,11 @@ gfx::Size VisualViewport::ExcludeScrollbars(const gfx::Size& size) const {
 }
 
 bool VisualViewport::ScheduleAnimation() {
-  GetPage().GetChromeClient().ScheduleAnimation(LocalMainFrame()->View());
+  DCHECK(IsActiveViewport());
+
+  LocalFrameView* frame_view = LocalMainFrame().View();
+  DCHECK(frame_view);
+  GetPage().GetChromeClient().ScheduleAnimation(frame_view);
   return true;
 }
 
@@ -1007,10 +1035,9 @@ gfx::Point VisualViewport::RootFrameToViewport(
 }
 
 void VisualViewport::StartTrackingPinchStats() {
-  if (!LocalMainFrame())
-    return;
+  DCHECK(IsActiveViewport());
 
-  Document* document = LocalMainFrame()->GetDocument();
+  Document* document = LocalMainFrame().GetDocument();
   if (!document)
     return;
 
@@ -1049,10 +1076,21 @@ void VisualViewport::SendUMAMetrics() {
 }
 
 bool VisualViewport::ShouldDisableDesktopWorkarounds() const {
-  if (!LocalMainFrame() || !LocalMainFrame()->View())
+  // TODO(bokan): Seems suspect that we keep desktop workarounds if we're in a
+  // remote frame. This is only ever called in a remote context from
+  // WebViewImpl::ShouldZoomToLegibleScale which is used to decide if a
+  // ScrollEditableIntoView should be zoomed as well. However, we won't know
+  // the real answer until the scroll bubbles to the outermost main frame's
+  // WebView. We probably need to propagate a DisableDesktopWorkarounds bit to
+  // remote WebViews.
+  if (!IsActiveViewport())
     return false;
 
-  if (!LocalMainFrame()->GetSettings()->GetViewportEnabled())
+  LocalFrameView* frame_view = LocalMainFrame().View();
+  if (!frame_view)
+    return false;
+
+  if (!LocalMainFrame().GetSettings()->GetViewportEnabled())
     return false;
 
   // A document is considered adapted to small screen UAs if one of these holds:
@@ -1062,7 +1100,7 @@ bool VisualViewport::ShouldDisableDesktopWorkarounds() const {
   const PageScaleConstraints& constraints =
       GetPage().GetPageScaleConstraintsSet().PageDefinedConstraints();
 
-  return LocalMainFrame()->View()->GetLayoutSize().width() == size_.width() ||
+  return frame_view->GetLayoutSize().width() == size_.width() ||
          (constraints.minimum_scale == constraints.maximum_scale &&
           constraints.minimum_scale != -1);
 }
@@ -1081,6 +1119,8 @@ CompositorAnimationTimeline* VisualViewport::GetCompositorAnimationTimeline()
 }
 
 void VisualViewport::NotifyRootFrameViewport() const {
+  DCHECK(IsActiveViewport());
+
   if (!GetRootFrameViewport())
     return;
 
@@ -1092,9 +1132,14 @@ ScrollbarTheme& VisualViewport::GetPageScrollbarTheme() const {
 }
 
 PaintArtifactCompositor* VisualViewport::GetPaintArtifactCompositor() const {
-  if (LocalMainFrame() && LocalMainFrame()->View())
-    return LocalMainFrame()->View()->GetPaintArtifactCompositor();
-  return nullptr;
+  if (!IsActiveViewport())
+    return nullptr;
+
+  LocalFrameView* frame_view = LocalMainFrame().View();
+  if (!frame_view)
+    return nullptr;
+
+  return frame_view->GetPaintArtifactCompositor();
 }
 
 std::unique_ptr<TracedValue> VisualViewport::ViewportToTracedValue() const {
