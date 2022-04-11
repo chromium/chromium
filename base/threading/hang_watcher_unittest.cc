@@ -48,6 +48,9 @@ const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
 // normal execution of a test.
 constexpr TimeDelta kVeryLongDelta{base::Days(365)};
 
+// A relatively small time delta to ensure ordering of hung threads list.
+constexpr TimeDelta kSmallCPUQuantum{base::Milliseconds(1)};
+
 constexpr uint64_t kArbitraryDeadline = 0x0000C0FFEEC0FFEEu;
 constexpr uint64_t kAllOnes = 0xFFFFFFFFFFFFFFFFu;
 constexpr uint64_t kAllZeros = 0x0000000000000000u;
@@ -512,10 +515,16 @@ namespace {
 class HangWatcherSnapshotTest : public testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
+    hang_watcher_.InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess);
+
     // The monitoring loop behavior is not verified in this test so we want to
     // trigger monitoring manually.
     hang_watcher_.SetMonitoringPeriodForTesting(kVeryLongDelta);
   }
+
+  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
 
   HangWatcherSnapshotTest() = default;
   HangWatcherSnapshotTest(const HangWatcherSnapshotTest& other) = delete;
@@ -533,6 +542,7 @@ class HangWatcherSnapshotTest : public testing::Test {
   // list of hung thread ids is correct.
   void TestIDList(const std::string& id_list) {
     list_of_hung_thread_ids_during_capture_ = id_list;
+    task_environment_.AdvanceClock(kSmallCPUQuantum);
     TriggerMonitorAndWaitForCompletion();
     ASSERT_EQ(++reference_capture_count_, hang_capture_count_);
   }
@@ -540,6 +550,7 @@ class HangWatcherSnapshotTest : public testing::Test {
   // Verify that even if hang monitoring takes place no hangs are detected.
   void ExpectNoCapture() {
     int old_capture_count = hang_capture_count_;
+    task_environment_.AdvanceClock(kSmallCPUQuantum);
     TriggerMonitorAndWaitForCompletion();
     ASSERT_EQ(old_capture_count, hang_capture_count_);
   }
@@ -575,6 +586,12 @@ class HangWatcherSnapshotTest : public testing::Test {
   // Increases at the same time as |hang_capture_count_| to test that capture
   // actually took place.
   int reference_capture_count_ = 0;
+
+  base::test::ScopedFeatureList feature_list_;
+
+  // Used exclusively for MOCK_TIME.
+  test::SingleThreadTaskEnvironment task_environment_{
+      test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   HangWatcher hang_watcher_;
 };
@@ -622,8 +639,16 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   }
 }
 
-// Disabled for being flaky. crbug.com/1078828
-TEST_F(HangWatcherSnapshotTest, DISABLED_HungThreadIDs) {
+// TODO(crbug.com/1223033): On MAC, the base::PlatformThread::CurrentId(...)
+// should return the system wide IDs. The HungThreadIDs test fails because the
+// reported process ids do not match.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HungThreadIDs DISABLED_HungThreadIDs
+#else
+#define MAYBE_HungThreadIDs HungThreadIDs
+#endif
+
+TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
   // During hang capture the list of hung threads should be populated.
   hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this]() {
     EXPECT_EQ(hang_watcher_.GrabWatchStateSnapshotForTesting()
@@ -647,6 +672,10 @@ TEST_F(HangWatcherSnapshotTest, DISABLED_HungThreadIDs) {
   BlockingThread blocking_thread(&monitor_event_, base::TimeDelta{});
   blocking_thread.StartAndWaitForScopeEntered();
   {
+    // Ensure the blocking thread entered the scope before the main thread. This
+    // will guarantee an ordering while reporting the list of hung threads.
+    task_environment_.AdvanceClock(kSmallCPUQuantum);
+
     // Start a WatchHangsInScope that expires right away. Ensures that
     // the first monitor will detect a hang. This scope will naturally have a
     // later deadline than the one in |blocking_thread_| since it was created
