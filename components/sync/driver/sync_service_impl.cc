@@ -844,12 +844,23 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
         DCHECK(account_mutator);
 
+        // TODO(crbug.com/1313410): make the behaviour consistent across
+        // platforms. Any platforms which support a single-step flow that signs
+        // in and enables sync should clear the primary account here for
+        // symmetry.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        // On mobile, fully sign out the user.
+        account_mutator->ClearPrimaryAccount(
+            signin_metrics::SERVER_FORCED_DISABLE,
+            signin_metrics::SignoutDelete::kIgnoreMetric);
+#else
         // Note: On some platforms, revoking the sync consent will also clear
         // the primary account as transitioning from ConsentLevel::kSync to
         // ConsentLevel::kSignin is not supported.
         account_mutator->RevokeSyncConsent(
             signin_metrics::SERVER_FORCED_DISABLE,
             signin_metrics::SignoutDelete::kIgnoreMetric);
+#endif
       }
 #endif
       break;

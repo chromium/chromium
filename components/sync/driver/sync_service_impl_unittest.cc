@@ -1022,6 +1022,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 #else
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+#endif
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
                                     SyncService::DISABLE_REASON_USER_CHOICE),
