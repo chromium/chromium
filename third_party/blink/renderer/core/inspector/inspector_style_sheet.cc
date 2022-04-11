@@ -1597,6 +1597,9 @@ void InspectorStyleSheet::ParseText(const String& text) {
 
   source_data_ = MakeGarbageCollected<CSSRuleSourceDataList>();
   FlattenSourceData(*rule_tree, source_data_.Get());
+  // The number of rules parsed should be equal to the number of source data
+  // entries:
+  DCHECK_EQ(parsed_flat_rules_.size(), source_data_->size());
 }
 
 // The stylesheet text might be out of sync with `page_style_sheet_` rules.

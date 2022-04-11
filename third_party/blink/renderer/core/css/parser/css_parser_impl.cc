@@ -1093,7 +1093,6 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kContainer, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
-    observer_->StartRuleBody(stream.Offset());
   }
 
   ContainerQueryParser query_parser(*context_);
@@ -1113,6 +1112,9 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     return nullptr;
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
       ContainerSelector(std::move(name), *query), std::move(query));
+
+  if (observer_)
+    observer_->StartRuleBody(stream.Offset());
 
   HeapVector<Member<StyleRuleBase>> rules;
   ConsumeRuleList(stream, kRegularRuleList,
