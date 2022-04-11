@@ -4886,8 +4886,7 @@ def CheckForIncludeGuards(input_api, output_api):
         if guard_name is None:
             errors.append(
                 output_api.PresubmitPromptWarning(
-                    'Missing include guard %s' % expected_guard,
-                    [f.LocalPath()], 'Missing include guard in %s\n'
+                    'Missing include guard in %s\n'
                     'Recommended name: %s\n'
                     'This check can be disabled by having the string\n'
                     '"no-include-guard-because-multiply-included" or\n'

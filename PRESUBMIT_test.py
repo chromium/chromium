@@ -865,9 +865,9 @@ class IncludeGuardTest(unittest.TestCase):
                      'Include guard CONTENT_BROWSER_THING_BAR_H_ '
                      'not covering the whole file')
 
-    self.assertEqual(msgs[1].items, ['content/browser/test1.h'])
-    self.assertEqual(msgs[1].message,
-                     'Missing include guard CONTENT_BROWSER_TEST1_H_')
+    self.assertIn('content/browser/test1.h', msgs[1].message)
+    self.assertIn('Recommended name: CONTENT_BROWSER_TEST1_H_',
+                     msgs[1].message)
 
     self.assertEqual(msgs[2].items, ['content/browser/test2.h:3'])
     self.assertEqual(msgs[2].message,
@@ -879,9 +879,9 @@ class IncludeGuardTest(unittest.TestCase):
                      'Header using the wrong include guard name '
                      'CONTENT_BROWSER_SPLLEING_H_')
 
-    self.assertEqual(msgs[4].items, ['content/browser/foo+bar.h'])
-    self.assertEqual(msgs[4].message,
-                     'Missing include guard CONTENT_BROWSER_FOO_BAR_H_')
+    self.assertIn('content/browser/foo+bar.h', msgs[4].message)
+    self.assertIn('Recommended name: CONTENT_BROWSER_FOO_BAR_H_',
+                  msgs[4].message)
 
     self.assertEqual(msgs[5].items, ['content/NotInBlink.h:1'])
     self.assertEqual(msgs[5].message,
