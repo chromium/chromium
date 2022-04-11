@@ -10,5 +10,5 @@ import "ui/gfx/mojom/linear_gradient.mojom";
 // See ui/gfx/geometry/mask_filter_info.h.
 struct MaskFilterInfo {
   gfx.mojom.RRectF rounded_corner_bounds;
-  gfx.mojom.LinearGradient? gradient_mask;
+  gfx.mojom.LinearGradient gradient_mask;
 };

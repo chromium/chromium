@@ -13,12 +13,12 @@ bool StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo>::
   if (!data.ReadRoundedCornerBounds(&bounds))
     return false;
 
-  absl::optional<gfx::LinearGradient> gradient_mask;
+  gfx::LinearGradient gradient_mask;
   if (!data.ReadGradientMask(&gradient_mask))
     return false;
 
-  if (gradient_mask.has_value() && !gradient_mask->IsEmpty())
-    *out = gfx::MaskFilterInfo(bounds, gradient_mask.value());
+  if (!gradient_mask.IsEmpty())
+    *out = gfx::MaskFilterInfo(bounds, gradient_mask);
   else
     *out = gfx::MaskFilterInfo(bounds);
   return true;
