@@ -111,18 +111,18 @@ enum FormDeserializationStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Metrics: "PasswordManager.PasswordSyncState"
-enum PasswordSyncState {
-  SYNCING_OK = 0,
-  NOT_SYNCING_FAILED_READ = 1,
-  NOT_SYNCING_DUPLICATE_TAGS = 2,
-  NOT_SYNCING_SERVER_ERROR = 3,
-  NOT_SYNCING_FAILED_CLEANUP = 4,
-  NOT_SYNCING_FAILED_DECRYPTION = 5,
-  NOT_SYNCING_FAILED_ADD = 6,
-  NOT_SYNCING_FAILED_UPDATE = 7,
-  NOT_SYNCING_FAILED_METADATA_PERSISTENCE = 8,
-  NUM_SYNC_STATES
+// Metrics: "PasswordManager.PasswordSyncState2"
+enum class PasswordSyncState {
+  kSyncingOk = 0,
+  kNotSyncingFailedRead = 1,
+  kNotSyncingDuplicateTags = 2,
+  kNotSyncingServerError = 3,
+  kNotSyncingFailedCleanup = 4,
+  kNotSyncingFailedDecryption = 5,
+  kNotSyncingFailedAdd = 6,
+  kNotSyncingFailedUpdate = 7,
+  kNotSyncingFailedMetadataPersistence = 8,
+  kMaxValue = kNotSyncingFailedMetadataPersistence,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

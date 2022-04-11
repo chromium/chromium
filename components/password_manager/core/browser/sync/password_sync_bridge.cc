@@ -326,7 +326,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       password_store_sync_->ReadAllLogins(&key_to_local_form_map);
 
   if (read_result == FormRetrievalResult::kDbError) {
-    metrics_util::LogPasswordSyncState(metrics_util::NOT_SYNCING_FAILED_READ);
+    metrics_util::LogPasswordSyncState(
+        metrics_util::PasswordSyncState::kNotSyncingFailedRead);
     return syncer::ModelError(FROM_HERE,
                               "Failed to load entries from password store.");
   }
@@ -335,7 +336,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     if (!ShouldRecoverPasswordsDuringMerge()) {
       metrics_util::LogPasswordSyncState(
-          metrics_util::NOT_SYNCING_FAILED_DECRYPTION);
+          metrics_util::PasswordSyncState::kNotSyncingFailedDecryption);
       return syncer::ModelError(FROM_HERE,
                                 "Failed to load entries from password store. "
                                 "Encryption service failure.");
@@ -343,14 +344,13 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     absl::optional<syncer::ModelError> cleanup_result_error =
         CleanupPasswordStore();
     if (cleanup_result_error) {
-      metrics_util::LogPasswordSyncState(
-          metrics_util::NOT_SYNCING_FAILED_CLEANUP);
       return cleanup_result_error;
     }
     // Clean up done successfully, try to read again.
     read_result = password_store_sync_->ReadAllLogins(&key_to_local_form_map);
     if (read_result != FormRetrievalResult::kSuccess) {
-      metrics_util::LogPasswordSyncState(metrics_util::NOT_SYNCING_FAILED_READ);
+      metrics_util::LogPasswordSyncState(
+          metrics_util::PasswordSyncState::kNotSyncingFailedRead);
       return syncer::ModelError(
           FROM_HERE,
           "Failed to load entries from password store after cleanup.");
@@ -446,7 +446,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
             update_login_error);
         if (changes.empty()) {
           metrics_util::LogPasswordSyncState(
-              metrics_util::NOT_SYNCING_FAILED_UPDATE);
+              metrics_util::PasswordSyncState::kNotSyncingFailedUpdate);
           return syncer::ModelError(
               FROM_HERE, "Failed to update an entry in the password store.");
         }
@@ -492,7 +492,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       if (changes.empty()) {
         DCHECK_NE(add_login_error, AddLoginError::kNone);
         metrics_util::LogPasswordSyncState(
-            metrics_util::NOT_SYNCING_FAILED_ADD);
+            metrics_util::PasswordSyncState::kNotSyncingFailedAdd);
         // If the remote update is invalid, direct the processor to ignore and
         // move on.
         if (add_login_error == AddLoginError::kConstraintViolation) {
@@ -535,7 +535,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
         sync_metadata_store_change_list.TakeError();
     if (error) {
       metrics_util::LogPasswordSyncState(
-          metrics_util::NOT_SYNCING_FAILED_METADATA_PERSISTENCE);
+          metrics_util::PasswordSyncState::
+              kNotSyncingFailedMetadataPersistence);
       return error;
     }
     transaction.Commit();
@@ -549,7 +550,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     password_store_sync_->NotifyLoginsChanged(password_store_changes);
   }
 
-  metrics_util::LogPasswordSyncState(metrics_util::SYNCING_OK);
+  metrics_util::LogPasswordSyncState(
+      metrics_util::PasswordSyncState::kSyncingOk);
   if (password_store_sync_->IsAccountStore()) {
     int password_count = base::ranges::count_if(
         entity_data,
@@ -889,13 +891,13 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
       break;
     case DatabaseCleanupResult::kEncryptionUnavailable:
       metrics_util::LogPasswordSyncState(
-          metrics_util::NOT_SYNCING_FAILED_DECRYPTION);
+          metrics_util::PasswordSyncState::kNotSyncingFailedDecryption);
       return syncer::ModelError(
           FROM_HERE, "Failed to get encryption key during database cleanup.");
     case DatabaseCleanupResult::kItemFailure:
     case DatabaseCleanupResult::kDatabaseUnavailable:
       metrics_util::LogPasswordSyncState(
-          metrics_util::NOT_SYNCING_FAILED_CLEANUP);
+          metrics_util::PasswordSyncState::kNotSyncingFailedCleanup);
       return syncer::ModelError(FROM_HERE, "Failed to cleanup database.");
   }
   return absl::nullopt;

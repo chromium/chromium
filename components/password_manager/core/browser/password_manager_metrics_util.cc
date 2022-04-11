@@ -149,8 +149,7 @@ void LogFilledCredentialIsFromAndroidApp(bool from_android) {
 }
 
 void LogPasswordSyncState(PasswordSyncState state) {
-  base::UmaHistogramEnumeration("PasswordManager.PasswordSyncState", state,
-                                NUM_SYNC_STATES);
+  base::UmaHistogramEnumeration("PasswordManager.PasswordSyncState2", state);
 }
 
 void LogApplySyncChangesState(ApplySyncChangesState state) {

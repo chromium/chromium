@@ -2280,6 +2280,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordSyncState" enum="PasswordSyncState"
     expires_after="2022-08-14">
+  <obsolete>
+    Removed in M102. Replaced with PasswordManager.PasswordSyncState2.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the passwords are syncing and, if not, then what's causing sync
+    failures. Recorded after the first sync attempt either succeeds or fails.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSyncState2" enum="PasswordSyncState"
+    expires_after="2022-08-14">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
