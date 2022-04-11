@@ -24,6 +24,9 @@ namespace url_param_filter {
 // somewhat less thorough than that seen in url_param_filterer_unittest.
 class UrlParamFilterThrottleTest : public ChromeRenderViewHostTestHarness {
  public:
+  constexpr static const char kHistogramName[] =
+      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+
   UrlParamFilterThrottleTest() {
     std::string encoded_classification =
         CreateBase64EncodedFilterParamClassificationForTesting(
@@ -98,6 +101,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleTrueCase) {
 }
 
 TEST_F(UrlParamFilterThrottleTest, WillStartRequestNullInitiatorNoChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
@@ -106,13 +111,18 @@ TEST_F(UrlParamFilterThrottleTest, WillStartRequestNullInitiatorNoChanges) {
 
   bool defer = false;
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillStartRequest(resource_request.get(), &defer);
 
+  // Filtered no parameters.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 0);
   ASSERT_EQ(resource_request->url, expected_url);
   ASSERT_FALSE(defer);
 }
 
 TEST_F(UrlParamFilterThrottleTest, WillStartRequestInitiatorChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
   GURL destination_url = GURL("https://no-rule.xyz?asdf=1&plzblock=1");
@@ -124,13 +134,18 @@ TEST_F(UrlParamFilterThrottleTest, WillStartRequestInitiatorChanges) {
 
   bool defer = false;
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillStartRequest(resource_request.get(), &defer);
 
+  // Filtered one parameter.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 1);
   ASSERT_EQ(resource_request->url, expected_url);
   ASSERT_FALSE(defer);
 }
 TEST_F(UrlParamFilterThrottleTest,
        WillStartRequestNoInitiatorDestinationChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
   GURL destination_url = GURL("https://destination.xyz?asdf=1&plzblock1=1");
@@ -140,13 +155,18 @@ TEST_F(UrlParamFilterThrottleTest,
 
   bool defer = false;
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillStartRequest(resource_request.get(), &defer);
 
+  // Filtered one parameter.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 1);
   ASSERT_EQ(resource_request->url, expected_url);
   ASSERT_FALSE(defer);
 }
 
 TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestNullInitiatorNoChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<net::RedirectInfo> redirect_info =
       std::make_unique<net::RedirectInfo>();
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
@@ -158,14 +178,19 @@ TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestNullInitiatorNoChanges) {
   std::vector<std::string> removed_headers;
   auto response_head = network::mojom::URLResponseHead::New();
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillRedirectRequest(redirect_info.get(), *response_head, &defer,
                                &removed_headers, &headers, &headers);
 
+  // Filtered no parameters.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 0);
   ASSERT_EQ(redirect_info->new_url, expected_url);
   ASSERT_FALSE(defer);
 }
 
 TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestInitiatorChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<net::RedirectInfo> redirect_info =
       std::make_unique<net::RedirectInfo>();
   GURL destination_url = GURL("https://no-rule.xyz?asdf=1&plzblock=1");
@@ -180,14 +205,19 @@ TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestInitiatorChanges) {
   std::vector<std::string> removed_headers;
   auto response_head = network::mojom::URLResponseHead::New();
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillRedirectRequest(redirect_info.get(), *response_head, &defer,
                                &removed_headers, &headers, &headers);
 
+  // Filtered one parameter.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 1);
   ASSERT_EQ(redirect_info->new_url, expected_url);
   ASSERT_FALSE(defer);
 }
 TEST_F(UrlParamFilterThrottleTest,
        WillRedirectRequestNoInitiatorDestinationChanges) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<net::RedirectInfo> redirect_info =
       std::make_unique<net::RedirectInfo>();
   GURL destination_url = GURL("https://destination.xyz?asdf=1&plzblock1=1");
@@ -200,9 +230,12 @@ TEST_F(UrlParamFilterThrottleTest,
   std::vector<std::string> removed_headers;
   auto response_head = network::mojom::URLResponseHead::New();
 
+  histograms.ExpectTotalCount(kHistogramName, 0);
   throttle.WillRedirectRequest(redirect_info.get(), *response_head, &defer,
                                &removed_headers, &headers, &headers);
 
+  // Filtered one parameter.
+  ASSERT_EQ(histograms.GetTotalSum(kHistogramName), 1);
   ASSERT_EQ(redirect_info->new_url, expected_url);
   ASSERT_FALSE(defer);
 }

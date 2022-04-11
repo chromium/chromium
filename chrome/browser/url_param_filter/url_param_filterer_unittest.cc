@@ -408,7 +408,7 @@ TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
   // When the feature is not explicitly activated, the 2-parameter version of
   // the function should be inert.
-  GURL result = FilterUrl(source, expected);
+  GURL result = FilterUrl(source, expected).filtered_url;
 
   ASSERT_EQ(result, expected);
 }
@@ -428,9 +428,10 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedNoQueryString) {
       {{"classifications", encoded_classification}});
 
   GURL expected = GURL{"https://destination.xyz"};
-  GURL result = FilterUrl(source, destination);
+  FilterResult result = FilterUrl(source, destination);
 
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 0);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureActivatedAllRemoved) {
@@ -449,9 +450,10 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedAllRemoved) {
       {{"classifications", encoded_classification}});
 
   GURL expected = GURL{"https://destination.xyz"};
-  GURL result = FilterUrl(source, destination);
+  FilterResult result = FilterUrl(source, destination);
 
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
@@ -470,48 +472,10 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
       {{"classifications", encoded_classification}});
 
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = FilterUrl(source, destination);
+  FilterResult result = FilterUrl(source, destination);
 
-  ASSERT_EQ(result, expected);
-}
-
-TEST_F(UrlParamFiltererTest, FeatureActivatedMetricsWritten) {
-  base::HistogramTester histograms;
-  const std::string histogram_name =
-      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
-  std::string encoded_classification =
-      CreateBase64EncodedFilterParamClassificationForTesting(
-          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  // With the flag set, the URL should be filtered.
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kIncognitoParamFilterEnabled,
-      {{"classifications", encoded_classification}});
-
-  GURL source = GURL{"http://source.xyz"};
-  GURL destination =
-      GURL{"https://destination.xyz?plzblock=1&plzblock1=2&nochange=asdf"};
-
-  // The histogram should start off empty.
-  histograms.ExpectTotalCount(histogram_name, 0);
-  FilterUrl(source, destination);
-  // We filtered two parameters.
-  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 2);
-  FilterUrl(source, destination);
-  // We filtered two more.
-  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 4);
-  destination = GURL{"https://destination.xyz?plzblock=1&nochange=asdf"};
-  FilterUrl(source, destination);
-
-  // This time just one more.
-  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 5);
-  destination = GURL{"https://destination.xyz?nochange=asdf"};
-  FilterUrl(source, destination);
-  // This time we didn't filter any.
-  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 5);
-  // The number of samples should be 4 (four calls to FilterUrl).
-  histograms.ExpectTotalCount(histogram_name, 4);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 }  // namespace

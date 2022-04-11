@@ -22,7 +22,7 @@ struct FilterResult {
 
 // Filter the destination URL according to the parameter classifications for the
 // source and destination URLs. Used internally by the 2-arg overload, and
-// called directly from tests. Defers to caller for any metric writing.
+// called directly from tests.
 // Currently experimental; not intended for broad consumption.
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
@@ -30,9 +30,9 @@ FilterResult FilterUrl(const GURL& source_url,
                        const ClassificationMap& destination_classification_map);
 
 // Filter the destination URL according to the default parameter classifications
-// for the source and destination URLs. Owns its own metric writing.
+// for the source and destination URLs.
 // Currently experimental; not intended for broad consumption.
-GURL FilterUrl(const GURL& source_url, const GURL& destination_url);
+FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url);
 
 }  // namespace url_param_filter
 #endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_

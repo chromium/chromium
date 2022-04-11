@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/url_param_filter/cross_otr_observer.h"
 #include "chrome/browser/url_param_filter/url_param_filterer.h"
 #include "content/public/browser/browser_thread.h"
@@ -13,6 +14,15 @@
 #include "services/network/public/cpp/resource_request.h"
 
 namespace url_param_filter {
+namespace {
+
+// Write metrics about results of param filtering.
+void WriteMetrics(FilterResult result) {
+  base::UmaHistogramCounts100(
+      "Navigation.UrlParamFilter.FilteredParamCountExperimental",
+      result.filtered_param_count);
+}
+}  // anonymous namespace
 
 void UrlParamFilterThrottle::MaybeCreateThrottle(
     content::WebContents* web_contents,
@@ -46,8 +56,11 @@ void UrlParamFilterThrottle::DetachFromCurrentSequence() {}
 void UrlParamFilterThrottle::WillStartRequest(network::ResourceRequest* request,
                                               bool* defer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  request->url = FilterUrl(last_hop_initiator_, request->url);
+
+  FilterResult result = FilterUrl(last_hop_initiator_, request->url);
+  request->url = result.filtered_url;
   last_hop_initiator_ = request->url;
+  WriteMetrics(result);
 }
 
 void UrlParamFilterThrottle::WillRedirectRequest(
@@ -58,10 +71,11 @@ void UrlParamFilterThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  redirect_info->new_url =
-      FilterUrl(last_hop_initiator_, redirect_info->new_url);
+  FilterResult result = FilterUrl(last_hop_initiator_, redirect_info->new_url);
+  redirect_info->new_url = result.filtered_url;
   // Future redirects should use the redirect's domain as the navigation source.
   last_hop_initiator_ = redirect_info->new_url;
+  WriteMetrics(result);
 }
 
 bool UrlParamFilterThrottle::makes_unsafe_redirect() {

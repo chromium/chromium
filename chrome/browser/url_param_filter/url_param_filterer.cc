@@ -124,13 +124,6 @@ FilterResult FilterUrl(const GURL& source_url,
   result = result.ReplaceComponents(replacements);
   return FilterResult{result, filtered_params_count};
 }
-
-// Write metrics about results of param filtering.
-void WriteMetrics(FilterResult result) {
-  base::UmaHistogramCounts100(
-      "Navigation.UrlParamFilter.FilteredParamCountExperimental",
-      result.filtered_param_count);
-}
 }  // anonymous namespace
 
 FilterResult FilterUrl(
@@ -142,16 +135,14 @@ FilterResult FilterUrl(
                    destination_classification_map, true);
 }
 
-GURL FilterUrl(const GURL& source_url, const GURL& destination_url) {
+FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
   if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    FilterResult result = FilterUrl(
+    return FilterUrl(
         source_url, destination_url,
         ClassificationsLoader::GetInstance()->GetSourceClassifications(),
         ClassificationsLoader::GetInstance()->GetDestinationClassifications());
-    WriteMetrics(result);
-    return result.filtered_url;
   }
-  return destination_url;
+  return FilterResult{destination_url, 0};
 }
 
 }  // namespace url_param_filter
