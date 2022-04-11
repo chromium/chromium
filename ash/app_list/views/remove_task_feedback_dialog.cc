@@ -14,6 +14,7 @@
 #include "ash/style/highlight_border.h"
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -46,8 +47,9 @@ constexpr int kMarginBetweenButtons = 8;
 }  // namespace
 
 RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
-    base::OnceClosure confirm_callback)
-    : confirm_callback_(std::move(confirm_callback)) {
+    ConfirmDialogCallback confirm_callback,
+    ContinueTaskView::TaskResultType task_type)
+    : confirm_callback_(std::move(confirm_callback)), task_type_(task_type) {
   views::View* button_row;
   views::Builder<RemoveTaskFeedbackDialog>(this)
       .SetModalType(ui::MODAL_TYPE_WINDOW)
@@ -77,13 +79,14 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
               .SetLayoutManager(std::make_unique<views::BoxLayout>(
                   views::BoxLayout::Orientation::kVertical))
               .AddChildren(
-                  views::Builder<views::RadioButton>().SetText(
-                      l10n_util::GetStringUTF16(
-                          IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_ANY_SUGGESTIONS_OPTION)),
+                  views::Builder<views::RadioButton>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_ANY_SUGGESTIONS_OPTION))
+                      .CopyAddressTo(&all_suggestions_option_),
                   views::Builder<views::RadioButton>()
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_THIS_SUGGESTION_OPTION))
-                      .CopyAddressTo(&secondary_options_control_),
+                      .CopyAddressTo(&single_suggestion_option_),
                   views::Builder<views::View>()
                       .CopyAddressTo(&secondary_options_panel_)
                       .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -95,12 +98,14 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
                                             kMarginBetweenOptionsAndButtons, 0))
                       .SetVisible(false)
                       .AddChildren(
-                          views::Builder<views::Checkbox>().SetText(
-                              l10n_util::GetStringUTF16(
-                                  IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FILE_DONE_OPTION)),
-                          views::Builder<views::Checkbox>().SetText(
-                              l10n_util::GetStringUTF16(
-                                  IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_DO_NOT_SHOW_FILE_OPTION)))),
+                          views::Builder<views::Checkbox>()
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FILE_DONE_OPTION))
+                              .CopyAddressTo(&done_using_option_),
+                          views::Builder<views::Checkbox>()
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_DO_NOT_SHOW_FILE_OPTION))
+                              .CopyAddressTo(&not_show_option_))),
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
               .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
@@ -121,8 +126,8 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_REMOVE_BUTTON_LABEL),
       PillButton::Type::kIconlessProminent, nullptr));
 
-  secondary_options_control_subscription_ =
-      secondary_options_control_->AddCheckedChangedCallback(base::BindRepeating(
+  single_suggestion_option_subscription_ =
+      single_suggestion_option_->AddCheckedChangedCallback(base::BindRepeating(
           &RemoveTaskFeedbackDialog::ToggleSecondaryOptionsPanel,
           base::Unretained(this)));
 
@@ -152,8 +157,14 @@ void RemoveTaskFeedbackDialog::OnThemeChanged() {
 }
 
 void RemoveTaskFeedbackDialog::Remove() {
+  const bool has_feedback = all_suggestions_option_->GetChecked() ||
+                            single_suggestion_option_->GetChecked();
+
+  if (has_feedback)
+    LogMetricsOnFeedbackSubmitted();
+
   if (confirm_callback_)
-    std::move(confirm_callback_).Run();
+    std::move(confirm_callback_).Run(has_feedback);
 
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -166,9 +177,51 @@ void RemoveTaskFeedbackDialog::Cancel() {
 }
 
 void RemoveTaskFeedbackDialog::ToggleSecondaryOptionsPanel() {
-  secondary_options_panel_->SetVisible(
-      secondary_options_control_->GetChecked());
+  secondary_options_panel_->SetVisible(single_suggestion_option_->GetChecked());
   PreferredSizeChanged();
+}
+
+RemoveTaskFeedbackDialog::FeedbackBuckets
+RemoveTaskFeedbackDialog::GetFeedbackBucketValue() {
+  DCHECK_NE(task_type_, ContinueTaskView::TaskResultType::kUnknown);
+
+  const bool is_local_file =
+      task_type_ == ContinueTaskView::TaskResultType::kLocalFile;
+
+  if (all_suggestions_option_->GetChecked()) {
+    return is_local_file ? FeedbackBuckets::kLocalFileDontWantAny
+                         : FeedbackBuckets::kDriveFileDontWantAny;
+  }
+
+  if (single_suggestion_option_->GetChecked()) {
+    const bool done_using_checked = done_using_option_->GetChecked();
+    const bool not_show_checked = not_show_option_->GetChecked();
+    if (done_using_checked && not_show_checked) {
+      return is_local_file ? FeedbackBuckets::kLocalFileDontNeedDontSee
+                           : FeedbackBuckets::kDriveFileDontNeedDontSee;
+    }
+
+    if (done_using_checked) {
+      return is_local_file ? FeedbackBuckets::kLocalFileDontNeed
+                           : FeedbackBuckets::kDriveFileDontNeed;
+    }
+
+    if (not_show_checked) {
+      return is_local_file ? FeedbackBuckets::kLocalFileDontSee
+                           : FeedbackBuckets::kDriveFileDontSee;
+    }
+
+    return is_local_file ? FeedbackBuckets::kLocalFileDontWantThis
+                         : FeedbackBuckets::kDriveFileDontWantThis;
+  }
+  NOTREACHED();
+  return FeedbackBuckets::kInvalidFeedback;
+}
+
+void RemoveTaskFeedbackDialog::LogMetricsOnFeedbackSubmitted() {
+  base::UmaHistogramEnumeration(
+      "Apps.AppList.Search.ContinueResultRemovalReason",
+      GetFeedbackBucketValue(), FeedbackBuckets::kMaxValue);
 }
 
 BEGIN_METADATA(RemoveTaskFeedbackDialog, views::WidgetDelegateView)

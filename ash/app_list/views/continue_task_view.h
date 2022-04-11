@@ -42,7 +42,8 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   enum class TaskResultType {
     kLocalFile = 0,
     kDriveFile = 1,
-    kMaxValue = kDriveFile,
+    kUnknown = 2,
+    kMaxValue = kUnknown,
   };
 
   METADATA_HEADER(ContinueTaskView);
@@ -77,6 +78,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   void ExecuteCommand(int command_id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
+  // Returns the type of result for the task. Used for metrics.
+  TaskResultType GetTaskResultType();
+
  private:
   void SetIcon(const gfx::ImageSkia& icon);
   gfx::Size GetIconSize() const;
@@ -110,6 +114,14 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
 
   // Record metrics at the moment when the ContinueTaskView result is removed.
   void LogMetricsOnResultRemoved();
+
+  // Returns true if the feedback dialog should be shown on task removal.
+  bool ShouldShowFeedbackDialog();
+
+  // Invoked when the remove feedback dialog for the task has been closed by the
+  // usser confirming the removal. This function handles removing the result and
+  // updating the remove feedback dialog pref if |has_feedback| is true.
+  void RemoveResultAndMaybeUpdateFeedbackPref(bool has_feedback);
 
   // The index of this view within a |SearchResultContainerView| that holds it.
   absl::optional<int> index_in_container_;

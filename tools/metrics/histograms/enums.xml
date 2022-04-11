@@ -50345,9 +50345,28 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
 </enum>
 
+<enum name="LauncherContinueSectionRemoveFeedbackType">
+  <int value="0" label="Invalid Feedback"/>
+  <int value="1" label="Local file - not interested in any suggestions"/>
+  <int value="2" label="Not interested in local file"/>
+  <int value="3" label="Not interested in local file - done using file"/>
+  <int value="4" label="Not interested in local file - don't want file shown"/>
+  <int value="5"
+      label="Not interested in local file - done using file and don't want
+             file shown"/>
+  <int value="6" label="Drive file - not interested in any suggestions"/>
+  <int value="7" label="Not interested in drive file"/>
+  <int value="8" label="Not interested in drive file - done using file"/>
+  <int value="9" label="Not interested in drive file - don't want file shown"/>
+  <int value="10"
+      label="Not interested in drive file - done using file and don't want
+             file shown"/>
+</enum>
+
 <enum name="LauncherContinueSectionResultType">
   <int value="0" label="Local file"/>
   <int value="1" label="Drive file"/>
+  <int value="2" label="Unknown"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

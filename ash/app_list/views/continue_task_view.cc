@@ -15,14 +15,19 @@
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/highlight_border.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -66,6 +71,15 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
 
 int GetCornerRadius(bool tablet_mode) {
   return tablet_mode ? kViewCornerRadiusTablet : kViewCornerRadiusClamshell;
+}
+
+PrefService* GetActiveUserPrefService() {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service;
 }
 
 }  // namespace
@@ -245,15 +259,19 @@ void ContinueTaskView::ShowContextMenuForViewImpl(
       views::InkDropState::ACTIVATED);
 }
 
+bool ContinueTaskView::ShouldShowFeedbackDialog() {
+  return app_list_features::IsFeedbackOnContinueSectionRemoveEnabled() &&
+         !GetActiveUserPrefService()->GetBoolean(
+             prefs::kLauncherFeedbackOnContinueSectionSent);
+}
+
 void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case ContinueTaskCommandId::kOpenResult:
       OpenResult(event_flags);
       break;
     case ContinueTaskCommandId::kRemoveResult:
-      // TODO(crbug.com/1307371): Create a pref to control the dialog showing
-      // only one time to the user.
-      if (app_list_features::IsFeedbackOnContinueSectionRemoveEnabled())
+      if (ShouldShowFeedbackDialog())
         ShowFeedbackDialog();
       else
         RemoveResult();
@@ -299,10 +317,34 @@ void ContinueTaskView::OpenResult(int event_flags) {
       false /* launch_as_default */);
 }
 
+ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
+  switch (result()->result_type()) {
+    case AppListSearchResultType::kFileChip:
+    case AppListSearchResultType::kZeroStateFile:
+      return TaskResultType::kLocalFile;
+    case AppListSearchResultType::kDriveChip:
+    case AppListSearchResultType::kZeroStateDrive:
+      return TaskResultType::kDriveFile;
+    default:
+      NOTREACHED();
+  }
+  return TaskResultType::kUnknown;
+}
+
 void ContinueTaskView::ShowFeedbackDialog() {
-  dialog_controller_->Show(
-      std::make_unique<RemoveTaskFeedbackDialog>(base::BindOnce(
-          &ContinueTaskView::RemoveResult, weak_ptr_factory_.GetWeakPtr())));
+  dialog_controller_->Show(std::make_unique<RemoveTaskFeedbackDialog>(
+      base::BindOnce(&ContinueTaskView::RemoveResultAndMaybeUpdateFeedbackPref,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetTaskResultType()));
+}
+
+void ContinueTaskView::RemoveResultAndMaybeUpdateFeedbackPref(
+    bool has_feedback) {
+  if (has_feedback) {
+    GetActiveUserPrefService()->SetBoolean(
+        prefs::kLauncherFeedbackOnContinueSectionSent, true);
+  }
+  RemoveResult();
 }
 
 void ContinueTaskView::RemoveResult() {
@@ -345,22 +387,8 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
 }
 
 void ContinueTaskView::LogMetricsOnResultRemoved() {
-  switch (result()->result_type()) {
-    case AppListSearchResultType::kFileChip:
-    case AppListSearchResultType::kZeroStateFile:
-      base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
-                                    TaskResultType::kLocalFile,
-                                    TaskResultType::kMaxValue);
-      break;
-    case AppListSearchResultType::kDriveChip:
-    case AppListSearchResultType::kZeroStateDrive:
-      base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
-                                    TaskResultType::kDriveFile,
-                                    TaskResultType::kMaxValue);
-      break;
-    default:
-      NOTREACHED();
-  }
+  base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
+                                GetTaskResultType(), TaskResultType::kMaxValue);
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)

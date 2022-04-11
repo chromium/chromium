@@ -135,6 +135,11 @@ const char kLoginDisplayPasswordButtonEnabled[] =
 // Boolean pref indicating whether the user has enabled Suggested Content.
 const char kSuggestedContentEnabled[] = "settings.suggested_content_enabled";
 
+// Boolean value that indicates that the user has given feedback for removing
+// items from the continue section.
+const char kLauncherFeedbackOnContinueSectionSent[] =
+    "ash.launcher.continue_section_removal_feedback_sent";
+
 // Boolean pref recording whether a search result has ever been launched from
 // the Chrome OS launcher.
 const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";

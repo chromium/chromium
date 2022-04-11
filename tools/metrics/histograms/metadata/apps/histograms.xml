@@ -729,6 +729,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppList.Search.ContinueResultRemovalReason"
+    enum="LauncherContinueSectionRemoveFeedbackType" expires_after="2023-04-08">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The user response to the feedback dialog shown to users when they attempt to
+    remove a file suggestion shown in ChromeOS launcher UI. The dialog lets the
+    user provide feedback about why they removed the suggestion,and will not be
+    shown again after the user responds.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Search.ContinueResultRemoved"
     enum="LauncherContinueSectionResultType" expires_after="2023-02-14">
   <owner>anasalazar@chromium.org</owner>

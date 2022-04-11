@@ -327,6 +327,9 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kSuggestedContentInfoDismissedInLauncher, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kLauncherFeedbackOnContinueSectionSent, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   AppListNudgeController::RegisterProfilePrefs(registry);
 }
 
