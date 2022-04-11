@@ -887,11 +887,13 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
   if (!is_recording_in_progress())
     return;
 
-  if (reason == EndRecordingReason::kImminentSuspend) {
-    // If suspend happens while recording is in progress, we consider this a
-    // failure, and cut the recording immediately. The recording service will
-    // flush any remaining buffered chunks in the muxer before it terminates.
-    RecordEndRecordingReason(EndRecordingReason::kImminentSuspend);
+  if (reason == EndRecordingReason::kImminentSuspend ||
+      reason == EndRecordingReason::kShuttingDown) {
+    // If suspend or shutdown happen while recording is in progress, we consider
+    // this a failure, and cut the recording immediately. The recording service
+    // will flush any remaining buffered chunks in the muxer before it
+    // terminates.
+    RecordEndRecordingReason(reason);
     FinalizeRecording(/*success=*/false, gfx::ImageSkia());
     return;
   }
@@ -1635,6 +1637,11 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
   } else {
     OnVideoFileSaved(video_file_path, video_thumbnail, success,
                      in_projector_mode);
+  }
+
+  if (features::IsProjectorEnabled()) {
+    ProjectorControllerImpl::Get()->OnDlpRestrictionCheckedAtVideoEnd(
+        in_projector_mode, should_delete_file, video_thumbnail);
   }
 
   low_disk_space_threshold_reached_ = false;

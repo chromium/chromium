@@ -272,10 +272,8 @@ void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
 }
 
 void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
-  if (!is_in_projector_mode) {
-    OnNewScreencastPreconditionChanged();
+  if (!is_in_projector_mode)
     return;
-  }
 
   DCHECK(projector_session_->is_active());
 
@@ -295,6 +293,14 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
     client_->OpenProjectorApp();
 
   RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingEnded);
+}
+
+void ProjectorControllerImpl::OnDlpRestrictionCheckedAtVideoEnd(
+    bool is_in_projector_mode,
+    bool user_deleted_video_file,
+    const gfx::ImageSkia& thumbnail) {
+  if (!is_in_projector_mode)
+    OnNewScreencastPreconditionChanged();
 }
 
 void ProjectorControllerImpl::OnRecordingStartAborted() {

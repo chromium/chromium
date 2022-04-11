@@ -18,6 +18,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
+
 namespace ash {
 
 class ProjectorClient;
@@ -71,9 +75,23 @@ class ASH_EXPORT ProjectorControllerImpl
 
   // Called by Capture Mode to notify with the state of a video recording.
   // `is_in_projector_mode` indicates whether it's a projector-initiated video
-  // recording.
+  // recording. `user_deleted_video_file` will be true, if the user deletes the
+  // file from a DLP warning dialog that can be shown after recording ends.
+  // `thumbnail` contains an image representation of the video, which can be
+  // empty if there were errors during recording.
   void OnRecordingStarted(bool is_in_projector_mode);
   void OnRecordingEnded(bool is_in_projector_mode);
+
+  // Called when the status of the video is confirmed. DLP can potentially show
+  // users a dialog to warn them about restricted contents in the video, and
+  // recommending that they delete the file. In this case,
+  // `user_deleted_video_file` will be true. `thumbnail` contains an image
+  // representation of the video, which can be empty if there were errors during
+  // recording. If this call is for a Projector-initiated recording,
+  // `is_in_projector_mode` will be true.
+  void OnDlpRestrictionCheckedAtVideoEnd(bool is_in_projector_mode,
+                                         bool user_deleted_video_file,
+                                         const gfx::ImageSkia& thumbnail);
 
   // Called by Capture Mode to notify us that a Projector-initiated recording
   // session was aborted (i.e. recording was never started) due to e.g. user
