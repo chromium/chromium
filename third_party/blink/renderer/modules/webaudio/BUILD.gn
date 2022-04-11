@@ -146,6 +146,8 @@ blink_modules_sources("webaudio") {
     "realtime_audio_destination_node.h",
     "realtime_audio_worklet_thread.cc",
     "realtime_audio_worklet_thread.h",
+    "script_processor_handler.cc",
+    "script_processor_handler.h",
     "script_processor_node.cc",
     "script_processor_node.h",
     "semi_realtime_audio_worklet_thread.cc",
