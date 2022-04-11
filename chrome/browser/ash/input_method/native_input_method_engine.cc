@@ -464,22 +464,17 @@ void OnError(base::Time start) {
   }
 }
 
-InputFieldContext CreateInputFieldContext(AssistiveSuggester* suggester) {
+InputFieldContext CreateInputFieldContext(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   return InputFieldContext{
       .lacros_enabled = IsLacrosEnabled(),
       .multiword_enabled = features::IsAssistiveMultiWordEnabled(),
-      .multiword_allowed =
-          suggester
-              ? suggester->IsAssistiveFeatureAllowed(
-                    AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion)
-              : false,
-  };
+      .multiword_allowed = enabled_suggestions.multi_word_suggestions};
 }
 
-mojom::TextPredictionMode GetTextPredictionMode(AssistiveSuggester* suggester) {
-  return suggester &&
-                 suggester->IsAssistiveFeatureAllowed(
-                     AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion)
+mojom::TextPredictionMode GetTextPredictionMode(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
+  return enabled_suggestions.multi_word_suggestions
              ? mojom::TextPredictionMode::kEnabled
              : mojom::TextPredictionMode::kDisabled;
 }
@@ -497,7 +492,7 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
 
 mojom::InputFieldInfoPtr CreateInputFieldInfo(
     const ui::IMEEngineHandlerInterface::InputContext& context,
-    AssistiveSuggester* suggester,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions,
     bool is_normal_screen) {
   // Disable most features on the login screen.
   if (!is_normal_screen) {
@@ -515,7 +510,7 @@ mojom::InputFieldInfoPtr CreateInputFieldInfo(
                                     context.should_do_learning
                                         ? mojom::PersonalizationMode::kEnabled
                                         : mojom::PersonalizationMode::kDisabled,
-                                    GetTextPredictionMode(suggester));
+                                    GetTextPredictionMode(enabled_suggestions));
 }
 
 void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
@@ -772,38 +767,59 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   }
   if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound()) {
-      InputFieldContext input_field_context =
-          features::IsAssistiveMultiWordEnabled()
-              ? CreateInputFieldContext(assistive_suggester_.get())
-              : InputFieldContext{};
-      // TODO(b/200611333): Make input_method_->OnFocus return the overriding
-      // XKB layout instead of having the logic here in Chromium.
-      auto settings =
-          CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context);
-      OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
-                                settings);
-
-      const bool is_normal_screen =
-          InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
-          InputMethodManager::UIStyle::kNormal;
-      auto input_field_info = CreateInputFieldInfo(
-          context, assistive_suggester_.get(), is_normal_screen);
-      auto on_focus_callback = base::BindOnce(
-          &NativeInputMethodEngine::ImeObserver::ActivateTextClient,
-          weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
-
-      input_method_->OnFocus(std::move(input_field_info),
-                             prefs_ ? std::move(settings) : nullptr,
-                             std::move(on_focus_callback));
-
-      // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
-      SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
+      if (assistive_suggester_.get()) {
+        assistive_suggester_->FetchEnabledSuggestionsFromBrowserContextThen(
+            base::BindOnce(&NativeInputMethodEngine::ImeObserver::
+                               HandleOnFocusAsyncForNativeMojoEngine,
+                           weak_ptr_factory_.GetWeakPtr(), engine_id, context));
+      } else {
+        // Because assistive_suggester is not available, we can assume that
+        // there are no enabled suggestions. Hence we just run this function
+        // synchronously with no enabled suggestions.
+        HandleOnFocusAsyncForNativeMojoEngine(
+            engine_id, context, AssistiveSuggesterSwitch::EnabledSuggestions{});
+      }
     }
   } else {
     // TODO(b/218608883): Support OnFocusCallback through extension based PK.
     ime_base_observer_->OnFocus(engine_id, context_id, context);
     ActivateTextClient(context_id, true);
   }
+}
+
+void NativeInputMethodEngine::ImeObserver::
+    HandleOnFocusAsyncForNativeMojoEngine(
+        const std::string& engine_id,
+        const IMEEngineHandlerInterface::InputContext& context,
+        const AssistiveSuggesterSwitch::EnabledSuggestions&
+            enabled_suggestions) {
+  InputFieldContext input_field_context =
+      features::IsAssistiveMultiWordEnabled()
+          ? CreateInputFieldContext(enabled_suggestions)
+          : InputFieldContext{};
+  // TODO(b/200611333): Make input_method_->OnFocus return the overriding
+  // XKB layout instead of having the logic here in Chromium.
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context);
+  OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
+                            settings);
+
+  const bool is_normal_screen =
+      InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
+      InputMethodManager::UIStyle::kNormal;
+  mojom::InputFieldInfoPtr input_field_info =
+      CreateInputFieldInfo(context, enabled_suggestions, is_normal_screen);
+
+  base::OnceCallback<void(bool)> on_focus_callback =
+      base::BindOnce(&NativeInputMethodEngine::ImeObserver::ActivateTextClient,
+                     weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
+
+  input_method_->OnFocus(std::move(input_field_info),
+                         prefs_ ? std::move(settings) : nullptr,
+                         std::move(on_focus_callback));
+
+  // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
+  SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnTouch(

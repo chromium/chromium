@@ -220,6 +220,12 @@ class NativeInputMethodEngine
     void ConnectToImeService(ime::mojom::ConnectionTarget connection_target,
                              const std::string& engine_id);
 
+    void HandleOnFocusAsyncForNativeMojoEngine(
+        const std::string& engine_id,
+        const IMEEngineHandlerInterface::InputContext& context,
+        const AssistiveSuggesterSwitch::EnabledSuggestions&
+            enabled_suggestions);
+
     bool IsInputMethodBound();
     bool IsInputMethodConnected();
     bool IsTextClientActive();

@@ -629,6 +629,57 @@ TEST_F(NativeInputMethodEngineTest,
   InputMethodManager::Shutdown();
 }
 
+TEST_F(
+    NativeInputMethodEngineTest,
+    FocusCallsPassPredictiveWritingDisabledWhenMultiDisabledInBrowserContext) {
+  TestingProfile testing_profile;
+  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
+                        /*predictive_writing_enabled=*/true);
+  EnableDefaultFeatureListWithMultiWord();
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  NativeInputMethodEngine engine(std::make_unique<FakeSuggesterSwitch>(
+      FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
+                                                  false}));
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_method,
+                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
+                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::AutocorrectMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::TextPredictionMode::kDisabled)),
+                        _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              EXPECT_EQ(*settings,
+                        *ime::mojom::InputMethodSettings::NewLatinSettings(
+                            ime::mojom::LatinSettings::New(
+                                /*autocorrect=*/true,
+                                /*predictive_writing=*/false)));
+              std::move(callback).Run(true);
+            }));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
+  }
+
+  ui::IMEEngineHandlerInterface::InputContext input_context(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true);
+  engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method is connected.
+  engine.FocusIn(input_context);
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
 TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   TestingProfile testing_profile;
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,

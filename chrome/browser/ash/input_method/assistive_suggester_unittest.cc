@@ -277,25 +277,6 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       QueriesAssistiveSuggesterSwitchWhenDeterminingIfFeatureAllowed) {
-  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          EnabledSuggestions{.emoji_suggestions = true,
-                             .multi_word_suggestions = true,
-                             .personal_info_suggestions = true}));
-
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
-      AssistiveSuggester::AssistiveFeature::kEmojiSuggestion));
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
-      AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion));
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
-      AssistiveSuggester::AssistiveFeature::kPersonalInfoSuggestion));
-}
-
 TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

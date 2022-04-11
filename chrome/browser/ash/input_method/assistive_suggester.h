@@ -48,9 +48,10 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsAssistiveFeatureEnabled();
 
-  // Is the given assisitive feature blocked from being shown to a user given
-  // the current browser context.
-  bool IsAssistiveFeatureAllowed(const AssistiveFeature& feature);
+  // Fetches enabled suggestions in the current browser context then run
+  // callback.
+  void FetchEnabledSuggestionsFromBrowserContextThen(
+      AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback);
 
   // SuggestionsSource overrides
   std::vector<ime::TextSuggestion> GetSuggestions() override;

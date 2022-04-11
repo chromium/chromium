@@ -193,18 +193,9 @@ bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
           IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled());
 }
 
-bool AssistiveSuggester::IsAssistiveFeatureAllowed(
-    const AssistiveFeature& feature) {
-  switch (feature) {
-    case AssistiveFeature::kEmojiSuggestion:
-      return suggester_switch_->IsEmojiSuggestionAllowed();
-    case AssistiveFeature::kMultiWordSuggestion:
-      return suggester_switch_->IsMultiWordSuggestionAllowed();
-    case AssistiveFeature::kPersonalInfoSuggestion:
-      return suggester_switch_->IsPersonalInfoSuggestionAllowed();
-    default:
-      return false;
-  }
+void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
+    AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback) {
+  suggester_switch_->FetchEnabledSuggestionsThen(std::move(callback));
 }
 
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
