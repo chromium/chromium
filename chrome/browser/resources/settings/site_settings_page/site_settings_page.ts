@@ -192,10 +192,10 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
     {
-      route: routes.SITE_SETTINGS_FONT_ACCESS,
-      id: Id.FONT_ACCESS,
+      route: routes.SITE_SETTINGS_LOCAL_FONTS,
+      id: Id.LOCAL_FONTS,
       label: 'fonts',
-      icon: 'settings:font-access',
+      icon: 'settings:local-fonts',
       enabledLabel: 'siteSettingsFontsAllowed',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
@@ -370,7 +370,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.VR,
               Id.IDLE_DETECTION,
               Id.WINDOW_PLACEMENT,
-              Id.FONT_ACCESS,
+              Id.LOCAL_FONTS,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

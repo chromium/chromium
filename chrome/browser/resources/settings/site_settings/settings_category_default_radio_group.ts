@@ -147,10 +147,10 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.CAMERA:
       case ContentSettingsTypes.CLIPBOARD:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
-      case ContentSettingsTypes.FONT_ACCESS:
       case ContentSettingsTypes.GEOLOCATION:
       case ContentSettingsTypes.HID_DEVICES:
       case ContentSettingsTypes.IDLE_DETECTION:
+      case ContentSettingsTypes.LOCAL_FONTS:
       case ContentSettingsTypes.MIC:
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.NOTIFICATIONS:

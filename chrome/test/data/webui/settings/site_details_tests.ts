@@ -150,7 +150,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.WINDOW_PLACEMENT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.FONT_ACCESS,
+              ContentSettingsTypes.LOCAL_FONTS,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.IDLE_DETECTION,

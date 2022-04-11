@@ -96,7 +96,7 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
   r.SITE_SETTINGS_WINDOW_PLACEMENT =
       r.SITE_SETTINGS.createChild('windowPlacement');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
-  r.SITE_SETTINGS_FONT_ACCESS = r.SITE_SETTINGS.createChild('fontAccess');
+  r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
 }
 
 /**

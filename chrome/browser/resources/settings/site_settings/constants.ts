@@ -20,12 +20,12 @@ export enum ContentSettingsTypes {
   CLIPBOARD = 'clipboard',
   COOKIES = 'cookies',
   FILE_SYSTEM_WRITE = 'file-system-write',
-  FONT_ACCESS = 'font-access',
   GEOLOCATION = 'location',
   HID_DEVICES = 'hid-devices',
   IDLE_DETECTION = 'idle-detection',
   IMAGES = 'images',
   JAVASCRIPT = 'javascript',
+  LOCAL_FONTS = 'local-fonts',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI_DEVICES = 'midi-sysex',
   MIXEDSCRIPT = 'mixed-script',

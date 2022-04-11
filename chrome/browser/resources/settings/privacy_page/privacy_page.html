@@ -964,7 +964,7 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/content/fontAccess" no-search>
+      <template is="dom-if" route-path="/content/localFonts" no-search>
         <settings-subpage page-title="$i18n{fonts}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
@@ -972,14 +972,14 @@
             $i18n{siteSettingsFontsDescription}
           </div>
           <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
+              category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
               allow-option-label="$i18n{siteSettingsFontsAllowed}"
-              allow-option-icon="settings:font-access"
+              allow-option-icon="settings:local-fonts"
               block-option-label="$i18n{siteSettingsFontsBlocked}"
-              block-option-icon="settings:font-access-off">
+              block-option-icon="settings:local-fonts-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
+              category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
               block-header="$i18n{siteSettingsFontsBlockedExceptions}"
               allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
               search-filter="[[searchFilter_]]">
