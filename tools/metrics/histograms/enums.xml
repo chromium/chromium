@@ -50470,6 +50470,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="WebShareTarget (WebAPK)"/>
   <int value="14" label="External intent from Chrome (WebAPK)"/>
   <int value="15" label="WebShareTarget for Files (WebAPK)"/>
+  <int value="16" label="Chrome install service (WebAPK)"/>
 </enum>
 
 <enum name="LaunchIntentFlags">
@@ -95017,6 +95018,9 @@ others/histograms.xml -->
   <int value="16" label="Installed from sync"/>
   <int value="17" label="Create shortcut from menu on desktop"/>
   <int value="18" label="Installed via the SubApps API"/>
+  <int value="19"
+      label="Installed via the Chrome Android service for installing WebAPKs
+             from another app"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

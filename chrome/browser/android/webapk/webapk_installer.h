@@ -80,7 +80,7 @@ class WebApkInstaller {
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
   // WebAPK server to generate a WebAPK on the server and locally requests the
   // APK to be installed. This function is used when the install is scheduled by
-  // the WebApkInstallSchedulerService as this already receives the
+  // the WebApkInstallCoordinatorService as this already receives the
   // |serialized_webapk| from the client. Calls |callback| once the install
   // completed or failed.
   static void InstallForServiceAsync(
@@ -257,15 +257,15 @@ class WebApkInstaller {
 
   // Data for installs.
 
-  // True if install was scheduled via WebApkInstallSchedulerService
+  // True if install was scheduled via WebApkInstallCoordinatorService.
   bool install_from_webapk_service_;
 
   // Only available if the install was scheduled by the
-  // WebApkInstallSchedulerService.
+  // WebApkInstallCoordinatorService.
   std::unique_ptr<std::string> serialized_webapk_;
 
   // Only available if the install was scheduled directly in chrome and not in
-  // the WebApkInstallSchedulerService.
+  // the WebApkInstallCoordinatorService.
   std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
 
   SkBitmap install_primary_icon_;

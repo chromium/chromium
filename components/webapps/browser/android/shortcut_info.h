@@ -111,7 +111,11 @@ struct ShortcutInfo {
     // events.
     SOURCE_WEBAPK_SHARE_TARGET_FILE = 15,
 
-    SOURCE_COUNT = 16
+    // Used for WebAPKs added by the Chrome Android service after the
+    // install was requested by another app.
+    SOURCE_CHROME_SERVICE = 16,
+
+    SOURCE_COUNT = 17
   };
 
   explicit ShortcutInfo(const GURL& shortcut_url);

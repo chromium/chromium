@@ -99,6 +99,9 @@ enum class WebappInstallSource {
   // Installed via the SubApps API.
   SUB_APP = 18,
 
+  // Chrome Android service for installing WebAPKs from another app.
+  CHROME_SERVICE = 19,
+
   // Add any new values above this one.
   COUNT,
 };

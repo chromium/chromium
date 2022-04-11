@@ -203,6 +203,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
     case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
     case webapps::WebappInstallSource::SUB_APP:
+    case webapps::WebappInstallSource::CHROME_SERVICE:
       return apps::mojom::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::mojom::InstallSource::kPlayStore;

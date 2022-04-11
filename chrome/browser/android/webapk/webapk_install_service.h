@@ -48,6 +48,13 @@ class WebApkInstallService : public KeyedService {
   using FinishCallback = base::OnceCallback<
       void(webapps::WebApkInstallResult, bool, const std::string&)>;
 
+  // Called when the installation of a WebAPK that was scheduled by the
+  // WebApkInstallCoordinatorService finished or failed to pass the result back
+  // to the WebapkInstallCoordinatorBridge which is passing it along to the
+  // connecting client.
+  using ServiceInstallFinishCallback =
+      base::OnceCallback<void(webapps::WebApkInstallResult)>;
+
   static WebApkInstallService* Get(content::BrowserContext* browser_context);
 
   explicit WebApkInstallService(content::BrowserContext* browser_context);
@@ -69,6 +76,18 @@ class WebApkInstallService : public KeyedService {
                     bool is_primary_icon_maskable,
                     webapps::WebappInstallSource install_source);
 
+  // This function is used if the install is scheduled in the
+  // WebApkInstallCoordinatorService service. Installs WebAPKs based on a
+  // serialized_web_apk it receives from the client. It
+  // talks to the Chrome WebAPK server to generate a WebAPK on the server and to
+  // Google Play to install the downloaded WebAPK. It calls the
+  // |finish_callback| with the result of the installation to propagate the
+  // result to the connecting client.
+  void InstallForServiceAsync(std::unique_ptr<std::string> serialized_web_apk,
+                              const SkBitmap& primary_icon,
+                              bool is_primary_icon_maskable,
+                              ServiceInstallFinishCallback finish_callback);
+
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
   // the Google Play server to install the downloaded WebAPK.
   // |update_request_path| is the path of the file with the update request.
@@ -86,18 +105,44 @@ class WebApkInstallService : public KeyedService {
                          bool relax_updates,
                          const std::string& webapk_package_name);
 
+  // Called once the install scheduled from the service completed or failed.
+  // Triggers the callback to propagate the |WebApkInstallResult| to the
+  // scheduling Client.
+  void OnFinishedInstallForService(const GURL& manifest_url,
+                                   const GURL& url,
+                                   const std::u16string& short_name,
+                                   const SkBitmap& primary_icon,
+                                   bool is_primary_icon_maskable,
+                                   ServiceInstallFinishCallback done_callback,
+                                   webapps::WebApkInstallResult result,
+                                   bool relax_updates,
+                                   const std::string& webapk_package_name);
+
+  // Removes current notifications about an ongoing install and adds a
+  // installed-notification if the installation was successful.
+  void HandleFinishInstallNotifications(const GURL& manifest_url,
+                                        const GURL& url,
+                                        const std::u16string& short_name,
+                                        const SkBitmap& primary_icon,
+                                        bool is_primary_icon_maskable,
+                                        webapps::WebApkInstallResult result,
+                                        const std::string& webapk_package_name);
+
   // Shows a notification that an install is in progress.
   static void ShowInstallInProgressNotification(
-      const webapps::ShortcutInfo& shortcut_info,
+      const GURL& manifest_url,
+      const std::u16string& short_name,
+      const GURL& url,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable);
 
   // Shows a notification that an install is completed.
-  static void ShowInstalledNotification(
-      const webapps::ShortcutInfo& shortcut_info,
-      const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable,
-      const std::string& webapk_package_name);
+  static void ShowInstalledNotification(const GURL& manifest_url,
+                                        const std::u16string& short_name,
+                                        const GURL& url,
+                                        const SkBitmap& primary_icon,
+                                        bool is_primary_icon_maskable,
+                                        const std::string& package_name);
 
   raw_ptr<content::BrowserContext> browser_context_;
 

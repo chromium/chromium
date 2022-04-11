@@ -768,6 +768,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case webapps::WebappInstallSource::SYNC:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
+    case webapps::WebappInstallSource::CHROME_SERVICE:
       return WebAppManagement::kSync;
 
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:

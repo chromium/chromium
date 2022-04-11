@@ -545,6 +545,7 @@ public abstract class ChromeFeatureList {
             "WebApkInstallCompleteNotification";
     public static final String WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT =
             "WebApkTrampolineOnInitialIntent";
+    public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
 
