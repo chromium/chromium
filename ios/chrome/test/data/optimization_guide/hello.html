@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Page</title>
+
+  <!-- This script is provided by the browsertest, but is intentionally slow.
+    This provides important time between commit and first layout for any text
+    dump requests to make it to the renderer, reducing flakes. -->
+  <script type="text/javascript" src="/slow-first-layout.js"></script>
+</head>
+<body>
+  <p>hello</p>
+</body>
+</html>

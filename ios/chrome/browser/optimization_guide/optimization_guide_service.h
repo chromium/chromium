@@ -14,8 +14,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #include "url/gurl.h"
 
 namespace leveldb_proto {
@@ -30,6 +32,8 @@ namespace optimization_guide {
 class TabUrlProvider;
 class TopHostProvider;
 class OptimizationGuideStore;
+class OptimizationTargetModelObserver;
+class PredictionManager;
 class HintsManager;
 }  // namespace optimization_guide
 
@@ -52,17 +56,26 @@ class NavigationContext;
 // data is cleared.
 class OptimizationGuideService
     : public KeyedService,
-      public optimization_guide::NewOptimizationGuideDecider {
+      public optimization_guide::NewOptimizationGuideDecider,
+      public optimization_guide::OptimizationGuideModelProvider {
  public:
+  // BackgroundDownloadService is only available once the profile is fully
+  // initialized and that cannot be done as part of |Initialize|. Get a provider
+  // to retrieve the service when it is needed.
+  using BackgroundDownloadServiceProvider =
+      base::OnceCallback<download::BackgroundDownloadService*(void)>;
   OptimizationGuideService(
       leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
       const base::FilePath& profile_path,
       bool off_the_record,
       const std::string& application_locale,
       base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
+      base::WeakPtr<optimization_guide::OptimizationGuideStore>
+          prediction_model_and_features_store,
       PrefService* pref_service,
       BrowserList* browser_list,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      BackgroundDownloadServiceProvider background_download_service_provider);
   ~OptimizationGuideService() override;
 
   OptimizationGuideService(const OptimizationGuideService&) = delete;
@@ -104,11 +117,26 @@ class OptimizationGuideService
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationGuideDecisionCallback callback);
 
+  // optimization_guide::OptimizationGuideModelProvider implementation
+  void AddObserverForOptimizationTargetModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      optimization_guide::OptimizationTargetModelObserver* observer) override;
+  void RemoveObserverForOptimizationTargetModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      optimization_guide::OptimizationTargetModelObserver* observer) override;
+
+  // These functions are not private but are for optimization_guide component
+  // internal use only.
+
   // Called when browsing data is cleared for the user.
   void OnBrowsingDataRemoved();
 
   // Getter for the hint manager.
   optimization_guide::HintsManager* GetHintsManager();
+
+  // Getter for the prediction manager.
+  optimization_guide::PredictionManager* GetPredictionManager();
 
  private:
   friend class OptimizationGuideServiceTest;
@@ -143,6 +171,14 @@ class OptimizationGuideService
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
   std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
+  // The store of optimization target prediction models and features.
+  std::unique_ptr<optimization_guide::OptimizationGuideStore>
+      prediction_model_and_features_store_;
+
+  // Manages the storing, loading, and evaluating of optimization target
+  // prediction models.
+  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // The PrefService of the browser state this service is linked to.
   PrefService* const pref_service_ = nullptr;

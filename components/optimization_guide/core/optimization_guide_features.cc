@@ -259,6 +259,10 @@ GURL GetOptimizationGuideServiceGetModelsURL() {
   return get_models_url;
 }
 
+bool IsOptimizationTargetPredictionEnabled() {
+  return base::FeatureList::IsEnabled(kOptimizationTargetPrediction);
+}
+
 bool IsOptimizationHintsEnabled() {
   return base::FeatureList::IsEnabled(kOptimizationHints);
 }

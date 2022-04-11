@@ -22,6 +22,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+bool g_ignore_localhost_ssl_error_for_testing = false;
+}
+
+using AuthenticationChallengeBlock =
+    void (^)(NSURLSessionAuthChallengeDisposition disposition,
+             NSURLCredential* credential);
 using CompletionCallback =
     download::BackgroundDownloadTaskHelper::CompletionCallback;
 using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
@@ -33,6 +40,7 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
                           taskRunner:
                               (scoped_refptr<base::SingleThreadTaskRunner>)
                                   taskRunner;
+
 @end
 
 @implementation BackgroundDownloadDelegate {
@@ -164,6 +172,23 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
                     filePath:base::FilePath()
                     fileSize:0];
 }
+
+- (void)URLSession:(NSURLSession*)session
+    didReceiveChallenge:(NSURLAuthenticationChallenge*)challenge
+      completionHandler:(AuthenticationChallengeBlock)completionHandler {
+  DCHECK(completionHandler);
+  if ([challenge.protectionSpace.authenticationMethod
+          isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+    if (g_ignore_localhost_ssl_error_for_testing &&
+        [challenge.protectionSpace.host isEqualToString:@"127.0.0.1"]) {
+      NSURLCredential* credential = [NSURLCredential
+          credentialForTrust:challenge.protectionSpace.serverTrust];
+      completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+      return;
+    }
+  }
+  completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+}
 @end
 
 namespace download {
@@ -226,6 +251,12 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
 std::unique_ptr<BackgroundDownloadTaskHelper>
 BackgroundDownloadTaskHelper::Create() {
   return std::make_unique<BackgroundDownloadTaskHelperImpl>();
+}
+
+// static
+void BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
+    bool ignore) {
+  g_ignore_localhost_ssl_error_for_testing = ignore;
 }
 
 }  // namespace download

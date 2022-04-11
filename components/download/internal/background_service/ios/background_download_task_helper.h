@@ -33,6 +33,13 @@ class BackgroundDownloadTaskHelper {
   using UpdateCallback = base::RepeatingCallback<void(int64_t)>;
   static std::unique_ptr<BackgroundDownloadTaskHelper> Create();
 
+  // For test only:
+  // Ignore the SSL errors for request https://127.0.0.1/...
+  // that are used to access EmbeddedTestServer.
+  // This will allow features that use BackgroundDownloadService
+  // to be tested using EmbeddedTestServer.
+  static void SetIgnoreLocalSSLErrorForTesting(bool ignore);
+
   BackgroundDownloadTaskHelper() = default;
   virtual ~BackgroundDownloadTaskHelper() = default;
   BackgroundDownloadTaskHelper(const BackgroundDownloadTaskHelper&) = delete;

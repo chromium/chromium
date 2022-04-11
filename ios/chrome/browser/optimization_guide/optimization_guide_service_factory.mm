@@ -8,6 +8,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -21,6 +22,7 @@
 #endif
 
 namespace {
+
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     web::BrowserState* context) {
   ChromeBrowserState* chrome_browser_state =
@@ -34,20 +36,36 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   base::FilePath profile_path = original_browser_state->GetStatePath();
 
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
+  base::WeakPtr<optimization_guide::OptimizationGuideStore>
+      prediction_model_and_features_store;
   if (chrome_browser_state->IsOffTheRecord()) {
     OptimizationGuideService* original_ogs =
         OptimizationGuideServiceFactory::GetForBrowserState(
             original_browser_state);
     DCHECK(original_ogs);
     hint_store = original_ogs->GetHintsManager()->hint_store();
+    if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+      prediction_model_and_features_store =
+          original_ogs->GetPredictionManager()->model_and_features_store();
+    }
   }
 
   return std::make_unique<OptimizationGuideService>(
       proto_db_provider, profile_path, chrome_browser_state->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocale(), hint_store,
-      chrome_browser_state->GetPrefs(),
+      prediction_model_and_features_store, chrome_browser_state->GetPrefs(),
       BrowserListFactory::GetForBrowserState(chrome_browser_state),
-      chrome_browser_state->GetSharedURLLoaderFactory());
+      chrome_browser_state->GetSharedURLLoaderFactory(),
+      base::BindOnce(
+          [](ChromeBrowserState* browser_state) {
+            return BackgroundDownloadServiceFactory::GetForBrowserState(
+                browser_state);
+          },
+          // base::Unretained is safe here because the callback is owned
+          // by PredictionManager which is a transitively owned by
+          // OptimizationGuideService (a keyed service that is
+          // killed before ChromeBrowserState is deallocated).
+          base::Unretained(chrome_browser_state)));
 }
 }
 
@@ -71,6 +89,7 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "OptimizationGuideService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
 }
 

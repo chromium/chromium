@@ -6,22 +6,27 @@
 
 #import "base/callback.h"
 #import "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/optimization_guide/core/command_line_top_host_provider.h"
 #import "components/optimization_guide/core/hints_processing_util.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/optimization_guide/core/optimization_guide_store.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/core/top_host_provider.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,15 +41,17 @@ OptimizationGuideService::OptimizationGuideService(
     bool off_the_record,
     const std::string& application_locale,
     base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
+    base::WeakPtr<optimization_guide::OptimizationGuideStore>
+        prediction_model_and_features_store,
     PrefService* pref_service,
     BrowserList* browser_list,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    BackgroundDownloadServiceProvider background_download_service_provider)
     : pref_service_(pref_service), off_the_record_(off_the_record) {
   DCHECK(optimization_guide::features::IsOptimizationHintsEnabled());
 
-  base::WeakPtr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store;
-  DCHECK(!off_the_record_ || hint_store);
+  DCHECK(!off_the_record_ ||
+         (hint_store && prediction_model_and_features_store));
   if (!off_the_record_) {
     // Only create a top host provider from the command line if provided.
     top_host_provider_ =
@@ -62,12 +69,37 @@ OptimizationGuideService::OptimizationGuideService(
                   pref_service)
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
+    if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+      prediction_model_and_features_store_ =
+          std::make_unique<optimization_guide::OptimizationGuideStore>(
+              proto_db_provider,
+              profile_path.Append(
+                  optimization_guide::
+                      kOptimizationGuidePredictionModelAndFeaturesStore),
+              base::ThreadPool::CreateSequencedTaskRunner(
+                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+              pref_service);
+      prediction_model_and_features_store =
+          prediction_model_and_features_store_->AsWeakPtr();
+    }
   }
   optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
   hints_manager_ = std::make_unique<optimization_guide::IOSChromeHintsManager>(
       off_the_record_, application_locale, pref_service, hint_store,
       top_host_provider_.get(), tab_url_provider_.get(), url_loader_factory,
       optimization_guide_logger_.get());
+
+  base::FilePath models_dir;
+  base::PathService::Get(ios::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                         &models_dir);
+  if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+    prediction_manager_ =
+        std::make_unique<optimization_guide::PredictionManager>(
+            prediction_model_and_features_store, url_loader_factory,
+            pref_service, off_the_record_, application_locale, models_dir,
+            optimization_guide_logger_.get(),
+            std::move(background_download_service_provider));
+  }
 }
 
 OptimizationGuideService::~OptimizationGuideService() {
@@ -89,6 +121,11 @@ void OptimizationGuideService::DoFinalInit() {
 
 optimization_guide::HintsManager* OptimizationGuideService::GetHintsManager() {
   return hints_manager_.get();
+}
+
+optimization_guide::PredictionManager*
+OptimizationGuideService::GetPredictionManager() {
+  return prediction_manager_.get();
 }
 
 void OptimizationGuideService::OnNavigationStartOrRedirect(
@@ -170,4 +207,24 @@ void OptimizationGuideService::Shutdown() {
 void OptimizationGuideService::OnBrowsingDataRemoved() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   hints_manager_->ClearFetchedHints();
+}
+
+#pragma mark - optimization_guide::OptimizationGuideModelProvider implementation
+void OptimizationGuideService::AddObserverForOptimizationTargetModel(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    const absl::optional<optimization_guide::proto::Any>& model_metadata,
+    optimization_guide::OptimizationTargetModelObserver* observer) {
+  if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+    prediction_manager_->AddObserverForOptimizationTargetModel(
+        optimization_target, model_metadata, observer);
+  }
+}
+
+void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    optimization_guide::OptimizationTargetModelObserver* observer) {
+  if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+    prediction_manager_->RemoveObserverForOptimizationTargetModel(
+        optimization_target, observer);
+  }
 }

@@ -83,6 +83,9 @@ GURL GetOptimizationGuideServiceGetHintsURL();
 // Model Features.
 GURL GetOptimizationGuideServiceGetModelsURL();
 
+// Whether prediction of optimization targets is enabled.
+bool IsOptimizationTargetPredictionEnabled();
+
 // Whether server optimization hints are enabled.
 bool IsOptimizationHintsEnabled();
 

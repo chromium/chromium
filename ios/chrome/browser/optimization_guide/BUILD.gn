@@ -14,18 +14,23 @@ source_set("optimization_guide") {
     "optimization_guide_tab_helper.mm",
     "optimization_guide_validation_tab_helper.h",
     "optimization_guide_validation_tab_helper.mm",
+    "prediction_model_download_client.mm",
     "tab_url_provider_impl.h",
     "tab_url_provider_impl.mm",
   ]
   deps = [
     "//base",
+    "//components/download/public/background_service:public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/web_state_list",
@@ -33,6 +38,16 @@ source_set("optimization_guide") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
+  public_deps = [ ":download_client_header" ]
+}
+
+source_set("download_client_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "prediction_model_download_client.h" ]
+  deps = [
+    "//base",
+    "//components/download/public/background_service:public",
+  ]
 }
 
 source_set("unit_tests") {
@@ -45,11 +60,14 @@ source_set("unit_tests") {
     "optimization_guide_test_utils.h",
     "optimization_guide_test_utils.mm",
     "optimization_guide_validation_tab_helper_unittest.mm",
+    "prediction_manager_browsertest.mm",
     "tab_url_provider_impl_unittest.mm",
   ]
   deps = [
     ":optimization_guide",
+    ":resources_unit_tests",
     "//base/test:test_support",
+    "//components/download/internal/background_service/ios:background_service",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -57,6 +75,8 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/unified_consent",
+    "//components/variations",
+    "//components/variations:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
@@ -64,6 +84,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
   ]
@@ -125,4 +146,20 @@ source_set("eg2_tests") {
     "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+bundle_data("resources_unit_tests") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [
+    "//ios/chrome/test/data/optimization_guide/additional_file_doesnt_exist.crx3",
+    "//ios/chrome/test/data/optimization_guide/additional_file_exists.crx3",
+    "//ios/chrome/test/data/optimization_guide/amp.html",
+    "//ios/chrome/test/data/optimization_guide/empty.html",
+    "//ios/chrome/test/data/optimization_guide/english_page.html",
+    "//ios/chrome/test/data/optimization_guide/hello.html",
+    "//ios/chrome/test/data/optimization_guide/hello_world.html",
+    "//ios/chrome/test/data/optimization_guide/signed_valid_model.crx3",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/ios/chrome/test/data/optimization_guide/{{source_file_part}}" ]
 }

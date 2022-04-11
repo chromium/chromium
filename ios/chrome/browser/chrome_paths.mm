@@ -85,6 +85,13 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
       break;
 
+    case DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      if (!base::PathService::Get(DIR_USER_DATA, &cur))
+        return false;
+      cur = cur.Append(FILE_PATH_LITERAL("OptimizationGuidePredictionModels"));
+      create_dir = true;
+      break;
+
     default:
       return false;
   }

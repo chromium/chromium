@@ -23,7 +23,9 @@ enum {
   FILE_RESOURCES_PACK,         // Full path to the .pak file containing binary
                                // data (e.g. html files and images used by
                                // internal pages).
-
+  DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
+                                             // downloaded by the Optimization
+                                             // Guide are stored.
   PATH_END
 };
 
