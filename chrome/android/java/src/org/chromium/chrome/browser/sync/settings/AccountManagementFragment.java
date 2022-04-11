@@ -214,8 +214,9 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                         != null) {
                     // Only show the sign-out dialog if the user has given sync consent.
-                    SignOutDialogFragment signOutFragment =
-                            SignOutDialogFragment.create(mGaiaServiceType);
+                    SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
+                            SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                            mGaiaServiceType);
                     signOutFragment.setTargetFragment(AccountManagementFragment.this, 0);
                     signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
                 } else {

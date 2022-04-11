@@ -253,6 +253,27 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testPressingTurnOffSyncForChildUser() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        assertSyncOnState(fragment);
+        Preference turnOffSyncPreference =
+                fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC);
+        Assert.assertTrue(
+                "Turn off sync button should be shown", turnOffSyncPreference.isVisible());
+        TestThreadUtils.runOnUiThreadBlocking(
+                fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withText(R.string.turn_off_sync_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
     public void testPaymentsIntegrationChecked() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setPaymentsIntegrationEnabled(true);

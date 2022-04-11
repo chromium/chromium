@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -35,7 +36,10 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -69,6 +73,12 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private Profile mProfile;
 
+    @Mock
+    private UserPrefs.Natives mUserPrefsMock;
+
+    @Mock
+    private PrefService mPrefService;
+
     private SignOutDialogFragment mSignOutDialog;
 
     @Before
@@ -77,6 +87,7 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsMock);
     }
 
     @After
@@ -100,13 +111,48 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @LargeTest
     @Feature("RenderTest")
     public void testSignOutDialogForNonManagedAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
         mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_managed_account");
     }
 
-    private View showSignOutDialog() {
-        mSignOutDialog = SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testTurnOffSyncDialogForNonManagedAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        mRenderTestRule.render(
+                showTurnOffSyncDialog(), "turn_off_sync_dialog_for_non_managed_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testTurnOffSyncDialogForNonManagedAccountCannotDeleteHistory() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(false);
+        mRenderTestRule.render(showTurnOffSyncDialog(),
+                "turn_off_sync_dialog_for_non_managed_account_cannot_delete_history");
+    }
+
+    private View showTurnOffSyncDialog() {
+        mSignOutDialog =
+                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT,
+                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         mSignOutDialog.show(getActivity().getSupportFragmentManager(), null);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return mSignOutDialog.getDialog().getWindow().getDecorView();
+    }
+
+    private View showSignOutDialog() {
+        mSignOutDialog =
+                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        mSignOutDialog.show(getActivity().getSupportFragmentManager(), null);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        return mSignOutDialog.getDialog().getWindow().getDecorView();
+    }
+
+    private void mockAllowDeletingBrowserHistoryPref(boolean value) {
+        when(mUserPrefsMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(value);
     }
 }

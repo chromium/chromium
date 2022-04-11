@@ -60,6 +60,9 @@ enum ProfileSignout : int {
   // iOS Specific. Sign-out forced because the account was removed from the
   // device after a device restore.
   IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE = 15,
+  // User clicked to 'Turn off sync' from the settings page.
+  // Currently only available for Android Unicorn users.
+  USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS = 16,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

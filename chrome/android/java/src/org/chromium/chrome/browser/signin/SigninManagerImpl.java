@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -43,6 +44,8 @@ import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -403,23 +406,27 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 //       here. SyncService should call RevokeSyncConsent/ClearPrimaryAccount in
                 //       SigninManager instead.
                 if (mSignOutState == null) {
-                    mSignOutState = new SignOutState(null, getManagementDomain() != null);
+                    mSignOutState = new SignOutState(null,
+                            getManagementDomain() != null
+                                    ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
+                                    : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
                 }
 
                 // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
                 //                                  uses the sync account before the native is
                 //                                  loaded.
                 SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
-                disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                disableSyncAndWipeData(this::finishSignOut);
                 break;
             case PrimaryAccountChangeEvent.Type.NONE:
                 if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
                     if (mSignOutState == null) {
                         // Don't wipe data as the user is not syncing.
-                        mSignOutState = new SignOutState(null, false);
+                        mSignOutState = new SignOutState(
+                                null, SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
                     }
-                    disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                    disableSyncAndWipeData(this::finishSignOut);
                 }
                 break;
         }
@@ -462,6 +469,34 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
+     * Initialize SignOutState, and call identity mutator to revoke the sync consent.  Processing
+     * will complete asynchronously in the {@link #onPrimaryAccountChanged()} callback.
+     */
+    @Override
+    public void revokeSyncConsent(@SignoutReason int signoutSource, SignOutCallback signOutCallback,
+            boolean forceWipeUserData) {
+        // Only one signOut at a time!
+        assert mSignOutState == null;
+        // User must be syncing.
+        assert mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
+
+        // Grab the management domain before nativeSignOut() potentially clears it.
+        String managementDomain = getManagementDomain();
+
+        // We wipe sync data only, as wiping the profile data would also trigger sign-out.
+        mSignOutState = new SignOutState(signOutCallback,
+                (forceWipeUserData || managementDomain != null)
+                        ? SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY
+                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
+        Log.d(TAG, "Revoking sync consent, management domain: " + managementDomain);
+
+        mIdentityMutator.revokeSyncConsent(signoutSource,
+                // Always use IGNORE_METRIC as Chrome Android has just a single-profile which is
+                // never deleted.
+                SignoutDelete.IGNORE_METRIC);
+    }
+
+    /**
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
@@ -480,8 +515,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         // Grab the management domain before nativeSignOut() potentially clears it.
         String managementDomain = getManagementDomain();
-        mSignOutState =
-                new SignOutState(signOutCallback, forceWipeUserData || managementDomain != null);
+        mSignOutState = new SignOutState(signOutCallback,
+                (forceWipeUserData || managementDomain != null)
+                        ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
+                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
         Log.d(TAG, "Signing out, management domain: " + managementDomain);
 
         // User data will be wiped in disableSyncAndWipeData(), called from
@@ -630,19 +667,24 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         SigninManagerImplJni.get().stopApplyingCloudPolicy(mNativeSigninManagerAndroid);
     }
 
-    private void disableSyncAndWipeData(
-            boolean shouldWipeUserData, final Runnable wipeDataCallback) {
-        Log.d(TAG, "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
+    private void disableSyncAndWipeData(final Runnable wipeDataCallback) {
+        Log.d(TAG, "On native signout, user data wipe action: " + mSignOutState.mDataWipeAction);
 
         if (mSignOutState.mSignOutCallback != null) {
             mSignOutState.mSignOutCallback.preWipeData();
         }
-        if (shouldWipeUserData) {
-            SigninManagerImplJni.get().wipeProfileData(
-                    mNativeSigninManagerAndroid, wipeDataCallback);
-        } else {
-            SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
-                    mNativeSigninManagerAndroid, wipeDataCallback);
+        switch (mSignOutState.mDataWipeAction) {
+            case SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY:
+                SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
+                        mNativeSigninManagerAndroid, wipeDataCallback);
+                break;
+            case SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY:
+                wipeSyncUserData(wipeDataCallback);
+                break;
+            case SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA:
+                SigninManagerImplJni.get().wipeProfileData(
+                        mNativeSigninManagerAndroid, wipeDataCallback);
+                break;
         }
         ThreadUtils.postOnUiThread(mAccountTrackerService::onAccountsChanged);
     }
@@ -727,17 +769,27 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      * cleared atomically, and all final fields to be set upon initialization.
      */
     private static class SignOutState {
+        @IntDef({DataWipeAction.WIPE_SIGNIN_DATA_ONLY, DataWipeAction.WIPE_SYNC_DATA_ONLY,
+                DataWipeAction.WIPE_ALL_PROFILE_DATA})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface DataWipeAction {
+            int WIPE_SIGNIN_DATA_ONLY = 0;
+            int WIPE_SYNC_DATA_ONLY = 1;
+            int WIPE_ALL_PROFILE_DATA = 2;
+        }
+
         final @Nullable SignOutCallback mSignOutCallback;
-        final boolean mShouldWipeUserData;
+        final @DataWipeAction int mDataWipeAction;
 
         /**
          * @param signOutCallback Hooks to call before/after data wiping phase of sign-out.
          * @param shouldWipeUserData Flag to wipe user data as requested by the user and enforced
          *         for managed users.
          */
-        SignOutState(@Nullable SignOutCallback signOutCallback, boolean shouldWipeUserData) {
+        SignOutState(
+                @Nullable SignOutCallback signOutCallback, @DataWipeAction int dataWipeAction) {
             this.mSignOutCallback = signOutCallback;
-            this.mShouldWipeUserData = shouldWipeUserData;
+            this.mDataWipeAction = dataWipeAction;
         }
     }
 

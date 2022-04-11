@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -33,6 +35,7 @@ import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -40,7 +43,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Tests for {@link SignOutDialogFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,6 +75,12 @@ public class SignOutDialogFragmentTest {
     @Mock
     private Profile mProfile;
 
+    @Mock
+    private UserPrefs.Natives mUserPrefsNatives;
+
+    @Mock
+    private PrefService mPrefService;
+
     @Spy
     private final DummySignOutTargetFragment mTargetFragment = new DummySignOutTargetFragment();
 
@@ -79,6 +91,7 @@ public class SignOutDialogFragmentTest {
     @Before
     public void setUp() {
         mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -91,7 +104,9 @@ public class SignOutDialogFragmentTest {
                                    .get()
                                    .getSupportFragmentManager();
         mFragmentManager.beginTransaction().add(mTargetFragment, null).commit();
-        mSignOutDialog = SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        mSignOutDialog =
+                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         mSignOutDialog.setTargetFragment(mTargetFragment, 0);
     }
 
@@ -106,6 +121,13 @@ public class SignOutDialogFragmentTest {
     }
 
     @Test
+    public void testNoDataWipeCheckboxWhenAccountIsManaged() {
+        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
+        AlertDialog alertDialog = showSignOutAlertDialog();
+        assertNull(alertDialog.findViewById(R.id.remove_local_data));
+    }
+
+    @Test
     public void testPositiveButtonWhenAccountIsManaged() {
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
         AlertDialog alertDialog = showSignOutAlertDialog();
@@ -117,7 +139,17 @@ public class SignOutDialogFragmentTest {
     }
 
     @Test
-    public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
+    public void testNoDataWipeCheckboxWhenAccountIsNotManagedAndHistoryDeletionNotAllowed() {
+        mockAllowDeletingBrowserHistoryPref(false);
+
+        AlertDialog alertDialog = showSignOutAlertDialog();
+        assertNull(alertDialog.findViewById(R.id.remove_local_data));
+    }
+
+    @Test
+    public void testPositiveButtonWhenAccountIsNotManagedAndHistoryDeletionNotAllowed() {
+        mockAllowDeletingBrowserHistoryPref(false);
+
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
         verify(mSigninMetricsUtilsNativeMock)
@@ -127,7 +159,22 @@ public class SignOutDialogFragmentTest {
     }
 
     @Test
+    public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
+        mockAllowDeletingBrowserHistoryPref(true);
+
+        AlertDialog alertDialog = showSignOutAlertDialog();
+        assertNotNull(alertDialog.findViewById(R.id.remove_local_data));
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
+                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        verify(mTargetFragment).onSignOutClicked(false);
+    }
+
+    @Test
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataChecked() {
+        mockAllowDeletingBrowserHistoryPref(true);
+
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.findViewById(R.id.remove_local_data).performClick();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
@@ -150,6 +197,8 @@ public class SignOutDialogFragmentTest {
 
     @Test
     public void testNegativeButtonWhenAccountIsNotManaged() {
+        mockAllowDeletingBrowserHistoryPref(true);
+
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
         verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
@@ -160,6 +209,8 @@ public class SignOutDialogFragmentTest {
 
     @Test
     public void testEventLoggedWhenDialogDismissed() {
+        mockAllowDeletingBrowserHistoryPref(true);
+
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.dismiss();
         verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
@@ -171,5 +222,10 @@ public class SignOutDialogFragmentTest {
     private AlertDialog showSignOutAlertDialog() {
         mSignOutDialog.show(mFragmentManager, null);
         return (AlertDialog) ShadowAlertDialog.getLatestDialog();
+    }
+
+    private void mockAllowDeletingBrowserHistoryPref(boolean value) {
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(value);
     }
 }

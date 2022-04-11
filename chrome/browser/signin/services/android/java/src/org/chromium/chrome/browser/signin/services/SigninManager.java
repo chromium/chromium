@@ -170,6 +170,18 @@ public interface SigninManager {
     void runAfterOperationInProgress(Runnable runnable);
 
     /**
+     * Revokes sync consent (which disables the sync feature). This method should only be called
+     * for child accounts.
+     *
+     * @param signoutSource describes the event driving disabling sync (e.g.
+     *         {@link SignoutReason.USER_CLICKED_TURN_OFF_SYNC_SETTINGS}).
+     * @param signOutCallback Callback to notify about progress.
+     * @param forceWipeUserData Whether user selected to wipe all device data.
+     */
+    void revokeSyncConsent(@SignoutReason int signoutSource, SignOutCallback signOutCallback,
+            boolean forceWipeUserData);
+
+    /**
      * Invokes signOut with no callback.
      */
     default void signOut(@SignoutReason int signoutSource) {

@@ -1261,7 +1261,12 @@ Chrome adds accounts to the Gaia cookies. -->
     expires_after="2022-08-07">
   <owner>triploblastic@google.com</owner>
   <owner>bsazonov@chromium.org</owner>
-  <summary>User requested to wipe local device data on signout.</summary>
+  <summary>
+    User requested to wipe local device data on signout. This histogram is only
+    recorded when the user is given a choice of whether or not to wipe data (not
+    in cases where the data is either automatically wiped or automatically not
+    wiped).
+  </summary>
 </histogram>
 
 </histograms>

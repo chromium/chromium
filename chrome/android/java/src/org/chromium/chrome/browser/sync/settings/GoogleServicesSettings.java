@@ -207,8 +207,9 @@ public class GoogleServicesSettings
                 return true;
             }
 
-            SignOutDialogFragment signOutFragment =
-                    SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+            SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
+                    SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                    GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
             signOutFragment.setTargetFragment(this, 0);
             signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
             // Don't change the preference state yet, it will be updated by onSignOutClicked

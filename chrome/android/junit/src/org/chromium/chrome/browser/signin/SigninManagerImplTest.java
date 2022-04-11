@@ -187,7 +187,7 @@ public class SigninManagerImplTest {
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
         // PrimaryAccountChanged should be called *before* clearing any account data.
-        // http://crbug.com/589028
+        // For more information see crbug.com/589028.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
@@ -208,7 +208,7 @@ public class SigninManagerImplTest {
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
         // PrimaryAccountChanged should be called *before* clearing any account data.
-        // http://crbug.com/589028
+        // For more information see crbug.com/589028.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
@@ -226,7 +226,7 @@ public class SigninManagerImplTest {
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
         // PrimaryAccountChanged should be called *before* clearing any account data.
-        // http://crbug.com/589028
+        // For more information see crbug.com/589028.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
@@ -250,7 +250,7 @@ public class SigninManagerImplTest {
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
         // PrimaryAccountCleared should be called *before* clearing any account data.
-        // http://crbug.com/589028
+        // For more information see crbug.com/589028.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
@@ -273,7 +273,7 @@ public class SigninManagerImplTest {
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST, null, true);
 
         // PrimaryAccountCleared should be called *before* clearing any account data.
-        // http://crbug.com/589028
+        // For more information see crbug.com/589028.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
@@ -321,6 +321,34 @@ public class SigninManagerImplTest {
         // Turning off sync should only clear service worker caches when the account is not managed.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock).wipeGoogleServiceWorkerCaches(eq(NATIVE_SIGNIN_MANAGER), any());
+    }
+
+    // TODO(crbug.com/1294761): add test for revokeSyncConsentFromJavaWithManagedDomain() and
+    // revokeSyncConsentFromJavaWipeData() - this requires making the BookmarkModel mockable in
+    // SigninManagerImpl.
+
+    @Test
+    public void revokeSyncConsentFromJavaWithNullDomain() {
+        SigninManager.SignOutCallback callback = mock(SigninManager.SignOutCallback.class);
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                     eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+
+        mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, callback, false);
+
+        // PrimaryAccountChanged should be called *before* clearing any account data.
+        // For more information see crbug.com/589028.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+
+        // Simulate native callback to trigger clearing of account data.
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
+
+        // Disabling sync should only clear the service worker cache when the user is neither
+        // managed or syncing.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
 
     @Test
