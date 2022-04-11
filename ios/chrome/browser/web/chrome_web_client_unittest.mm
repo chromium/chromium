@@ -29,6 +29,8 @@
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
+#import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
+#import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
@@ -430,6 +432,44 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
   EXPECT_TRUE([page containsString:close_page_string])
       << base::SysNSStringToUTF8(page);
   EXPECT_FALSE([page containsString:back_to_safety_string])
+      << base::SysNSStringToUTF8(page);
+}
+
+// Tests PrepareErrorPage for a HTTPS-Only Mode error, which results in a
+// committed HTTPS-Only Mode interstitial that has a 'Go back'.
+TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(browser_state());
+  HttpsOnlyModeContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web_state.SetNavigationManager(std::move(navigation_manager));
+
+  HttpsOnlyModeContainer::FromWebState(&web_state)->SetHttpUrl(GURL(kTestUrl));
+
+  NSError* error = [NSError errorWithDomain:kHttpsOnlyModeErrorDomain
+                                       code:kHttpsOnlyModeErrorCode
+                                   userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/absl::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  NSString* back_to_safety_string =
+      l10n_util::GetNSString(IDS_HTTPS_ONLY_MODE_BACK_BUTTON);
+  EXPECT_TRUE([page containsString:back_to_safety_string])
       << base::SysNSStringToUTF8(page);
 }
 

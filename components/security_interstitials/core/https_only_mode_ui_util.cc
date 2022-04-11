@@ -22,6 +22,8 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(base::Value* load_time_data,
   load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH));
+  // TODO(crbug.com/1302509): Change this button to "Close" when we can't go
+  // back:
   load_time_data->SetStringKey(
       "proceedButtonText",
       l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_SUBMIT_BUTTON));
