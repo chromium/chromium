@@ -2111,11 +2111,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children.html"));
 }
 
+// Failing under multiple platforms. crbug.com/1314860
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityIframeWithInvalidChildrenAdded) {
-  // Flaky when the ApiType is kBlink. https://crbug.com/1314860
-  if (GetParam() == ui::AXApiType::kBlink)
-    return;
+                       DISABLED_AccessibilityIframeWithInvalidChildrenAdded) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children-added.html"));
 }
 
