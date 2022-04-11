@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -54,6 +55,10 @@ class ArcBootPhaseThrottleObserver
   // arc::ConnectionObserver<arc::mojom::IntentHelperInstance> overrides.
   void OnConnectionReady() override;
 
+  // If nullopt, ARC hasn't been started yet. Otherwise, true means ARC is
+  // booting, and false means ARC has already booted.
+  const absl::optional<bool>& arc_is_booting() const { return arc_is_booting_; }
+
   static const base::TimeDelta& GetThrottleDelayForTesting();
 
  private:
@@ -65,7 +70,8 @@ class ArcBootPhaseThrottleObserver
   void MaybeSetActive();
 
   bool session_restore_loading_ = false;
-  bool arc_is_booting_ = false;
+  // This is set when one of the ArcSessionManagerObserver functions is called.
+  absl::optional<bool> arc_is_booting_;
 
   base::WeakPtrFactory<ArcBootPhaseThrottleObserver> weak_ptr_factory_{this};
 };

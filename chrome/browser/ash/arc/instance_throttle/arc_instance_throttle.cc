@@ -38,7 +38,8 @@ void OnSetArcVmCpuRestriction(
     LOG(ERROR) << "SetVmCpuRestriction for ARCVM failed";
 }
 
-void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state) {
+void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
+                            bool use_quota) {
   auto* const client = chromeos::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
@@ -49,12 +50,15 @@ void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state) {
   request.set_cpu_cgroup(vm_tools::concierge::CPU_CGROUP_ARCVM);
   switch (cpu_restriction_state) {
     case CpuRestrictionState::CPU_RESTRICTION_FOREGROUND:
+      DCHECK(!use_quota);
       request.set_cpu_restriction_state(
           vm_tools::concierge::CPU_RESTRICTION_FOREGROUND);
       break;
     case CpuRestrictionState::CPU_RESTRICTION_BACKGROUND:
       request.set_cpu_restriction_state(
-          vm_tools::concierge::CPU_RESTRICTION_BACKGROUND);
+          use_quota ? vm_tools::concierge::
+                          CPU_RESTRICTION_BACKGROUND_WITH_CFS_QUOTA_ENFORCED
+                    : vm_tools::concierge::CPU_RESTRICTION_BACKGROUND);
       break;
   }
 
@@ -96,11 +100,14 @@ void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
 // Adjusts the amount of CPU the ARC instance is allowed to use. When
 // |cpu_restriction_state| is CPU_RESTRICTION_BACKGROUND, the limit is adjusted
 // so ARC can only use tightly restricted CPU resources.
-void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  if (IsArcVmEnabled())
-    SetArcVmCpuRestriction(cpu_restriction_state);
-  else
+void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state,
+                          bool use_quota) {
+  if (IsArcVmEnabled()) {
+    SetArcVmCpuRestriction(cpu_restriction_state, use_quota);
+  } else {
+    // ARC container does not support |use_quota|.
     SetArcContainerCpuRestriction(cpu_restriction_state);
+  }
 }
 
 class DefaultDelegateImpl : public ArcInstanceThrottle::Delegate {
@@ -111,8 +118,9 @@ class DefaultDelegateImpl : public ArcInstanceThrottle::Delegate {
   DefaultDelegateImpl& operator=(const DefaultDelegateImpl&) = delete;
 
   ~DefaultDelegateImpl() override = default;
-  void SetCpuRestriction(CpuRestrictionState cpu_restriction_state) override {
-    SetArcCpuRestriction(cpu_restriction_state);
+  void SetCpuRestriction(CpuRestrictionState cpu_restriction_state,
+                         bool use_quota) override {
+    SetArcCpuRestriction(cpu_restriction_state, use_quota);
   }
 
   void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
@@ -175,7 +183,13 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
       bridge_(bridge) {
   AddObserver(std::make_unique<ArcActiveWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcAppLaunchThrottleObserver>());
-  AddObserver(std::make_unique<ArcBootPhaseThrottleObserver>());
+
+  {
+    auto boot_observer = std::make_unique<ArcBootPhaseThrottleObserver>();
+    boot_observer_ = boot_observer.get();  // Remember the pointer locally.
+    AddObserver(std::move(boot_observer));
+  }
+
   AddObserver(std::make_unique<ArcKioskModeThrottleObserver>());
   AddObserver(std::make_unique<ArcPipWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
@@ -206,7 +220,22 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
       ToCpuRestriction(should_throttle);
 
   NotifyCpuRestriction(cpu_restriction_state);
-  delegate_->SetCpuRestriction(cpu_restriction_state);
+
+  // Check if enforcing quota is possible
+  bool use_quota = false;
+
+  const absl::optional<bool>& arc_is_booting = boot_observer_->arc_is_booting();
+  const bool arc_has_booted = (arc_is_booting && !*arc_is_booting);
+  const bool is_throttling = (cpu_restriction_state ==
+                              CpuRestrictionState::CPU_RESTRICTION_BACKGROUND);
+
+  if (arc_has_booted && !quota_ever_enforced_ && is_throttling) {
+    // TODO(yusukes): Do not use quota when Android VPN is in use.
+    use_quota = true;
+    quota_ever_enforced_ = true;
+    DVLOG(2) << "Enforcing cfs_quota";
+  }
+  delegate_->SetCpuRestriction(cpu_restriction_state, use_quota);
 }
 
 void ArcInstanceThrottle::RecordCpuRestrictionDisabledUMA(

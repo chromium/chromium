@@ -24,6 +24,7 @@ class BrowserContext;
 }
 
 namespace arc {
+class ArcBootPhaseThrottleObserver;
 class ArcBridgeService;
 
 namespace mojom {
@@ -48,8 +49,8 @@ class ArcInstanceThrottle : public KeyedService,
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual void SetCpuRestriction(
-        CpuRestrictionState cpu_restriction_state) = 0;
+    virtual void SetCpuRestriction(CpuRestrictionState cpu_restriction_state,
+                                   bool use_quota) = 0;
     virtual void RecordCpuRestrictionDisabledUMA(
         const std::string& observer_name,
         base::TimeDelta delta) = 0;
@@ -89,8 +90,14 @@ class ArcInstanceThrottle : public KeyedService,
   void NotifyCpuRestriction(CpuRestrictionState cpu_restriction_state);
 
   std::unique_ptr<Delegate> delegate_;
+  // True if CPU_RESTRICTION_BACKGROUND_WITH_CFS_QUOTA_ENFORCED has ever been
+  // used.
+  bool quota_ever_enforced_ = false;
+
   // Owned by ArcServiceManager.
   ArcBridgeService* const bridge_;
+  // Owned by the parent class, ash::ThrottleService.
+  ArcBootPhaseThrottleObserver* boot_observer_ = nullptr;
 };
 
 }  // namespace arc
