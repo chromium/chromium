@@ -202,6 +202,53 @@ using ::ash::MagnifierType;
 // that directly map to a single preference.
 // clang-format off
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+// Policies for all platforms - Start
+  { key::kDefaultPopupsSetting,
+    prefs::kManagedDefaultPopupsSetting,
+    base::Value::Type::INTEGER },
+  { key::kDisableSafeBrowsingProceedAnyway,
+    prefs::kSafeBrowsingProceedAnywayDisabled,
+    base::Value::Type::BOOLEAN },
+  { key::kEditBookmarksEnabled,
+    bookmarks::prefs::kEditBookmarksEnabled,
+    base::Value::Type::BOOLEAN },
+    { key::kOptimizationGuideFetchingEnabled,
+    optimization_guide::prefs::kOptimizationGuideFetchingEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kPasswordManagerEnabled,
+    password_manager::prefs::kCredentialsEnableService,
+    base::Value::Type::BOOLEAN },
+  { key::kPopupsAllowedForUrls,
+    prefs::kManagedPopupsAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kPopupsBlockedForUrls,
+    prefs::kManagedPopupsBlockedForUrls,
+    base::Value::Type::LIST },
+#if BUILDFLAG(ENABLE_PRINTING)
+  { key::kPrintingEnabled,
+    prefs::kPrintingEnabled,
+    base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(ENABLE_PRINTING)
+  { key::kSafeBrowsingEnabled,
+    prefs::kSafeBrowsingEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kSavingBrowserHistoryDisabled,
+    prefs::kSavingBrowserHistoryDisabled,
+    base::Value::Type::BOOLEAN },
+  { key::kSearchSuggestEnabled,
+    prefs::kSearchSuggestEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kTranslateEnabled,
+    translate::prefs::kOfferTranslateEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kURLAllowlist,
+    policy_prefs::kUrlAllowlist,
+    base::Value::Type::LIST
+  },
+  { key::kUrlKeyedAnonymizedDataCollectionEnabled,
+    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+    base::Value::Type::BOOLEAN },
+// Policies for all platforms - End
   { key::kHomepageIsNewTabPage,
     prefs::kHomePageIsNewTabPage,
     base::Value::Type::BOOLEAN },
@@ -213,9 +260,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kAlternateErrorPagesEnabled,
     embedder_support::kAlternateErrorPagesEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kSearchSuggestEnabled,
-    prefs::kSearchSuggestEnabled,
     base::Value::Type::BOOLEAN },
   { key::kBuiltInDnsClientEnabled,
     prefs::kBuiltInDnsClientEnabled,
@@ -229,17 +273,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kQuicAllowed,
     prefs::kQuicAllowed,
     base::Value::Type::BOOLEAN },
-  { key::kSafeBrowsingEnabled,
-    prefs::kSafeBrowsingEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kSafeBrowsingForTrustedSourcesEnabled,
     prefs::kSafeBrowsingForTrustedSourcesEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSafeBrowsingExtendedReportingEnabled,
     prefs::kSafeBrowsingScoutReportingEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kUrlKeyedAnonymizedDataCollectionEnabled,
-    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
     base::Value::Type::BOOLEAN },
   { key::kDownloadRestrictions,
     prefs::kDownloadRestrictions,
@@ -256,17 +294,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForceYouTubeRestrict,
     prefs::kForceYouTubeRestrict,
     base::Value::Type::INTEGER },
-  { key::kPasswordManagerEnabled,
-    password_manager::prefs::kCredentialsEnableService,
-    base::Value::Type::BOOLEAN },
   { key::kSetTimeoutWithout1MsClampEnabled,
     policy_prefs::kSetTimeoutWithout1MsClampEnabled,
     base::Value::Type::BOOLEAN },
-#if BUILDFLAG(ENABLE_PRINTING)
-  { key::kPrintingEnabled,
-    prefs::kPrintingEnabled,
-    base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(ENABLE_PRINTING)
   { key::kPrintHeaderFooter,
     prefs::kPrintHeaderFooter,
     base::Value::Type::BOOLEAN },
@@ -282,9 +312,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kShowHomeButton,
     prefs::kShowHomeButton,
     base::Value::Type::BOOLEAN },
-  { key::kSavingBrowserHistoryDisabled,
-    prefs::kSavingBrowserHistoryDisabled,
-    base::Value::Type::BOOLEAN },
   { key::kAllowDeletingBrowserHistory,
     prefs::kAllowDeletingBrowserHistory,
     base::Value::Type::BOOLEAN },
@@ -299,9 +326,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
   { key::kDefaultJavaScriptJitSetting,
     prefs::kManagedDefaultJavaScriptJitSetting,
-    base::Value::Type::INTEGER },
-  { key::kDefaultPopupsSetting,
-    prefs::kManagedDefaultPopupsSetting,
     base::Value::Type::INTEGER },
   { key::kCookiesAllowedForUrls,
     prefs::kManagedCookiesAllowedForUrls,
@@ -335,12 +359,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kInsecurePrivateNetworkRequestsAllowedForUrls,
     prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
-    base::Value::Type::LIST },
-  { key::kPopupsAllowedForUrls,
-    prefs::kManagedPopupsAllowedForUrls,
-    base::Value::Type::LIST },
-  { key::kPopupsBlockedForUrls,
-    prefs::kManagedPopupsBlockedForUrls,
     base::Value::Type::LIST },
   { key::kNotificationsAllowedForUrls,
     prefs::kManagedNotificationsAllowedForUrls,
@@ -427,14 +445,8 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCloudPrintSubmitEnabled,
     prefs::kCloudPrintSubmitEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kTranslateEnabled,
-    translate::prefs::kOfferTranslateEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kBookmarkBarEnabled,
     bookmarks::prefs::kShowBookmarkBar,
-    base::Value::Type::BOOLEAN },
-  { key::kEditBookmarksEnabled,
-    bookmarks::prefs::kEditBookmarksEnabled,
     base::Value::Type::BOOLEAN },
   { key::kShowAppsShortcutInBookmarkBar,
     bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
@@ -514,9 +526,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultMediaStreamSetting,
     prefs::kManagedDefaultMediaStreamSetting,
     base::Value::Type::INTEGER },
-  { key::kDisableSafeBrowsingProceedAnyway,
-    prefs::kSafeBrowsingProceedAnywayDisabled,
-    base::Value::Type::BOOLEAN },
   { key::kCECPQ2Enabled,
     prefs::kCECPQ2Enabled,
     base::Value::Type::BOOLEAN },
@@ -737,9 +746,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForcedLanguages,
     language::prefs::kForcedLanguages,
     base::Value::Type::LIST },
-    { key::kOptimizationGuideFetchingEnabled,
-    optimization_guide::prefs::kOptimizationGuideFetchingEnabled,
-    base::Value::Type::BOOLEAN },
 
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,
@@ -1697,32 +1703,40 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
         kSimplePolicyMap[i].value_type));
   }
 
+  // Policies for all platforms - Start
   handlers->AddHandler(
       std::make_unique<autofill::AutofillAddressPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
   handlers->AddHandler(std::make_unique<autofill::AutofillPolicyHandler>());
   handlers->AddHandler(
+      std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
+  handlers->AddHandler(std::make_unique<DefaultSearchPolicyHandler>());
+  handlers->AddHandler(std::make_unique<IncognitoModePolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
+          chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
+  handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
+  // Policies for all platforms - End
+
+  handlers->AddHandler(
       std::make_unique<content_settings::CookieSettingsPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<
           content_settings::InsecurePrivateNetworkPolicyHandler>());
-  handlers->AddHandler(std::make_unique<DefaultSearchPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<
           enterprise_reporting::CloudProfileReportingPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<
-          enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
   handlers->AddHandler(std::make_unique<ForceSafeSearchPolicyHandler>());
   handlers->AddHandler(std::make_unique<ForceYouTubeSafetyModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<IncognitoModePolicyHandler>());
   handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
-          chrome_schema));
   handlers->AddHandler(std::make_unique<HomepageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<proxy_config::ProxyPolicyHandler>());
   handlers->AddHandler(std::make_unique<SecureDnsPolicyHandler>());
@@ -1772,8 +1786,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<JavascriptPolicyHandler>());
   handlers->AddHandler(std::make_unique<NetworkPredictionPolicyHandler>());
   handlers->AddHandler(std::make_unique<RestoreOnStartupPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kWindowOcclusionEnabled,
       policy::policy_prefs::kNativeWindowOcclusionEnabled,
@@ -1781,14 +1793,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingAllowlistDomains,
       base::Value::Type::LIST));
-  handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
   handlers->AddHandler(std::make_unique<BrowsingHistoryPolicyHandler>());
 
-  handlers->AddHandler(
-      std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kURLAllowlist, policy_prefs::kUrlAllowlist,
-      base::Value::Type::LIST));
   handlers->AddHandler(
       std::make_unique<ExplicitlyAllowedNetworkPortsPolicyHandler>());
   handlers->AddHandler(std::make_unique<HttpsOnlyModePolicyHandler>());
