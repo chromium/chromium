@@ -19,7 +19,7 @@ generate_grd("build_grdp") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
@@ -31,21 +31,16 @@ preprocess_if_expr("preprocess_src") {
     "dialogs.css",
     "i18n_process.css",
     "list.css",
+    "menu_button.css",
+    "menu.css",
     "roboto.css",
+    "spinner.css",
     "tabs.css",
     "text_defaults.css",
     "text_defaults_md.css",
     "throbber.css",
-
-    # TODO(dpapad): Include remaining files once thy no longer depend on
-    # flattenhtml=true.
-    #"controlled_indicator.css",
-    #"menu_button.css",
-    #"menu.css",
-    #"overlay.css",
-    #"spinner.css",
-    #"tree.css",
-    #"widgets.css",
+    "tree.css",
+    "widgets.css",
   ]
 
   if (include_polymer) {
@@ -53,6 +48,9 @@ preprocess_if_expr("preprocess_src") {
   }
 
   if (is_chromeos) {
-    in_files += [ "os_header.css" ]
+    in_files += [
+      "os_header.css",
+      "overlay.css",
+    ]
   }
 }

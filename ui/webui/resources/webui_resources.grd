@@ -12,30 +12,11 @@ without changes to the corresponding grd file. -->
     <output filename="webui_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
-    <includes>
-      <if expr="chromeos_ash">
-        <include name="IDR_WEBUI_CROS_COLORS_CSS"
-                 file="${root_gen_dir}/ui/chromeos/styles/cros_styles.css"
-                 resource_path="chromeos/colors/cros_styles.css"
-                 type="chrome_html"
-                 use_base_dir="false" />
-      </if>
-    </includes>
     <structures>
-      <structure name="IDR_WEBUI_CSS_MENU_CSS"
+      <!-- TODO(crbug.com/1132403): Remove this entire file. Keeping one dummy
+      entry temporarily, because an empty grd file causes a build failures. -->
+      <structure name="IDR_WEBUI_CSS_MENU_DUMMY_CSS"
                  file="css/menu.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_MENU_BUTTON_CSS"
-                 file="css/menu_button.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_SPINNER_CSS"
-                 file="css/spinner.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_TREE_CSS"
-                 file="css/tree.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_WIDGETS_CSS"
-                 file="css/widgets.css" type="chrome_html" />
-      <if expr="chromeos_ash">
-        <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
-                   file="css/overlay.css" type="chrome_html" />
-      </if>
     </structures>
   </release>
 </grit>
