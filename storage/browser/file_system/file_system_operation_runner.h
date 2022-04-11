@@ -47,7 +47,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
       FileSystemOperation::CopyFileProgressCallback;
   using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
-  using CopyOrMoveHookDelegate = CopyOrMoveHookDelegate;
 
   using OperationID = uint64_t;
 
