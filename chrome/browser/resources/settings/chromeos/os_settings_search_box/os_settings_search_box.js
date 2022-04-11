@@ -15,8 +15,8 @@ import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {Route, Router} from '../../router.js';
 import {recordSearch} from '../metrics_recorder.js';
@@ -51,7 +51,6 @@ const OsSettingSearchBoxUserAction = {
   SEARCH_RESULT_CLICKED: 0,
   CLICKED_OUT_OF_SEARCH_BOX: 1,
 };
-
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -188,10 +187,7 @@ Polymer({
 
     // Setting the search box value without triggering a 'search-changed'
     // event, to prevent an unnecessary duplicate entry in |window.history|.
-    toolbarSearchField.setValue(urlSearchQuery, /*noEvent=*/true);
-
-    // Initialize the announcer once.
-    IronA11yAnnouncer.requestAvailability();
+    toolbarSearchField.setValue(urlSearchQuery, /*noEvent=*/ true);
 
     // Log number of search requests made each time settings window closes.
     window.addEventListener('beforeunload', () => {
@@ -444,7 +440,8 @@ Polymer({
     }
 
     if (!this.searchResultsExist_) {
-      this.fire('iron-announce', {text: this.i18n('searchNoResults')});
+      CrA11yAnnouncerElement.getInstance().announce(
+          this.i18n('searchNoResults'));
       return;
     }
   },

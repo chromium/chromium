@@ -14,11 +14,11 @@ js_type_check("closure_compile_module") {
 
 js_library("keyboard_shortcut_banner") {
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
 }
 
 html_to_js("web_components") {

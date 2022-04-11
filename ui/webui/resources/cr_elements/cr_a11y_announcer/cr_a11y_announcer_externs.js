@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function CrA11yAnnouncerElement() {}
+
+/** @param {string} message */
+CrA11yAnnouncerElement.prototype.announce = function(message) {};
+
+/** @return {!CrA11yAnnouncerElement} */
+CrA11yAnnouncerElement.getInstance = function() {};

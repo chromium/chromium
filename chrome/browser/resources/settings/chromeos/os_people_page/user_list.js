@@ -21,8 +21,8 @@ import '../../settings_vars_css.js';
 
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
@@ -65,12 +65,6 @@ Polymer({
 
   /** chrome.usersPrivate */
   usersPrivate_: chrome.usersPrivate,
-
-  /** @override */
-  attached() {
-    // Initialize the announcer once.
-    IronA11yAnnouncer.requestAvailability();
-  },
 
   /** @override */
   ready() {
@@ -126,9 +120,8 @@ Polymer({
    * @param {!{model: !{item: !chrome.usersPrivate.User}}} e
    */
   removeUser_(e) {
-    this.fire(
-        'iron-announce',
-        {text: this.i18n('userRemovedMessage', e.model.item.name)});
+    CrA11yAnnouncerElement.getInstance().announce(
+        this.i18n('userRemovedMessage', e.model.item.name));
 
     // Focus the add user button since, after this removal, the only user left
     // will be the account owner.

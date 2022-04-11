@@ -12,10 +12,11 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../settings_shared_css.js';
 import '../i18n_setup.js';
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './security_keys_pin_field.html.js';
 
 /**
@@ -68,14 +69,6 @@ export class SettingsSecurityKeysPinFieldElement extends
   private error_: string;
   private value_: string;
   private inputVisible_: boolean;
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
-  }
 
   /** Focuses the PIN input field. */
   override focus() {
@@ -216,9 +209,7 @@ export class SettingsSecurityKeysPinFieldElement extends
   private errorChanged_() {
     // Make screen readers announce changes to the PIN validation error
     // label.
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce',
-        {bubbles: true, composed: true, detail: {text: this.error_}}));
+    CrA11yAnnouncerElement.getInstance().announce(this.error_);
   }
 }
 

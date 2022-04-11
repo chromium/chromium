@@ -30,6 +30,7 @@ import './passwords_export_dialog.js';
 import './passwords_shared_css.js';
 import './avatar_icon.js';
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -37,8 +38,7 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -424,10 +424,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
           this.trustedVaultBannerState_ = state;
         });
 
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
-
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_PASSWORD_MANAGER);
   }
@@ -729,7 +725,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       return;
     }
     setTimeout(() => {  // Async to allow list to update.
-      IronA11yAnnouncer.requestAvailability();
       const total = this.shownPasswordsCount_ + this.shownExceptionsCount_;
       let text;
       switch (total) {
@@ -743,13 +738,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
           text =
               this.i18n('searchResultsPlural', total.toString(), this.filter);
       }
-      this.dispatchEvent(new CustomEvent('iron-announce', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          text: text,
-        }
-      }));
+
+      CrA11yAnnouncerElement.getInstance().announce(text);
     }, 0);
   }
 

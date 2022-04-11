@@ -84,23 +84,20 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         '#enableBluetoothToggle');
     assertTrue(toggle.checked);
 
-    let ironAnnouncerPromise =
-        eventToPromise('iron-announce', bluetoothDevicesSubpage);
-
+    let a11yMessagesEventPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
     toggle.click();
-    let result = await ironAnnouncerPromise;
-    assertEquals(
-        result.detail.text,
-        bluetoothDevicesSubpage.i18n('bluetoothDisabledA11YLabel'));
+    let a11yMessagesEvent = await a11yMessagesEventPromise;
+    assertTrue(a11yMessagesEvent.detail.messages.includes(
+        bluetoothDevicesSubpage.i18n('bluetoothDisabledA11YLabel')));
 
-    ironAnnouncerPromise =
-        eventToPromise('iron-announce', bluetoothDevicesSubpage);
+    a11yMessagesEventPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
     toggle.click();
 
-    result = await ironAnnouncerPromise;
-    assertEquals(
-        result.detail.text,
-        bluetoothDevicesSubpage.i18n('bluetoothEnabledA11YLabel'));
+    a11yMessagesEvent = await a11yMessagesEventPromise;
+    assertTrue(a11yMessagesEvent.detail.messages.includes(
+        bluetoothDevicesSubpage.i18n('bluetoothEnabledA11YLabel')));
   });
 
   test('Toggle button states', async function() {

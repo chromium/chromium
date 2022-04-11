@@ -16,13 +16,14 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
@@ -136,7 +137,6 @@ class SettingsBluetoothDevicesSubpageElement extends
   /** @override */
   ready() {
     super.ready();
-    IronA11yAnnouncer.requestAvailability();
     if (loadTimeData.getBoolean('enableFastPairFlag')) {
       this.addWebUIListener(
           'fast-pair-device-supported-status', (isSupported) => {
@@ -288,15 +288,9 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   /** @private */
   annouceBluetoothStateChange_() {
-    this.dispatchEvent(new CustomEvent('iron-announce', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        text: this.isBluetoothToggleOn_ ?
-            this.i18n('bluetoothEnabledA11YLabel') :
-            this.i18n('bluetoothDisabledA11YLabel')
-      }
-    }));
+    CrA11yAnnouncerElement.getInstance().announce(
+        this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
+                                    this.i18n('bluetoothDisabledA11YLabel'));
   }
 
   /**

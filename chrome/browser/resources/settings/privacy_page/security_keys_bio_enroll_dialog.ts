@@ -21,6 +21,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
@@ -28,9 +29,8 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './security_keys_bio_enroll_dialog.html.js';
 
 import {Ctap2Status, Enrollment, EnrollmentResponse, SampleResponse, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl,} from './security_keys_browser_proxy.js';
@@ -130,11 +130,6 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
-
     this.$.dialog.showModal();
     this.addWebUIListener(
         'security-keys-bio-enroll-error',
@@ -267,7 +262,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     if (response.status !== SampleStatus.OK) {
       this.progressArcLabel_ =
           this.i18n('securityKeysBioEnrollmentTryAgainLabel');
-      this.fire_('iron-announce', {text: this.progressArcLabel_});
+      CrA11yAnnouncerElement.getInstance().announce(this.progressArcLabel_);
       return;
     }
 
