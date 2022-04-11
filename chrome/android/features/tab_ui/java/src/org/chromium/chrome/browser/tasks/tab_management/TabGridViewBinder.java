@@ -14,6 +14,7 @@ import android.graphics.drawable.InsetDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
@@ -144,6 +145,9 @@ class TabGridViewBinder {
             view.setMinimumHeight(model.get(TabProperties.GRID_CARD_HEIGHT));
             view.getLayoutParams().height = model.get(TabProperties.GRID_CARD_HEIGHT);
             view.setLayoutParams(view.getLayoutParams());
+            TabGridThumbnailView thumbnail =
+                    (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
+            thumbnail.getLayoutParams().height = LayoutParams.MATCH_PARENT;
         } else if (TabProperties.GRID_CARD_WIDTH == propertyKey) {
             view.setMinimumWidth(model.get(TabProperties.GRID_CARD_WIDTH));
             view.getLayoutParams().width = model.get(TabProperties.GRID_CARD_WIDTH);
@@ -343,6 +347,7 @@ class TabGridViewBinder {
             thumbnail.setScaleType(ScaleType.FIT_CENTER);
             thumbnail.setAdjustViewBounds(true);
         }
+
         if (fetcher == null) {
             thumbnail.setImageDrawable(null);
             return;
