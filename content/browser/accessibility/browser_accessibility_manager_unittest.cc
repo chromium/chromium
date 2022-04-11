@@ -937,8 +937,11 @@ TEST_F(BrowserAccessibilityManagerTest, TestFindIndicesInCommonParent) {
   ASSERT_EQ(2U, div_accessible->PlatformChildCount());
   BrowserAccessibility* button_accessible = div_accessible->PlatformGetChild(0);
   ASSERT_NE(nullptr, button_accessible);
+  ASSERT_EQ(0U, button_accessible->PlatformChildCount());
+  ASSERT_EQ(1U, button_accessible->InternalChildCount());
+
   BrowserAccessibility* button_text_accessible =
-      button_accessible->PlatformGetChild(0);
+      button_accessible->InternalGetChild(0);
   ASSERT_NE(nullptr, button_text_accessible);
   BrowserAccessibility* line_break_accessible =
       div_accessible->PlatformGetChild(1);
@@ -1096,8 +1099,11 @@ TEST_F(BrowserAccessibilityManagerTest, TestGetTextForRange) {
   ASSERT_EQ(3U, div_accessible->PlatformChildCount());
   BrowserAccessibility* button_accessible = div_accessible->PlatformGetChild(0);
   ASSERT_NE(nullptr, button_accessible);
+  ASSERT_EQ(0U, button_accessible->PlatformChildCount());
+  ASSERT_EQ(1U, button_accessible->InternalChildCount());
+
   BrowserAccessibility* button_text_accessible =
-      button_accessible->PlatformGetChild(0);
+      button_accessible->InternalGetChild(0);
   ASSERT_NE(nullptr, button_text_accessible);
   BrowserAccessibility* container_accessible =
       div_accessible->PlatformGetChild(1);

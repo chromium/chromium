@@ -960,11 +960,18 @@ TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
   BrowserAccessibility::AXPosition pos = gc_accessible->CreatePositionAt(0);
   EXPECT_TRUE(pos->IsTreePosition());
 
+  ASSERT_EQ(1U, gc_accessible->InternalChildCount());
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, nodes with only static text can drop their children.
+  ASSERT_EQ(0U, gc_accessible->PlatformChildCount());
+#else
+  ASSERT_EQ(1U, gc_accessible->PlatformChildCount());
   BrowserAccessibility* text_accessible = gc_accessible->PlatformGetChild(0);
   ASSERT_NE(nullptr, text_accessible);
 
   pos = text_accessible->CreatePositionAt(0);
   EXPECT_TRUE(pos->IsTextPosition());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace content

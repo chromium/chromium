@@ -163,10 +163,16 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetFirstChild() const {
+  if (PlatformChildCount() == 0)
+    return nullptr;
+
   return PlatformGetChild(0);
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetLastChild() const {
+  if (PlatformChildCount() == 0)
+    return nullptr;
+
   BrowserAccessibility* child_tree_root = PlatformGetRootOfChildTree();
   return child_tree_root ? child_tree_root : InternalGetLastChild();
 }
@@ -211,6 +217,9 @@ bool BrowserAccessibility::IsLineBreakObject() const {
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
     uint32_t child_index) const {
+  if (PlatformChildCount() == 0)
+    return nullptr;
+
   BrowserAccessibility* child_tree_root = PlatformGetRootOfChildTree();
   if (child_tree_root) {
     // A node with a child tree has only one child.
@@ -776,11 +785,6 @@ gfx::RectF BrowserAccessibility::GetInlineTextRect(const int start_offset,
 
 BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
     const gfx::Point& blink_screen_point) {
-  // TODO(accessibility): propagate this to all tree traversal methods and
-  // remove here. This keeps things equivalent for now.
-  if (IsLeaf())
-    return this;
-
   // The best result found that's a child of this object.
   BrowserAccessibility* child_result = nullptr;
   // The best result that's an indirect descendant like grandchild, etc.
