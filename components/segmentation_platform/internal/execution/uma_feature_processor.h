@@ -61,10 +61,10 @@ class UmaFeatureProcessor : public QueryProcessor {
   base::flat_map<FeatureIndex, proto::UMAFeature> uma_features_;
 
   // Main signal database for user actions and histograms.
-  raw_ptr<SignalDatabase> signal_database_;
+  const raw_ptr<SignalDatabase> signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
-  raw_ptr<FeatureAggregator> feature_aggregator_;
+  const raw_ptr<FeatureAggregator> feature_aggregator_;
 
   // Data needed for the processing of uma features.
   const base::Time prediction_time_;

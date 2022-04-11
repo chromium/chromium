@@ -44,13 +44,16 @@ void UmaFeatureProcessor::Process(
 void UmaFeatureProcessor::ProcessNextUmaFeature() {
   // Process the feature list.
   absl::optional<proto::UMAFeature> next_feature;
-  auto it = uma_features_.begin();
+  FeatureIndex index;
   while (!uma_features_.empty()) {
+    auto it = uma_features_.begin();
     if (it->second.bucket_count() == 0) {
       // Skip collection-only features.
-      uma_features_.erase(it++);
+      uma_features_.erase(it);
     } else {
       next_feature = std::move(it->second);
+      index = it->first;
+      uma_features_.erase(it);
       break;
     }
   }
@@ -72,7 +75,7 @@ void UmaFeatureProcessor::ProcessNextUmaFeature() {
     return;
   }
 
-  ProcessSingleUmaFeature(it->first, next_feature.value());
+  ProcessSingleUmaFeature(index, next_feature.value());
 }
 
 void UmaFeatureProcessor::ProcessSingleUmaFeature(
