@@ -121,10 +121,8 @@ public class WebappActionsNotificationTest {
     }
 
     @Test
-    /*
-      @SmallTest
-      @Feature({"Webapps"})
-    */
+    @SmallTest
+    @Feature({"Webapps"})
     @DisabledTest(message = "crbug.com/774491")
     public void testNotification_copyUrl() throws Exception {
         Notification notification = getWebappNotification();

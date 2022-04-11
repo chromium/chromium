@@ -160,7 +160,7 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/1130093")
     public void testSetVoiceSearchButtonVisibilityAndClickListener() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);

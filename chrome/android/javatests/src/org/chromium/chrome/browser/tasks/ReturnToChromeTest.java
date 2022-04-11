@@ -485,43 +485,6 @@ public class ReturnToChromeTest {
     }
 
     /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start. Also test the first meaningful paint UMA for the no-tab condition.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @DisabledTest(message = "http://crbug.com/1027315")
-    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs_UMA() throws TimeoutException{
-        // clang-format on
-        testTabSwitcherModeTriggeredBeyondThreshold_NoTabs();
-
-        assertThat(mActivityTestRule.getActivity().isTablet()).isFalse();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT),
-                    Matchers.is(1));
-        });
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(true)));
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(true)
-                        + ReturnToChromeExperimentsUtil.numThumbnailsBucketName(
-                                mActivityTestRule.getActivity()
-                                        .getTabModelSelector()
-                                        .getTotalTabCount())));
-    }
-
-    /**
      * Ideally we should use {@link StartSurfaceTestUtils#createTabStateFile} so that we don't need
      * to create tabs with thumbnails and then restart. However, we cannot use stock serialized
      * TabStates like {@link TestTabModelDirectory#M26_GOOGLE_COM} because all of them have URLs
@@ -537,7 +500,7 @@ public class ReturnToChromeTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/single"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1063984")
+    @DisabledTest(message = "https://crbug.com/1023079")
     public void testInitialScrollIndex() throws Exception {
         // clang-format on
         // Instant start is not applicable since we need to create tabs and restart.

@@ -739,7 +739,7 @@ public class TabGridDialogTest {
     }
 
     @Test
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/1065153")
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)

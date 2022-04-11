@@ -224,8 +224,8 @@ public class WebappModeTest {
      * Ensure WebappActivities can't be launched without proper security checks.
      */
     @Test
-    //@MediumTest
-    //@Feature({"Webapps"})
+    @MediumTest
+    @Feature({"Webapps"})
     @DisabledTest(message = "crbug.com/755114")
     public void testWebappRequiresValidMac() throws Exception {
         // Try to start a WebappActivity.  Fail because the Intent is insecure.
