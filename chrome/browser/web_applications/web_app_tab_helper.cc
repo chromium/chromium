@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
+#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "content/public/browser/media_session.h"
@@ -54,6 +55,14 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
 
 bool WebAppTabHelper::HasLoadedNonAboutBlankPage() const {
   return has_loaded_non_about_blank_page_;
+}
+
+WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
+  if (!launch_queue_) {
+    launch_queue_ = std::make_unique<WebAppLaunchQueue>(web_contents(),
+                                                        provider_->registrar());
+  }
+  return *launch_queue_;
 }
 
 void WebAppTabHelper::SetAppId(const AppId& app_id) {

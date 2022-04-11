@@ -1,0 +1,8 @@
+{
+  "name": "route_to: existing-client-retain",
+  "start_url": "basic.html?route_to=existing-client-retain",
+  "display": "standalone",
+  "launch_handler": {
+    "route_to": "existing-client-retain"
+  }
+}
