@@ -577,30 +577,6 @@ id<GREYMatcher> SearchCopiedTextButton() {
 - (void)testEmpty {
 }
 
-- (void)testOmniboxDefocusesOnTabSwitch {
-  [self openPage1];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey waitForMainTabCount:2];
-  [self openPage2];
-
-  [ChromeEarlGreyUI focusOmnibox];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"Obama")];
-
-  // The popup should open.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      assertWithMatcher:grey_notNil()];
-
-  // Switch to the first tab.
-  [ChromeEarlGrey selectTabAtIndex:0];
-  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-
-  // The omnibox shouldn't be focused and the popup should be closed.
-  [self checkLocationBarSteadyState];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      assertWithMatcher:grey_notVisible()];
-}
-
 @end
 
 #pragma mark - Edit state tests

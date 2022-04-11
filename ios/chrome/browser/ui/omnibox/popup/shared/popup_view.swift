@@ -57,18 +57,36 @@ struct AccessibilityIdentifierModifier: ViewModifier {
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
-    static let selfSizingListBottomMargin: CGFloat = 40
     // Any scrolling offset outside of this range is not treated as user drag gesture.
     static let acceptableScrollingOffsetDeltaRange = 1.5...10
     // If distance between current and initial scrolling offset is less than this value,
     // it is probably an automatic scroll-to-top so we do not consider it to be user drag gesture.
     static let initialScrollingOffsetDifferenceThreshold: CGFloat = 0.1
+
+    static let selfSizingListBottomMargin: CGFloat = 16
+
+    // Default height if no other header or footer. This spaces the sections
+    // out properly.
+    static let headerFooterHeight: CGFloat = 16
   }
 
   /// Custom modifier for the background of the list.
   struct ListBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
       content.background(Color.cr_groupedPrimaryBackground.edgesIgnoringSafeArea(.all))
+    }
+  }
+
+  /// Custom modifier emulating `.environment(key, value)`.
+  struct EnvironmentValueModifier<Value>: ViewModifier {
+    let key: WritableKeyPath<SwiftUI.EnvironmentValues, Value>
+    let value: Value
+    init(_ key: WritableKeyPath<SwiftUI.EnvironmentValues, Value>, _ value: Value) {
+      self.key = key
+      self.value = value
+    }
+    func body(content: Content) -> some View {
+      content.environment(key, value)
     }
   }
 
@@ -107,6 +125,7 @@ struct PopupView: View {
                 inSection: UInt(sectionIndex))
             }
           )
+          .id("\(sectionIndex) \(matchIndex)")
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
           .accessibilityElement(children: .contain)
@@ -120,15 +139,14 @@ struct PopupView: View {
           }
         }
 
-      // Split the suggestions into sections, but only add a header text if the header isn't empty
-      if !section.header.isEmpty {
-        Section(header: Text(section.header)) {
-          sectionContents
-        }
-      } else {
-        Section {
-          sectionContents
-        }
+      let footer = Spacer()
+        // Use `leastNonzeroMagnitude` to remove the footer. Otherwise,
+        // it uses a default height.
+        .frame(height: CGFloat.leastNonzeroMagnitude)
+        .listRowInsets(EdgeInsets())
+
+      Section(header: header(for: section), footer: footer) {
+        sectionContents
       }
     }
   }
@@ -142,8 +160,9 @@ struct PopupView: View {
     let listModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
-    .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
+    .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
     .concat(ListBackgroundModifier())
+    .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
 
     GeometryReader { geometry in
       if shouldSelfSize {
@@ -180,6 +199,17 @@ struct PopupView: View {
     listView.onAppear(perform: onAppear)
   }
 
+  @ViewBuilder
+  func header(for section: PopupMatchSection) -> some View {
+    if section.header.isEmpty {
+      Spacer()
+        .frame(height: Dimensions.headerFooterHeight)
+        .listRowInsets(EdgeInsets())
+    } else {
+      Text(section.header)
+    }
+  }
+
   func onAppear() {
     if let appearanceContainerType = self.appearanceContainerType {
       let listAppearance = UITableView.appearance(whenContainedInInstancesOf: [
@@ -199,9 +229,9 @@ struct PopupView: View {
     model.delegate?.autocompleteResultConsumerDidScroll(model)
   }
 
-  func onNewMatches(matches: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
+  func onNewSections(sections: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
     // Scroll to the very top of the list.
-    scrollProxy.scrollTo(0, anchor: UnitPoint(x: 0, y: -.infinity))
+    scrollProxy.scrollTo("0 0", anchor: UnitPoint(x: 0, y: -.infinity))
   }
 
   func onNewScrollingOffset(oldScrollingOffset: CGFloat?, newScrollingOffset: CGFloat) {

@@ -137,6 +137,11 @@ GREYElementInteraction* RequestDesktopButton() {
         @"Disabled for iPad due to alternate letters educational screen.");
   }
 
+  // TODO(crbug.com/1315304): Reenable.
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
+  }
+
   [self addURLToHistory];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageString = base::SysUTF8ToNSString(pageURL.GetContent());
