@@ -56,7 +56,7 @@ if (include_js_tests) {
     sources = [
       "cr_components/cr_components_mojo_interactive_test.js",
       "new_tab_page/new_tab_page_interactive_test.js",
-      "read_later/side_panel/side_panel_interactive_ui_tests.js",
+      "side_panel/side_panel_interactive_ui_tests.js",
     ]
 
     gen_include_files = [
@@ -312,8 +312,7 @@ if (include_js_tests) {
       "media/media_history_webui_browsertest.js",
       "metrics_reporter/metrics_reporter_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
-      "read_later/read_later_browsertest.js",
-      "read_later/side_panel/side_panel_browsertest.js",
+      "side_panel/side_panel_browsertest.js",
       "tab_search/tab_search_browsertest.js",
       "usb_internals_browsertest.js",
     ]
@@ -484,8 +483,8 @@ generate_grd("build_grd") {
     "metrics_reporter:build_grdp",
     "new_tab_page:build_grdp",
     "privacy_sandbox:build_grdp",
-    "read_later:build_grdp",
     "settings:build_grdp",
+    "side_panel:build_grdp",
     "tab_search:build_grdp",
   ]
 
@@ -498,7 +497,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/new_tab_page/resources.grdp",
-    "$target_gen_dir/read_later/resources.grdp",
+    "$target_gen_dir/side_panel/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",

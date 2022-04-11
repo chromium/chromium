@@ -1,0 +1,102 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/side_panel_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/side_panel_resources.h",
+    "grit/side_panel_resources_map.cc",
+    "grit/side_panel_resources_map.h",
+    "side_panel_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "images/read_later_empty_dark.svg",
+    "images/read_later_empty.svg",
+    "reading_list/reading_list.html",
+    "bookmarks/bookmarks.html",
+    "read_anything/read_anything.html",
+    "side_panel.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  grd_prefix = "side_panel"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_if_expr("preprocess_web_components") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "app.ts" ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "app.ts" ]
+}
+
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  in_files = [
+    "app.ts",
+    "bookmarks/bookmark_folder.ts",
+    "bookmarks/bookmarks_list.ts",
+    "bookmarks/bookmarks_api_proxy.ts",
+    "bookmarks/bookmarks_drag_manager.ts",
+    "bookmarks/bookmarks.mojom-webui.js",
+    "read_anything/app.ts",
+    "read_anything/read_anything_api_proxy.ts",
+    "read_anything/read_anything.mojom-webui.js",
+    "reading_list/app.ts",
+    "reading_list/icons.ts",
+    "reading_list/reading_list_api_proxy.ts",
+    "reading_list/reading_list_item.ts",
+    "reading_list/read_later.mojom-webui.js",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":preprocess_web_components",
+    "bookmarks:preprocess",
+    "bookmarks:preprocess_mojo",
+    "bookmarks:preprocess_web_components",
+    "read_anything:preprocess",
+    "read_anything:preprocess_mojo",
+    "read_anything:preprocess_web_components",
+    "reading_list:preprocess",
+    "reading_list:preprocess_mojo",
+    "reading_list:preprocess_web_components",
+  ]
+}

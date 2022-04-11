@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/read_later_resources.h"
-#include "chrome/grit/read_later_resources_map.h"
+#include "chrome/grit/side_panel_resources.h"
+#include "chrome/grit/side_panel_resources_map.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
@@ -61,9 +61,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  const int resource = IDR_READ_LATER_SIDE_PANEL_BOOKMARKS_HTML;
+  const int resource = IDR_SIDE_PANEL_BOOKMARKS_BOOKMARKS_HTML;
   webui::SetupWebUIDataSource(
-      source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
+      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

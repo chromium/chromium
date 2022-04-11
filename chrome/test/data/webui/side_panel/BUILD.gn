@@ -1,0 +1,45 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_side_panel"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "side_panel"
+}
+
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://read-later.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/side_panel/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "bookmarks/bookmark_folder_test.ts",
+    "bookmarks/bookmarks_drag_manager_test.ts",
+    "bookmarks/bookmarks_list_interactive_ui_test.ts",
+    "bookmarks/bookmarks_list_test.ts",
+    "bookmarks/test_bookmarks_api_proxy.ts",
+    "reading_list/reading_list_app_test.ts",
+    "reading_list/test_reading_list_api_proxy.ts",
+    "side_panel_app_test.ts",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+  ]
+  deps = [ "//chrome/browser/resources/side_panel:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
+}

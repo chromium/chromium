@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/read_later_resources.h"
-#include "chrome/grit/read_later_resources_map.h"
+#include "chrome/grit/side_panel_resources.h"
+#include "chrome/grit/side_panel_resources_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -33,8 +33,8 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
     webui::AddLocalizedString(source, str.name, str.id);
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      IDR_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
+      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
+      IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

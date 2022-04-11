@@ -1,0 +1,209 @@
+<style include="mwb-shared-style mwb-element-shared-style cr-hidden-style">
+  #top-container {
+    display: flex;
+    height: var(--mwb-item-height);
+    justify-content: flex-end;
+  }
+
+  :host([side-panel]) #top-container {
+    display: none;
+  }
+
+  #header {
+    align-items: center;
+    color: var(--cr-primary-text-color);
+    flex-grow: 1;
+    font-size: 15px;
+    line-height: var(--mwb-item-height);
+    margin: 0;
+    padding-inline-start: var(--mwb-list-item-horizontal-margin);
+  }
+
+  cr-icon-button {
+    margin-inline-end: 4px;
+    margin-top: 4px;
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    cr-icon-button {
+      --cr-icon-button-ripple-opacity: 0.15;
+    }
+  }
+
+  #readingListList {
+    max-height: 500px;
+    overflow: auto;
+  }
+
+  :host([side-panel]) #readingListList {
+    margin-block-start: 8px;
+    max-height: none;
+  }
+
+  #currentPageActionButton {
+    --disabled-border-color: var(--border-color);
+    --hover-bg-color: var(--cr-icon-button-hover-background-color,
+            var(--cr-hover-background-color));
+    --hover-border-color: var(--border-color);
+    border-radius: 4px;
+    margin: 0 16px 24px;
+    padding: 8px;
+    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  :host([side-panel]) #currentPageActionButton {
+    margin: 8px 16px 0 16px;
+  }
+
+  #empty-state-container:not([hidden]) ~ #currentPageActionButton {
+    display: flex;
+    margin: -8px auto 16px auto;
+    width: fit-content;
+  }
+
+  #currentPageActionButtonIcon {
+    --iron-icon-fill-color: currentColor;
+    align-items: center;
+    height: 16px;
+    margin-inline-end: 5px;
+    margin-inline-start: auto;
+    width: 16px;
+  }
+
+  #currentPageActionButtonText {
+    margin-inline-end: auto;
+  }
+
+  .mwb-list-item:focus-within {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  .mwb-list-item:active {
+    background-color: var(--mwb-list-item-selected-background-color);
+  }
+
+  .sub-heading {
+    align-items: center;
+    border-bottom: 1px solid #dbdbdb;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: 11px;
+    height: 24px;
+    margin-inline-start: var(--mwb-list-item-horizontal-margin);
+    margin-top: 4px;
+  }
+
+  :host([side-panel]) .sub-heading {
+    border: none;
+    font-weight: 600;
+    height: 28px;
+    margin: 0;
+    padding: 8px 16px;
+  }
+
+  :host([side-panel]) .hr {
+    border-top: 1px solid var(--google-grey-300);
+    margin-block-start: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([side-panel]) .hr {
+      border-top: 1px solid var(--google-grey-700);
+    }
+  }
+
+  #empty-state-container {
+    text-align: center;
+  }
+
+  #empty-state-image {
+    content: url(images/read_later_empty.svg);
+    height: 160px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    width: 240px;
+  }
+
+  :host([side-panel]) #empty-state-image {
+    margin-top: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #empty-state-image {
+      content: url(images/read_later_empty_dark.svg);
+    }
+  }
+
+  #empty-state-header {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+    line-height: 20px;
+    padding: 0 var(--mwb-list-item-horizontal-margin);
+  }
+
+  #empty-state-subheader {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    line-height: 20px;
+    padding: 4px var(--mwb-list-item-horizontal-margin) 24px;
+  }
+
+  :host([side-panel]) #empty-state-subheader {
+    padding-bottom: 16px;
+  }
+</style>
+
+<div id="top-container" hidden="[[unifiedSidePanel_]]">
+  <div id="header">$i18n{title}</div>
+  <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
+      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onCloseClick_" title="$i18n{tooltipClose}">
+  </cr-icon-button>
+</div>
+<div id="content" hidden="[[loadingContent_]]">
+  <div id="empty-state-container"
+       hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+    <img id="empty-state-image" aria-hidden="true">
+    <div id="empty-state-header">$i18n{emptyStateHeader}</div>
+    <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
+  </div>
+  <cr-button id="currentPageActionButton"
+      hidden$="[[!shouldShowCurrentPageActionButton_()]]"
+      aria-label="$i18n{addCurrentTab}"
+      on-click="onCurrentPageActionButtonClick_"
+      disabled="[[getCurrentPageActionButtonDisabled_(
+          currentPageActionButtonState_)]]">
+    <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
+        icon="cr:add">
+    </iron-icon>
+    <div id="currentPageActionButtonText" aria-hidden="true">
+      $i18n{addCurrentTab}
+    </div>
+  </cr-button>
+  <div id="readingListList">
+    <iron-selector id="selector" on-keydown="onItemKeyDown_"
+        attr-for-selected="data-url" selectable="reading-list-item">
+      <div hidden="[[!unreadItems_.length]]" class="sub-heading">
+        $i18n{unreadHeader}
+      </div>
+      <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
+        <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+        </reading-list-item>
+      </template>
+      <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
+      </div>
+      <div hidden="[[!readItems_.length]]" class="sub-heading">
+        $i18n{readHeader}
+      </div>
+      <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
+        <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+        </reading-list-item>
+      </template>
+    </iron-selector>
+  </div>
+</div>

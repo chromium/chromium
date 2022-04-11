@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/read_later_resources.h"
-#include "chrome/grit/read_later_resources_map.h"
+#include "chrome/grit/side_panel_resources.h"
+#include "chrome/grit/side_panel_resources_map.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
@@ -88,10 +88,10 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   const int resource =
       !base::FeatureList::IsEnabled(features::kUnifiedSidePanel)
-          ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
-          : IDR_READ_LATER_READ_LATER_HTML;
+          ? IDR_SIDE_PANEL_SIDE_PANEL_HTML
+          : IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML;
   webui::SetupWebUIDataSource(
-      source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
+      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

@@ -247,13 +247,13 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [1910],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/read_later/read_later_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [1920],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/segmentation_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [1930],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/side_panel_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1935],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/chromeos/os_settings_resources.grd": {
     "META": {"sizes": {"includes": [1000],}},
