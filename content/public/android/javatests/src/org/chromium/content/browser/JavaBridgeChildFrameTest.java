@@ -154,7 +154,7 @@ public class JavaBridgeChildFrameTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @DisabledTest(message = "https://crbug.com/677182")
+    @DisabledTest(message = "https://crbug.com/677053")
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testRemovingTransientObjectHolders(boolean useMojo) throws Throwable {
         class Test {

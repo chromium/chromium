@@ -309,9 +309,9 @@ public class MediaSessionTest {
 
     // TODO(zqzhang): Investigate why this test fails after switching to .ogg from .mp3
     @Test
-    @DisabledTest
     @SmallTest
     @Feature({"MediaSession"})
+    @DisabledTest(message = "https://crbug.com/1315305")
     public void testShortAudioStopsIfLostFocus() throws Exception {
         Assert.assertEquals(
                 AudioManager.AUDIOFOCUS_LOSS, mAudioFocusChangeListener.getAudioFocusState());

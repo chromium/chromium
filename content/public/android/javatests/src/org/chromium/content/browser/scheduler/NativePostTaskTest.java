@@ -149,7 +149,7 @@ public class NativePostTaskTest {
 
     @Test
     @MediumTest
-    @DisabledTest
+    @DisabledTest(message = "https://crbug.com/938316")
     public void testCreateTaskRunnerMigrationToNative() throws Exception {
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();

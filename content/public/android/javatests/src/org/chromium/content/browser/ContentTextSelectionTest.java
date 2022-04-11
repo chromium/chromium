@@ -429,7 +429,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisabledTest(message = "https://crbug.com/592428")
+    @DisabledTest(message = "https://crbug.com/1315297")
     public void testPastePopupDismissedOnDestroy() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
@@ -769,7 +769,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisabledTest(message = "crbug.com/592428")
+    @DisabledTest(message = "https://crbug.com/1315299")
     public void testSelectActionBarTextAreaPaste() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "textarea");

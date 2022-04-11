@@ -165,7 +165,7 @@ public class ScreenOrientationListenerTest {
     @Test
     @MediumTest
     @Feature({"ScreenOrientation"})
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/645609")
     public void testOrientationChanges() throws Exception {
         int rotation = lockOrientationAndWait(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         Assert.assertEquals(

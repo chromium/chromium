@@ -9,6 +9,8 @@ import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -109,8 +112,8 @@ public class ContentViewPointerTypeTest {
     }
 
     @Test
-    //@SmallTest
-    //@Feature({"Main"})
+    @SmallTest
+    @Feature({"Main"})
     @DisabledTest(message = "crbug.com/755112")
     public void testPointerType() throws Throwable {
         checkPointerTypeForNode("hand", CursorType.HAND);
