@@ -28,7 +28,7 @@ export const RouteState = {
 };
 
 /**
- * @param {?Route} route
+ * @param {?Route=} route
  * @return {!RouteState}
  */
 function classifyRoute(route) {
@@ -207,7 +207,7 @@ export const MainPageBehavior = {
    * Detects which state transition is appropriate for the given new/old
    * routes.
    * @param {!Route} newRoute
-   * @param {Route} oldRoute
+   * @param {!Route=} oldRoute
    * @private
    */
   getStateTransition_(newRoute, oldRoute) {
@@ -242,7 +242,7 @@ export const MainPageBehavior = {
 
   /**
    * @param {!Route} newRoute
-   * @param {Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
     const transition = this.getStateTransition_(newRoute, oldRoute);
@@ -351,3 +351,29 @@ export const MainPageBehavior = {
         this.$$(`settings-section[section="${section}"]`));
   },
 };
+
+/** @interface */
+export class MainPageBehaviorInterface {
+  constructor() {
+    /** @type {?HTMLElement} */
+    this.scroller;
+  }
+
+  /**
+   * @param {!Route} route
+   * @return {boolean} Whether the given route is part of |this| page.
+   */
+  containsRoute(route) {}
+
+  /**
+   * @param {!Route} newRoute
+   * @param {!Route=} oldRoute
+   */
+  currentRouteChanged(newRoute, oldRoute) {}
+
+  /**
+   * @param {string} section Section name of the element to get.
+   * @return {?HTMLElement}
+   */
+  getSection(section) {}
+}

@@ -16,108 +16,135 @@ import './channel_switcher_dialog.js';
 import './edit_hostname_dialog.js';
 
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './device_name_browser_proxy.js';
 import {DeviceNameState} from './device_name_util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-detailed-build-info',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {DeepLinkingBehaviorInterface}
+ */
+const SettingsDetailedBuildInfoBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior,
+      WebUIListenerBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    WebUIListenerBehavior,
-    I18nBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
+  static get is() {
+    return 'settings-detailed-build-info';
+  }
 
-  properties: {
-    /** @private {!VersionInfo} */
-    versionInfo_: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!ChannelInfo} */
-    channelInfo_: Object,
+  static get properties() {
+    return {
+      /** @private {!VersionInfo} */
+      versionInfo_: Object,
 
-    /** @private {!DeviceNameMetadata} */
-    deviceNameMetadata_: Object,
+      /** @private {!ChannelInfo} */
+      channelInfo_: Object,
 
-    /** @private */
-    currentlyOnChannelText_: String,
+      /** @private {!DeviceNameMetadata} */
+      deviceNameMetadata_: Object,
 
-    /** @private */
-    showChannelSwitcherDialog_: Boolean,
+      /** @private */
+      currentlyOnChannelText_: String,
 
-    /** @private */
-    showEditHostnameDialog_: Boolean,
+      /** @private */
+      showChannelSwitcherDialog_: Boolean,
 
-    /** @private */
-    canChangeChannel_: Boolean,
+      /** @private */
+      showEditHostnameDialog_: Boolean,
 
-    eolMessageWithMonthAndYear: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      canChangeChannel_: Boolean,
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kChangeChromeChannel,
-        chromeos.settings.mojom.Setting.kChangeDeviceName,
-        chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
-      ]),
-    },
-
-    /** @private */
-    shouldHideEolInfo_: {
-      type: Boolean,
-      computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
-    },
-
-    /** @private */
-    isHostnameSettingEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isHostnameSettingEnabled');
+      eolMessageWithMonthAndYear: {
+        type: String,
+        value: '',
       },
-      readOnly: true,
-    },
 
-    /**
-     * Whether the browser/ChromeOS is managed by their organization
-     * through enterprise policies.
-     * @private
-     */
-    isManaged_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isManaged');
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kChangeChromeChannel,
+          chromeos.settings.mojom.Setting.kChangeDeviceName,
+          chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
+        ]),
       },
-      readOnly: true,
-    },
-  },
+
+      /** @private */
+      shouldHideEolInfo_: {
+        type: Boolean,
+        computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
+      },
+
+      /** @private */
+      isHostnameSettingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isHostnameSettingEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Whether the browser/ChromeOS is managed by their organization
+       * through enterprise policies.
+       * @private
+       */
+      isManaged_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isManaged');
+        },
+        readOnly: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!AboutPageBrowserProxy} */
+    this.aboutPageBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
+
+    /** @private {!DeviceNameBrowserProxy} */
+    this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
   ready() {
-    const browserProxy = AboutPageBrowserProxyImpl.getInstance();
-    browserProxy.pageReady();
+    super.ready();
+    this.aboutPageBrowserProxy_.pageReady();
 
-    browserProxy.getVersionInfo().then(versionInfo => {
+    this.aboutPageBrowserProxy_.getVersionInfo().then(versionInfo => {
       this.versionInfo_ = versionInfo;
     });
 
@@ -127,9 +154,9 @@ Polymer({
       this.addWebUIListener(
           'settings.updateDeviceNameMetadata',
           (data) => this.updateDeviceNameMetadata_(data));
-      DeviceNameBrowserProxyImpl.getInstance().notifyReadyForDeviceName();
+      this.deviceNameBrowserProxy_.notifyReadyForDeviceName();
     }
-  },
+  }
 
   /**
    * @param {!Route} route
@@ -142,7 +169,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -150,28 +177,26 @@ Polymer({
    */
   computeShouldHideEolInfo_() {
     return this.isManaged_ || !this.eolMessageWithMonthAndYear;
-  },
+  }
 
   /** @private */
   updateChannelInfo_() {
-    const browserProxy = AboutPageBrowserProxyImpl.getInstance();
-
     // canChangeChannel() call is expected to be low-latency, so fetch this
     // value by itself to ensure UI consistency (see https://crbug.com/848750).
-    browserProxy.canChangeChannel().then(canChangeChannel => {
+    this.aboutPageBrowserProxy_.canChangeChannel().then(canChangeChannel => {
       this.canChangeChannel_ = canChangeChannel;
     });
 
     // getChannelInfo() may have considerable latency due to updates. Fetch this
     // metadata as part of a separate request.
-    browserProxy.getChannelInfo().then(info => {
+    this.aboutPageBrowserProxy_.getChannelInfo().then(info => {
       this.channelInfo_ = info;
       // Display the target channel for the 'Currently on' message.
       this.currentlyOnChannelText_ = this.i18n(
           'aboutCurrentlyOnChannelInfo',
           this.i18n(browserChannelToI18nId(info.targetChannel, info.isLts)));
     });
-  },
+  }
 
   /**
    * @param {!DeviceNameMetadata} data
@@ -179,7 +204,7 @@ Polymer({
    */
   updateDeviceNameMetadata_(data) {
     this.deviceNameMetadata_ = data;
-  },
+  }
 
   /**
    * @return {string}
@@ -191,7 +216,7 @@ Polymer({
     }
 
     return this.deviceNameMetadata_.deviceName;
-  },
+  }
 
   /**
    * @return {string}
@@ -204,7 +229,7 @@ Polymer({
 
     return this.i18n(
         'aboutDeviceNameEditBtnA11yDescription', this.getDeviceNameText_());
-  },
+  }
 
   /**
    * @return {boolean}
@@ -217,7 +242,7 @@ Polymer({
 
     return this.deviceNameMetadata_.deviceNameState ===
         DeviceNameState.CAN_BE_MODIFIED;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -225,7 +250,7 @@ Polymer({
    */
   shouldShowPolicyIndicator_() {
     return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
-  },
+  }
 
   /**
    * @return {string}
@@ -247,7 +272,7 @@ Polymer({
     }
 
     return CrPolicyIndicatorType.NONE;
-  },
+  }
 
   /**
    * @param {boolean} canChangeChannel
@@ -262,7 +287,7 @@ Polymer({
     return loadTimeData.getBoolean('aboutEnterpriseManaged') ?
         '' :
         loadTimeData.getString('ownerEmail');
-  },
+  }
 
   /**
    * @param {boolean} canChangeChannel
@@ -276,7 +301,7 @@ Polymer({
     return loadTimeData.getBoolean('aboutEnterpriseManaged') ?
         CrPolicyIndicatorType.DEVICE_POLICY :
         CrPolicyIndicatorType.OWNER;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -285,7 +310,7 @@ Polymer({
   onChangeChannelTap_(e) {
     e.preventDefault();
     this.showChannelSwitcherDialog_ = true;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -294,18 +319,18 @@ Polymer({
   onEditHostnameTap_(e) {
     e.preventDefault();
     this.showEditHostnameDialog_ = true;
-  },
+  }
 
   /**
    * @return {boolean}
    * @private
    */
-  copyToClipBoardEnabled_: function() {
+  copyToClipBoardEnabled_() {
     return !!this.versionInfo_ && !!this.channelInfo_;
-  },
+  }
 
   /** @private */
-  onCopyBuildDetailsToClipBoardTap_: function() {
+  onCopyBuildDetailsToClipBoardTap_() {
     const buildInfo = {
       'application_label': loadTimeData.getString('aboutBrowserVersion'),
       'platform': this.versionInfo_.osVersion,
@@ -325,7 +350,7 @@ Polymer({
     }
 
     navigator.clipboard.writeText(entries.join('\n'));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -334,18 +359,21 @@ Polymer({
   onVisitBuildDetailsPageTap_(e) {
     e.preventDefault();
     window.open('chrome://version');
-  },
+  }
 
   /** @private */
   onChannelSwitcherDialogClosed_() {
     this.showChannelSwitcherDialog_ = false;
-    focusWithoutInk(assert(this.$$('cr-button')));
+    focusWithoutInk(assert(this.shadowRoot.querySelector('cr-button')));
     this.updateChannelInfo_();
-  },
+  }
 
   /** @private */
   onEditHostnameDialogClosed_() {
     this.showEditHostnameDialog_ = false;
-    focusWithoutInk(assert(this.$$('cr-button')));
-  },
-});
+    focusWithoutInk(assert(this.shadowRoot.querySelector('cr-button')));
+  }
+}
+
+customElements.define(
+    SettingsDetailedBuildInfoElement.is, SettingsDetailedBuildInfoElement);

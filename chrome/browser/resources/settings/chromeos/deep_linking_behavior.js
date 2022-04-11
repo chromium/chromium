@@ -149,6 +149,29 @@ export class DeepLinkingBehaviorInterface {
   }
 
   /**
+   * @return {?chromeos.settings.mojom.Setting}
+   */
+  getDeepLinkSettingId() {}
+
+  /**
+   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
+   *     ?chromeos.settings.mojom.Setting}>}
+   */
+  showDeepLink(settingId) {}
+
+  /**
+   * @param {!Element} elToFocus
+   */
+  showDeepLinkElement(elToFocus) {}
+
+  /**
+   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @return {boolean}
+   */
+  beforeDeepLinkAttempt(settingId) {}
+
+  /**
    * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
    *     ?chromeos.settings.mojom.Setting}>}
    */
