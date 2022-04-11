@@ -624,8 +624,6 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
 }
 
 void Desk::CloseAllAppWindows() {
-  DCHECK(features::IsDesksCloseAllEnabled());
-
   {
     // We need to disable the desk notifying content has been changed here
     // because the desk is going to be removed soon, so updating content here is

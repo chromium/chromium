@@ -11,7 +11,9 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
@@ -363,6 +365,23 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
       is_zero_state, desk_template->uuid(), root_window);
 
   if (!was_update) {
+    if (desk_template->type() == DeskTemplateType::kSaveAndRecall) {
+      // We have successfully created a *new* desk template for Save & Recall,
+      // so we are now going to close all the windows on the active desk and
+      // also remove the desk.
+      auto* desks_controller = DesksController::Get();
+      auto* active_desk = desks_controller->active_desk();
+
+      // If this is the only desk, we have to create a new desk before we can
+      // remove the current one.
+      if (!desks_controller->CanRemoveDesks())
+        desks_controller->NewDesk(DesksCreationRemovalSource::kSaveAndRecall);
+
+      desks_controller->RemoveDesk(active_desk,
+                                   DesksCreationRemovalSource::kSaveAndRecall,
+                                   /*close_windows=*/true);
+    }
+
     RecordNewTemplateHistogram();
     RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
   }

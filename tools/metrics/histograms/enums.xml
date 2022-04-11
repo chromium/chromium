@@ -21880,6 +21880,7 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Desks restore on first signin"/>
   <int value="3" label="Template Launched"/>
   <int value="4" label="Drag and drop window on the new desk button"/>
+  <int value="5" label="Desk Save and Recall"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">
