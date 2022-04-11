@@ -5,6 +5,7 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,6 +26,32 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 @synthesize userFullName = _userFullName;
 @synthesize userGivenName = _userGivenName;
 @synthesize hashedGaiaID = _hashedGaiaID;
+
++ (std::string)encodeIdentitiesToBase64:
+    (NSArray<FakeChromeIdentity*>*)identities {
+  NSError* error = nil;
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:identities
+                                       requiringSecureCoding:NO
+                                                       error:&error];
+  DCHECK(!error);
+  NSString* string = [data base64EncodedStringWithOptions:
+                               NSDataBase64EncodingEndLineWithCarriageReturn];
+  return base::SysNSStringToUTF8(string);
+}
+
++ (NSArray<FakeChromeIdentity*>*)identitiesFromBase64String:
+    (const std::string&)string {
+  NSData* data = [[NSData alloc]
+      initWithBase64EncodedString:base::SysUTF8ToNSString(string)
+                          options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  NSSet* classes =
+      [NSSet setWithArray:@[ [NSArray class], [FakeChromeIdentity class] ]];
+  NSError* error = nil;
+  NSArray* identities = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
+                                                            fromData:data
+                                                               error:&error];
+  return identities;
+}
 
 + (FakeChromeIdentity*)fakeIdentity1 {
   return [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"

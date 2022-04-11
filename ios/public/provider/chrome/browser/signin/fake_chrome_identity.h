@@ -7,8 +7,19 @@
 
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
+#include <string>
+
 // A fake ChromeIdentity used for testing.
 @interface FakeChromeIdentity : ChromeIdentity <NSSecureCoding>
+
+// Encodes |identities| into a string, using NSKeyedArchiver.
++ (std::string)encodeIdentitiesToBase64:
+    (NSArray<FakeChromeIdentity*>*)identities;
+
+// Returns a list of FakeChromeIdentity encoded using
+// |encodeIdentitiesToBase64:|.
++ (NSArray<FakeChromeIdentity*>*)identitiesFromBase64String:
+    (const std::string&)string;
 
 // Returns a fake identity.
 + (FakeChromeIdentity*)fakeIdentity1;

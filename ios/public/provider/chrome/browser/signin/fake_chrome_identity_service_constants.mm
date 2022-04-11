@@ -12,4 +12,6 @@ namespace ios {
 
 NSString* const kManagedIdentityEmailSuffix = @"@google.com";
 
+const char* const kAddFakeIdentitiesArg = "add_fake_identities";
+
 }  // namespace ios

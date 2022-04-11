@@ -12,6 +12,11 @@ namespace ios {
 // Email suffix used for managed accounts.
 extern NSString* const kManagedIdentityEmailSuffix;
 
+// Argument to use when starting FakeChromeIdentityService with a list of
+// FakeChromeIdentity. The value is a NSArray of FakeChromeIdentity encoded. See
+// +[FakeChromeIdentity encodeIdentitiesToBase64:].
+extern const char* const kAddFakeIdentitiesArg;
+
 }  // namespace ios
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_CONSTANTS_H_
