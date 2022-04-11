@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_CRYPTOHOME_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_CRYPTOHOME_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -31,8 +33,10 @@ class PinStorageCryptohome {
 
   // Transforms `key` for usage in PIN. Returns nullopt if the key could not be
   // transformed.
-  static absl::optional<Key> TransformKey(const AccountId& account_id,
-                                          const Key& key);
+  static absl::optional<Key> TransformPinKey(
+      const PinSaltStorage* pin_salt_storage,
+      const AccountId& account_id,
+      const Key& key);
 
   PinStorageCryptohome();
 
@@ -58,12 +62,16 @@ class PinStorageCryptohome {
                        Purpose purpose,
                        BoolCallback result);
 
+  void SetPinSaltStorageForTesting(
+      std::unique_ptr<PinSaltStorage> pin_salt_storage);
+
  private:
   void OnSystemSaltObtained(const std::string& system_salt);
 
   bool salt_obtained_ = false;
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
+  std::unique_ptr<PinSaltStorage> pin_salt_storage_;
 
   base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
 };

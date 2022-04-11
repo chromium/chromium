@@ -244,6 +244,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_mount_request_.authorization().key().secret();
   }
 
+  // Returns the `unlock_webauthn_secret` parameter passed in the last
+  // CheckKeyEx call (either successful or not).
+  bool get_last_unlock_webauthn_secret() {
+    return last_unlock_webauthn_secret_;
+  }
+
   // Getter for the AccountIdentifier() that was passed to the last
   // StartMigrateToDircrypto() call.
   const cryptohome::AccountIdentifier& get_id_for_disk_migrated_to_dircrypto()
@@ -325,6 +331,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   int mount_request_count_ = 0;
   ::user_data_auth::MountRequest last_mount_request_;
+
+  // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
+  bool last_unlock_webauthn_secret_;
 
   // The key data for various accounts.
   std::map<cryptohome::AccountIdentifier,

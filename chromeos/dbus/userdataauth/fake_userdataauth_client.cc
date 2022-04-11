@@ -185,6 +185,8 @@ void FakeUserDataAuthClient::CheckKey(
   ::user_data_auth::CheckKeyReply reply;
 
   if (TestApi::Get()->enable_auth_check_) {
+    last_unlock_webauthn_secret_ = request.unlock_webauthn_secret();
+
     const auto it = key_data_map_.find(request.account_id());
     if (it == key_data_map_.end()) {
       reply.set_error(::user_data_auth::CryptohomeErrorCode::

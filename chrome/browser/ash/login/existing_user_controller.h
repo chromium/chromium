@@ -38,7 +38,7 @@
 namespace base {
 class ElapsedTimer;
 class ListValue;
-}
+}  // namespace base
 
 namespace ash {
 class CrosSettings;
@@ -48,6 +48,10 @@ enum class SigninError;
 
 namespace login {
 class NetworkStateHelper;
+}
+
+namespace quick_unlock {
+class PinSaltStorage;
 }
 
 // ExistingUserController is used to handle login when someone has already
@@ -177,9 +181,8 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // hibernate service. This is initiated in the OnAuthSuccess() flow to make a
   // blocking call to resume from hibernate before releasing other usual login
   // activities.
-  void OnHibernateServiceAvailable(
-    const UserContext& user_context,
-    bool service_is_available);
+  void OnHibernateServiceAvailable(const UserContext& user_context,
+                                   bool service_is_available);
 
   // Handles the continuation of successful login after an attempt has been made
   // to divert to a hibernate resume flow. The execution of this method means
@@ -388,6 +391,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Used to wait for cloud policy store load during public session login, if
   // the store is not yet initialized when the login is attempted.
   std::unique_ptr<PolicyStoreLoadWaiter> policy_store_waiter_;
+
+  // The source of PIN salts. Used to retrieve PIN during TransformPinKey.
+  std::unique_ptr<quick_unlock::PinSaltStorage> pin_salt_storage_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

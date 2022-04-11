@@ -15,35 +15,15 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/known_user.h"
 
 namespace ash::quick_unlock {
 namespace {
-
-// Read the salt from local state.
-std::string GetSalt(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (const std::string* salt =
-          known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
-    return *salt;
-  }
-  return std::string();
-}
-
-// Write the salt to local state.
-void WriteSalt(const AccountId& account_id, const std::string& salt) {
-  if (!g_browser_process->local_state())
-    return;
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  known_user.SetStringPref(account_id, prefs::kQuickUnlockPinSalt, salt);
-}
 
 template <typename ReplyType>
 void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,
@@ -150,7 +130,8 @@ void PinStorageCryptohome::IsSupported(BoolCallback result) {
 }
 
 // static
-absl::optional<Key> PinStorageCryptohome::TransformKey(
+absl::optional<Key> PinStorageCryptohome::TransformPinKey(
+    const PinSaltStorage* pin_salt_storage,
     const AccountId& account_id,
     const Key& key) {
   Key result = key;
@@ -160,8 +141,7 @@ absl::optional<Key> PinStorageCryptohome::TransformKey(
   if (key.GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN)
     return absl::nullopt;
 
-  // Try to lookup in known_user.
-  const std::string salt = GetSalt(account_id);
+  const std::string salt = pin_salt_storage->GetSalt(account_id);
   if (salt.empty())
     return absl::nullopt;
 
@@ -169,7 +149,8 @@ absl::optional<Key> PinStorageCryptohome::TransformKey(
   return result;
 }
 
-PinStorageCryptohome::PinStorageCryptohome() {
+PinStorageCryptohome::PinStorageCryptohome()
+    : pin_salt_storage_(std::make_unique<PinSaltStorage>()) {
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &PinStorageCryptohome::OnSystemSaltObtained, weak_factory_.GetWeakPtr()));
 }
@@ -220,7 +201,7 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
     secret = PinBackend::ComputeSecret(pin, salt, Key::KEY_TYPE_PASSWORD_PLAIN);
   }
 
-  WriteSalt(user_context.GetAccountId(), salt);
+  pin_salt_storage_->WriteSalt(user_context.GetAccountId(), salt);
 
   ::user_data_auth::AddKeyRequest request;
   const cryptohome::KeyDefinition key_def =
@@ -307,7 +288,8 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
     return;
   }
   const std::string secret = PinBackend::ComputeSecret(
-      key.GetSecret(), GetSalt(account_id), key.GetKeyType());
+      key.GetSecret(), pin_salt_storage_->GetSalt(account_id),
+      key.GetKeyType());
   ::user_data_auth::CheckKeyRequest request;
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(account_id));
@@ -321,6 +303,11 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
       request,
       base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
                      std::move(result)));
+}
+
+void PinStorageCryptohome::SetPinSaltStorageForTesting(
+    std::unique_ptr<PinSaltStorage> pin_salt_storage) {
+  pin_salt_storage_ = std::move(pin_salt_storage);
 }
 
 }  // namespace ash::quick_unlock

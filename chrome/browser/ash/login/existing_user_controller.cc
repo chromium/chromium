@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
@@ -131,7 +132,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_HIBERNATE)
-#include "chromeos/dbus/hiberman/hiberman_client.h" // nogncheck
+#include "chromeos/dbus/hiberman/hiberman_client.h"  // nogncheck
 #endif
 
 namespace ash {
@@ -387,7 +388,8 @@ ExistingUserController* ExistingUserController::current_controller() {
 
 ExistingUserController::ExistingUserController()
     : cros_settings_(CrosSettings::Get()),
-      network_state_helper_(new login::NetworkStateHelper) {
+      network_state_helper_(new login::NetworkStateHelper),
+      pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
                  content::NotificationService::AllSources());
   show_user_names_subscription_ = cros_settings_->AddSettingsObserver(
@@ -638,8 +640,10 @@ void ExistingUserController::PerformLogin(
   }
 
   if (new_user_context.IsUsingPin()) {
-    absl::optional<Key> key = quick_unlock::PinStorageCryptohome::TransformKey(
-        new_user_context.GetAccountId(), *new_user_context.GetKey());
+    absl::optional<Key> key =
+        quick_unlock::PinStorageCryptohome::TransformPinKey(
+            pin_salt_storage_.get(), new_user_context.GetAccountId(),
+            *new_user_context.GetKey());
     if (key) {
       new_user_context.SetKey(*key);
     } else {
@@ -851,8 +855,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   if (features::IsHibernateEnabled()) {
     HibermanClient::Get()->WaitForServiceToBeAvailable(
         base::BindOnce(&ExistingUserController::OnHibernateServiceAvailable,
-                       weak_factory_.GetWeakPtr(),
-                       user_context));
+                       weak_factory_.GetWeakPtr(), user_context));
 
     return;
   }
@@ -875,8 +878,9 @@ void ExistingUserController::OnHibernateServiceAvailable(
     // continues in the resumed hibernation image.
     HibermanClient::Get()->ResumeFromHibernate(
         user_context.GetAccountId().GetUserEmail(),
-        base::BindOnce(&ExistingUserController::ContinueAuthSuccessAfterResumeAttempt,
-                      weak_factory_.GetWeakPtr(), user_context));
+        base::BindOnce(
+            &ExistingUserController::ContinueAuthSuccessAfterResumeAttempt,
+            weak_factory_.GetWeakPtr(), user_context));
   }
 }
 #endif
@@ -884,7 +888,6 @@ void ExistingUserController::OnHibernateServiceAvailable(
 void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
     const UserContext& user_context,
     bool resume_call_success) {
-
   // There are three cases that may have led to execution here, and one that
   // won't:
   // 1) The ENABLE_HIBERNATE buildflag is not enabled, so this function was
