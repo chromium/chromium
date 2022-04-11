@@ -4842,6 +4842,10 @@ const char kFiltersInRecentsDescription[] =
     "Enable file-type filters (Audio, Images, Videos) in Files App Recents "
     "view.";
 
+const char kFiltersInRecentsV2Name[] = "Filters in Recents enhancement";
+const char kFiltersInRecentsV2Description[] =
+    "More enhancements for the filters in Recents.";
+
 const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";

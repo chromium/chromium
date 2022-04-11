@@ -2768,6 +2768,9 @@ extern const char kFilesWebDriveOfficeDescription[];
 extern const char kFiltersInRecentsName[];
 extern const char kFiltersInRecentsDescription[];
 
+extern const char kFiltersInRecentsV2Name[];
+extern const char kFiltersInRecentsV2Description[];
+
 extern const char kFloatWindow[];
 extern const char kFloatWindowDescription[];
 

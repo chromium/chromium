@@ -52588,6 +52588,7 @@ from previous Chrome versions.
   <int value="-1695774453" label="skip-extra-ash-window-positioning"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
+  <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
   <int value="-1692973133" label="VmStatusPage:disabled"/>
   <int value="-1692967465"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:enabled"/>
@@ -53821,6 +53822,7 @@ from previous Chrome versions.
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-895071695" label="DesktopScreenshots:enabled"/>
+  <int value="-894774400" label="FiltersInRecentsV2:enabled"/>
   <int value="-894214299" label="fill-on-account-select:enabled"/>
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>

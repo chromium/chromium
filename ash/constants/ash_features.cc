@@ -684,6 +684,10 @@ const base::Feature kFilesWebDriveOffice{"FilesWebDriveOffice",
 const base::Feature kFiltersInRecents{"FiltersInRecents",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables filters in Files app Recents view V2.
+const base::Feature kFiltersInRecentsV2{"FiltersInRecentsV2",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the firmware updater app.
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
