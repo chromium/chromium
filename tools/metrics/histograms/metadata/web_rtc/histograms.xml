@@ -844,24 +844,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputChannelLayout" enum="ChannelLayout"
-    expires_after="2020-11-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>webrtc-audio@google.com</owner>
-  <summary>Audio input channel layout in WebRTC.</summary>
-</histogram>
-
-<histogram name="WebRTC.AudioInputSampleRate" enum="AudioSampleRate"
-    expires_after="2020-11-29">
-  <owner>henrika@chromium.org</owner>
-  <summary>Audio input sample rate for WebRTC (in Hz).</summary>
-</histogram>
-
-<histogram name="WebRTC.AudioInputSampleRateUnexpected" units="Hz"
-    expires_after="2021-04-30">
+    expires_after="2023-04-11">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
-    Audio input sample rate for WebRTC (atypical values, in Hz).
+    Audio input channel layout in WebRTC. Warning: this histogram was expired
+    from 2020-11-01 to 2022-04-11; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.AudioInputSampleRate" enum="AudioSampleRate"
+    expires_after="2023-04-11">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-audio@google.com</owner>
+  <summary>
+    Audio input sample rate for WebRTC (in Hz). Warning: this histogram was
+    expired from 2020-11-29 to 2022-04-11; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.AudioInputSampleRateUnexpected" units="Hz"
+    expires_after="2023-04-11">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-audio@google.com</owner>
+  <summary>
+    Audio input sample rate for WebRTC (atypical values, in Hz). Warning: this
+    histogram was expired from 2021-04-30 to 2022-04-11; data may be missing.
   </summary>
 </histogram>
 
