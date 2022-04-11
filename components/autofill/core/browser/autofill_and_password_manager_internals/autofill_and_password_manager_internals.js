@@ -136,7 +136,7 @@ function nodeToDomNode(node) {
   return domNode;
 }
 
-// TODO(crbug.com/928595) Rename this to "addStructuredLog". Punting on this
+// TODO(crbug.com/928595) Rename this to 'addStructuredLog'. Punting on this
 // to simplify an existing CL that shall be merged.
 function addRawLog(node) {
   const logDiv = $('log-entries');
@@ -168,6 +168,8 @@ function setUpAutofillInternals() {
   document.getElementById('logging-note-incognito').innerText =
       'Captured autofill logs are not available in Incognito.';
   setUpLogDisplayConfig();
+  setUpMarker();
+  setUpDownload('autofill');
 }
 
 function setUpPasswordManagerInternals() {
@@ -179,6 +181,8 @@ function setUpPasswordManagerInternals() {
       no longer captured when all password-manager-internals pages are closed.';
   document.getElementById('logging-note-incognito').innerText =
       'Captured password manager logs are not available in Incognito.';
+  setUpMarker();
+  setUpDownload('password-manager');
 }
 
 function enableResetCacheButton() {
@@ -191,18 +195,74 @@ function notifyAboutIncognito(isIncognito) {
 }
 
 function notifyAboutVariations(variations) {
-  const list = document.createElement("div");
+  const list = document.createElement('div');
   for (const item of variations) {
     list.appendChild(document.createTextNode(item));
-    list.appendChild(document.createElement("br"));
+    list.appendChild(document.createElement('br'));
   }
-  const variationsList = document.getElementById("variations-list");
+  const variationsList = document.getElementById('variations-list');
   variationsList.appendChild(list);
 }
 
+// Setup a (fake) button to add visual markers
+// (it's fake to keep Autofill from parsing the form).
+function setUpMarker() {
+  // Initialize marker field: when pressed, add fake log event.
+  let markerCounter = 0;
+  const markerFakeButton = document.getElementById('marker-fake-button');
+  markerFakeButton.addEventListener('click', () => {
+    ++markerCounter;
+    const scrollAfterInsert = needsScrollDown();
+    addRawLog({
+      type: 'element',
+      value: 'div',
+      attributes: {'class': 'marker', 'contenteditable': 'true'},
+      children: [{type: 'text', value: `#${markerCounter} `}]
+    });
+    if (scrollAfterInsert) {
+      scrollDown();
+      // Focus marker div, set caret at end of line.
+      const markerNode = logDiv.lastChild;
+      const textNode = markerNode.lastChild;
+      markerNode.focus();
+      window.getSelection().collapse(textNode, textNode.length);
+    }
+  });
+}
+
+// Setup a (fake) download button to download html content of the page.
+function setUpDownload(moduleName) {
+  const downloadFakeButton = document.getElementById('download-fake-button');
+  downloadFakeButton.addEventListener('click', () => {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = window.URL.createObjectURL(blob);
+    const dateString = new Date()
+                           .toISOString()
+                           .replace(/T/g, '_')
+                           .replace(/\..+/, '')
+                           .replace(/:/g, '-');
+    const filename = `${moduleName}-internals-${dateString}.html`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  });
+  // <if expr="is_ios">
+  // Hide this until downloading a file works on iOS, see
+  // https://bugs.webkit.org/show_bug.cgi?id=167341
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
+  downloadFakeButton.style = 'display: none';
+  // </if>
+}
+
 // Sets up the top bar with checkboxes to show/hide the different sorts of log
-// event types, a checkbox to enable/disable autoscroll, and a (fake) button to
-// add visual markers (it's fake to keep Autofill from parsing the form).
+// event types, a checkbox to enable/disable autoscroll.
 function setUpLogDisplayConfig() {
   const SCOPES = [
     'Context',
@@ -214,13 +274,9 @@ function setUpLogDisplayConfig() {
     'Metrics',
     'AddressProfileFormImport',
   ];
-  const displayConfigDiv = document.getElementById('log-display-config');
   const logDiv = document.getElementById('log-entries');
   const autoScrollInput = document.getElementById('enable-autoscroll');
   const checkboxPlaceholder = document.getElementById('checkbox-placeholder');
-
-  displayConfigDiv.style.display = 'block';
-  displayConfigDiv.parentElement.classList.add('sticky-bar');
 
   // Initialize the auto-scroll checkbox.
   autoScrollInput.checked = getUrlHashParam('autoscroll') !== 'n';
@@ -256,56 +312,6 @@ function setUpLogDisplayConfig() {
     checkboxPlaceholder.appendChild(input);
     checkboxPlaceholder.appendChild(label);
   }
-
-  // Initialize marker field: when pressed, add fake log event.
-  let markerCounter = 0;
-  const markerFakeButton = document.getElementById('marker-fake-button');
-  markerFakeButton.addEventListener('click', () => {
-    ++markerCounter;
-    const scrollAfterInsert = needsScrollDown();
-    addRawLog({
-      type: 'element',
-      value: 'div',
-      attributes: {'class': 'marker', 'contenteditable': 'true'},
-      children: [{type: 'text', value: `#${markerCounter} `}]
-    });
-    if (scrollAfterInsert) {
-      scrollDown();
-      // Focus marker div, set caret at end of line.
-      const markerNode = logDiv.lastChild;
-      const textNode = markerNode.lastChild;
-      markerNode.focus();
-      window.getSelection().collapse(textNode, textNode.length);
-    }
-  });
-
-  const downloadFakeButton = document.getElementById('download-fake-button');
-  downloadFakeButton.addEventListener('click', () => {
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], {type: 'text/html'});
-    const url = window.URL.createObjectURL(blob);
-    const dateString = new Date()
-                           .toISOString()
-                           .replace(/T/g, '_')
-                           .replace(/\..+/, '')
-                           .replace(/:/g, '-');
-    const filename = `autofill-internals-${dateString}.html`;
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  });
-// <if expr="is_ios">
-  // Hide this until downloading a file works on iOS, see
-  // https://bugs.webkit.org/show_bug.cgi?id=167341
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
-  downloadFakeButton.style = 'display: none';
-// </if>
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
