@@ -84,10 +84,6 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   // that might run after.
   //
   // See crbug.com/1069086.
-  if (![[AppLaunchManager sharedManager] appIsLaunched]) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithConfiguration:config];
-  }
   [VariationsAppInterface clearVariationsPrefs];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -118,11 +114,13 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 
 - (void)setUp {
   // |ChromeTestCase:isStartupTest| must be true before calling [super setUp] in
-  // order to avoid opening a new tab on startup.
+  // order to avoid opening a new tab on startup. While not strictly necessary,
+  // this let's the test run a little faster.
   [[self class] testForStartup];
 
   [super setUp];
   [self resetAppState:[self appConfigurationForTestCase]];
+  self.continueAfterFailure = YES;
 }
 
 - (void)tearDown {
@@ -136,9 +134,11 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 //
 // Corresponds to FieldTrialTest.SafeModeEndToEndTest in
 // variations_safe_mode_browsertest.cc.
-// Disabled test due to multiple builder failures.
-// TODO(crbug.com/1298274): re-enable the test with fix.
-- (void)DISABLED_testVariationsSafeModeEndToEnd {
+//
+// TODO(crbug.com/1298274): Re-enabled with new mechanism to catch crashes.
+// TODO(crbug.com/1298256): Re-enabled with new mechanism to catch crashes.
+// Sheriffs, feel free to immediately re-disable if needed.
+- (void)testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/1297123): Disabled on iPad device
@@ -147,13 +147,8 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 #endif
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
-  // Set the safe seed value. Then restart and validate that the safe seed is
-  // set, but not active.
+  // Set the safe seed value. Validate that the seed is set but not active.
   [VariationsAppInterface setTestSafeSeedAndSignature];
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
-                @"App should be launched.");
-  [self checkCrashStreakValue:0];
   GREYAssertTrue([VariationsAppInterface hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
@@ -163,18 +158,18 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   [VariationsAppInterface setCrashingRegularSeedAndSignature];
 
   // Pretend chrome has repeatedly crashed, just one away from safe mode.
-  [VariationsAppInterface setCrashValue:variations::kCrashStreakThreshold - 1];
+  int penultimateCrash = variations::kCrashStreakThreshold - 1;
+  [VariationsAppInterface setCrashValue:penultimateCrash];
+  [self checkCrashStreakValue:penultimateCrash];
 
   // The next restart should crash, hitting the crash streak threshold.
-  config.maybe_crash_on_startup = true;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   XCTAssertFalse([[AppLaunchManager sharedManager] appIsLaunched],
-                 @"App should have crashed.");
+                 @"App should fail on launch");
 
   // Subsequent restarts should succeed. Verify that Chrome fell back to
   // variations safe mode by checking that there is a field trial for the test
   // safe seed's study.
-  config.maybe_crash_on_startup = false;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");

@@ -7,16 +7,11 @@
 
 #import <objc/runtime.h>
 
+#import "ios/third_party/earl_grey2/src/CommonLib/GREYSwizzler.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
 
-// Configures the enclosing test fixture to allow Chrome to crash on restart.
-// This disables error handling that would otherwise automatically fail the
-// test if Chrome fails to start. It also skips over some startup services
-// that may attempt to communicate with a (potentially non-existent) Chrome
-// instance.
-//
-// When ScopedAllowCrashOnStartup is used, you probably want to use
-// ChromeTestCase+testForStartup: as well.
+// Swizzles away various crash and error handlers such that if the app being
+// tested crashes on startup, it does not immediately fail the test.
 //
 // There may be at most one live instance of ScopedAllowCrashOnStartup at any
 // given time.
@@ -29,8 +24,7 @@ class ScopedAllowCrashOnStartup {
   static bool IsActive();
 
  private:
-  Method original_crash_handler_method_;
-  Method swizzled_crash_handler_method_;
+  GREYSwizzler* swizzler_;
   EDOClientErrorHandler original_client_error_handler_;
 };
 

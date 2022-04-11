@@ -6,7 +6,8 @@
 
 #include <atomic>
 
-#include "base/check_op.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/third_party/earl_grey2/src/CommonLib/Assertion/GREYFatalAsserts.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,52 +17,100 @@ namespace {
 
 std::atomic_int g_instance_count;
 
-Method GetHandlerMethod(const char* class_name) {
-  return class_getInstanceMethod(
-      objc_getClass(class_name),
-      NSSelectorFromString(@"handleCrashUnderSymbol:"));
+// Uses |swizzler| to replace the implementation of |originalMethodName| in
+// |originalClassName| with that of |swizzledMethodName| of |swizzledClassName|.
+// Asserts that the replacement was successful.
+void SwizzleMethod(GREYSwizzler* swizzler,
+                   NSString* originalClassName,
+                   NSString* originalMethodName,
+                   NSString* swizzledClassName,
+                   NSString* swizzledMethodName) {
+  Class originalClass = NSClassFromString(originalClassName);
+  Class swizzledClass = NSClassFromString(swizzledClassName);
+  SEL originalMethod = NSSelectorFromString(originalMethodName);
+  SEL swizzledMethod = NSSelectorFromString(swizzledMethodName);
+  IMP swizzledImpl = [swizzledClass instanceMethodForSelector:swizzledMethod];
+  BOOL swizzled = [swizzler swizzleClass:originalClass
+                       addInstanceMethod:swizzledMethod
+                      withImplementation:swizzledImpl
+            andReplaceWithInstanceMethod:originalMethod];
+  GREYFatalAssertWithMessage(swizzled, @"Failed to swizzle %@-%@",
+                             originalClassName, originalMethodName);
 }
 
+// NOP implementation of EDOClientErrorHandler.
 const EDOClientErrorHandler kNopClientErrorHandler = ^(NSError* error) {
-  NSLog(@"NOP error handler (allows crash on startup)");
+  NSLog(@"NOP EDO client error handler");
+};
+
+// NOP implementation of GREYHostApplicationCrashHandler.
+const GREYHostApplicationCrashHandler kHostApplicationCrashHandler = ^{
+  NSLog(@"NOP host app crash handler");
 };
 
 }  // namespace
 
-@interface ScopedAllowCrashOnStartup_NopErrorHandler : NSObject
-- (void)handleCrashUnderSymbol:(id)unused;
+// Helper class to hold swizzle-able instance method implementations.
+@interface ScopedAllowCrashOnStartup_SwizzleHelper : NSObject
+
+// XCUIApplicationImpl-handleCrashUnderSymbol
+- (void)swizzledHandleCrashUnderSymbol:(id)unused;
+
+// XCTestCase-recordIssue
+- (void)swizzledRecordIssue:(XCTIssue*)issue;
+
 @end
 
-@implementation ScopedAllowCrashOnStartup_NopErrorHandler
-- (void)handleCrashUnderSymbol:(id)unused {
+@implementation ScopedAllowCrashOnStartup_SwizzleHelper
+
+// XCUIApplicationImpl-handleCrashUnderSymbol
+- (void)swizzledHandleCrashUnderSymbol:(id)unused {
   NSLog(@"NOP handleCrashUnderSymbol");
 }
 
+// XCTestCase-recordIssue
+- (void)swizzledRecordIssue:(XCTIssue*)issue {
+  NSLog(@"----------- captured issue! ------------");
+  if ([issue.compactDescription
+          containsString:@"Couldn’t communicate with a helper application. Try "
+                         @"your operation again. If that fails, quit and "
+                         @"relaunch the application and try again."] ||
+      [issue.compactDescription containsString:@" crashed in "]) {
+    [[NSException exceptionWithName:@"foo" reason:@"bar" userInfo:nil] raise];
+  }
+  INVOKE_ORIGINAL_IMP1(void, @selector(recordIssue:), issue);
+}
 @end
 
-// Swizzle away the handleCrashUnderSymbol callback.  Without this, any time
-// the host app is intentionally crashed, the test is immediately failed.
-ScopedAllowCrashOnStartup::ScopedAllowCrashOnStartup()
-    : original_crash_handler_method_(GetHandlerMethod("XCUIApplicationImpl")),
-      swizzled_crash_handler_method_(
-          GetHandlerMethod("ScopedAllowCrashOnStartup_NopErrorHandler")),
-      original_client_error_handler_(
-          EDOSetClientErrorHandler(kNopClientErrorHandler)) {
-  NSLog(@"Swizzle app crash error handlers");
-  method_exchangeImplementations(original_crash_handler_method_,
-                                 swizzled_crash_handler_method_);
-  CHECK_EQ(++g_instance_count, 1);
+ScopedAllowCrashOnStartup::ScopedAllowCrashOnStartup() {
+  GREYFatalAssertWithMessage(
+      ++g_instance_count == 1,
+      @"At most one ScopedAllowCrashOnStartup instance may exist at any time.");
+  swizzler_ = [[GREYSwizzler alloc] init];
+
+  NSLog(@"Swizzle/stub app crash error handlers");
+  SwizzleMethod(swizzler_, @"XCUIApplicationImpl", @"handleCrashUnderSymbol:",
+                @"ScopedAllowCrashOnStartup_SwizzleHelper",
+                @"swizzledHandleCrashUnderSymbol:");
+  SwizzleMethod(swizzler_, @"XCTestCase",
+                @"recordIssue:", @"ScopedAllowCrashOnStartup_SwizzleHelper",
+                @"swizzledRecordIssue:");
+  original_client_error_handler_ =
+      EDOSetClientErrorHandler(kNopClientErrorHandler);
+  [EarlGrey setHostApplicationCrashHandler:kHostApplicationCrashHandler];
 }
 
 ScopedAllowCrashOnStartup::~ScopedAllowCrashOnStartup() {
-  NSLog(@"Un-swizzle app crash error handlers!");
+  NSLog(@"Restore app crash error handlers!");
+  [EarlGrey setHostApplicationCrashHandler:nil];
   EDOSetClientErrorHandler(original_client_error_handler_);
-  method_exchangeImplementations(swizzled_crash_handler_method_,
-                                 original_crash_handler_method_);
-  --g_instance_count;
+  [swizzler_ resetAll];
+  GREYFatalAssertWithMessage(--g_instance_count == 0,
+                             @"Destroying singleton ScopedAllowCrashOnStartup "
+                             @"should bring instance count to 0");
 }
 
 // static
 bool ScopedAllowCrashOnStartup::IsActive() {
-  return g_instance_count == 1;
+  return g_instance_count != 0;
 }

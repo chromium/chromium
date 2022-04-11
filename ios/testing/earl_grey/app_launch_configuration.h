@@ -42,12 +42,6 @@ struct AppLaunchConfiguration {
   std::vector<std::string> additional_args;
   // Relaunch policy.
   RelaunchPolicy relaunch_policy = NoForceRelaunchAndResetState;
-  // When true, the AppLaunchManager will give the newly launched app a chance
-  // to crash during startup. This requires that a ScopedAllowCrashOnStartup
-  // instance be live while the test is running. Note that this is not a hard
-  // expectation; the test should check AppLaunchManager-appIsLaunched: to
-  // determine whether or not the app crashed or was successfully launched.
-  bool maybe_crash_on_startup = false;
 };
 
 #endif  // IOS_TESTING_EARL_GREY_APP_LAUNCH_CONFIGURATION_H_

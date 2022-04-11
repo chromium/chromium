@@ -103,8 +103,7 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 // fails to do so.
 // In EG1, this method is a no-op.
 - (void)ensureAppLaunchedWithArgs:(NSArray<NSString*>*)arguments
-                   relaunchPolicy:(RelaunchPolicy)relaunchPolicy
-              maybeCrashOnStartup:(bool)maybeCrashOnStartup {
+                   relaunchPolicy:(RelaunchPolicy)relaunchPolicy {
   BOOL forceRestart = (relaunchPolicy == ForceRelaunchByKilling) ||
                       (relaunchPolicy == ForceRelaunchByCleanShutdown);
   BOOL gracefullyKill = (relaunchPolicy == ForceRelaunchByCleanShutdown);
@@ -166,21 +165,22 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
   XCUIApplication* application = [[XCUIApplication alloc] init];
   application.launchArguments = arguments;
-  [application launch];
 
-  if (maybeCrashOnStartup) {
-    // Can't use EG conditionals here since the app may be terminated.
-    NSLog(@"Giving application time to start/crash.");
-    if ([application waitForState:XCUIApplicationStateNotRunning timeout:20]) {
-      XCTAssertEqual(application.state, XCUIApplicationStateNotRunning);
-      NSLog(@"App has crashed (as expected).");
-      self.runningApplication = nil;
-      self.runningApplicationProcessIdentifier = -1;
-      self.currentLaunchArgs = nil;
-      XCTAssertFalse([self appIsLaunched]);
-      return;
-    }
-    NSLog(@"App is running.");
+  @try {
+    [application launch];
+  } @catch (id exception) {
+    XCTAssertFalse(GREYTestApplicationDistantObject.sharedInstance
+                       .hostActiveWithAppComponent);
+  }
+
+  if (!GREYTestApplicationDistantObject.sharedInstance
+           .hostActiveWithAppComponent) {
+    NSLog(@"App has crashed on startup");
+    self.runningApplication = nil;
+    self.runningApplicationProcessIdentifier = -1;
+    self.currentLaunchArgs = nil;
+    XCTAssertFalse([self appIsLaunched]);
+    return;
   }
 
   [CoverageUtils configureCoverageReportPath];
@@ -246,8 +246,7 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   [self ensureAppLaunchedWithArgs:arguments
-                   relaunchPolicy:configuration.relaunch_policy
-              maybeCrashOnStartup:configuration.maybe_crash_on_startup];
+                   relaunchPolicy:configuration.relaunch_policy];
 
   if ([self appIsLaunched]) {
     if (@available(iOS 14, *)) {
