@@ -33,6 +33,7 @@ static_library("c_support") {
     "//mojo/public/c/system",
     "//mojo/public/cpp/system",
   ]
+  visibility = [ ":*" ]
 }
 
 static_library("c_test_support") {
@@ -43,6 +44,7 @@ static_library("c_test_support") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
   ]
+  visibility = [ ":*" ]
 }
 
 source_set("mojo_c_system_wrapper") {
@@ -51,12 +53,14 @@ source_set("mojo_c_system_wrapper") {
     ":c_support",
     "//mojo/public/c/system:headers",
   ]
+  all_dependent_configs = configs
+  visibility = [ ":*" ]
 }
 
 rust_bindgen("mojo_c_system_binding") {
   header = "system/wrapper.h"
   deps = [ ":mojo_c_system_wrapper" ]
-  configs = default_compiler_configs
+  visibility = [ ":*" ]
 }
 
 rust_static_library("mojo_rust") {
@@ -95,9 +99,8 @@ rust_static_library("mojo_rust") {
     ":mojo_c_system_wrapper",
   ]
 
-  inputs = get_target_outputs(":mojo_c_system_binding")
-
   bindgen_output = get_target_outputs(":mojo_c_system_binding")
+  inputs = bindgen_output
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
 }
 

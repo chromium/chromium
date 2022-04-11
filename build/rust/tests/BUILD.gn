@@ -48,6 +48,7 @@ group("deps") {
     if (can_build_rust_unit_tests) {
       deps += [
         "autocxx_test:autocxx_test_lib_unittests",
+        "bindgen_test:bindgen_test_lib_unittests",
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_mixed_component:test_mixed_component_rs_unittests",
         "test_mixed_static_library:test_mixed_static_library_rs_unittests",

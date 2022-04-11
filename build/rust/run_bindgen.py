@@ -82,7 +82,6 @@ def main():
   env = os.environ
   if args.ld_library_path:
     env["LD_LIBRARY_PATH"] = args.ld_library_path
-  print(' '.join([args.exe] + genargs))
   if subprocess.run([args.exe, *genargs], env=env).returncode != 0:
     # Make sure we don't emit anything if bindgen failed.
     try:

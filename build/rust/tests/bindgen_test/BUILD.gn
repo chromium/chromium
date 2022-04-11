@@ -17,6 +17,7 @@ component("c_lib") {
 
 rust_bindgen("c_lib_bindgen") {
   header = "lib.h"
+  configs = default_compiler_configs
 }
 
 rust_static_library("bindgen_test_lib") {

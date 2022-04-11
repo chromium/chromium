@@ -46,7 +46,7 @@ template("rust_bindgen") {
   action(_target_name) {
     testonly = _testonly
     if (defined(_visibility)) {
-      visibility += _visibility
+      visibility = _visibility
     }
 
     sources = [ invoker.header ]
@@ -91,18 +91,25 @@ template("rust_bindgen") {
       rebase_path(clang_base_path + "/lib", root_build_dir),
     ]
 
-    # TODO(crbug.com/1306841): solve by passing cflags (and similar) to action
-    # targets as well as defines and includes.
     args += [
       "--",
       "{{defines}}",
       "{{include_dirs}}",
-      "-std=c11",  # Keep in sync with main Chromium build.
-      "--sysroot=" + rebase_path(sysroot, root_build_dir),
+      "{{cflags}}",
+
+      # Despite passing {{cflags}} this is still necessary for some standard C
+      # includes. It seems for C++ code these files come from libc++, which is
+      # obviously not available for C.
       "-isystem" + rebase_path(
               clang_base_path + "/lib/clang/" + clang_version + "/include",
               root_build_dir),
+
+      # Passes C comments through as rustdoc attributes.
       "-fparse-all-comments",
+
+      # Default configs include "-fvisibility=hidden", and for some reason this
+      # causes bindgen not to emit function bindings. Override it.
+      "-fvisibility=default",
     ]
   }
 }
