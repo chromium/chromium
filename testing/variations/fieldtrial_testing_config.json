@@ -7330,6 +7330,24 @@
             ]
         }
     ],
+    "UnifiedPasswordManagerAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "stage": "2"
+                    },
+                    "enable_features": [
+                        "UnifiedPasswordManagerAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "UpdateClientHintsGREASERollout": [
         {
             "platforms": [
