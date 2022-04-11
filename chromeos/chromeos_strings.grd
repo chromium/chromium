@@ -2953,7 +2953,7 @@ Try tapping the mic to ask me anything.
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair error
       </message>
       <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
-        We're running into errors. Try rebooting or return to the login screen.
+        We're running into errors. Try rebooting or recover the firmware using a USB thumbdrive.
       </message>
       <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON" translateable="false" desc="Label for the exit button on the error page.">
         Exit repair

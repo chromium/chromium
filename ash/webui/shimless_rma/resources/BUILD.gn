@@ -57,6 +57,7 @@ generate_grd("build_grd") {
     "mojo_interface_provider.js",
     "illustrations/base_on_flat_surface.svg",
     "illustrations/downloading.svg",
+    "illustrations/error.svg",
     "illustrations/insert_usb.svg",
     "illustrations/lid_on_flat_surface.svg",
     "illustrations/repair_start.svg",
