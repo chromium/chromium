@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "gin/interceptor.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/wrappable.h"
@@ -17,7 +18,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class Value;
 }  // namespace base
 
 namespace gin {
@@ -40,7 +40,7 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
   class Client {
    public:
     // Handles converted messages from the embedder.
-    virtual void OnMessage(const base::Value& message) = 0;
+    virtual void OnMessage(const base::Value::Dict& message) = 0;
 
    protected:
     Client() = default;

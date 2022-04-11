@@ -273,7 +273,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       const blink::WebAssociatedURLLoaderOptions& options) override;
 
   // PostMessageReceiver::Client:
-  void OnMessage(const base::Value& message) override;
+  void OnMessage(const base::Value::Dict& message) override;
 
   // SkiaGraphics::Client:
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;

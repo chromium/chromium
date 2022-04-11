@@ -123,12 +123,13 @@ void PostMessageReceiver::PostMessage(v8::Local<v8::Value> message) {
 
   std::unique_ptr<base::Value> converted_message =
       v8_value_converter_->FromV8Value(message, isolate_->GetCurrentContext());
-  DCHECK(converted_message) << "The PDF Viewer UI should not be sending "
-                               "messages that cannot be converted.";
+  // The PDF Viewer UI should not be sending messages that cannot be converted.
+  DCHECK(converted_message);
+  DCHECK(converted_message->is_dict());
 
-  client_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&Client::OnMessage, client_,
-                                               std::move(*converted_message)));
+  client_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Client::OnMessage, client_,
+                                std::move(converted_message->GetDict())));
 }
 
 }  // namespace chrome_pdf

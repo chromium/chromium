@@ -10,14 +10,11 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/values.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/page_orientation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace base {
-class Value;
-}
 
 namespace chrome_pdf {
 
@@ -56,11 +53,11 @@ class DocumentLayout final {
       return !(lhs == rhs);
     }
 
-    // Serializes layout options to a base::Value.
-    base::Value ToValue() const;
+    // Serializes layout options to a base::Value::Dict.
+    base::Value::Dict ToValue() const;
 
-    // Deserializes layout options from a base::Value.
-    void FromValue(const base::Value& value);
+    // Deserializes layout options from a base::Value::Dict.
+    void FromValue(const base::Value::Dict& value);
 
     // Page layout direction. This is tied to the direction of the user's UI,
     // rather than the direction of individual pages.

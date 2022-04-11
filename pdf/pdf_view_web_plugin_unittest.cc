@@ -348,7 +348,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   void SetDocumentDimensions(const gfx::Size& dimensions) {
     EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
         .WillRepeatedly(Return(dimensions));
-    plugin_->OnMessage(base::test::ParseJson(R"({
+    base::Value message = base::test::ParseJson(R"({
       "type": "viewport",
       "userInitiated": false,
       "zoom": 1,
@@ -360,7 +360,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
       "xOffset": 0,
       "yOffset": 0,
       "pinchPhase": 0,
-    })"));
+    })");
+    plugin_->OnMessage(message.GetDict());
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {

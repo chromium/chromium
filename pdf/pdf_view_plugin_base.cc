@@ -104,13 +104,13 @@ enum class PinchPhase {
 // "fooReply". The `message` from the embedder must have a "messageId" value
 // that will be copied to the reply message.
 base::Value PrepareReplyMessage(base::StringPiece reply_type,
-                                const base::Value& message) {
-  DCHECK_EQ(reply_type, *message.FindStringKey("type") + "Reply");
+                                const base::Value::Dict& message) {
+  DCHECK_EQ(reply_type, *message.FindString("type") + "Reply");
 
-  base::Value reply(base::Value::Type::DICTIONARY);
-  reply.SetStringKey("type", reply_type);
-  reply.SetStringKey("messageId", *message.FindStringKey("messageId"));
-  return reply;
+  base::Value::Dict reply;
+  reply.Set("type", reply_type);
+  reply.Set("messageId", *message.FindString("messageId"));
+  return base::Value(std::move(reply));
 }
 
 bool IsPrintPreviewUrl(base::StringPiece url) {
@@ -198,7 +198,7 @@ void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
   message.SetStringKey("type", "documentDimensions");
   message.SetIntKey("width", layout.size().width());
   message.SetIntKey("height", layout.size().height());
-  message.SetKey("layoutOptions", layout.options().ToValue());
+  message.SetKey("layoutOptions", base::Value(layout.options().ToValue()));
   base::Value page_dimensions_list(base::Value::Type::LIST);
   for (size_t i = 0; i < layout.page_count(); ++i)
     page_dimensions_list.Append(base::Value(DictFromRect(layout.page_rect(i))));
@@ -548,8 +548,8 @@ bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {
   return event_to_handle.GetType() == blink::WebInputEvent::Type::kMouseDown;
 }
 
-void PdfViewPluginBase::HandleMessage(const base::Value& message) {
-  using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
+void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
+  using MessageHandler = void (PdfViewPluginBase::*)(const base::Value::Dict&);
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
@@ -578,7 +578,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
-  MessageHandler handler = kMessageHandlers.at(*message.FindStringKey("type"));
+  MessageHandler handler = kMessageHandlers.at(*message.FindString("type"));
   (this->*handler)(message);
 }
 
@@ -1040,14 +1040,14 @@ base::Value::DictStorage PdfViewPluginBase::DictFromRect(
 }
 
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
-    const base::Value& message) {
-  engine()->DisplayAnnotations(message.FindBoolKey("display").value());
+    const base::Value::Dict& message) {
+  engine()->DisplayAnnotations(message.FindBool("display").value());
 }
 
 void PdfViewPluginBase::HandleGetNamedDestinationMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   absl::optional<PDFEngine::NamedDestination> named_destination =
-      engine()->GetNamedDestination(*message.FindStringKey("namedDestination"));
+      engine()->GetNamedDestination(*message.FindString("namedDestination"));
 
   const int page_number = named_destination.has_value()
                               ? base::checked_cast<int>(named_destination->page)
@@ -1073,13 +1073,13 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
 }
 
 void PdfViewPluginBase::HandleGetPasswordCompleteMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   DCHECK(password_callback_);
-  std::move(password_callback_).Run(*message.FindStringKey("password"));
+  std::move(password_callback_).Run(*message.FindString("password"));
 }
 
 void PdfViewPluginBase::HandleGetSelectedTextMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   // Always return unix newlines to JavaScript.
   std::string selected_text;
   base::RemoveChars(engine()->GetSelectedText(), "\r", &selected_text);
@@ -1089,8 +1089,9 @@ void PdfViewPluginBase::HandleGetSelectedTextMessage(
   SendMessage(std::move(reply));
 }
 
-void PdfViewPluginBase::HandleGetThumbnailMessage(const base::Value& message) {
-  const int page_index = message.FindIntKey("page").value();
+void PdfViewPluginBase::HandleGetThumbnailMessage(
+    const base::Value::Dict& message) {
+  const int page_index = message.FindInt("page").value();
   base::Value reply = PrepareReplyMessage("getThumbnailReply", message);
 
   engine()->RequestThumbnail(page_index, device_scale_,
@@ -1099,9 +1100,9 @@ void PdfViewPluginBase::HandleGetThumbnailMessage(const base::Value& message) {
 }
 
 void PdfViewPluginBase::HandleLoadPreviewPageMessage(
-    const base::Value& message) {
-  const std::string& url = *message.FindStringKey("url");
-  int index = message.FindIntKey("index").value();
+    const base::Value::Dict& message) {
+  const std::string& url = *message.FindString("url");
+  int index = message.FindInt("index").value();
 
   // For security reasons, crash if `url` is not for Print Preview.
   CHECK(IsPrintPreview());
@@ -1109,15 +1110,16 @@ void PdfViewPluginBase::HandleLoadPreviewPageMessage(
   ProcessPreviewPageInfo(url, index);
 }
 
-void PdfViewPluginBase::HandlePrintMessage(const base::Value& /*message*/) {
+void PdfViewPluginBase::HandlePrintMessage(
+    const base::Value::Dict& /*message*/) {
   Print();
 }
 
 void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
-    const base::Value& message) {
-  const std::string& url = *message.FindStringKey("url");
-  bool is_grayscale = message.FindBoolKey("grayscale").value();
-  int print_preview_page_count = message.FindIntKey("pageCount").value();
+    const base::Value::Dict& message) {
+  const std::string& url = *message.FindString("url");
+  bool is_grayscale = message.FindBool("grayscale").value();
+  int print_preview_page_count = message.FindInt("pageCount").value();
 
   // For security reasons, crash if `url` is not for Print Preview.
   CHECK(IsPrintPreview());
@@ -1156,18 +1158,18 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
 }
 
 void PdfViewPluginBase::HandleRotateClockwiseMessage(
-    const base::Value& /*message*/) {
+    const base::Value::Dict& /*message*/) {
   engine()->RotateClockwise();
 }
 
 void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
-    const base::Value& /*message*/) {
+    const base::Value::Dict& /*message*/) {
   engine()->RotateCounterclockwise();
 }
 
-void PdfViewPluginBase::HandleSaveMessage(const base::Value& message) {
-  const std::string& token = *message.FindStringKey("token");
-  int request_type = message.FindIntKey("saveRequestType").value();
+void PdfViewPluginBase::HandleSaveMessage(const base::Value::Dict& message) {
+  const std::string& token = *message.FindString("token");
+  int request_type = message.FindInt("saveRequestType").value();
   DCHECK_GE(request_type, static_cast<int>(SaveRequestType::kAnnotation));
   DCHECK_LE(request_type, static_cast<int>(SaveRequestType::kEdited));
 
@@ -1194,8 +1196,8 @@ void PdfViewPluginBase::HandleSaveMessage(const base::Value& message) {
 }
 
 void PdfViewPluginBase::HandleSaveAttachmentMessage(
-    const base::Value& message) {
-  const int index = message.FindIntKey("attachmentIndex").value();
+    const base::Value::Dict& message) {
+  const int index = message.FindInt("attachmentIndex").value();
 
   const std::vector<DocumentAttachmentInfo>& list =
       engine()->GetDocumentAttachmentInfoList();
@@ -1213,32 +1215,36 @@ void PdfViewPluginBase::HandleSaveAttachmentMessage(
   SendMessage(std::move(reply));
 }
 
-void PdfViewPluginBase::HandleSelectAllMessage(const base::Value& /*message*/) {
+void PdfViewPluginBase::HandleSelectAllMessage(
+    const base::Value::Dict& /*message*/) {
   engine()->SelectAll();
 }
 
 void PdfViewPluginBase::HandleSetBackgroundColorMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   background_color_ =
-      base::checked_cast<SkColor>(message.FindDoubleKey("color").value());
+      base::checked_cast<SkColor>(message.FindDouble("color").value());
 }
 
-void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
-  engine()->SetReadOnly(message.FindBoolKey("enableReadOnly").value());
+void PdfViewPluginBase::HandleSetReadOnlyMessage(
+    const base::Value::Dict& message) {
+  engine()->SetReadOnly(message.FindBool("enableReadOnly").value());
 }
 
-void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
-  engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
+void PdfViewPluginBase::HandleSetTwoUpViewMessage(
+    const base::Value::Dict& message) {
+  engine()->SetTwoUpView(message.FindBool("enableTwoUpView").value());
 }
 
 void PdfViewPluginBase::HandleStopScrollingMessage(
-    const base::Value& /*message*/) {
+    const base::Value::Dict& /*message*/) {
   stop_scrolling_ = true;
 }
 
-void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
-  const base::Value* layout_options_value =
-      message.FindDictKey("layoutOptions");
+void PdfViewPluginBase::HandleViewportMessage(
+    const base::Value::Dict& message) {
+  const base::Value::Dict* layout_options_value =
+      message.FindDict("layoutOptions");
   if (layout_options_value) {
     DocumentLayout::Options layout_options;
     layout_options.FromValue(*layout_options_value);
@@ -1259,11 +1265,11 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     }
   }
 
-  gfx::Vector2dF scroll_offset(*message.FindDoubleKey("xOffset"),
-                               *message.FindDoubleKey("yOffset"));
-  double new_zoom = *message.FindDoubleKey("zoom");
+  gfx::Vector2dF scroll_offset(*message.FindDouble("xOffset"),
+                               *message.FindDouble("yOffset"));
+  double new_zoom = *message.FindDouble("zoom");
   const PinchPhase pinch_phase =
-      static_cast<PinchPhase>(*message.FindIntKey("pinchPhase"));
+      static_cast<PinchPhase>(*message.FindInt("pinchPhase"));
 
   received_viewport_message_ = true;
   stop_scrolling_ = false;
@@ -1284,14 +1290,14 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   if (pinch_phase == PinchPhase::kUpdateZoomIn ||
       (pinch_phase == PinchPhase::kUpdateZoomOut && zoom_ratio > 1.0)) {
     // Get the coordinates of the center of the pinch gesture.
-    const double pinch_x = *message.FindDoubleKey("pinchX");
-    const double pinch_y = *message.FindDoubleKey("pinchY");
+    const double pinch_x = *message.FindDouble("pinchX");
+    const double pinch_y = *message.FindDouble("pinchY");
     gfx::Point pinch_center(pinch_x, pinch_y);
 
     // Get the pinch vector which represents the panning caused by the change in
     // pinch center between the start and the end of the gesture.
-    const double pinch_vector_x = *message.FindDoubleKey("pinchVectorX");
-    const double pinch_vector_y = *message.FindDoubleKey("pinchVectorY");
+    const double pinch_vector_x = *message.FindDouble("pinchVectorX");
+    const double pinch_vector_y = *message.FindDouble("pinchVectorY");
     gfx::Vector2d pinch_vector =
         gfx::Vector2d(pinch_vector_x * zoom_ratio, pinch_vector_y * zoom_ratio);
 
@@ -1353,7 +1359,7 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
 
   // Bound the input parameters.
   new_zoom = std::max(kMinZoom, new_zoom);
-  DCHECK(message.FindBoolKey("userInitiated").has_value());
+  DCHECK(message.FindBool("userInitiated").has_value());
 
   SetZoom(new_zoom);
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));

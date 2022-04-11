@@ -230,7 +230,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Handles `postMessage()` calls from the embedder.
-  void HandleMessage(const base::Value& message);
+  void HandleMessage(const base::Value::Dict& message);
 
   // Enqueues a "message" event carrying `message` to the embedder. Messages are
   // guaranteed to be received in the order that they are sent. This method is
@@ -416,24 +416,25 @@ class PdfViewPluginBase : public PDFEngine::Client,
       const gfx::Vector2dF& scroll_offset) const;
 
   // Message handlers.
-  void HandleDisplayAnnotationsMessage(const base::Value& message);
-  void HandleGetNamedDestinationMessage(const base::Value& message);
-  void HandleGetPasswordCompleteMessage(const base::Value& message);
-  void HandleGetSelectedTextMessage(const base::Value& message);
-  void HandleGetThumbnailMessage(const base::Value& message);
-  void HandleLoadPreviewPageMessage(const base::Value& message);
-  void HandlePrintMessage(const base::Value& /*message*/);
-  void HandleResetPrintPreviewModeMessage(const base::Value& message);
-  void HandleRotateClockwiseMessage(const base::Value& /*message*/);
-  void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
-  void HandleSaveMessage(const base::Value& message);
-  void HandleSaveAttachmentMessage(const base::Value& message);
-  void HandleSelectAllMessage(const base::Value& /*message*/);
-  void HandleSetBackgroundColorMessage(const base::Value& message);
-  void HandleSetReadOnlyMessage(const base::Value& message);
-  void HandleSetTwoUpViewMessage(const base::Value& message);
-  void HandleStopScrollingMessage(const base::Value& /*message*/);
-  void HandleViewportMessage(const base::Value& message);
+  void HandleDisplayAnnotationsMessage(const base::Value::Dict& message);
+  void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
+  void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
+  void HandleGetSelectedTextMessage(const base::Value::Dict& message);
+  void HandleGetThumbnailMessage(const base::Value::Dict& message);
+  void HandleLoadPreviewPageMessage(const base::Value::Dict& message);
+  void HandlePrintMessage(const base::Value::Dict& /*message*/);
+  void HandleResetPrintPreviewModeMessage(const base::Value::Dict& message);
+  void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
+  void HandleRotateCounterclockwiseMessage(
+      const base::Value::Dict& /*message*/);
+  void HandleSaveMessage(const base::Value::Dict& message);
+  void HandleSaveAttachmentMessage(const base::Value::Dict& message);
+  void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
+  void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
+  void HandleSetReadOnlyMessage(const base::Value::Dict& message);
+  void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
+  void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
+  void HandleViewportMessage(const base::Value::Dict& message);
 
   // Sends start/stop loading notifications to the plugin's render frame
   // depending on `did_call_start_loading_`.

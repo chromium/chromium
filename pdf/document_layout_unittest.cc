@@ -111,7 +111,7 @@ TEST_F(DocumentLayoutOptionsTest, NotEquals) {
 }
 
 TEST_F(DocumentLayoutOptionsTest, ToValueDefault) {
-  base::Value value = options_.ToValue();
+  base::Value value(options_.ToValue());
 
   EXPECT_THAT(value, base::test::IsJson(R"({
     "direction": 0,
@@ -124,7 +124,7 @@ TEST_F(DocumentLayoutOptionsTest, ToValueModified) {
   options_.set_direction(base::i18n::LEFT_TO_RIGHT);
   options_.RotatePagesClockwise();
   options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
-  base::Value value = options_.ToValue();
+  base::Value value(options_.ToValue());
 
   EXPECT_THAT(value, base::test::IsJson(R"({
     "direction": 2,
@@ -134,21 +134,23 @@ TEST_F(DocumentLayoutOptionsTest, ToValueModified) {
 }
 
 TEST_F(DocumentLayoutOptionsTest, FromValueDefault) {
-  options_.FromValue(base::test::ParseJson(R"({
+  base::Value value = base::test::ParseJson(R"({
     "direction": 0,
     "defaultPageOrientation": 0,
     "twoUpViewEnabled": false,
-  })"));
+  })");
+  options_.FromValue(value.GetDict());
 
   EXPECT_EQ(options_, DocumentLayout::Options());
 }
 
 TEST_F(DocumentLayoutOptionsTest, FromValueModified) {
-  options_.FromValue(base::test::ParseJson(R"({
+  base::Value value = base::test::ParseJson(R"({
     "direction": 2,
     "defaultPageOrientation": 1,
     "twoUpViewEnabled": true,
-  })"));
+  })");
+  options_.FromValue(value.GetDict());
 
   EXPECT_EQ(options_.direction(), base::i18n::LEFT_TO_RIGHT);
   EXPECT_EQ(options_.default_page_orientation(), PageOrientation::kClockwise90);

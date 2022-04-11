@@ -208,12 +208,13 @@ base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
   return message;
 }
 
-base::Value CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType type,
-                                     const std::string& token) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "save");
-  message.SetIntKey("saveRequestType", static_cast<int>(type));
-  message.SetStringKey("token", token);
+base::Value::Dict CreateSaveRequestMessage(
+    PdfViewPluginBase::SaveRequestType type,
+    const std::string& token) {
+  base::Value::Dict message;
+  message.Set("type", "save");
+  message.Set("saveRequestType", static_cast<int>(type));
+  message.Set("token", token);
   return message;
 }
 
@@ -252,7 +253,7 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
 
  protected:
   void SendDefaultViewportMessage() {
-    fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    base::Value message = base::test::ParseJson(R"({
       "type": "viewport",
       "userInitiated": false,
       "zoom": 1,
@@ -264,7 +265,8 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
       "xOffset": 0,
       "yOffset": 0,
       "pinchPhase": 0,
-    })"));
+    })");
+    fake_plugin_.HandleMessage(message.GetDict());
   }
 };
 
@@ -613,7 +615,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
 
   static constexpr char kSaveAnnotInNonEditModeToken[] =
       "save-annot-in-non-edit-mode-token";
-  base::Value message =
+  base::Value::Dict message =
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
                                kSaveAnnotInNonEditModeToken);
   base::Value expected_response =
@@ -633,7 +635,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
 
   static constexpr char kSaveAnnotInEditModeToken[] =
       "save-annot-in-edit-mode-token";
-  base::Value message =
+  base::Value::Dict message =
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
                                kSaveAnnotInEditModeToken);
   base::Value expected_response =
@@ -653,7 +655,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
 
   static constexpr char kSaveOriginalInNonEditModeToken[] =
       "save-original-in-non-edit-mode-token";
-  base::Value message =
+  base::Value::Dict message =
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kOriginal,
                                kSaveOriginalInNonEditModeToken);
   base::Value expected_response =
@@ -674,7 +676,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
 
   static constexpr char kSaveOriginalInEditModeToken[] =
       "save-original-in-edit-mode-token";
-  base::Value message =
+  base::Value::Dict message =
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kOriginal,
                                kSaveOriginalInEditModeToken);
   base::Value expected_response =
@@ -696,7 +698,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
 
   static constexpr char kSaveEditedInNonEditModeToken[] =
       "save-edited-in-non-edit-mode";
-  base::Value message =
+  base::Value::Dict message =
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kEdited,
                                kSaveEditedInNonEditModeToken);
   base::Value expected_response =
@@ -716,7 +718,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
 
   static constexpr char kSaveEditedInEditModeToken[] =
       "save-edited-in-edit-mode-token";
-  base::Value message = CreateSaveRequestMessage(
+  base::Value::Dict message = CreateSaveRequestMessage(
       PdfViewPluginBase::SaveRequestType::kEdited, kSaveEditedInEditModeToken);
   base::Value expected_response =
       CreateExpectedSaveToBufferResponse(kSaveEditedInEditModeToken,
@@ -732,9 +734,9 @@ TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
   const SkColor kNewBackgroundColor = SK_ColorGREEN;
   ASSERT_NE(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setBackgroundColor");
-  message.SetDoubleKey("color", kNewBackgroundColor);
+  base::Value::Dict message;
+  message.Set("type", "setBackgroundColor");
+  message.Set("color", static_cast<double>(kNewBackgroundColor));
 
   fake_plugin_.HandleMessage(message);
   EXPECT_EQ(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
@@ -745,7 +747,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
   EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -757,7 +759,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 
   EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
 }
@@ -770,7 +773,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
   fake_plugin_.DocumentLoadComplete();
   fake_plugin_.clear_sent_messages();
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -782,7 +785,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 
   EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
     "type": "loadProgress",
@@ -793,7 +797,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
 TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message1 = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -805,14 +809,15 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message1.GetDict());
   fake_plugin_.clear_sent_messages();
 
   DocumentLayout::Options two_up_options;
   two_up_options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_CALL(*engine, ApplyDocumentLayout(two_up_options));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message2 = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -824,7 +829,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message2.GetDict());
 
   EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
 }
@@ -836,7 +842,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageScroll) {
   EXPECT_CALL(*engine, ScrolledToXPosition(2));
   EXPECT_CALL(*engine, ScrolledToYPosition(3));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -848,7 +854,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageScroll) {
     "xOffset": 2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest,
@@ -859,7 +866,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
   EXPECT_CALL(*engine, ScrolledToXPosition(2));
   EXPECT_CALL(*engine, ScrolledToYPosition(3));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -871,7 +878,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
     "xOffset": 2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest,
@@ -883,7 +891,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
   EXPECT_CALL(*engine, ScrolledToYPosition(3));
   EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -895,7 +903,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
     "xOffset": -2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScroll) {
@@ -911,9 +920,10 @@ TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollStopped) {
   EXPECT_CALL(*engine, ScrolledToXPosition).Times(0);
   EXPECT_CALL(*engine, ScrolledToYPosition).Times(0);
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "stopScrolling",
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
   fake_plugin_.UpdateScroll({0, 0});
 }
 
@@ -1085,12 +1095,13 @@ TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessage) {
                            PDFiumFormFiller::ScriptOption::kNoJavaScript))
       .WillOnce(Return(ByMove(std::move(engine))));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": false,
     "pageCount": 1,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
@@ -1103,12 +1114,13 @@ TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
                            PDFiumFormFiller::ScriptOption::kNoJavaScript))
       .WillOnce(Return(ByMove(std::move(engine))));
 
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+  base::Value message = base::test::ParseJson(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": true,
     "pageCount": 1,
-  })"));
+  })");
+  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, NormalPrinting) {

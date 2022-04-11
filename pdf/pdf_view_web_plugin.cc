@@ -876,7 +876,7 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
   return container_wrapper_->CreateAssociatedURLLoader(options);
 }
 
-void PdfViewWebPlugin::OnMessage(const base::Value& message) {
+void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   PdfViewPluginBase::HandleMessage(message);
 }
 
