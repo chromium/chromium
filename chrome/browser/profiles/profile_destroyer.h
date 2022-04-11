@@ -33,7 +33,6 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
  private:
   friend class ProfileImpl;
   typedef std::set<content::RenderProcessHost*> HostSet;
-  typedef std::set<ProfileDestroyer*> DestroyerSet;
 
   friend class base::RefCounted<ProfileDestroyer>;
 
@@ -66,9 +65,6 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // to make it stop attempting to destroy it. Returns true if any object
   // object was found to match and get reset.
   static bool ResetPendingDestroyers(Profile* const profile);
-
-  // We need access to all pending destroyers so we can cancel them.
-  static DestroyerSet* pending_destroyers_;
 
   // We don't want to wait forever, so we have a cancellation timer.
   base::OneShotTimer timer_;

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -42,9 +43,13 @@ enum class ProfileDestructionType {
   kMaxValue = kDelayedAndCrashed,
 };
 
-}  // namespace
+using DestroyerSet = std::set<ProfileDestroyer*>;
+DestroyerSet& PendingDestroyers() {
+  static base::NoDestructor<DestroyerSet> instance;
+  return *instance;
+}
 
-ProfileDestroyer::DestroyerSet* ProfileDestroyer::pending_destroyers_ = nullptr;
+}  // namespace
 
 // static
 void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
@@ -164,12 +169,10 @@ void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
 bool ProfileDestroyer::ResetPendingDestroyers(Profile* const profile) {
   DCHECK(profile);
   bool found = false;
-  if (pending_destroyers_) {
-    for (auto* i : *pending_destroyers_) {
-      if (i->profile_ == profile) {
-        i->profile_ = nullptr;
-        found = true;
-      }
+  for (auto* i : PendingDestroyers()) {
+    if (i->profile_ == profile) {
+      i->profile_ = nullptr;
+      found = true;
     }
   }
   return found;
@@ -185,9 +188,7 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
                 proto->set_profile_ptr(reinterpret_cast<uint64_t>(profile));
                 proto->set_host_count_at_creation(hosts->size());
               });
-  if (pending_destroyers_ == NULL)
-    pending_destroyers_ = new DestroyerSet;
-  pending_destroyers_->insert(this);
+  PendingDestroyers().insert(this);
   for (auto* host : *hosts)
     observations_.AddObservation(host);
   // If we are going to wait for render process hosts, we don't want to do it
@@ -226,14 +227,9 @@ ProfileDestroyer::~ProfileDestroyer() {
   // during shutdown of the browser and deletion of the profile.
   CHECK(!observations_.IsObservingAnySource())
       << "Some render process hosts were not destroyed early enough!";
-  DCHECK(pending_destroyers_);
-  auto iter = pending_destroyers_->find(this);
-  DCHECK(iter != pending_destroyers_->end());
-  pending_destroyers_->erase(iter);
-  if (pending_destroyers_->empty()) {
-    delete pending_destroyers_;
-    pending_destroyers_ = NULL;
-  }
+  auto iter = PendingDestroyers().find(this);
+  DCHECK(iter != PendingDestroyers().end());
+  PendingDestroyers().erase(iter);
 }
 
 void ProfileDestroyer::RenderProcessHostDestroyed(
