@@ -30,7 +30,12 @@ MediaStreamRequest::MediaStreamRequest(
       audio_type(audio_type),
       video_type(video_type),
       disable_local_echo(disable_local_echo),
-      request_pan_tilt_zoom_permission(request_pan_tilt_zoom_permission) {}
+      request_pan_tilt_zoom_permission(request_pan_tilt_zoom_permission) {
+  DCHECK(blink::IsAudioInputMediaType(audio_type) ||
+         audio_type == blink::mojom::MediaStreamType::NO_SERVICE);
+  DCHECK(blink::IsVideoInputMediaType(video_type) ||
+         video_type == blink::mojom::MediaStreamType::NO_SERVICE);
+}
 
 MediaStreamRequest::MediaStreamRequest(const MediaStreamRequest& other) =
     default;

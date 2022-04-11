@@ -127,6 +127,7 @@ MEDIA_EXPORT extern const base::Feature kCdmHostVerification;
 MEDIA_EXPORT extern const base::Feature kCdmProcessSiteIsolation;
 MEDIA_EXPORT extern const base::Feature kChromeWideEchoCancellation;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderUseSharedHandle;
+MEDIA_EXPORT extern const base::Feature kDisplayAudioUseLocalAudioSource;
 MEDIA_EXPORT extern const base::Feature kEnableTabMuting;
 MEDIA_EXPORT extern const base::Feature kExposeSwDecodersToWebRTC;
 MEDIA_EXPORT extern const base::Feature kExternalClearKeyForTesting;
