@@ -21,7 +21,8 @@
 namespace ui_devtools {
 
 // TODO(lgrey): Hopefully temporary while we figure out why this doesn't work.
-#if BUILDFLAG(IS_APPLE)
+// TODO(crbug.com/1315287): Re-enable when test works on Fuchsia.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ConnectionToViewsServer DISABLED_ConnectionToViewsServer
 #else
 #define MAYBE_ConnectionToViewsServer ConnectionToViewsServer

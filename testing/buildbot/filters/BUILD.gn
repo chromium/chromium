@@ -112,10 +112,8 @@ source_set("chromeos_filters") {
 source_set("components_unittests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/fuchsia.components_unittests.filter",
-    "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
-  ]
+  data =
+      [ "//testing/buildbot/filters/linux-lacros.components_unittests.filter" ]
 }
 
 source_set("content_browsertests_filters") {

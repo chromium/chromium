@@ -505,9 +505,16 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
     SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314073): Re-enable when UnwriteableDirectory works on
+// Fuchsia.
+#define MAYBE_UnwriteableDirectory DISABLED_UnwriteableDirectory
+#else
+#define MAYBE_UnwriteableDirectory UnwriteableDirectory
+#endif
 // If the target directory is unwriteable, then callback should be notified that
 // verification failed.
-TEST_F(DownloadPathReservationTrackerTest, UnwriteableDirectory) {
+TEST_F(DownloadPathReservationTrackerTest, MAYBE_UnwriteableDirectory) {
   std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));

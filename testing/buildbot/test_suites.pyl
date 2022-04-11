@@ -1801,9 +1801,6 @@
         'swarming': {
           'shards': 2,
         },
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
-        ],
       },
       'compositor_unittests': {},
       'content_unittests': {

@@ -725,8 +725,14 @@ TEST_F(DownloadFileTest, RenameRecognizesSelfConflict) {
   EXPECT_EQ(initial_path.value(), new_path.value());
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314071): Re-enable when RenameError works on Fuchsia.
+#define MAYBE_RenameError DISABLED_RenameError
+#else
+#define MAYBE_RenameError RenameError
+#endif
 // Test to make sure we get the proper error on failure.
-TEST_P(DownloadFileTestWithRename, RenameError) {
+TEST_P(DownloadFileTestWithRename, MAYBE_RenameError) {
   ASSERT_TRUE(CreateDownloadFile(true));
   base::FilePath initial_path(download_file_->FullPath());
 
@@ -772,6 +778,13 @@ void TestRenameCompletionCallback(base::OnceClosure closure,
 
 }  // namespace
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314072): Re-enable when RenameWithErrorRetry works on
+// Fuchsia.
+#define MAYBE_RenameWithErrorRetry DISABLED_RenameWithErrorRetry
+#else
+#define MAYBE_RenameWithErrorRetry RenameWithErrorRetry
+#endif
 // Test that the retry logic works. This test assumes that DownloadFileImpl will
 // post tasks to the current message loop (acting as the download sequence)
 // asynchronously to retry the renames. We will stuff RunLoop::QuitClosures()
@@ -781,7 +794,7 @@ void TestRenameCompletionCallback(base::OnceClosure closure,
 // Note that there is only one queue of tasks to run, and that is in the tests'
 // base::CurrentThread::Get(). Each RunLoop processes that queue until it
 // sees a QuitClosure() targeted at itself, at which point it stops processing.
-TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
+TEST_P(DownloadFileTestWithRename, MAYBE_RenameWithErrorRetry) {
   ASSERT_TRUE(CreateDownloadFile(true));
   base::FilePath initial_path(download_file_->FullPath());
 

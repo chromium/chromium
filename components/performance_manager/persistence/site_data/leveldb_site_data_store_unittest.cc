@@ -257,9 +257,16 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
   // manifest files.
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314084): Re-enable when DatabaseOpeningFailure works on
+// Fuchsia.
+#define MAYBE_DatabaseOpeningFailure DISABLED_DatabaseOpeningFailure
+#else
+#define MAYBE_DatabaseOpeningFailure DatabaseOpeningFailure
+#endif
 // Ensure that there's no fatal failures if we try using the data store after
 // failing to open it (all the events will be ignored).
-TEST_F(LevelDBSiteDataStoreTest, DatabaseOpeningFailure) {
+TEST_F(LevelDBSiteDataStoreTest, MAYBE_DatabaseOpeningFailure) {
   db_.reset();
   ScopedReadOnlyDirectory read_only_dir(GetTempPath());
 
