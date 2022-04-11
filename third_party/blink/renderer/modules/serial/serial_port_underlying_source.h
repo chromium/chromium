@@ -26,7 +26,6 @@ class SerialPortUnderlyingSource : public UnderlyingSourceBase {
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
   void ContextDestroyed() override;
 
-  void SignalErrorImmediately(DOMException*);
   void SignalErrorOnClose(DOMException*);
 
   void Trace(Visitor*) const override;

@@ -57,12 +57,6 @@ void SerialPortUnderlyingSource::ContextDestroyed() {
   UnderlyingSourceBase::ContextDestroyed();
 }
 
-void SerialPortUnderlyingSource::SignalErrorImmediately(
-    DOMException* exception) {
-  SignalErrorOnClose(exception);
-  PipeClosed();
-}
-
 void SerialPortUnderlyingSource::SignalErrorOnClose(DOMException* exception) {
   if (data_pipe_) {
     // Pipe is still open. Wait for PipeClosed() to be called.
