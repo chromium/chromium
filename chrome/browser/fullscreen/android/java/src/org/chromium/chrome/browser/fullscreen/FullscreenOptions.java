@@ -8,7 +8,11 @@ package org.chromium.chrome.browser.fullscreen;
  * Options to control a fullscreen request.
  */
 public class FullscreenOptions {
-    private boolean mShowNavigationBar;
+    /** Whether the navigation bar should be shown. */
+    public final boolean showNavigationBar;
+
+    /** Whether the status bar should be shown. */
+    public final boolean showStatusBar;
 
     // Used by FullscreenHtmlApiHandler internally to indicate that the fullscreen request
     // associated with this option got canceled at the pending state.
@@ -18,16 +22,11 @@ public class FullscreenOptions {
      * Constructs FullscreenOptions.
      *
      * @param showNavigationBar Whether the navigation bar should be shown.
+     * @param showStatusBar Whether the status bar should be shown.
      */
-    public FullscreenOptions(boolean showNavigationBar) {
-        mShowNavigationBar = showNavigationBar;
-    }
-
-    /**
-     * @return Whether the navigation bar should be shown.
-     */
-    public boolean showNavigationBar() {
-        return mShowNavigationBar;
+    public FullscreenOptions(boolean showNavigationBar, boolean showStatusBar) {
+        this.showNavigationBar = showNavigationBar;
+        this.showStatusBar = showStatusBar;
     }
 
     void setCanceled() {
@@ -44,6 +43,13 @@ public class FullscreenOptions {
             return false;
         }
         FullscreenOptions options = (FullscreenOptions) obj;
-        return mShowNavigationBar == options.mShowNavigationBar;
+        return showNavigationBar == options.showNavigationBar
+                && showStatusBar == options.showStatusBar;
+    }
+
+    @Override
+    public String toString() {
+        return "FullscreenOptions(showNavigationBar=" + showNavigationBar
+                + ",showStatusBar=" + showStatusBar + ", canceled=" + mCanceled + ")";
     }
 }

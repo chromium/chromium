@@ -9,6 +9,10 @@ struct FullscreenOptions {
   // mode on devices with overlay navigation bars.
   bool prefers_navigation_bar = false;
 
+  // Prefer that the status bar be shown when in fullscreen mode on devices with
+  // overlay navigation bars.
+  bool prefers_status_bar = false;
+
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, this is the requested display's id.
   int64 display_id = -1;

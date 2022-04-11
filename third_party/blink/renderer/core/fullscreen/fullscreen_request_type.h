@@ -38,6 +38,10 @@ enum class FullscreenRequestType {
   // transparent background.
   kForXrOverlay = 4,
 
+  // For WebXR Immersive AR sessions with access to the camera, in this mode,
+  // the status bar should stay visible.
+  kForXrArWithCamera = 8,
+
   // Explicit name for "no options" for backwards compatibility and convenience
   kUnprefixed = kNull,
 };

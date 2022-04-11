@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.fullscreen;
 
 import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
+import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 import static android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE;
 
 import android.app.Activity;
@@ -26,6 +28,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -57,6 +60,10 @@ import java.lang.ref.WeakReference;
 public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFocusChangedListener,
                                                  View.OnSystemUiVisibilityChangeListener,
                                                  FullscreenManager {
+    // TAG length is limited to 20 characters, so we cannot use full class name:
+    private static final String TAG = "FullscreenHtmlApi";
+    private static final boolean DEBUG_LOGS = false;
+
     private static final int MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS = 1;
     private static final int MSG_ID_CLEAR_LAYOUT_FULLSCREEN_FLAG = 2;
 
@@ -84,7 +91,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     private WebContents mWebContentsInFullscreen;
     @Nullable
     private View mContentViewInFullscreen;
-    @Nullable private Tab mTabInFullscreen;
+    @Nullable
+    private Tab mTabInFullscreen;
+    @Nullable
     private FullscreenOptions mFullscreenOptions;
 
     // Toast at the top of the screen that is shown when user enters fullscreen for the
@@ -136,13 +145,22 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                     assert fullscreenHtmlApiHandler.getPersistentFullscreenMode() :
                         "Calling after we exited fullscreen";
 
-                    if ((systemUiVisibility & SYSTEM_UI_FLAG_FULLSCREEN)
-                            == SYSTEM_UI_FLAG_FULLSCREEN) {
+                    if (!hasDesiredStatusBarAndNavigationState(
+                                systemUiVisibility, fullscreenHtmlApiHandler.mFullscreenOptions)) {
+                        systemUiVisibility = fullscreenHtmlApiHandler.applyEnterFullscreenUIFlags(
+                                systemUiVisibility);
+
+                        if (DEBUG_LOGS) {
+                            Log.i(TAG,
+                                    "handleMessage set flags, systemUiVisibility="
+                                            + systemUiVisibility);
+                        }
+                        contentView.setSystemUiVisibility(systemUiVisibility);
+                    }
+
+                    if ((systemUiVisibility & SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == 0) {
                         return;
                     }
-                    systemUiVisibility = fullscreenHtmlApiHandler.applyEnterFullscreenUIFlags(
-                            systemUiVisibility);
-                    contentView.setSystemUiVisibility(systemUiVisibility);
 
                     // Trigger a update to clear the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag
                     // once the view has been laid out after this system UI update.  Without
@@ -170,10 +188,12 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                     // assert getPersistentFullscreenMode() : "Calling after we exited fullscreen";
                     if (!fullscreenHtmlApiHandler.getPersistentFullscreenMode()) return;
 
-                    if ((systemUiVisibility & SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == 0) {
-                        return;
-                    }
                     systemUiVisibility &= ~SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                    if (DEBUG_LOGS) {
+                        Log.i(TAG,
+                                "handleMessage clear fullscreen flag, systemUiVisibility="
+                                        + systemUiVisibility);
+                    }
                     contentView.setSystemUiVisibility(systemUiVisibility);
                     fullscreenHtmlApiHandler.clearWindowFlags(
                             WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -415,9 +435,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         mHandler.removeMessages(MSG_ID_CLEAR_LAYOUT_FULLSCREEN_FLAG);
 
         int systemUiVisibility = contentView.getSystemUiVisibility();
-        systemUiVisibility &= ~SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         systemUiVisibility = applyExitFullscreenUIFlags(systemUiVisibility);
         clearWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        if (DEBUG_LOGS) Log.i(TAG, "exitFullscreen, systemUiVisibility=" + systemUiVisibility);
         contentView.setSystemUiVisibility(systemUiVisibility);
         if (mFullscreenOnLayoutChangeListener != null) {
             contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
@@ -440,23 +460,60 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         if (webContents != null && !webContents.isDestroyed()) webContents.exitFullscreen();
     }
 
+    private static boolean isAlreadyInFullscreenOrNavigationHidden(int systemUiVisibility) {
+        return (systemUiVisibility & SYSTEM_UI_FLAG_FULLSCREEN) == SYSTEM_UI_FLAG_FULLSCREEN
+                || (systemUiVisibility & SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+                == SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+    }
+
+    private static boolean hasDesiredStatusBarAndNavigationState(
+            int systemUiVisibility, FullscreenOptions options) {
+        assert options != null;
+
+        boolean shouldDisplayStatusBar = options.showStatusBar;
+        boolean shouldDisplayNavigationBar = options.showNavigationBar;
+
+        boolean statusBarVisible =
+                (systemUiVisibility & SYSTEM_UI_FLAG_FULLSCREEN) != SYSTEM_UI_FLAG_FULLSCREEN;
+        boolean navigationBarVisible = (systemUiVisibility & SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+                != SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+        if (statusBarVisible != shouldDisplayStatusBar) return false;
+        if (navigationBarVisible != shouldDisplayNavigationBar) return false;
+
+        return true;
+    }
+
     /**
      * Handles hiding the system UI components to allow the content to take up the full screen.
      * @param tab The tab that is entering fullscreen.
      */
     public void enterFullscreen(final Tab tab, FullscreenOptions options) {
+        assert !(options.showNavigationBar && options.showStatusBar)
+            : "Cannot enter fullscreen with both status and navigation bars visible!";
+
+        if (DEBUG_LOGS) Log.i(TAG, "enterFullscreen, options=" + options.toString());
+
         WebContents webContents = tab.getWebContents();
         if (webContents == null) return;
         mFullscreenOptions = options;
         final View contentView = tab.getContentView();
         int systemUiVisibility = contentView.getSystemUiVisibility();
-        if ((systemUiVisibility & SYSTEM_UI_FLAG_FULLSCREEN) == SYSTEM_UI_FLAG_FULLSCREEN) {
+        if (isAlreadyInFullscreenOrNavigationHidden(systemUiVisibility)) {
+            if (hasDesiredStatusBarAndNavigationState(systemUiVisibility, mFullscreenOptions)) {
+                // We are already in fullscreen mode and the visibility flags match what we need;
+                // nothing to do:
+                return;
+            }
+
             // Already in full screen mode; just changed options. Mask off old
             // ones and apply new ones.
             systemUiVisibility = applyExitFullscreenUIFlags(systemUiVisibility);
             systemUiVisibility = applyEnterFullscreenUIFlags(systemUiVisibility);
         } else if ((systemUiVisibility & SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-                == SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) {
+                        == SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                || (systemUiVisibility & SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                        == SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION) {
             systemUiVisibility = applyEnterFullscreenUIFlags(systemUiVisibility);
         } else {
             Activity activity = TabUtils.getActivity(tab);
@@ -464,15 +521,21 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                     || MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
 
             // To avoid a double layout that is caused by the system when just hiding
-            // the status bar set the status bar as translucent immediately. This cause
-            // it not to take up space so the layout is stable. (See crbug.com/935015). Do
+            // the status bar set the status bar as translucent immediately. This causes
+            // it not to take up space so the layout is stable. (See https://crbug.com/935015). Do
             // not do this in multi-window mode since that mode forces the status bar
             // to always be visible.
-            if (mFullscreenOptions != null && mFullscreenOptions.showNavigationBar()
-                    && !isMultiWindow) {
+            if (!mFullscreenOptions.showStatusBar && !isMultiWindow) {
                 setWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             }
-            systemUiVisibility |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+
+            if (!mFullscreenOptions.showNavigationBar) {
+                systemUiVisibility |= SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            }
+
+            if (!mFullscreenOptions.showStatusBar) {
+                systemUiVisibility |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            }
         }
         if (mFullscreenOnLayoutChangeListener != null) {
             contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
@@ -498,11 +561,14 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                 contentView.removeOnLayoutChangeListener(this);
             }
         };
+
         contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+        if (DEBUG_LOGS) Log.i(TAG, "enterFullscreen, systemUiVisibility=" + systemUiVisibility);
         contentView.setSystemUiVisibility(systemUiVisibility);
         mFullscreenOptions = options;
 
         // Request a layout so the updated system visibility takes affect.
+        // The flow will continue in the handler of MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS message.
         contentView.requestLayout();
 
         mWebContentsInFullscreen = webContents;
@@ -611,14 +677,25 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      */
     private int applyEnterFullscreenUIFlags(int systemUiVisibility) {
         boolean showNavigationBar =
-                mFullscreenOptions != null ? mFullscreenOptions.showNavigationBar() : false;
-        int flags = SYSTEM_UI_FLAG_FULLSCREEN;
-        flags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        if (!showNavigationBar) {
+                mFullscreenOptions != null ? mFullscreenOptions.showNavigationBar : false;
+        boolean showStatusBar =
+                mFullscreenOptions != null ? mFullscreenOptions.showStatusBar : false;
+
+        int flags = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if (!showStatusBar && !showNavigationBar) {
             flags |= SYSTEM_UI_FLAG_LOW_PROFILE;
-            flags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-            flags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         }
+
+        if (!showNavigationBar) {
+            flags |= SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            flags |= SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+        }
+
+        if (!showStatusBar) {
+            flags |= SYSTEM_UI_FLAG_FULLSCREEN;
+            flags |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        }
+
         return flags | systemUiVisibility;
     }
 
@@ -628,10 +705,11 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @return fullscreen flags to be applied to system UI visibility.
      */
     private static int applyExitFullscreenUIFlags(int systemUiVisibility) {
-        int maskOffFlags = SYSTEM_UI_FLAG_LOW_PROFILE | SYSTEM_UI_FLAG_FULLSCREEN;
-        maskOffFlags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-        maskOffFlags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        int maskOffFlags = SYSTEM_UI_FLAG_LOW_PROFILE | SYSTEM_UI_FLAG_FULLSCREEN
+                | SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        maskOffFlags |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         maskOffFlags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
         return systemUiVisibility & ~maskOffFlags;
     }
 

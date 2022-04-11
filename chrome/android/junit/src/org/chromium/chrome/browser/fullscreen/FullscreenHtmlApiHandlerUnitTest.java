@@ -69,7 +69,7 @@ public class FullscreenHtmlApiHandlerUnitTest {
         // Fullscreen process stops at pending state since controls are not hidden.
         mAreControlsHidden.set(false);
         mFullscreenHtmlApiHandler.setTabForTesting(mTab);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
         mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
 
         // Exit is invoked unexpectedly before the controls get hidden. Fullscreen process should be

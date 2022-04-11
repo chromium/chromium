@@ -1139,32 +1139,23 @@ void XRSystem::RequestImmersiveSession(PendingRequestSessionQuery* query,
   outstanding_request_queries_.insert(query);
   auto session_options = XRSessionOptionsFromQuery(*query);
 
-  // If using DOM Overlay, if we're already in fullscreen mode, and if this
-  // frame has a remote ancestor (OOPIF with the ancestor in another process),
-  // we need to exit and re-enter fullscreen mode to properly apply the
-  // is_xr_overlay property. Request a fullscreen exit, and continue with
-  // the session request once that completes.
+  // If we're already in fullscreen mode, we need to exit and re-enter
+  // fullscreen mode to properly apply the is_xr_overlay property and reset the
+  // existing navigationUI options that may be conflicting with what we want.
+  // Request a fullscreen exit, and continue with the session request once that
+  // completes.
   Document* doc = DomWindow()->document();
-  if (query->DOMOverlayElement() && Fullscreen::FullscreenElementFrom(*doc)) {
-    bool has_remote_ancestor = false;
-    for (Frame* f = DomWindow()->GetFrame(); f; f = f->Tree().Parent()) {
-      if (f->IsRemoteFrame()) {
-        has_remote_ancestor = true;
-        break;
-      }
-    }
-    DVLOG(2) << __func__ << ": has_remote_ancestor=" << has_remote_ancestor;
-    if (has_remote_ancestor) {
-      fullscreen_exit_observer_ =
-          MakeGarbageCollected<XrExitFullscreenObserver>();
+  if (Fullscreen::FullscreenElementFrom(*doc)) {
+    fullscreen_exit_observer_ =
+        MakeGarbageCollected<XrExitFullscreenObserver>();
 
-      base::OnceClosure callback =
-          WTF::Bind(&XRSystem::DoRequestSession, WrapWeakPersistent(this),
-                    WrapPersistent(query), std::move(session_options));
-      fullscreen_exit_observer_->ExitFullscreen(doc, std::move(callback));
-      return;
-    }
+    base::OnceClosure callback =
+        WTF::Bind(&XRSystem::DoRequestSession, WrapWeakPersistent(this),
+                  WrapPersistent(query), std::move(session_options));
+    fullscreen_exit_observer_->ExitFullscreen(doc, std::move(callback));
+    return;
   }
+
   DoRequestSession(std::move(query), std::move(session_options));
 }
 
@@ -1546,12 +1537,15 @@ void XRSystem::OnRequestSessionReturned(
     return;
   }
 
+  const bool session_has_camera_access = base::Contains(
+      enabled_features, device::mojom::XRSessionFeature::CAMERA_ACCESS);
+
   // At this point, we know that we have an element that we need to make
   // fullscreen, so we do that before we continue setting up the session.
   fullscreen_enter_observer_ =
       MakeGarbageCollected<XrEnterFullscreenObserver>();
   fullscreen_enter_observer_->RequestFullscreen(
-      fullscreen_element, setup_for_dom_overlay,
+      fullscreen_element, setup_for_dom_overlay, session_has_camera_access,
       WTF::Bind(&XRSystem::OnFullscreenConfigured, WrapPersistent(this),
                 WrapPersistent(query), std::move(result)));
 }

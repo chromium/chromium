@@ -367,9 +367,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar) {
+    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
         if (mFullscreenManager != null) {
-            mFullscreenManager.onEnterFullscreen(mTab, new FullscreenOptions(prefersNavigationBar));
+            mFullscreenManager.onEnterFullscreen(
+                    mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
         }
     }
 

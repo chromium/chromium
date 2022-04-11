@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen_request_type.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 
 namespace blink {
@@ -47,36 +48,24 @@ void XrEnterFullscreenObserver::Invoke(ExecutionContext* execution_context,
 void XrEnterFullscreenObserver::RequestFullscreen(
     Element* fullscreen_element,
     bool setup_for_dom_overlay,
+    bool may_have_camera_access,
     base::OnceCallback<void(bool)> on_completed) {
   DCHECK(!on_completed_);
   DCHECK(fullscreen_element);
   on_completed_ = std::move(on_completed);
   fullscreen_element_ = fullscreen_element;
 
-  bool wait_for_fullscreen_change = true;
+  // If we're already in fullscreen, there may be different options applied for
+  // navigationUI than what we need. In order to avoid that, we should have
+  // exited the fullscreen prior to attempting to enter it here.
+  DCHECK(
+      !Fullscreen::FullscreenElementFrom(fullscreen_element_->GetDocument()));
 
-  if (fullscreen_element_ ==
-      Fullscreen::FullscreenElementFrom(fullscreen_element_->GetDocument())) {
-    // It's possible that the requested element is already fullscreen, in which
-    // case we must not wait for a fullscreenchange event since it won't arrive.
-    // This can happen if the site used Fullscreen API to place the element into
-    // fullscreen mode before requesting the session, and if the session can
-    // proceed without needing a permission prompt. (Showing a dialog exits
-    // fullscreen mode.)
-    //
-    // We still need to do the RequestFullscreen call to apply the kForXrOverlay
-    // property which sets the background transparent.
-    DVLOG(2) << __func__ << ": requested element already fullscreen";
-    wait_for_fullscreen_change = false;
-  }
-
-  if (wait_for_fullscreen_change) {
-    // Set up event listeners for success and failure.
-    fullscreen_element_->GetDocument().addEventListener(
-        event_type_names::kFullscreenchange, this, true);
-    fullscreen_element_->GetDocument().addEventListener(
-        event_type_names::kFullscreenerror, this, true);
-  }
+  // Set up event listeners for success and failure.
+  fullscreen_element_->GetDocument().addEventListener(
+      event_type_names::kFullscreenchange, this, true);
+  fullscreen_element_->GetDocument().addEventListener(
+      event_type_names::kFullscreenerror, this, true);
 
   // Use the event-generating unprefixed version of RequestFullscreen to ensure
   // that the fullscreen event listener is informed once this completes.
@@ -91,17 +80,16 @@ void XrEnterFullscreenObserver::RequestFullscreen(
                                   ? ScopedAllowFullscreen::kXrOverlay
                                   : ScopedAllowFullscreen::kXrSession);
 
-  FullscreenRequestType request_type = FullscreenRequestType::kUnprefixed;
+  FullscreenRequestType request_type =
+      may_have_camera_access ? FullscreenRequestType::kForXrArWithCamera
+                             : FullscreenRequestType::kNull;
   if (setup_for_dom_overlay) {
     request_type = request_type | FullscreenRequestType::kForXrOverlay;
   }
 
+  // Flow will continue in `XrEnterFullscreenObserver::Invoke()` when fullscreen
+  // request completes (either successfully or errors out).
   Fullscreen::RequestFullscreen(*fullscreen_element_, options, request_type);
-
-  if (!wait_for_fullscreen_change) {
-    // Element was already fullscreen, proceed with session creation.
-    std::move(on_completed_).Run(true);
-  }
 }
 
 void XrEnterFullscreenObserver::Trace(Visitor* visitor) const {

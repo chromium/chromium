@@ -578,6 +578,9 @@ void RemoteFrame::WillEnterFullscreen(
                                     : FullscreenRequestType::kUnprefixed) |
       (request_options->is_xr_overlay ? FullscreenRequestType::kForXrOverlay
                                       : FullscreenRequestType::kNull) |
+      (request_options->prefers_status_bar
+           ? FullscreenRequestType::kForXrArWithCamera
+           : FullscreenRequestType::kNull) |
       FullscreenRequestType::kForCrossProcessDescendant;
 
   Fullscreen::RequestFullscreen(*owner_element, FullscreenOptions::Create(),
