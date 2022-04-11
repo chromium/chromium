@@ -67,6 +67,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
+#include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -335,6 +336,9 @@ SharedImageFactory::SharedImageFactory(
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   if (gr_context_type_ == GrContextType::kVulkan) {
+    auto ozone_factory =
+        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    factories_.push_back(std::move(ozone_factory));
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));

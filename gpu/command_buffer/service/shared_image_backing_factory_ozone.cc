@@ -190,13 +190,28 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
-  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
-      gmb_type != gfx::SHARED_MEMORY_BUFFER) {
-    return false;
-  }
   // TODO(crbug.com/969114): Not all shared image factory implementations
   // support concurrent read/write usage.
   if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_FUCHSIA)
+  DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
+
+  // For now just use SharedImageBackingOzone for primary plane buffers.
+  // TODO(crbug.com/1310026): When Vulkan/GL interop is supported on Fuchsia
+  // SharedImageBackingOzone should be used for all scanout buffers.
+  constexpr uint32_t kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY |
+                                               SHARED_IMAGE_USAGE_SCANOUT |
+                                               SHARED_IMAGE_USAGE_RASTER;
+  if (usage != kPrimaryPlaneUsageFlags ||
+      !CanImportGpuMemoryBufferToVulkan(gmb_type)) {
+    return false;
+  }
+#else
+  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
+      gmb_type != gfx::SHARED_MEMORY_BUFFER) {
     return false;
   }
 
@@ -209,9 +224,17 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   if (!needs_interop_factory) {
     return false;
   }
+#endif
 
   *allow_legacy_mailbox = false;
   return true;
+}
+
+bool SharedImageBackingFactoryOzone::CanImportGpuMemoryBufferToVulkan(
+    gfx::GpuMemoryBufferType memory_buffer_type) {
+  return shared_context_state_->vk_context_provider()
+      ->GetVulkanImplementation()
+      ->CanImportGpuMemoryBuffer(memory_buffer_type);
 }
 
 }  // namespace gpu
