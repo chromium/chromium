@@ -9,7 +9,6 @@ source_set("browser_tests") {
 
   sources = [
     "omnibox_prerender_browsertest.cc",
-    "payment_request_for_prerender_browsertest.cc",
     "prerender_browsertest.cc",
   ]
 
@@ -18,8 +17,6 @@ source_set("browser_tests") {
   deps = [
     "//base/test:test_support",
     "//chrome/test:test_support",
-    "//chrome/test/payments:test_support",
-    "//components/payments/content:utils",
   ]
 
   data = [ "//chrome/test/data/" ]

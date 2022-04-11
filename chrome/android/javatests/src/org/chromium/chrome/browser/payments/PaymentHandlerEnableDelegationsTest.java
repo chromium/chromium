@@ -31,6 +31,7 @@ import org.chromium.net.test.ServerCertificate;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
+@DisabledTest(message = "https://crbug.com/825270")
 public class PaymentHandlerEnableDelegationsTest {
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.

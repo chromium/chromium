@@ -101,6 +101,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
 
 using PaymentHandlerSkipSheetTest = PaymentHandlerJustInTimeInstallationTest;
 
+// TODO(crbug.com/825270): Now that user-activation is required for show(), this
+// test doesn't make much sense (we will always have a user gesture). However we
+// should make sure that the codepaths it is testing are covered by other
+// skip-the-sheet tests before removing it.
 IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
@@ -127,37 +131,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
-}
-
-IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
-  // When shipping is not requested, kylepay.com cannot leverage skip-the-sheet
-  // for being the only payment app that can fulfill all delegation requests. So
-  // if there is no user gesture, the request should stop at the payment sheet
-  // waiting for user action.
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.PaymentHandlerInstallSuccess", 0);
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE |
-                          content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  WaitForObservedEvent();
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
-
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.PaymentHandlerInstallSuccess", 0);
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
 }
 
 class PaymentHandlerJustInTimeInstallationTestWithParam
