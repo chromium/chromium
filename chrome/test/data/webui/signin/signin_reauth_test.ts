@@ -5,7 +5,6 @@
 import 'chrome://signin-reauth/signin_reauth_app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SigninReauthAppElement} from 'chrome://signin-reauth/signin_reauth_app.js';
 import {SigninReauthBrowserProxyImpl} from 'chrome://signin-reauth/signin_reauth_browser_proxy.js';
@@ -52,7 +51,7 @@ suite('SigninReauthTest', function() {
     return browserProxy.whenCalled('cancel');
   });
 
-  test('ButtonsVisibilityAndFocus', async () => {
+  test('ButtonsVisibility', async () => {
     await browserProxy.whenCalled('initialize');
     assertFalse(isVisible(app.$.confirmButton));
     assertFalse(isVisible(app.$.cancelButton));
@@ -64,8 +63,6 @@ suite('SigninReauthTest', function() {
     assertTrue(isVisible(app.$.confirmButton));
     assertTrue(isVisible(app.$.cancelButton));
     assertFalse(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
-
-    assertEquals(getDeepActiveElement(), app.$.confirmButton);
 
     assertDefaultLocale();
     assertEquals('Yes', app.$.confirmButton.textContent!.trim());

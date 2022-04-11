@@ -75,7 +75,6 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
 
   private onReauthTypeDetermined_() {
     this.confirmButtonHidden_ = false;
-    this.$.confirmButton.focus();
     this.cancelButtonHidden_ = false;
   }
 
