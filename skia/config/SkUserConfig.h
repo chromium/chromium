@@ -231,6 +231,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INNER_JOINS
 
+// crbug.com/1313579
+#define SK_DISABLE_SKIF_TOLERANCE_ROUND
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
