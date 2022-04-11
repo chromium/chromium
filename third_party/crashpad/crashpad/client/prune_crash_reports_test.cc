@@ -145,6 +145,30 @@ TEST(PruneCrashReports, SizeCondition) {
     // |report_1k| should be pruned as the cumulated size is now past 0kB.
     EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
   }
+
+  {
+    DatabaseSizePruneCondition condition(/*max_size_in_kb=*/6);
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
+    EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
+    EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_1k| should be pruned as the cumulated size is now past 6kB.
+    EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
+
+    // Reset |measured_size_in_kb_|, which stores the size of reports, to 0.
+    condition.ResetPruneConditionState();
+
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
+    EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
+    EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_1k| should be pruned as the cumulated size is now past 6kB.
+    EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
+  }
 }
 
 class StaticCondition final : public PruneCondition {
@@ -160,6 +184,8 @@ class StaticCondition final : public PruneCondition {
     did_execute_ = true;
     return value_;
   }
+
+  void ResetPruneConditionState() override {}
 
   bool did_execute() const { return did_execute_; }
 
