@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -724,11 +723,6 @@ TEST_F(SaveUpdateBubbleControllerTest, DisableEditing) {
 
 TEST_F(SaveUpdateBubbleControllerTest,
        UpdateAccountStoreAffectsTheAccountStore) {
-  // This test is relevant only for account store users.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
   SetupAccountPasswordStore(sync_service());
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
@@ -747,11 +741,6 @@ TEST_F(SaveUpdateBubbleControllerTest,
 
 TEST_F(SaveUpdateBubbleControllerTest,
        UpdateProfileStoreDoesnotAffectTheAccountStore) {
-  // This test is relevant only for account store users.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
   SetupAccountPasswordStore(sync_service());
 
   EXPECT_CALL(*delegate(), GetPendingPassword())
@@ -770,11 +759,6 @@ TEST_F(SaveUpdateBubbleControllerTest,
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
-  // This test is relevant only for account store users.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
   SetupAccountPasswordStore(sync_service());
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
@@ -801,11 +785,6 @@ TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
 
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInAccountStoreAffectsTheAccountStore) {
-  // This test is relevant only for account store users.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
   SetupAccountPasswordStore(sync_service());
   ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
       .WillByDefault(
@@ -817,11 +796,6 @@ TEST_F(SaveUpdateBubbleControllerTest,
 
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInProfileStoreDoesntAffectTheAccountStore) {
-  // This test is relevant only for account store users.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
   SetupAccountPasswordStore(sync_service());
   ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
       .WillByDefault(
