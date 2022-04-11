@@ -1291,8 +1291,11 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   // Now that the unignored cached values are up to date, notify observers of
   // new nodes in the tree.
-  for (AXNodeID node_id : update_state.new_node_ids)
-    NotifyNodeHasBeenReparentedOrCreated(GetFromId(node_id), &update_state);
+  for (AXNodeID node_id : update_state.new_node_ids) {
+    AXNode* node = GetFromId(node_id);
+    if (node)
+      NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
+  }
 
   // Now that the unignored cached values are up to date, notify observers of
   // node changes.
