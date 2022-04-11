@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -73,6 +75,7 @@ class PasswordManagerAndroidBrowserTest
 
 IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
                        TriggerFormSubmission) {
+  base::HistogramTester uma_recorder;
   bool has_form_tag = GetParam();
   NavigateToFile(has_form_tag ? "/password/simple_password.html"
                               : "/password/no_form_element.html");
@@ -101,10 +104,15 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
 
   // A user accepts a credential in TouchToFill. That fills in the credential
   // and submits it.
+  ChromePasswordManagerClient::FromWebContents(GetActiveWebContents())
+      ->StartSubmissionTrackingAfterTouchToFill(u"username");
   driver->FillSuggestion(u"username", u"password");
   driver->TriggerFormSubmission();
 
   observer.Wait();
+
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(VariateFormElementPresence,

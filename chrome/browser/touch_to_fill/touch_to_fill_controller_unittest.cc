@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/device_reauth/mock_biometric_authenticator.h"
@@ -52,6 +53,15 @@ using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
 using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 constexpr char kExampleCom[] = "https://example.com/";
+
+class MockPasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(void,
+              StartSubmissionTrackingAfterTouchToFill,
+              (const std::u16string& filled_username),
+              (override));
+};
 
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
   MOCK_METHOD2(FillSuggestion,
@@ -116,6 +126,8 @@ class TouchToFillControllerTest : public testing::Test {
 
   MockPasswordManagerDriver& driver() { return driver_; }
 
+  MockPasswordManagerClient& client() { return client_; }
+
   MockTouchToFillView& view() { return *mock_view_; }
 
   MockBiometricAuthenticator* authenticator() { return authenticator_.get(); }
@@ -139,10 +151,11 @@ class TouchToFillControllerTest : public testing::Test {
   scoped_refptr<MockBiometricAuthenticator> authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
   MockPasswordManagerDriver driver_;
+  MockPasswordManagerClient client_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_recorder_;
   TouchToFillController touch_to_fill_controller_{
-      base::PassKey<TouchToFillControllerTest>(), authenticator_};
+      base::PassKey<TouchToFillControllerTest>(), &client_, authenticator_};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -207,6 +220,7 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Submit) {
                                        std::u16string(u"p4ssw0rd")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(driver(), TriggerFormSubmission());
+  EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -236,6 +250,7 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Dont_Submit) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
+  EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -341,8 +356,8 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  // Without |kTouchToFillPasswordSubmission|, |ready_for_submission=true| has
-  // no effect.
+  // Without |kTouchToFillPasswordSubmission|, a form that is ready for
+  // submission doesn't affect UI.
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            /*trigger_submission=*/false));
@@ -360,9 +375,11 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
   EXPECT_CALL(*authenticator(),
               Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(true));
-  // Without |kTouchToFillPasswordSubmission|, |ready_for_submission=true| has
-  // no effect.
+  // Without |kTouchToFillPasswordSubmission|, don't trigger a submission, but
+  // inform the client that a form can be submitted.
   EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
+  EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
+
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
 

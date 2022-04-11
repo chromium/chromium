@@ -877,6 +877,10 @@ void PasswordManager::OnPasswordFormsRendered(
     logger->LogMessage(Logger::STRING_ON_PASSWORD_FORMS_RENDERED_METHOD);
   }
 
+  // No submitted manager => no submission tracking.
+  if (!GetSubmittedManager())
+    client_->ResetSubmissionTrackingAfterTouchToFill();
+
   if (!IsAutomaticSavePromptAvailable())
     return;
 
@@ -975,6 +979,7 @@ void PasswordManager::OnLoginSuccessful() {
       submitted_form->url, submitted_form->IsFederatedCredential(),
       submitted_form->federation_origin,
       submitted_manager->GetPendingCredentials().username_value);
+  client_->NotifyOnSuccessfulLogin(submitted_form->username_value);
   if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
     return;
 
@@ -1205,6 +1210,8 @@ absl::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
 }
 
 void PasswordManager::ResetSubmittedManager() {
+  client_->ResetSubmissionTrackingAfterTouchToFill();
+
   if (owned_submitted_form_manager_) {
     owned_submitted_form_manager_.reset();
     return;

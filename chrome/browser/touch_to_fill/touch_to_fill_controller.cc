@@ -56,31 +56,35 @@ std::vector<UiCredential> SortCredentials(
 
 // Infers whether a form should be submitted based on the feature's state and
 // the form's structure (submission_readiness).
-bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kTouchToFillPasswordSubmission)) {
-    return false;
-  }
+bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness,
+                             bool* ready_for_submission) {
+  bool submission_enabled = base::FeatureList::IsEnabled(
+      password_manager::features::kTouchToFillPasswordSubmission);
+  bool allow_non_conservative_heuristics =
+      submission_enabled &&
+      !base::GetFieldTrialParamByFeatureAsBool(
+          password_manager::features::kTouchToFillPasswordSubmission,
+          password_manager::features::
+              kTouchToFillPasswordSubmissionWithConservativeHeuristics,
+          false);
 
-  bool use_conservative_heuristics = base::GetFieldTrialParamByFeatureAsBool(
-      password_manager::features::kTouchToFillPasswordSubmission,
-      password_manager::features::
-          kTouchToFillPasswordSubmissionWithConservativeHeuristics,
-      false);
   switch (submission_readiness) {
     case SubmissionReadinessState::kNoInformation:
     case SubmissionReadinessState::kError:
     case SubmissionReadinessState::kNoUsernameField:
     case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
     case SubmissionReadinessState::kFieldAfterPasswordField:
+      *ready_for_submission = false;
       return false;
 
     case SubmissionReadinessState::kEmptyFields:
     case SubmissionReadinessState::kMoreThanTwoFields:
-      return !use_conservative_heuristics;
+      *ready_for_submission = true;
+      return allow_non_conservative_heuristics;
 
     case SubmissionReadinessState::kTwoFields:
-      return true;
+      *ready_for_submission = true;
+      return submission_enabled;
   }
 }
 
@@ -97,8 +101,10 @@ bool ContainsNonEmptyUsername(
 
 TouchToFillController::TouchToFillController(
     base::PassKey<TouchToFillControllerTest>,
+    password_manager::PasswordManagerClient* password_client,
     scoped_refptr<device_reauth::BiometricAuthenticator> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    : password_client_(password_client),
+      authenticator_(std::move(authenticator)) {}
 
 TouchToFillController::TouchToFillController(
     ChromePasswordManagerClient* password_client,
@@ -106,7 +112,7 @@ TouchToFillController::TouchToFillController(
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
       source_id_(ukm::GetSourceIdForWebContentsDocument(
-          password_client_->web_contents())) {}
+          password_client->web_contents())) {}
 
 TouchToFillController::~TouchToFillController() {
   if (authenticator_) {
@@ -122,8 +128,11 @@ void TouchToFillController::Show(
   DCHECK(!driver_ || driver_.get() == driver.get());
   driver_ = std::move(driver);
 
-  trigger_submission_ = ShouldTriggerSubmission(submission_readiness) &&
-                        ContainsNonEmptyUsername(credentials);
+  trigger_submission_ =
+      ShouldTriggerSubmission(submission_readiness, &ready_for_submission_) &&
+      ContainsNonEmptyUsername(credentials);
+  ready_for_submission_ &= ContainsNonEmptyUsername(credentials);
+
   base::UmaHistogramEnumeration(
       "PasswordManager.TouchToFill.SubmissionReadiness", submission_readiness);
   ukm::builders::TouchToFill_SubmissionReadiness(source_id_)
@@ -207,7 +216,11 @@ void TouchToFillController::OnDismiss() {
 }
 
 gfx::NativeView TouchToFillController::GetNativeView() {
-  return password_client_->web_contents()->GetNativeView();
+  // It is not a |ChromePasswordManagerClient| only in
+  // TouchToFillControllerTest.
+  return static_cast<ChromePasswordManagerClient*>(password_client_)
+      ->web_contents()
+      ->GetNativeView();
 }
 
 void TouchToFillController::OnReauthCompleted(UiCredential credential,
@@ -235,8 +248,16 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
 
   driver_->FillSuggestion(credential.username(), credential.password());
 
-  if (trigger_submission_ && !credential.username().empty()) {
-    driver_->TriggerFormSubmission();
+  trigger_submission_ &= !credential.username().empty();
+  ready_for_submission_ &= !credential.username().empty();
+  if (ready_for_submission_) {
+    password_client_->StartSubmissionTrackingAfterTouchToFill(
+        credential.username());
+    if (trigger_submission_)
+      driver_->TriggerFormSubmission();
+  } else {
+    DCHECK(!trigger_submission_) << "Form is not ready for submission. "
+                                    "|trigger_submission_| cannot be true";
   }
   driver_ = nullptr;
 

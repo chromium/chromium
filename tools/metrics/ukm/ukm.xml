@@ -18971,6 +18971,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TouchToFill.TimeToSuccessfulLogin">
+  <owner>kolos@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Recorded when a successful login is detected after filling by the Touch To
+    Fill.
+  </summary>
+  <metric name="TimeToSuccessfulLogin">
+    <summary>
+      The time in milliseconds between filling by the Touch To Fill and a
+      successful submission (To ensure filling and submitting correspond to each
+      other, the usernames should coincide and the timestamps should be within
+      one minute. A successful login after a failed submission or manual typing
+      is not reported). Used to compare the times when automated submission is
+      enabled and disabled. Thus, we measure the time saved for a user. Recorded
+      when the password manager detects that the login was successful.
+    </summary>
+  </metric>
+</event>
+
 <event name="Translate">
   <owner>hamelphi@chromium.org</owner>
   <summary>

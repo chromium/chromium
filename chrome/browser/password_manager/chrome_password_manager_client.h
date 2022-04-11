@@ -152,6 +152,13 @@ class ChromePasswordManagerClient
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
   void NotifyStorePasswordCalled() override;
+#if BUILDFLAG(IS_ANDROID)
+  void NotifyOnSuccessfulLogin(
+      const std::u16string& submitted_username) override;
+  void StartSubmissionTrackingAfterTouchToFill(
+      const std::u16string& filled_username) override;
+  void ResetSubmissionTrackingAfterTouchToFill() override;
+#endif
   void UpdateCredentialCache(
       const url::Origin& origin,
       const std::vector<const password_manager::PasswordForm*>& best_matches,
@@ -434,6 +441,13 @@ class ChromePasswordManagerClient
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
   password_manager::PasswordManagerClientHelper helper_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Username filled by Touch To Fill and the timestamp. Used to collect
+  // metrics. TODO(crbug.com/1299394): Remove after the launch.
+  absl::optional<std::pair<std::u16string, base::Time>>
+      username_filled_by_touch_to_fill_ = absl::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -14,7 +14,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
@@ -213,7 +215,9 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
  public:
-  ChromePasswordManagerClientTest() {
+  ChromePasswordManagerClientTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDelayedWarnings);
   }
   ~ChromePasswordManagerClientTest() override = default;
@@ -840,6 +844,10 @@ class ChromePasswordManagerClientAndroidTest
     return static_cast<MockManualFillingView*>(controller()->view());
   }
 
+  void AdvanceClock(const base::TimeDelta& delta) {
+    task_environment()->AdvanceClock(delta);
+  }
+
  private:
   autofill::TestAutofillClient test_autofill_client_;
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
@@ -996,5 +1004,47 @@ TEST_F(ChromePasswordManagerClientAndroidTest, HideFillingUIOnNavigatingAway) {
   EXPECT_CALL(*view(), Hide());
   GURL kUrl2("https://accounts.google.com");
   NavigateAndCommit(kUrl2);
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FormSubmissionTrackingAfterTouchToLogin) {
+  base::HistogramTester uma_recorder;
+
+  // As tracking is not started yet, no metric reports are expected.
+  GetClient()->NotifyOnSuccessfulLogin(u"username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+
+  // As tracking was reset, no metric reports are expected.
+  GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
+  GetClient()->ResetSubmissionTrackingAfterTouchToFill();
+  GetClient()->NotifyOnSuccessfulLogin(u"username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+
+  // Tracking started but a successful login was observed for a wrong username.
+  // No reports are expected.
+  GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
+  GetClient()->NotifyOnSuccessfulLogin(u"another_username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+
+  // Tracking started too long ago, ignore a successful login.
+  GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
+  AdvanceClock(base::Minutes(2));
+  GetClient()->NotifyOnSuccessfulLogin(u"username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+
+  // Tracking started and a successful login was observed for the correct
+  // username recently, expect a metric report.
+  GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
+  GetClient()->NotifyOnSuccessfulLogin(u"username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
+  // Should be reported only once.
+  GetClient()->NotifyOnSuccessfulLogin(u"username");
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
 }
 #endif  //  BUILDFLAG(IS_ANDROID)

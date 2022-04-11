@@ -22,6 +22,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
+class PasswordManagerClient;
 class PasswordManagerDriver;
 class UiCredential;
 }  // namespace password_manager
@@ -60,7 +61,9 @@ class TouchToFillController {
   // No-op constructor for tests.
   TouchToFillController(
       base::PassKey<class TouchToFillControllerTest>,
+      password_manager::PasswordManagerClient* password_client,
       scoped_refptr<device_reauth::BiometricAuthenticator> authenticator);
+
   TouchToFillController(
       ChromePasswordManagerClient* password_client,
       scoped_refptr<device_reauth::BiometricAuthenticator> authenticator);
@@ -104,8 +107,8 @@ class TouchToFillController {
   // Fills the credential into the form.
   void FillCredential(const password_manager::UiCredential& credential);
 
-  // Weak pointer to the ChromePasswordManagerClient this class is tied to.
-  raw_ptr<ChromePasswordManagerClient> password_client_ = nullptr;
+  // Weak pointer to the PasswordManagerClient this class is tied to.
+  raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
 
   // Driver passed to the latest invocation of Show(). Gets cleared when
   // OnCredentialSelected() or OnDismissed() gets called.
@@ -114,6 +117,13 @@ class TouchToFillController {
   // Whether the controller should trigger submission when a credential is
   // filled in.
   bool trigger_submission_ = false;
+
+  // Whether a form is ready for submission. Similar to |trigger_submission_|,
+  // but doesn't depend on flags. Used for dark launch metrics (e.g. time
+  // between filling and successful login with and without
+  // kTouchToFillPasswordSubmission enabled). TODO(crbug.com/1299394): remove
+  // after the launch.
+  bool ready_for_submission_ = false;
 
   // Authenticator used to trigger a biometric auth before filling.
   scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;

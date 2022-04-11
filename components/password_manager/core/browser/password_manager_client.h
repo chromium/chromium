@@ -225,6 +225,24 @@ class PasswordManagerClient {
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) = 0;
 
+  // Informs that a successful login has just happened.
+  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // deprecated.
+  virtual void NotifyOnSuccessfulLogin(
+      const std::u16string& submitted_username) {}
+
+  // Informs that a credential filled by Touch To Fill can be submitted.
+  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // deprecated.
+  virtual void StartSubmissionTrackingAfterTouchToFill(
+      const std::u16string& filled_username) {}
+
+  // Informs that a successful submission didn't happen after Touch To Fill
+  // (e.g. a submission failed, a user edited an input field manually).
+  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // deprecated.
+  virtual void ResetSubmissionTrackingAfterTouchToFill() {}
+
   // Inform the embedder that the site called 'store()'.
   virtual void NotifyStorePasswordCalled() = 0;
 

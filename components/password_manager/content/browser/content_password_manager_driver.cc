@@ -369,6 +369,9 @@ void ContentPasswordManagerDriver::UserModifiedPasswordField() {
     return;
   if (client_->GetMetricsRecorder())
     client_->GetMetricsRecorder()->RecordUserModifiedPasswordField();
+  // A user has modified an input field, it wouldn't be a submission "after
+  // Touch To Fill".
+  client_->ResetSubmissionTrackingAfterTouchToFill();
 }
 
 void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
@@ -380,6 +383,9 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
     return;
   GetPasswordManager()->OnUserModifiedNonPasswordField(this, renderer_id,
                                                        field_name, value);
+  // A user has modified an input field, it wouldn't be a submission "after
+  // Touch To Fill".
+  client_->ResetSubmissionTrackingAfterTouchToFill();
 }
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestions(

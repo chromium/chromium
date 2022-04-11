@@ -193,6 +193,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (std::unique_ptr<PasswordFormManagerForUI>),
               (override));
   MOCK_METHOD(void,
+              NotifyOnSuccessfulLogin,
+              (const std::u16string& submitted_username),
+              (override));
+  MOCK_METHOD(void, ResetSubmissionTrackingAfterTouchToFill, (), (override));
+  MOCK_METHOD(void,
               AutomaticPasswordSave,
               (std::unique_ptr<PasswordFormManagerForUI>),
               (override));
@@ -1129,6 +1134,7 @@ TEST_P(PasswordManagerTest, FormSubmit) {
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value));
 
   observed.clear();
   manager()->OnPasswordFormsParsed(&driver_, observed);
@@ -1321,12 +1327,16 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
-  // No expected calls to the PasswordStore...
+  // No prompts.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
   EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
+  // No expected calls to the PasswordStore.
   EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(*store_, UpdateLogin).Times(0);
   EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey).Times(0);
+  // Stop waiting for a successful "After-TouchToFill" submission as the
+  // submission has failed.
+  EXPECT_CALL(client_, ResetSubmissionTrackingAfterTouchToFill());
 
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
@@ -4350,6 +4360,35 @@ TEST_P(PasswordManagerTest, SubmittedManagerClearingOnSuccessfulLogin) {
   // There should be no submitted manager after the login detection.
   EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(PasswordManagerTest, FormSubmissionTrackingAfterTouchToFill) {
+  PasswordForm saved_match(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_match)));
+
+  // A navigation without a submitted manager clears the state of submission
+  // tracking.
+  EXPECT_CALL(client_, ResetSubmissionTrackingAfterTouchToFill());
+
+  PasswordForm observed_form(MakeSimpleForm());
+  std::vector<FormData> observed_forms = {observed_form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed_forms);
+  manager()->OnPasswordFormsRendered(&driver_, observed_forms, true);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(observed_form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(observed_form.form_data);
+
+  // No forms means a successful login, which reports a metric and stops
+  // tracking.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(_));
+  EXPECT_CALL(client_, ResetSubmissionTrackingAfterTouchToFill());
+
+  observed_forms.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed_forms);
+  manager()->OnPasswordFormsRendered(&driver_, observed_forms, true);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Check that on successful login the credentials are checked for leak depending
 // on mute state of insecure credential.

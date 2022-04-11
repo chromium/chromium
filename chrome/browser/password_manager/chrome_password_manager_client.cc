@@ -105,6 +105,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -516,6 +517,39 @@ void ChromePasswordManagerClient::NotifyStorePasswordCalled() {
   helper_.NotifyStorePasswordCalled();
   was_store_ever_called_ = true;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::StartSubmissionTrackingAfterTouchToFill(
+    const std::u16string& filled_username) {
+  username_filled_by_touch_to_fill_ =
+      std::make_pair(filled_username, base::Time::Now());
+}
+
+void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
+    const std::u16string& submitted_username) {
+  if (!username_filled_by_touch_to_fill_)
+    return;
+
+  base::TimeDelta delta =
+      base::Time::Now() - username_filled_by_touch_to_fill_->second;
+  // Filter out unrelated logins.
+  if (delta < base::Minutes(1) &&
+      username_filled_by_touch_to_fill_->first == submitted_username) {
+    UmaHistogramMediumTimes("PasswordManager.TouchToFill.TimeToSuccessfulLogin",
+                            delta);
+    ukm::builders::TouchToFill_TimeToSuccessfulLogin(GetUkmSourceId())
+        .SetTimeToSuccessfulLogin(
+            ukm::GetExponentialBucketMinForUserTiming(delta.InMilliseconds()))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  username_filled_by_touch_to_fill_.reset();
+}
+
+void ChromePasswordManagerClient::ResetSubmissionTrackingAfterTouchToFill() {
+  username_filled_by_touch_to_fill_.reset();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromePasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
