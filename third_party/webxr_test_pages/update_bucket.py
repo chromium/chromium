@@ -2,9 +2,6 @@
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
-
 import argparse
 import logging
 import mimetypes
@@ -13,6 +10,8 @@ import re
 import subprocess
 import sys
 import tempfile
+
+from typing import List, Tuple
 
 # Add third_party directory to the Python import path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -50,7 +49,7 @@ SUFFIX_TYPES = {
 
 g_flags = None
 
-def binary_name(cmd):
+def binary_name(cmd: str) -> str:
   """Finds the platform-appropriate name for an executable command."""
 
   # On Windows, the "subprocess" execution requires a name with extension.
@@ -62,25 +61,26 @@ def binary_name(cmd):
     return WINDOWS_EXES[cmd]
   raise Exeption('No known Windows executable for command "%s"' % cmd)
 
-def run_command(*args):
-  """Runs a shell command and returns output."""
+def run_command(*args: Tuple[str, ...]) -> str:
+  """Runs a shell command and returns output. The output will be decoded,
+  assuming utf-8 encoding and using strict error handling scheme."""
   platform_args = list(args)
   platform_args[0] = binary_name(platform_args[0])
   logging.debug('Executing: %s', platform_args)
-  return subprocess.check_output(platform_args)
+  return subprocess.check_output(platform_args).decode('utf-8')
 
-def run_readonly(*args):
+def run_readonly(*args) -> str:
   """Runs command expected to have no side effects, safe for dry runs."""
   return run_command(*args)
 
-def run_modify(*args):
+def run_modify(*args) -> str:
   """Runs command with side effects, skipped for dry runs."""
   if g_flags.dry_run:
     print('Dry-Run:', *args)
     return
   return run_command(*args)
 
-def get_cr_positions():
+def get_cr_positions() -> List[str]:
   """Retrieves list of Cr-Commit-Position entries for local commits"""
   revs = run_readonly('git', 'log', '--format=%H', FIRST_REVISION+'^..', '--',
                       TEST_SUBDIR)
@@ -95,7 +95,7 @@ def get_cr_positions():
     cr_positions.append(cr_position)
   return cr_positions
 
-def get_commit_from_cr_position(position):
+def get_commit_from_cr_position(position: str) -> str:
   """Given the Cr-Commit-Position, returns a string with commit hash.
 
   The function works on a best-effort basis. If commit hash cannot be found,
@@ -111,7 +111,7 @@ def get_commit_from_cr_position(position):
     logging.debug('`git crrev-parse %s` returned an error', position)
     return ''
 
-def get_bucket_copies():
+def get_bucket_copies() -> List[str]:
   """Retrieves list of test subdirectories from Cloud Storage"""
   copies = []
   dirs = run_readonly('gsutil.py', 'ls', '-d', BUCKET)
@@ -123,12 +123,12 @@ def get_bucket_copies():
       copies.append(m.group(1))
   return copies
 
-def is_working_dir_clean():
+def is_working_dir_clean() -> bool:
   """Checks if the git working directory has unsaved changes"""
   status = run_readonly('git', 'status', '--porcelain', '--untracked-files=no')
   return status.strip() == ''
 
-def write_to_bucket(cr_position):
+def write_to_bucket(cr_position: str):
   """Copies the test directory to Cloud Storage"""
   destination = BUCKET + '/r' + cr_position
   run_modify('gsutil.py', '-m', 'rsync', '-x', 'media', '-r', './' + TEST_SUBDIR,
@@ -138,7 +138,7 @@ def write_to_bucket(cr_position):
   # misconfigured. Sanity check and fix if needed.
   check_and_fix_content_types(destination)
 
-def direct_publish_samples(source, dest_subfolder):
+def direct_publish_samples(source: str, dest_subfolder: str):
   destination = 'gs://chromium-webxr-samples' + '/' + dest_subfolder
   run_modify('gsutil.py', '-m', 'rsync', '-x', 'media', '-r', './' + source,
           destination)
@@ -147,9 +147,9 @@ def direct_publish_samples(source, dest_subfolder):
   # misconfigured. Sanity check and fix if needed.
   check_and_fix_content_types(destination)
 
-def check_and_fix_content_types(destination):
+def check_and_fix_content_types(destination: str):
   mimetypes.init()
-  for suffix, content_type in SUFFIX_TYPES.iteritems():
+  for suffix, content_type in SUFFIX_TYPES.items():
     configured_type = mimetypes.types_map.get('.' + suffix)
     if configured_type != content_type:
       logging.info('Fixing content type mismatch for .%s: found %s, '
@@ -187,7 +187,7 @@ def write_index():
 
   with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as temp:
     try:
-      temp.write(content)
+      temp.write(content.encode('utf-8'))
       temp.seek(0)
       temp.close()
       run_modify('gsutil.py', 'cp', temp.name, BUCKET + '/index.html')
@@ -213,14 +213,14 @@ def write_latest():
 
   with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as temp:
     try:
-      temp.write(content)
+      temp.write(content.encode('utf-8'))
       temp.seek(0)
       temp.close()
       run_modify('gsutil.py', 'cp', temp.name, BUCKET + '/latest.html')
     finally:
       os.unlink(temp.name)
 
-def update_test_copies():
+def update_test_copies() -> bool:
   """Uploads a new test copy if available"""
 
   if not is_working_dir_clean() and not g_flags.ignore_unclean_status:
