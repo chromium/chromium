@@ -396,7 +396,7 @@
       'Win ASan Release Media (reclient shadow)': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
       'Win ASan Release (reclient shadow)': 'asan_fuzzer_v8_heap_release_bot_reclient',
       'win-annotator-rel': 'release_bot_reclient',
-      'win-celab-builder-rel': 'release_bot_minimal_symbols',
+      'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'win-pixel-builder-rel': 'release_bot_reclient',

@@ -1064,6 +1064,9 @@ fyi_celab_builder(
     ),
     schedule = "0 0,6,12,18 * * *",
     triggered_by = [],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
 )
 
 fyi_celab_builder(
