@@ -1,7 +1,9 @@
-CONSOLE ERROR: Uncaught (in promise) UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process.
-CONSOLE ERROR: Uncaught (in promise) UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process.
-CONSOLE ERROR: Uncaught (in promise) UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process.
-CONSOLE ERROR: Uncaught (in promise) UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process.
+CONSOLE WARNING: PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE WARNING: PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) SecurityError: Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort
+CONSOLE ERROR: Uncaught (in promise) SecurityError: Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort
 This is a testharness.js-based test.
 PASS Creating a PaymentRequest with empty parameters should not throw or crash.
 PASS Creating a PaymentRequest with extra parameters should not throw or crash.

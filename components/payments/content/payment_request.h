@@ -256,6 +256,8 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   bool has_recorded_completion_ = false;
 
   // Whether PaymentRequest.show() was invoked with a user gesture.
+  // TODO(crbug.com/825270): Remove this member now that user gesture is always
+  // required for show().
   bool is_show_user_gesture_ = false;
 
   // Whether PaymentRequest.show() was invoked by skipping payment request UI.

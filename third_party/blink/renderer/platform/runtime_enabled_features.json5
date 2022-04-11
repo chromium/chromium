@@ -1792,6 +1792,7 @@
     },
     {
       name: "PaymentRequestRequiresUserActivation",
+      status: "stable",
     },
     {
       name: "PaymentRetry",
