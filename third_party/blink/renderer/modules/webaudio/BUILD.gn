@@ -120,6 +120,8 @@ blink_modules_sources("webaudio") {
     "media_element_audio_source_node.h",
     "media_stream_audio_destination_node.cc",
     "media_stream_audio_destination_node.h",
+    "media_stream_audio_source_handler.cc",
+    "media_stream_audio_source_handler.h",
     "media_stream_audio_source_node.cc",
     "media_stream_audio_source_node.h",
     "offline_audio_completion_event.cc",
