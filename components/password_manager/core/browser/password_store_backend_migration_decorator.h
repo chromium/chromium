@@ -101,7 +101,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
-  // Creates 'migrator_' and starts migration process.
+  // Starts migration process.
   void StartMigration();
 
   // React on sync changes to keep GMS Core local storage up-to-date.

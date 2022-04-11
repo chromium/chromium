@@ -97,7 +97,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
 
   // Only start the migration when launching the UPM which needs chrome-local
   // data in the remote store. For shadow traffic, this doesn't matter.
-  if (features::RequiresInitialMigrationForUnifiedPasswordManager()) {
+  if (features::RequiresMigrationForUnifiedPasswordManager()) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         built_in_backend_.get(), android_backend_.get(), prefs_,
         sync_delegate_.get());
@@ -231,15 +231,15 @@ void PasswordStoreBackendMigrationDecorator::StartMigration() {
 }
 
 void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
-  if (!features::RequiresInitialMigrationForUnifiedPasswordManager())
+  if (!features::RequiresMigrationForUnifiedPasswordManager())
     return;
 
-  // Sync was enabled. Delete all the passwords from GMS Core local storage.
-  // During initial rollout, local passwords remain untouched. Only the use of
-  // a different local storage requires explicit migration.
-  if (sync_delegate_->IsSyncingPasswordsEnabled() &&
-      features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
-    android_backend_->ClearAllLocalPasswords();
+  if (sync_delegate_->IsSyncingPasswordsEnabled()) {
+    // Non-syncable data needs to be migrated to the new active backend.
+    migrator_->StartMigrationIfNecessary();
+
+    // TODO(crbug.com/1312387): Delete all the passwords from GMS Core
+    // local storage if password sync was enabled.
   }
 }
 

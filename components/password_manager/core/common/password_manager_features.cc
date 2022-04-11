@@ -271,7 +271,7 @@ bool UsesUnifiedPasswordManagerUi() {
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_ANDROID)
-bool RequiresInitialMigrationForUnifiedPasswordManager() {
+bool RequiresMigrationForUnifiedPasswordManager() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
     return false;
   UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();

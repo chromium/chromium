@@ -127,9 +127,9 @@ bool UsesUnifiedPasswordManagerUi();
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
-// that requires migrating existing credentials initially. Independent of
+// that requires migrating existing credentials. Independent of
 // whether only non-syncable data needs to be migrated or full credentials.
-bool RequiresInitialMigrationForUnifiedPasswordManager();
+bool RequiresMigrationForUnifiedPasswordManager();
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_ANDROID)
