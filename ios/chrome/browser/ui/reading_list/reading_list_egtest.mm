@@ -582,14 +582,21 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   [ChromeEarlGrey goBack];
 
-  // Check that the offline version is still displayed.
   [ChromeEarlGrey waitForPageToFinishLoading];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  AssertIsShowingDistillablePage(false, distillablePageURL);
 
-  // Check that a new navigation wasn't created.
-  GREYAssertEqual(0, [ChromeEarlGrey navigationBackListItemsCount],
-                  @"The offline page should be the first committed URL.");
+  if ([ChromeEarlGrey isLoadSimulatedRequestAPIEnabled]) {
+    // Check that the online version is now displayed.
+    AssertIsShowingDistillablePage(true, distillablePageURL);
+    GREYAssertEqual(1, [ChromeEarlGrey navigationBackListItemsCount],
+                    @"The NTP page should be the first committed URL.");
+  } else {
+    // Check that the offline version is still displayed.
+    AssertIsShowingDistillablePage(false, distillablePageURL);
+    // Check that a new navigation wasn't created.
+    GREYAssertEqual(0, [ChromeEarlGrey navigationBackListItemsCount],
+                    @"The offline page should be the first committed URL.");
+  }
 
   // Check that navigating forward navigates to the correct page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]

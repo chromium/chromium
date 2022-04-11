@@ -644,6 +644,9 @@ UIWindow* GetAnyKeyWindow();
 // with custom WebKit frameworks.
 - (BOOL)isCustomWebKitLoadedIfRequested [[nodiscard]];
 
+// Returns YES if error pages are displayed using loadSimulatedRequest.
+- (BOOL)isLoadSimulatedRequestAPIEnabled;
+
 // Returns whether the mobile version of the websites are requested by default.
 - (BOOL)isMobileModeByDefault [[nodiscard]];
 

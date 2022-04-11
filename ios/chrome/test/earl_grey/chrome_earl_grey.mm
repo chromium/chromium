@@ -1229,6 +1229,10 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isCustomWebKitLoadedIfRequested];
 }
 
+- (BOOL)isLoadSimulatedRequestAPIEnabled {
+  return [ChromeEarlGreyAppInterface isLoadSimulatedRequestAPIEnabled];
+}
+
 - (BOOL)isMobileModeByDefault {
   return [ChromeEarlGreyAppInterface isMobileModeByDefault];
 }

@@ -1092,6 +1092,10 @@ NSString* SerializedValue(const base::Value* value) {
   return IsCustomWebKitLoadedIfRequested();
 }
 
++ (BOOL)isLoadSimulatedRequestAPIEnabled {
+  return web::features::IsLoadSimulatedRequestAPIEnabled();
+}
+
 + (BOOL)isMobileModeByDefault {
   web::UserAgentType webClientUserAgent =
       web::GetWebClient()->GetDefaultUserAgent(

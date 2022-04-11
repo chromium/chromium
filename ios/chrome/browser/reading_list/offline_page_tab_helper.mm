@@ -158,6 +158,7 @@ void OfflinePageTabHelper::LoadOfflineData(web::WebState* web_state,
   DCHECK(web::features::IsLoadSimulatedRequestAPIEnabled());
 
   presenting_offline_page_ = true;
+  offline_navigation_triggered_ = url;
 
   if (is_pdf) {
     NSData* ns_data = [NSData dataWithBytes:data.c_str() length:data.size()];
@@ -184,8 +185,8 @@ void OfflinePageTabHelper::DidStartNavigation(web::WebState* web_state,
                                               web::NavigationContext* context) {
   if (context->GetUrl() == offline_navigation_triggered_ ||
       context->IsSameDocument()) {
-    // This is the navigation triggered by the loadData. Ignore it, to not reset
-    // the presenting_offline_page_ flag.
+    // This is the navigation triggered by loadData or loadSimulatedRequest.
+    // Ignore it, to not reset the presenting_offline_page_ flag.
     offline_navigation_triggered_ = GURL::EmptyGURL();
     return;
   }
