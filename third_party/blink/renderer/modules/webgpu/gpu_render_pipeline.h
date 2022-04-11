@@ -64,8 +64,8 @@ struct OwnedRenderPipelineDescriptor {
   WGPURenderPipelineDescriptor dawn_desc = {};
   std::string label;
   std::string vertex_entry_point;
-  Vector<WGPUVertexBufferLayout> buffers;
-  Vector<WGPUVertexAttribute> attributes;
+  std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
+  std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
   OwnedPrimitiveState primitive;
   WGPUDepthStencilState depth_stencil;
   OwnedFragmentState fragment;

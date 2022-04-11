@@ -10,7 +10,5 @@ dictionary GPUVertexState {
   required GPUShaderModule module;
   required USVString entryPoint;
 
-  // TODO(crbug.com/951629): Make this a sequence of nullables, like so:
-  //sequence<GPUVertexBufferLayout?> buffers = [];
-  object buffers; // We validate this is an array of nullable GPUVertexBufferLayout
+  sequence<GPUVertexBufferLayout?> buffers = [];
 };

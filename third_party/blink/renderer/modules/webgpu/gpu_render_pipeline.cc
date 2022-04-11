@@ -69,6 +69,30 @@ WGPUColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
   return dawn_desc;
 }
 
+WGPUVertexBufferLayout AsDawnType(const GPUVertexBufferLayout* webgpu_desc) {
+  DCHECK(webgpu_desc);
+
+  WGPUVertexBufferLayout dawn_desc = {};
+  dawn_desc.arrayStride = webgpu_desc->arrayStride();
+  dawn_desc.stepMode = AsDawnEnum<WGPUVertexStepMode>(webgpu_desc->stepMode());
+  dawn_desc.attributeCount = webgpu_desc->attributes().size();
+
+  // dawn_desc.attributes is handled outside separately
+
+  return dawn_desc;
+}
+
+WGPUVertexAttribute AsDawnType(const GPUVertexAttribute* webgpu_desc) {
+  DCHECK(webgpu_desc);
+
+  WGPUVertexAttribute dawn_desc = {};
+  dawn_desc.shaderLocation = webgpu_desc->shaderLocation();
+  dawn_desc.offset = webgpu_desc->offset();
+  dawn_desc.format = AsDawnEnum<WGPUVertexFormat>(webgpu_desc->format());
+
+  return dawn_desc;
+}
+
 namespace {
 
 WGPUStencilFaceState AsDawnType(const GPUStencilFaceState* webgpu_desc) {
@@ -143,78 +167,41 @@ WGPUMultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
   return dawn_desc;
 }
 
-void AsDawnVertexBufferLayouts(
-    v8::Isolate* isolate,
-    GPUDevice* device,
-    v8::Local<v8::Value> vertex_buffers_value,
-    Vector<WGPUVertexBufferLayout>* dawn_vertex_buffers,
-    Vector<WGPUVertexAttribute>* dawn_vertex_attributes,
-    ExceptionState& exception_state) {
-  if (!vertex_buffers_value->IsArray()) {
-    exception_state.ThrowTypeError("vertexBuffers must be an array");
+void AsDawnVertexBufferLayouts(GPUDevice* device,
+                               const GPUVertexState* descriptor,
+                               OwnedRenderPipelineDescriptor* dawn_desc_info) {
+  DCHECK(descriptor);
+  DCHECK(dawn_desc_info);
+
+  WGPUVertexState* dawn_vertex = &dawn_desc_info->dawn_desc.vertex;
+  dawn_vertex->bufferCount = descriptor->buffers().size();
+
+  if (dawn_vertex->bufferCount == 0) {
+    dawn_vertex->buffers = nullptr;
     return;
   }
 
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Array> vertex_buffers = vertex_buffers_value.As<v8::Array>();
-
-  // First we collect all the descriptors but we don't set
-  // WGPUVertexBufferLayout::attributes
   // TODO(cwallez@chromium.org): Should we validate the Length() first so we
   // don't risk creating HUGE vectors of WGPUVertexBufferLayout from
   // the sparse array?
-  for (uint32_t i = 0; i < vertex_buffers->Length(); ++i) {
-    // This array can be sparse. Skip empty slots.
-    v8::MaybeLocal<v8::Value> maybe_value = vertex_buffers->Get(context, i);
-    v8::Local<v8::Value> value;
-    if (!maybe_value.ToLocal(&value) || value.IsEmpty() ||
-        value->IsNullOrUndefined()) {
-      WGPUVertexBufferLayout dawn_vertex_buffer = {};
-      dawn_vertex_buffer.arrayStride = 0;
-      dawn_vertex_buffer.stepMode = WGPUVertexStepMode_Vertex;
-      dawn_vertex_buffer.attributeCount = 0;
-      dawn_vertex_buffer.attributes = nullptr;
-      dawn_vertex_buffers->push_back(dawn_vertex_buffer);
+  dawn_desc_info->buffers = AsDawnType(descriptor->buffers());
+  dawn_vertex->buffers = dawn_desc_info->buffers.get();
+
+  // Handle WGPUVertexBufferLayout::attributes separately to guarantee the
+  // lifetime.
+  dawn_desc_info->attributes =
+      std::make_unique<std::unique_ptr<WGPUVertexAttribute[]>[]>(
+          dawn_vertex->bufferCount);
+  for (wtf_size_t i = 0; i < dawn_vertex->bufferCount; ++i) {
+    const auto& maybe_buffer = descriptor->buffers()[i];
+    if (!maybe_buffer) {
+      // This buffer layout is empty
       continue;
     }
-
-    GPUVertexBufferLayout* vertex_buffer =
-        NativeValueTraits<GPUVertexBufferLayout>::NativeValue(isolate, value,
-                                                              exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-
-    WGPUVertexBufferLayout dawn_vertex_buffer = {};
-    dawn_vertex_buffer.arrayStride = vertex_buffer->arrayStride();
-    dawn_vertex_buffer.stepMode =
-        AsDawnEnum<WGPUVertexStepMode>(vertex_buffer->stepMode());
-    dawn_vertex_buffer.attributeCount =
-        static_cast<uint32_t>(vertex_buffer->attributes().size());
-    dawn_vertex_buffer.attributes = nullptr;
-    dawn_vertex_buffers->push_back(dawn_vertex_buffer);
-
-    for (wtf_size_t j = 0; j < vertex_buffer->attributes().size(); ++j) {
-      const GPUVertexAttribute* attribute = vertex_buffer->attributes()[j];
-      WGPUVertexAttribute dawn_vertex_attribute = {};
-      dawn_vertex_attribute.shaderLocation = attribute->shaderLocation();
-      dawn_vertex_attribute.offset = attribute->offset();
-      dawn_vertex_attribute.format =
-          AsDawnEnum<WGPUVertexFormat>(attribute->format());
-      dawn_vertex_attributes->push_back(dawn_vertex_attribute);
-    }
-  }
-
-  // Set up pointers in DawnVertexBufferLayout::attributes only
-  // after we stopped appending to the vector so the pointers aren't
-  // invalidated.
-  uint32_t attributeIndex = 0;
-  for (WGPUVertexBufferLayout& buffer : *dawn_vertex_buffers) {
-    if (buffer.attributeCount == 0) {
-      continue;
-    }
-    buffer.attributes = &(*dawn_vertex_attributes)[attributeIndex];
-    attributeIndex += buffer.attributeCount;
+    const GPUVertexBufferLayout* buffer = maybe_buffer.Get();
+    dawn_desc_info->attributes.get()[i] = AsDawnType(buffer->attributes());
+    WGPUVertexBufferLayout* dawn_buffer = &dawn_desc_info->buffers[i];
+    dawn_buffer->attributes = dawn_desc_info->attributes.get()[i].get();
   }
 }
 
@@ -230,6 +217,11 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
 
   dawn_fragment->entry_point = descriptor->entryPoint().Ascii();
   dawn_fragment->dawn_desc.entryPoint = dawn_fragment->entry_point.c_str();
+
+  // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
+  // the spec is settled.
+  dawn_fragment->dawn_desc.constantCount = 0;
+  dawn_fragment->dawn_desc.constants = nullptr;
 
   dawn_fragment->dawn_desc.targets = nullptr;
   dawn_fragment->dawn_desc.targetCount =
@@ -289,19 +281,13 @@ void ConvertToDawnType(v8::Isolate* isolate,
   dawn_desc_info->vertex_entry_point = vertex->entryPoint().Ascii();
   dawn_vertex->entryPoint = dawn_desc_info->vertex_entry_point.c_str();
 
-  if (vertex->hasBuffers()) {
-    // TODO(crbug.com/951629): Use a sequence of nullable descriptors.
-    v8::Local<v8::Value> buffers_value = vertex->buffers().V8Value();
-    AsDawnVertexBufferLayouts(isolate, device, buffers_value,
-                              &dawn_desc_info->buffers,
-                              &dawn_desc_info->attributes, exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
+  // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
+  // the spec is settled.
+  dawn_vertex->constantCount = 0;
+  dawn_vertex->constants = nullptr;
 
-    dawn_vertex->bufferCount =
-        static_cast<uint32_t>(dawn_desc_info->buffers.size());
-    dawn_vertex->buffers = dawn_desc_info->buffers.data();
+  if (vertex->hasBuffers()) {
+    AsDawnVertexBufferLayouts(device, vertex, dawn_desc_info);
   }
 
   // Primitive
