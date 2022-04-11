@@ -131,10 +131,12 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Search text changes tab items', async () => {
-    await setupTest(createProfileData({
-      recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
-      recentlyClosedSectionExpanded: true,
-    }));
+    await setupTest(
+        createProfileData({
+          recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
+          recentlyClosedSectionExpanded: true,
+        }),
+        {useFuzzySearch: false});
     const searchField = tabSearchApp.$.searchField;
     searchField.setValue('bing');
     await flushTasks();

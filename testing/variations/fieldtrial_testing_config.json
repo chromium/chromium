@@ -7013,22 +7013,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
-                        "TabSearchFuzzySearch"
-                    ]
-                },
-                {
-                    "name": "Enabled_Small",
-                    "params": {
-                        "TabSearchSearchThreshold": "0.3"
-                    },
-                    "enable_features": [
-                        "TabSearchFuzzySearch"
-                    ]
-                },
-                {
-                    "name": "Enabled_Medium",
+                    "name": "Enabled_FuzzyLevelMedium_20220405",
                     "params": {
                         "TabSearchSearchThreshold": "0.6"
                     },
@@ -7037,11 +7022,17 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Large",
+                    "name": "Enabled_FuzzyLevelSmall_20220405",
                     "params": {
-                        "TabSearchSearchThreshold": "0.8"
+                        "TabSearchSearchThreshold": "0.3"
                     },
                     "enable_features": [
+                        "TabSearchFuzzySearch"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
                         "TabSearchFuzzySearch"
                     ]
                 }
