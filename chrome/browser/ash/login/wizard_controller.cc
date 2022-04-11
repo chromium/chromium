@@ -2310,7 +2310,8 @@ void WizardController::SkipPostLoginScreensForTesting() {
 
   const OobeScreenId current_screen_id =
       default_controller()->current_screen()->screen_id();
-  if (current_screen_id == TermsOfServiceScreenView::kScreenId ||
+  if (current_screen_id == LocaleSwitchView::kScreenId ||
+      current_screen_id == TermsOfServiceScreenView::kScreenId ||
       current_screen_id == FamilyLinkNoticeView::kScreenId ||
       current_screen_id == EduCoexistenceLoginScreen::kScreenId ||
       current_screen_id == SyncConsentScreenView::kScreenId ||

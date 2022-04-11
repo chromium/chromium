@@ -204,6 +204,10 @@ void AshColorProvider::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (!features::IsDarkLightModeEnabled())
     return;
+  if (state != session_manager::SessionState::OOBE &&
+      state != session_manager::SessionState::LOGIN_PRIMARY) {
+    is_oobe_webui_shown_ = false;
+  }
   NotifyDarkModeEnabledPrefChange();
   NotifyColorModeThemedPrefChange();
 }
