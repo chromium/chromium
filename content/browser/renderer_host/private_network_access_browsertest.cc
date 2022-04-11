@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
@@ -2902,8 +2903,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 }
 
+// Failing on Mac11. https://crbug.com/1315068
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PreflightConnectionReusedHttp1 \
+  DISABLED_PreflightConnectionReusedHttp1
+#else
+#define MAYBE_PreflightConnectionReusedHttp1 PreflightConnectionReusedHttp1
+#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       PreflightConnectionReusedHttp1) {
+                       MAYBE_PreflightConnectionReusedHttp1) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   EXPECT_EQ(true, EvalJs(root_frame_host(),
