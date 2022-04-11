@@ -351,10 +351,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetWidgetHost()->GetView()->view_stopped_flinging_for_test());
 }
 
+// Flaky on Linux ASAN and TSAN. https://crbug.com/1269960
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_FlingingStopsAfterNavigation DISABLED_FlingingStopsAfterNavigation
+#else
+#define MAYBE_FlingingStopsAfterNavigation FlingingStopsAfterNavigation
+#endif
+
 // Tests that flinging does not continue after navigating to a page that uses
 // the same renderer.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
-                       FlingingStopsAfterNavigation) {
+                       MAYBE_FlingingStopsAfterNavigation) {
   GURL first_url(embedded_test_server()->GetURL(
       "b.a.com", "/scrollable_page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), first_url));
