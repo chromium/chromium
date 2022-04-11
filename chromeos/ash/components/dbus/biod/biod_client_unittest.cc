@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 
 #include <map>
 #include <memory>
@@ -13,8 +13,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/biod/messages.pb.h"
-#include "chromeos/dbus/biod/test_utils.h"
+#include "chromeos/ash/components/dbus/biod/messages.pb.h"
+#include "chromeos/ash/components/dbus/biod/test_utils.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
@@ -25,7 +25,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -444,4 +444,4 @@ TEST_F(BiodClientTest, TestNotifyObserversFingerprintMessage) {
   EXPECT_EQ(1, observer.NumAuthScansReceived());
   EXPECT_EQ(1, observer.num_failures_received());
 }
-}  // namespace chromeos
+}  // namespace ash

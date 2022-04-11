@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

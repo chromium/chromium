@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 
 #include <vector>
 
@@ -11,14 +11,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/biod/test_utils.h"
+#include "chromeos/ash/components/dbus/biod/test_utils.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using biod::ERROR_UNABLE_TO_PROCESS;
 using biod::SCAN_RESULT_SUCCESS;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -28,7 +28,7 @@ const char kTestLabel[] = "testLabel";
 // are two wildcards that will be replaced by numbers to ensure unique scans.
 const char kTestScan[] = "finger#scan$";
 
-}  // namepsace
+}  // namespace
 
 class FakeBiodClientTest : public testing::Test {
  public:
@@ -343,4 +343,4 @@ TEST_F(FakeBiodClientTest, TestGetAndSetRecordLabels) {
   EXPECT_EQ(kNewLabelTwo, returned_str);
 }
 
-}  // namespace chromeos
+}  // namespace ash

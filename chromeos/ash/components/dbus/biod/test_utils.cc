@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/biod/test_utils.h"
+#include "chromeos/ash/components/dbus/biod/test_utils.h"
 
 #include "base/check.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 namespace test_utils {
 
 void CopyObjectPath(dbus::ObjectPath* dest_path,
@@ -76,4 +76,4 @@ void TestBiodObserver::BiodSessionFailedReceived() {
 }
 
 }  // namespace test_utils
-}  // namespace chromeos
+}  // namespace ash

@@ -10,8 +10,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
-#include "chromeos/dbus/biod/biod_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -33,7 +33,7 @@ void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
-  if (!chromeos::BiodClient::Get()) {
+  if (!BiodClient::Get()) {
     // Could be nullptr in tests.
     return;
   }

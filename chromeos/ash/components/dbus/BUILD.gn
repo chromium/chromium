@@ -15,9 +15,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/ash/components/dbus/biod:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/session_manager",
     "//components/account_id",
+    "//dbus",
   ]
-  sources = [ "authpolicy/fake_authpolicy_client_unittest.cc" ]
+  sources = [
+    "authpolicy/fake_authpolicy_client_unittest.cc",
+    "biod/biod_client_unittest.cc",
+    "biod/fake_biod_client_unittest.cc",
+  ]
 }

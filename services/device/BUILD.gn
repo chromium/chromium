@@ -233,8 +233,8 @@ source_set("tests") {
       "geolocation/wifi_data_provider_chromeos_unittest.cc",
     ]
     deps += [
+      "//chromeos/ash/components/dbus/biod:test_support",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/biod:test_support",
       "//chromeos/network:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",

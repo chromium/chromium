@@ -26,7 +26,7 @@ component("fingerprint") {
       "fingerprint_chromeos.h",
     ]
     deps += [
-      "//chromeos/dbus/biod",
+      "//chromeos/ash/components/dbus/biod",
       "//dbus",
       "//third_party/protobuf:protobuf_lite",
     ]

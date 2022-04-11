@@ -100,7 +100,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/audio",
-    "//chromeos/dbus/biod:test_support",
     "//chromeos/dbus/cec_service:unit_tests",
     "//chromeos/dbus/cros_disks:unit_tests",
     "//chromeos/dbus/cryptohome",
@@ -139,8 +138,6 @@ source_set("unit_tests") {
   }
   sources = [
     "audio/cras_audio_client_unittest.cc",
-    "biod/biod_client_unittest.cc",
-    "biod/fake_biod_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
     "dbus_thread_manager_unittest.cc",
     "hiberman/hiberman_client_unittest.cc",

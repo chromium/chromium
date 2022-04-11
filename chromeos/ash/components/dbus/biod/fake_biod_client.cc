@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 
 #include <memory>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -243,4 +243,4 @@ void FakeBiodClient::RequestRecordLabel(const dbus::ObjectPath& record_path,
       FROM_HERE, base::BindOnce(std::move(callback), record_label));
 }
 
-}  // namespace chromeos
+}  // namespace ash

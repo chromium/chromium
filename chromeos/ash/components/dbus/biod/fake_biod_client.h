@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_
-#define CHROMEOS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_
 
 #include <map>
 #include <memory>
@@ -11,10 +11,10 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of BiodClient. It emulates the real Biod daemon by
 // providing the same API and storing fingerprints locally. A fingerprint is
@@ -110,12 +110,6 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeBiodClient;
-}
-
-#endif  // CHROMEOS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_FAKE_BIOD_CLIENT_H_

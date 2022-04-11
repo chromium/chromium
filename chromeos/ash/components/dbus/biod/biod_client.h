@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_BIOD_BIOD_CLIENT_H_
-#define CHROMEOS_DBUS_BIOD_BIOD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_BIOD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_BIOD_CLIENT_H_
 
 #include <string>
 #include <unordered_map>
@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/biod/constants.pb.h"
-#include "chromeos/dbus/biod/messages.pb.h"
+#include "chromeos/ash/components/dbus/biod/constants.pb.h"
+#include "chromeos/ash/components/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -20,7 +20,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Each time the sensor detects a scan, an object containing all the users, each
 // with the object paths of all the matched stored biometrics is returned. The
@@ -158,12 +158,6 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
   virtual ~BiodClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::BiodClient;
-}
-
-#endif  // CHROMEOS_DBUS_BIOD_BIOD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_BIOD_CLIENT_H_

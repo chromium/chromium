@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 
 #include <stdint.h>
 
@@ -14,15 +14,15 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/dbus/biod/fake_biod_client.h"
-#include "chromeos/dbus/biod/messages.pb.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -428,7 +428,8 @@ BiodClient::~BiodClient() {
 
 // static
 void BiodClient::Initialize(dbus::Bus* bus) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBiodFake)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kBiodFake)) {
     BiodClient::InitializeFake();
   } else {
     DCHECK(bus);
@@ -452,4 +453,4 @@ BiodClient* BiodClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

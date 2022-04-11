@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -19,8 +19,8 @@ namespace device {
 
 namespace {
 
-chromeos::BiodClient* GetBiodClient() {
-  return chromeos::BiodClient::Get();
+ash::BiodClient* GetBiodClient() {
+  return ash::BiodClient::Get();
 }
 
 // Helper functions to convert between dbus and mojo types. The dbus type comes
@@ -257,7 +257,7 @@ void FingerprintChromeOS::BiodEnrollScanDoneReceived(
 
 void FingerprintChromeOS::BiodAuthScanDoneReceived(
     const biod::FingerprintMessage& msg,
-    const chromeos::AuthScanMatches& matches) {
+    const ash::AuthScanMatches& matches) {
   // Convert ObjectPath to string, since mojom doesn't know definition of
   // dbus ObjectPath.
   std::vector<std::pair<std::string, std::vector<std::string>>> entries;

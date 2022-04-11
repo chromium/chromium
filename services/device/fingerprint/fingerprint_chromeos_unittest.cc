@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -77,13 +77,13 @@ class FingerprintChromeOSTest : public testing::Test {
   ~FingerprintChromeOSTest() override = default;
 
   void SetUp() override {
-    chromeos::BiodClient::InitializeFake();
+    ash::BiodClient::InitializeFake();
     fingerprint_ = base::WrapUnique(new FingerprintChromeOS());
   }
 
   void TearDown() override {
     fingerprint_.reset();
-    chromeos::BiodClient::Shutdown();
+    ash::BiodClient::Shutdown();
   }
 
   FingerprintChromeOS* fingerprint() { return fingerprint_.get(); }
@@ -92,19 +92,18 @@ class FingerprintChromeOSTest : public testing::Test {
 
   void GenerateEnrollScanDoneSignal() {
     std::string fake_fingerprint_data;
-    chromeos::FakeBiodClient::Get()->SendEnrollScanDone(
+    ash::FakeBiodClient::Get()->SendEnrollScanDone(
         fake_fingerprint_data, biod::SCAN_RESULT_SUCCESS, true,
         -1 /* percent_complete */);
   }
 
   void GenerateAuthScanDoneSignal(const biod::FingerprintMessage& msg) {
     std::string fake_fingerprint_data;
-    chromeos::FakeBiodClient::Get()->SendAuthScanDone(fake_fingerprint_data,
-                                                      msg);
+    ash::FakeBiodClient::Get()->SendAuthScanDone(fake_fingerprint_data, msg);
   }
 
   void GenerateSessionFailedSignal() {
-    chromeos::FakeBiodClient::Get()->SendSessionFailed();
+    ash::FakeBiodClient::Get()->SendSessionFailed();
   }
 
   void onStartSession(const dbus::ObjectPath& path) {}
@@ -158,7 +157,7 @@ TEST_F(FingerprintChromeOSTest, FingerprintObserverTest) {
 
   std::string user_id;
   std::string label;
-  chromeos::FakeBiodClient::Get()->StartEnrollSession(
+  ash::FakeBiodClient::Get()->StartEnrollSession(
       user_id, label,
       base::BindOnce(&FingerprintChromeOSTest::onStartSession,
                      base::Unretained(this)));
@@ -168,7 +167,7 @@ TEST_F(FingerprintChromeOSTest, FingerprintObserverTest) {
   EXPECT_EQ(observer.enroll_scan_dones(), 1);
 
   biod::FingerprintMessage msg;
-  chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
+  ash::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
       &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
   msg.set_scan_result(biod::SCAN_RESULT_SUCCESS);
@@ -211,7 +210,7 @@ TEST_F(FingerprintChromeOSTest, FingerprintScanResultConvertTest) {
       pending_observer.InitWithNewPipeAndPassReceiver());
   fingerprint()->AddFingerprintObserver(std::move(pending_observer));
 
-  chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
+  ash::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
       &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
@@ -301,7 +300,7 @@ TEST_F(FingerprintChromeOSTest, FingerprintErrorConvertTest) {
       pending_observer.InitWithNewPipeAndPassReceiver());
   fingerprint()->AddFingerprintObserver(std::move(pending_observer));
 
-  chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
+  ash::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
       &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 

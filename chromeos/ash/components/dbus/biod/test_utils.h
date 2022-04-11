@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_BIOD_TEST_UTILS_H_
-#define CHROMEOS_DBUS_BIOD_TEST_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_TEST_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_TEST_UTILS_H_
 
 #include <string>
 #include <vector>
 
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 
 namespace dbus {
 class ObjectPath;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test_utils {
 
 // Copies |src_path| to |dest_path|.
@@ -84,6 +84,6 @@ class TestBiodObserver : public BiodClient::Observer {
 };
 
 }  // namespace test_utils
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_BIOD_TEST_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_BIOD_TEST_UTILS_H_
