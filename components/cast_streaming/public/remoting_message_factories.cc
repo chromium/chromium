@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/cast_streaming/public/remoting_message_factories.h"
+
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/audio_decoder_config.h"
@@ -113,6 +115,14 @@ CreateMessageForInitializationComplete(bool has_succeeded) {
 
 std::unique_ptr<openscreen::cast::RpcMessage> CreateMessageForFlushComplete() {
   return CreateMessage(openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK);
+}
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForAcquireRendererDone(int receiver_renderer_handle) {
+  auto rpc =
+      CreateMessage(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+  rpc->set_integer_value(receiver_renderer_handle);
+  return rpc;
 }
 
 }  // namespace remoting

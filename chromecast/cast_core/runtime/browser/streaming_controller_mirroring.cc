@@ -9,6 +9,11 @@
 
 namespace chromecast {
 
+// Callback used for RendererController::SetPlaybackController() mojo call.
+void OnCastStreamingRendererAcquired() {
+  // This method has been intentionally left empty.
+}
+
 StreamingControllerMirroring::StreamingControllerMirroring(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     CastWebContents* cast_web_contents)
@@ -26,7 +31,8 @@ void StreamingControllerMirroring::StartPlayback(
 
   renderer_connection_ = std::move(renderer_connection);
   renderer_connection_->SetPlaybackController(
-      renderer_controls_.BindNewPipeAndPassReceiver());
+      renderer_controls_.BindNewPipeAndPassReceiver(),
+      base::BindOnce(&OnCastStreamingRendererAcquired));
   renderer_controls_->StartPlayingFrom(base::Seconds(0));
   renderer_controls_->SetPlaybackRate(1.0);
 }

@@ -15,5 +15,8 @@ interface RendererController {
   // standard with a renderer, the remote user's phone / laptop / device
   // controlling a Cast Streaming session will send these commands to which the
   // receiver must respond.
-  SetPlaybackController(pending_receiver<media.mojom.Renderer> renderer);
+  //
+  // The callback for this method is sent when the renderer-process
+  // PlaybackCommandForwardingRenderer takes ownership of |renderer|.
+  SetPlaybackController(pending_receiver<media.mojom.Renderer> renderer) => ();
 };

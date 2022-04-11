@@ -65,6 +65,9 @@ CreateMessageForInitializationComplete(bool has_succeeded);
 
 std::unique_ptr<openscreen::cast::RpcMessage> CreateMessageForFlushComplete();
 
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForAcquireRendererDone(int receiver_renderer_handle);
+
 }  // namespace remoting
 }  // namespace cast_streaming
 

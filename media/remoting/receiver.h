@@ -46,9 +46,10 @@ class ReceiverController;
 // via RPC calls. When Receiver receives RPC calls, it will call the
 // corresponding functions of |renderer_| to control the media playback of
 // the remoting media.
-class Receiver final : public Renderer,
-                       public RendererClient,
-                       public cast_streaming::remoting::RpcCallMessageHandler {
+class Receiver final
+    : public Renderer,
+      public RendererClient,
+      public cast_streaming::remoting::RpcRendererCallMessageHandler {
  public:
   Receiver(int rpc_handle,
            int remote_handle,

@@ -62,7 +62,12 @@ class RendererControllerProxyImpl : public RendererControllerProxy {
     // browser process are passed immediately to
     // |renderer_process_pending_receiver_|.
     void SetPlaybackController(mojo::PendingReceiver<media::mojom::Renderer>
-                                   browser_process_renderer_controls) override;
+                                   browser_process_renderer_controls,
+                               SetPlaybackControllerCallback callback) override;
+
+    // Callback from the SetPlaybackController() method. Returned when the
+    // receiver is taken by the Renderer which uses it.
+    SetPlaybackControllerCallback set_playback_controller_cb_;
 
     // This handle is bound to the |renderer_process_pending_receiver_| upon
     // class construction. When SetPlaybackController() is called, ownership of

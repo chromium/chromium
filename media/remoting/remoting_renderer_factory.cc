@@ -5,6 +5,7 @@
 #include "media/remoting/remoting_renderer_factory.h"
 
 #include "base/task/bind_post_task.h"
+#include "components/cast_streaming/public/remoting_message_factories.h"
 #include "media/base/demuxer.h"
 #include "media/remoting/receiver.h"
 #include "media/remoting/receiver_controller.h"
@@ -114,11 +115,10 @@ void RemotingRendererFactory::OnAcquireRendererDone(int receiver_rpc_handle) {
   DVLOG(3) << __func__
            << ": Issues RPC_ACQUIRE_RENDERER_DONE RPC message. remote_handle="
            << remote_renderer_handle_ << " rpc_handle=" << receiver_rpc_handle;
-  openscreen::cast::RpcMessage rpc;
-  rpc.set_handle(remote_renderer_handle_);
-  rpc.set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
-  rpc.set_integer_value(receiver_rpc_handle);
-  rpc_messenger_->SendMessageToRemote(rpc);
+  auto rpc = cast_streaming::remoting::CreateMessageForAcquireRendererDone(
+      receiver_rpc_handle);
+  rpc->set_handle(remote_renderer_handle_);
+  rpc_messenger_->SendMessageToRemote(*rpc);
 
   // Once RPC_ACQUIRE_RENDERER_DONE is sent, it implies there is no Receiver
   // instance that is waiting the remote handle.

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
 #define COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 
 namespace openscreen {
@@ -21,9 +19,18 @@ namespace remoting {
 // This class is responsible for translating between
 // openscreen::cast::RpcMessage commands (used by the remoting protocol) and
 // chromium types that are more easily usable.
-class RpcCallMessageHandler {
+class RpcInitializationCallMessageHandler {
  public:
-  virtual ~RpcCallMessageHandler();
+  virtual ~RpcInitializationCallMessageHandler();
+
+  virtual void OnRpcAcquireRenderer(int handle) = 0;
+  virtual void OnRpcAcquireDemuxer(int audio_stream_handle,
+                                   int video_stream_handle) = 0;
+};
+
+class RpcRendererCallMessageHandler {
+ public:
+  virtual ~RpcRendererCallMessageHandler();
 
   virtual void OnRpcInitialize() = 0;
   virtual void OnRpcFlush(uint32_t audio_count, uint32_t video_count) = 0;
@@ -34,8 +41,10 @@ class RpcCallMessageHandler {
 
 // Processes the incoming |message| and forwards it to the appropriate |client|
 // method.
-void DispatchRpcCall(std::unique_ptr<openscreen::cast::RpcMessage> message,
-                     RpcCallMessageHandler* client);
+bool DispatchInitializationRpcCall(openscreen::cast::RpcMessage* message,
+                                   RpcInitializationCallMessageHandler* client);
+bool DispatchRendererRpcCall(openscreen::cast::RpcMessage* message,
+                             RpcRendererCallMessageHandler* client);
 
 }  // namespace remoting
 }  // namespace cast_streaming

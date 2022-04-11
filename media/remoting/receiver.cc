@@ -123,7 +123,7 @@ void Receiver::OnReceivedRpc(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
 
-  cast_streaming::remoting::DispatchRpcCall(std::move(message), this);
+  cast_streaming::remoting::DispatchRendererRpcCall(message.get(), this);
 }
 
 void Receiver::SetRemoteHandle(int remote_handle) {

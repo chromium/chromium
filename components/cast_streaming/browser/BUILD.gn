@@ -212,8 +212,10 @@ source_set("renderer_controls") {
     "remoting_session_client.h",
     "renderer_control_multiplexer.cc",
     "renderer_control_multiplexer.h",
-    "rpc_call_translator.cc",
-    "rpc_call_translator.h",
+    "renderer_rpc_call_translator.cc",
+    "renderer_rpc_call_translator.h",
+    "rpc_initialization_call_handler_base.cc",
+    "rpc_initialization_call_handler_base.h",
   ]
 }
 

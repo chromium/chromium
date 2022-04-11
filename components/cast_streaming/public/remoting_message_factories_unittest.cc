@@ -181,5 +181,13 @@ TEST_F(RemotingMessageFactoriesTest, CreateMessageForFlushComplete) {
             openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK);
 }
 
+TEST_F(RemotingMessageFactoriesTest, CreateMessageForAcquireRendererDone) {
+  int kTestHandle = 42;
+  auto rpc = CreateMessageForAcquireRendererDone(kTestHandle);
+  EXPECT_EQ(rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+  EXPECT_EQ(rpc->integer_value(), kTestHandle);
+}
+
 }  // namespace remoting
 }  // namespace cast_streaming

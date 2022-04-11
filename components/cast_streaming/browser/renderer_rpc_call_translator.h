@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_BROWSER_RPC_CALL_TRANSLATOR_H_
-#define COMPONENTS_CAST_STREAMING_BROWSER_RPC_CALL_TRANSLATOR_H_
+#ifndef COMPONENTS_CAST_STREAMING_BROWSER_RENDERER_RPC_CALL_TRANSLATOR_H_
+#define COMPONENTS_CAST_STREAMING_BROWSER_RENDERER_RPC_CALL_TRANSLATOR_H_
 
 #include <memory>
 
@@ -15,29 +15,26 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace openscreen {
-namespace cast {
+namespace openscreen::cast {
 class RpcMessage;
-}  // namespace cast
-}  // namespace openscreen
+}  // namespace openscreen::cast
 
-namespace cast_streaming {
-namespace remoting {
+namespace cast_streaming::remoting {
 
 // This class is responsible for translating between
 // openscreen::cast::RpcMessage instances (used by the remoting protocol) and
 // mojo API calls (used locally within this chromium instance).
-class RpcCallTranslator : public media::mojom::RendererClient,
-                          public RpcCallMessageHandler {
+class RendererRpcCallTranslator : public media::mojom::RendererClient,
+                                  public RpcRendererCallMessageHandler {
  public:
   using RpcMessageProcessor = base::RepeatingCallback<void(
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
 
   // |remote_renderer| is the remote media::mojom::Renderer to which commands
   // translated from proto messages should be sent.
-  explicit RpcCallTranslator(
+  explicit RendererRpcCallTranslator(
       mojo::Remote<media::mojom::Renderer> remote_renderer);
-  ~RpcCallTranslator() override;
+  ~RendererRpcCallTranslator() override;
 
   // |processor| is responsible for handling any proto messages ready to be sent
   // out. This callback is expected to set the handle in each incoming message.
@@ -80,10 +77,9 @@ class RpcCallTranslator : public media::mojom::RendererClient,
       renderer_client_receiver_;
   mojo::Remote<media::mojom::Renderer> renderer_remote_;
 
-  base::WeakPtrFactory<RpcCallTranslator> weak_factory_;
+  base::WeakPtrFactory<RendererRpcCallTranslator> weak_factory_;
 };
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace cast_streaming::remoting
 
-#endif  // COMPONENTS_CAST_STREAMING_BROWSER_RPC_CALL_TRANSLATOR_H_
+#endif  // COMPONENTS_CAST_STREAMING_BROWSER_RENDERER_RPC_CALL_TRANSLATOR_H_

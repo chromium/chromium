@@ -87,15 +87,27 @@ mojo::PendingReceiver<media::mojom::Renderer>
 RendererControllerProxyImpl::FrameProxy::GetReceiver() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(renderer_process_pending_receiver_);
+
+  if (set_playback_controller_cb_) {
+    std::move(set_playback_controller_cb_).Run();
+  }
+
   return std::move(renderer_process_pending_receiver_);
 }
 
 void RendererControllerProxyImpl::FrameProxy::SetPlaybackController(
     mojo::PendingReceiver<media::mojom::Renderer>
-        browser_process_renderer_controls) {
+        browser_process_renderer_controls,
+    SetPlaybackControllerCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!set_playback_controller_cb_);
+  set_playback_controller_cb_ = std::move(callback);
+
   CHECK(mojo::FusePipes(std::move(browser_process_renderer_controls),
                         std::move(renderer_process_remote_)));
+  if (!renderer_process_pending_receiver_) {
+    std::move(set_playback_controller_cb_).Run();
+  }
 }
 
 }  // namespace cast_streaming
