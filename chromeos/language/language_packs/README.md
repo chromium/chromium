@@ -13,6 +13,8 @@ The pack is verified, extracted and mounted to the user partition.
 A Mojo API is also provided, in order for clients outside the browser
 process to communicate via IPC.
 
+For the documentation see go/g3d-languagepacks.
+
 ## Sample Usage
 
 In the Browser Process you can install a Language Pack via:
