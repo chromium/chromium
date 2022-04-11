@@ -2516,7 +2516,7 @@
 <translation id="343115368966109153">Завантажити файл <ph name="FILE_NAME" />? Його зможуть бачити всі користувачі пристрою.</translation>
 <translation id="3432227430032737297">Вилучити всі показані</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
-<translation id="3433507769937235446">Блокування за відсутності користувача</translation>
+<translation id="3433507769937235446">Блокувати, коли вас немає поруч</translation>
 <translation id="3433621910545056227">На жаль, системі не вдалося заблокувати атрибути часу встановлення на пристрої.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Якщо ввімкнено також запис Історії додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини. Докладніше про це налаштування читайте на сторінці families.google.com.</translation>

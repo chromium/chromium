@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">არჩეულია ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">შეიყვანეთ განბლოკვის 8-სიმბოლოიანი კოდი</translation>
 <translation id="2712812801627182647">TLS ავტორიზაციის გასაღები</translation>
+<translation id="2717139507051041123">მუქი ფერის რეჟიმის ჩართვა</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2751739896257479635">EAP ავტორიზაციის მე-2 ფაზა</translation>
 <translation id="2783010256799387990">გავლილია</translation>
@@ -376,6 +377,7 @@
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="5252456968953390977">როუმინგი</translation>
+<translation id="5257811368506016604">ღია ფერის რეჟიმის ჩართვა</translation>
 <translation id="5264277876637023664">CPU-ს ტესტის გაშვება</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">რუტინების ხელახლა გაშვება</translation>
@@ -486,6 +488,7 @@
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>
 <translation id="6456394469623773452">კარგი</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ხელახლა სკანირება?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +572,7 @@
 <translation id="7343649194310845056">ქსელური მოწყობილობები</translation>
 <translation id="7359657277149375382">ფაილის ტიპი</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">ეკრანმზოგის შეცვლა</translation>
 <translation id="741244894080940828">გარდაქმნა</translation>
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7656388927906093505">მოწყობილობა არის მაუსი.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7665800271478495366">ავატარის შეცვლა</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@
 <translation id="7994702968232966508">EAP მეთოდი</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ავტომატური ფერის რეჟიმის ჩართვა</translation>
 <translation id="8041089156583427627">გამოხმაურება</translation>
 <translation id="8075838845814659848">დარჩენილი მუხტი</translation>
 <translation id="8082366717211101304">DNS-ის დარეგულირება ვერ მოხერხდა Android აპებიდან</translation>

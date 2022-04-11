@@ -1791,6 +1791,9 @@
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
+<translation id="2959527429632925933">如果此政策不存在（例如对于非受管用户），系统将在终端系统应用中启用 SSH（安全外壳）出站客户端连接功能（默认为 True）。
+      如果用户是受管用户，并且此政策未设置或已停用，系统将在终端中停用该功能。
+      如果此政策已启用，系统会允许受管用户在终端中创建出站客户端 SSH 连接。</translation>
 <translation id="2959898425599642200">代理绕过规则</translation>
 <translation id="2960013482187484833">在打印预览中将上次使用的打印机设为默认选项</translation>
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
@@ -3529,6 +3532,7 @@
 <translation id="4988291787868618635">闲置延迟时间已过时执行的操作</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" />登录凭据不会被用于网络身份验证。</translation>
 <translation id="4996086761250834365">允许进行 <ph name="PLUGIN_VM_NAME" /> 产品分析</translation>
+<translation id="4996161752665479028">启用终端系统应用中的 SSH</translation>
 <translation id="4997074784107449343">在 PDF 文档的打印预览中，“以图片形式打印”选项（若有）默认处于未选中状态。</translation>
 <translation id="500149597848135831">启用所有变体</translation>
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
@@ -4720,6 +4724,7 @@
 <translation id="6368403635025849609">在这些网站上允许 JavaScript</translation>
 <translation id="6371561334154580937">在用户关闭最后一个窗口时显示让用户确认退出登录的对话框。</translation>
 <translation id="6372105930898423193">允许重新启用 AppCache 功能，即使此功能默认处于关闭状态。</translation>
+<translation id="6376540107659524656">停用终端系统应用中的 SSH</translation>
 <translation id="6376659517206731212">可强制执行</translation>
 <translation id="6377031865393559909">允许用户使用桌面模板</translation>
 <translation id="6378076389057087301">指定音频活动是否影响电源管理</translation>
@@ -5810,6 +5815,7 @@
 <translation id="7529332889403151669">指定当设备从睡眠状态或暗屏幕恢复时是否应显示全屏提醒。
 
       如果此政策未设置或设为 True，系统会显示一条提醒，以提醒用户在输入密码之前先退出全屏。如果此政策设为 False，系统将不会显示任何提醒。</translation>
+<translation id="7531630046107845550">允许终端系统应用中的 SSH 出站客户端连接</translation>
 <translation id="7534199150025803530">此政策对 Android 版“Google 云端硬盘”应用没有任何影响。如果您想阻止通过移动网络连接使用 Google 云端硬盘，则应禁止安装 Android 版“Google 云端硬盘”应用。</translation>
 <translation id="7538583957913002726">此政策默认处于已启用状态。它可让控制已注册的设备，使其报告 CPU 的型号名称、架构和最快时钟速度（对于 M96 及更高版本，还会报告 CPU 利用率和温度）。
 

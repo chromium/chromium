@@ -494,6 +494,7 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5339316356165661760">Включить синхронизацию</translation>
 <translation id="5360976571138293719">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделе <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Ваши подписки появятся здесь</translation>
 <translation id="5388358297987318779">Открыть изображение</translation>
 <translation id="5407969256130905701">Сбросить изменения</translation>
 <translation id="5416022985862681400">Последние 7 дней</translation>
@@ -611,6 +612,7 @@
 <translation id="6344783595350022745">Очистить</translation>
 <translation id="6346549652287021269">Скачать новый файл?</translation>
 <translation id="634878792104344809">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах.</translation>
+<translation id="6361848730467328243">Подписаться на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нет открытых вкладок инкогнито</translation>
 <translation id="6363526231572697780">Имя пользователя не указано</translation>
 <translation id="6366190659675876144">Стандартная защита</translation>
@@ -648,6 +650,7 @@
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6530992499366869131">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Откройте сайт и выберите "Подписаться" в меню Google Chrome.</translation>
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6583087784430677195">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Автозаполнение паролей".</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
