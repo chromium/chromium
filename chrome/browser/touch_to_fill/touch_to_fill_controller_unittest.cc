@@ -61,6 +61,10 @@ class MockPasswordManagerClient
               StartSubmissionTrackingAfterTouchToFill,
               (const std::u16string& filled_username),
               (override));
+  MOCK_METHOD(void,
+              NavigateToManagePasswordsPage,
+              (password_manager::ManagePasswordsReferrer),
+              (override));
 };
 
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
@@ -536,6 +540,41 @@ TEST_F(TouchToFillControllerTest, Dismiss) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.Outcome",
       TouchToFillController::TouchToFillOutcome::kSheetDismissed, 1);
+}
+
+TEST_F(TouchToFillControllerTest, ManagePasswordsSelected) {
+  std::unique_ptr<MockTouchToFillView> mock_view =
+      std::make_unique<MockTouchToFillView>();
+  MockTouchToFillView* weak_view = mock_view.get();
+  touch_to_fill_controller().set_view(std::move(mock_view));
+
+  UiCredential credentials[] = {
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+
+  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                               ElementsAreArray(credentials),
+                               /*trigger_submission=*/false));
+  touch_to_fill_controller().Show(
+      credentials, driver().AsWeakPtr(),
+      autofill::mojom::SubmissionReadinessState::kNoInformation);
+
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(client(),
+              NavigateToManagePasswordsPage(
+                  password_manager::ManagePasswordsReferrer::kTouchToFill));
+
+  touch_to_fill_controller().OnManagePasswordsSelected();
+
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kManagePasswordsSelected, 1);
+
+  auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  test_recorder().ExpectEntryMetric(
+      entries[0], UkmBuilder::kUserActionName,
+      static_cast<int64_t>(
+          TouchToFillController::UserAction::kSelectedManagePasswords));
 }
 
 TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
