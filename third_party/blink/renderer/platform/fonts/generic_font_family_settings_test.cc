@@ -26,4 +26,66 @@ TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
   }
 }
 
+TEST(GenericFontFamilySettingsTest, TestAllNames) {
+  GenericFontFamilySettings settings;
+
+  EXPECT_TRUE(settings.Standard().IsEmpty());
+  EXPECT_TRUE(settings.Fixed().IsEmpty());
+  EXPECT_TRUE(settings.Serif().IsEmpty());
+  EXPECT_TRUE(settings.SansSerif().IsEmpty());
+  EXPECT_TRUE(settings.Cursive().IsEmpty());
+  EXPECT_TRUE(settings.Fantasy().IsEmpty());
+
+  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
+
+  settings.UpdateStandard("CustomStandard");
+  settings.UpdateFixed("CustomFixed");
+  settings.UpdateSerif("CustomSerif");
+  settings.UpdateSansSerif("CustomSansSerif");
+  settings.UpdateCursive("CustomCursive");
+  settings.UpdateFantasy("CustomFantasy");
+
+  settings.UpdateStandard("CustomArabicStandard", USCRIPT_ARABIC);
+  settings.UpdateFixed("CustomArabicFixed", USCRIPT_ARABIC);
+  settings.UpdateSerif("CustomArabicSerif", USCRIPT_ARABIC);
+  settings.UpdateSansSerif("CustomArabicSansSerif", USCRIPT_ARABIC);
+  settings.UpdateCursive("CustomArabicCursive", USCRIPT_ARABIC);
+  settings.UpdateFantasy("CustomArabicFantasy", USCRIPT_ARABIC);
+
+  EXPECT_EQ("CustomStandard", settings.Standard());
+  EXPECT_EQ("CustomFixed", settings.Fixed());
+  EXPECT_EQ("CustomSerif", settings.Serif());
+  EXPECT_EQ("CustomSansSerif", settings.SansSerif());
+  EXPECT_EQ("CustomCursive", settings.Cursive());
+  EXPECT_EQ("CustomFantasy", settings.Fantasy());
+
+  EXPECT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicFixed", settings.Fixed(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicSerif", settings.Serif(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicSansSerif", settings.SansSerif(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicCursive", settings.Cursive(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicFantasy", settings.Fantasy(USCRIPT_ARABIC));
+
+  settings.Reset();
+
+  EXPECT_TRUE(settings.Standard().IsEmpty());
+  EXPECT_TRUE(settings.Fixed().IsEmpty());
+  EXPECT_TRUE(settings.Serif().IsEmpty());
+  EXPECT_TRUE(settings.SansSerif().IsEmpty());
+  EXPECT_TRUE(settings.Cursive().IsEmpty());
+  EXPECT_TRUE(settings.Fantasy().IsEmpty());
+
+  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
+}
+
 }  // namespace blink
