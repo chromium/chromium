@@ -46,46 +46,46 @@ suite('AppManagementPageTests', () => {
 
   test('App list renders on page change', async () => {
     await fakeHandler.addApp();
-    expectEquals(1, getAppListChildren());
+    assertEquals(1, getAppListChildren());
     await fakeHandler.addApp();
-    expectEquals(2, getAppListChildren());
+    assertEquals(2, getAppListChildren());
   });
 
   test('No Apps Found Label', async () => {
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     const app = await fakeHandler.addApp();
-    expectEquals(1, getAppListChildren());
-    expectTrue(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(1, getAppListChildren());
+    assertTrue(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     fakeHandler.uninstall(app.id);
     await flushTasks();
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
   });
 
   test('App list filters when searching', async () => {
     await fakeHandler.addApp(null, {title: 'slides'});
     await fakeHandler.addApp(null, {title: 'calculator'});
     const sheets = await fakeHandler.addApp(null, {title: 'sheets'});
-    expectEquals(3, getAppListChildren());
+    assertEquals(3, getAppListChildren());
 
     appManagementPage.searchTerm = 's';
     await flushTasks();
-    expectEquals(2, getAppListChildren());
+    assertEquals(2, getAppListChildren());
 
     fakeHandler.uninstall(sheets.id);
     await flushTasks();
-    expectEquals(1, getAppListChildren());
+    assertEquals(1, getAppListChildren());
 
     appManagementPage.searchTerm = 'ss';
     await flushTasks();
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     appManagementPage.searchTerm = '';
     await flushTasks();
-    expectEquals(2, getAppListChildren());
+    assertEquals(2, getAppListChildren());
   });
 });

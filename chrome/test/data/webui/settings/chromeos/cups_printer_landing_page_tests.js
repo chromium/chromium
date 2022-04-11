@@ -438,8 +438,8 @@ suite('CupsSavedPrintersTests', function() {
           addressField.value = expectedAddress;
           addressField.fire('input');
 
-          expectFalse(editDialog.$$('.cancel-button').hidden);
-          expectFalse(editDialog.$$('.action-button').hidden);
+          assertFalse(editDialog.$$('.cancel-button').hidden);
+          assertFalse(editDialog.$$('.action-button').hidden);
 
           flush();
 
@@ -1545,7 +1545,7 @@ suite('CupsEnterprisePrintersTests', function() {
 
           // Users are not allowed to remove enterprise printers.
           const removeButton = enterprisePrintersElement.$$('#removeButton');
-          expectTrue(removeButton.disabled);
+          assertTrue(removeButton.disabled);
 
           clickButton(enterprisePrinterEntries[0].$$('.icon-more-vert'));
           clickButton(enterprisePrintersElement.$$('#viewButton'));
@@ -1556,23 +1556,23 @@ suite('CupsEnterprisePrintersTests', function() {
 
           const nameField = editDialog.$$('.printer-name-input');
           assertTrue(!!nameField);
-          expectEquals('test1', nameField.value);
-          expectTrue(nameField.readonly);
+          assertEquals('test1', nameField.value);
+          assertTrue(nameField.readonly);
 
-          expectTrue(editDialog.$$('#printerAddress').readonly);
-          expectTrue(editDialog.$$('.md-select').disabled);
-          expectTrue(editDialog.$$('#printerQueue').readonly);
-          expectTrue(editDialog.$$('#printerPPDManufacturer').readonly);
+          assertTrue(editDialog.$$('#printerAddress').readonly);
+          assertTrue(editDialog.$$('.md-select').disabled);
+          assertTrue(editDialog.$$('#printerQueue').readonly);
+          assertTrue(editDialog.$$('#printerPPDManufacturer').readonly);
 
           // The "specify PDD" section should be hidden.
-          expectTrue(editDialog.$$('.browse-button').parentElement.hidden);
-          expectTrue(editDialog.$$('#ppdLabel').hidden);
+          assertTrue(editDialog.$$('.browse-button').parentElement.hidden);
+          assertTrue(editDialog.$$('#ppdLabel').hidden);
 
           // Save and Cancel buttons should be hidden. Close button should be
           // visible.
-          expectTrue(editDialog.$$('.cancel-button').hidden);
-          expectTrue(editDialog.$$('.action-button').hidden);
-          expectFalse(editDialog.$$('.close-button').hidden);
+          assertTrue(editDialog.$$('.cancel-button').hidden);
+          assertTrue(editDialog.$$('.action-button').hidden);
+          assertFalse(editDialog.$$('.close-button').hidden);
         });
   });
 

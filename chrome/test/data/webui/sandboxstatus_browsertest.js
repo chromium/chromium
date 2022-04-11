@@ -49,8 +49,8 @@ TEST_F(
       var suidyes = document.body.innerText.match(sandboxsuidstring);
 
       // Exactly one of the namespace or suid sandbox should be enabled.
-      expectTrue(suidyes !== null || namespaceyes !== null);
-      expectFalse(suidyes !== null && namespaceyes !== null);
+      assertTrue(suidyes !== null || namespaceyes !== null);
+      assertFalse(suidyes !== null && namespaceyes !== null);
     });
 
 // The seccomp-bpf sandbox is also not compatible with ASAN.
@@ -71,9 +71,9 @@ TEST_F('SandboxStatusUITest', 'MAYBE_testBPFSandboxEnabled', function() {
   var bpfyes = document.body.innerText.match(bpfyesstring);
   var bpfno = document.body.innerText.match(bpfnostring);
 
-  expectEquals(null, bpfno);
+  assertEquals(null, bpfno);
   assertFalse(bpfyes === null);
-  expectEquals(bpfyesstring, bpfyes[0]);
+  assertEquals(bpfyesstring, bpfyes[0]);
 });
 
 /**
@@ -116,8 +116,8 @@ TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
         let gpuyes = addedNode.innerText.match(gpuyesstring);
         let gpuno = addedNode.innerText.match(gpunostring);
         if (gpuyes || gpuno) {
-          expectEquals(null, gpuno);
-          expectTrue(gpuyes && (gpuyes[0] === gpuyesstring));
+          assertEquals(null, gpuno);
+          assertTrue(gpuyes && (gpuyes[0] === gpuyesstring));
           testDone();
         }
       }
@@ -161,13 +161,13 @@ TEST_F('SandboxStatusWindowsUITest', 'MAYBE_testSandboxStatus', function() {
   var sandboxMitigations = 'platformMitigations';
 
   var titleyes = document.body.innerText.match(sandboxTitle);
-  expectTrue(titleyes !== null);
+  assertTrue(titleyes !== null);
 
   var rawNode = document.getElementById('raw-info');
   var policiesyes = rawNode.innerText.match(sandboxPolicies);
-  expectTrue(policiesyes !== null);
+  assertTrue(policiesyes !== null);
   var mitigationsyes = rawNode.innerText.match(sandboxMitigations);
-  expectTrue(mitigationsyes !== null);
+  assertTrue(mitigationsyes !== null);
 
   testDone();
 });

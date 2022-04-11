@@ -281,7 +281,7 @@ suite('AppsPageTests', function() {
       assertTrue(AppManagementShown());
       assertTrue(AndroidAppsShown());
       assertTrue(RestoreAppsOnStartupShown());
-      expectEquals(3, appsPage.onStartupOptions_.length);
+      assertEquals(3, appsPage.onStartupOptions_.length);
     });
 
     test('App notification row', async () => {

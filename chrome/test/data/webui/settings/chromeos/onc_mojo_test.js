@@ -8,10 +8,10 @@ const mojom = chromeos.networkConfig.mojom;
 
 suite('OncMojoTest', () => {
   test('Serialize Domain Suffix Match', () => {
-    expectEquals(OncMojo.serializeDomainSuffixMatch([]), '');
-    expectEquals(
+    assertEquals(OncMojo.serializeDomainSuffixMatch([]), '');
+    assertEquals(
         OncMojo.serializeDomainSuffixMatch(['example.com']), 'example.com');
-    expectEquals(
+    assertEquals(
         OncMojo.serializeDomainSuffixMatch(
             ['example1.com', 'example2.com', 'example3.com']),
         'example1.com;example2.com;example3.com');
@@ -28,12 +28,12 @@ suite('OncMojoTest', () => {
     expectEqualValues('example;', ['example']);
     expectEqualValues('example1;example2', ['example1', 'example2']);
     // '#' is a non-RFC compliant DNS character.
-    expectEquals(OncMojo.deserializeDomainSuffixMatch('example#'), null);
+    assertEquals(OncMojo.deserializeDomainSuffixMatch('example#'), null);
   });
 
   test('Serialize Subject Alternative Name Match', () => {
-    expectEquals(OncMojo.serializeSubjectAltNameMatch([]), '');
-    expectEquals(
+    assertEquals(OncMojo.serializeSubjectAltNameMatch([]), '');
+    assertEquals(
         OncMojo.serializeSubjectAltNameMatch([
           {type: mojom.SubjectAltName_Type.kEmail, value: 'test@example.com'},
           {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'}
@@ -53,13 +53,13 @@ suite('OncMojoTest', () => {
       {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'}
     ]);
     // Malformed SAN entry.
-    expectEquals(
+    assertEquals(
         OncMojo.deserializeSubjectAltNameMatch('EMAILtest@example.com'), null);
     // Incorrect SAN type.
-    expectEquals(
+    assertEquals(
         OncMojo.deserializeSubjectAltNameMatch('E:test@example.com'), null);
     // Non-RFC compliant character.
-    expectEquals(
+    assertEquals(
         OncMojo.deserializeSubjectAltNameMatch('EMAIL:test@exa\'mple.com'),
         null);
   });

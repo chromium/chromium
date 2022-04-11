@@ -63,7 +63,7 @@ suite('<app-management-app>', () => {
     fakeHandler.addApp()
         .then(() => {
           numApps = 1;
-          expectEquals(numApps, appList.numChildrenForTesting_);
+          assertEquals(numApps, appList.numChildrenForTesting_);
 
           // Click app to go to detail page.
           appList.querySelector('app-management-app-item').click();
@@ -76,7 +76,7 @@ suite('<app-management-app>', () => {
           numApps++;
 
           appList.addEventListener('num-children-for-testing_-changed', () => {
-            expectEquals(numApps, appList.numChildrenForTesting_);
+            assertEquals(numApps, appList.numChildrenForTesting_);
             done();
           });
 
@@ -91,29 +91,29 @@ suite('<app-management-app>', () => {
 
   test('Search from main page', async () => {
     await navigateTo('/');
-    expectTrue(isMainViewShown());
+    assertTrue(isMainViewShown());
 
     await searchApps('o');
-    expectTrue(isSearchViewShown());
-    expectEquals('/?q=o', getCurrentUrlSuffix());
+    assertTrue(isSearchViewShown());
+    assertEquals('/?q=o', getCurrentUrlSuffix());
 
     await searchApps('');
-    expectTrue(isMainViewShown());
-    expectEquals('/', getCurrentUrlSuffix());
+    assertTrue(isMainViewShown());
+    assertEquals('/', getCurrentUrlSuffix());
   });
 
   test('Search from detail page', async () => {
     await fakeHandler.addApp();
 
     await navigateTo('/detail?id=0');
-    expectTrue(isDetailViewShown());
+    assertTrue(isDetailViewShown());
 
     await searchApps('o');
-    expectTrue(isSearchViewShown());
-    expectEquals('/detail?id=0&q=o', getCurrentUrlSuffix());
+    assertTrue(isSearchViewShown());
+    assertEquals('/detail?id=0&q=o', getCurrentUrlSuffix());
 
     await searchApps('');
-    expectTrue(isDetailViewShown());
-    expectEquals('/detail?id=0', getCurrentUrlSuffix());
+    assertTrue(isDetailViewShown());
+    assertEquals('/detail?id=0', getCurrentUrlSuffix());
   });
 });

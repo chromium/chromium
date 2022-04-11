@@ -43,7 +43,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Web App');
@@ -71,7 +71,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Android App');
@@ -99,7 +99,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Chrome App');
@@ -128,7 +128,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Chrome App installed from Chrome Web Store');
@@ -156,7 +156,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Android App installed from <a href="#">Google Play Store</a>');
@@ -183,7 +183,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'System App');
@@ -210,7 +210,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Chrome OS System App');
@@ -237,7 +237,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#version').textContent.trim(),
         'Version: 17.2');
   });
@@ -263,7 +263,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    expectEquals(
+    assertEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 13.1.52');
   });

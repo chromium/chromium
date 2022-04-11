@@ -6,12 +6,12 @@
  * @fileoverview The way these tests work is as follows:
  * C++ in net_internals_ui_browsertest.cc does any necessary setup, and then
  * calls the entry point for a test with RunJavascriptTest.  The called
- * function can then use the assert/expect functions defined in test_api.js.
+ * function can then use the assert functions defined in test_api.js.
  * All callbacks from the browser are wrapped in such a way that they can
- * also use the assert/expect functions.
+ * also use the assert functions.
  *
  * A test ends when testDone is called.  This can be done by the test itself,
- * but will also be done by the test framework when an assert/expect test fails
+ * but will also be done by the test framework when an assert test fails
  * or an exception is thrown.
  */
 GEN_INCLUDE(

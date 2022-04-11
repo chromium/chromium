@@ -26,7 +26,7 @@ TEST_F('NotificationsCustomBindingsTest', 'TestImageDataSetter', function () {
   var k = "key";
   var callback = imageDataSetter(c, k);
   callback('val');
-  expectTrue(c[k] === 'val');
+  assertTrue(c[k] === 'val');
 });
 
 TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecs', function () {
@@ -40,7 +40,7 @@ TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecs', function () {
   var notificationDetails = {};
 
   var emptySpecs = getUrlSpecs(imageSizes, notificationDetails);
-  expectTrue(emptySpecs.length === 0);
+  assertTrue(emptySpecs.length === 0);
 
   notificationDetails.iconUrl = "iconUrl";
   notificationDetails.imageUrl = "imageUrl";
@@ -49,27 +49,27 @@ TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecs', function () {
     {iconUrl: "buttonTwoIconUrl"}];
 
   var allSpecs = getUrlSpecs(imageSizes, notificationDetails);
-  expectTrue(allSpecs.length === 4);
+  assertTrue(allSpecs.length === 4);
 
-  expectFalse(notificationDetails.iconBitmap === "test");
-  expectFalse(notificationDetails.imageBitmap === "test");
-  expectFalse(notificationDetails.buttons[0].iconBitmap === "test");
-  expectFalse(notificationDetails.buttons[1].iconBitmap === "test");
+  assertFalse(notificationDetails.iconBitmap === "test");
+  assertFalse(notificationDetails.imageBitmap === "test");
+  assertFalse(notificationDetails.buttons[0].iconBitmap === "test");
+  assertFalse(notificationDetails.buttons[1].iconBitmap === "test");
 
   for (var i = 0; i < allSpecs.length; i++) {
     var expectedKeys = ['path', 'width', 'height', 'callback'];
     var spec = allSpecs[i];
     for (var j in expectedKeys) {
-      expectTrue(spec.hasOwnProperty(expectedKeys[j]));
+      assertTrue(spec.hasOwnProperty(expectedKeys[j]));
     }
     spec.callback(spec.path + "|" + spec.width + "|" + spec.height);
   }
 
-  expectTrue(notificationDetails.iconBitmap === "iconUrl|10|10");
-  expectTrue(notificationDetails.imageBitmap === "imageUrl|24|32");
-  expectTrue(
+  assertTrue(notificationDetails.iconBitmap === "iconUrl|10|10");
+  assertTrue(notificationDetails.imageBitmap === "imageUrl|24|32");
+  assertTrue(
       notificationDetails.buttons[0].iconBitmap === "buttonOneIconUrl|2|2");
-  expectTrue(
+  assertTrue(
       notificationDetails.buttons[1].iconBitmap === "buttonTwoIconUrl|2|2");
 });
 
@@ -95,10 +95,10 @@ TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecsScaled', function () {
     spec.callback(spec.path + "|" + spec.width + "|" + spec.height);
   }
 
-  expectEquals(notificationDetails.iconBitmap, "iconUrl|20|20");
-  expectEquals(notificationDetails.imageBitmap, "imageUrl|48|64");
-  expectEquals(notificationDetails.buttons[0].iconBitmap,
+  assertEquals(notificationDetails.iconBitmap, "iconUrl|20|20");
+  assertEquals(notificationDetails.imageBitmap, "imageUrl|48|64");
+  assertEquals(notificationDetails.buttons[0].iconBitmap,
                "buttonOneIconUrl|4|4");
-  expectEquals(notificationDetails.buttons[1].iconBitmap,
+  assertEquals(notificationDetails.buttons[1].iconBitmap,
                "buttonTwoIconUrl|4|4");
 });

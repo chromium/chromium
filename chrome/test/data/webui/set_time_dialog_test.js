@@ -131,13 +131,13 @@ suite('SetTimeDialog', function() {
   test('SystemTimezoneChanged', () => {
     const timezoneSelect = setTimeElement.$$('#timezoneSelect');
     assertTrue(!!timezoneSelect);
-    expectEquals('America/Sao_Paulo', timezoneSelect.value);
+    assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
     cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
-    expectEquals('America/Los_Angeles', timezoneSelect.value);
+    assertEquals('America/Los_Angeles', timezoneSelect.value);
 
     cr.webUIListenerCallback('system-timezone-changed', 'Asia/Seoul');
-    expectEquals('Asia/Seoul', timezoneSelect.value);
+    assertEquals('Asia/Seoul', timezoneSelect.value);
   });
 
   // Disabled for flake. https://crbug.com/1043598
@@ -150,7 +150,7 @@ suite('SetTimeDialog', function() {
 
     const timezoneSelect = setTimeElement.$$('#timezoneSelect');
     assertTrue(!!timezoneSelect);
-    expectEquals('America/Sao_Paulo', timezoneSelect.value);
+    assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
     // Simulate the user changing the time by forwarding it 15 minutes.
     const originalTime = dateInput.valueAsDate;
@@ -162,7 +162,7 @@ suite('SetTimeDialog', function() {
 
     // Simulate the user changing the time zone.
     cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
-    expectEquals('America/Los_Angeles', timezoneSelect.value);
+    assertEquals('America/Los_Angeles', timezoneSelect.value);
 
     // Make sure that time on input field was updated.
     const updatedTimeAndTimezone = dateInput.valueAsDate;
@@ -170,7 +170,7 @@ suite('SetTimeDialog', function() {
     // updatedTimeAndTimezone reflects the new timezone so it should be
     // smaller, because it is more to the west than the original
     // one, therefore even with the 15 minutes forwarded it should be smaller.
-    expectGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
+    assertGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
 
     // Close the dialog.
     setTimeElement.$$('#doneButton').click();
@@ -185,10 +185,10 @@ suite('SetTimeDialog', function() {
     // timeInSeconds should be bigger, because this timestamp is seconds
     // since epoch and it does not hold any information regarding the
     // current timezone.
-    expectGT(timeInSeconds, todaySeconds);
+    assertGT(timeInSeconds, todaySeconds);
 
     const newTimezone = await testBrowserProxy.whenCalled('setTimezone');
-    expectEquals('America/Los_Angeles', newTimezone);
+    assertEquals('America/Los_Angeles', newTimezone);
   });
 
   suite('HideTimezone', () => {
