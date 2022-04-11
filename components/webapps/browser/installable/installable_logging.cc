@@ -73,6 +73,8 @@ static const char kWarnNotOfflineCapable[] =
     "https://goo.gle/improved-pwa-offline-detection for more information.";
 static const char kPipelineRestarted[] =
     "Web app uninstalled so that it stops any running pipeline";
+static const char kManifestUrlSchemeNotSupportedForWebApkMessage[] =
+    "The Manifest URL scheme is not supported on Android.";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
@@ -108,6 +110,8 @@ static const char kManifestDisplayOverrideNotSupportedId[] =
     "manifest-display-override-not-supported";
 static const char kWarnNotOfflineCapableId[] = "warn-not-offline-capable";
 static const char kPipelineRestartedId[] = "pipeline-restarted";
+static const char kManifestUrlSchemeNotSupportedForWebApkId[] =
+    "scheme-not-supported-for-webapk";
 
 const std::string& GetMessagePrefix() {
   static base::NoDestructor<std::string> message_prefix(
@@ -219,6 +223,9 @@ std::string GetErrorMessage(InstallableStatusCode code) {
       break;
     case PIPELINE_RESTARTED:
       message = kPipelineRestarted;
+      break;
+    case MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK:
+      message = kManifestUrlSchemeNotSupportedForWebApkMessage;
       break;
   }
 
@@ -332,6 +339,9 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case PIPELINE_RESTARTED:
       error_id = kPipelineRestartedId;
+      break;
+    case MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK:
+      error_id = kManifestUrlSchemeNotSupportedForWebApkId;
       break;
   }
   error.error_id = error_id;
