@@ -11,6 +11,10 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#endif
+
 // This file contains helper functions for testing profile UIs, in particular,
 // the profile picker.
 namespace profiles::testing {
@@ -35,6 +39,11 @@ void WaitForPickerClosed();
 void ExpectPickerWelcomeScreenTypeAndProceed(
     EnterpriseProfileWelcomeUI::ScreenType expected_type,
     signin::SigninChoice choice);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void CompleteLacrosFirstRun(
+    LoginUIService::SyncConfirmationUIClosedResult result);
+#endif
 
 }  // namespace profiles::testing
 

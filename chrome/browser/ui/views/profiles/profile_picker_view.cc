@@ -227,6 +227,15 @@ bool ProfilePicker::IsOpen() {
   return g_profile_picker_view;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+bool ProfilePicker::IsLacrosFirstRunOpen() {
+  return ProfilePicker::IsOpen() &&
+         g_profile_picker_view->params_.entry_point() ==
+             ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun;
+}
+#endif
+
 bool ProfilePicker::IsActive() {
   if (!IsOpen())
     return false;

@@ -13,6 +13,10 @@
 #error This file should only be included on lacros.
 #endif
 
+// Task to run after the FRE is exited, with `proceed` indicating whether it
+// should be aborted or resumed.
+using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
+
 // Returns whether the primary (main) profile first run experience (including
 // sync promo) should be opened on startup.
 bool ShouldOpenPrimaryProfileFirstRun();
@@ -26,13 +30,13 @@ bool ShouldOpenPrimaryProfileFirstRun();
 //    asynchronously 'finishes' the flow (sets a flag in the local prefs) once
 //    the user chooses any action on the sync consent screen. If the user exits
 //    the FRE UI via the generic 'Close window' affordances, it is interpreted
-//    as an intent to exit the app and `callback` will not be called. If they
-//    exit it via the dedicated options in the flow, it will be considered
-//    'completed' and `callback` will be run. If the FRE flow is exited before
-//    the sync consent screen, the flow is considered 'aborted', and can be
-//    shown again at the next startup.
-// When this method is called again while FRE is in progress, it only activates
-// the FRE window and drops the new callback.
-void OpenPrimaryProfileFirstRunIfNeeded(base::OnceClosure callback);
+//    as an intent to exit the app and `callback` will be called with `proceed`
+//    set to false. If they exit it via the dedicated options in the flow, it
+//    will be considered 'completed' and `callback` will be run with `proceed`
+//    set to true. If the FRE flow is exited before the sync consent screen, the
+//    flow is considered 'aborted', and can be shown again at the next startup.
+// When this method is called again while FRE is in progress, the new `callback`
+// is aborted (called with false) right away.
+void OpenPrimaryProfileFirstRunIfNeeded(ResumeTaskCallback callback);
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_LACROS_H_

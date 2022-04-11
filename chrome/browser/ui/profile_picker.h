@@ -240,6 +240,12 @@ class ProfilePicker {
   // Returns whether the profile picker is currently open.
   static bool IsOpen();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns whether the profile picker is currently open and showing the Lacros
+  // First Run Experience.
+  static bool IsLacrosFirstRunOpen();
+#endif
+
   // Returns whether the Profile picker is showing and active.
   static bool IsActive();
 

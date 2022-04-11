@@ -581,7 +581,11 @@ void OpenNewWindowForFirstRun(
     const std::vector<GURL>& first_run_urls,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
+    bool proceed) {
+  if (!proceed)
+    return;
+
   StartupBrowserCreator browser_creator;
   browser_creator.AddFirstRunTabs(first_run_urls);
   browser_creator.LaunchBrowser(command_line, profile, cur_dir, process_startup,

@@ -70,6 +70,16 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, LaunchWithFiles);
 
   void OnReady();
+  void ExecuteContextMenuCommandInternal(
+      const std::string& app_id,
+      const std::string& id,
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          launch_finished_callback);
+  void LaunchInternal(
+      const std::string& app_id,
+      apps::AppLaunchParams params,
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          launch_finished_callback);
 
   // crosapi::mojom::AppController:
   void Uninstall(const std::string& app_id,
@@ -107,7 +117,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
       absl::optional<bool> accessing_microphone) override;
 
   void ReturnLaunchResults(
-      LaunchCallback callback,
+      base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback,
       const std::vector<content::WebContents*>& web_contents);
 
   const WebApp* GetWebApp(const AppId& app_id) const;

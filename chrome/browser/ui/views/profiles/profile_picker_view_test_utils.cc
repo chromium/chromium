@@ -22,6 +22,14 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
@@ -128,5 +136,40 @@ void ExpectPickerWelcomeScreenTypeAndProceed(
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void CompleteLacrosFirstRun(
+    LoginUIService::SyncConfirmationUIClosedResult result) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+
+  WaitForPickerWidgetCreated();
+  WaitForPickerLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+
+  ASSERT_TRUE(ProfilePicker::IsLacrosFirstRunOpen());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  ExpectPickerWelcomeScreenTypeAndProceed(
+      /*expected_type=*/
+      EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome,
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+  WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"),
+      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
+       absl::optional<SkColor>()}));
+
+  if (result == LoginUIService::UI_CLOSED) {
+    // `UI_CLOSED` is not provided via webui handlers. Instead, it gets sent
+    // when the profile picker gets closed by some external source. If we only
+    // send the result notification like for other types, the view will stay
+    // open.
+    ProfilePicker::Hide();
+  } else {
+    LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
+        result);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace profiles::testing

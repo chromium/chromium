@@ -5,6 +5,7 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
@@ -13,13 +14,17 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/startup/first_run_lacros.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -29,6 +34,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -416,4 +422,91 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+}
+
+// Tests for lacros-chrome that require `LacrosNonSyncingProfiles` to be
+// enabled.
+class BrowserServiceLacrosNonSyncingProfilesBrowserTest
+    : public BrowserServiceLacrosBrowserTest {
+ public:
+  // BrowserServiceLacrosBrowserTest:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    BrowserServiceLacrosBrowserTest::SetUpDefaultCommandLine(command_line);
+    if (GetTestPreCount() == 0) {
+      // The kNoStartupWindow is applied when launching lacros-chrome with the
+      // kDoNotOpenWindow initial browser action.
+      command_line->AppendSwitch(switches::kNoStartupWindow);
+
+      // Show the FRE in these tests. We only disable the FRE for PRE_ tests
+      // (with GetTestPreCount() == 1) as we need the general set up to run
+      // and finish registering a signed in account with the primary profile. It
+      // will then be available to the subsequent steps of the test.
+      command_line->RemoveSwitch(switches::kNoFirstRun);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kLacrosNonSyncingProfiles};
+  profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
+      non_enterprise_domain_setter_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       PRE_NewWindow_OpensFirstRun) {
+  // Dummy case to set up the primary profile.
+}
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       NewWindow_OpensFirstRun) {
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  base::RunLoop run_loop;
+  browser_service()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/false,
+      /*callback=*/run_loop.QuitClosure());
+  profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       PRE_NewWindow_OpensFirstRun_UiClose) {
+  // Dummy case to set up the primary profile.
+}
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       NewWindow_OpensFirstRun_UiClose) {
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  base::RunLoop run_loop;
+  browser_service()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/false,
+      /*callback=*/run_loop.QuitClosure());
+  profiles::testing::CompleteLacrosFirstRun(LoginUIService::UI_CLOSED);
+
+  run_loop.Run();
+
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       PRE_NewTab_OpensFirstRun) {
+  // Dummy case to set up the primary profile.
+}
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
+                       NewTab_OpensFirstRun) {
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  base::RunLoop run_loop;
+  browser_service()->NewTab(
+      /*callback=*/run_loop.QuitClosure());
+  profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }

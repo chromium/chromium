@@ -31,32 +31,30 @@ namespace {
 // `original_intent_callback` should be run to allow the caller to resume what
 // they were trying to do before they stopped to show the FRE. If the FRE's
 // `status` is not `ProfilePicker::FirstRunExitStatus::kCompleted`, that
-// `original_intent_callback` will not be executed. `post_first_run_callback`
-// will be executed for completed flows, to perform tasks that the FRE requires
-// after the interrupted task is resumed.
-void OnFirstRunHasExited(base::OnceClosure original_intent_callback,
+// `original_intent_callback` will be called with `proceed` set to false,
+// otherwise it will be called with true. `post_first_run_callback` will be
+// executed for completed flows, to perform tasks that the FRE requires after
+// the interrupted task is resumed.
+void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
                          ProfilePicker::FirstRunExitStatus status,
                          base::OnceClosure post_first_run_callback) {
-  // The user aborted the FRE, we don't proceed with the original intent.
-  if (status == ProfilePicker::FirstRunExitStatus::kQuitEarly)
-    return;
+  if (status != ProfilePicker::FirstRunExitStatus::kQuitEarly) {
+    // The user got to the last step, we can mark the FRE as finished, whether
+    // we eventually proceed with the original intent or not.
+    PrefService* local_state = g_browser_process->local_state();
+    local_state->SetBoolean(lacros_prefs::kPrimaryProfileFirstRunFinished,
+                            true);
+  }
 
-  // The user got to the last step, we can mark the FRE as finished, even if we
-  // know a few lines below that they want to close the browser.
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(lacros_prefs::kPrimaryProfileFirstRunFinished, true);
+  bool proceed = status == ProfilePicker::FirstRunExitStatus::kCompleted;
+  std::move(original_intent_callback).Run(proceed);
 
-  if (status == ProfilePicker::FirstRunExitStatus::kQuitAtEnd)
-    return;
-
-  std::move(original_intent_callback).Run();
-
-  if (post_first_run_callback)
+  if (proceed && post_first_run_callback)
     std::move(post_first_run_callback).Run();
 }
 
 void OpenPrimaryProfileFirstRunIfNeededWithProfile(
-    base::OnceClosure& callback,
+    ResumeTaskCallback& callback,
     Profile* profile,
     Profile::CreateStatus create_status) {
   if (create_status != Profile::CreateStatus::CREATE_STATUS_INITIALIZED)
@@ -70,9 +68,16 @@ void OpenPrimaryProfileFirstRunIfNeededWithProfile(
   // profiles.
   if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
           signin::ConsentLevel::kSync)) {
-    OnFirstRunHasExited(std::move(callback),
-                        ProfilePicker::FirstRunExitStatus::kCompleted,
-                        base::OnceClosure());
+    auto exit_status = ProfilePicker::FirstRunExitStatus::kCompleted;
+    if (ProfilePicker::IsLacrosFirstRunOpen()) {
+      // The FRE artificially marks Sync as being consented while it's open, as
+      // it needs to check the sync server for policies, the FRE is not actually
+      // completed. We also can't proceed while the FRE is up, so we just quit.
+      // TODO(https://crbug.com/1300109): The FRE window might be in the
+      // background, or closing... Can these cases be handled better?
+      exit_status = ProfilePicker::FirstRunExitStatus::kQuitEarly;
+    }
+    OnFirstRunHasExited(std::move(callback), exit_status, base::OnceClosure());
     return;
   }
 
@@ -99,7 +104,7 @@ bool ShouldOpenPrimaryProfileFirstRun() {
       lacros_prefs::kPrimaryProfileFirstRunFinished);
 }
 
-void OpenPrimaryProfileFirstRunIfNeeded(base::OnceClosure callback) {
+void OpenPrimaryProfileFirstRunIfNeeded(ResumeTaskCallback callback) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   profile_manager->CreateProfileAsync(
