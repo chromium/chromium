@@ -571,7 +571,10 @@ suite('SearchEnginePageTests', function() {
     page.dispatchEvent(new CustomEvent('edit-search-engine', {
       bubbles: true,
       composed: true,
-      detail: {engine, anchorElement: page.$.addSearchEngine}
+      detail: {
+        engine,
+        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!
+      }
     }));
     return browserProxy.whenCalled('searchEngineEditStarted')
         .then(modelIndex => {
