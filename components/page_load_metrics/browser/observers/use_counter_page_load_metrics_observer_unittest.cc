@@ -9,14 +9,20 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "url/gurl.h"
 
 namespace {
 
 const char kTestUrl[] = "https://www.google.com";
+const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
 using WebFeature = blink::mojom::WebFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using FeatureType = blink::mojom::UseCounterFeatureType;
@@ -44,9 +50,13 @@ const char* GetUseCounterHistogramName(
 }  // namespace
 
 class UseCounterPageLoadMetricsObserverTest
-    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
+    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness,
+      public testing::WithParamInterface<bool> {
  public:
-  UseCounterPageLoadMetricsObserverTest() {}
+  UseCounterPageLoadMetricsObserverTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
 
   UseCounterPageLoadMetricsObserverTest(
       const UseCounterPageLoadMetricsObserverTest&) = delete;
@@ -70,6 +80,18 @@ class UseCounterPageLoadMetricsObserverTest
       const std::vector<blink::UseCounterFeature>& first_features,
       const std::vector<blink::UseCounterFeature>& second_features = {}) {
     NavigateAndCommit(GURL(kTestUrl));
+
+    if (WithFencedFrames()) {
+      content::RenderFrameHost* fenced_frame_root =
+          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendFencedFrame();
+      ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
+
+      auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+          GURL(kFencedFramesUrl), fenced_frame_root);
+      ASSERT_NE(nullptr, simulator);
+      simulator->Commit();
+    }
 
     tester()->SimulateFeaturesUpdate(first_features);
     // Verify that kPageVisits is observed on commit.
@@ -102,13 +124,22 @@ class UseCounterPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   }
+
+  bool WithFencedFrames() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         UseCounterPageLoadMetricsObserverTest,
+                         testing::Bool());
+
+TEST_P(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
   HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebFeature, 0}});
 }
 
-TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
+TEST_P(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
   HistogramBasicTest(
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
@@ -124,7 +155,7 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
       });
 }
 
-TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
+TEST_P(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
   HistogramBasicTest(
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},

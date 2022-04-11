@@ -2464,6 +2464,140 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.UseCounter.FencedFrames.AnimatedCSSProperties"
+    enum="MappedCSSProperties" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.AnimatedCSSProperties, this records usage of
+    animated CSS properties used on a FencedFrame Page. Either statically or
+    dynamically, from the time the page is initialised to when it is closed or
+    navigated away from. Each property is counted at most once per page per view
+    via PageLoadMetricsObserver.
+
+    This histogram counts CSS properties only when they are animated by a CSS
+    Animation. Refer to Blink.UseCounter.FencedFrames.CSSProperties for more
+    details.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.CSSProperties"
+    enum="MappedCSSProperties" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.CSSProperties, this records usage of CSS
+    properties used on a FencedFrame Page. Either statically or dynamically,
+    from the time the page is initialised to when it is closed or navigated away
+    from. Each property is counted at most once per page per view via
+    PageLoadMetricsObserver.
+
+    The first time a CSS property is parsed on a page, the histogram is updated
+    to increment the counter. Each histogram bucket corresponds to a CSS
+    property (eg. width, border-radius). The exception is the 'Total pages
+    measured' bucket - this counts the number of pages that CSS properties were
+    counted on. When a page navigation occurs the page count bucket is
+    incremented and tracking of the set of which properties have been seen is
+    reset.
+
+    These numbers give the percentage of pages that use a CSS property. For
+    example, if the 'border-radius' histogram bucket has a count of 250, and the
+    page count bucket (i.e. bucket number 1) has a count of 1000 - this means
+    that 1000 pages were recorded, and border-radius was used on 25% of those
+    pages.
+
+    Note that CSS properties used inside of SVG images are not tracked.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.Features" enum="FeatureObserver"
+    expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.Features, this counts how many page loads use
+    various features across all frames in a FencedFrame page. The PageVisits
+    bucket is incremented for each page load, and the other buckets incremented
+    at most once per PageVisit via blink::UseCounter and
+    UseCounterPageLoadMetricsObserver.
+
+    Note that this histogram only counts FencedFrames page with HTTP/HTTPS URL
+    scheme. Feature used in pages with other URL schemes are not counted.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.MainFrame.Features"
+    enum="FeatureObserver" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.MainFrame.Features, this counts how many page
+    loads use various features across in the main frame of a FencedFrame page.
+    The PageVisits bucket is incremented at the beginning of each page load and
+    the other buckets incremented at most once per PageVisit via
+    blink::UseCounter and UseCounterPageLoadMetricsObserver throughout the
+    lifetime of a page load metrics observer.
+
+    This histogram counts usage of web features in FencedFrames' main frame
+    only. Refer to Blink.UseCounter.FencedFrames.Features for more details.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2"
+    enum="FeaturePolicyFeature" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.PermissionsPolicy.Allow2, this counts the use of
+    a specific permissions policy feature via the &quot;allow&quot; attribute on
+    iframes under FencedFrames root. Each policy is counted only once per page
+    load. But the page is limited only to FencedFrames pages.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2"
+    enum="FeaturePolicyFeature" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.PermissionsPolicy.Header2, this counts the use
+    of a specific permissions policy feature via both &quot;Feature-Policy&quot;
+    and &quot;Permissions-Policy&quot; HTTP response header. Each policy is
+    counted only once per page load. But the page is limited only to
+    FencedFrames pages.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation.Enforce"
+    enum="FeaturePolicyFeature" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.PermissionsPolicy.Violation.Enforce, this counts
+    the actual enforced permissions policy violation. The metrics is triggered
+    when ExecutionContext::IsFeatureEnabled with ReportOptions::ReportOnFailure
+    as param returns false, at most once per page visit. But the page is limited
+    only to FencedFrames pages.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.FencedFrames.UserAgentOverride"
+    enum="UserAgentOverride" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparc-dev@chromium.org</owner>
+  <summary>
+    Similar to Blink.UseCounter.UserAgentOverride, this measures how often a
+    User-Agent string is overridden, how often that override contains the
+    original User-Agent string, and how often that override is the original
+    User-Agent string with a suffix concatinated to the end. Measured once per
+    navigation request and at most once per page load, either when a resource
+    fetch request is prepared or when navigator.userAgent is accessed, if the UA
+    string has been overridden. But the page is limited only to FencedFrames
+    pages.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UseCounter.File.Features" enum="FeatureObserver"
     expires_after="2021-01-10">
   <owner>yhirano@chromium.org</owner>

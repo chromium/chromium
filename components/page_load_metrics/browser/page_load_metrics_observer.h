@@ -205,7 +205,9 @@ struct ExtraRequestCompleteInfo {
 };
 
 // Interface for PageLoadMetrics observers. All instances of this class are
-// owned by the PageLoadTracker tracking a page load.
+// owned by the PageLoadTracker tracking a page load. The page would be a
+// primary page, Prerendering page, FencedFrames page, or pages for new other
+// features based on MPArch.
 class PageLoadMetricsObserver {
  public:
   // ObservePolicy is used as a return value on some PageLoadMetricsObserver

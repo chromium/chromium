@@ -15,6 +15,7 @@
 
 namespace internal {
 
+// Histogram name definitions for the primary uses.
 const char kFeaturesHistogramName[] = "Blink.UseCounter.Features";
 const char kFeaturesHistogramMainFrameName[] =
     "Blink.UseCounter.MainFrame.Features";
@@ -30,8 +31,30 @@ const char kPermissionsPolicyIframeAttributeHistogramName[] =
 const char kUserAgentOverrideHistogramName[] =
     "Blink.UseCounter.UserAgentOverride";
 
+// Histogram name definitions for FencedFrames page variants.
+// TODO(https://crbug.com/1301880): Generate the name dynamically rather than
+// preparing prefixed names. See review comments at https://crrev.com/c/3573433.
+const char kFeaturesHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.Features";
+const char kFeaturesHistogramFencedFramesMainFrameName[] =
+    "Blink.UseCounter.FencedFrames.MainFrame.Features";
+const char kCssPropertiesHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.CSSProperties";
+const char kAnimatedCssPropertiesHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.AnimatedCSSProperties";
+const char kPermissionsPolicyViolationHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation.Enforce";
+const char kPermissionsPolicyHeaderHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2";
+const char kPermissionsPolicyIframeAttributeHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2";
+const char kUserAgentOverrideHistogramFencedFramesName[] =
+    "Blink.UseCounter.FencedFrames.UserAgentOverride";
+
 }  // namespace internal
 
+// This class reports several use counters coming from Blink.
+// For FencedFrames, it reports the use counters with a "FencedFrames" prefix.
 class UseCounterPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
@@ -45,6 +68,9 @@ class UseCounterPageLoadMetricsObserver
   ~UseCounterPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver.
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
@@ -80,6 +106,9 @@ class UseCounterPageLoadMetricsObserver
   // Records UKM subset of WebFeatures, if the WebFeature is observed in the
   // page.
   void RecordUkmFeatures();
+
+  // Holds true if this instance tracks a FencedFrames page.
+  bool is_in_fenced_frames_page_ = false;
 
   // To keep tracks of which features have been measured.
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
