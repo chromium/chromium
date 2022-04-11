@@ -64,7 +64,7 @@ public class SplashActivity extends Activity {
         if (androidSSplashScreenEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // When launched with a data Intent, the splash screen is created, but
             // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
-            // Fall back to manually creating out own splash screen in that case.
+            // Fall back to manually creating our own splash screen in that case.
             androidSSplashSuccess =
                     SplashUtilsForS.listenForSplashScreen(this, getWindow(), (view, bitmap) -> {
                         mSplashView = view;

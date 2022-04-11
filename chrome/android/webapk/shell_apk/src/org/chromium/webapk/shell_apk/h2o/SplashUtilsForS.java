@@ -12,18 +12,17 @@ import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.drawable.Icon;
+import android.os.Build.VERSION_CODES;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.widget.ImageView;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.WebApkUtils;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /** Contains splash screen related utility methods that require Android S APIs. */
 class SplashUtilsForS {
@@ -35,73 +34,24 @@ class SplashUtilsForS {
         void onSplashScreenShown(View view, Bitmap bitmap);
     }
 
-    /**
-     * A copy of SplashScreen.OnExitAnimationListener for us to use since we're not building with
-     * the Android S SDK.
-     */
-    private interface OnExitAnimationListener {
-        void onSplashScreenExit(View splashView, View iconView);
-    }
-
     /** Registers a listener for the Android S splash screen. */
+    @RequiresApi(api = VERSION_CODES.S)
     public static boolean listenForSplashScreen(
             Activity activity, Window window, SplashscreenShownListener listener) {
-        try {
-            setOnExitAnimationListener(activity, (splashView, iconView) -> {
-                WindowInsets insets = window.getDecorView().getRootWindowInsets();
-                Insets systemBarInsets = insets.getInsets(WindowInsets.Type.systemBars());
+        activity.getSplashScreen().setOnExitAnimationListener(splashView -> {
+            WindowInsets insets = window.getDecorView().getRootWindowInsets();
+            Insets systemBarInsets = insets.getInsets(WindowInsets.Type.systemBars());
 
-                int backgroundColor = WebApkUtils.getColor(
-                        activity.getResources(), R.color.background_color_non_empty);
-                Bitmap bitmap = screenshotSplashScreenView(splashView, iconView, systemBarInsets,
-                        backgroundColor, SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
+            int backgroundColor = WebApkUtils.getColor(
+                    activity.getResources(), R.color.background_color_non_empty);
+            Bitmap bitmap = screenshotSplashScreenView(splashView, splashView.getIconView(),
+                    systemBarInsets, backgroundColor,
+                    SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
 
-                listener.onSplashScreenShown(splashView, bitmap);
-            });
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
-                | IllegalAccessException e) {
-            return false;
-        }
+            listener.onSplashScreenShown(splashView, bitmap);
+        });
 
         return true;
-    }
-
-    private static void setOnExitAnimationListener(Activity activity,
-            OnExitAnimationListener listener) throws ClassNotFoundException, NoSuchMethodException,
-                                                     InvocationTargetException,
-                                                     IllegalAccessException {
-        // The Java reflection that follows maps to:
-        // activity.getSplashScreen().setOnExitAnimationListener(view -> {
-        //     listener.onSplashScreenExit(view, view.getIconView());
-        // });
-
-        Class<?> onExitAnimationListenerInterface =
-                Class.forName("android.window.SplashScreen$OnExitAnimationListener");
-        Object instance = Proxy.newProxyInstance(activity.getClassLoader(),
-                new Class<?>[] {onExitAnimationListenerInterface}, (proxy, method, args) -> {
-                    if (!method.getName().equals("onSplashScreenExit")) return null;
-
-                    try {
-                        View splashView = (View) args[0];
-
-                        Method getIconViewMethod = splashView.getClass().getMethod("getIconView");
-
-                        View iconView = (View) getIconViewMethod.invoke(splashView);
-                        listener.onSplashScreenExit(splashView, iconView);
-                    } catch (NoSuchMethodException | InvocationTargetException
-                            | IllegalAccessException e) {
-                        // There's no easy error recovery option here, but also to reach here the
-                        // reflection calls below must have succeeded, but the ones above must have
-                        // failed, so this is unlikely to happen.
-                    }
-                    return null;
-                });
-
-        Method getSplashScreenMethod = activity.getClass().getMethod("getSplashScreen");
-        Object splashScreen = getSplashScreenMethod.invoke(activity);
-        Method setOnExitAnimationListenerMethod = splashScreen.getClass().getMethod(
-                "setOnExitAnimationListener", onExitAnimationListenerInterface);
-        setOnExitAnimationListenerMethod.invoke(splashScreen, instance);
     }
 
     /**
@@ -113,6 +63,7 @@ class SplashUtilsForS {
      * Activity bounds, so to make sure that the screen doesn't change between the shell and Chrome,
      * we provide a screenshot without the areas normally covered by the status and navigation bar.
      */
+    @RequiresApi(api = VERSION_CODES.Q)
     private static Bitmap screenshotSplashScreenView(
             View splashView, View iconView, Insets insets, int backgroundColor, int maxSizeBytes) {
         int width = splashView.getWidth() - insets.right - insets.left;
@@ -150,12 +101,13 @@ class SplashUtilsForS {
      * approximation of the Android S splash screen instead (which is good enough since the user
      * will never see them side by side).
      */
+    @RequiresApi(api = VERSION_CODES.O)
     static View createSplashView(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.splash_screen_view, null);
         if (WebApkUtils.isSplashIconAdaptive(context)) {
             Bitmap icon = WebApkUtils.decodeBitmapFromDrawable(
                     context.getResources(), R.drawable.splash_icon);
-            ImageView imageView = (ImageView) view.findViewById(R.id.splashscreen_icon_view);
+            ImageView imageView = view.findViewById(R.id.splashscreen_icon_view);
             imageView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
         }
         return view;
