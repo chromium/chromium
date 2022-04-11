@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
                  base::OnceClosure callback,
                  network_handler::ErrorCallback error_callback) override;
 
+  void SetAllowCellularSimLock(bool allow_cellular_sim_lock) override;
+
   void SetCellularPolicyAllowRoaming(bool policy_allow_roaming) override;
 
   void SetMACAddressRandomizationEnabled(bool enabled) override;
@@ -170,6 +172,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   const DeviceState* GetWifiDeviceState();
 
   NetworkStateHandler* network_state_handler_ = nullptr;
+  bool allow_cellular_sim_lock_ = true;
   bool cellular_policy_allow_roaming_ = true;
   WifiFeatureSupport mac_addr_randomization_supported_ =
       WifiFeatureSupport::NOT_REQUESTED;

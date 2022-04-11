@@ -188,6 +188,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // installed from policy. The network list should be updated at this point.
   virtual void OnCellularPoliciesApplied(const NetworkProfile& profile) = 0;
 
+  // Return true if AllowCellularSimLock policy is enabled.
+  virtual bool AllowCellularSimLock() const = 0;
+
   // Return true if AllowOnlyPolicyCellularNetworks policy is enabled.
   virtual bool AllowOnlyPolicyCellularNetworks() const = 0;
 

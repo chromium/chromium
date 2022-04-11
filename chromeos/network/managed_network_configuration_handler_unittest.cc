@@ -992,6 +992,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowOnlyPolicyWiFiToConnect) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1018,6 +1019,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1043,6 +1045,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1072,7 +1075,29 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kSimLockPolicy);
+
+  // Set 'AllowCellularSimLock' policy and another arbitrary cellular
+  // policy.
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_allow_cellular_sim_lock.onc");
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_cellular.onc");
+  base::RunLoop().RunUntilIdle();
+
+  // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_FALSE(managed_handler()->AllowCellularSimLock());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
@@ -1096,6 +1121,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlacklistedHexSSIDs) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1119,6 +1145,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlockedHexSSIDs) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());

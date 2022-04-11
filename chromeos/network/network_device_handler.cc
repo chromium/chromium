@@ -17,6 +17,7 @@ const char NetworkDeviceHandler::kErrorPinBlocked[] = "pin-blocked";
 const char NetworkDeviceHandler::kErrorPinRequired[] = "pin-required";
 const char NetworkDeviceHandler::kErrorTimeout[] = "timeout";
 const char NetworkDeviceHandler::kErrorUnknown[] = "unknown";
+const char NetworkDeviceHandler::kErrorBlockedByPolicy[] = "blocked-by-policy";
 
 NetworkDeviceHandler::NetworkDeviceHandler() = default;
 

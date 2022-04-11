@@ -1,0 +1,8 @@
+{
+  "NetworkConfigurations": [
+  ],
+  "GlobalNetworkConfiguration": {
+    "AllowCellularSimLock": false
+  },
+  "Type": "UnencryptedConfiguration"
+}

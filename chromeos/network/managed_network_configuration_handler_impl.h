@@ -120,6 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
 
+  bool AllowCellularSimLock() const override;
   bool AllowOnlyPolicyCellularNetworks() const override;
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;

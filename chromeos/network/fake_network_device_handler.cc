@@ -54,6 +54,9 @@ void FakeNetworkDeviceHandler::ChangePin(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {}
 
+void FakeNetworkDeviceHandler::SetAllowCellularSimLock(
+    bool allow_cellular_sim_lock) {}
+
 void FakeNetworkDeviceHandler::SetCellularPolicyAllowRoaming(
     bool policy_allow_roaming) {}
 

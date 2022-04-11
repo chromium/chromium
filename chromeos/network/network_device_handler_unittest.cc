@@ -545,4 +545,47 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
+TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
+  base::HistogramTester histogram_tester;
+
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+
+  // Test that the error callback gets called when attempting to require a PIN
+  // lock.
+  network_device_handler_->RequirePin(kDefaultCellularDevicePath, true,
+                                      kDefaultPin, GetSuccessCallback(),
+                                      GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 0);
+
+  // Test that the success callback gets called when removing a PIN lock.
+  network_device_handler_->RequirePin(kDefaultCellularDevicePath, false,
+                                      kDefaultPin, GetSuccessCallback(),
+                                      GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kResultSuccess, result_);
+}
+
+TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
+  base::HistogramTester histogram_tester;
+  const char kNewPin[] = "1234";
+
+  fake_device_client_->GetTestInterface()->SetSimLocked(
+      kDefaultCellularDevicePath, true);
+
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+
+  // Test that the error callback gets called.
+  network_device_handler_->ChangePin(
+      kDefaultCellularDevicePath, FakeShillDeviceClient::kDefaultSimPin,
+      kNewPin, GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinChangeSuccessHistogram, 0);
+}
 }  // namespace chromeos

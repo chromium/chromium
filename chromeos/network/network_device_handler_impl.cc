@@ -171,6 +171,12 @@ void NetworkDeviceHandlerImpl::RequirePin(
     const std::string& pin,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
+  // Allow removal of the SIM PIN, but disallow requiring a SIM PIN.
+  if (require_pin && !allow_cellular_sim_lock_) {
+    std::move(error_callback).Run(NetworkDeviceHandler::kErrorBlockedByPolicy);
+    return;
+  }
+
   NET_LOG(USER) << "Device.RequirePin: " << device_path << ": " << require_pin;
   ShillDeviceClient::Get()->RequirePin(
       dbus::ObjectPath(device_path), pin, require_pin,
@@ -221,6 +227,11 @@ void NetworkDeviceHandlerImpl::ChangePin(
     const std::string& new_pin,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
+  if (!allow_cellular_sim_lock_) {
+    std::move(error_callback).Run(NetworkDeviceHandler::kErrorBlockedByPolicy);
+    return;
+  }
+
   NET_LOG(USER) << "Device.ChangePin: " << device_path;
   ShillDeviceClient::Get()->ChangePin(
       dbus::ObjectPath(device_path), old_pin, new_pin,
@@ -230,6 +241,11 @@ void NetworkDeviceHandlerImpl::ChangePin(
       base::BindOnce(&HandleSimPinOperationFailure,
                      CellularMetricsLogger::SimPinOperation::kChange,
                      device_path, std::move(error_callback)));
+}
+
+void NetworkDeviceHandlerImpl::SetAllowCellularSimLock(
+    bool allow_cellular_sim_lock) {
+  allow_cellular_sim_lock_ = allow_cellular_sim_lock;
 }
 
 void NetworkDeviceHandlerImpl::SetCellularPolicyAllowRoaming(

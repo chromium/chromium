@@ -736,6 +736,9 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
           AllowOnlyPolicyCellularNetworks());
     }
 
+    if (features::IsSimLockPolicyEnabled())
+      network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
+
     if (device_policy_applied_ && user_policy_applied_) {
       network_state_handler_->UpdateBlockedWifiNetworks(
           AllowOnlyPolicyWiFiToConnect(),
@@ -837,6 +840,22 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
     const std::string& guid,
     const std::string& profile_path) const {
   return !IsNetworkConfiguredByPolicy(guid, profile_path);
+}
+
+bool ManagedNetworkConfigurationHandlerImpl::AllowCellularSimLock() const {
+  const base::Value* global_network_config = GetGlobalConfigFromPolicy(
+      std::string() /* no username hash, device policy */);
+
+  // If |global_network_config| does not exist, default to allowing PIN Locking
+  // SIMs.
+  if (!global_network_config)
+    return true;
+
+  const base::Value* managed_only_value = global_network_config->FindKeyOfType(
+      ::onc::global_network_config::kAllowCellularSimLock,
+      base::Value::Type::BOOLEAN);
+  return !managed_only_value ||
+         (managed_only_value && managed_only_value->GetBool());
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyCellularNetworks()

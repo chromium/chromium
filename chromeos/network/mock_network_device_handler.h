@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
                     base::OnceClosure callback,
                     network_handler::ErrorCallback error_callback));
 
+  MOCK_METHOD1(SetAllowCellularSimLock, void(bool allow_cellular_sim_lock));
+
   MOCK_METHOD1(SetCellularPolicyAllowRoaming, void(bool policy_allow_roaming));
 
   MOCK_METHOD1(SetMACAddressRandomizationEnabled, void(bool enabled));
