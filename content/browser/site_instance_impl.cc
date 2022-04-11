@@ -818,8 +818,9 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
     // that should be routed to the default SiteInstance.
     DCHECK_EQ(site_info_.site_url(), GetDefaultSiteURL());
 
-    // TODO(1243449): Verify if WebExposedIsolationInfo should match between
-    // GetWebExposedIsolationInfo() and url_info's member.
+    // We're only interested in knowning if we're same-site.
+    // WebExposedIsolationInfo should not come into play here so we make them
+    // match explicitly.
     UrlInfo updated_url_info = url_info;
     updated_url_info.web_exposed_isolation_info = GetWebExposedIsolationInfo();
 

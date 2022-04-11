@@ -3508,18 +3508,11 @@ void NavigationRequest::OnResponseStarted(
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
 
-    // Explicitly use the web_exposed_isolation_info of `render_frame_host_`
-    // SiteInstance.
-    // TODO(https://crbug.com/1243449): It is unclear why we want to do that.
-    // Inspect call sites and write a proper comment describing why we need to
-    // use `render_frame_host_`'s information.
     UrlInfo url_info = GetUrlInfo();
-    url_info.web_exposed_isolation_info =
-        instance->GetWebExposedIsolationInfo();
     auto site_info = SiteInfo::Create(isolation_context, url_info);
     if (!instance->HasSite() &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
-      instance->ConvertToDefaultOrSetSite(GetUrlInfo());
+      instance->ConvertToDefaultOrSetSite(url_info);
     }
     // Now that we know the IsolationContext for the assigned SiteInstance, we
     // opt the origin into OAC here if needed. Note that this doesn't need to
