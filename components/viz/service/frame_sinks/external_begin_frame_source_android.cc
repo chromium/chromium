@@ -119,6 +119,11 @@ struct AChoreographerMethods33 {
 
  private:
   AChoreographerMethods33() {
+    if (!base::android::BuildInfo::GetInstance()->is_at_least_t()) {
+      supported = false;
+      return;
+    }
+
     void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
     if (!main_dl_handle) {
       LOG(ERROR) << "Couldnt load libandroid.so";
