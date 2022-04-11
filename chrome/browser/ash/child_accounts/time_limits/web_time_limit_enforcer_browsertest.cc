@@ -237,8 +237,13 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
       params.navigated_or_inserted_contents));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebBlockedAfterBrowser DISABLED_WebBlockedAfterBrowser
+#else
+#define MAYBE_WebBlockedAfterBrowser WebBlockedAfterBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
-                       WebBlockedAfterBrowser) {
+                       MAYBE_WebBlockedAfterBrowser) {
   GURL url = embedded_test_server()->GetURL(kExampleHost,
                                             "/supervised_user/simple.html");
   NavigateParams params(browser(), url,
