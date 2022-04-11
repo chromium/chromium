@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/login_auth_factors_view.h"
 
+#include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/animated_auth_factors_label_wrapper.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_icon_view.h"
@@ -40,6 +41,8 @@ constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
+constexpr base::TimeDelta kCheckmarkAnimationDuration = base::Milliseconds(450);
+constexpr int kCheckmarkAnimationNumFrames = 13;
 
 // The values of this enum should be nearly the same as the values of
 // AuthFactorState, except instead of kErrorTemporary and kErrorPermanent, we
@@ -413,11 +416,20 @@ void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
 }
 
 void LoginAuthFactorsView::ShowCheckmark() {
+  const bool arrow_button_was_visible = arrow_button_->GetVisible();
   auth_factor_icon_row_->SetVisible(false);
   checkmark_icon_->SetVisible(true);
   SetArrowVisibility(false);
-  // TODO(crbug.com/1233614): If transitioning from Click Required state, show
-  // animation.
+  if (arrow_button_was_visible) {
+    const auto& resource = AshColorProvider::Get()->IsDarkModeEnabled()
+                               ? IDR_LOGIN_ARROW_CHECKMARK_SPINNER_DARKMODE
+                               : IDR_LOGIN_ARROW_CHECKMARK_SPINNER_LIGHTMODE;
+    checkmark_icon_->SetAnimation(resource, kCheckmarkAnimationDuration,
+                                  kCheckmarkAnimationNumFrames);
+  } else {
+    checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
+                             AuthIconView::Color::kPositive);
+  }
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {
