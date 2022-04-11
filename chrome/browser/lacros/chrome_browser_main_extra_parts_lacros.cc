@@ -98,6 +98,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     chrome_apps_controller_ =
         LacrosExtensionAppsController::MakeForChromeApps();
     chrome_apps_controller_->Initialize(chrome_apps_publisher_->publisher());
+    chrome_apps_controller_->SetPublisher(chrome_apps_publisher_.get());
 
     extensions_publisher_ = LacrosExtensionAppsPublisher::MakeForExtensions();
     extensions_publisher_->Initialize();

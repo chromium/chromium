@@ -135,9 +135,11 @@ AppServiceContextMenu::AppServiceContextMenu(
         app_type_ = apps_util::IsInstalled(update.Readiness())
                         ? update.AppType()
                         : apps::AppType::kUnknown;
+        is_platform_app_ = update.IsPlatformApp().value_or(false);
       });
-
-  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp) {
+  // StandaloneBrowserExtension creates its own context menus for platform apps.
+  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
+      is_platform_app_) {
     standalone_browser_extension_menu_ =
         std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
             app_id, StandaloneBrowserExtensionAppContextMenu::Source::kAppList);
@@ -152,9 +154,10 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     return;
   }
 
-  // StandaloneBrowserExtension handles its own context menus. Forward to that
-  // class.
-  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp) {
+  // StandaloneBrowserExtension handles its own context menus for platform apps.
+  // Forward to that class.
+  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
+      is_platform_app_) {
     standalone_browser_extension_menu_->GetMenuModel(std::move(callback));
     return;
   }
@@ -287,6 +290,7 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
 
   switch (app_type_) {
     case apps::AppType::kWeb:
+    case apps::AppType::kStandaloneBrowserChromeApp:  // hosted app
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         auto user_window_mode = apps::WindowMode::kUnknown;
@@ -451,8 +455,10 @@ void AppServiceContextMenu::ShowAppInfo() {
 
 void AppServiceContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
-    case apps::AppType::kWeb: {
-      // Web apps can only toggle between kWindow and kBrowser.
+    case apps::AppType::kWeb:
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      // Web apps and standalone browser hosted apps can only toggle between
+      // kWindow and kBrowser.
       apps::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::WindowMode::kUnknown) {

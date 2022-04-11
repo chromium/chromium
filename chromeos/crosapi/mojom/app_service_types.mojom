@@ -101,6 +101,9 @@ struct App {
   // If empty during updates, Subscriber can assume no changes.
   // There is no guarantee that this is sorted by any criteria.
   array<Shortcut>? shortcuts@27;
+
+  [MinVersion=19]
+  OptionalBool is_platform_app@28;
 };
 
 // The types of apps available in the registry.

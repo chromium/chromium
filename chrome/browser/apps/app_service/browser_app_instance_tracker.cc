@@ -31,6 +31,10 @@
 #include "extensions/common/extension.h"
 #include "ui/aura/window.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_extensions_util.h"
+#endif
+
 namespace apps {
 
 namespace {
@@ -78,8 +82,20 @@ bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {
   return browser->tab_strip_model()->GetActiveWebContents() == contents;
 }
 
-std::string GetAppIdForTab(content::WebContents* contents) {
-  return GetInstanceAppIdForWebContents(contents).value_or("");
+std::string GetAppIdForTab(content::WebContents* contents, Profile* profile) {
+  std::string app_id = GetInstanceAppIdForWebContents(contents).value_or("");
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!app_id.empty()) {
+    auto* registry = extensions::ExtensionRegistry::Get(profile);
+    auto* extension = registry->GetInstalledExtension(app_id);
+    // Return muxed app_id for Lacros hosted app.
+    if (extension && extension->is_hosted_app())
+      return lacros_extensions_util::MuxId(profile, extension);
+  }
+#endif
+
+  return app_id;
 }
 
 std::string GetAppIdForBrowser(Browser* browser) {
@@ -91,8 +107,17 @@ std::string GetAppIdForBrowser(Browser* browser) {
   if (!extension)
     return app_id;
 
-  if (extension->is_hosted_app() || extension->is_legacy_packaged_app())
+  if (extension->is_hosted_app()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return lacros_extensions_util::MuxId(browser->profile(), extension);
+#else
     return app_id;
+#endif
+  }
+
+  if (extension->is_legacy_packaged_app())
+    return app_id;
+
   return "";
 }
 
@@ -459,7 +484,7 @@ void BrowserAppInstanceTracker::OnTabCreated(Browser* browser,
     return;
   }
 
-  std::string app_id = GetAppIdForTab(contents);
+  std::string app_id = GetAppIdForTab(contents, profile_);
   if (!app_id.empty()) {
     CreateAppTabInstance(std::move(app_id), browser, contents);
   }
@@ -480,7 +505,7 @@ void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,
   }
 
   // Handle app tabs.
-  std::string new_app_id = GetAppIdForTab(contents);
+  std::string new_app_id = GetAppIdForTab(contents, profile_);
   BrowserAppInstance* instance = GetInstance(app_tab_instances_, contents);
   if (instance) {
     if (instance->app_id != new_app_id) {

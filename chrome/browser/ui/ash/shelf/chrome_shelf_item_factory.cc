@@ -43,12 +43,16 @@ bool ChromeShelfItemFactory::CreateShelfItemForAppId(
       apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
 
+  // Note: In addition to other kinds of web apps, standalone browser hosted
+  // apps are also handled by browser app shelf item controller.
   if (BrowserAppShelfControllerShouldHandleApp(app_id, profile)) {
     *delegate =
         std::make_unique<BrowserAppShelfItemController>(shelf_id, profile);
     return true;
   }
 
+  // Standalone browser platform apps are handled by standalone browser
+  // extension app shelf item controller.
   if (app_type == apps::AppType::kStandaloneBrowserChromeApp) {
     *delegate =
         std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(

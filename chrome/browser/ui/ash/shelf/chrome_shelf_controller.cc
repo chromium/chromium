@@ -103,6 +103,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
+#include "net/base/escape.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -850,7 +851,13 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
         profile, app_id,
         ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(profile, app_id,
+    // Normally app ids would only contain alphanumerics, but standalone
+    // browser extension app uses '#' as a delimiter.
+    std::string escaped_id =
+        app_type == apps::AppType::kStandaloneBrowserChromeApp
+            ? net::EscapeAllExceptUnreserved(app_id)
+            : app_id;
+    chrome::ShowAppManagementPage(profile, escaped_id,
                                   ash::settings::AppManagementEntryPoint::
                                       kShelfContextMenuAppInfoChromeApp);
   }

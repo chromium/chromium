@@ -22,6 +22,8 @@ namespace apps {
 class ExtensionAppsEnableFlow;
 }
 
+class LacrosExtensionAppsPublisher;
+
 // This class is responsible for receiving AppController events from Ash, and
 // implementing their effects. Distinct instances should be used to handle
 // Chrome Apps and Extensions separately.
@@ -48,6 +50,8 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   // Tests may construct this class without using Initialize if the tests
   // directly call the AppController methods.
   void Initialize(mojo::Remote<crosapi::mojom::AppPublisher>& publisher);
+
+  void SetPublisher(LacrosExtensionAppsPublisher* publisher);
 
   // crosapi::mojom::AppController
   // Public for testing.
@@ -104,6 +108,8 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   // result in a callback to FinishedEnableFlow.
   // The key is the raw pointer to the ExtensionAppsEnableFlow.
   std::map<void*, std::unique_ptr<apps::ExtensionAppsEnableFlow>> enable_flows_;
+
+  LacrosExtensionAppsPublisher* publisher_ = nullptr;  // Not owned.
 
   // Mojo endpoint that's responsible for receiving messages from Ash.
   mojo::Receiver<crosapi::mojom::AppController> controller_;

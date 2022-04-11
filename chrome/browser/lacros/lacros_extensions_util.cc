@@ -7,20 +7,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "build//build_config.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
 namespace lacros_extensions_util {
-namespace {
 
-// The delimiter separates the profile basename from the extension id.
-constexpr char kDelimiter[] = "###";
-
-}  // namespace
+bool IsExtensionApp(const extensions::Extension* extension) {
+  return extension->is_platform_app() ||
+         (extension->is_hosted_app() && apps::ShouldHostedAppsRunInLacros());
+}
 
 const extensions::Extension* MaybeGetExtension(
     Profile* profile,
@@ -38,14 +41,16 @@ std::string MuxId(const Profile* profile,
 }
 
 std::string MuxId(const Profile* profile, const std::string& extension_id) {
-  return profile->GetBaseName().value() + kDelimiter + extension_id;
+  return profile->GetBaseName().value() + apps::kExtensionAppMuxedIdDelimiter +
+         extension_id;
 }
 
 bool DemuxId(const std::string& muxed_id,
              Profile** output_profile,
              const extensions::Extension** output_extension) {
   std::vector<std::string> splits = base::SplitStringUsingSubstr(
-      muxed_id, kDelimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      muxed_id, apps::kExtensionAppMuxedIdDelimiter, base::KEEP_WHITESPACE,
+      base::SPLIT_WANT_ALL);
   if (splits.size() != 2)
     return false;
   std::string profile_basename = std::move(splits[0]);

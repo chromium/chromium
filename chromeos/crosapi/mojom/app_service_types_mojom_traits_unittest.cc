@@ -64,6 +64,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->shortcuts.push_back(
       std::make_unique<apps::Shortcut>("test_id", "test_name", /*position*/ 1));
 
+  input->is_platform_app = true;
+
   apps::AppPtr output;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(input, output));
@@ -124,6 +126,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(shortcut->shortcut_id, "test_id");
   EXPECT_EQ(shortcut->name, "test_name");
   EXPECT_EQ(shortcut->position, 1);
+
+  EXPECT_TRUE(output->is_platform_app.value());
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -150,6 +154,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->window_mode = apps::WindowMode::kBrowser;
   input->allow_uninstall = true;
   input->handles_intents = true;
+  input->is_platform_app = absl::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -184,6 +189,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(output->window_mode, apps::WindowMode::kBrowser);
   EXPECT_TRUE(output->allow_uninstall);
   EXPECT_TRUE(output->handles_intents);
+  EXPECT_FALSE(output->is_platform_app.has_value());
 }
 
 // Test that serialization and deserialization works with updating app type.

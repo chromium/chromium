@@ -9,8 +9,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_menu_builder.h"
@@ -83,6 +85,25 @@ extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
   }
 }
 
+bool IsStandaloneBrowserExtensionAppId(const std::string& app_id) {
+  std::vector<std::string> splits =
+      base::SplitStringUsingSubstr(app_id, apps::kExtensionAppMuxedIdDelimiter,
+                                   base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  return splits.size() == 2;
+}
+
+std::string GetAppId(const ash::ShelfID& shelf_id) {
+  std::string app_id;
+  if (IsStandaloneBrowserExtensionAppId(shelf_id.app_id))
+    return shelf_id.app_id;
+
+  // Remove the ARC shelf grouy prefix.
+  const arc::ArcAppShelfId arc_shelf_id =
+      arc::ArcAppShelfId::FromString(shelf_id.app_id);
+  DCHECK(arc_shelf_id.valid());
+  return arc_shelf_id.app_id();
+}
+
 }  // namespace
 
 AppServiceShelfContextMenu::AppServiceShelfContextMenu(
@@ -99,13 +120,9 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
     return;
   }
 
-  // Remove the ARC shelf group Prefix.
-  const arc::ArcAppShelfId arc_shelf_id =
-      arc::ArcAppShelfId::FromString(item->id.app_id);
-  DCHECK(arc_shelf_id.valid());
   app_type_ = apps::AppServiceProxyFactory::GetForProfile(controller->profile())
                   ->AppRegistryCache()
-                  .GetAppType(arc_shelf_id.app_id());
+                  .GetAppType(GetAppId(item->id));
 }
 
 AppServiceShelfContextMenu::~AppServiceShelfContextMenu() = default;
@@ -226,6 +243,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
 bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
   switch (app_type_) {
+    case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       if ((command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
@@ -471,6 +489,7 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
 
 void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
+    case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       // Web apps can only toggle between kWindow, kTabbed and kBrowser.

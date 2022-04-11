@@ -118,6 +118,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<AppPtr> deltas) override;

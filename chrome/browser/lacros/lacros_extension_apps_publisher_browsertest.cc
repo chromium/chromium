@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
@@ -12,10 +13,12 @@
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
@@ -27,7 +30,9 @@ using Apps = std::vector<apps::AppPtr>;
 class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
  public:
   LacrosExtensionAppsPublisherFake()
-      : LacrosExtensionAppsPublisher(InitForChromeApps()) {}
+      : LacrosExtensionAppsPublisher(InitForChromeApps()) {
+    apps::EnableHostedAppsInLacrosForTesting();
+  }
   ~LacrosExtensionAppsPublisherFake() override = default;
 
   LacrosExtensionAppsPublisherFake(const LacrosExtensionAppsPublisherFake&) =
@@ -69,16 +74,41 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
   std::map<std::string, std::string> app_windows_;
 };
 
+const size_t kDefaultAppsSize = 1u;
+
+// Verify that only default apps have been published. Web store app
+// (hosted app) is the default app that is always loaded by chrome component
+// extension loader.
+void VerifyOnlyDefaultAppsPublished(
+    LacrosExtensionAppsPublisherFake* publisher) {
+  ASSERT_GE(publisher->apps_history().size(), 1u);
+
+  Apps& default_apps = publisher->apps_history()[0];
+  ASSERT_EQ(kDefaultAppsSize, default_apps.size());
+
+  auto& default_app = default_apps[0];
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success = lacros_extensions_util::DemuxId(default_app->app_id, &profile,
+                                                 &extension);
+  ASSERT_TRUE(success);
+  ASSERT_TRUE(extension->is_hosted_app());
+  ASSERT_EQ(extensions::kWebStoreAppId, extension->id());
+  ASSERT_TRUE(default_app->is_platform_app.has_value());
+  ASSERT_FALSE(default_app->is_platform_app.value());
+}
+
 using LacrosExtensionAppsPublisherTest = extensions::ExtensionBrowserTest;
 
-// If the profile has extensions, but no apps, then creating a publisher should
-// have no effect.
-IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoApps) {
+// When publisher is created and initialized, only chrome default apps
+// should be published.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, DefaultApps) {
   LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
       std::make_unique<LacrosExtensionAppsPublisherFake>();
+  ASSERT_TRUE(publisher->apps_history().empty());
   publisher->Initialize();
-  EXPECT_TRUE(publisher->apps_history().empty());
+  VerifyOnlyDefaultAppsPublished(publisher.get());
 }
 
 // If the profile has one app installed, then creating a publisher should
@@ -91,7 +121,11 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, OneApp) {
   publisher->Initialize();
   ASSERT_GE(publisher->apps_history().size(), 1u);
   Apps& apps = publisher->apps_history()[0];
-  ASSERT_EQ(1u, apps.size());
+  // The platform app is added after the default apps.
+  ASSERT_EQ(kDefaultAppsSize + 1u, apps.size());
+  auto& platform_app = apps.back();
+  ASSERT_TRUE(platform_app->is_platform_app.has_value());
+  ASSERT_TRUE(platform_app->is_platform_app.value());
 }
 
 // Same as OneApp, but with two pre-installed apps.
@@ -104,7 +138,14 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, TwoApps) {
   publisher->Initialize();
   ASSERT_GE(publisher->apps_history().size(), 1u);
   Apps& apps = publisher->apps_history()[0];
-  ASSERT_EQ(2u, apps.size());
+  // The platform apps are added after the default apps.
+  ASSERT_EQ(kDefaultAppsSize + 2u, apps.size());
+  auto& platform_app_1 = apps[kDefaultAppsSize];
+  ASSERT_TRUE(platform_app_1->is_platform_app.has_value());
+  ASSERT_TRUE(platform_app_1->is_platform_app.value());
+  auto& platform_app_2 = apps[kDefaultAppsSize + 1];
+  ASSERT_TRUE(platform_app_2->is_platform_app.has_value());
+  ASSERT_TRUE(platform_app_2->is_platform_app.value());
 }
 
 // If an app is installed after the AppsPublisher is created, there should be a
@@ -113,12 +154,18 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
                        InstallAppAfterCreate) {
   std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
       std::make_unique<LacrosExtensionAppsPublisherFake>();
-  publisher->Initialize();
   ASSERT_TRUE(publisher->apps_history().empty());
-  LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  publisher->Initialize();
+  VerifyOnlyDefaultAppsPublished(publisher.get());
   ASSERT_GE(publisher->apps_history().size(), 1u);
-  Apps& apps = publisher->apps_history()[0];
+
+  LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  ASSERT_GE(publisher->apps_history().size(), 2u);
+  Apps& apps = publisher->apps_history().back();
   ASSERT_EQ(1u, apps.size());
+  auto& platform_app = apps.back();
+  ASSERT_TRUE(platform_app->is_platform_app.has_value());
+  ASSERT_TRUE(platform_app->is_platform_app.value());
 }
 
 // If an app is unloaded, there should be a corresponding unload event.
@@ -135,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Unload) {
   // The first event should be a ready event.
   {
     Apps& apps = publisher->apps_history()[0];
-    ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kReady);
+    ASSERT_EQ(kDefaultAppsSize + 1u, apps.size());
+    ASSERT_EQ(apps.back()->readiness, apps::Readiness::kReady);
   }
 
   // The last event should be an unload event.
@@ -161,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Uninstall) {
   // The first event should be a ready event.
   {
     Apps& apps = publisher->apps_history()[0];
-    ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kReady);
+    ASSERT_EQ(2u, apps.size());
+    ASSERT_EQ(apps[1]->readiness, apps::Readiness::kReady);
   }
 
   // The last event should be an uninstall event.

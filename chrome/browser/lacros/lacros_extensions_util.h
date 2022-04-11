@@ -17,6 +17,10 @@ class Extension;
 
 namespace lacros_extensions_util {
 
+// Returns true if |extension| is an extension based app supported in Lacros,
+// which include platform apps and hosted apps.
+bool IsExtensionApp(const extensions::Extension* extension);
+
 // Returns the extension pointer for |extension_id| in |profile|, or null if
 // nonexistent.
 const extensions::Extension* MaybeGetExtension(Profile* profile,

@@ -219,6 +219,15 @@ bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
     case apps::AppType::kSystemWeb:
     case apps::AppType::kStandaloneBrowser:
       return true;
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      // Should handle Standalone browser hosted apps.
+      bool is_platform_app = false;
+      proxy->AppRegistryCache().ForOneApp(
+          app_id, [&is_platform_app](const apps::AppUpdate& update) {
+            is_platform_app = update.IsPlatformApp().value_or(true);
+          });
+      return !is_platform_app;
+    }
     default:
       return false;
   }

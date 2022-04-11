@@ -60,6 +60,10 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // pointers get passed and used in inner classes.
   void Initialize();
 
+  // Updates app's window mode and republishes the app.
+  void UpdateAppWindowMode(const std::string& app_id,
+                           apps::WindowMode window_mode);
+
   // Exposed so that LacrosExtensionAppsController can initialize its receiver.
   mojo::Remote<crosapi::mojom::AppPublisher>& publisher() { return publisher_; }
 

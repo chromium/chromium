@@ -702,8 +702,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 39
-// Next id: 39
+// Next version: 40
+// Next id: 40
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -879,6 +879,10 @@ struct BrowserInitParams {
   // When this flag is set, lacros will publish chrome apps to the app service.
   [MinVersion=28]
   bool publish_chrome_apps@28;
+
+// When this flag is set, lacros will publish hosted apps to the app service.
+  [MinVersion=39]
+  bool publish_hosted_apps@39;
 
   [Stable, Extensible]
   enum InitialKeepAlive {

@@ -115,6 +115,13 @@ StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::handles_intents(
   return ConvertOptionalBoolToMojomOptionalBool(r->handles_intents);
 }
 
+// static
+crosapi::mojom::OptionalBool
+StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::is_platform_app(
+    const apps::AppPtr& r) {
+  return ConvertOptionalBoolToMojomOptionalBool(r->is_platform_app);
+}
+
 bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     crosapi::mojom::AppDataView data,
     apps::AppPtr* out) {
@@ -230,6 +237,10 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   if (!data.ReadShortcuts(&shortcuts))
     return false;
 
+  crosapi::mojom::OptionalBool is_platform_app;
+  if (!data.ReadIsPlatformApp(&is_platform_app))
+    return false;
+
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
@@ -262,6 +273,8 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   app->handles_intents =
       ConvertMojomOptionalBoolToOptionalBool(handles_intents);
   app->shortcuts = std::move(shortcuts);
+  app->is_platform_app =
+      ConvertMojomOptionalBoolToOptionalBool(is_platform_app);
   *out = std::move(app);
   return true;
 }

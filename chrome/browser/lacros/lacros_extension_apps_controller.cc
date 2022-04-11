@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
@@ -16,12 +20,15 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -57,6 +64,11 @@ void LacrosExtensionAppsController::Initialize(
   if (!publisher.is_bound())
     return;
   publisher->RegisterAppController(controller_.BindNewPipeAndPassRemote());
+}
+
+void LacrosExtensionAppsController::SetPublisher(
+    LacrosExtensionAppsPublisher* publisher) {
+  publisher_ = publisher;
 }
 
 void LacrosExtensionAppsController::Uninstall(
@@ -163,9 +175,8 @@ void LacrosExtensionAppsController::OpenNativeSettings(
 void LacrosExtensionAppsController::SetWindowMode(
     const std::string& app_id,
     apps::WindowMode window_mode) {
-  // This method doesn't make sense for packaged v2 apps, which always run in a
-  // standalone window.
-  NOTIMPLEMENTED();
+  DCHECK(publisher_);
+  publisher_->UpdateAppWindowMode(app_id, window_mode);
 }
 
 void LacrosExtensionAppsController::Launch(
@@ -217,11 +228,19 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
     return;
   DCHECK(which_type_.Matches(extension));
 
-  // Close all app windows.
-  for (extensions::AppWindow* app_window :
-       extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(
-           extension->id())) {
-    app_window->GetBaseWindow()->Close();
+  if (extension->is_platform_app()) {
+    // Close all app windows.
+    for (extensions::AppWindow* app_window :
+         extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(
+             extension->id())) {
+      app_window->GetBaseWindow()->Close();
+    }
+  } else if (extension->is_hosted_app()) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->BrowserAppInstanceTracker()
+        ->StopInstancesOfApp(app_id);
+  } else {
+    NOTREACHED();
   }
 }
 

@@ -5106,6 +5106,8 @@ static_library("browser") {
       "apps/app_service/browser_app_instance_observer.h",
       "apps/app_service/browser_app_instance_tracker.cc",
       "apps/app_service/browser_app_instance_tracker.h",
+      "apps/app_service/extension_apps_utils.cc",
+      "apps/app_service/extension_apps_utils.h",
       "apps/intent_helper/common_apps_navigation_throttle.cc",
       "apps/intent_helper/common_apps_navigation_throttle.h",
       "webshare/chromeos/sharesheet_client.cc",

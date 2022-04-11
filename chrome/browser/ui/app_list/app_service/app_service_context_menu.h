@@ -57,6 +57,7 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   void ExecutePublisherContextMenuCommand(int command_id);
 
   apps::AppType app_type_ = apps::AppType::kUnknown;
+  bool is_platform_app_ = false;
 
   // The SimpleMenuModel used to hold the submenu items.
   std::unique_ptr<ui::SimpleMenuModel> submenu_;

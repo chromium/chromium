@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/for_which_extension_type.h"
 
 #include "base/logging.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "extensions/common/extension.h"
 
 /******** ForWhichExtensionType ********/
@@ -19,7 +20,7 @@ ForWhichExtensionType::~ForWhichExtensionType() = default;
 
 bool ForWhichExtensionType::Matches(
     const extensions::Extension* extension) const {
-  return for_chrome_apps_ ? extension->is_platform_app()
+  return for_chrome_apps_ ? lacros_extensions_util::IsExtensionApp(extension)
                           : extension->is_extension();
 }
 

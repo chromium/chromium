@@ -6,18 +6,21 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/extend.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -30,6 +33,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/constants.h"
 
 namespace {
 
@@ -107,6 +111,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       }
     }
   }
+
+  void Publish(const extensions::Extension* extension, Readiness readiness) {
+    Publish(MakeApp(extension, readiness));
+  }
+
   ~ProfileTracker() override = default;
 
  private:
@@ -294,6 +303,19 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->show_in_management = extension->ShouldDisplayInAppLauncher();
     app->handles_intents = which_type_.IsExtensions() || show;
 
+    if (which_type_.IsChromeApps()) {
+      app->is_platform_app = extension->is_platform_app();
+
+      if (extension->is_hosted_app()) {
+        app->window_mode =
+            extensions::GetLaunchType(extensions::ExtensionPrefs::Get(profile_),
+                                      extension) ==
+                    extensions::LaunchType::LAUNCH_TYPE_WINDOW
+                ? apps::WindowMode::kWindow
+                : apps::WindowMode::kBrowser;
+      }
+    }
+
     const extensions::ManagementPolicy* policy =
         extensions::ExtensionSystem::Get(profile_)->management_policy();
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
@@ -441,4 +463,27 @@ void LacrosExtensionAppsPublisher::OnProfileMarkedForPermanentDeletion(
 
 void LacrosExtensionAppsPublisher::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
+}
+
+void LacrosExtensionAppsPublisher::UpdateAppWindowMode(
+    const std::string& app_id,
+    apps::WindowMode window_mode) {
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
+  if (!success)
+    return;
+
+  DCHECK(extension->is_hosted_app());
+
+  // Persist hosted app's launch preference.
+  extensions::SetLaunchType(profile, extension->id(),
+                            window_mode == apps::WindowMode::kWindow
+                                ? extensions::LAUNCH_TYPE_WINDOW
+                                : extensions::LAUNCH_TYPE_REGULAR);
+
+  // Republish the app.
+  auto matched = profile_trackers_.find(profile);
+  DCHECK(matched != profile_trackers_.end());
+  matched->second->Publish(extension, apps::Readiness::kReady);
 }

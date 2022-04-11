@@ -108,6 +108,8 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
     return r->shortcuts;
   }
 
+  static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
+
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 

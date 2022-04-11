@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -721,6 +722,15 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   if (!extension->is_app() || IsBlocklisted(extension->id())) {
     return false;
   }
+
+  //  Do not publish hosted apps in Ash if hosted apps should run in
+  //  Lacros.
+  if (extension->is_hosted_app() &&
+      extension->id() != app_constants::kChromeAppId &&
+      apps::ShouldHostedAppsRunInLacros()) {
+    return false;
+  }
+
   return true;
 }
 
