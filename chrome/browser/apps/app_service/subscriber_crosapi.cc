@@ -45,7 +45,9 @@ namespace apps {
 
 class AppUpdate;
 
-SubscriberCrosapi::SubscriberCrosapi(Profile* profile) : profile_(profile) {}
+SubscriberCrosapi::SubscriberCrosapi(Profile* profile)
+    : profile_(profile),
+      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)) {}
 
 SubscriberCrosapi::~SubscriberCrosapi() = default;
 
@@ -142,20 +144,18 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
   subscriber_.set_disconnect_handler(base::BindOnce(
       &SubscriberCrosapi::OnSubscriberDisconnected, base::Unretained(this)));
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
   DCHECK(app_service.is_bound());
   mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
   receivers_.Add(this, app_service_subscriber.InitWithNewPipeAndPassReceiver());
   app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
 
-  proxy->RegisterCrosApiSubScriber(this);
+  proxy_->RegisterCrosApiSubScriber(this);
 }
 
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   // TODO(crbug.com/1244506): Link up the return callback.
-  proxy->LaunchAppWithParams(
+  proxy_->LaunchAppWithParams(
       ConvertCrosapiToLaunchParams(launch_params, profile_), base::DoNothing());
 }
 
@@ -169,14 +169,13 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
     return;
   }
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  auto app_type = proxy_->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIconFromIconKey(
+    proxy_->LoadIconFromIconKey(
         app_type, app_id, *icon_key, icon_type, size_hint_in_dip,
         /*allow_placeholder_icon=*/false, std::move(callback));
   } else {
-    proxy->LoadIconFromIconKey(
+    proxy_->LoadIconFromIconKey(
         ConvertAppTypeToMojomAppType(app_type), app_id,
         ConvertIconKeyToMojomIconKey(*icon_key),
         ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
@@ -187,15 +186,13 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
 
 void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,
                                         crosapi::mojom::IntentPtr intent) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->AddPreferredApp(
+  proxy_->AddPreferredApp(
       app_id, apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_));
 }
 
 void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy->AppRegistryCache().ForOneApp(app_id,
-                                           [](const apps::AppUpdate&) {})) {
+  if (!proxy_->AppRegistryCache().ForOneApp(app_id,
+                                            [](const apps::AppUpdate&) {})) {
     LOG(WARNING) << "Unknown app: " << app_id;
     return;
   }
@@ -204,8 +201,7 @@ void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {
 }
 
 void SubscriberCrosapi::SetSupportedLinksPreference(const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->SetSupportedLinksPreference(app_id);
+  proxy_->SetSupportedLinksPreference(app_id);
 }
 
 void SubscriberCrosapi::OnSubscriberDisconnected() {

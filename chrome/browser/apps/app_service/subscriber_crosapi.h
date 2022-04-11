@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -79,7 +81,8 @@ class SubscriberCrosapi : public KeyedService,
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
   mojo::Remote<crosapi::mojom::AppServiceSubscriber> subscriber_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
 };
 
 }  // namespace apps
