@@ -220,15 +220,6 @@
     <message name="IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL" desc="Aria label for the dropdown option to view more print destinations in a dialog. Expansion of SEE_MORE above to add context for screen readers." meaning="Label text">
       See more destinations
     </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_YEAR" desc="Shown when printer has been offline for more than a year.">
-      Offline for more than a year
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_MONTH" desc="Shown when printer has been offline for more than a month.">
-      Offline for more than a month
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_WEEK" desc="Shown when printer has been offline for more than a week.">
-      Offline for more than a week
-    </message>
     <message name="IDS_PRINT_PREVIEW_OFFLINE" desc="Shown when printer is currently offline.">
       Currently offline
     </message>

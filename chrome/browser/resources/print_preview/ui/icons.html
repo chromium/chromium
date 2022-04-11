@@ -2,10 +2,6 @@
   <svg>
     <defs>
       <!-- Custom SVGs (namratakannan) -->
-      <g id="printer-shared" viewBox="0 0 106 96">
-        <path d="M44 59H32v26h12v11H21.2V74.462H0V42.154C0 33.215 7.102 26 15.9 26h74.2c8.798 0 15.9 7.215 15.9 16.154V59H91.393A15.943 15.943 0 0 0 93 52c0-8.84-7.16-16-16-16s-16 7.16-16 16c0 2.51.578 4.886 1.607 7H44zM84 0H21v22h63V0z"></path>
-        <path d="M77 68c-9.679 0-29 6.253-29 18.667V96h58v-9.333C106 74.253 86.679 68 77 68zM77 64c6.63 0 12-5.37 12-12s-5.37-12-12-12-12 5.37-12 12 5.37 12 12 12z" fill="#4A93F9"></path>
-      </g>
       <g id="short-edge" viewBox="0 0 26 20" fill-rule="evenodd">
         <path d="M2 14v2h2v-2H2zm12 4v2h2v-2h-2zm4 0v2h2v-2h-2zm3.556-18H4.444C3.1 0 2 1.35 2 3v6h2V2h18v7h2V3c0-1.65-1.1-3-2.444-3zM24 18h-2v2c1.1 0 2-.9 2-2zM0 10v2h26v-2H0zm6 8v2h2v-2H6zm16-4v2h2v-2h-2zm-12 4v2h2v-2h-2zm-8 0c0 1.1.9 2 2 2v-2H2z">
         <path d="M29-6v32H-3V-6z">
@@ -15,13 +11,13 @@
         <path d="M-5-5h32v32H-5z">
       </g>
 
+    <if expr="chromeos_ash or chromeos_lacros">
       <!-- Icon from http://icons/ -->
       <g id="save-to-drive">
         <path fill="none" d="M0 0h24v24H0z"></path>
         <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-8.5 11l-1.1-2.14 2.84-4.96 1.5 2.66L12.25 17h-.75zm6.8 0h-5.55l1.4-2.5h5.11l.26.46L18.3 17zm-4.55-8h2.39l2.84 5h-2.93l-2.56-4.54.26-.46z"></path>
       </g>
 
-    <if expr="chromeos_ash or chromeos_lacros">
       <!-- Color scheme "light" Variants. -->
       <g id="printer-status-green">
         <path d="M19,8 C20.66,8 22,9.34 22,11 L22,11 L22.0008411,12.1834702 C20.9260374,10.5660653 19.0875152,9.5 17,9.5 C14.2041481,9.5 11.8549346,11.412286 11.1889599,14.0002575 L8,14 L8,19 L12.1267078,19.0009178 C12.7530956,19.8713157 13.6069102,20.5670952 14.6011413,21.0012461 L6,21 L6,17 L2,17 L2,11 C2,9.34 3.34,8 5,8 L5,8 Z M18,3 L18,7 L6,7 L6,3 L18,3 Z"></path>
@@ -80,7 +76,6 @@
       See http://goo.gl/Y1OdAq for instructions on adding additional icons.
       -->
       <g id="business"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path></g>
-      <g id="smartphone"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"></path></g>
       <g id="print"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></g>
     </defs>
   </svg>

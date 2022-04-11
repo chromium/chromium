@@ -375,7 +375,7 @@ suite(model_test.suiteName, function() {
   test(assert(model_test.TestNames.GetCloudPrintTicket), function() {
     initializeModel();
 
-    // Create a test cloud destination.
+    // Create a test extension destination.
     const testDestination = new Destination(
         'FooDevice', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
         'FooName', DestinationConnectionStatus.ONLINE);
@@ -447,7 +447,7 @@ suite(model_test.suiteName, function() {
     const unsupportedCloud = new Destination(
         GooglePromotedDestinationId.DOCS, DestinationType.GOOGLE,
         DestinationOrigin.COOKIES, 'Save to Google Drive',
-        DestinationConnectionStatus.ONLINE, {account: 'foo@chromium.org'});
+        DestinationConnectionStatus.ONLINE);
     const supportedLocal = new Destination(
         'FooDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'FooName',
         DestinationConnectionStatus.ONLINE);

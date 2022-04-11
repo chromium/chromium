@@ -69,8 +69,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
 
   static get properties() {
     return {
-      cloudPrintErrorMessage: String,
-
       controlsManaged: Boolean,
 
       destination: {
@@ -138,7 +136,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     };
   }
 
-  cloudPrintErrorMessage: string;
   controlsManaged: boolean;
   destination: Destination|null;
   destinationState: DestinationState;

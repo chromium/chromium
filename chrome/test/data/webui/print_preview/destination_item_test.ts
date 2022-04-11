@@ -75,7 +75,6 @@ suite(destination_item_test.suiteName, function() {
         printerName, DestinationConnectionStatus.OFFLINE, {
           extensionId: 'aaa111',
           extensionName: 'myPrinterExtension',
-          lastAccessTime: twoMonthsAgo.getTime()
         });
 
     const name = item.shadowRoot!.querySelector('.name')!;
@@ -85,7 +84,7 @@ suite(destination_item_test.suiteName, function() {
         '',
         item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
     assertEquals(
-        loadTimeData.getString('offlineForMonth'),
+        loadTimeData.getString('offline'),
         item.shadowRoot!.querySelector(
                             '.connection-status')!.textContent!.trim());
     assertFalse(item.shadowRoot!

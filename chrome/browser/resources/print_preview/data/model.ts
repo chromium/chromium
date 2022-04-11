@@ -1606,7 +1606,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    */
   createCloudJobTicket(destination: Destination): string {
     assert(
-        !destination.isLocal || destination.isExtension,
+        destination.isExtension,
         'Trying to create a Google Cloud Print print ticket for a local ' +
             ' non-extension destination');
     assert(

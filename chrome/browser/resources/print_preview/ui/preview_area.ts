@@ -252,7 +252,7 @@ export class PrintPreviewPreviewAreaElement extends
       // </if>
       case PreviewAreaState.ERROR:
         // The preview area is responsible for displaying all errors except
-        // print failed and cloud print error.
+        // print failed.
         return this.getErrorMessage_();
       default:
         return '';

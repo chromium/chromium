@@ -9,7 +9,6 @@ import '../data/document_info.js';
 import './sidebar.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
@@ -306,8 +305,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       return;
     }
     this.whenReady_.then(() => {
-      // The cloud print interface should be initialized before initializing the
-      // sidebar, so that cloud printers can be selected automatically.
       this.$.documentInfo.init(
           settings.previewModifiable, settings.previewIsFromArc,
           settings.documentTitle, settings.documentHasSelection);
@@ -407,9 +404,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.remove();
       this.nativeLayer_!.dialogClose(this.cancelled_);
     } else if (this.state === State.HIDDEN) {
-      if (this.destination_.isLocal &&
-          getPrinterTypeForDestination(this.destination_) !==
-              PrinterType.PDF_PRINTER) {
+      if (getPrinterTypeForDestination(this.destination_) !==
+          PrinterType.PDF_PRINTER) {
         // Only hide the preview for local, non PDF destinations.
         this.nativeLayer_!.hidePreview();
       }
@@ -418,7 +414,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.nativeLayer_!.print(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
-      assert(this.destination_.isLocal, 'Cannot print to cloud printers');
       const onError = getPrinterTypeForDestination(this.destination_) ===
               PrinterType.PDF_PRINTER ?
           this.onFileSelectionCancel_.bind(this) :

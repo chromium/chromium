@@ -106,7 +106,7 @@ export class PrintPreviewDestinationListItemElement extends
   static get observers() {
     return [
       'onDestinationPropertiesChange_(' +
-          'destination.displayName, destination.isOfflineOrInvalid, ' +
+          'destination.displayName, destination.isOffline, ' +
           'destination.isExtension)',
       'updateHighlightsAndHint_(destination, searchQuery)',
       // <if expr="chromeos_ash or chromeos_lacros">
@@ -132,7 +132,7 @@ export class PrintPreviewDestinationListItemElement extends
 
   private onDestinationPropertiesChange_() {
     this.title = this.destination.displayName;
-    this.stale_ = this.destination.isOfflineOrInvalid;
+    this.stale_ = this.destination.isOffline;
     if (this.destination.isExtension) {
       const icon =
           this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
@@ -227,9 +227,8 @@ export class PrintPreviewDestinationListItemElement extends
     }
     // </if>
 
-    return this.destination.isOfflineOrInvalid ?
-        this.destination.connectionStatusText :
-        '';
+    return this.destination.isOffline ? this.destination.connectionStatusText :
+                                        '';
   }
 
   private computeDestinationIcon_(): string {

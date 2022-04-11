@@ -105,7 +105,6 @@ export type NativeInitialSettings = {
           serializedDefaultDestinationSelectionRulesStr: string|null,
           pdfPrinterDisabled: boolean,
           destinationsManaged: boolean,
-  cloudPrintURL?: string,
   isDriveMounted?: boolean,
 };
 

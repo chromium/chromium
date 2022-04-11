@@ -34,7 +34,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   let nativeLayer: NativeLayerStub;
 
   setup(function() {
-    // Stub out the native layer and cloud print interface
+    // Stub out the native layer.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos_ash or chromeos_lacros">

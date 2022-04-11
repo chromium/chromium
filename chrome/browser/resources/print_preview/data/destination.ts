@@ -29,17 +29,17 @@ export enum DestinationType {
 }
 
 /**
- * Enumeration of the origin types for cloud destinations.
+ * Enumeration of the origin types for destinations.
  */
 export enum DestinationOrigin {
   LOCAL = 'local',
+  // Note: Cookies, device and privet are deprecated, but used to filter any
+  // legacy entries in the recent destinations, since we can't guarantee all
+  // such recent printers have been overridden.
   COOKIES = 'cookies',
   // <if expr="chromeos_ash or chromeos_lacros">
   DEVICE = 'device',
   // </if>
-  // Note: Privet is deprecated, but used to filter any legacy entries in the
-  // recent destinations, since we can't guarantee all recent privet printers
-  // have been overridden.
   PRIVET = 'privet',
   EXTENSION = 'extension',
   CROS = 'chrome_os',
@@ -66,22 +66,6 @@ export enum DestinationProvisionalType {
   // User has to grant USB access for the destination to its provider.
   // Used for destinations with extension origin.
   NEEDS_USB_PERMISSION = 'NEEDS_USB_PERMISSION',
-}
-
-/**
- * Enumeration specifying the status of a destination's 2018 certificate.
- * Values UNKNOWN and YES are returned directly by the GCP server.
- */
-export enum DestinationCertificateStatus {
-  // Destination is not a cloud printer or no status was retrieved.
-  NONE = 'NONE',
-  // Printer does not have a valid 2018 certificate. Currently unused, to be
-  // sent by GCP server.
-  NO = 'NO',
-  // Printer may or may not have a valid certificate. Sent by GCP server.
-  UNKNOWN = 'UNKNOWN',
-  // Printer has a valid 2018 certificate. Sent by GCP server.
-  YES = 'YES',
 }
 
 /**
@@ -137,22 +121,16 @@ export function createRecentDestinationKey(
 }
 
 export type DestinationOptionalParams = {
-  account?: string,
   tags?: string[],
-  isOwned?: boolean,
   isEnterprisePrinter?: boolean,
-  lastAccessTime?: number,
-  cloudID?: string,
   provisionalType?: DestinationProvisionalType,
   extensionId?: string,
   extensionName?: string,
   description?: string,
-  certificateStatus?: DestinationCertificateStatus,
 };
 
 /**
- * Print destination data object that holds data for both local and cloud
- * destinations.
+ * Print destination data object.
  */
 export class Destination {
   /**
@@ -186,11 +164,6 @@ export class Destination {
   private capabilities_: Cdd|null = null;
 
   /**
-   * Whether the destination is owned by the user.
-   */
-  private isOwned_: boolean;
-
-  /**
    * Whether the destination is an enterprise policy controlled printer.
    */
   private isEnterprisePrinter_: boolean;
@@ -209,12 +182,6 @@ export class Destination {
    * Connection status of the destination.
    */
   private connectionStatus_: DestinationConnectionStatus;
-
-  /**
-   * Number of milliseconds since the epoch when the printer was last
-   * accessed.
-   */
-  private lastAccessTime_: number;
 
   /**
    * Extension ID for extension managed printers.
@@ -284,11 +251,9 @@ export class Destination {
     this.origin_ = origin;
     this.displayName_ = displayName || '';
     this.tags_ = (params && params.tags) || [];
-    this.isOwned_ = (params && params.isOwned) || false;
     this.isEnterprisePrinter_ = (params && params.isEnterprisePrinter) || false;
     this.description_ = (params && params.description) || '';
     this.connectionStatus_ = connectionStatus;
-    this.lastAccessTime_ = (params && params.lastAccessTime) || Date.now();
     this.extensionId_ = (params && params.extensionId) || '';
     this.extensionName_ = (params && params.extensionName) || '';
     this.provisionalType_ =
@@ -315,21 +280,6 @@ export class Destination {
 
   get displayName(): string {
     return this.displayName_;
-  }
-
-  /**
-   * @return Whether the user owns the destination. Only applies to
-   *     cloud-based destinations.
-   */
-  get isOwned(): boolean {
-    return this.isOwned_;
-  }
-
-  /** @return Whether the destination is local (vs cloud-based). */
-  get isLocal(): boolean {
-    return this.origin_ === DestinationOrigin.LOCAL ||
-        this.origin_ === DestinationOrigin.EXTENSION ||
-        this.origin_ === DestinationOrigin.CROS;
   }
 
   /**
@@ -518,13 +468,6 @@ export class Destination {
     ].includes(this.connectionStatus_);
   }
 
-  /**
-   * @return Whether the destination is offline or has an invalid certificate.
-   */
-  get isOfflineOrInvalid(): boolean {
-    return this.isOffline;
-  }
-
   /** @return Whether the destination is ready to be selected. */
   get readyForSelection(): boolean {
     return (!(isChromeOS || isLacros) ||
@@ -534,33 +477,10 @@ export class Destination {
   }
 
   /**
-   * @return Human readable status for a destination that is offline
-   *     or has a bad certificate.
+   * @return Human readable status for a destination that is offline.
    */
   get connectionStatusText(): string {
-    if (!this.isOfflineOrInvalid) {
-      return '';
-    }
-    const offlineDurationMs = Date.now() - this.lastAccessTime_;
-    let statusMessageId;
-    if (offlineDurationMs > 31622400000.0) {  // One year.
-      statusMessageId = 'offlineForYear';
-    } else if (offlineDurationMs > 2678400000.0) {  // One month.
-      statusMessageId = 'offlineForMonth';
-    } else if (offlineDurationMs > 604800000.0) {  // One week.
-      statusMessageId = 'offlineForWeek';
-    } else {
-      statusMessageId = 'offline';
-    }
-    return loadTimeData.getString(statusMessageId);
-  }
-
-  /**
-   * @return Number of milliseconds since the epoch when the printer
-   *     was last accessed.
-   */
-  get lastAccessTime(): number {
-    return this.lastAccessTime_;
+    return this.isOffline ? loadTimeData.getString('offline') : '';
   }
 
   /** @return Path to the SVG for the destination's icon. */
@@ -579,16 +499,7 @@ export class Destination {
     if (this.isEnterprisePrinter) {
       return 'print-preview:business';
     }
-    if (this.isLocal) {
-      return 'print-preview:print';
-    }
-    if (this.type_ === DestinationType.MOBILE) {
-      return 'print-preview:smartphone';
-    }
-    if (this.isOwned_) {
-      return 'print-preview:print';
-    }
-    return 'print-preview:printer-shared';
+    return 'print-preview:print';
   }
 
   /**
@@ -693,10 +604,9 @@ export class Destination {
    * @return Native color model of the destination.
    */
   getNativeColorModel(isColor: boolean): number {
-    // For non-local printers or printers without capability, native color
-    // model is ignored.
+    // For printers without capability, native color model is ignored.
     const capability = this.colorCapability_();
-    if (!capability || !capability.option || !this.isLocal) {
+    if (!capability || !capability.option) {
       return isColor ? ColorMode.COLOR : ColorMode.GRAY;
     }
     const selected = this.getSelectedColorOption(isColor);
