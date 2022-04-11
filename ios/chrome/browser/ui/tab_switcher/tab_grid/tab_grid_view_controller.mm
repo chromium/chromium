@@ -860,18 +860,33 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                               trigger:(ViewRevealTrigger)trigger {
   [self updateNotSelectedTabCellOpacityForState:currentViewRevealState];
   self.currentState = currentViewRevealState;
+  // Update a11y visibility for browser and grid. Both should be visible
+  // when in Peeked mode, and only one visible in the other two modes.
+  BOOL updateAccessibility = NO;
   switch (currentViewRevealState) {
     case ViewRevealState::Hidden:
       [self.delegate tabGridViewControllerDidDismiss:self];
+      self.view.accessibilityViewIsModal = NO;
+      [self.delegate setBVCAccessibilityViewModal:YES];
+      updateAccessibility = YES;
       break;
     case ViewRevealState::Peeked:
-      // No-op.
+      self.view.accessibilityViewIsModal = NO;
+      [self.delegate setBVCAccessibilityViewModal:NO];
+      updateAccessibility = startViewRevealState == ViewRevealState::Hidden;
       break;
     case ViewRevealState::Revealed:
       self.scrollView.scrollEnabled = YES;
       [self setInsetForRemoteTabs];
       [self.delegate dismissBVC];
+      self.view.accessibilityViewIsModal = YES;
+      [self.delegate setBVCAccessibilityViewModal:NO];
+      updateAccessibility = startViewRevealState == ViewRevealState::Hidden;
       break;
+  }
+  if (updateAccessibility) {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    nil);
   }
 }
 

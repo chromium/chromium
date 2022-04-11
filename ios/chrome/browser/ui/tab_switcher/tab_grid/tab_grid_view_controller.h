@@ -70,7 +70,7 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
-// BVC is completely hidden, detach it from view.
+// BVC is completely hidden, detach it from view (for thumbstrip mode).
 - (void)dismissBVC;
 
 // Asks the delegate to open history modal with results filtered by
@@ -79,6 +79,9 @@ enum class TabGridPageConfiguration {
 
 // Asks the delegate to open a new tab page with a web search for |searchText|.
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText;
+
+// Sets BVC accessibilityViewIsModal to |modal| (for thumbstrip mode).
+- (void)setBVCAccessibilityViewModal:(BOOL)modal;
 
 @end
 

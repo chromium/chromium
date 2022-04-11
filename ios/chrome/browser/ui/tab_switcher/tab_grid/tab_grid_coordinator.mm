@@ -556,7 +556,6 @@
     [self.baseViewController addChildViewController:self.bvcContainer];
     self.bvcContainer.view.frame = self.baseViewController.view.bounds;
     [self.baseViewController.view addSubview:self.bvcContainer.view];
-    self.bvcContainer.view.accessibilityViewIsModal = YES;
     [self.bvcContainer didMoveToParentViewController:self.baseViewController];
   }
 
@@ -941,6 +940,10 @@
                     incognito:NO
            shouldCloseTabGrid:NO
                    completion:nil];
+}
+
+- (void)setBVCAccessibilityViewModal:(BOOL)modal {
+  self.bvcContainer.view.accessibilityViewIsModal = modal;
 }
 
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText {
