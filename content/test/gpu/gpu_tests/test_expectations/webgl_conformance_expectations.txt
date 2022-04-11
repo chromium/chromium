@@ -247,6 +247,7 @@ crbug.com/1143424 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
 crbug.com/478572 [ fuchsia ] deqp/data/gles2/shaders/functions.html [ Skip ]
 crbug.com/angleproject/3111 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/1218708 [ fuchsia ] conformance/rendering/many-draw-calls.html [ Skip ]
+crbug.com/1145858 [ fuchsia ] conformance/extensions/ext-disjoint-timer-query.html [ Skip ]
 
 # Fails when dcheck_always_on set to true
 [ fuchsia ] deqp/data/gles2/shaders/preprocessor.html [ Skip ]
@@ -407,8 +408,6 @@ crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] confor
 crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-
-crbug.com/1145858 [ fuchsia ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 
 ####################
 # Win failures     #
