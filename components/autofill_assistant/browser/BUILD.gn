@@ -458,6 +458,7 @@ source_set("unit_tests") {
     "actions/show_generic_ui_action_unittest.cc",
     "actions/show_info_box_action_unittest.cc",
     "actions/show_progress_bar_action_unittest.cc",
+    "actions/stop_action_unittest.cc",
     "actions/stopwatch_unittest.cc",
     "actions/tell_action_unittest.cc",
     "actions/update_client_settings_action_unittest.cc",
