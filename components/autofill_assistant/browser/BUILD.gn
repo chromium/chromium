@@ -573,19 +573,6 @@ source_set("unit_tests") {
   ]
 }
 
-static_library("extensions_test_support") {
-  testonly = true
-  deps = [
-    ":browser",
-    ":proto",
-    ":unit_test_support",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 if (is_android) {
   proto_java_library("proto_java") {
     proto_path = "//components/autofill_assistant/browser/"
