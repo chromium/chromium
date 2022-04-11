@@ -222,12 +222,6 @@ std::vector<std::string> GenerateKernelCmdline(
   VLOG(1) << "Setting ARCVM guest's zram size to " << guest_zram_size;
 
   std::vector<std::string> result = {
-      // Note: Do not change the value "bertha". This string is checked in
-      // platform2/metrics/process_meter.cc to detect ARCVM's crosvm processes,
-      // for example.
-      "androidboot.hardware=bertha",
-
-      "androidboot.container=1",
       base::StringPrintf("androidboot.native_bridge=%s", native_bridge.c_str()),
       base::StringPrintf("androidboot.dev_mode=%d", is_dev_mode),
       base::StringPrintf("androidboot.disable_runas=%d", !is_dev_mode),
@@ -385,12 +379,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_owner_id(kArcVmDefaultOwner);
   request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
 
-  request.add_params("root=/dev/vda");
   if (file_system_status.is_host_rootfs_writable() &&
       file_system_status.is_system_image_ext_format()) {
     request.add_params("rw");
   }
-  request.add_params("init=/init");
 
   for (auto& entry : kernel_cmdline)
     request.add_params(std::move(entry));
