@@ -481,7 +481,7 @@ interface Frame {
   // Requests a one-time distillation of the accessibility tree without enabling
   // accessibility if it wasn't already enabled.
   SnapshotAndDistillAXTree() => (ax.mojom.AXTreeUpdate snapshot,
-                                 array<int32> text_node_ids);
+                                 array<int32> content_node_ids);
 
   // Get HTML data by serializing the target frame and replacing all resource
   // links with a path to the local copy passed in the message payload. In order

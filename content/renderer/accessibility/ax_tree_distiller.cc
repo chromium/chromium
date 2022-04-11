@@ -8,6 +8,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "ui/accessibility/ax_node.h"
@@ -15,6 +16,15 @@
 
 namespace {
 
+static constexpr int kMaxNodes = 5000;
+
+// TODO: Consider moving this to AXNodeProperties.
+static const ax::mojom::Role kContentRoles[]{
+    ax::mojom::Role::kHeading,
+    ax::mojom::Role::kParagraph,
+};
+
+// TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kAudio,
     ax::mojom::Role::kBanner,
@@ -29,7 +39,6 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kLabelText,
     ax::mojom::Role::kNavigation,
 };
-static constexpr int kMaxNodes = 5000;
 
 int32_t GetNumberOfChildParagraphs(const ui::AXNode* node) {
   int n = 0;
@@ -60,11 +69,7 @@ const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
       article = popped;
     }
 
-    // TODO(crbug.com/1266555): Replace this with skipping all content nodes,
-    // including paragraphs, headings, and other text-like containers from
-    // AXNodeProperties.
-    if (popped->GetRole() != ax::mojom::Role::kParagraph) {
-      // Only explore branches that do not have a large number of paragraphs.
+    if (!base::Contains(kContentRoles, node->GetRole())) {
       for (auto iter = popped->UnignoredChildrenBegin();
            iter != popped->UnignoredChildrenEnd(); ++iter) {
         queue.push(iter.get());
@@ -75,21 +80,21 @@ const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
   return article;
 }
 
-void AddTextNodesToVector(const ui::AXNode* node,
-                          std::vector<ui::AXNodeID>* text_node_ids) {
-  if (node->GetRole() == ax::mojom::Role::kStaticText) {
-    if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
-      text_node_ids->emplace_back(node->id());
+// Recurse through the root node, searching for content nodes (any node whose
+// role is in kContentRoles). Skip branches which begin with a node with role
+// in kRolesToSkip. Once a content node is identified, add it to the vector
+// |content_node_ids|, whose pointer is passed through the recursion.
+void AddContentNodesToVector(const ui::AXNode* node,
+                             std::vector<ui::AXNodeID>* content_node_ids) {
+  if (base::Contains(kContentRoles, node->GetRole())) {
+    content_node_ids->emplace_back(node->id());
     return;
   }
-
-  for (const auto role : kRolesToSkip) {
-    if (role == node->GetRole())
-      return;
-  }
+  if (base::Contains(kRolesToSkip, node->GetRole()))
+    return;
   for (auto iter = node->UnignoredChildrenBegin();
        iter != node->UnignoredChildrenEnd(); ++iter) {
-    AddTextNodesToVector(iter.get(), text_node_ids);
+    AddContentNodesToVector(iter.get(), content_node_ids);
   }
 }
 
@@ -121,10 +126,10 @@ void AXTreeDistiller::SnapshotAXTree() {
 }
 
 void AXTreeDistiller::DistillAXTree() {
-  // If text_node_ids_ is already cached, do nothing.
-  if (text_node_ids_)
+  // If content_node_ids_ is already cached, do nothing.
+  if (content_node_ids_)
     return;
-  text_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
+  content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
 
   DCHECK(snapshot_);
   ui::AXTree tree;
@@ -140,8 +145,7 @@ void AXTreeDistiller::DistillAXTree() {
     return;
   }
 
-  text_node_ids_->reserve(snapshot_->nodes.size());
-  AddTextNodesToVector(article_node, text_node_ids_.get());
+  AddContentNodesToVector(article_node, content_node_ids_.get());
 }
 
 }  // namespace content

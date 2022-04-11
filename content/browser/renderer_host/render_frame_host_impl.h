@@ -2923,12 +2923,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Callback that will be called as a response to the call to the method
   // content::mojom::RenderAccessibility::DistillAXTree(). The |callback| passed
-  // will be invoked after the renderer has responded with a list of text node
-  // ID's as |text_nodes|.
+  // will be invoked after the renderer has responded with a list of
+  // |content_node_ids|.
   void RequestDistilledAXTreeCallback(
       AXTreeDistillerCallback callback,
       const ui::AXTreeUpdate& snapshot,
-      const std::vector<ui::AXNodeID>& text_node_ids);
+      const std::vector<ui::AXNodeID>& content_node_ids);
 
   // Makes a copy of an AXTreeUpdate to send to the destination.
   void CopyAXTreeUpdate(const ui::AXTreeUpdate& snapshot,

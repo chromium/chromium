@@ -29,25 +29,23 @@ class AXTreeDistillerTestBase : public RenderViewTest {
     distiller_->Distill();
   }
 
-  void CheckTextNodes(const std::vector<std::string>& text_node_contents) {
+  void CheckNodeContents(const std::vector<std::string>& node_contents) {
     // AXTree snapshot from distiller should unserialize successfully.
     ui::AXTree tree;
     EXPECT_TRUE(tree.Unserialize(*(distiller_->GetSnapshot())));
 
-    // Text node IDs list from distiller should be the same length as
-    // |text_node_contents| passed in.
-    auto* text_node_ids = distiller_->GetTextNodeIDs();
-    EXPECT_EQ(text_node_ids->size(), text_node_contents.size());
+    // Content node IDs list from distiller should be the same length as
+    // |node_contents| passed in.
+    auto* content_node_ids = distiller_->GetContentNodeIDs();
+    EXPECT_EQ(content_node_ids->size(), node_contents.size());
 
-    // Iterate through each text node ID from distiller and check that the text
-    // value equals the passed-in string from |text_node_contents|.
-    for (size_t i = 0; i < text_node_ids->size(); i++) {
-      ui::AXNode* node = tree.GetFromId(text_node_ids->at(i));
+    // Iterate through each content node ID from distiller and check that the
+    // text value equals the passed-in string from |node_contents|.
+    for (size_t i = 0; i < content_node_ids->size(); i++) {
+      ui::AXNode* node = tree.GetFromId(content_node_ids->at(i));
       EXPECT_TRUE(node);
-      std::string value;
-      EXPECT_TRUE(
-          node->GetStringAttribute(ax::mojom::StringAttribute::kName, &value));
-      EXPECT_EQ(value, text_node_contents[i]);
+      EXPECT_TRUE(node->GetTextContentLengthUTF8());
+      EXPECT_EQ(node->GetTextContentUTF8(), node_contents[i]);
     }
   }
 
@@ -58,7 +56,7 @@ class AXTreeDistillerTestBase : public RenderViewTest {
 struct TestCase {
   const char* test_name;
   const char* html;
-  std::vector<std::string> text_node_contents;
+  std::vector<std::string> node_contents;
 };
 
 class AXTreeDistillerTest : public AXTreeDistillerTestBase,
@@ -154,12 +152,19 @@ const TestCase kDistillWebPageTestCases[] = {
         </div>
       <body>)HTML",
      {"P2", "P3"}},
+    /* ----------------------- */
+    {"paragraph_with_bold",
+     R"HTML(<!doctype html>
+      <body>
+        <p>Some <b>bolded</b> text</p>
+      <body>)HTML",
+     {"Some bolded text"}},
 };
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
   TestCase param = GetParam();
   DistillPage(param.html);
-  CheckTextNodes(param.text_node_contents);
+  CheckNodeContents(param.node_contents);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* prefix */,

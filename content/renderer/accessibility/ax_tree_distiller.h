@@ -32,7 +32,9 @@ class CONTENT_EXPORT AXTreeDistiller {
   void Distill();
 
   ui::AXTreeUpdate* GetSnapshot() { return snapshot_.get(); }
-  std::vector<ui::AXNodeID>* GetTextNodeIDs() { return text_node_ids_.get(); }
+  std::vector<ui::AXNodeID>* GetContentNodeIDs() {
+    return content_node_ids_.get();
+  }
   bool IsDistillable() { return is_distillable_; }
 
  private:
@@ -40,12 +42,12 @@ class CONTENT_EXPORT AXTreeDistiller {
   void SnapshotAXTree();
 
   // Distills |snapshot_| by identifying main content nodes and caching their
-  // IDs as |text_node_ids_|.
+  // IDs as |content_node_ids_|.
   void DistillAXTree();
 
   RenderFrameImpl* render_frame_;
   std::unique_ptr<ui::AXTreeUpdate> snapshot_;
-  std::unique_ptr<std::vector<ui::AXNodeID>> text_node_ids_;
+  std::unique_ptr<std::vector<ui::AXNodeID>> content_node_ids_;
   bool is_distillable_ = true;
 };
 

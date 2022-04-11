@@ -47,22 +47,29 @@ void ReadAnythingPageHandler::ShowUI() {
 
 void ReadAnythingPageHandler::OnAXTreeDistilled(
     const ui::AXTreeUpdate& snapshot,
-    const std::vector<ui::AXNodeID>& text_node_ids) {
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  // Unserialize the snapshot.
   ui::AXTree tree;
   bool success = tree.Unserialize(snapshot);
   if (!success)
     return;
-  std::vector<std::string> text_node_contents;
-  text_node_contents.resize(text_node_ids.size());
-  for (size_t i = 0; i < text_node_ids.size(); ++i) {
-    ui::AXNode* node = tree.GetFromId(text_node_ids[i]);
+
+  std::vector<std::string> content;
+  // Iterate through all content node ids.
+  for (auto node_id : content_node_ids) {
+    // Find the node in the tree which has this node id.
+    ui::AXNode* node = tree.GetFromId(node_id);
     if (!node)
       continue;
-    std::string value;
-    if (node->GetStringAttribute(ax::mojom::StringAttribute::kName, &value))
-      text_node_contents[i] = value;
+
+    // Get the complete text content for the node and add it to a vector of
+    // contents.
+    // TODO: Handle links.
+    if (node->GetTextContentLengthUTF8())
+      content.push_back(node->GetTextContentUTF8());
   }
-  page_->OnEssentialContent(std::move(text_node_contents));
+  // Send the contents to the WebUI.
+  page_->OnEssentialContent(std::move(content));
 }
 
 void ReadAnythingPageHandler::HandleFontChange(

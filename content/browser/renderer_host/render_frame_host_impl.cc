@@ -9753,12 +9753,12 @@ void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
 void RenderFrameHostImpl::RequestDistilledAXTreeCallback(
     AXTreeDistillerCallback callback,
     const ui::AXTreeUpdate& snapshot,
-    const std::vector<ui::AXNodeID>& text_nodes) {
+    const std::vector<ui::AXNodeID>& content_node_ids) {
   // Since |snapshot| is const, we need to make a copy in order to modify the
   // tree data.
   ui::AXTreeUpdate dst_snapshot;
   CopyAXTreeUpdate(snapshot, &dst_snapshot);
-  std::move(callback).Run(dst_snapshot, text_nodes);
+  std::move(callback).Run(dst_snapshot, content_node_ids);
 }
 
 void RenderFrameHostImpl::CopyAXTreeUpdate(const ui::AXTreeUpdate& snapshot,
