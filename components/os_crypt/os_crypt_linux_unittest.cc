@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker_linux.h"
@@ -73,7 +72,7 @@ TEST_F(OSCryptLinuxTest, IsEncryptionAvailable) {
   EXPECT_TRUE(OSCrypt::IsEncryptionAvailable());
   OSCrypt::ClearCacheForTesting();
   // Mock the GetKeyStorage function.
-  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&GetNullKeyStorage));
+  OSCrypt::UseMockKeyStorageForTesting(GetNullKeyStorage);
   EXPECT_FALSE(OSCrypt::IsEncryptionAvailable());
 }
 

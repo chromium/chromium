@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/rand_util.h"
 #include "components/os_crypt/key_storage_config_linux.h"
@@ -31,12 +30,12 @@ std::string* OSCryptMockerLinux::GetKeyPtr() {
 
 // static
 void OSCryptMockerLinux::SetUp() {
-  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&CreateNewMock));
+  OSCrypt::UseMockKeyStorageForTesting(&CreateNewMock);
 }
 
 // static
 void OSCryptMockerLinux::TearDown() {
-  OSCrypt::UseMockKeyStorageForTesting(base::NullCallback());
+  OSCrypt::UseMockKeyStorageForTesting(nullptr);
   OSCrypt::ClearCacheForTesting();
 }
 
