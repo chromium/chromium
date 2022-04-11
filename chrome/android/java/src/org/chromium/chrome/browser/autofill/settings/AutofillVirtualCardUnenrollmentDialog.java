@@ -51,7 +51,7 @@ public class AutofillVirtualCardUnenrollmentDialog {
                         .with(ModalDialogProperties.TITLE,
                                 mContext.getString(
                                         R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
                                         mContext,
                                         R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_message,

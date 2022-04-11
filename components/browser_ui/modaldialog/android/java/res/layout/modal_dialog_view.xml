@@ -34,8 +34,16 @@
                 android:visibility="gone" />
 
             <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/message"
+                android:id="@+id/message_paragraph_1"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="20sp"
+                style="@style/AlertDialogContent" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/message_paragraph_2"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"
                 app:leading="20sp"
                 style="@style/AlertDialogContent" />
 

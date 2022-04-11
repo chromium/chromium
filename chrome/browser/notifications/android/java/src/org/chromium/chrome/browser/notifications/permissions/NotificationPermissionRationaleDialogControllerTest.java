@@ -77,7 +77,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
         // The dialog should have no title or message, because we set those on CUSTOM_VIEW.
         assertNull(dialogModel.get(ModalDialogProperties.TITLE));
-        assertNull(dialogModel.get(ModalDialogProperties.MESSAGE));
+        assertNull(dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
 
         assertEquals(ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
                 dialogModel.get(ModalDialogProperties.BUTTON_STYLES));

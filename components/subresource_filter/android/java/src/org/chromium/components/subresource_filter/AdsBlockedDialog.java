@@ -84,18 +84,19 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
         Resources resources = mContext.getResources();
         mClickableSpan = new NoUnderlineClickableSpan(
                 mContext, (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
-        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                               .with(ModalDialogProperties.CONTROLLER, this)
-                               .with(ModalDialogProperties.TITLE, resources,
-                                       R.string.blocked_ads_dialog_title)
-                               .with(ModalDialogProperties.MESSAGE, getFormattedMessageText())
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                       R.string.blocked_ads_dialog_always_allow)
-                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                       R.string.cancel)
-                               .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                               .with(ModalDialogProperties.FOCUS_DIALOG, true)
-                               .build();
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, resources,
+                                R.string.blocked_ads_dialog_title)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, getFormattedMessageText())
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                R.string.blocked_ads_dialog_always_allow)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                R.string.cancel)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.FOCUS_DIALOG, true)
+                        .build();
 
         // shouldPostDialog determines if ModalDialogManager#showDialog should be invoked directly
         // or using Handler#post.

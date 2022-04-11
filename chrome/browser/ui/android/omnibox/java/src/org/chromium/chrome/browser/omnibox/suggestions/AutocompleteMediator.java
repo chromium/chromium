@@ -542,7 +542,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, titleText)
                         .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
-                        .with(ModalDialogProperties.MESSAGE, resources.getString(dialogMessageId))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                resources.getString(dialogMessageId))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel)

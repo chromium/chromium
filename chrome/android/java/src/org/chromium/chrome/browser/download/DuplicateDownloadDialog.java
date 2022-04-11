@@ -9,9 +9,11 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -67,48 +69,12 @@ public class DuplicateDownloadDialog {
                         .Builder(ModalDialogProperties.ALL_KEYS)
 
                         .with(ModalDialogProperties.CONTROLLER,
-                                new ModalDialogProperties.Controller() {
-                                    @Override
-                                    public void onClick(PropertyModel model, int buttonType) {
-                                        boolean isConfirm = buttonType
-                                                == ModalDialogProperties.ButtonType.POSITIVE;
-                                        if (callback != null) {
-                                            callback.onResult(isConfirm);
-                                        }
-                                        modalDialogManager.dismissDialog(model,
-                                                isConfirm ? DialogDismissalCause
-                                                                    .POSITIVE_BUTTON_CLICKED
-                                                          : DialogDismissalCause
-                                                                    .NEGATIVE_BUTTON_CLICKED);
-                                        recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
-                                                isConfirm
-                                                        ? DuplicateDownloadDialogEvent
-                                                                  .DUPLICATE_DOWNLOAD_DIALOG_CONFIRM
-                                                        : DuplicateDownloadDialogEvent
-                                                                  .DUPLICATE_DOWNLOAD_DIALOG_CANCEL);
-                                    }
-
-                                    @Override
-                                    public void onDismiss(PropertyModel model, int dismissalCause) {
-                                        if (callback != null
-                                                && dismissalCause
-                                                        != DialogDismissalCause
-                                                                   .POSITIVE_BUTTON_CLICKED
-                                                && dismissalCause
-                                                        != DialogDismissalCause
-                                                                   .NEGATIVE_BUTTON_CLICKED) {
-                                            callback.onResult(false);
-                                            recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
-                                                    DuplicateDownloadDialogEvent
-                                                            .DUPLICATE_DOWNLOAD_DIALOG_DISMISS);
-                                        }
-                                    }
-                                })
+                                getController(modalDialogManager, pageUrl, callback))
                         .with(ModalDialogProperties.TITLE,
                                 context.getResources().getString(pageUrl.isEmpty()
                                                 ? R.string.duplicate_download_dialog_title
                                                 : R.string.duplicate_page_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 getClickableSpan(context, filePath, pageUrl, totalBytes,
                                         duplicateExists, otrProfileID))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
@@ -117,9 +83,51 @@ public class DuplicateDownloadDialog {
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getResources().getString(R.string.cancel))
                         .build();
+
+        if (shouldShowIncognitoWarning(otrProfileID)) {
+            mPropertyModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2,
+                    context.getResources().getString(R.string.download_location_incognito_warning));
+        }
+
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
         recordDuplicateDownloadDialogEvent(
                 !pageUrl.isEmpty(), DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW);
+    }
+
+    private boolean shouldShowIncognitoWarning(OTRProfileID otrProfileID) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
+                && OTRProfileID.isOffTheRecord(otrProfileID);
+    }
+
+    @NonNull
+    private ModalDialogProperties.Controller getController(
+            ModalDialogManager modalDialogManager, String pageUrl, Callback<Boolean> callback) {
+        return new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                boolean isConfirm = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
+                if (callback != null) {
+                    callback.onResult(isConfirm);
+                }
+                modalDialogManager.dismissDialog(model,
+                        isConfirm ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
+                        isConfirm ? DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM
+                                  : DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL);
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (callback != null
+                        && dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                    callback.onResult(false);
+                    recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
+                            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS);
+                }
+            }
+        };
     }
 
     /**

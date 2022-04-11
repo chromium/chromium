@@ -293,7 +293,7 @@ public class WebContentsDarkModeMessageController {
                                        .with(ModalDialogProperties.TITLE_ICON,
                                                AppCompatResources.getDrawable(activity,
                                                        R.drawable.ic_brightness_medium_24dp))
-                                       .with(ModalDialogProperties.MESSAGE, message)
+                                       .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                                positiveButtonId)
                                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,

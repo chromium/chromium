@@ -73,7 +73,7 @@ public class CloseAllTabsDialog {
                                 context.getString(isIncognito
                                                 ? R.string.close_all_tabs_dialog_title_incognito
                                                 : R.string.close_all_tabs_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(isIncognito
                                                 ? R.string.close_all_tabs_dialog_message_incognito
                                                 : R.string.close_all_tabs_dialog_message))

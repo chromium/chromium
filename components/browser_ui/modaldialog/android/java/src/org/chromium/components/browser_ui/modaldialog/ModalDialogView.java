@@ -57,7 +57,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
-    private TextView mMessageView;
+    private TextView mMessageParagraph1;
+    private TextView mMessageParagraph2;
     private ViewGroup mCustomViewContainer;
     private View mButtonBar;
     private Button mPositiveButton;
@@ -85,7 +86,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
-        mMessageView = findViewById(R.id.message);
+        mMessageParagraph1 = findViewById(R.id.message_paragraph_1);
+        mMessageParagraph2 = findViewById(R.id.message_paragraph_2);
         mCustomViewContainer = findViewById(R.id.custom);
         mButtonBar = findViewById(R.id.button_bar);
         mPositiveButton = findViewById(R.id.positive_button);
@@ -95,7 +97,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         mPositiveButton.setOnClickListener(this);
         mNegativeButton.setOnClickListener(this);
-        mMessageView.setMovementMethod(LinkMovementMethod.getInstance());
+        mMessageParagraph1.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterContainer.setBackgroundColor(
                 ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
@@ -265,8 +267,17 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /** @param message The message in the dialog content. */
-    void setMessage(CharSequence message) {
-        mMessageView.setText(message);
+    void setMessageParagraph1(CharSequence message) {
+        mMessageParagraph1.setText(message);
+        updateContentVisibility();
+    }
+
+    /**
+     * @param message The message shown below the text set via
+     *         {@link #setMessageParagraph1(CharSequence)} when both are set.
+     */
+    void setMessageParagraph2(CharSequence message) {
+        mMessageParagraph2.setText(message);
         updateContentVisibility();
     }
 
@@ -351,15 +362,18 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
         boolean titleContainerVisible = titleVisible || titleIconVisible;
-        boolean messageVisible = !TextUtils.isEmpty(mMessageView.getText());
-        boolean scrollViewVisible = (mTitleScrollable && titleContainerVisible) || messageVisible;
+        boolean messageParagraph1Visibile = !TextUtils.isEmpty(mMessageParagraph1.getText());
+        boolean messageParagraph2Visible = !TextUtils.isEmpty(mMessageParagraph2.getText());
+        boolean scrollViewVisible = (mTitleScrollable && titleContainerVisible)
+                || messageParagraph1Visibile || messageParagraph2Visible;
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
 
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
-        mMessageView.setVisibility(messageVisible ? View.VISIBLE : View.GONE);
+        mMessageParagraph1.setVisibility(messageParagraph1Visibile ? View.VISIBLE : View.GONE);
         mScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
+        mMessageParagraph2.setVisibility(messageParagraph2Visible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
     }
 

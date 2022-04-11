@@ -98,7 +98,7 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         // Get the "Learn more about virtual cards" span.
         SpannableString str = (SpannableString) mModalDialogManager.getShownDialogModel().get(
-                ModalDialogProperties.MESSAGE);
+                ModalDialogProperties.MESSAGE_PARAGRAPH_1);
         // Assert that the message is not empty.
         assertThat(str.length()).isGreaterThan(0);
         NoUnderlineClickableSpan[] spans =

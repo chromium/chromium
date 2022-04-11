@@ -118,7 +118,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.TITLE, resources, titleId)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 resources.getString(R.string.webapp_update_explanation))
                         .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
                         .with(ModalDialogProperties.BUTTON_STYLES,

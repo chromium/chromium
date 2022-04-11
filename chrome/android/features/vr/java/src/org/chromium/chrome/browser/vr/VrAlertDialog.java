@@ -126,7 +126,7 @@ public class VrAlertDialog extends AlertDialog {
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
-                .with(ModalDialogProperties.MESSAGE, message)
+                .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                 .with(ModalDialogProperties.CUSTOM_VIEW, mView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText)

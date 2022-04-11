@@ -302,7 +302,7 @@ public final class SubresourceFilterTest {
                                    .getModalDialogManager()
                                    .getCurrentPresenterForTest())
                                   .getDialogContainerForTest();
-        TextView messageView = dialogView.findViewById(R.id.message);
+        TextView messageView = dialogView.findViewById(R.id.message_paragraph_1);
         Spanned spannedMessage = (Spanned) messageView.getText();
         ClickableSpan[] spans =
                 spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);

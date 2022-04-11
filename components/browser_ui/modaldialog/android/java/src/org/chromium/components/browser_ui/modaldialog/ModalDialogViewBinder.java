@@ -26,8 +26,10 @@ public class ModalDialogViewBinder
             view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));
         } else if (ModalDialogProperties.TITLE_ICON == propertyKey) {
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
-        } else if (ModalDialogProperties.MESSAGE == propertyKey) {
-            view.setMessage(model.get(ModalDialogProperties.MESSAGE));
+        } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_1 == propertyKey) {
+            view.setMessageParagraph1(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_2 == propertyKey) {
+            view.setMessageParagraph2(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
         } else if (ModalDialogProperties.CUSTOM_VIEW == propertyKey) {
             view.setCustomView(model.get(ModalDialogProperties.CUSTOM_VIEW));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_TEXT == propertyKey) {

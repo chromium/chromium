@@ -111,7 +111,8 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
         onView(withId(R.id.custom)).check(matches(not(isDisplayed())));
         onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.positive_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));
@@ -159,7 +160,7 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
 
         // Set title to not scrollable and verify that non-scrollable title is displayed.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -169,7 +170,7 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -200,30 +201,59 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    public void testMessage() {
-        // Verify that the message set from builder is displayed.
+    public void testMessageParagraph1() {
+        // Verify that the message_paragraph_1 set from builder is displayed.
         String msg = sResources.getString(R.string.more);
-        PropertyModel model = createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE, msg));
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, msg));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message)).check(matches(allOf(isDisplayed(), withText(R.string.more))));
+        onView(withId(R.id.message_paragraph_1))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
 
-        // Set an empty message and verify that message is not shown.
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(ModalDialogProperties.MESSAGE, ""));
+        // Set an empty message_paragraph_1 and verify that message_paragraph_1 is not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, ""));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
 
-        // Use CharSequence for the message.
+        // Use CharSequence for the message_paragraph_1.
         SpannableStringBuilder sb = new SpannableStringBuilder(msg);
         sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(ModalDialogProperties.MESSAGE, sb));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, sb));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message)).check(matches(allOf(isDisplayed(), withText(R.string.more))));
+        onView(withId(R.id.message_paragraph_1))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMessageParagraph2() {
+        // Verify that the message_paragraph_2 set from builder is displayed.
+        String msg = "Incognito warning message";
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_2, msg));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2))
+                .check(matches(allOf(isDisplayed(), withText(msg))));
+
+        // Set an empty message_paragraph_2 and verify that it's not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, ""));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
     }
 
     @Test

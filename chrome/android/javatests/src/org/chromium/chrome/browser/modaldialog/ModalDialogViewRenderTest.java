@@ -130,7 +130,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
@@ -146,7 +146,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton);
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
@@ -165,7 +165,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE, "Message")
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, "Message")
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_ICON, icon));
         mRenderTestRule.render(mModalDialogView, "primary_button_with_icon");
@@ -181,7 +181,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton);
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE, "Message")
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, "Message")
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_ICON, icon)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
@@ -197,7 +197,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
                         .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "scrollable_title");
@@ -227,7 +227,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
         createModel(
                 mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)

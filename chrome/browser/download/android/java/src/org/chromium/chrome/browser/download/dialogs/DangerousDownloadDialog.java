@@ -103,7 +103,7 @@ public class DangerousDownloadDialog {
                         .with(ModalDialogProperties.TITLE,
                                 context.getResources().getString(
                                         R.string.dangerous_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE, message)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getResources().getString(
                                         R.string.dangerous_download_dialog_confirm_text))

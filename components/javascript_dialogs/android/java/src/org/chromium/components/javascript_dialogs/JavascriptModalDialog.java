@@ -62,7 +62,7 @@ public abstract class JavascriptModalDialog implements ModalDialogProperties.Con
         mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                .with(ModalDialogProperties.CONTROLLER, this)
                                .with(ModalDialogProperties.TITLE, mTitle)
-                               .with(ModalDialogProperties.MESSAGE, mMessage)
+                               .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, mMessage)
                                .with(ModalDialogProperties.CUSTOM_VIEW, mDialogCustomView)
                                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                        mPositiveButtonTextId)

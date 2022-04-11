@@ -114,7 +114,7 @@ public class CloseAllTabsDialogUnitTest {
         assertEquals(
                 mContext.getString(isIncognito ? R.string.close_all_tabs_dialog_message_incognito
                                                : R.string.close_all_tabs_dialog_message),
-                model.get(ModalDialogProperties.MESSAGE));
+                model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
         assertEquals(mContext.getString(R.string.menu_close_all_tabs),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         assertEquals(mContext.getString(R.string.cancel),

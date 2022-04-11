@@ -456,9 +456,10 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController);
         if (!clickthroughData.getDescription().isEmpty()) {
-            builder.with(ModalDialogProperties.MESSAGE, clickthroughData.getDescription());
+            builder.with(
+                    ModalDialogProperties.MESSAGE_PARAGRAPH_1, clickthroughData.getDescription());
         } else {
-            builder.with(ModalDialogProperties.MESSAGE,
+            builder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                     resources.getString(R.string.autofill_assistant_view_original_image_desc));
         }
 
