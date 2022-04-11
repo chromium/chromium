@@ -18,7 +18,7 @@
 #error "This file requires ARC support."
 #endif
 
-const char kScriptName[] = "link_to_text_js";
+const char kScriptName[] = "link_to_text";
 const char kGetLinkToTextFunction[] = "linkToText.getLinkToText";
 
 LinkToTextJavaScriptFeature::LinkToTextJavaScriptFeature()

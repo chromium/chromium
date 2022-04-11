@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("link_to_text") {
   sources = [
@@ -66,10 +66,10 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_bundle("link_to_text_js") {
+optimize_js("link_to_text_js") {
   visibility = [ ":link_to_text" ]
-  closure_entry_point = "__crWeb.linkToText"
 
+  primary_script = "resources/link_to_text.js"
   sources = [
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
