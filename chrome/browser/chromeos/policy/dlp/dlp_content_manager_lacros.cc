@@ -235,6 +235,7 @@ void DlpContentManagerLacros::OnConfidentialityChanged(
   }
   window_webcontents_[window].insert(web_contents);
   UpdateRestrictions(window);
+  CheckRunningScreenShares();
 }
 
 void DlpContentManagerLacros::OnWebContentsDestroyed(
