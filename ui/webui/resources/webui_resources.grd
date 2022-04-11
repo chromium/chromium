@@ -23,24 +23,18 @@ without changes to the corresponding grd file. -->
     </includes>
     <structures>
       <structure name="IDR_WEBUI_CSS_MENU_CSS"
-                 file="css/menu.css" type="chrome_html"
-                 flattenhtml="true" />
+                 file="css/menu.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_MENU_BUTTON_CSS"
-                 file="css/menu_button.css" type="chrome_html"
-                 flattenhtml="true" />
+                 file="css/menu_button.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_SPINNER_CSS"
-                 file="css/spinner.css" type="chrome_html"
-                 flattenhtml="true" />
+                 file="css/spinner.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_TREE_CSS"
-                 file="css/tree.css" type="chrome_html"
-                 flattenhtml="true" />
+                 file="css/tree.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_WIDGETS_CSS"
-                 file="css/widgets.css" type="chrome_html"
-                 flattenhtml="true" />
+                 file="css/widgets.css" type="chrome_html" />
       <if expr="chromeos_ash">
         <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
-                   file="css/overlay.css" type="chrome_html"
-                   flattenhtml="true" />
+                   file="css/overlay.css" type="chrome_html" />
       </if>
     </structures>
   </release>
