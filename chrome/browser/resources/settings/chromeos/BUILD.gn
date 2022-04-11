@@ -283,6 +283,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/multidevice_page/multidevice_browser_proxy.js",
     "chromeos/multidevice_page/multidevice_constants.js",
     "chromeos/multidevice_page/multidevice_feature_behavior.js",
+    "chromeos/multidevice_page/multidevice_metrics_logger.js",
     "chromeos/nearby_share_page/nearby_account_manager_browser_proxy.js",
     "chromeos/nearby_share_page/nearby_share_receive_manager.js",
     "chromeos/nearby_share_page/types.js",

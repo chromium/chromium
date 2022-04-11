@@ -2348,6 +2348,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartLock.Toggle" enum="SmartLockToggle"
+    expires_after="2023-02-01">
+  <owner>cclem@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Emitted whenever Smart Lock is enabled/disabled in Settings using any of the
+    three toggles. Indicates which toggle was used and whether Smart Lock was
+    enabled or disabled.
+  </summary>
+</histogram>
+
 <histogram name="WifiSync.MultiDeviceFeatureState"
     enum="MultiDevice_FeatureState" expires_after="2023-02-01">
   <owner>cvandermerwe@google.com</owner>

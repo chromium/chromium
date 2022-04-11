@@ -84761,6 +84761,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Authenticated channel dropped"/>
 </enum>
 
+<enum name="SmartLockToggle">
+  <int value="0" label="Enabled on multidevice page"/>
+  <int value="1" label="Disabled on multidevice page"/>
+  <int value="2" label="Enabled on lock screen settings"/>
+  <int value="3" label="Disabled on lock screen settings"/>
+</enum>
+
 <enum name="SmoothVolatility">
   <int value="0" label="Prediction stays at NotSmooth after update"/>
   <int value="1"

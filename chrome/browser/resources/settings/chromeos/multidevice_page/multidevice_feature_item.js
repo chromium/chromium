@@ -18,6 +18,7 @@ import {RouteOriginBehavior} from '../route_origin_behavior.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
 
 /**
  * @fileoverview
@@ -79,6 +80,8 @@ Polymer({
       value: false,
     }
   },
+
+  listeners: {'feature-toggle-clicked': 'onFeatureToggleClicked_'},
 
   /** RouteOriginBehavior override */
   route_: routes.MULTIDEVICE_FEATURES,
@@ -162,5 +165,24 @@ Polymer({
    */
   getItemTextContainerClassName_(isFeatureIconHidden) {
     return isFeatureIconHidden ? 'start' : 'middle';
+  },
+
+  /**
+   * Intercept (but do not stop propagation of) the feature-toggle-clicked event
+   * for the purpose of logging metrics.
+   * @private
+   */
+  onFeatureToggleClicked_(event) {
+    const feature = event.detail.feature;
+    const enabled = event.detail.enabled;
+
+    if (feature === MultiDeviceFeature.SMART_LOCK) {
+      const toggleLocation =
+          Router.getInstance().currentRoute.contains(routes.LOCK_SCREEN) ?
+          SmartLockToggleLocation.LOCK_SCREEN_SETTINGS :
+          SmartLockToggleLocation.MULTIDEVICE_PAGE;
+
+      recordSmartLockToggleMetric(toggleLocation, enabled);
+    }
   },
 });
