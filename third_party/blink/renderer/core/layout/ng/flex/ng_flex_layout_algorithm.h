@@ -156,7 +156,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool MovePastRowBreakPoint(NGBreakAppeal appeal_before,
                              LayoutUnit fragmentainer_block_offset,
                              LayoutUnit row_block_size,
-                             wtf_size_t row_index);
+                             wtf_size_t row_index,
+                             bool has_container_separation,
+                             bool breakable_at_start_of_container);
 
   // Add an early break for the column at the provided |index|.
   void AddColumnEarlyBreak(NGEarlyBreak* breakpoint, wtf_size_t index);

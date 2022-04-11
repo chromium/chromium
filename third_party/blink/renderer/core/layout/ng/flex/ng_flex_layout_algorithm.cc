@@ -2294,8 +2294,9 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.
-  if (MovePastRowBreakPoint(appeal_before, fragmentainer_block_offset,
-                            row.line_cross_size, row_index))
+  if (MovePastRowBreakPoint(
+          appeal_before, fragmentainer_block_offset, row.line_cross_size,
+          row_index, has_container_separation, breakable_at_start_of_container))
     return NGBreakStatus::kContinue;
 
   // We're out of space. Figure out where to insert a soft break. It will either
@@ -2313,7 +2314,9 @@ bool NGFlexLayoutAlgorithm::MovePastRowBreakPoint(
     NGBreakAppeal appeal_before,
     LayoutUnit fragmentainer_block_offset,
     LayoutUnit row_block_size,
-    wtf_size_t row_index) {
+    wtf_size_t row_index,
+    bool has_container_separation,
+    bool breakable_at_start_of_container) {
   if (!ConstraintSpace().HasKnownFragmentainerBlockSize()) {
     // We only care about soft breaks if we have a fragmentainer block-size.
     // During column balancing this may be unknown.
@@ -2344,8 +2347,9 @@ bool NGFlexLayoutAlgorithm::MovePastRowBreakPoint(
 
   // Update the early break in case breaking before the row ends up being the
   // most appealing spot to break.
-  if (!container_builder_.HasEarlyBreak() ||
-      appeal_before >= container_builder_.EarlyBreak().BreakAppeal()) {
+  if ((has_container_separation || breakable_at_start_of_container) &&
+      (!container_builder_.HasEarlyBreak() ||
+       appeal_before >= container_builder_.EarlyBreak().BreakAppeal())) {
     container_builder_.SetEarlyBreak(
         MakeGarbageCollected<NGEarlyBreak>(row_index, appeal_before));
   }
