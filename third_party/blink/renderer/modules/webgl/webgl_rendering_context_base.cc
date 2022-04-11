@@ -5194,40 +5194,38 @@ void WebGLRenderingContextBase::TexImageImpl(
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(
-    const char* function_name,
-    TexImageFunctionType function_type,
+    TexImageParams params,
     TexFuncValidationSourceType source_type,
-    GLenum target,
-    GLint level,
-    GLenum internalformat,
-    GLsizei width,
-    GLsizei height,
-    GLsizei depth,
-    GLint border,
-    GLenum format,
-    GLenum type,
-    GLint xoffset,
-    GLint yoffset,
-    GLint zoffset) {
-  if (!ValidateTexFuncLevel(function_name, target, level))
+    absl::optional<GLsizei> source_width,
+    absl::optional<GLsizei> source_height) {
+  // Overwrite `params.width` and `params.height` with `source_width` and
+  // `source_height`. If `params.depth` is unspecified, set it to 1.
+  if (source_width)
+    params.width = *source_width;
+  if (source_height)
+    params.height = *source_height;
+  if (!params.depth)
+    params.depth = 1;
+
+  const char* function_name = GetTexImageFunctionName(params.function_id);
+  if (!ValidateTexFuncLevel(function_name, params.target, params.level))
     return false;
 
-  if (!ValidateTexFuncParameters(function_name, function_type, source_type,
-                                 target, level, internalformat, width, height,
-                                 depth, border, format, type))
+  if (!ValidateTexFuncParameters(params, source_type))
     return false;
 
-  if (function_type == kTexSubImage) {
-    if (!ValidateSettableTexFormat(function_name, format))
+  if (GetTexImageFunctionType(params.function_id) == kTexSubImage) {
+    if (!ValidateSettableTexFormat(function_name, params.format))
       return false;
-    if (!ValidateSize(function_name, xoffset, yoffset, zoffset))
+    if (!ValidateSize(function_name, params.xoffset, params.yoffset,
+                      params.zoffset))
       return false;
   } else {
     // For SourceArrayBufferView, function validateTexFuncData() would handle
     // whether to validate the SettableTexFormat
     // by checking if the ArrayBufferView is null or not.
     if (source_type != kSourceArrayBufferView) {
-      if (!ValidateSettableTexFormat(function_name, format))
+      if (!ValidateSettableTexFormat(function_name, params.format))
         return false;
     }
   }
@@ -5310,6 +5308,21 @@ const char* WebGLRenderingContextBase::GetTexImageFunctionName(
   }
 }
 
+WebGLRenderingContextBase::TexImageFunctionType
+WebGLRenderingContextBase::GetTexImageFunctionType(
+    TexImageFunctionID function_id) {
+  switch (function_id) {
+    case kTexImage2D:
+      return kTexImage;
+    case kTexSubImage2D:
+      return kTexSubImage;
+    case kTexImage3D:
+      return kTexImage;
+    case kTexSubImage3D:
+      return kTexSubImage;
+  }
+}
+
 gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
   if (!image)
     return gfx::Rect();
@@ -5344,16 +5357,8 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
     return;
   if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
     return;
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
-  if (!ValidateTexFunc(func_name, function_type, kSourceArrayBufferView,
-                       params.target, params.level, params.internalformat,
-                       *params.width, *params.height, *params.depth,
-                       params.border, params.format, params.type,
-                       params.xoffset, params.yoffset, params.zoffset)) {
+  if (!ValidateTexFunc(params, kSourceArrayBufferView, absl::nullopt,
+                       absl::nullopt)) {
     return;
   }
   if (!ValidateTexFuncData(params, pixels, null_disposition, src_offset))
@@ -5371,9 +5376,8 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
       (unpack_flip_y_ || unpack_premultiply_alpha_)) {
     DCHECK(params.function_id == kTexImage2D ||
            params.function_id == kTexSubImage2D);
-    // Only enter here if *params.width or *params.height is non-zero.
-    // Otherwise, call to the underlying driver to generate appropriate GL
-    // errors if needed.
+    // Only enter here if width or height is non-zero. Otherwise, call to the
+    // underlying driver to generate appropriate GL errors if needed.
     WebGLImageConversion::PixelStoreParams unpack_params =
         GetUnpackPixelStoreParams(kTex2D);
     GLint data_store_width =
@@ -5457,23 +5461,16 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
 
   if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
     return;
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
   if (!params.width)
     params.width = pixels->width();
   if (!params.height)
     params.height = pixels->height();
   if (!params.depth)
     params.depth = 1;
-  if (!ValidateTexFunc(func_name, function_type, kSourceImageData,
-                       params.target, params.level, params.internalformat,
-                       pixels->width(), pixels->height(), *params.depth,
-                       params.border, params.format, params.type,
-                       params.xoffset, params.yoffset, params.zoffset))
+  if (!ValidateTexFunc(params, kSourceImageData, pixels->width(),
+                       pixels->height())) {
     return;
+  }
 
   auto pixmap = pixels->GetSkPixmap();
   TexImageSkPixmap(params, &pixmap, /*pixmap_has_flip_y=*/false);
@@ -5519,19 +5516,9 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
         DrawImageIntoBuffer(std::move(image_for_render), image->width(),
                             image->height(), func_name);
   }
-
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
   if (!image_for_render ||
-      !ValidateTexFunc(func_name, function_type, kSourceHTMLImageElement,
-                       params.target, params.level, params.internalformat,
-                       image_for_render->width(), image_for_render->height(),
-                       params.depth.value_or(1), params.border, params.format,
-                       params.type, params.xoffset, params.yoffset,
-                       params.zoffset)) {
+      !ValidateTexFunc(params, kSourceHTMLImageElement,
+                       image_for_render->width(), image_for_render->height())) {
     return;
   }
 
@@ -5713,18 +5700,11 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       ValidateTexImageBinding(func_name, params.function_id, params.target);
   if (!texture)
     return;
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
-  if (!ValidateTexFunc(func_name, function_type, kSourceHTMLCanvasElement,
-                       params.target, params.level, params.internalformat,
+  if (!ValidateTexFunc(params, kSourceHTMLCanvasElement,
                        source_sub_rectangle.width(),
-                       source_sub_rectangle.height(), params.depth.value_or(1),
-                       0, params.format, params.type, params.xoffset,
-                       params.yoffset, params.zoffset))
+                       source_sub_rectangle.height())) {
     return;
+  }
 
   // Note that the sub-rectangle validation is needed for the GPU-GPU
   // copy case, but is redundant for the software upload case
@@ -5849,17 +5829,8 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
       ValidateTexImageBinding(func_name, params.function_id, params.target);
   if (!texture)
     return;
-
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
-  if (!ValidateTexFunc(func_name, function_type, kSourceHTMLVideoElement,
-                       params.target, params.level, params.internalformat,
-                       video->videoWidth(), video->videoHeight(),
-                       params.depth.value_or(1), 0, params.format, params.type,
-                       params.xoffset, params.yoffset, params.zoffset)) {
+  if (!ValidateTexFunc(params, kSourceHTMLVideoElement, video->videoWidth(),
+                       video->videoHeight())) {
     return;
   }
 
@@ -5896,12 +5867,6 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   if (!texture)
     return;
 
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
-
   auto local_handle = frame->handle()->CloneForInternalUse();
   if (!local_handle) {
     SynthesizeGLError(GL_INVALID_OPERATION, func_name,
@@ -5910,11 +5875,8 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   }
 
   const auto natural_size = local_handle->frame()->natural_size();
-  if (!ValidateTexFunc(func_name, function_type, kSourceVideoFrame,
-                       params.target, params.level, params.internalformat,
-                       natural_size.width(), natural_size.height(), 1, 0,
-                       params.format, params.type, params.xoffset,
-                       params.yoffset, params.zoffset)) {
+  if (!ValidateTexFunc(params, kSourceVideoFrame, natural_size.width(),
+                       natural_size.height())) {
     return;
   }
 
@@ -6232,17 +6194,10 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     return;
   }
 
-  TexImageFunctionType function_type;
-  if (params.function_id == kTexImage2D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
-  if (!ValidateTexFunc(func_name, function_type, kSourceImageBitmap,
-                       params.target, params.level, params.internalformat,
-                       *params.width, *params.height, *params.depth, 0,
-                       params.format, params.type, params.xoffset,
-                       params.yoffset, params.zoffset))
+  if (!ValidateTexFunc(params, kSourceImageBitmap, absl::nullopt,
+                       absl::nullopt)) {
     return;
+  }
 
   scoped_refptr<StaticBitmapImage> image = bitmap->BitmapImage();
   DCHECK(image);
@@ -7703,11 +7658,9 @@ void WebGLRenderingContextBase::AddExtensionSupportedFormatsTypesWebGL2() {
 }
 
 bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
-    const char* function_name,
-    TexImageFunctionType function_type,
-    GLenum internalformat,
-    GLenum format,
-    GLenum type) {
+    const TexImageParams& params) {
+  const char* function_name = GetTexImageFunctionName(params.function_id);
+
   if (!is_web_gl2_tex_image_source_formats_types_added_ && IsWebGL2()) {
     ADD_VALUES_TO_SET(supported_tex_image_source_internal_formats_,
                       kSupportedInternalFormatsTexImageSourceES3);
@@ -7724,10 +7677,11 @@ bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
     AddExtensionSupportedFormatsTypesWebGL2();
   }
 
-  if (internalformat != 0 &&
-      supported_tex_image_source_internal_formats_.find(internalformat) ==
+  if (params.internalformat != 0 &&
+      supported_tex_image_source_internal_formats_.find(
+          params.internalformat) ==
           supported_tex_image_source_internal_formats_.end()) {
-    if (function_type == kTexImage) {
+    if (GetTexImageFunctionType(params.function_id) == kTexImage) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
                         "invalid internalformat");
     } else {
@@ -7736,12 +7690,12 @@ bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
     }
     return false;
   }
-  if (supported_tex_image_source_formats_.find(format) ==
+  if (supported_tex_image_source_formats_.find(params.format) ==
       supported_tex_image_source_formats_.end()) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid format");
     return false;
   }
-  if (supported_tex_image_source_types_.find(type) ==
+  if (supported_tex_image_source_types_.find(params.type) ==
       supported_tex_image_source_types_.end()) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid type");
     return false;
@@ -7751,12 +7705,9 @@ bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
 }
 
 bool WebGLRenderingContextBase::ValidateTexFuncFormatAndType(
-    const char* function_name,
-    TexImageFunctionType function_type,
-    GLenum internalformat,
-    GLenum format,
-    GLenum type,
-    GLint level) {
+    const TexImageParams& params) {
+  const char* function_name = GetTexImageFunctionName(params.function_id);
+
   if (!is_web_gl2_formats_types_added_ && IsWebGL2()) {
     ADD_VALUES_TO_SET(supported_internal_formats_,
                       kSupportedInternalFormatsES3);
@@ -7773,10 +7724,12 @@ bool WebGLRenderingContextBase::ValidateTexFuncFormatAndType(
     AddExtensionSupportedFormatsTypesWebGL2();
   }
 
-  if (internalformat != 0 && supported_internal_formats_.find(internalformat) ==
-                                 supported_internal_formats_.end()) {
-    if (function_type == kTexImage) {
-      if (compressed_texture_formats_.Contains(internalformat)) {
+  if (params.internalformat != 0 &&
+      supported_internal_formats_.find(params.internalformat) ==
+          supported_internal_formats_.end()) {
+    if (GetTexImageFunctionType(params.function_id) == kTexImage) {
+      if (compressed_texture_formats_.Contains(
+              static_cast<GLenum>(params.internalformat))) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "compressed texture formats are not accepted");
       } else {
@@ -7789,21 +7742,22 @@ bool WebGLRenderingContextBase::ValidateTexFuncFormatAndType(
     }
     return false;
   }
-  if (supported_formats_.find(format) == supported_formats_.end()) {
+  if (supported_formats_.find(params.format) == supported_formats_.end()) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid format");
     return false;
   }
-  if (supported_types_.find(type) == supported_types_.end()) {
+  if (supported_types_.find(params.type) == supported_types_.end()) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid type");
     return false;
   }
 
-  if (format == GL_DEPTH_COMPONENT && level > 0 && !IsWebGL2()) {
+  if (params.format == GL_DEPTH_COMPONENT && params.level > 0 && !IsWebGL2()) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "level must be 0 for DEPTH_COMPONENT format");
     return false;
   }
-  if (format == GL_DEPTH_STENCIL_OES && level > 0 && !IsWebGL2()) {
+  if (params.format == GL_DEPTH_STENCIL_OES && params.level > 0 &&
+      !IsWebGL2()) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "level must be 0 for DEPTH_STENCIL format");
     return false;
@@ -7923,18 +7877,10 @@ bool WebGLRenderingContextBase::ValidateTexFuncDimensions(
 }
 
 bool WebGLRenderingContextBase::ValidateTexFuncParameters(
-    const char* function_name,
-    TexImageFunctionType function_type,
-    TexFuncValidationSourceType source_type,
-    GLenum target,
-    GLint level,
-    GLenum internalformat,
-    GLsizei width,
-    GLsizei height,
-    GLsizei depth,
-    GLint border,
-    GLenum format,
-    GLenum type) {
+    const TexImageParams& params,
+    TexFuncValidationSourceType source_type) {
+  const char* function_name = GetTexImageFunctionName(params.function_id);
+
   // We absolutely have to validate the format and type combination.
   // The texImage2D entry points taking HTMLImage, etc. will produce
   // temporary data based on this combination, so it must be legal.
@@ -7943,22 +7889,23 @@ bool WebGLRenderingContextBase::ValidateTexFuncParameters(
       source_type == kSourceHTMLVideoElement ||
       source_type == kSourceImageData || source_type == kSourceImageBitmap ||
       source_type == kSourceVideoFrame) {
-    if (!ValidateTexImageSourceFormatAndType(function_name, function_type,
-                                             internalformat, format, type)) {
+    if (!ValidateTexImageSourceFormatAndType(params)) {
       return false;
     }
   } else {
-    if (!ValidateTexFuncFormatAndType(function_name, function_type,
-                                      internalformat, format, type, level)) {
+    if (!ValidateTexFuncFormatAndType(params)) {
       return false;
     }
   }
 
-  if (!ValidateTexFuncDimensions(function_name, function_type, target, level,
-                                 width, height, depth))
+  if (!ValidateTexFuncDimensions(function_name,
+                                 GetTexImageFunctionType(params.function_id),
+                                 params.target, params.level, *params.width,
+                                 *params.height, *params.depth)) {
     return false;
+  }
 
-  if (border) {
+  if (params.border) {
     SynthesizeGLError(GL_INVALID_VALUE, function_name, "border != 0");
     return false;
   }

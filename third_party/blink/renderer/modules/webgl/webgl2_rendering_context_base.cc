@@ -1143,10 +1143,12 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
         "FLIP_Y or PREMULTIPLY_ALPHA isn't allowed while uploading from PBO");
     return;
   }
-  if (!ValidateTexFunc("texImage2D", kTexImage, kSourceUnpackBuffer, target,
-                       level, internalformat, width, height, 1, border, format,
-                       type, 0, 0, 0))
+  TexImageParams params;
+  POPULATE_TEX_IMAGE_2D_PARAMS(params);
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
+                       absl::nullopt)) {
     return;
+  }
   if (!ValidateValueFitNonNegInt32("texImage2D", "offset", offset))
     return;
 
@@ -1179,10 +1181,12 @@ void WebGL2RenderingContextBase::texSubImage2D(GLenum target,
         "FLIP_Y or PREMULTIPLY_ALPHA isn't allowed while uploading from PBO");
     return;
   }
-  if (!ValidateTexFunc("texSubImage2D", kTexSubImage, kSourceUnpackBuffer,
-                       target, level, 0, width, height, 1, 0, format, type,
-                       xoffset, yoffset, 0))
+  TexImageParams params;
+  POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
+                       absl::nullopt)) {
     return;
+  }
   if (!ValidateValueFitNonNegInt32("texSubImage2D", "offset", offset))
     return;
 
@@ -1911,10 +1915,12 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
         "FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures");
     return;
   }
-  if (!ValidateTexFunc("texImage3D", kTexImage, kSourceUnpackBuffer, target,
-                       level, internalformat, width, height, depth, border,
-                       format, type, 0, 0, 0))
+  TexImageParams params;
+  POPULATE_TEX_IMAGE_3D_PARAMS(params);
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
+                       absl::nullopt)) {
     return;
+  }
   if (!ValidateValueFitNonNegInt32("texImage3D", "offset", offset))
     return;
 
@@ -2128,10 +2134,12 @@ void WebGL2RenderingContextBase::texSubImage3D(GLenum target,
         "FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures");
     return;
   }
-  if (!ValidateTexFunc("texSubImage3D", kTexSubImage, kSourceUnpackBuffer,
-                       target, level, 0, width, height, depth, 0, format, type,
-                       xoffset, yoffset, zoffset))
+  TexImageParams params;
+  POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
+                       absl::nullopt)) {
     return;
+  }
   if (!ValidateValueFitNonNegInt32("texSubImage3D", "offset", offset))
     return;
 

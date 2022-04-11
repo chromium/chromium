@@ -1366,21 +1366,12 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Helper function to check input internalformat/format/type for functions
   // Tex{Sub}Image taking TexImageSource source data.  Generates GL error and
   // returns false if parameters are invalid.
-  bool ValidateTexImageSourceFormatAndType(const char* function_name,
-                                           TexImageFunctionType,
-                                           GLenum internalformat,
-                                           GLenum format,
-                                           GLenum type);
+  bool ValidateTexImageSourceFormatAndType(const TexImageParams& params);
 
   // Helper function to check input internalformat/format/type for functions
   // Tex{Sub}Image.  Generates GL error and returns false if parameters are
   // invalid.
-  bool ValidateTexFuncFormatAndType(const char* function_name,
-                                    TexImageFunctionType,
-                                    GLenum internalformat,
-                                    GLenum format,
-                                    GLenum type,
-                                    GLint level);
+  bool ValidateTexFuncFormatAndType(const TexImageParams& params);
 
   // Helper function to check readbuffer validity for copyTex{Sub}Image.
   // If yes, obtains the bound read framebuffer, returns true.
@@ -1433,28 +1424,20 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     kSourceVideoFrame,
   };
 
-  // Helper function for tex{Sub}Image{2|3}D to check if the input
+  // Helper function for tex{Sub}Image{2|3}D to check if the input params'
   // format/type/level/target/width/height/depth/border/xoffset/yoffset/zoffset
   // are valid.  Otherwise, it would return quickly without doing other work.
-  bool ValidateTexFunc(const char* function_name,
-                       TexImageFunctionType,
+  // If `source_width` and `source_height` are specified, then overwrite
+  // params.width and params.height with those values before performing
+  // validation.
+  bool ValidateTexFunc(TexImageParams params,
                        TexFuncValidationSourceType,
-                       GLenum target,
-                       GLint level,
-                       GLenum internalformat,
-                       GLsizei width,
-                       GLsizei height,
-                       GLsizei depth,
-                       GLint border,
-                       GLenum format,
-                       GLenum type,
-                       GLint xoffset,
-                       GLint yoffset,
-                       GLint zoffset);
+                       absl::optional<GLsizei> source_width,
+                       absl::optional<GLsizei> source_height);
 
   // Helper function to check input width and height for functions {copy,
-  // compressed}Tex{Sub}Image.  Generates GL error and returns false if width or
-  // height is invalid.
+  // compressed}Tex{Sub}Image.  Generates GL error and returns false if width,
+  // height, or depth is invalid.
   bool ValidateTexFuncDimensions(const char* function_name,
                                  TexImageFunctionType,
                                  GLenum target,
@@ -1466,18 +1449,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Helper function to check input parameters for functions
   // {copy}Tex{Sub}Image.  Generates GL error and returns false if parameters
   // are invalid.
-  bool ValidateTexFuncParameters(const char* function_name,
-                                 TexImageFunctionType,
-                                 TexFuncValidationSourceType,
-                                 GLenum target,
-                                 GLint level,
-                                 GLenum internalformat,
-                                 GLsizei width,
-                                 GLsizei height,
-                                 GLsizei depth,
-                                 GLint border,
-                                 GLenum format,
-                                 GLenum type);
+  bool ValidateTexFuncParameters(const TexImageParams& params,
+                                 TexFuncValidationSourceType);
 
   enum NullDisposition { kNullAllowed, kNullNotAllowed, kNullNotReachable };
 
@@ -1784,6 +1757,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                  ImageBitmap*,
                                  ExceptionState&);
   static const char* GetTexImageFunctionName(TexImageFunctionID);
+  static TexImageFunctionType GetTexImageFunctionType(TexImageFunctionID);
   gfx::Rect SafeGetImageSize(Image*);
   gfx::Rect GetImageDataSize(ImageData*);
 
