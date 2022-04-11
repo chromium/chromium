@@ -76,9 +76,7 @@ bool IsPublicSessionOrEphemeralLogin() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   return user_manager->IsLoggedInAsPublicAccount() ||
-         (user_manager->IsCurrentUserNonCryptohomeDataEphemeral() &&
-          user_manager->GetActiveUser()->GetType() !=
-              user_manager::USER_TYPE_REGULAR);
+         user_manager->IsCurrentUserCryptohomeDataEphemeral();
 }
 
 }  // namespace chrome_user_manager_util
