@@ -2301,6 +2301,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.PartitionAlloc.PeriodicPurge" units="microseconds"
+    expires_after="2022-07-31">
+  <owner>lizeb@chromium.org</owner>
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    Time it takes for PartitionAlloc's periodic purge to run once. Collected at
+    each purge, for all process types.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
     units="%" expires_after="M102">
   <owner>lizeb@chromium.org</owner>

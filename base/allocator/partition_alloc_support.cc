@@ -147,6 +147,8 @@ void RegisterPCScanStatsReporter() {
 namespace {
 
 void RunThreadCachePeriodicPurge() {
+  // Micros, since periodic purge should typically take at most a few ms.
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.PeriodicPurge");
   TRACE_EVENT0("memory", "PeriodicPurge");
   auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
   instance.RunPeriodicPurge();
