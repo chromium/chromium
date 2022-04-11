@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -939,12 +940,15 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
   if (!style->ContainsStyle() || !style->ContainsLayout())
     return rejection_names::kContainmentNotSatisfied;
 
-  // We allow replaced elements to be locked. This check is similar to the check
-  // in DefinitelyNewFormattingContext() in element.cc, but in this case we
-  // allow object element to get locked.
-  if (IsA<HTMLObjectElement>(*element_) || IsA<HTMLImageElement>(*element_) ||
-      element_->IsFormControlElement() || element_->IsMediaElement() ||
-      element_->IsFrameOwnerElement() || element_->IsSVGElement()) {
+  // We allow replaced elements without fallback content to be locked. This
+  // check is similar to the check in DefinitelyNewFormattingContext() in
+  // element.cc, but in this case we allow object element to get locked.
+  if (const auto* object_element = DynamicTo<HTMLObjectElement>(*element_)) {
+    if (!object_element->UseFallbackContent())
+      return nullptr;
+  } else if (IsA<HTMLImageElement>(*element_) ||
+             element_->IsFormControlElement() || element_->IsMediaElement() ||
+             element_->IsFrameOwnerElement() || element_->IsSVGElement()) {
     return nullptr;
   }
 

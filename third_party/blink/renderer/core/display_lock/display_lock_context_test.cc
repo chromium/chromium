@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -3614,6 +3615,26 @@ TEST_F(DisplayLockContextTest, ElementActivateDisplayLockIfNeeded) {
   // Non-ancestor c-v:hidden should not prevent the activation.
   EXPECT_TRUE(target->ActivateDisplayLockIfNeeded(
       DisplayLockActivationReason::kScrollIntoView));
+}
+
+TEST_F(DisplayLockContextTest, ShouldForceUnlockObjectWithFallbackContent) {
+  SetHtmlInnerHTML(R"HTML(
+    <div style="height: 10000px"></div>
+    <object style="content-visibility: auto" id="target">foo bar</object>
+  )HTML");
+
+  // The <object> should should be lockable after the initial layout.
+  UpdateAllLifecyclePhasesForTest();
+  auto* target = To<HTMLPlugInElement>(GetDocument().getElementById("target"));
+  EXPECT_TRUE(target->GetDisplayLockContext());
+  EXPECT_TRUE(target->GetDisplayLockContext()->IsLocked());
+
+  // UpdatePlugin() makes the <object> UseFallbackContent() state, and
+  // invalidates its style.
+  ASSERT_TRUE(target->NeedsPluginUpdate());
+  target->UpdatePlugin();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());
 }
 
 }  // namespace blink
