@@ -26,6 +26,7 @@ using password_manager::PasswordChangeSuccessTracker;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::SaveArgPointee;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 
@@ -253,6 +254,44 @@ TEST_F(SaveSubmittedPasswordActionTest,
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               PRECONDITION_FAILED))));
   Run();
+}
+
+TEST_F(SaveSubmittedPasswordActionTest,
+       SaveSubmittedPasswordAlwaysReturnResult) {
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
+
+  // Prevent a leak warning.
+  proto_.mutable_save_submitted_password()->clear_leak_detection_timeout_ms();
+
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
+      .WillOnce(Return(true));
+  // Check for password equality.
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
+  EXPECT_CALL(
+      mock_password_change_success_tracker_,
+      OnChangePasswordFlowCompleted(
+          GURL(kOrigin), kUsername,
+          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+
+  // Since no timeout was submitted in the action, no leak check is performed.
+  EXPECT_CALL(mock_website_login_manager_,
+              CheckWhetherSubmittedCredentialIsLeaked)
+      .Times(0);
+
+  ProcessedActionProto processed_proto;
+  EXPECT_CALL(callback_, Run).WillOnce(SaveArgPointee<0>(&processed_proto));
+
+  Run();
+
+  // We always expect to get a result, even if no leak check was performed
+  // and the password is not the same.
+  EXPECT_TRUE(processed_proto.has_save_submitted_password_result());
+  EXPECT_TRUE(processed_proto.save_submitted_password_result()
+                  .has_used_same_password());
+  EXPECT_FALSE(
+      processed_proto.save_submitted_password_result().used_same_password());
 }
 
 }  // namespace autofill_assistant

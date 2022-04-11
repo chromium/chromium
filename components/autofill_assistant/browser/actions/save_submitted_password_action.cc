@@ -38,14 +38,16 @@ void SaveSubmittedPasswordAction::InternalProcessAction(
     return;
   }
 
-  // If a password form has been submitted, but no password update is
-  // registered, then the new password must be the same as the previous one.
-  // In that case, set a flag in the response so that scripts can retrigger
-  // the flow.
-  if (delegate_->GetWebsiteLoginManager()->SubmittedPasswordIsSame()) {
-    processed_action_proto_->mutable_save_submitted_password_result()
-        ->set_used_same_password(true);
-  } else {
+  // Set a flag in the response whether the submitted password is the same
+  // as the currently saved one, so that scripts can retrigger the flow.
+  // Always send a result even it is false. Otherwise, the result handler does
+  // not realize that a previous result is stale and keeps it in memory.
+  bool used_same_password =
+      delegate_->GetWebsiteLoginManager()->SubmittedPasswordIsSame();
+  processed_action_proto_->mutable_save_submitted_password_result()
+      ->set_used_same_password(used_same_password);
+
+  if (!used_same_password) {
     delegate_->GetWebsiteLoginManager()->SaveSubmittedPassword();
     delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
         delegate_->GetUserData()->selected_login_->origin,
