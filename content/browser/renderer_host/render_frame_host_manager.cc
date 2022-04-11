@@ -635,15 +635,6 @@ void RenderFrameHostManager::PrepareForCollectingPage(
   // Prepare the proxies.
   SiteInstance* instance = main_render_frame_host->GetSiteInstance();
 
-  // When BrowsingContextState is decoupled from the FrameTreeNode and
-  // RenderFrameHostManager (legacy mode is disabled), proxies and replication
-  // state will be transferred with the RenderFrameHost instead and therefore
-  // will not need to be collected.
-  if (features::GetBrowsingContextMode() ==
-      features::BrowsingContextStateImplementationType::
-          kSwapForCrossBrowsingInstanceNavigations) {
-    return;
-  }
   for (auto& it :
        main_render_frame_host->browsing_context_state()->proxy_hosts()) {
     // This avoids including the proxy created when starting a
@@ -651,9 +642,27 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     // restored proxies which are also in a different BrowsingInstance.
     if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
       (*render_view_hosts).insert(it.second->GetRenderViewHost());
-      (*proxy_hosts)[it.first] = std::move(it.second);
+      // When BrowsingContextState is decoupled from the FrameTreeNode and
+      // RenderFrameHostManager (legacy mode is disabled), proxies and
+      // replication state will be stored in a separate BrowsingContextState,
+      // which won't need any updates. However, RenderViewHosts are still stored
+      // in FrameTree (which, for example, is shared between the new page and
+      // the page entering BFCache), so they have to be collected explicitly.
+      if (features::GetBrowsingContextMode() ==
+          features::BrowsingContextStateImplementationType::
+              kLegacyOneToOneWithFrameTreeNode) {
+        (*proxy_hosts)[it.first] = std::move(it.second);
+      }
     }
   }
+
+  // Since proxies are not collected, we can return early here.
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kSwapForCrossBrowsingInstanceNavigations) {
+    return;
+  }
+
   // Remove the previously extracted proxies from the
   // RenderFrameHostManager, which also removes their respective
   // SiteInstanceGroup::Observer.
