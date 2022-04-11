@@ -34,6 +34,11 @@ TEST(StepRangeTest, StepSnappedMaximum) {
                         Decimal::FromDouble(1.84467e+19),
                         StepRange::StepDescription());
   EXPECT_FALSE(step_range2.StepSnappedMaximum().IsFinite());
+
+  StepRange step_range3(Decimal::FromDouble(100), Decimal(0), Decimal(400),
+                        true, /*supports_reversed_range=*/false, Decimal(-7),
+                        StepRange::StepDescription());
+  EXPECT_FALSE(step_range3.StepSnappedMaximum().IsFinite());
 }
 
 TEST(StepRangeTest, ReversedRange) {
