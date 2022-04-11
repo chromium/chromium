@@ -1928,7 +1928,6 @@ void StyleEngine::ApplyUserRuleSetChanges(
       changed_rule_flags = kRuleSetFlagsAll;
   }
 
-  bool has_rebuilt_font_face_cache = false;
   if (changed_rule_flags & kFontFaceRules) {
     if (ScopedStyleResolver* scoped_resolver =
             GetDocument().GetScopedStyleResolver()) {
@@ -1939,8 +1938,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
       scoped_resolver->SetNeedsAppendAllSheets();
       MarkDocumentDirty();
     } else {
-      has_rebuilt_font_face_cache =
+      bool has_rebuilt_font_face_cache =
           ClearFontFaceCacheAndAddUserFonts(new_style_sheets);
+      if (has_rebuilt_font_face_cache) {
+        GetFontSelector()->FontFaceInvalidated(
+            FontInvalidationReason::kGeneralInvalidation);
+      }
     }
   }
 
@@ -1998,11 +2001,6 @@ void StyleEngine::ApplyUserRuleSetChanges(
       scoped_resolver->SetNeedsAppendAllSheets();
       MarkDocumentDirty();
     }
-  }
-
-  if ((changed_rule_flags & kFontFaceRules) || has_rebuilt_font_face_cache) {
-    GetFontSelector()->FontFaceInvalidated(
-        FontInvalidationReason::kGeneralInvalidation);
   }
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
@@ -2124,24 +2122,23 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
-  bool has_rebuilt_font_face_cache = false;
-  if (rebuild_font_face_cache) {
-    has_rebuilt_font_face_cache =
-        ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
-  }
-
-  if (!new_style_sheets.IsEmpty()) {
-    tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
-        append_start_index, new_style_sheets);
-  }
-
   if (tree_scope.RootNode().IsDocumentNode()) {
+    bool has_rebuilt_font_face_cache = false;
+    if (rebuild_font_face_cache) {
+      has_rebuilt_font_face_cache =
+          ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
+    }
     if ((changed_rule_flags & kFontFaceRules) ||
         (changed_rule_flags & kFontPaletteValuesRules) ||
         has_rebuilt_font_face_cache) {
       GetFontSelector()->FontFaceInvalidated(
           FontInvalidationReason::kGeneralInvalidation);
     }
+  }
+
+  if (!new_style_sheets.IsEmpty()) {
+    tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
+        append_start_index, new_style_sheets);
   }
 
   InvalidateForRuleSetChanges(tree_scope, changed_rule_sets, changed_rule_flags,
