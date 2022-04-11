@@ -78,8 +78,9 @@ bool FirstPartySetsOverridesPolicyHandler::CheckPolicySettings(
   // Output error and return false if any of the sets provided in the
   // "replacements" or "additions" list are not valid First-Party Sets.
   if (absl::optional<content::FirstPartySetsHandler::PolicyParsingError>
-          maybe_error = content::FirstPartySetsHandler::GetInstance()
-                            ->ValidateEnterprisePolicy(policy_value->GetDict());
+          maybe_error =
+              content::FirstPartySetsHandler::ValidateEnterprisePolicy(
+                  policy_value->GetDict());
       maybe_error.has_value()) {
     errors->AddError(policy_name(),
                      base::StringPrintf("%s.items[%d]",
