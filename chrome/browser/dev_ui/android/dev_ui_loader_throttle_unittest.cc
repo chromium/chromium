@@ -14,6 +14,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace dev_ui {
@@ -137,6 +138,17 @@ class DevUiLoaderThrottleTest : public ChromeRenderViewHostTestHarness {
   MockDevUiModuleProvider mock_provider_;
 };
 
+class DevUiLoaderThrottleFencedFrameTest : public DevUiLoaderThrottleTest {
+ public:
+  DevUiLoaderThrottleFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 }  // namespace
 
 TEST_F(DevUiLoaderThrottleTest, ShouldInstallDevUiDfm) {
@@ -202,6 +214,45 @@ TEST_F(DevUiLoaderThrottleTest, MaybeCreateThrottleFor) {
   for (const char* url_string : kDevUiUrls) {
     EXPECT_FALSE(creates_throttle(url_string));
     EXPECT_TRUE(mock_provider_.GetIsLoaded());
+  }
+}
+
+TEST_F(DevUiLoaderThrottleFencedFrameTest, MaybeCreateThrottleFor) {
+  bool is_installed = false;
+  content::RenderFrameHost* render_frame_host = nullptr;
+  auto creates_throttle = [&](const std::string& url_string) -> bool {
+    mock_provider_.Reset();
+    mock_provider_.SetIsInstalled(is_installed);
+    content::MockNavigationHandle handle(GURL(url_string), render_frame_host);
+    std::unique_ptr<content::NavigationThrottle> throttle =
+        DevUiLoaderThrottle::MaybeCreateThrottleFor(&handle);
+    return throttle != nullptr;
+  };
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  render_frame_host =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+  EXPECT_TRUE(render_frame_host);
+
+  // In any case, throttles should not be created in fenced frames.
+  is_installed = false;
+  for (const char* url_string : kNonDevUiUrls) {
+    EXPECT_FALSE(creates_throttle(url_string));
+    EXPECT_FALSE(mock_provider_.GetIsLoaded());
+  }
+  for (const char* url_string : kDevUiUrls) {
+    EXPECT_FALSE(creates_throttle(url_string));
+    EXPECT_FALSE(mock_provider_.GetIsLoaded());
+  }
+  is_installed = true;
+  for (const char* url_string : kNonDevUiUrls) {
+    EXPECT_FALSE(creates_throttle(url_string));
+    EXPECT_FALSE(mock_provider_.GetIsLoaded());
+  }
+  for (const char* url_string : kDevUiUrls) {
+    EXPECT_FALSE(creates_throttle(url_string));
+    EXPECT_FALSE(mock_provider_.GetIsLoaded());
   }
 }
 

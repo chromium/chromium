@@ -91,7 +91,7 @@ std::unique_ptr<content::NavigationThrottle>
 DevUiLoaderThrottle::MaybeCreateThrottleFor(content::NavigationHandle* handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(handle);
-  if (!handle->IsInMainFrame())
+  if (!handle->IsInPrimaryMainFrame())
     return nullptr;
 
   if (!ShouldInstallDevUiDfm(handle->GetURL()))
