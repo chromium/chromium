@@ -55,12 +55,33 @@ UserSignoutSetting* UserSignoutSetting::GetForProfile(Profile* profile) {
         profile->GetUserData(kSignoutSettingKey));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  signout_setting->is_main_profile_ = profile->IsMainProfile();
+#endif
   return signout_setting;
 }
 
 void UserSignoutSetting::SetSignoutAllowed(bool is_allowed) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_main_profile_ && !is_allowed) {
+    // Turn off sync is always allowed in the main profile. For managed
+    // profiles, it does not introduce cross-sync risks as the primary account
+    // can't be changed.
+    DCHECK(false) << "Signout is always allowed in the main profile.";
+    return;
+  }
+#endif
   signout_allowed_ =
       is_allowed ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+}
+
+signin::Tribool UserSignoutSetting::signout_allowed() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_main_profile_) {
+    return signin::Tribool::kTrue;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  return signout_allowed_;
 }
 
 ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(

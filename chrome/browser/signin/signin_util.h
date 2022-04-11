@@ -17,6 +17,11 @@ class Profile;
 
 namespace signin_util {
 
+// This class is used by cloud policy to indicate signout is disallowed for
+// cloud-managed enterprise accounts. Signout would require profile destruction
+// (See ChromeSigninClient::PreSignOut(),
+//      PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile()).
+// This class is also used on Android to disallow signout for supervised users.
 class UserSignoutSetting : public base::SupportsUserData::Data {
  public:
   // Fetch from Profile. Make and store if not already present.
@@ -29,10 +34,15 @@ class UserSignoutSetting : public base::SupportsUserData::Data {
   UserSignoutSetting(const UserSignoutSetting&) = delete;
   UserSignoutSetting& operator=(const UserSignoutSetting&) = delete;
 
-  signin::Tribool signout_allowed() const { return signout_allowed_; }
+  signin::Tribool signout_allowed() const;
   void SetSignoutAllowed(bool is_allowed);
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `signout_allowed()` is always true for Lacros main profile despite of
+  // policies.
+  bool is_main_profile_ = false;
+#endif
   signin::Tribool signout_allowed_ = signin::Tribool::kUnknown;
 };
 
