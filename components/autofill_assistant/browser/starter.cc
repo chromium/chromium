@@ -391,6 +391,8 @@ void Starter::Init() {
   // which leads to pollution of our metrics.
   fetch_trigger_scripts_on_navigation_ =
       proactive_help_setting_enabled && msbb_setting_enabled &&
+      (!platform_delegate_->GetIsWebLayer() ||
+       platform_delegate_->GetIsLoggedIn()) &&
       ((is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA() &&
         base::FeatureList::IsEnabled(
             features::kAutofillAssistantInCCTTriggering)) ||

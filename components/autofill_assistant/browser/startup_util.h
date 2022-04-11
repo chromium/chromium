@@ -39,7 +39,7 @@ class StartupUtil {
   struct Options {
     // Whether the 'Make searches and browsing better' setting was enabled.
     bool msbb_setting_enabled = false;
-    // Whether the 'Proactive help" setting was enabled.
+    // Whether the 'Proactive help' setting was enabled.
     bool proactive_help_setting_enabled = false;
     // Whether the feature module is already installed.
     bool feature_module_installed = false;

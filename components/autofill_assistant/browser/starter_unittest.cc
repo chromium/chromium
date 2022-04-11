@@ -1073,11 +1073,15 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
   EXPECT_THAT(GetUkmRegularScriptOnboarding(ukm_recorder_), IsEmpty());
 }
 
-TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
+TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithoutLogin) {
   SetupPlatformDelegateForReturningUser();
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
+  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.proactive_help_enabled_ = true;
+  fake_platform_delegate_.is_logged_in_ = false;
+  fake_platform_delegate_.is_web_layer_ = false;
   starter_->Init();
 
   EXPECT_CALL(
@@ -1175,6 +1179,58 @@ TEST_F(StarterTest, DoNotStartImplicitlyForNonAgaCct) {
   SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
   task_environment()->RunUntilIdle();
   EXPECT_THAT(GetUkmInChromeTriggering(ukm_recorder_), IsEmpty());
+}
+
+TEST_F(StarterTest, DoNotStartImplicitlyIfNotLoggedInForWebLayer) {
+  SetupPlatformDelegateForReturningUser();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.proactive_help_enabled_ = true;
+  fake_platform_delegate_.is_logged_in_ = false;
+  fake_platform_delegate_.is_web_layer_ = true;
+  starter_->Init();
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+  SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(GetUkmInChromeTriggering(ukm_recorder_), IsEmpty());
+}
+
+TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithLoginForWebLayer) {
+  SetupPlatformDelegateForReturningUser();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.proactive_help_enabled_ = true;
+  fake_platform_delegate_.is_logged_in_ = true;
+  fake_platform_delegate_.is_web_layer_ = true;
+  starter_->Init();
+
+  EXPECT_CALL(
+      *mock_trigger_script_service_request_sender_,
+      OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
+                    _, RpcType::GET_TRIGGER_SCRIPTS))
+      .WillOnce(RunOnceCallback<2>(
+          net::HTTP_OK,
+          CreateTriggerScriptResponseForTest(
+              TriggerScriptProto::SHOPPING_CART_RETURNING_USER),
+          ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
+      .WillOnce([&]() {
+        ASSERT_TRUE(trigger_script_coordinator_ != nullptr);
+        trigger_script_coordinator_->PerformTriggerScriptAction(
+            TriggerScriptProto::ACCEPT);
+      });
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL("https://www.some-website.com/cart"), _, _));
+
+  // Implicit startup by navigating to an autofill-assistant-enabled site.
+  SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {

@@ -66,11 +66,14 @@ PasswordManagerClient* DependenciesChrome::GetPasswordManagerClient(
 
 std::string DependenciesChrome::GetChromeSignedInEmailAddress(
     WebContents* web_contents) const {
-  CoreAccountInfo account_info =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  return account_info.email;
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (!identity_manager) {
+    return std::string();
+  }
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+      .email;
 }
 
 AnnotateDomModelService* DependenciesChrome::GetOrCreateAnnotateDomModelService(

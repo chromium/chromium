@@ -49,7 +49,9 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetIsLoggedIn() override;
   bool GetIsCustomTab() const override;
+  bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
@@ -73,7 +75,9 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
       on_show_onboarding_callback_;
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
+  bool is_logged_in_ = true;
   bool is_custom_tab_ = true;
+  bool is_web_layer_ = true;
   bool is_tab_created_by_gsa_ = true;
   std::unique_ptr<AssistantFieldTrialUtil> field_trial_util_;
   bool is_attached_ = true;

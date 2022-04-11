@@ -103,8 +103,16 @@ bool FakeStarterPlatformDelegate::GetMakeSearchesAndBrowsingBetterEnabled()
   return msbb_enabled_;
 }
 
+bool FakeStarterPlatformDelegate::GetIsLoggedIn() {
+  return is_logged_in_;
+}
+
 bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
+}
+
+bool FakeStarterPlatformDelegate::GetIsWebLayer() const {
+  return is_web_layer_;
 }
 
 bool FakeStarterPlatformDelegate::GetIsTabCreatedByGSA() const {

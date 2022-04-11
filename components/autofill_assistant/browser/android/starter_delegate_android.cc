@@ -247,8 +247,17 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
       base::android::AttachCurrentThread(), java_object_);
 }
 
+bool StarterDelegateAndroid::GetIsLoggedIn() {
+  return !dependencies_->GetChromeSignedInEmailAddress(&GetWebContents())
+              .empty();
+}
+
 bool StarterDelegateAndroid::GetIsCustomTab() const {
   return dependencies_->IsCustomTab(GetWebContents());
+}
+
+bool StarterDelegateAndroid::GetIsWebLayer() const {
+  return dependencies_->IsWebLayer();
 }
 
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {

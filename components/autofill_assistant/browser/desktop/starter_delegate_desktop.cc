@@ -95,7 +95,16 @@ bool StarterDelegateDesktop::GetMakeSearchesAndBrowsingBetterEnabled() const {
   return false;
 }
 
+bool StarterDelegateDesktop::GetIsLoggedIn() {
+  // Only relevant for trigger scripts, which don't exist in headless.
+  return false;
+}
+
 bool StarterDelegateDesktop::GetIsCustomTab() const {
+  return false;
+}
+
+bool StarterDelegateDesktop::GetIsWebLayer() const {
   return false;
 }
 

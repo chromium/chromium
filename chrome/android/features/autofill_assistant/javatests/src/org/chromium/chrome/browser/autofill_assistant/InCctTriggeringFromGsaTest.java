@@ -20,8 +20,6 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
-import com.google.protobuf.GeneratedMessageLite;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,17 +50,10 @@ public class InCctTriggeringFromGsaTest {
     private static final String TEST_PAGE_SUPPORTED = "cart.html";
 
     @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    public final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
     private String getTargetWebsiteUrl(String testPage) {
         return mTestRule.getTestServer().getURL(HTML_DIRECTORY + testPage);
-    }
-
-    private void setupTriggerScripts(GetTriggerScriptsResponseProto triggerScripts) {
-        AutofillAssistantTestServiceRequestSender testServiceRequestSender =
-                new AutofillAssistantTestServiceRequestSender();
-        testServiceRequestSender.setNextResponse(/* httpStatus = */ 200, triggerScripts);
-        testServiceRequestSender.scheduleForInjection();
     }
 
     @Before
@@ -86,7 +77,8 @@ public class InCctTriggeringFromGsaTest {
         });
     }
 
-    private GeneratedMessageLite createDefaultTriggerScriptResponse(String statusMessage) {
+    private GetTriggerScriptsResponseProto createDefaultTriggerScriptResponse(
+            String statusMessage) {
         return GetTriggerScriptsResponseProto.newBuilder()
                 .addTriggerScripts(TriggerScriptProto.newBuilder().setUserInterface(
                         createDefaultTriggerScriptUI(statusMessage,

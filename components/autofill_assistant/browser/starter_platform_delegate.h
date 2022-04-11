@@ -85,8 +85,12 @@ class StarterPlatformDelegate {
   // TODO(arbesser): Move this out of the platform delegate.
   // Returns whether the MSBB seetting is enabled.
   virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const = 0;
+  // Returns whether the user is logged in or not.
+  virtual bool GetIsLoggedIn() = 0;
   // Returns whether this is a custom tab or not.
   virtual bool GetIsCustomTab() const = 0;
+  // Returns whether this is running in WebLayer or not.
+  virtual bool GetIsWebLayer() const = 0;
   // Returns whether the tab was created by GSA or not.
   virtual bool GetIsTabCreatedByGSA() const = 0;
   // Creates the util for registering synthetic field trials.
