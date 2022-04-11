@@ -214,10 +214,10 @@ Selector::Selector(const SelectorProto& selector_proto)
 
 Selector::~Selector() = default;
 
-Selector::Selector(Selector&& other) = default;
+Selector::Selector(Selector&& other) noexcept = default;
 Selector::Selector(const Selector& other) = default;
 Selector& Selector::operator=(const Selector& other) = default;
-Selector& Selector::operator=(Selector&& other) = default;
+Selector& Selector::operator=(Selector&& other) noexcept = default;
 
 bool Selector::operator<(const Selector& other) const {
   return proto.filters() < other.proto.filters();

@@ -36,9 +36,9 @@ struct Selector {
   explicit Selector(const std::vector<std::string>& s)
       : Selector(ToSelectorProto(s)) {}
 
-  Selector(Selector&& other);
+  Selector(Selector&& other) noexcept;
   Selector(const Selector& other);
-  Selector& operator=(Selector&& other);
+  Selector& operator=(Selector&& other) noexcept;
   Selector& operator=(const Selector& other);
 
   bool operator<(const Selector& other) const;
