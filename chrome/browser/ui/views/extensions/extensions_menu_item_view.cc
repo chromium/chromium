@@ -138,39 +138,46 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
     : browser_(browser),
       controller_(std::move(controller)),
       model_(ToolbarActionsModel::Get(browser_->profile())) {
-  views::Builder<InstalledExtensionMenuItemView>(this)
-      .SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      // Set so the extension button receives enter/exit on children to retain
-      // hover status when hovering child views.
-      .SetNotifyEnterExitOnChild(true)
-      .AddChildren(
-          views::Builder<ExtensionsMenuButton>(
-              std::make_unique<ExtensionsMenuButton>(
-                  browser_, controller_.get(), allow_pinning))
-              .CopyAddressTo(&primary_action_button_)
-              .SetProperty(views::kFlexBehaviorKey,
-                           views::FlexSpecification(
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)),
-          views::Builder<HoverButton>(
-              std::make_unique<HoverButton>(
-                  base::BindRepeating(
-                      &InstalledExtensionMenuItemView::OnPinButtonPressed,
-                      base::Unretained(this)),
-                  std::u16string()))
-              .CopyAddressTo(&pin_button_)
-              .SetID(EXTENSION_PINNING)
-              .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets)),
-          views::Builder<HoverButton>(
-              std::make_unique<HoverButton>(views::Button::PressedCallback(),
-                                            std::u16string()))
-              .CopyAddressTo(&context_menu_button_)
-              .SetID(EXTENSION_CONTEXT_MENU)
-              .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets))
-              .SetTooltipText(l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)))
-      .BuildChildren();
+  auto builder =
+      views::Builder<InstalledExtensionMenuItemView>(this)
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          // Set so the extension button receives enter/exit on children to
+          // retain hover status when hovering child views.
+          .SetNotifyEnterExitOnChild(true)
+          .AddChildren(
+              views::Builder<ExtensionsMenuButton>(
+                  std::make_unique<ExtensionsMenuButton>(
+                      browser_, controller_.get(), allow_pinning))
+                  .CopyAddressTo(&primary_action_button_)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)),
+              views::Builder<HoverButton>(
+                  std::make_unique<HoverButton>(
+                      views::Button::PressedCallback(), std::u16string()))
+                  .CopyAddressTo(&context_menu_button_)
+                  .SetID(EXTENSION_CONTEXT_MENU)
+                  .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)));
+
+  if (primary_action_button_->CanShowIconInToolbar()) {
+    builder.AddChildAt(
+        views::Builder<HoverButton>(
+            std::make_unique<HoverButton>(
+                base::BindRepeating(
+                    &InstalledExtensionMenuItemView::OnPinButtonPressed,
+                    base::Unretained(this)),
+                std::u16string()))
+            .CopyAddressTo(&pin_button_)
+            .SetID(EXTENSION_PINNING)
+            .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets)),
+        1);
+  }
+
+  std::move(builder).BuildChildren();
 
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
