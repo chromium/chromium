@@ -333,15 +333,16 @@ interface NetworkService {
   // order to ensure that CT is not enforced if the log list is too out of
   // date.
   [EnableIf=is_ct_supported]
-  UpdateCtLogList(array<CTLogInfo> log_list, mojo_base.mojom.Time update_time);
+  UpdateCtLogList(array<CTLogInfo> log_list,
+                  mojo_base.mojom.Time update_time) => ();
 
   // Updates the list of popular SCTs queried during CT hashdance auditing.
   [EnableIf=is_ct_supported]
-  UpdateCtKnownPopularSCTs(array<array<uint8>> sct_hashes);
+  UpdateCtKnownPopularSCTs(array<array<uint8>> sct_hashes) => ();
 
   // Disables or enables CT Enforcement.
   [EnableIf=is_ct_supported]
-  SetCtEnforcementEnabled(bool enabled);
+  SetCtEnforcementEnabled(bool enabled) => ();
 
   // Updates the key pinnning pin list. `update_time` should contain the
   // timestamp that the pins list was considered fresh/current, in order to

@@ -9,10 +9,66 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "components/component_updater/component_installer.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace component_updater {
+
+// The service that does the heavy lifting to install the PKI metadata
+// component.
+class PKIMetadataComponentInstallerService final {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called after the PKI metadata was configured.
+    virtual void OnPKIMetadataConfigured() = 0;
+  };
+
+  // Returns the live server instance, creating it if it does not exist.
+  static PKIMetadataComponentInstallerService* GetInstance();
+
+  PKIMetadataComponentInstallerService();
+  ~PKIMetadataComponentInstallerService() = delete;
+
+  // Sets the PKI metadata configuration on the current network service. This is
+  // a no-op if the component is not ready.
+  // Reconfiguring happens on an asynchronous task.
+  void ReconfigureAfterNetworkRestart();
+
+  // Called when the component is ready to be installed.
+  void OnComponentReady(base::FilePath install_dir);
+
+  // Writes arbitrary data to the CT config component.
+  void WriteComponentForTesting(const base::FilePath& path,
+                                std::string contents);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  // Updates the network service CT list with the component delivered data.
+  // |ct_config_bytes| should be a serialized CTLogList proto message.
+  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
+
+  // Updates the network service pins list with the component delivered data.
+  // |kp_config_bytes| should be a serialized KPConfig proto message.
+  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
+
+  // Notifies all observers that the PKI metadata has been configured.
+  void NotifyPKIMetadataConfigured();
+
+  // The install folder path. An empty path if the component is not ready.
+  base::FilePath install_dir_;
+  base::ObserverList<Observer> observers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PKIMetadataComponentInstallerService> weak_factory_{
+      this};
+};
 
 // Component installer policy for the PKIMetadata component. This component
 // includes any dynamically updateable needed for PKI policies enforcement.
@@ -48,14 +104,6 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  // Updates the network service CT list with the component delivered data.
-  // |ct_config_bytes| should be a serialized CTLogList proto message.
-  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
-
-  // Updates the network service pins list with the component delivered data.
-  // |kp_config_bytes| should be a serialized KPConfig proto message.
-  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
 };
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus);

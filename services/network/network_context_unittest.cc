@@ -6261,8 +6261,10 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
 
     log_list_mojo.push_back(std::move(log_info));
   }
+  base::RunLoop run_loop;
   network_service()->UpdateCtLogList(std::move(log_list_mojo),
-                                     base::Time::Now());
+                                     base::Time::Now(), run_loop.QuitClosure());
+  run_loop.Run();
 
   // Configure CT params in network context.
   mojom::NetworkContextParamsPtr params =
@@ -6346,8 +6348,10 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfigWithOperatorSwitches) {
   }
   log_list_mojo.push_back(std::move(log_info));
 
+  base::RunLoop run_loop;
   network_service()->UpdateCtLogList(std::move(log_list_mojo),
-                                     base::Time::Now());
+                                     base::Time::Now(), run_loop.QuitClosure());
+  run_loop.Run();
 
   // Configure CT params in network context.
   mojom::NetworkContextParamsPtr params =

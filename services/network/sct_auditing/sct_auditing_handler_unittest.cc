@@ -86,7 +86,10 @@ class SCTAuditingHandlerTest : public testing::Test {
     log->mmd = kTestLogMMD;
     std::vector<mojom::CTLogInfoPtr> log_list;
     log_list.emplace_back(std::move(log));
-    network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now());
+    base::RunLoop run_loop;
+    network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
+                                      run_loop.QuitClosure());
+    run_loop.Run();
 
     // A NetworkContextClient is needed for querying/updating the report count.
     mojo::PendingRemote<network::mojom::NetworkContextClient>

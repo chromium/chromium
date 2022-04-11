@@ -736,8 +736,11 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
   // using `MockCertVerifier` (otherwise CT validation would fail due to the
   // empty log list).
   if (g_enable_expect_ct_for_testing) {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     network_service->UpdateCtLogList(
-        std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now());
+        std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now(),
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 }
 

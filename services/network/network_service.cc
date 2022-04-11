@@ -449,6 +449,12 @@ void NetworkService::RegisterNetworkContext(NetworkContext* network_context) {
 
   if (doh_probe_activator_)
     doh_probe_activator_->MaybeActivateDohProbes(network_context);
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  network_context->url_request_context()
+      ->transport_security_state()
+      ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 
 void NetworkService::DeregisterNetworkContext(NetworkContext* network_context) {
@@ -709,7 +715,8 @@ void NetworkService::ConfigureSCTAuditing(
 }
 
 void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
-                                     base::Time update_time) {
+                                     base::Time update_time,
+                                     UpdateCtLogListCallback callback) {
   log_list_ = std::move(log_list);
   ct_log_list_update_time_ = update_time;
 
@@ -724,22 +731,29 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
           ->SetCTLogListUpdateTime(update_time);
     }
   }
+  std::move(callback).Run();
 }
 
 void NetworkService::UpdateCtKnownPopularSCTs(
-    const std::vector<std::vector<uint8_t>>& sct_hashes) {
+    const std::vector<std::vector<uint8_t>>& sct_hashes,
+    UpdateCtLogListCallback callback) {
   sct_auditing_cache_->set_popular_scts(std::move(sct_hashes));
+  std::move(callback).Run();
 }
 
-void NetworkService::SetCtEnforcementEnabled(bool enabled) {
+void NetworkService::SetCtEnforcementEnabled(
+    bool enabled,
+    SetCtEnforcementEnabledCallback callback) {
+  ct_enforcement_enabled_ = enabled;
   DCHECK(base::FeatureList::IsEnabled(
       certificate_transparency::features::
           kCertificateTransparencyComponentUpdater));
   for (auto* context : network_contexts_) {
     context->url_request_context()
         ->transport_security_state()
-        ->SetCTEmergencyDisabled(!enabled);
+        ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);
   }
+  std::move(callback).Run();
 }
 
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)

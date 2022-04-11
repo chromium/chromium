@@ -196,10 +196,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureSCTAuditing(
       mojom::SCTAuditingConfigurationPtr configuration) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
-                       base::Time update_time) override;
+                       base::Time update_time,
+                       UpdateCtLogListCallback callback) override;
   void UpdateCtKnownPopularSCTs(
-      const std::vector<std::vector<uint8_t>>& sct_hashes) override;
-  void SetCtEnforcementEnabled(bool enabled) override;
+      const std::vector<std::vector<uint8_t>>& sct_hashes,
+      UpdateCtKnownPopularSCTsCallback callback) override;
+  void SetCtEnforcementEnabled(
+      bool enabled,
+      SetCtEnforcementEnabledCallback callback) override;
 #endif
 
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
@@ -275,6 +279,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   base::Time ct_log_list_update_time() const {
     return ct_log_list_update_time_;
+  }
+
+  bool is_ct_enforcement_enabled_for_testing() const {
+    return ct_enforcement_enabled_;
   }
 #endif
 
@@ -411,6 +419,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<CtLogListDistributor> ct_log_list_distributor_;
 
   base::Time ct_log_list_update_time_;
+
+  bool ct_enforcement_enabled_ = true;
 #endif
 
   bool pins_list_updated_ = false;
