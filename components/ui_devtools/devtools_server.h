@@ -81,6 +81,9 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   // Marks as a const function so it can be called after the server is set up
   // and used as a constant instance.
   void SetOnSessionEnded(base::OnceClosure callback) const;
+  // Sets a callback that tests can use to wait for the server to be ready to
+  // accept connections.
+  void SetOnSocketConnectedForTesting(base::OnceClosure on_socket_connected);
 
  private:
   UiDevToolsServer(int port,
@@ -123,6 +126,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
 
   // Invoked when the server doesn't have any live connection.
   mutable base::OnceClosure on_session_ended_;
+  base::OnceClosure on_socket_connected_;
 
   // The server (owned by Chrome for now)
   static UiDevToolsServer* devtools_server_;

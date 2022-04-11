@@ -100,6 +100,15 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
   return server;
 }
 
+void UiDevToolsServer::SetOnSocketConnectedForTesting(
+    base::OnceClosure on_socket_connected) {
+  if (server_) {
+    std::move(on_socket_connected).Run();
+    return;
+  }
+  on_socket_connected_ = std::move(on_socket_connected);
+}
+
 // static
 void UiDevToolsServer::CreateTCPServerSocket(
     mojo::PendingReceiver<network::mojom::TCPServerSocket>
@@ -192,6 +201,8 @@ void UiDevToolsServer::MakeServer(
       }
     }
   }
+  if (on_socket_connected_)
+    std::move(on_socket_connected_).Run();
 }
 
 // HttpServer::Delegate Implementation

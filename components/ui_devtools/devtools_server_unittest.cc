@@ -5,6 +5,7 @@
 #include "components/ui_devtools/devtools_server.h"
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/ui_devtools/switches.h"
@@ -20,19 +21,9 @@
 
 namespace ui_devtools {
 
-// TODO(lgrey): Hopefully temporary while we figure out why this doesn't work.
-// TODO(crbug.com/1315287): Re-enable when test works on Fuchsia.
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_ConnectionToViewsServer DISABLED_ConnectionToViewsServer
-#else
-#define MAYBE_ConnectionToViewsServer ConnectionToViewsServer
-#endif
-
 // Tests whether the server for Views is properly created so we can connect to
 // it.
-TEST(UIDevToolsServerTest, MAYBE_ConnectionToViewsServer) {
-  // Use port 80 to prevent firewall issues.
-  static constexpr int fake_port = 80;
+TEST(UIDevToolsServerTest, ConnectionToViewsServer) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableUiDevTools);
   base::test::TaskEnvironment task_environment(
@@ -53,11 +44,14 @@ TEST(UIDevToolsServerTest, MAYBE_ConnectionToViewsServer) {
       network_context_remote.BindNewPipeAndPassReceiver(),
       std::move(context_params));
 
+  base::RunLoop run_loop;
   std::unique_ptr<UiDevToolsServer> server =
-      UiDevToolsServer::CreateForViews(network_context_remote.get(), fake_port);
+      UiDevToolsServer::CreateForViews(network_context_remote.get(), 0);
+  server->SetOnSocketConnectedForTesting(run_loop.QuitClosure());
+  run_loop.Run();
   // Connect to the server socket.
   net::AddressList addr(
-      net::IPEndPoint(net::IPAddress(127, 0, 0, 1), fake_port));
+      net::IPEndPoint(net::IPAddress(127, 0, 0, 1), server->port()));
   auto client_socket = std::make_unique<net::TCPClientSocket>(
       addr, nullptr, nullptr, nullptr, net::NetLogSource());
   net::TestCompletionCallback callback;
