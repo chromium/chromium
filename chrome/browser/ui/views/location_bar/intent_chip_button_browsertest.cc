@@ -275,7 +275,14 @@ class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest, ShowsAppIconInChip) {
+// TODO(crbug.com/1314260): Fix test flakiness on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowsAppIconInChip DISABLED_ShowsAppIconInChip
+#else
+#define MAYBE_ShowsAppIconInChip ShowsAppIconInChip
+#endif
+IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest,
+                       MAYBE_ShowsAppIconInChip) {
   if (!HasRequiredAshVersionForLacros())
     GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
