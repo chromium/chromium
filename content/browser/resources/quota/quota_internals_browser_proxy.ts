@@ -27,6 +27,11 @@ type GetHostUsageForInternalsResult = {
   'hostUsage': bigint,
 };
 
+type GetGlobalUsageResult = {
+  usage: bigint,
+  unlimitedUsage: bigint,
+};
+
 type GetStatisticsResult = {
   evictionStatistics: {
     'errors-on-getting-usage-and-quota': string,
@@ -71,6 +76,11 @@ export class QuotaInternalsBrowserProxy {
 
   getDiskAvailability(): Promise<GetDiskAvailabilityResult> {
     return this.handler.getDiskAvailability();
+  }
+
+  getGlobalUsage(storageType: string): Promise<GetGlobalUsageResult> {
+    return this.handler.getGlobalUsageForInternals(
+        enumerateStorageType(storageType));
   }
 
   getStatistics(): Promise<GetStatisticsResult> {

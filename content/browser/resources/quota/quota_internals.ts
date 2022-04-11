@@ -102,6 +102,19 @@ async function renderDiskAvailability() {
   tableBody.append(listenerRow);
 }
 
+async function renderGlobalUsage() {
+  const globalUsageStorageTypes: string[] =
+      ['temporary', 'persistent', 'syncable'];
+
+  for (const storageType of globalUsageStorageTypes) {
+    const result = await getProxy().getGlobalUsage(storageType);
+    const formattedResultString: string = `${Number(result.usage)} B (${
+        result.unlimitedUsage} B for unlimited origins)`;
+    document.body.querySelector(`.${storageType}-global-and-unlimited-usage`)!
+        .textContent = formattedResultString;
+  }
+}
+
 async function renderEvictionStats() {
   const result = await getProxy().getStatistics();
 
@@ -271,6 +284,7 @@ async function renderUsageAndQuotaStats() {
 document.addEventListener('DOMContentLoaded', () => {
   renderDiskAvailability();
   renderEvictionStats();
+  renderGlobalUsage();
   renderUsageAndQuotaStats();
   document.body.querySelector('#trigger-notification')!.addEventListener(
       'click', () => getProxy().simulateStoragePressure());

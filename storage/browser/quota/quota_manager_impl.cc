@@ -1561,6 +1561,19 @@ void QuotaManagerImpl::GetGlobalUsage(StorageType type,
   usage_tracker->GetGlobalUsage(std::move(callback));
 }
 
+void QuotaManagerImpl::GetGlobalUsageForInternals(
+    storage::mojom::StorageType storage_type,
+    GetGlobalUsageForInternalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+  EnsureDatabaseOpened();
+
+  StorageType type = GetBlinkStorageType(storage_type);
+  UsageTracker* usage_tracker = GetUsageTracker(type);
+  DCHECK(usage_tracker);
+  usage_tracker->GetGlobalUsage(std::move(callback));
+}
+
 void QuotaManagerImpl::GetHostUsageWithBreakdown(
     const std::string& host,
     StorageType type,

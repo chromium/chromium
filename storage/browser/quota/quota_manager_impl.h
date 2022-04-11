@@ -359,6 +359,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const std::string& host,
       storage::mojom::StorageType storage_type,
       GetHostUsageForInternalsCallback callback) override;
+  void GetGlobalUsageForInternals(
+      storage::mojom::StorageType storage_type,
+      GetGlobalUsageForInternalsCallback callback) override;
 
   // Called by UI and internal modules.
   void GetPersistentHostQuota(const std::string& host, QuotaCallback callback);

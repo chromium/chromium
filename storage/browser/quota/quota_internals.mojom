@@ -49,4 +49,8 @@ interface QuotaInternalsHandler {
     // Returns a host's usage for a given storage type.
     GetHostUsageForInternals(string host, StorageType storage_type) =>
         (int64 host_usage);
+
+    // Returns the global usage and unlimited usage for a given storage type.
+    GetGlobalUsageForInternals(StorageType storage_type) =>
+        (int64 usage, int64 unlimited_usage);
 };
