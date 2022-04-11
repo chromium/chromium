@@ -31,6 +31,24 @@ chromium-metrics-reviews@google.com.
                than inflation."/>
 </variants>
 
+<variants name="MobileInfobarType">
+  <variant name="InfobarTypeAutofillAddressProfile"
+      summary="Recorded for Autofill Address Infobar."/>
+  <variant name="InfobarTypeConfirm" summary="Recorded for Confirm Messages."/>
+  <variant name="InfobarTypePasswordSave"
+      summary="Recorded for Save Password Infobar."/>
+  <variant name="InfobarTypePasswordUpdate"
+      summary="Recorded for Update Password Messages."/>
+  <variant name="InfobarTypePermissions"
+      summary="Recorded for PermissionsInfobar."/>
+  <variant name="InfobarTypeReadingList"
+      summary="Recorded for Reading List Infobar."/>
+  <variant name="InfobarTypeSaveCard"
+      summary="Recorded for Save Card Infobar."/>
+  <variant name="InfobarTypeTranslate"
+      summary="Recorded for Translate Infobar."/>
+</variants>
+
 <histogram name="Mobile.AppMenu.HighlightMenuItem.Clicked"
     enum="AppMenuHighlightItem" expires_after="2021-09-19">
   <owner>shaktisahu@chromium.org</owner>
@@ -186,31 +204,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Badge.Tapped"
+<histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
     enum="MobileMessagesBadgeState" expires_after="2022-07-24">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records the state of a badge when it was tapped.</summary>
+  <summary>
+    Records the state of a badge when it was tapped. {MobileInfobarType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Banner.Dismiss"
+<histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
     enum="MobileMessagesBannerDismissType" expires_after="2022-07-24">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records the reason why a Banner was dismissed.</summary>
+  <summary>
+    Records the reason why an infobar banner was dismissed. {MobileInfobarType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Banner.Event"
+<histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
     enum="MobileMessagesBannerEvent" expires_after="2022-07-31">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records Infobar Banner events.</summary>
+  <summary>Records infobar banner events. {MobileInfobarType}</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
@@ -258,13 +274,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Modal.Event"
+<histogram name="Mobile.Messages.Modal.Event.{MobileInfobarType}"
     enum="MobileMessagesModalEvent" expires_after="2022-07-24">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records generic Infobar Modal events.</summary>
+  <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"

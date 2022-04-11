@@ -4251,24 +4251,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile_Messages_Type" separator=".">
-  <suffix name="InfobarTypeAutofillAddressProfile"
-      label="Recorded for Autofill Address Messages."/>
-  <suffix name="InfobarTypeConfirm" label="Recorded for Confirm Messages."/>
-  <suffix name="InfobarTypePasswordSave"
-      label="Recorded for Save Password Messages."/>
-  <suffix name="InfobarTypePasswordUpdate"
-      label="Recorded for Update Password Messages."/>
-  <suffix name="InfobarTypeReadingList"
-      label="Recorded for Reading List Messages."/>
-  <suffix name="InfobarTypeSaveCard" label="Recorded for Save Card Messages."/>
-  <suffix name="InfobarTypeTranslate" label="Recorded for Translate Messages."/>
-  <affected-histogram name="Mobile.Messages.Badge.Tapped"/>
-  <affected-histogram name="Mobile.Messages.Banner.Dismiss"/>
-  <affected-histogram name="Mobile.Messages.Banner.Event"/>
-  <affected-histogram name="Mobile.Messages.Modal.Event"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MobileDownloadBytesDownloadedTypes" separator=".">
   <suffix name="ChromeNetworkStack.Failure" label=""/>
   <suffix name="ChromeNetworkStack.Success" label=""/>
