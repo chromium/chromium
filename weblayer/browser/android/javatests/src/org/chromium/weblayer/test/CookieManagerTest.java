@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.CookieChangeCause;
 import org.chromium.weblayer.CookieChangedCallback;
@@ -151,6 +152,7 @@ public class CookieManagerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1133891")
     public void testCookieChanged() throws Exception {
         CookieChangedCallbackHelper helper = new CookieChangedCallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
