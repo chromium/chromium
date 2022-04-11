@@ -188,13 +188,6 @@ void NotificationGroupingController::SetupParentNotification(
   grouped_notification_list_->AddGroupedNotification(old_parent_id,
                                                      new_parent_id);
 
-  Notification* new_parent_notification = notification_copy.get();
-  {
-    // Prevent double processing `parent_notification`'s copy, used as a group
-    // parent.
-    base::AutoReset<bool> reset(&adding_parent_grouped_notification_, true);
-    MessageCenter::Get()->AddNotification(std::move(notification_copy));
-  }
   GetActiveNotificationViewController()
       ->ConvertNotificationViewToGroupedNotificationView(
           /*ungrouped_notification_id=*/old_parent_id,
@@ -207,8 +200,16 @@ void NotificationGroupingController::SetupParentNotification(
   // Add the old parent notification as a group child to the
   // newly created parent notification which will act as a
   // container for this group as long as it exists.
-  new_parent_notification->SetGroupParent();
+  notification_copy->SetGroupParent();
   parent_notification->SetGroupChild();
+
+  Notification* new_parent_notification = notification_copy.get();
+  {
+    // Prevent double processing `parent_notification`'s copy, used as a group
+    // parent.
+    base::AutoReset<bool> reset(&adding_parent_grouped_notification_, true);
+    MessageCenter::Get()->AddNotification(std::move(notification_copy));
+  }
 
   // Record metrics for the new parent and new child added.
   metrics_utils::LogGroupNotificationAddedType(
