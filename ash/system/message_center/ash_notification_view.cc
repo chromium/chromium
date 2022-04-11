@@ -180,6 +180,17 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
                     .SetTextStyle(views::style::STYLE_SECONDARY));
 }
 
+views::Builder<ash::AshNotificationView::GroupedNotificationsContainer>
+CreateGroupedNotificationsContainerBuilder(
+    ash::AshNotificationView* parent_notification_view) {
+  return views::Builder<
+             ash::AshNotificationView::GroupedNotificationsContainer>()
+      .SetParentNotificationView(parent_notification_view)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetInsideBorderInsets(ash::kGroupedNotificationContainerCollapsedInsets)
+      .SetBetweenChildSpacing(ash::kGroupedNotificationsCollapsedSpacing);
+}
+
 // Perform a scale and translate animation by scale from (scale_value_x,
 // scalue_value_y) and translate from (translate_value_x, translate_value_y) to
 // its correct scale and position.
@@ -452,21 +463,25 @@ AshNotificationView::AshNotificationView(
                    .CopyAddressTo(&collapsed_summary_view_)
                    .Build());
 
-  AddChildView(
-      views::Builder<views::ScrollView>()
-          .CopyAddressTo(&grouped_notifications_scroll_view_)
-          .SetBackgroundColor(absl::nullopt)
-          .SetDrawOverflowIndicator(false)
-          .ClipHeightTo(0, std::numeric_limits<int>::max())
-          .SetContents(views::Builder<GroupedNotificationsContainer>()
-                           .CopyAddressTo(&grouped_notifications_container_)
-                           .SetParentNotificationView(this)
-                           .SetOrientation(Orientation::kVertical)
-                           .SetInsideBorderInsets(
-                               kGroupedNotificationContainerCollapsedInsets)
-                           .SetBetweenChildSpacing(
-                               kGroupedNotificationsCollapsedSpacing))
-          .Build());
+  // We only need a scroll view if the notification is being shown in its own
+  // popup. Scrolling is handled by `UnifiedMessageCenterView` otherwise. Having
+  // a nested scroll view results in crbug/1302756.
+  if (shown_in_popup) {
+    AddChildView(
+        views::Builder<views::ScrollView>()
+            .CopyAddressTo(&grouped_notifications_scroll_view_)
+            .SetBackgroundColor(absl::nullopt)
+            .SetDrawOverflowIndicator(false)
+            .ClipHeightTo(0, std::numeric_limits<int>::max())
+            .SetContents(
+                CreateGroupedNotificationsContainerBuilder(this).CopyAddressTo(
+                    &grouped_notifications_container_))
+            .Build());
+  } else {
+    AddChildView(CreateGroupedNotificationsContainerBuilder(this)
+                     .CopyAddressTo(&grouped_notifications_container_)
+                     .Build());
+  }
 
   AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
 
@@ -755,7 +770,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   expand_button_->SetExpanded(expanded);
 
   if (is_grouped_parent_view_) {
-    if (shown_in_popup_) {
+    if (grouped_notifications_scroll_view_) {
       grouped_notifications_scroll_view_->ClipHeightTo(
           0, CalculateMaxHeightForGroupedNotifications());
     }
@@ -790,7 +805,9 @@ void AshNotificationView::UpdateWithNotification(
   is_grouped_child_view_ = notification.group_child();
   is_grouped_parent_view_ = notification.group_parent();
 
-  grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
+  if (grouped_notifications_scroll_view_)
+    grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
+  grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
 
   if (is_grouped_child_view_ && !is_nested())
     SetIsNested();
