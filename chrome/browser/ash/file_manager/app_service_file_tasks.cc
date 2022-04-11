@@ -137,7 +137,7 @@ void FindAppServiceTasks(Profile* profile,
       has_non_native_file = true;
     if (!has_audio_file && IsAudio(entry.path))
       has_audio_file = true;
-    if (!has_pdf_file && entry.path.Extension() == ".pdf")
+    if (!has_pdf_file && entry.path.MatchesExtension(".pdf"))
       has_pdf_file = true;
   }
 

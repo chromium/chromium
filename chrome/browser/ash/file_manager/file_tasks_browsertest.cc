@@ -162,7 +162,7 @@ class FileTasksBrowserTestBase
     const char* file_manager_app_id = ash::features::IsFileManagerSwaEnabled()
                                           ? kFileManagerSwaAppId
                                           : kFileManagerAppId;
-    return {{"pdf", file_manager_app_id}};
+    return {{"pdf", file_manager_app_id}, {"PDF", file_manager_app_id}};
   }
 
  private:
@@ -252,7 +252,8 @@ constexpr Expectation kVideoExpectations[] = {
 };
 
 // PDF handler expectations when |kMediaAppHandlesPdf| is on.
-constexpr Expectation kMediaAppPdfExpectations[] = {{"pdf", kMediaAppId}};
+constexpr Expectation kMediaAppPdfExpectations[] = {{"pdf", kMediaAppId},
+                                                    {"PDF", kMediaAppId}};
 
 }  // namespace
 
