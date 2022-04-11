@@ -1776,8 +1776,16 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that browser session restore isn't triggered when we launch a template
 // that contains a browser window.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SystemUIPreventBrowserSessionRestoreTest \
+  DISABLED_SystemUIPreventBrowserSessionRestoreTest
+#else
+#define MAYBE_SystemUIPreventBrowserSessionRestoreTest \
+  SystemUIPreventBrowserSessionRestoreTest
+#endif
+
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       SystemUIPreventBrowserSessionRestoreTest) {
+                       MAYBE_SystemUIPreventBrowserSessionRestoreTest) {
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
