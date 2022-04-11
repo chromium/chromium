@@ -281,9 +281,14 @@ WebContents* OpenEnabledApplication(Profile* profile,
                                     apps::AppLaunchParams&& params) {
   const Extension* extension = GetExtension(profile, params);
   if (!extension)
-    return NULL;
+    return nullptr;
 
-  WebContents* tab = NULL;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile())
+    return nullptr;
+#endif
+
+  WebContents* tab = nullptr;
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
   prefs->SetActiveBit(extension->id(), true);
 
