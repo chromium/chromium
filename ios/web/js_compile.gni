@@ -2,6 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+##############################################################################
+#
+#
+# DEPRECATED! These templates will be removed soon, please do not use them for
+# adding new JavaScript targets. Instead use the template at
+# //ios/web/public/js_messaging/optimize_js.gni
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+##############################################################################
+
 declare_args() {
   # Control whether the JavaScript files shipped with Chrome on iOS are
   # compiled with closure_compiler or not. Useful for debugging.
