@@ -811,14 +811,14 @@ public class PaymentRequestMetricsTest implements MainActivityStartCallback {
 
     /**
      * Expect that the "Shown" event is recorded only once.
-     * TODO(crbug.com/1260121): The test deterministically fails in local run. Efforts are needed
-     * to fix the test or the implementation code.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisabledTest(message = "Flaky. See crbug.com/727558")
-    public void testShownLoggedOnlyOnce() throws TimeoutException {
+    @DisabledTest(message = "crbug.com/1260121 - The test deterministically fails in local run. "
+                    + "Efforts are needed to fix the test or the implementation code.")
+    public void
+    testShownLoggedOnlyOnce() throws TimeoutException {
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
 

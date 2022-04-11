@@ -76,11 +76,10 @@ public class PaymentRequestTabTest implements MainActivityStartCallback {
     }
 
     /** If the user closes the tab, the dialog is dismissed. */
-    //@MediumTest
-    //@Feature({"Payments"})
-    // Disabled due to recent flakiness: crbug.com/661450.
     @Test
-    @DisabledTest
+    @MediumTest
+    @Feature({"Payments"})
+    @DisabledTest(message = "Flaky - crbug.com/648773")
     public void testDismissOnTabClose() throws TimeoutException {
         // Install two apps to force showing the payment request UI.
         mPaymentRequestTestRule.addPaymentAppFactory(

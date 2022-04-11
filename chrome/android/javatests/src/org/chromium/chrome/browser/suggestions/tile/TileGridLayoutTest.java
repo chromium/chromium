@@ -148,11 +148,10 @@ public class TileGridLayoutTest {
     }
 
     @Test
-    //@MediumTest
-    @DisabledTest(message = "crbug.com/771648")
+    @MediumTest
+    @DisabledTest(message = "crbug.com/768779")
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTileGridAppearance_Full()
-            throws IOException, InterruptedException {
+    public void testModernTileGridAppearance_Full() throws IOException, InterruptedException {
         View tileGridLayout = renderTiles(makeSuggestions(FAKE_MOST_VISITED_URLS.length));
 
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, mActivityTestRule.getActivity());
@@ -174,11 +173,10 @@ public class TileGridLayoutTest {
     }
 
     @Test
-    //@MediumTest
-    @DisabledTest(message = "crbug.com/771648")
+    @MediumTest
+    @DisabledTest(message = "crbug.com/768779")
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTileGridAppearance_Two()
-            throws IOException, InterruptedException {
+    public void testModernTileGridAppearance_Two() throws IOException, InterruptedException {
         View tileGridLayout = renderTiles(makeSuggestions(2));
 
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, mActivityTestRule.getActivity());
