@@ -119,6 +119,11 @@
 #define EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE 0x3450
 #endif /* EGL_ANGLE_platform_angle_vulkan */
 
+#ifndef EGL_ANGLE_robust_resource_initialization
+#define EGL_ANGLE_robust_resource_initialization 1
+#define EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x3453
+#endif /* EGL_ANGLE_display_robust_resource_initialization */
+
 #ifndef EGL_ANGLE_platform_angle_metal
 #define EGL_ANGLE_platform_angle_metal 1
 #define EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE 0x3489
@@ -2222,12 +2227,25 @@ bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   // they have different addresses. If they have the same address then a
   // future call to MakeCurrent might early out because it appears the current
   // context and surface have not changed.
-  EGLint pbuffer_attribs[] = {
-      EGL_WIDTH, size_.width(), EGL_HEIGHT, size_.height(), EGL_NONE,
-  };
+  std::vector<EGLint> pbuffer_attribs;
+  pbuffer_attribs.push_back(EGL_WIDTH);
+  pbuffer_attribs.push_back(size_.width());
+  pbuffer_attribs.push_back(EGL_HEIGHT);
+  pbuffer_attribs.push_back(size_.height());
+
+  // Enable robust resource init when using SwANGLE
+  if (IsSoftwareGLImplementation(GetGLImplementationParts()) &&
+      GLSurfaceEGL::IsRobustResourceInitSupported()) {
+    pbuffer_attribs.push_back(EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE);
+    pbuffer_attribs.push_back(EGL_TRUE);
+  }
+
+  // Append final EGL_NONE to signal the pbuffer attributes are finished
+  pbuffer_attribs.push_back(EGL_NONE);
+  pbuffer_attribs.push_back(EGL_NONE);
 
   EGLSurface new_surface =
-      eglCreatePbufferSurface(display, GetConfig(), pbuffer_attribs);
+      eglCreatePbufferSurface(display, GetConfig(), &pbuffer_attribs[0]);
   if (!new_surface) {
     LOG(ERROR) << "eglCreatePbufferSurface failed with error "
                << GetLastEGLErrorString();
