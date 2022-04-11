@@ -208,9 +208,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // This simplifies bounds calculations.
   std::map<int32_t, gfx::Rect> computed_bounds_;
 
-  // Mapping from Chrome node ID to the previous computed name for live region.
-  std::map<int32_t, std::string> previous_live_region_name_;
-
   // Mapping from Chrome node ID to the attached hook implementations.
   base::flat_map<int32_t, std::unique_ptr<Hook>> hooks_;
 
