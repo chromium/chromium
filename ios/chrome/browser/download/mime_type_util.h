@@ -28,7 +28,7 @@ extern char kMicrosoftApplicationMimeType[];
 // MIME Type for Android package archive.
 extern char kAndroidPackageArchiveMimeType[];
 
-// MIME Type for iCalendar.
+// MIME Type for Calendar.
 extern char kCalendarMimeType[];
 
 // MIME Type for Apple disk image.

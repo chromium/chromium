@@ -159,6 +159,10 @@ const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
 
+const char kDownloadCalendarName[] = "Download Calendar";
+const char kDownloadCalendarDescription[] =
+    "Allows user to download & save Calendar";
+
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

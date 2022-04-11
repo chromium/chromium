@@ -34,9 +34,11 @@ class SafariDownloadTabHelper
     delegate_ = delegate;
   }
 
-  // Download the .mobileconfig file using SFSafariViewController and stops the
-  // given |task|.
+  // SafariDownloadTabHelper does not really proceed with the download. Instead
+  // it extract the download URL and forward it to SFSafariViewController. The
+  // task is dropped and destroyed at the end of the method.
   void DownloadMobileConfig(std::unique_ptr<web::DownloadTask> task);
+  void DownloadCalendar(std::unique_ptr<web::DownloadTask> task);
 
  private:
   friend class web::WebStateUserData<SafariDownloadTabHelper>;

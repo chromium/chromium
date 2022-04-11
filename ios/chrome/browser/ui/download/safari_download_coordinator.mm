@@ -71,10 +71,6 @@ const char kUmaDownloadMobileConfigFileUI[] =
 
 // Presents SFSafariViewController in order to download the file.
 - (void)presentSFSafariViewController:(NSURL*)fileURL {
-  base::UmaHistogramEnumeration(
-      kUmaDownloadMobileConfigFileUI,
-      DownloadMobileConfigFileUI::kSFSafariViewIsPresented);
-
   self.safariViewController =
       [[SFSafariViewController alloc] initWithURL:fileURL];
   self.safariViewController.delegate = self;
@@ -135,6 +131,46 @@ const char kUmaDownloadMobileConfigFileUI[] =
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE)
                 action:^{
+                  base::UmaHistogramEnumeration(
+                      kUmaDownloadMobileConfigFileUI,
+                      DownloadMobileConfigFileUI::kSFSafariViewIsPresented);
+                  [weakSelf presentSFSafariViewController:fileURL];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self.alertCoordinator start];
+}
+
+- (void)presentCalendarAlertFromURL:(NSURL*)fileURL {
+  if (!fileURL) {
+    return;
+  }
+
+  // TODO(crbug.com/1280175): Record some metric.
+
+  self.alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE)
+                         message:
+                             l10n_util::GetNSString(
+                                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE)];
+
+  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                   action:^{
+                                     // TODO(crbug.com/1280175): Record some
+                                     // metric.
+                                   }
+                                    style:UIAlertActionStyleCancel];
+
+  __weak SafariDownloadCoordinator* weakSelf = self;
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE)
+                action:^{
+                  // TODO(crbug.com/1280175): Record metric.
                   [weakSelf presentSFSafariViewController:fileURL];
                 }
                  style:UIAlertActionStyleDefault];

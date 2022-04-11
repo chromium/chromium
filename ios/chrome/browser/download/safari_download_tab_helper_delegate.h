@@ -14,6 +14,10 @@
 // file that we are trying to download. |fileURL| cannot be nil.
 - (void)presentMobileConfigAlertFromURL:(NSURL*)fileURL;
 
+// Called to download .ics file, |fileURL| points to the .ics
+// file that we are trying to download. |fileURL| cannot be nil.
+- (void)presentCalendarAlertFromURL:(NSURL*)fileURL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_SAFARI_DOWNLOAD_TAB_HELPER_DELEGATE_H_

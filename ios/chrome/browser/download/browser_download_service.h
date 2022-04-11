@@ -36,7 +36,7 @@ enum class DownloadMimeTypeResult {
   // text/vcard MIME type.
   VirtualContactFile = 6,
   // text/calendar MIME type.
-  iCalendar = 7,
+  Calendar = 7,
   // model/usd MIME type.
   LegacyUniversalSceneDescription = 8,
   // application/x-apple-diskimage MIME type.

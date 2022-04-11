@@ -851,6 +851,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnforceDelaysInStrikeDatabase)},
+    {"download-calendar", flag_descriptions::kDownloadCalendarName,
+     flag_descriptions::kDownloadCalendarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDownloadCalendar)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

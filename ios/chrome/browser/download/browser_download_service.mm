@@ -46,7 +46,7 @@ DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
     return DownloadMimeTypeResult::VirtualContactFile;
 
   if (mime_type == kCalendarMimeType)
-    return DownloadMimeTypeResult::iCalendar;
+    return DownloadMimeTypeResult::Calendar;
 
   if (mime_type == kLegacyUsdzMimeType)
     return DownloadMimeTypeResult::LegacyUniversalSceneDescription;
@@ -146,6 +146,14 @@ void BrowserDownloadService::OnDownloadCreated(
         SafariDownloadTabHelper::FromWebState(web_state);
     if (tab_helper)
       tab_helper->DownloadMobileConfig(std::move(task));
+  } else if (task->GetMimeType() == kCalendarMimeType &&
+             base::FeatureList::IsEnabled(kDownloadCalendar) &&
+             task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
+    // SFSafariViewController can only open http and https URLs.
+    SafariDownloadTabHelper* tab_helper =
+        SafariDownloadTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->DownloadCalendar(std::move(task));
   } else if (task->GetMimeType() == kVcardMimeType &&
              !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
     VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);

@@ -8,6 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
+const base::Feature kDownloadCalendar{"DownloadCalendar",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kARKillSwitch{"DownloadKillSwitchAR",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 

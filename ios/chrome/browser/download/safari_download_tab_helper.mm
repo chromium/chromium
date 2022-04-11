@@ -22,11 +22,14 @@ void SafariDownloadTabHelper::CreateForWebState(web::WebState* web_state) {
 
 void SafariDownloadTabHelper::DownloadMobileConfig(
     std::unique_ptr<web::DownloadTask> task) {
-  // SafariDownloadTabHelper does not really proceed with the download. Instead
-  // it extract the download URL and forward it to SFSafariViewController. The
-  // task is dropped and destroyed at the end of the method.
   NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());
   [delegate_ presentMobileConfigAlertFromURL:url];
+}
+
+void SafariDownloadTabHelper::DownloadCalendar(
+    std::unique_ptr<web::DownloadTask> task) {
+  NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());
+  [delegate_ presentCalendarAlertFromURL:url];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafariDownloadTabHelper)
