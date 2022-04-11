@@ -346,3 +346,9 @@ export const NetworkConfigServiceRemote =
  * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
  */
 export const Network = chromeos.networkConfig.mojom.NetworkStateProperties;
+
+/**
+ * Type alias for the ShutdownMethod.
+ * @typedef {ash.shimlessRma.mojom.ShutdownMethod}
+ */
+export const ShutdownMethod = ash.shimlessRma.mojom.ShutdownMethod;

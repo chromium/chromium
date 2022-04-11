@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -723,27 +723,13 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * The fake does not use the status list parameter, the fake data is never
+   * updated.
+   * @param {!ShutdownMethod} unused
    * @return {!Promise<!StateResult>}
    */
-  endRmaAndReboot() {
-    return this.getNextStateForMethod_(
-        'endRmaAndReboot', State.kRepairComplete);
-  }
-
-  /**
-   * @return {!Promise<!StateResult>}
-   */
-  endRmaAndShutdown() {
-    return this.getNextStateForMethod_(
-        'endRmaAndShutdown', State.kRepairComplete);
-  }
-
-  /**
-   * @return {!Promise<!StateResult>}
-   */
-  endRmaAndCutoffBattery() {
-    return this.getNextStateForMethod_(
-        'endRmaAndCutoffBattery', State.kRepairComplete);
+  endRma(unused) {
+    return this.getNextStateForMethod_('endRma', State.kRepairComplete);
   }
 
   /**
@@ -1282,9 +1268,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('getLog');
     this.methods_.register('getPowerwashRequired');
-    this.methods_.register('endRmaAndReboot');
-    this.methods_.register('endRmaAndShutdown');
-    this.methods_.register('endRmaAndCutoffBattery');
+    this.methods_.register('endRma');
 
     // Critical error handling
     this.methods_.register('criticalErrorExitToLogin');

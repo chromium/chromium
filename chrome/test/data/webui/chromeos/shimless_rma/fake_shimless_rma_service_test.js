@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponentsWithFails} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, State, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, ShutdownMethod, State, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -698,102 +698,16 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('EndRmaAndRebootOk', () => {
+  test('EndRma', () => {
     let states = [
       {state: State.kRepairComplete, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.endRmaAndReboot().then((state) => {
+    return service.endRma(ShutdownMethod.kReboot).then((state) => {
       assertEquals(state.state, State.kChooseDestination);
       assertEquals(state.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('EndRmaAndRebootWhenRmaNotRequired', () => {
-    return service.endRmaAndReboot().then((state) => {
-      assertEquals(state.state, State.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
-
-  test('EndRmaAndRebootWrongStateFails', () => {
-    let states = [
-      {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
-      {state: State.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.endRmaAndReboot().then((state) => {
-      assertEquals(state.state, State.kWelcomeScreen);
-      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
-    });
-  });
-
-  test('EndRmaAndShutdownOk', () => {
-    let states = [
-      {state: State.kRepairComplete, error: RmadErrorCode.kOk},
-      {state: State.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.endRmaAndShutdown().then((state) => {
-      assertEquals(state.state, State.kChooseDestination);
-      assertEquals(state.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('EndRmaAndShutdownWhenRmaNotRequired', () => {
-    return service.endRmaAndShutdown().then((state) => {
-      assertEquals(state.state, State.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
-
-  test('EndRmaAndShutdownWrongStateFails', () => {
-    let states = [
-      {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
-      {state: State.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.endRmaAndShutdown().then((state) => {
-      assertEquals(state.state, State.kWelcomeScreen);
-      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
-    });
-  });
-
-  test('EndRmaAndCutoffBatteryOk', () => {
-    let states = [
-      {state: State.kRepairComplete, error: RmadErrorCode.kOk},
-      {state: State.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.endRmaAndCutoffBattery().then((state) => {
-      assertEquals(state.state, State.kChooseDestination);
-      assertEquals(state.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('EndRmaAndCutoffBatteryWhenRmaNotRequired', () => {
-    return service.endRmaAndCutoffBattery().then((state) => {
-      assertEquals(state.state, State.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
-
-  test('EndRmaAndCutoffBatteryWrongStateFails', () => {
-    let states = [
-      {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
-      {state: State.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.endRmaAndCutoffBattery().then((state) => {
-      assertEquals(state.state, State.kWelcomeScreen);
-      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
 

@@ -89,6 +89,10 @@ mojom("mojom") {
           mojom = "ash.shimless_rma.mojom.UpdateErrorCode"
           cpp = "::update_engine::ErrorCode"
         },
+        {
+          mojom = "ash.shimless_rma.mojom.ShutdownMethod"
+          cpp = "::rmad::RepairCompleteState_ShutdownMethod"
+        },
       ]
       traits_headers = [
         "shimless_rma_mojom_traits.h",

@@ -132,9 +132,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetLog(GetLogCallback callback) override;
   void GetPowerwashRequired(GetPowerwashRequiredCallback callback) override;
   void LaunchDiagnostics() override;
-  void EndRmaAndReboot(EndRmaAndRebootCallback callback) override;
-  void EndRmaAndShutdown(EndRmaAndShutdownCallback callback) override;
-  void EndRmaAndCutoffBattery(EndRmaAndCutoffBatteryCallback callback) override;
+  void EndRma(rmad::RepairCompleteState::ShutdownMethod shutdown_method,
+              EndRmaCallback callback) override;
 
   void CriticalErrorExitToLogin(
       CriticalErrorExitToLoginCallback callback) override;

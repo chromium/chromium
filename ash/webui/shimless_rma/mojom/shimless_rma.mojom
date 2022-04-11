@@ -383,6 +383,16 @@ enum FinalizationError {
   kGbb = 5,
 };
 
+// This must remain in sync with RepairCompleteState::ShutdownMethod in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum ShutdownMethod {
+  kUnknown = 0,
+  kReboot = 1,
+  kShutdown = 2,
+  kBatteryCutoff = 3,
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -745,19 +755,9 @@ interface ShimlessRmaService {
   GetPowerwashRequired() => (bool powerwash_required);
   // Launch the system diagnostics app.
   LaunchDiagnostics();
-  // Complete RMA and reboot.
+  // Complete RMA using the `shutdown_method`.
   // Returns an error indicating success or a failure.
-  EndRmaAndReboot()
-      => (State state, bool can_cancel, bool can_go_back,
-          RmadErrorCode error);
-  // Complete RMA and shutdown.
-  // Returns an error indicating success or a failure.
-  EndRmaAndShutdown()
-      => (State state, bool can_cancel, bool can_go_back,
-          RmadErrorCode error);
-  // Attempt to cut off the device battery and shutdown.
-  // Returns an error indicating success or a failure.
-  EndRmaAndCutoffBattery()
+  EndRma(ShutdownMethod shutdown_method)
       => (State state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
 

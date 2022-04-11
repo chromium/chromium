@@ -6,6 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -89,8 +90,10 @@ export function wrapupRepairCompletePageTest() {
     service.setGetPowerwashRequiredResult(false);
 
     let callCount = 0;
-    service.endRmaAndShutdown = () => {
+    let shutdownMethod;
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
+      shutdownMethod = seenShutdownMethod;
       return resolver.promise;
     };
     await flushTasks();
@@ -99,6 +102,7 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+    assertEquals(ShutdownMethod.kShutdown, shutdownMethod);
   });
 
   test('ShutDownButtonOpensPowerwashDialogIfPowerwashRequired', async () => {
@@ -108,7 +112,7 @@ export function wrapupRepairCompletePageTest() {
     service.setGetPowerwashRequiredResult(true);
 
     let callCount = 0;
-    service.endRmaAndShutdown = () => {
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
       return resolver.promise;
     };
@@ -134,8 +138,10 @@ export function wrapupRepairCompletePageTest() {
         service.setGetPowerwashRequiredResult(true);
 
         let callCount = 0;
-        service.endRmaAndShutdown = () => {
+        let shutdownMethod;
+        service.endRma = (seenShutdownMethod) => {
           callCount++;
+          shutdownMethod = seenShutdownMethod;
           return resolver.promise;
         };
         await flushTasks();
@@ -145,6 +151,7 @@ export function wrapupRepairCompletePageTest() {
         await flushTasks();
 
         assertEquals(1, callCount);
+        assertEquals(ShutdownMethod.kShutdown, shutdownMethod);
       });
 
   test('PowerwashButtonTriggersRebootIfOpenedWithRebootButton', async () => {
@@ -154,8 +161,10 @@ export function wrapupRepairCompletePageTest() {
     service.setGetPowerwashRequiredResult(true);
 
     let callCount = 0;
-    service.endRmaAndReboot = () => {
+    let shutdownMethod;
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
+      shutdownMethod = seenShutdownMethod;
       return resolver.promise;
     };
     await flushTasks();
@@ -165,6 +174,7 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+    assertEquals(ShutdownMethod.kReboot, shutdownMethod);
   });
 
   test('RebootButtonTriggersRebootIfNoPowerwashRequired', async () => {
@@ -174,8 +184,10 @@ export function wrapupRepairCompletePageTest() {
     service.setGetPowerwashRequiredResult(false);
 
     let callCount = 0;
-    service.endRmaAndReboot = () => {
+    let shutdownMethod;
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
+      shutdownMethod = seenShutdownMethod;
       return resolver.promise;
     };
     await flushTasks();
@@ -184,6 +196,7 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+    assertEquals(ShutdownMethod.kReboot, shutdownMethod);
   });
 
   test('RebootButtonOpensPowerwashDialogIfPowerwashRequired', async () => {
@@ -193,7 +206,7 @@ export function wrapupRepairCompletePageTest() {
     service.setGetPowerwashRequiredResult(true);
 
     let callCount = 0;
-    service.endRmaAndReboot = () => {
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
       return resolver.promise;
     };
@@ -215,8 +228,10 @@ export function wrapupRepairCompletePageTest() {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
     let callCount = 0;
-    service.endRmaAndCutoffBattery = () => {
+    let shutdownMethod;
+    service.endRma = (seenShutdownMethod) => {
       callCount++;
+      shutdownMethod = seenShutdownMethod;
       return resolver.promise;
     };
     await flushTasks();
@@ -228,6 +243,7 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+    assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
   });
 
   test('OpensRmaLogDialog', async () => {

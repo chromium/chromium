@@ -13,7 +13,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma_types.js';
 import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
@@ -139,7 +139,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   endRmaAndShutdown_() {
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.endRmaAndShutdown());
+        this, () => this.shimlessRmaService_.endRma(ShutdownMethod.kShutdown));
   }
 
   /**
@@ -173,7 +173,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   endRmaAndReboot_() {
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.endRmaAndReboot());
+        this, () => this.shimlessRmaService_.endRma(ShutdownMethod.kReboot));
   }
 
   /** @protected */
@@ -189,7 +189,8 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   /** @protected */
   onBatteryCutButtonClick_() {
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.endRmaAndCutoffBattery());
+        this,
+        () => this.shimlessRmaService_.endRma(ShutdownMethod.kBatteryCutoff));
   }
 
   /** @protected */

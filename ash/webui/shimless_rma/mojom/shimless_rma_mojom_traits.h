@@ -210,6 +210,16 @@ struct EnumTraits<ash::shimless_rma::mojom::UpdateRoFirmwareStatus,
                         rmad::UpdateRoFirmwareStatus* out);
 };
 
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::ShutdownMethod,
+                  rmad::RepairCompleteState::ShutdownMethod> {
+  static ash::shimless_rma::mojom::ShutdownMethod ToMojom(
+      rmad::RepairCompleteState::ShutdownMethod shutdown_method);
+
+  static bool FromMojom(ash::shimless_rma::mojom::ShutdownMethod input,
+                        rmad::RepairCompleteState::ShutdownMethod* out);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_SHIMLESS_RMA_MOJOM_SHIMLESS_RMA_MOJOM_TRAITS_H_
