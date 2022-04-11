@@ -367,8 +367,7 @@ AttributionStorageSql::AttributionStorageSql(
                             ? base::FilePath(kInMemoryPath)
                             : path_to_database.Append(kDatabasePath)),
       rate_limit_table_(delegate.get()),
-      delegate_(std::move(delegate)),
-      weak_factory_(this) {
+      delegate_(std::move(delegate)) {
   DCHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

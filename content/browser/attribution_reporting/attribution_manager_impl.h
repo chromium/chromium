@@ -202,7 +202,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::ObserverList<AttributionObserver> observers_;
 
-  base::WeakPtrFactory<AttributionManagerImpl> weak_factory_;
+  base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };
 
 // Gets the delay for a report that has failed to be sent

@@ -290,8 +290,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
-      report_sender_(std::move(report_sender)),
-      weak_factory_(this) {
+      report_sender_(std::move(report_sender)) {
   DCHECK(storage_partition_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);

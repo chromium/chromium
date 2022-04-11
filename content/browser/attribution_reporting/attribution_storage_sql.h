@@ -403,7 +403,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<AttributionStorageSql> weak_factory_;
+  base::WeakPtrFactory<AttributionStorageSql> weak_factory_{this};
 };
 
 }  // namespace content
