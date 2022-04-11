@@ -378,23 +378,45 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
 
   if (service_worker_already_registered) {
     worker_state.registration_state_ = RegistrationState::kRegistered;
-    // TODO(https://crbug.com/901101): We should kick off an async check to see
-    // if the registration is *actually* there and re-register if necessary.
+    VerifyRegistration(service_worker_context, context_id, extension->url());
     return;
   }
 
   worker_state.registration_state_ = RegistrationState::kPending;
-  GURL script_url = extension->GetResourceURL(
-      BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
+
+  RegisterServiceWorker(RegistrationReason::REGISTER_ON_EXTENSION_LOAD,
+                        context_id, *extension);
+}
+
+void ServiceWorkerTaskQueue::VerifyRegistration(
+    content::ServiceWorkerContext* service_worker_context,
+    const SequencedContextId& context_id,
+    const GURL& scope) {
+  service_worker_context->CheckHasServiceWorker(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      base::BindOnce(&ServiceWorkerTaskQueue::DidVerifyRegistration,
+                     weak_factory_.GetWeakPtr(), context_id));
+}
+
+void ServiceWorkerTaskQueue::RegisterServiceWorker(
+    RegistrationReason reason,
+    const SequencedContextId& context_id,
+    const Extension& extension) {
+  GURL script_url = extension.GetResourceURL(
+      BackgroundInfo::GetBackgroundServiceWorkerScript(&extension));
   blink::mojom::ServiceWorkerRegistrationOptions option;
-  if (BackgroundInfo::GetBackgroundServiceWorkerType(extension) ==
-      BackgroundServiceWorkerType::kModule)
+  if (BackgroundInfo::GetBackgroundServiceWorkerType(&extension) ==
+      BackgroundServiceWorkerType::kModule) {
     option.type = blink::mojom::ScriptType::kModule;
-  option.scope = extension->url();
+  }
+  option.scope = extension.url();
+
+  content::ServiceWorkerContext* service_worker_context =
+      GetServiceWorkerContext(extension.id());
   service_worker_context->RegisterServiceWorker(
       script_url, blink::StorageKey(url::Origin::Create(option.scope)), option,
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
-                     weak_factory_.GetWeakPtr(), context_id,
+                     weak_factory_.GetWeakPtr(), context_id, reason,
                      base::Time::Now()));
 }
 
@@ -458,6 +480,7 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
+    RegistrationReason reason,
     base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
@@ -476,6 +499,14 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.RegistrationStatus",
                         success);
+
+  if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
+        success);
+    if (g_test_observer)
+      g_test_observer->RegistrationMismatchMitigated(success);
+  }
 
   if (!success) {
     auto error = std::make_unique<ManifestError>(
@@ -678,6 +709,37 @@ void ServiceWorkerTaskQueue::StopObserving(
   if (std::distance(iter_pair.first, iter_pair.second) == 1)
     service_worker_context->RemoveObserver(this);
   observing_worker_contexts_.erase(iter_pair.first);
+}
+
+void ServiceWorkerTaskQueue::DidVerifyRegistration(
+    const SequencedContextId& context_id,
+    content::ServiceWorkerCapability capability) {
+  const bool is_registered =
+      capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER;
+  UMA_HISTOGRAM_BOOLEAN(
+      "Extensions.ServiceWorkerBackground.RegistrationWhenExpected",
+      is_registered);
+
+  if (is_registered)
+    return;
+
+  // We expected a SW registration (as ExtensionPrefs said so), but there isn't
+  // one. Re-register SW script if the extension is still installed (it's
+  // possible it was uninstalled while we were checking).
+  const ExtensionId& extension_id = context_id.first.extension_id();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  DCHECK(registry);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  if (!extension)
+    return;
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
+      extension->location());
+
+  RegisterServiceWorker(RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH,
+                        context_id, *extension);
 }
 
 void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(

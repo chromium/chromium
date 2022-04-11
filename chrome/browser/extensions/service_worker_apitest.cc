@@ -657,12 +657,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, FilteredEvents) {
 
 // Listens for |message| from extension Service Worker early so that tests can
 // wait for the message on startup (and not miss it).
+template <const char message[]>
 class ServiceWorkerWithEarlyMessageListenerTest
     : public ServiceWorkerBasedBackgroundTest {
  public:
-  explicit ServiceWorkerWithEarlyMessageListenerTest(
-      const std::string& test_message)
-      : test_message_(test_message) {}
+  ServiceWorkerWithEarlyMessageListenerTest() : test_message_(message) {}
 
   ServiceWorkerWithEarlyMessageListenerTest(
       const ServiceWorkerWithEarlyMessageListenerTest&) = delete;
@@ -686,19 +685,9 @@ class ServiceWorkerWithEarlyMessageListenerTest
   std::unique_ptr<ExtensionTestMessageListener> listener_;
 };
 
-class ServiceWorkerOnStartupEventTest
-    : public ServiceWorkerWithEarlyMessageListenerTest {
- public:
-  ServiceWorkerOnStartupEventTest()
-      : ServiceWorkerWithEarlyMessageListenerTest("onStartup event") {}
-
-  ServiceWorkerOnStartupEventTest(const ServiceWorkerOnStartupEventTest&) =
-      delete;
-  ServiceWorkerOnStartupEventTest& operator=(
-      const ServiceWorkerOnStartupEventTest&) = delete;
-
-  ~ServiceWorkerOnStartupEventTest() override = default;
-};
+constexpr char kMsgOnStartup[] = "onStartup event";
+using ServiceWorkerOnStartupEventTest =
+    ServiceWorkerWithEarlyMessageListenerTest<kMsgOnStartup>;
 
 // Tests "runtime.onStartup" for extension SW.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, PRE_Event) {
@@ -712,12 +701,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, DISABLED_Event) {
   EXPECT_TRUE(WaitForMessage());
 }
 
+constexpr char kMsgWorkerRunning[] = "WORKER_RUNNING";
 class ServiceWorkerRegistrationAtStartupTest
-    : public ServiceWorkerWithEarlyMessageListenerTest,
+    : public ServiceWorkerWithEarlyMessageListenerTest<kMsgWorkerRunning>,
       public ServiceWorkerTaskQueue::TestObserver {
  public:
-  ServiceWorkerRegistrationAtStartupTest()
-      : ServiceWorkerWithEarlyMessageListenerTest("WORKER_RUNNING") {
+  ServiceWorkerRegistrationAtStartupTest() {
     ServiceWorkerTaskQueue::SetObserverForTest(this);
   }
 
@@ -2668,6 +2657,90 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                                         disable_reason::DISABLE_USER_ACTION);
   extension_service()->DisableExtension(extension2->id(),
                                         disable_reason::DISABLE_USER_ACTION);
+}
+
+constexpr char kReady[] = "ready";
+class ServiceWorkerTestWithEarlyReadyMesssage
+    : public ServiceWorkerWithEarlyMessageListenerTest<kReady>,
+      public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  ServiceWorkerTestWithEarlyReadyMesssage() {
+    ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+
+  // ServiceWorkerTaskQueue::TestObserver:
+  void RegistrationMismatchMitigated(bool success) override {
+    registration_mismatch_mitigated_ = success;
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  // Waits and returns whether registration mismatch mitigation succeeded.
+  bool WaitForRegistrationMismatchMitigation() {
+    if (!registration_mismatch_mitigated_) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+    }
+    return *registration_mismatch_mitigated_;
+  }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  absl::optional<bool> registration_mismatch_mitigated_;
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+// Tests that missing SW registration is re-registered upon extension
+// activation.
+//
+// In PRE_ test, extension is loaded and then its SW is unregistered. After
+// browser restart, the tests verifies that the extension still runs after
+// browser restart.
+//
+// Regression test for crbug.com/1271154.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
+                       PRE_MissingRegistrationMitigated) {
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/activate_ensures_register"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(WaitForMessage());
+
+  // Unregister the extension service worker.
+  {
+    base::RunLoop run_loop;
+    content::ServiceWorkerContext* context =
+        profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
+
+    // The service worker is registered at the root scope.
+    context->UnregisterServiceWorker(
+        extension->url(), blink::StorageKey(extension->origin()),
+        base::BindLambdaForTesting(
+            [&run_loop](bool success) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
+                       MissingRegistrationMitigated) {
+  WaitForMessage();
+
+  EXPECT_EQ(1,
+            histogram_tester().GetBucketCount(
+                "Extensions.ServiceWorkerBackground.RegistrationWhenExpected",
+                false));
+  EXPECT_EQ(
+      1, histogram_tester().GetBucketCount(
+             "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
+             mojom::ManifestLocation::kUnpacked));
+
+  bool mitigation_succeeded = WaitForRegistrationMismatchMitigation();
+  EXPECT_TRUE(mitigation_succeeded);
+  EXPECT_EQ(
+      1, histogram_tester().GetBucketCount(
+             "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
+             true));
 }
 
 // Tests that an extension's service worker can't be used to relax the extension

@@ -3026,6 +3026,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchLocation"
+    enum="ExtensionLocation" expires_after="2023-04-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    Recorded when Service Worker registration wasn't found when expected. This
+    also records the manifest location of the extension.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated"
+    enum="Boolean" expires_after="2023-04-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    Whether the attempt to re-register an extension Service Worker to mitigate
+    missing registration issue succeeded. The attempt is performed during
+    extension load.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationStatus"
     enum="Boolean" expires_after="2022-10-01">
   <owner>lazyboy@chromium.org</owner>
@@ -3041,6 +3064,16 @@ chromium-metrics-reviews@google.com.
   <owner>dbertoni@chromium.org</owner>
   <summary>
     The amount of time it takes to register a service worker background script.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.RegistrationWhenExpected"
+    enum="Boolean" expires_after="2023-04-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    Whether or not an expected Service Worker registration was found. Note that
+    this expectation was stored in ExtensionPrefs.
   </summary>
 </histogram>
 
