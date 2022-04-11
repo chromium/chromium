@@ -409,31 +409,24 @@ void DesktopWindowTreeHostPlatform::StackAtTop() {
 }
 
 void DesktopWindowTreeHostPlatform::CenterWindow(const gfx::Size& size) {
-  gfx::Size size_in_pixels = ToPixelRect(gfx::Rect(size)).size();
-  gfx::Rect parent_bounds_in_pixels = ToPixelRect(GetWorkAreaBoundsInScreen());
+  gfx::Rect parent_bounds = GetWorkAreaBoundsInScreen();
 
   // If |window_|'s transient parent bounds are big enough to contain |size|,
   // use them instead.
   if (wm::GetTransientParent(GetContentWindow())) {
     gfx::Rect transient_parent_rect =
         wm::GetTransientParent(GetContentWindow())->GetBoundsInScreen();
+    // Consider using the intersect of the work area.
     if (transient_parent_rect.height() >= size.height() &&
         transient_parent_rect.width() >= size.width()) {
-      parent_bounds_in_pixels = ToPixelRect(transient_parent_rect);
+      parent_bounds = transient_parent_rect;
     }
   }
 
-  gfx::Rect window_bounds_in_pixels(
-      parent_bounds_in_pixels.x() +
-          (parent_bounds_in_pixels.width() - size_in_pixels.width()) / 2,
-      parent_bounds_in_pixels.y() +
-          (parent_bounds_in_pixels.height() - size_in_pixels.height()) / 2,
-      size_in_pixels.width(), size_in_pixels.height());
-  // Don't size the window bigger than the parent, otherwise the user may not be
-  // able to close or move it.
-  window_bounds_in_pixels.AdjustToFit(parent_bounds_in_pixels);
+  gfx::Rect window_bounds_in_screen = parent_bounds;
+  window_bounds_in_screen.ClampToCenteredSize(size);
 
-  SetBoundsInPixels(window_bounds_in_pixels);
+  SetBoundsInDIP(window_bounds_in_screen);
 }
 
 void DesktopWindowTreeHostPlatform::GetWindowPlacement(
