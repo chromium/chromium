@@ -84,6 +84,17 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
                                       public DesksController::Observer,
                                       public ShelfConfig::Observer {
  public:
+  // See `drag_status_`. Visible for testing.
+  enum DragStatus {
+    kDragNone,
+    kDragAttempt,
+    kDragInProgress,
+    kDragCancelInProgress,
+    kDragCompleteInProgress,
+    kDragAppListInProgress,
+    kDragHomeToOverviewInProgress,
+  };
+
   // Suspend work area updates within its scope. Note that relevant
   // ShelfLayoutManager must outlive this class.
   class ScopedSuspendWorkAreaUpdate {
@@ -322,6 +333,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   home_to_overview_nudge_controller_for_testing() {
     return home_to_overview_nudge_controller_.get();
   }
+
+  DragStatus drag_status_for_test() const { return drag_status_; }
 
   bool IsDraggingApplist() const {
     return drag_status_ == kDragAppListInProgress;
@@ -599,16 +612,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // events. For example, swiping up from the shelf in tablet mode can open the
   // fullscreen app list. Some shelf behaviour (e.g. visibility state,
   // background color etc.) are affected by various stages of the drag.
-  enum DragStatus {
-    kDragNone,
-    kDragAttempt,
-    kDragInProgress,
-    kDragCancelInProgress,
-    kDragCompleteInProgress,
-    kDragAppListInProgress,
-    kDragHomeToOverviewInProgress,
-  };
-
   DragStatus drag_status_ = kDragNone;
 
   // Whether the hotseat is being dragged.

@@ -2380,10 +2380,19 @@ bool ShelfLayoutManager::StartAppListDrag(
 
 bool ShelfLayoutManager::StartShelfDrag(const ui::LocatedEvent& event_in_screen,
                                         const gfx::Vector2dF& scroll_hint) {
+  const bool is_tablet_mode = Shell::Get()->IsInTabletMode();
   // Disable the shelf dragging if the fullscreen app list is opened.
   if (Shell::Get()->app_list_controller()->IsVisible(display_.id()) &&
-      !Shell::Get()->IsInTabletMode())
+      !is_tablet_mode) {
     return false;
+  }
+
+  // Clamshell ProductivityLauncher does not support shelf drags unless autohide
+  // is enabled.
+  if (!is_tablet_mode && features::IsProductivityLauncherEnabled() &&
+      CalculateShelfVisibility() != SHELF_AUTO_HIDE) {
+    return false;
+  }
 
   drag_status_ = kDragInProgress;
   drag_auto_hide_state_ =

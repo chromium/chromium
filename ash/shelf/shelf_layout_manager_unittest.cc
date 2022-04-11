@@ -1560,6 +1560,38 @@ TEST_F(ShelfLayoutManagerTest, GestureDrag) {
   }
 }
 
+TEST_F(ShelfLayoutManagerTest, ShelfDragDisabledForProductivityLauncher) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
+
+  Shelf* shelf = GetPrimaryShelf();
+  ASSERT_EQ(shelf->auto_hide_behavior(), ShelfAutoHideBehavior::kNever);
+  ASSERT_EQ(shelf->GetVisibilityState(), SHELF_VISIBLE);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Rect shelf_bounds_in_screen = GetVisibleShelfWidgetBoundsInScreen();
+  // Pick an `x` position 1/4 of the way from the left so mouse events are
+  // received by the Shelf instead of the HomeButton.
+  const int x = shelf_bounds_in_screen.x() + shelf_bounds_in_screen.width() / 4;
+  // Start dragging inside the shelf.
+  generator->MoveMouseTo(x, shelf_bounds_in_screen.y() + 20);
+  generator->PressLeftButton();
+  // Try to drag to above the shelf.
+  generator->MoveMouseTo(x, shelf_bounds_in_screen.y() - 20);
+
+  // A drag "attempt" is happening but the shelf is not actually being dragged.
+  EXPECT_NE(GetShelfLayoutManager()->drag_status_for_test(),
+            ShelfLayoutManager::kDragInProgress);
+  EXPECT_NE(GetShelfLayoutManager()->drag_status_for_test(),
+            ShelfLayoutManager::kDragAppListInProgress);
+
+  // Complete the drag. The app list did not open.
+  generator->ReleaseLeftButton();
+  EXPECT_EQ(GetShelfLayoutManager()->drag_status_for_test(),
+            ShelfLayoutManager::kDragNone);
+  GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
+}
+
 TEST_F(ShelfLayoutManagerTest, MouseDragOnShelfShowsAppList) {
   // ProductivityLauncher does not support shelf drags to show app list.
   base::test::ScopedFeatureList feature_list;
