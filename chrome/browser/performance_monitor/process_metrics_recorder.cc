@@ -16,11 +16,12 @@ ProcessMetricsRecorder::ProcessMetricsRecorder(
 ProcessMetricsRecorder::~ProcessMetricsRecorder() = default;
 
 void ProcessMetricsRecorder::OnMetricsSampled(
-    const ProcessMetadata& process_metadata,
+    int process_type,
+    ProcessSubtypes process_subtype,
     const ProcessMonitor::Metrics& metrics) {
   // The histogram macros don't support variables as histogram names,
   // hence the macro duplication for each process type.
-  switch (process_metadata.process_type) {
+  switch (process_type) {
     case content::PROCESS_TYPE_BROWSER:
       RecordProcessHistograms("BrowserProcess", metrics);
       break;
@@ -40,7 +41,7 @@ void ProcessMetricsRecorder::OnMetricsSampled(
       break;
   }
 
-  switch (process_metadata.process_subtype) {
+  switch (process_subtype) {
     case kProcessSubtypeUnknown:
       break;
     case kProcessSubtypeExtensionPersistent:

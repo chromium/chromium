@@ -11,11 +11,11 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
-#include "base/process/process_iterator.h"
+#include "base/process/process_handle.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_monitor/process_metrics_history.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -46,8 +46,35 @@ namespace {
 // The global instance.
 ProcessMonitor* g_process_monitor = nullptr;
 
-void GetProcessSubtypeForRenderProcess(content::RenderProcessHost* host,
-                                       ProcessMetadata* data) {
+std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
+    base::ProcessHandle process_handle) {
+#if BUILDFLAG(IS_MAC)
+  return base::ProcessMetrics::CreateProcessMetrics(
+      process_handle, content::BrowserChildProcessHost::GetPortProvider());
+#else
+  return base::ProcessMetrics::CreateProcessMetrics(process_handle);
+#endif
+}
+
+ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
+  ProcessMonitor::Metrics metrics;
+
+  metrics.cpu_usage = process_metrics.GetPlatformIndependentCPUUsage();
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
+  metrics.idle_wakeups = process_metrics.GetIdleWakeupsPerSecond();
+#endif
+#if BUILDFLAG(IS_MAC)
+  metrics.package_idle_wakeups =
+      process_metrics.GetPackageIdleWakeupsPerSecond();
+  metrics.energy_impact = process_metrics.GetEnergyImpact();
+#endif
+
+  return metrics;
+}
+
+ProcessSubtypes GetProcessSubtypeForRenderProcess(
+    content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context = host->GetBrowserContext();
@@ -60,7 +87,7 @@ void GetProcessSubtypeForRenderProcess(content::RenderProcessHost* host,
   // We only collect more granular metrics when there's only one extension
   // running in a given renderer, to reduce noise.
   if (extension_ids.size() != 1)
-    return;
+    return kProcessSubtypeUnknown;
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser_context);
@@ -69,12 +96,13 @@ void GetProcessSubtypeForRenderProcess(content::RenderProcessHost* host,
       extension_registry->enabled_extensions().GetByID(*extension_ids.begin());
 
   if (!extension)
-    return;
+    return kProcessSubtypeUnknown;
 
-  data->process_subtype =
-      extensions::BackgroundInfo::HasPersistentBackgroundPage(extension)
-          ? kProcessSubtypeExtensionPersistent
-          : kProcessSubtypeExtensionEvent;
+  return extensions::BackgroundInfo::HasPersistentBackgroundPage(extension)
+             ? kProcessSubtypeExtensionPersistent
+             : kProcessSubtypeExtensionEvent;
+#else
+  return kProcessSubtypeUnknown;
 #endif
 }
 
@@ -99,6 +127,14 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 }  // namespace
 
 constexpr base::TimeDelta ProcessMonitor::kGatherInterval;
+
+ProcessInfo::ProcessInfo(int process_type,
+                         ProcessSubtypes process_subtype,
+                         std::unique_ptr<base::ProcessMetrics> process_metrics)
+    : process_type(process_type),
+      process_subtype(process_subtype),
+      process_metrics(std::move(process_metrics)) {}
+ProcessInfo::~ProcessInfo() = default;
 
 ProcessMonitor::Metrics::Metrics() = default;
 ProcessMonitor::Metrics::Metrics(const ProcessMonitor::Metrics& other) =
@@ -139,7 +175,11 @@ void ProcessMonitor::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-ProcessMonitor::ProcessMonitor() {
+ProcessMonitor::ProcessMonitor()
+    : browser_process_info_(
+          content::PROCESS_TYPE_BROWSER,
+          kProcessSubtypeUnknown,
+          CreateProcessMetrics(base::GetCurrentProcessHandle())) {
   DCHECK(!g_process_monitor);
   g_process_monitor = this;
 
@@ -150,16 +190,8 @@ ProcessMonitor::ProcessMonitor() {
 
   content::BrowserChildProcessObserver::Add(this);
 
-  // Add the current (browser) process.
-  browser_process_metrics_ = std::make_unique<ProcessMetricsHistory>();
-  ProcessMetadata browser_process_data;
-  browser_process_data.process_type = content::PROCESS_TYPE_BROWSER;
-  browser_process_data.handle = base::GetCurrentProcessHandle();
-  browser_process_metrics_->Initialize(browser_process_data);
-
   // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
   //                 returns meaningful data.
-  // browser_process_metrics_->SampleMetrics();
 }
 
 void ProcessMonitor::OnRenderProcessHostCreated(
@@ -172,33 +204,31 @@ void ProcessMonitor::OnRenderProcessHostCreated(
 
 void ProcessMonitor::RenderProcessReady(
     content::RenderProcessHost* render_process_host) {
-  auto [it, inserted] = render_process_metrics_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(render_process_host),
-      std::forward_as_tuple(std::make_unique<ProcessMetricsHistory>()));
+  bool inserted =
+      render_process_infos_
+          .emplace(std::piecewise_construct,
+                   std::forward_as_tuple(render_process_host),
+                   std::forward_as_tuple(
+                       content::PROCESS_TYPE_RENDERER,
+                       GetProcessSubtypeForRenderProcess(render_process_host),
+                       CreateProcessMetrics(
+                           render_process_host->GetProcess().Handle())))
+          .second;
   DCHECK(inserted);
-
-  ProcessMetricsHistory* process_metrics_history = it->second.get();
-
-  ProcessMetadata process_metadata;
-  process_metadata.process_type = content::PROCESS_TYPE_RENDERER;
-  process_metadata.handle = render_process_host->GetProcess().Handle();
-  GetProcessSubtypeForRenderProcess(render_process_host, &process_metadata);
-  process_metrics_history->Initialize(process_metadata);
 
   // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
   //                 returns meaningful data.
-  // process_metrics_history->SampleMetrics();
 }
 
 void ProcessMonitor::RenderProcessExited(
     content::RenderProcessHost* render_process_host,
     const content::ChildProcessTerminationInfo& info) {
-  auto it = render_process_metrics_.find(render_process_host);
-  if (it == render_process_metrics_.end()) {
+  auto it = render_process_infos_.find(render_process_host);
+  if (it == render_process_infos_.end()) {
     // This process was never ready.
     return;
   }
-  render_process_metrics_.erase(it);
+  render_process_infos_.erase(it);
 }
 
 void ProcessMonitor::RenderProcessHostDestroyed(
@@ -217,23 +247,21 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
   }
 #endif
 
-  auto [it, inserted] = browser_child_process_metrics_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(data.id),
-      std::forward_as_tuple(std::make_unique<ProcessMetricsHistory>()));
+  ProcessSubtypes process_subtype =
+      data.metrics_name == network::mojom::NetworkService::Name_
+          ? kProcessSubtypeNetworkProcess
+          : kProcessSubtypeUnknown;
+  bool inserted =
+      browser_child_process_infos_
+          .emplace(std::piecewise_construct, std::forward_as_tuple(data.id),
+                   std::forward_as_tuple(
+                       data.process_type, process_subtype,
+                       CreateProcessMetrics(data.GetProcess().Handle())))
+          .second;
   DCHECK(inserted);
-
-  ProcessMetricsHistory* process_metrics_history = it->second.get();
-
-  ProcessMetadata process_metadata;
-  process_metadata.handle = data.GetProcess().Handle();
-  process_metadata.process_type = data.process_type;
-  if (data.metrics_name == network::mojom::NetworkService::Name_)
-    process_metadata.process_subtype = kProcessSubtypeNetworkProcess;
-  process_metrics_history->Initialize(process_metadata);
 
   // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
   //                 returns meaningful data.
-  // process_metrics_history->SampleMetrics();
 }
 
 void ProcessMonitor::BrowserChildProcessHostDisconnected(
@@ -247,35 +275,35 @@ void ProcessMonitor::BrowserChildProcessHostDisconnected(
   }
 #endif
 
-  auto it = browser_child_process_metrics_.find(data.id);
-  if (it == browser_child_process_metrics_.end()) {
+  auto it = browser_child_process_infos_.find(data.id);
+  if (it == browser_child_process_infos_.end()) {
     // It is possible to receive this notification without a launch-and-connect
     // notification. See https://crbug.com/942500 for a similar issue.
     return;
   }
 
-  browser_child_process_metrics_.erase(it);
+  browser_child_process_infos_.erase(it);
 }
 
 void ProcessMonitor::SampleAllProcesses() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::vector<performance_monitor::ProcessMetricsHistory*>
-      process_metrics_histories;
-  process_metrics_histories.reserve(1 + render_process_metrics_.size() +
-                                    browser_child_process_metrics_.size());
-  process_metrics_histories.push_back(browser_process_metrics_.get());
-  for (auto& [_, process_metrics_history] : render_process_metrics_)
-    process_metrics_histories.push_back(process_metrics_history.get());
-  for (auto& [_, process_metrics_history] : browser_child_process_metrics_)
-    process_metrics_histories.push_back(process_metrics_history.get());
+  std::vector<ProcessInfo*> process_infos;
+  process_infos.reserve(1 + render_process_infos_.size() +
+                        browser_child_process_infos_.size());
+  process_infos.push_back(&browser_process_info_);
+  for (auto& [_, process_info] : render_process_infos_)
+    process_infos.push_back(&process_info);
+  for (auto& [_, process_info] : browser_child_process_infos_)
+    process_infos.push_back(&process_info);
 
   Metrics aggregated_metrics;
-  for (auto* process_metrics_history : process_metrics_histories) {
-    Metrics metrics = process_metrics_history->SampleMetrics();
+  for (auto* process_info : process_infos) {
+    Metrics metrics = SampleMetrics(*process_info->process_metrics);
     aggregated_metrics += metrics;
     for (auto& observer : observer_list_)
-      observer.OnMetricsSampled(process_metrics_history->metadata(), metrics);
+      observer.OnMetricsSampled(process_info->process_type,
+                                process_info->process_subtype, metrics);
   }
   for (auto& observer : observer_list_)
     observer.OnAggregatedMetricsSampled(aggregated_metrics);

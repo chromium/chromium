@@ -19,9 +19,11 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/process_type.h"
 
-namespace performance_monitor {
+namespace base {
+class ProcessMetrics;
+}
 
-class ProcessMetricsHistory;
+namespace performance_monitor {
 
 enum ProcessSubtypes {
   kProcessSubtypeUnknown,
@@ -30,10 +32,15 @@ enum ProcessSubtypes {
   kProcessSubtypeNetworkProcess,
 };
 
-struct ProcessMetadata {
-  base::ProcessHandle handle = base::kNullProcessHandle;
-  int process_type = content::PROCESS_TYPE_UNKNOWN;
-  ProcessSubtypes process_subtype = kProcessSubtypeUnknown;
+struct ProcessInfo {
+  ProcessInfo(int process_type,
+              ProcessSubtypes process_subtype,
+              std::unique_ptr<base::ProcessMetrics> process_metrics);
+  ~ProcessInfo();
+
+  int process_type;
+  ProcessSubtypes process_subtype;
+  std::unique_ptr<base::ProcessMetrics> process_metrics;
 };
 
 // ProcessMonitor is a tool which periodically monitors performance metrics
@@ -80,7 +87,8 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
    public:
     // Provides the sampled metrics for every Chrome process. This is called
     // once per process at a regular interval.
-    virtual void OnMetricsSampled(const ProcessMetadata& process_metadata,
+    virtual void OnMetricsSampled(int process_type,
+                                  ProcessSubtypes process_subtype,
                                   const Metrics& metrics) {}
 
     // Provides the aggregated sampled metrics from every Chrome process. This
@@ -147,13 +155,11 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
                                      content::RenderProcessHostObserver>
       render_process_host_observations_{this};
 
-  std::unique_ptr<ProcessMetricsHistory> browser_process_metrics_;
+  ProcessInfo browser_process_info_;
 
-  std::map<content::RenderProcessHost*, std::unique_ptr<ProcessMetricsHistory>>
-      render_process_metrics_;
+  std::map<content::RenderProcessHost*, ProcessInfo> render_process_infos_;
 
-  std::map<int, std::unique_ptr<ProcessMetricsHistory>>
-      browser_child_process_metrics_;
+  std::map<int, ProcessInfo> browser_child_process_infos_;
 
   // The timer to signal ProcessMonitor to perform its timed collections.
   base::RepeatingTimer repeating_timer_;
