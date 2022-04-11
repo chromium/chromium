@@ -305,12 +305,6 @@ const base::Feature kDesktopPWAsRunOnOsLogin {
 #endif
 };
 
-// Makes user navigations via links within web app scopes get captured tab
-// tabbed app windows.
-// TODO(crbug.com/897314): Enable this feature.
-const base::Feature kDesktopPWAsTabStripLinkCapturing{
-    "DesktopPWAsTabStripLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 const base::Feature kDesktopPWAsTabStripSettings{
     "DesktopPWAsTabStripSettings", base::FEATURE_DISABLED_BY_DEFAULT};

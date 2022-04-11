@@ -485,17 +485,11 @@ extern const char kDesktopPWAsNotificationIconAndTitleDescription[];
 extern const char kDesktopPWAsLaunchHandlerName[];
 extern const char kDesktopPWAsLaunchHandlerDescription[];
 
-extern const char kDesktopPWAsLinkCapturingName[];
-extern const char kDesktopPWAsLinkCapturingDescription[];
-
 extern const char kDesktopPWAsManifestIdName[];
 extern const char kDesktopPWAsManifestIdDescription[];
 
 extern const char kDesktopPWAsTabStripName[];
 extern const char kDesktopPWAsTabStripDescription[];
-
-extern const char kDesktopPWAsTabStripLinkCapturingName[];
-extern const char kDesktopPWAsTabStripLinkCapturingDescription[];
 
 extern const char kDesktopPWAsTabStripSettingsName[];
 extern const char kDesktopPWAsTabStripSettingsDescription[];

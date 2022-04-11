@@ -838,14 +838,6 @@ const char kDesktopPWAsNotificationIconAndTitleDescription[] =
     "Replaces the websites origin and the Chrome icon with the web app's name "
     "and app icon in notifications.";
 
-const char kDesktopPWAsLinkCapturingName[] =
-    "Desktop PWA declarative link capturing";
-const char kDesktopPWAsLinkCapturingDescription[] =
-    "Enable web app manifests to declare link capturing behavior. Prototype "
-    "implementation of: "
-    "https://github.com/WICG/sw-launch/blob/master/"
-    "declarative_link_capturing.md";
-
 const char kDesktopPWAsLaunchHandlerName[] = "Desktop PWA launch handler";
 const char kDesktopPWAsLaunchHandlerDescription[] =
     "Enable web app manifests to declare app launch behavior. Prototype "
@@ -862,13 +854,6 @@ const char kDesktopPWAsTabStripName[] = "Desktop PWA tab strips";
 const char kDesktopPWAsTabStripDescription[] =
     "Experimental UI for exploring what PWA windows would look like with a tab "
     "strip.";
-
-const char kDesktopPWAsTabStripLinkCapturingName[] =
-    "Desktop PWA tab strip link capturing";
-const char kDesktopPWAsTabStripLinkCapturingDescription[] =
-    "Experimental behaviour for \"Desktop PWA tab strips\" to capture link "
-    "navigations within the app scope and bring them into the app's tabbed "
-    "window.";
 
 const char kDesktopPWAsTabStripSettingsName[] =
     "Desktop PWA tab strips settings";
