@@ -172,9 +172,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   ServiceProviderTestHelper test_helper_;
 };
 
-// Disabled due to flakiness. See crbug.com/1308890.
-TEST_F(EncryptedReportingServiceProviderTest,
-       DISABLED_SuccessfullyUploadsRecord) {
+TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   SetupForRequestUploadEncryptedRecord();
   EXPECT_CALL(*this, ReportSuccessfulUpload(
                          EqualsProto(record_.sequence_information()), _))

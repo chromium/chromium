@@ -124,7 +124,9 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   std::unique_ptr<TestEncryptedReportingUploadProvider> service_provider_;
 };
 
-TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
+// Disabled due to flakiness. See crbug.com/1308890.
+TEST_F(EncryptedReportingUploadProviderTest,
+       DISABLED_SuccessfullyUploadsRecord) {
   test::TestMultiEvent<SequenceInformation, bool /*force*/> uploaded_event;
   EXPECT_CALL(*this, ReportSuccessfulUpload(_, _))
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
