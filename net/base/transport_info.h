@@ -14,12 +14,14 @@
 
 namespace net {
 
-// Specifies the type of a network transport.
+// Specifies the type of a network transport over which a resource is loaded.
 enum class TransportType {
   // The transport was established directly to a peer.
   kDirect,
   // The transport was established to a proxy of some kind.
   kProxied,
+  // The transport was "established" to a cache entry.
+  kCached,
 };
 
 // Returns a string representation of the given transport type.
@@ -45,11 +47,15 @@ struct NET_EXPORT TransportInfo {
   // The type of the transport.
   TransportType type = TransportType::kDirect;
 
-  // If |type| is kDirect, then this identifies the peer endpoint.
-  // If |type| is kProxied, then this identifies the proxy endpoint.
+  // If `type` is `kDirect`, then this identifies the peer endpoint.
+  // If `type` is `kProxied`, then this identifies the proxy endpoint.
+  // If `type` is `kCached`, then this identifies the endpoint (peer or proxy)
+  // from which the resource was initially loaded.
   IPEndPoint endpoint;
 
   // The value of the ACCEPT_CH HTTP2/3 frame, as pulled in through ALPS.
+  //
+  // Invariant: if `type` is `kCached`, then this is empty.
   std::string accept_ch_frame;
 };
 

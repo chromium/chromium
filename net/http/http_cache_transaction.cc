@@ -40,6 +40,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/trace_constants.h"
+#include "net/base/transport_info.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -685,7 +686,7 @@ void HttpCache::Transaction::MaybeSetParallelWritingPatternForMetrics(
 //   GetBackend* -> InitEntry -> OpenOrCreateEntry* -> AddToEntry* ->
 //   CacheReadResponse* -> CacheDispatchValidation ->
 //   BeginPartialCacheValidation() -> BeginCacheValidation() ->
-//   SetupEntryForRead() -> FinishHeaders*
+//   ConnectedCallback* -> SetupEntryForRead() -> FinishHeaders*
 //
 //   Read():
 //   CacheReadData*
@@ -730,7 +731,7 @@ void HttpCache::Transaction::MaybeSetParallelWritingPatternForMetrics(
 //
 //   Read() 2:
 //   NetworkReadCacheWrite* -> StartPartialCacheValidation ->
-//   CompletePartialCacheValidation -> CacheReadData* ->
+//   CompletePartialCacheValidation -> ConnectedCallback* -> CacheReadData*
 //
 //   Read() 3:
 //   CacheReadData* -> StartPartialCacheValidation ->
@@ -789,7 +790,8 @@ void HttpCache::Transaction::MaybeSetParallelWritingPatternForMetrics(
 //   GetBackend* -> InitEntry -> OpenOrCreateEntry* -> AddToEntry* ->
 //   CacheReadResponse* -> CacheToggleUnusedSincePrefetch* ->
 //   CacheDispatchValidation -> BeginPartialCacheValidation() ->
-//   BeginCacheValidation() -> SetupEntryForRead() -> FinishHeaders*
+//   BeginCacheValidation() -> ConnectedCallback* -> SetupEntryForRead() ->
+//   FinishHeaders*
 //
 //   Read():
 //   CacheReadData*
@@ -890,6 +892,12 @@ int HttpCache::Transaction::DoLoop(int result) {
         break;
       case STATE_CACHE_UPDATE_STALE_WHILE_REVALIDATE_TIMEOUT_COMPLETE:
         rv = DoCacheUpdateStaleWhileRevalidateTimeoutComplete(rv);
+        break;
+      case STATE_CONNECTED_CALLBACK:
+        rv = DoConnectedCallback();
+        break;
+      case STATE_CONNECTED_CALLBACK_COMPLETE:
+        rv = DoConnectedCallbackComplete(rv);
         break;
       case STATE_SETUP_ENTRY_FOR_READ:
         DCHECK_EQ(OK, rv);
@@ -1675,7 +1683,9 @@ int HttpCache::Transaction::DoCompletePartialCacheValidation(int result) {
                                    &custom_request_->extra_headers);
 
   if (reading_ && partial_->IsCurrentRangeCached()) {
-    TransitionToState(STATE_CACHE_READ_DATA);
+    // We're about to read a range of bytes from the cache. Signal it to the
+    // consumer through the "connected" callback.
+    TransitionToState(STATE_CONNECTED_CALLBACK);
     return OK;
   }
 
@@ -1700,7 +1710,8 @@ int HttpCache::Transaction::DoCacheUpdateStaleWhileRevalidateTimeoutComplete(
       "HttpCacheTransaction::DoCacheUpdateStaleWhileRevalidateTimeoutComplete",
       net_log().source().id,
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  TransitionToState(STATE_SETUP_ENTRY_FOR_READ);
+  DCHECK(!reading_);
+  TransitionToState(STATE_CONNECTED_CALLBACK);
   return OnWriteResponseInfoToEntryComplete(result);
 }
 
@@ -2564,7 +2575,8 @@ int HttpCache::Transaction::BeginCacheValidation() {
       (truncated_ || response_.headers->response_code() == 206)) {
     DCHECK(!partial_);
     if (skip_validation) {
-      TransitionToState(STATE_SETUP_ENTRY_FOR_READ);
+      DCHECK(!reading_);
+      TransitionToState(STATE_CONNECTED_CALLBACK);
       return OK;
     }
 
@@ -2606,9 +2618,10 @@ int HttpCache::Transaction::BeginCacheValidation() {
 
   if (skip_validation) {
     UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_USED);
+    DCHECK(!reading_);
     TransitionToState(needs_stale_while_revalidate_cache_update
                           ? STATE_CACHE_UPDATE_STALE_WHILE_REVALIDATE_TIMEOUT
-                          : STATE_SETUP_ENTRY_FOR_READ);
+                          : STATE_CONNECTED_CALLBACK);
     return OK;
   } else {
     // Make the network request conditional, to see if we may reuse our cached
@@ -3091,6 +3104,40 @@ void HttpCache::Transaction::IgnoreRangeRequest() {
   UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
   DoneWithEntry(mode_ != WRITE);
   partial_.reset(nullptr);
+}
+
+// Called to signal to the consumer that we are about to read headers from a
+// cached entry originally read from a given IP endpoint.
+int HttpCache::Transaction::DoConnectedCallback() {
+  TransitionToState(STATE_CONNECTED_CALLBACK_COMPLETE);
+  if (connected_callback_.is_null()) {
+    return OK;
+  }
+
+  return connected_callback_.Run(
+      TransportInfo(TransportType::kCached, response_.remote_endpoint, ""),
+      io_callback_);
+}
+
+int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {
+  if (result != OK) {
+    // Release the entry for further use - we are done using it.
+    DoneWithEntry(/*did_finish=*/true);
+
+    TransitionToState(STATE_NONE);
+    return result;
+  }
+
+  if (reading_) {
+    // We can only get here if we're reading a partial range of bytes from the
+    // cache. In that case, proceed to read the bytes themselves.
+    DCHECK(partial_);
+    TransitionToState(STATE_CACHE_READ_DATA);
+  } else {
+    // Otherwise, we have just read headers from the cache.
+    TransitionToState(STATE_SETUP_ENTRY_FOR_READ);
+  }
+  return OK;
 }
 
 void HttpCache::Transaction::FixHeadersForHead() {

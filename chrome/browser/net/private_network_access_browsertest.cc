@@ -674,10 +674,10 @@ IN_PROC_BROWSER_TEST_F(
       IsEmpty());
 }
 
-// This test verifies that private network requests that are blocked result in
-// a WebFeature being use-counted.
+// This test verifies that private network requests that are blocked are not
+// use-counted.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-                       RecordsAddressSpaceFeatureForBlockedRequests) {
+                       DoesNotRecordAddressSpaceFeatureForBlockedRequests) {
   WebFeatureHistogramTester feature_histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -745,10 +745,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       IsEmpty());
 }
 
-// This test verifies that resources fetched from cache are not subject to
-// Private Network Access checks, and should not be counted towards metrics.
+// This test verifies that resources fetched from cache are subject to Private
+// Network Access checks. When the fetch is blocked, it is not use-counted.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-                       CachedResourcesAllowed) {
+                       DoesNotRecordAddressSpaceFeatureForCachedBlocked) {
   auto server = NewServer();
 
   EXPECT_TRUE(
@@ -769,13 +769,46 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
-    fetch("/cachetime").then(response => response.ok)
+  EXPECT_EQ(false, content::EvalJs(web_contents(), R"(
+    fetch("/cachetime").then(response => true).catch(error => false)
   )"));
 
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
+}
+
+// This test verifies that resources fetched from cache are subject to Private
+// Network Access checks. When the fetch is allowed, it is use-counted.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsAddressSpaceFeatureForCachedResource) {
+  auto server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), LocalSecureURL(*server)));
+
+  // Load the resource a first time, to prime the HTTP cache.
+  //
+  // This caching hinges on the fact that `PublicNonSecureURL(*server)` is
+  // same-origin with `LocalNonSecureURL(*server)` (the public one just uses
+  // the `Content-Security-Policy: treat-as-public-address` header). Therefore
+  // both documents share the same cache key.
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    fetch("/cachetime").then(response => response.ok)
+  )"));
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    fetch("/cachetime").then(response => response.ok)
+  )"));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
+      }));
 }
 
 // This test verifies that a UseCounter is recorded when a document makes a

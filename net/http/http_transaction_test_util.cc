@@ -511,6 +511,7 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
 
   response_.was_cached = false;
   response_.network_accessed = true;
+  response_.remote_endpoint = t->transport_info.endpoint;
 
   response_.response_time = transaction_factory_->Now();
   if (!t->response_time.is_null())

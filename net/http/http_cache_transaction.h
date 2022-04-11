@@ -256,6 +256,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_COMPLETE_PARTIAL_CACHE_VALIDATION,
     STATE_CACHE_UPDATE_STALE_WHILE_REVALIDATE_TIMEOUT,
     STATE_CACHE_UPDATE_STALE_WHILE_REVALIDATE_TIMEOUT_COMPLETE,
+    STATE_CONNECTED_CALLBACK,
+    STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_SETUP_ENTRY_FOR_READ,
     STATE_SEND_REQUEST,
     STATE_SEND_REQUEST_COMPLETE,
@@ -334,6 +336,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoCacheQueryDataComplete(int result);
   int DoCacheUpdateStaleWhileRevalidateTimeout();
   int DoCacheUpdateStaleWhileRevalidateTimeoutComplete(int result);
+  int DoConnectedCallback();
+  int DoConnectedCallbackComplete(int result);
   int DoSetupEntryForRead();
   int DoStartPartialCacheValidation();
   int DoCompletePartialCacheValidation(int result);

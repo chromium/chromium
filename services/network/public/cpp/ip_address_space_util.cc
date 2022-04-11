@@ -285,6 +285,7 @@ base::StringPiece IPAddressSpaceToStringPiece(IPAddressSpace space) {
 IPAddressSpace TransportInfoToIPAddressSpace(const net::TransportInfo& info) {
   switch (info.type) {
     case net::TransportType::kDirect:
+    case net::TransportType::kCached:
       return IPEndPointToIPAddressSpace(info.endpoint);
     case net::TransportType::kProxied:
       return mojom::IPAddressSpace::kUnknown;

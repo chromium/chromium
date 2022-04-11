@@ -7,6 +7,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 
 namespace net {
@@ -17,6 +18,8 @@ base::StringPiece TransportTypeToString(TransportType type) {
       return "TransportType::kDirect";
     case TransportType::kProxied:
       return "TransportType::kProxied";
+    case TransportType::kCached:
+      return "TransportType::kCached";
   }
 
   // We define this here instead of as a `default` clause above so as to force
@@ -32,7 +35,11 @@ TransportInfo::TransportInfo(TransportType type_arg,
                              std::string accept_ch_frame_arg)
     : type(type_arg),
       endpoint(std::move(endpoint_arg)),
-      accept_ch_frame(std::move(accept_ch_frame_arg)) {}
+      accept_ch_frame(std::move(accept_ch_frame_arg)) {
+  if (type == TransportType::kCached) {
+    DCHECK_EQ(accept_ch_frame, "");
+  }
+}
 
 TransportInfo::TransportInfo(const TransportInfo&) = default;
 

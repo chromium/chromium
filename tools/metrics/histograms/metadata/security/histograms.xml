@@ -265,6 +265,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PrivateNetworkAccess.CachedResourceCheckResult"
+    enum="PrivateNetworkAccessCheckResult" expires_after="2022-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    Same as `Security.PrivateNetworkAccess.CheckResult`, but only recorded when
+    the resource is loaded from the HTTP cache.
+  </summary>
+</histogram>
+
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
     enum="PrivateNetworkAccessCheckResult" expires_after="M107">
   <owner>titouan@chromium.org</owner>

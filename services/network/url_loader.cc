@@ -1061,6 +1061,11 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
       security_state, target_ip_address_space_, options_,
       transport_ip_address_space);
 
+  if (transport_info.type == net::TransportType::kCached) {
+    base::UmaHistogramEnumeration(
+        "Security.PrivateNetworkAccess.CachedResourceCheckResult", result);
+  }
+
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
         auto client_address_space = mojom::IPAddressSpace::kUnknown;

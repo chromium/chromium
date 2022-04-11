@@ -32,13 +32,19 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
+
+using ::net::test_server::METHOD_GET;
+using ::net::test_server::METHOD_OPTIONS;
+using ::testing::ElementsAre;
 
 // These domains are mapped to the IP addresses above using the
 // `--host-resolver-rules` command-line switch. The exact values come from the
@@ -66,6 +72,19 @@ constexpr char kPnaPath[] =
 
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
+
+// Path to a cacheable variant of `kCorsPath`.
+constexpr char kCacheableCorsPath[] =
+    "/set-header?"
+    "Cache-Control: max-age%3D60&"
+    "Access-Control-Allow-Origin: *";
+
+// Path to a cacheable variant of `kPnaPath`.
+constexpr char kCacheablePnaPath[] =
+    "/set-header?"
+    "Cache-Control: max-age%3D60&"
+    "Access-Control-Allow-Origin: *&"
+    "Access-Control-Allow-Private-Network: true";
 
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
@@ -165,6 +184,44 @@ class ConnectionCounter
   int count_ GUARDED_BY(lock_) = 0;
 };
 
+class RequestObserver {
+ public:
+  RequestObserver() = default;
+
+  // The returned callback must not outlive this instance.
+  net::test_server::EmbeddedTestServer::MonitorRequestCallback BindCallback() {
+    return base::BindRepeating(&RequestObserver::Observe,
+                               base::Unretained(this));
+  }
+
+  // The origin of the URL is not checked for equality.
+  std::vector<net::test_server::HttpMethod> RequestMethodsForUrl(
+      const GURL& url) const {
+    std::string path = url.PathForRequest();
+    std::vector<net::test_server::HttpMethod> methods;
+    {
+      base::AutoLock guard(lock_);
+      for (const auto& request : requests_) {
+        if (request.GetURL().PathForRequest() == path) {
+          methods.push_back(request.method);
+        }
+      }
+    }
+    return methods;
+  }
+
+ private:
+  void Observe(const net::test_server::HttpRequest& request) {
+    base::AutoLock guard(lock_);
+    requests_.push_back(request);
+  }
+
+  // `requests_` is mutated on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
+};
+
 // A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
 //
 // NOTE(titouan): The IP address space overrides CLI switch is copied to utility
@@ -184,7 +241,7 @@ class FakeAddressSpaceServer {
     server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
 
     server_.SetConnectionListener(&connection_counter_);
-
+    server_.RegisterRequestMonitor(request_observer_.BindCallback());
     server_.AddDefaultHandlers(test_data_path);
     StartServer(server_);
 
@@ -215,6 +272,8 @@ class FakeAddressSpaceServer {
   // Returns the total number of sockets accepted by this server.
   int ConnectionCount() const { return connection_counter_.count(); }
 
+  const RequestObserver& request_observer() const { return request_observer_; }
+
  private:
   // Constructor helper.
   // ASSERT macros can only be used in functions returning void.
@@ -238,6 +297,7 @@ class FakeAddressSpaceServer {
   }
 
   ConnectionCounter connection_counter_;
+  RequestObserver request_observer_;
   net::EmbeddedTestServer server_;
 };
 
@@ -3098,41 +3158,166 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This test verifies that even when the right feature is enabled, requests:
+//  - from a non-secure context in the `local` IP address space
+//  - to a subresource cached from a `local` IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromInsecureLocalToCachedLocalIsNotBlocked) {
+  GURL target = InsecureLocalURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when the right feature is enabled, requests:
 //  - from a non-secure context in the `public` IP address space
 //  - to a subresource cached from a `local` IP address
-//  are not blocked.
-//
-// TODO(https://crbug.com/1124340): Decide whether this is bad and either change
-// this test or delete this todo.
+// are blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       FromInsecurePublicToCachedLocalIsNotBlocked) {
-  GURL cached_url = SecureLocalURL(kCacheablePath);
+                       FromInsecurePublicToCachedLocalIsBlocked) {
+  GURL target = InsecureLocalURL(kCacheablePath);
 
   // Cache the resource first, by fetching it from a document in the same IP
-  // address space.
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+  // address space. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
 
   // Now navigate to a document in the `public` address space belonging to the
   // same site as the previous document (this will use the same cache key).
   EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the resource, even from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure context in the `local` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecureLocalToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when preflights are sent but not enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromSecurePublicToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePath);
+
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
       NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
-  ResourceLoadObserver observer(shell());
+  // Check that the page can still load the subresource from cache.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 
-  // Check that the page can still load the subresource. This fetch would fail
-  // were the subresource not cached.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
+}
 
-  observer.WaitForResourceCompletion(cached_url);
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecurePublicToCachedLocalIsBlocked) {
+  GURL target = SecureLocalURL(kCacheableCorsPath);
 
-  // And that the resource was loaded from the cache.
-  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(cached_url);
-  ASSERT_TRUE(info);
-  ASSERT_TRUE(*info);
-  EXPECT_TRUE((*info)->was_cached);
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the subresource from cache.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
+}
+
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server responds OK to the preflight request
+//  are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecurePublicToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePnaPath);
+
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page can still load the subresource from cache.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
 }
 
 // This test verifies that even with the blocking feature disabled, an insecure
