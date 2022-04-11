@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/syslog_logging.h"
@@ -52,7 +53,16 @@ base::FilePath::CharType kDirPolicyPath[] =
     FILE_PATH_LITERAL("/etc/chromium/policies");
 #endif
 
+absl::optional<base::FilePath>& GetTestFilePathStorage() {
+  static base::NoDestructor<absl::optional<base::FilePath>> storage;
+  return *storage;
+}
+
 base::FilePath GetSigningKeyFilePath() {
+  auto& storage = GetTestFilePathStorage();
+  if (storage) {
+    return storage.value();
+  }
   base::FilePath path(kDirPolicyPath);
   return path.Append(constants::kSigningKeyFilePath);
 }
@@ -142,20 +152,14 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
 }
 
 KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
-  base::File file =
-      OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid())
-    return invalid_key_info();
-
-  // Read key info.
-  char keyinfo_str[kMaxBufferSize];
-  int bytes_read = file.ReadAtCurrentPos(keyinfo_str, kMaxBufferSize);
-  if (bytes_read <= 0) {
+  std::string file_content;
+  if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
+                                         kMaxBufferSize)) {
     return invalid_key_info();
   }
 
   // Get dictionary key info.
-  auto keyinfo = base::JSONReader::Read(keyinfo_str);
+  auto keyinfo = base::JSONReader::Read(file_content);
   if (!keyinfo || !keyinfo->is_dict()) {
     return invalid_key_info();
   }
@@ -189,8 +193,15 @@ KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
 LinuxKeyPersistenceDelegate::GetTpmBackedKeyProvider() {
-  NOTIMPLEMENTED();  // TODO (http://b/210343211)
+  // TODO (http://b/210343211)
   return nullptr;
+}
+
+// static
+void LinuxKeyPersistenceDelegate::SetFilePathForTesting(
+    const base::FilePath& file_path) {
+  auto& storage = GetTestFilePathStorage();
+  storage.emplace(file_path);
 }
 
 }  // namespace enterprise_connectors

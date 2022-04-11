@@ -9,6 +9,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace enterprise_connectors {
 
 // Linux implementation of the KeyPersistenceDelegate interface.
@@ -26,6 +30,12 @@ class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
       override;
 
  private:
+  friend class LinuxKeyPersistenceDelegateTest;
+
+  // Statically sets a file path to be used by LinuxKeyPersistenceDelegate
+  // instances when retrieve the key file path.
+  static void SetFilePathForTesting(const base::FilePath& file_path);
+
   // Signing key file instance used for handling concurrency during the
   // key rotation process.
   absl::optional<base::File> locked_file_;
