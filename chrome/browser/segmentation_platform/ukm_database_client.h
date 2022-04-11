@@ -25,8 +25,6 @@ class UkmDatabaseClient {
 
   void PostMessageLoopRun();
 
-  void ProfileManagerDestroying();
-
   // UkmDataManager will be valid for the lifetime of all the profiles. It is
   // created before profiles are created at startup. It is safe to use this
   // pointer till ProfileManagerDestroying() is called.

@@ -78,7 +78,6 @@ void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
 }
 
 void SegmentationPlatformProfileObserver::OnProfileManagerDestroying() {
-  UkmDatabaseClient::GetInstance().ProfileManagerDestroying();
   profile_manager_ = nullptr;
 }
 

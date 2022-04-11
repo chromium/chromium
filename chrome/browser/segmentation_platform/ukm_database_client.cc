@@ -65,9 +65,4 @@ void UkmDatabaseClient::PostMessageLoopRun() {
   ukm_data_manager_->StopObservingUkm();
 }
 
-void UkmDatabaseClient::ProfileManagerDestroying() {
-  // All profiles are destroyed, it it safe to tear down the UkmDataManager.
-  ukm_data_manager_.reset();
-}
-
 }  // namespace segmentation_platform
