@@ -10,6 +10,23 @@
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 
 namespace segmentation_platform {
+namespace {
+
+#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+class DummyModelProvider : public ModelProvider {
+ public:
+  DummyModelProvider()
+      : ModelProvider(optimization_guide::proto::OptimizationTarget::
+                          OPTIMIZATION_TARGET_UNKNOWN) {}
+  void InitAndFetchModel(
+      const ModelUpdatedCallback& model_updated_callback) override {}
+  void ExecuteModelWithInput(const std::vector<float>& inputs,
+                             ExecutionCallback callback) override {}
+  bool ModelAvailable() override { return false; }
+};
+#endif
+
+}  // namespace
 
 ModelProviderFactoryImpl::ModelProviderFactoryImpl(
     optimization_guide::OptimizationGuideModelProvider*
@@ -26,10 +43,9 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
   return std::make_unique<OptimizationGuideSegmentationModelProvider>(
       optimization_guide_provider_, background_task_runner_,
       optimization_target);
+#else
+  return std::make_unique<DummyModelProvider>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  NOTREACHED();
-  return nullptr;
 }
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(

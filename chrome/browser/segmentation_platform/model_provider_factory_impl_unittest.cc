@@ -7,12 +7,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 class ModelProviderFactoryImplTest : public testing::Test {
  public:
   ModelProviderFactoryImplTest() = default;
@@ -49,6 +47,5 @@ TEST_F(ModelProviderFactoryImplTest, ProviderCreated) {
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 }  // namespace segmentation_platform

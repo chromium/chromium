@@ -1,13 +1,12 @@
+CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
-DummyModelExecutionManagerTest.*
 DummySegmentationPlatformServiceTest.*
 FeatureAggregatorImplTest.*
 FeatureListQueryProcessorTest.*
 HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
 MetadataUtilsTest.*
-ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 OptimizationGuideSegmentationModelProviderTest.*

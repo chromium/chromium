@@ -9,7 +9,6 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 
@@ -39,10 +38,9 @@ void ExecutionService::Initialize(
       signal_storage_config, clock);
   training_data_collector_->OnServiceInitialized();
 
-  model_execution_manager_ = CreateModelExecutionManager(
-      model_provider_factory, task_runner, all_segment_ids, clock,
-      segment_info_database, signal_database,
-      feature_list_query_processor_.get(), callback);
+  model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
+      all_segment_ids, model_provider_factory, clock, segment_info_database,
+      signal_database, feature_list_query_processor_.get(), callback);
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), segment_info_database, signal_storage_config,

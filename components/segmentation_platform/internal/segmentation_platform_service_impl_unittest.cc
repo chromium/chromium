@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
@@ -33,9 +32,7 @@ using ::testing::Invoke;
 namespace segmentation_platform {
 namespace {
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 const int64_t kModelVersion = 123;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
 
 // A mock of the ServiceProxy::Observer.
 class MockServiceProxyObserver : public ServiceProxy::Observer {
@@ -136,7 +133,6 @@ class SegmentationPlatformServiceImplTest
     // If we build with TF Lite, we need to also inspect whether the
     // ModelExecutionManagerImpl is publishing the correct data and whether that
     // leads to the SegmentationPlatformServiceImpl doing the right thing.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     base::HistogramTester histogram_tester;
     proto::SegmentationModelMetadata metadata;
     metadata.set_time_unit(proto::TimeUnit::DAY);
@@ -219,7 +215,6 @@ class SegmentationPlatformServiceImplTest
     EXPECT_CALL(observer_, OnClientInfoAvailable(_));
     task_environment_.RunUntilIdle();
     segment_db_->LoadCallback(true);
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
     // Database maintenance tasks should try to cleanup the signals after a
     // short delay, which starts with looking up data from the
