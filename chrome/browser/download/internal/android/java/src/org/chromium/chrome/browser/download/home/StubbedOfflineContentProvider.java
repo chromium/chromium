@@ -47,6 +47,10 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
         if (mObserver != null) mObserver.onItemsAdded(list);
     }
 
+    public void setObserver(OfflineContentProvider.Observer newObserver) {
+        mObserver = newObserver;
+    }
+
     @Override
     public void addObserver(OfflineContentProvider.Observer addedObserver) {
         assertEquals(mObserver, null);
@@ -115,5 +119,18 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
     @Override
     public void renameItem(ContentId id, String name, Callback<Integer /*RenameResult*/> callback) {
         mHandler.post(callback.bind(RenameResult.SUCCESS));
+    }
+
+    protected void notifyObservers(ContentId id) {
+        if (mObserver != null) mObserver.onItemUpdated(findItem(id), null);
+    }
+
+    protected OfflineItem findItem(ContentId id) {
+        for (OfflineItem item : mItems) {
+            if (item.id.equals(id)) {
+                return item;
+            }
+        }
+        return null;
     }
 }

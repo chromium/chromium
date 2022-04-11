@@ -219,6 +219,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedProvider.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialMediatorTest.java",
   ]
 
   deps = [
