@@ -186,8 +186,16 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
 // See https://crbug.com/726743 and https://crbug.com/1050635.
+// Flaky on Android, see https://crbug.com/1315346.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  DISABLED_VisualPropertiesPropagation_VisibleViewportSize
+#else
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  VisualPropertiesPropagation_VisibleViewportSize
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       VisualPropertiesPropagation_VisibleViewportSize) {
+                       MAYBE_VisualPropertiesPropagation_VisibleViewportSize) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
