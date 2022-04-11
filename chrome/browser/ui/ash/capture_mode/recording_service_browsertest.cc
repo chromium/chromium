@@ -250,8 +250,15 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordRegion) {
   FinishVideoRecordingTest(&test_api);
 }
 
+// Failing on ChromiumOS MSAN. https://crbug.com/1315067
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_RecordingServiceEndpointDropped \
+  DISABLED_RecordingServiceEndpointDropped
+#else
+#define MAYBE_RecordingServiceEndpointDropped RecordingServiceEndpointDropped
+#endif
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       RecordingServiceEndpointDropped) {
+                       MAYBE_RecordingServiceEndpointDropped) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
