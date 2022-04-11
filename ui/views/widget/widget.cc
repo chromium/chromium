@@ -655,9 +655,9 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
     return;
   }
   if (non_client_view_ && non_client_view_->OnWindowCloseRequested() ==
-                              CloseRequestResult::kCannotClose)
+                              CloseRequestResult::kCannotClose) {
     return;
-
+  }
   // This is the last chance to cancel closing.
   if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason))
     return;
@@ -668,8 +668,9 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
       (g_disable_activation_change_handling_ ==
            DisableActivationChangeHandlingType::kIgnore ||
        g_disable_activation_change_handling_ ==
-           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly))
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly)) {
     return;
+  }
 
   // The actions below can cause this function to be called again, so mark
   // |this| as closed early. See crbug.com/714334
