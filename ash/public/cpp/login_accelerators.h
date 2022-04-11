@@ -35,6 +35,7 @@ enum LoginAcceleratorAction {
   kAppLaunchNetworkConfig,
   kCancelScreenAction,
   kStartEnrollment,
+  kStartKioskEnrollment,
   kEnableConsumerKiosk,
   kEnableDebugging,
   kEditDeviceRequisition,

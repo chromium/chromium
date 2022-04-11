@@ -1034,6 +1034,11 @@ void WizardController::OnUserCreationScreenExit(
     case UserCreationScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
       break;
+    case UserCreationScreen::Result::KIOSK_ENTERPRISE_ENROLL:
+      wizard_context_->enrollment_preference_ =
+          WizardContext::EnrollmentPreference::kKiosk;
+      ShowEnrollmentScreenIfEligible();
+      break;
     case UserCreationScreen::Result::CANCEL:
       LoginDisplayHost::default_host()->HideOobeDialog();
       break;

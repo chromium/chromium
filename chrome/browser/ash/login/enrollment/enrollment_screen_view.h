@@ -52,6 +52,11 @@ class EnrollmentScreenView {
   virtual ~EnrollmentScreenView() {}
 
   enum class FlowType { kEnterprise, kCFM, kEnterpriseLicense };
+  enum class GaiaButtonsType {
+    kDefault,
+    kEnterprisePreffered,
+    kKioskPreffered
+  };
   enum class UserErrorType { kConsumerDomain, kBusinessDomain };
 
   // Initializes the view with parameters.
@@ -64,6 +69,9 @@ class EnrollmentScreenView {
 
   // Sets which flow should GAIA show.
   virtual void SetFlowType(FlowType flow_type) = 0;
+
+  // Sets which buttons should GAIA screen show.
+  virtual void SetGaiaButtonsType(GaiaButtonsType buttons_type) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;

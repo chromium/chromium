@@ -558,6 +558,10 @@ const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
 const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Kiosk enrollment option in OOBE.
+const base::Feature kEnableKioskEnrollmentInOobe{
+    "EnableKioskEnrollmentInOobe", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables skipping of network screen.
 const base::Feature kEnableOobeNetworkScreenSkip{
     "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1892,6 +1896,10 @@ bool IsOobeHidDetectionRevampEnabled() {
 
 bool IsOobePolymer3Enabled() {
   return base::FeatureList::IsEnabled(kEnableOobePolymer3);
+}
+
+bool IsKioskEnrollmentInOobeEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKioskEnrollmentInOobe);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {

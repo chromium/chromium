@@ -78,6 +78,7 @@ class EnrollmentScreenHandler
   void SetEnterpriseDomainInfo(const std::string& manager,
                                const std::u16string& device_type) override;
   void SetFlowType(FlowType flow_type) override;
+  void SetGaiaButtonsType(GaiaButtonsType buttons_type) override;
   void Show() override;
   void Hide() override;
   void Bind(ash::EnrollmentScreen* screen) override;
@@ -182,6 +183,8 @@ class EnrollmentScreenHandler
 
   // GAIA flow type parameter that is set to authenticator.
   FlowType flow_type_;
+
+  GaiaButtonsType gaia_buttons_type_;
 
   // Active Directory configuration in the form of encrypted binary data.
   std::string active_directory_domain_join_config_;

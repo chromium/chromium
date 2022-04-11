@@ -283,7 +283,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     gaiaParams.enableGaiaActionButtons = true;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
-
+    if (data.gaia_buttons_type)
+      this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
     this.isManualEnrollment_ = 'enrollment_mode' in data ?
         data.enrollment_mode === 'manual' :
         undefined;

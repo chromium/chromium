@@ -50,6 +50,10 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
        ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
        false, kScopeOobe,
     }, {
+       kStartKioskEnrollment,
+       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       false, kScopeOobe,
+    }, {
        kStartDemoMode,
        ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
        false, kScopeOobe,
@@ -67,7 +71,7 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
        false, kScopeOobe,
     }, {
        kEnableConsumerKiosk,
-       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
        false, kScopeOobe,
     }, {
        kLaunchDiagnostics,
@@ -93,6 +97,7 @@ std::string MapToWebUIAccelerator(LoginAcceleratorAction action) {
       return kAccelNameCancel;
     case LoginAcceleratorAction::kShowFeedback:
     case LoginAcceleratorAction::kStartEnrollment:
+    case LoginAcceleratorAction::kStartKioskEnrollment:
     case LoginAcceleratorAction::kEnableConsumerKiosk:
     case LoginAcceleratorAction::kEnableDebugging:
     case LoginAcceleratorAction::kEditDeviceRequisition:

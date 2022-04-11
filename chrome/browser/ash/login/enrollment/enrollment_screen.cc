@@ -268,13 +268,28 @@ void EnrollmentScreen::UpdateFlowType() {
       config_.license_type ==
           policy::EnrollmentConfig::LicenseType::kEnterprise) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterpriseLicense);
+    view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
   }
   const bool cfm = policy::EnrollmentRequisitionManager::IsRemoraRequisition();
   if (cfm) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
+    view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
   } else {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    if (!features::IsKioskEnrollmentInOobeEnabled()) {
+      view_->SetGaiaButtonsType(
+          EnrollmentScreenView::GaiaButtonsType::kDefault);
+      return;
+    }
+    if (context()->enrollment_preference_ ==
+        WizardContext::EnrollmentPreference::kKiosk) {
+      view_->SetGaiaButtonsType(
+          EnrollmentScreenView::GaiaButtonsType::kKioskPreffered);
+    } else {
+      view_->SetGaiaButtonsType(
+          EnrollmentScreenView::GaiaButtonsType::kEnterprisePreffered);
+    }
   }
 }
 

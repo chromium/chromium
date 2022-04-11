@@ -24,6 +24,11 @@ class WizardContext {
   WizardContext(const WizardContext&) = delete;
   WizardContext& operator=(const WizardContext&) = delete;
 
+  enum class EnrollmentPreference {
+    kKiosk,
+    kEnterprise,
+  };
+
   // Configuration for automating OOBE screen actions, e.g. during device
   // version rollback.
   // Set by WizardController.
@@ -78,6 +83,11 @@ class WizardContext {
   // Force that OOBE Login display isn't destroyed right after login due to all
   // screens being skipped.
   bool defer_oobe_flow_finished_for_tests = false;
+
+  // Indicates which type of licenses should be used for primary button on
+  // enrollment screen.
+  EnrollmentPreference enrollment_preference_ =
+      WizardContext::EnrollmentPreference::kEnterprise;
 
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).

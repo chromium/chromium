@@ -183,6 +183,19 @@ std::string GetFlowString(EnrollmentScreenView::FlowType type) {
   }
 }
 
+// String constants should be in sync with `OobeTypes.GaiaDialogButtonsType`.
+std::string GetGaiaButtonsTypeString(
+    EnrollmentScreenView::GaiaButtonsType type) {
+  switch (type) {
+    case EnrollmentScreenView::GaiaButtonsType::kDefault:
+      return "default";
+    case EnrollmentScreenView::GaiaButtonsType::kEnterprisePreffered:
+      return "enterprise-preferred";
+    case EnrollmentScreenView::GaiaButtonsType::kKioskPreffered:
+      return "kiosk-preferred";
+  }
+}
+
 }  // namespace
 
 // EnrollmentScreenHandler, public ------------------------------
@@ -412,6 +425,10 @@ void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
 
 void EnrollmentScreenHandler::SetFlowType(FlowType flow_type) {
   flow_type_ = flow_type;
+}
+
+void EnrollmentScreenHandler::SetGaiaButtonsType(GaiaButtonsType buttons_type) {
+  gaia_buttons_type_ = buttons_type;
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentSuccessScreen() {
@@ -1095,6 +1112,8 @@ void EnrollmentScreenHandler::DoShowWithPartition(
   screen_data.Set("attestationBased", config_.is_mode_attestation());
   screen_data.Set("management_domain", config_.management_domain);
   screen_data.Set("flow", GetFlowString(flow_type_));
+  screen_data.Set("gaia_buttons_type",
+                  GetGaiaButtonsTypeString(gaia_buttons_type_));
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
     screen_data.Set("hl", app_locale);

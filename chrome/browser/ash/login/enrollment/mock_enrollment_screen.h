@@ -42,6 +42,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
               SetEnterpriseDomainInfo,
               (const std::string& manager, const std::u16string& device_type));
   MOCK_METHOD(void, SetFlowType, (FlowType flow_type));
+  MOCK_METHOD(void, SetGaiaButtonsType, (GaiaButtonsType buttons_type));
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, MockBind, (EnrollmentScreen * screen));

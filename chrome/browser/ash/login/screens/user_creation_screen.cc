@@ -39,6 +39,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "CreateChildAccount";
     case Result::ENTERPRISE_ENROLL:
       return "EnterpriseEnroll";
+    case Result::KIOSK_ENTERPRISE_ENROLL:
+      return "KioskEnterpriseEnroll";
     case Result::CANCEL:
       return "Cancel";
     case Result::SKIPPED:
@@ -138,6 +140,10 @@ void UserCreationScreen::OnUserActionDeprecated(const std::string& action_id) {
 bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kStartEnrollment) {
     RunExitCallback(Result::ENTERPRISE_ENROLL);
+    return true;
+  }
+  if (action == LoginAcceleratorAction::kStartKioskEnrollment) {
+    RunExitCallback(Result::KIOSK_ENTERPRISE_ENROLL);
     return true;
   }
   return false;
