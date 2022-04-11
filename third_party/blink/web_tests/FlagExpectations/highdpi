@@ -177,6 +177,7 @@ editing/selection/selection-background.html [ Pass ]
 external/wpt/css/cssom-view/pt-to-px-width.html [ Pass ]
 external/wpt/pointerlock/movementX_Y_basic.html [ Pass ]
 external/wpt/svg/painting/svg-with-outline.html [ Pass ]
+external/wpt/css/css-sizing/contain-intrinsic-size/* [ Pass ]
 fast/backgrounds/background-origin-root-element.html [ Pass ]
 fast/block/basic/001.html [ Pass ]
 fast/block/float/float-in-float-painting.html [ Pass ]
@@ -463,6 +464,8 @@ crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/o
 crbug.com/1311421 virtual/document-transition/wpt_internal/document-transition/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/old-content-object-fit-fill.html [ Failure ]
 crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/new-content-object-fit-fill.html [ Failure ]
+
+crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
 
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]
