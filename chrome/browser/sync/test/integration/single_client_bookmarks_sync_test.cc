@@ -1807,9 +1807,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                 .value());
 }
 
-// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DISABLED_DepleteQuota) {
+                       DepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1842,9 +1841,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   // Recovering from depleted quota is tested by another test.
 }
 
-// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DISABLED_DepletedQuotaDoesNotStopCommitCycle) {
+                       DepletedQuotaDoesNotStopCommitCycle) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1878,9 +1876,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
                        ModelTypeHistogramValue(syncer::BOOKMARKS)));
 }
 
-// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DISABLED_DoNotDepleteQuota) {
+                       DoNotDepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1922,9 +1919,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
-// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DISABLED_DepleteQuotaAndRecover) {
+                       DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill, and custom nudge
