@@ -31,6 +31,17 @@ inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
   return position & 0xFFFF;
 }
 
+// Used by the -inl.h file.
+CORE_EXPORT CascadeFilter
+AmendFilter(CascadeFilter filter, const MatchedProperties& matched_properties);
+CORE_EXPORT bool IsInAllExpansion(CSSPropertyID id);
+
+// CascadeExpansion objects which exceed these limits will emit nothing.
+constexpr wtf_size_t kMaxDeclarationIndex =
+    std::numeric_limits<uint16_t>::max();
+constexpr wtf_size_t kMaxMatchedPropertiesIndex =
+    std::numeric_limits<uint16_t>::max();
+
 // CascadeExpansion takes a declaration block (MatchedProperties) and
 // expands the declarations found into the final list of declarations observed
 // by StyleCascade. It exists to prevent callers to deal with the complexity
@@ -60,88 +71,23 @@ inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
 //
 // Usage:
 //
-//   CascadeExpansion e = ...;
-//   for (; !e.AtEnd(); a.Next())
-//     DoStuff(e);
+//   ExpandCascade(..., [](CascadePriority cascade_priority,
+//                         const CSSProperty& css_property, const CSSValue&
+//                         css_value, uint16_t tree_order) {
+//                           DoStuff(...)
+//                         }
 //
-class CORE_EXPORT CascadeExpansion {
-  STACK_ALLOCATED();
-
-  enum class State { kInit, kNormal, kVisited, kAll };
-
- public:
-  // CascadeExpansion objects which exceed these limits will emit nothing.
-  static constexpr wtf_size_t kMaxDeclarationIndex =
-      std::numeric_limits<uint16_t>::max();
-  static constexpr wtf_size_t kMaxMatchedPropertiesIndex =
-      std::numeric_limits<uint16_t>::max();
-
-  CascadeExpansion(const MatchedProperties&,
-                   const Document&,
-                   CascadeFilter,
-                   wtf_size_t matched_properties_index);
-  // We need an explicit copy constructor, since CascadeExpansion has self-
-  // pointers.
-  CascadeExpansion(const CascadeExpansion& o);
-  void Next();
-  inline bool AtEnd() const { return index_ >= size_; }
-  inline CSSPropertyID Id() const { return id_; }
-  inline CSSPropertyName Name() const {
-    if (id_ != CSSPropertyID::kVariable)
-      return CSSPropertyName(id_);
-    return Property().GetCSSPropertyName();
-  }
-  inline const CSSProperty& Property() const {
-    DCHECK(!AtEnd());
-    return *property_;
-  }
-  inline const CSSValue& Value() const {
-    DCHECK(!AtEnd());
-    return PropertyAt(index_).Value();
-  }
-  inline CascadePriority Priority() const { return priority_; }
-  uint16_t TreeOrder() const;
-
- private:
-  friend class CascadeExpansionTest;
-
-  static bool IsInAllExpansion(CSSPropertyID);
-
-  bool ShouldEmitVisited() const;
-
-  void AdvanceNormal();
-  bool AdvanceVisited();
-  void AdvanceAll();
-
-  CSSPropertyValueSet::PropertyReference PropertyAt(wtf_size_t) const;
-
-  const Document& document_;
-  State state_ = State::kInit;
-  const MatchedProperties& matched_properties_;
-
-  // The priority of the current declaration pointed to by index_. This does
-  // not change for generated declarations.
-  CascadePriority priority_;
-
-  // Index and size of the regular declarations. In other words, index_ will
-  // only move during State::kNormal, and not while expanding 'all', etc. It
-  // will always point to a valid index in matched_properties_ (unless we're
-  // AtEnd()).
-  //
-  // Note that this is initialized to ~0 such that the first call to Next()
-  // (done by the constructor) will produce ~0+1 = 0.
-  wtf_size_t index_ = std::numeric_limits<wtf_size_t>::max();
-  wtf_size_t size_;
-
-  CascadeFilter filter_;
-  const wtf_size_t matched_properties_index_;
-
-  // The id/property of the current "virtual" declaration. In other words,
-  // the id/property will be updated when expanding 'all', etc.
-  CSSPropertyID id_ = CSSPropertyID::kInvalid;
-  const CSSProperty* property_ = nullptr;
-  CustomProperty custom_;
-};
+// The css_property reference is not guaranteed to live past the end of the
+// callback.
+//
+// The implementation is in cascade_expansion-inl.h, which you will need to
+// include if you use this function.
+template <class Callback>
+void ExpandCascade(const MatchedProperties& matched_properties,
+                   const Document& document,
+                   CascadeFilter upstream_filter,
+                   wtf_size_t matched_properties_index,
+                   Callback&& callback);
 
 }  // namespace blink
 

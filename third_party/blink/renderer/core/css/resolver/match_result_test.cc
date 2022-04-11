@@ -197,49 +197,6 @@ TEST_F(MatchResultTest, CascadeOriginTreeScopes) {
   EXPECT_EQ(OriginAt(result, 7), CascadeOrigin::kAuthor);
 }
 
-TEST_F(MatchResultTest, ExpansionsRange) {
-  MatchResult result;
-  result.AddMatchedProperties(ParseDeclarationBlock("left:1px;all:unset"));
-  result.AddMatchedProperties(ParseDeclarationBlock("color:red"));
-  result.FinishAddingUARules();
-  result.AddMatchedProperties(ParseDeclarationBlock("display:block"));
-  result.FinishAddingUserRules();
-  result.FinishAddingPresentationalHints();
-  result.AddMatchedProperties(ParseDeclarationBlock("left:unset"));
-  result.AddMatchedProperties(ParseDeclarationBlock("top:unset"));
-  result.AddMatchedProperties(
-      ParseDeclarationBlock("right:unset;bottom:unset"));
-  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
-
-  CascadeFilter filter;
-
-  wtf_size_t i = 0;
-  wtf_size_t size = result.GetMatchedProperties().size();
-  for (auto actual : result.Expansions(GetDocument(), filter)) {
-    ASSERT_LT(i, size);
-    CascadeExpansion expected(result.GetMatchedProperties()[i], GetDocument(),
-                              filter, i);
-    EXPECT_EQ(expected.Id(), actual.Id());
-    EXPECT_EQ(expected.Priority(), actual.Priority());
-    EXPECT_EQ(expected.Value(), actual.Value());
-    ++i;
-  }
-
-  EXPECT_EQ(6u, i);
-}
-
-TEST_F(MatchResultTest, EmptyExpansionsRange) {
-  MatchResult result;
-  result.FinishAddingUARules();
-  result.FinishAddingUserRules();
-  result.FinishAddingPresentationalHints();
-  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
-
-  CascadeFilter filter;
-  auto range = result.Expansions(GetDocument(), filter);
-  EXPECT_EQ(range.end(), range.begin());
-}
-
 TEST_F(MatchResultTest, Reset) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0));

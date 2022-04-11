@@ -537,6 +537,7 @@ blink_core_sources_css = [
   "remote_font_face_source.h",
   "resolver/cascade_expansion.cc",
   "resolver/cascade_expansion.h",
+  "resolver/cascade_expansion-inl.h",
   "resolver/cascade_filter.h",
   "resolver/cascade_interpolations.h",
   "resolver/cascade_map.cc",

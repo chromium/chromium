@@ -87,15 +87,6 @@ void MatchResult::FinishAddingAuthorRulesForTreeScope(
   current_tree_order_ = base::ClampAdd(current_tree_order_, 1);
 }
 
-MatchedExpansionsRange MatchResult::Expansions(const Document& document,
-                                               CascadeFilter filter) const {
-  return MatchedExpansionsRange(
-      MatchedExpansionsIterator(matched_properties_.begin(), document, filter,
-                                0),
-      MatchedExpansionsIterator(matched_properties_.end(), document, filter,
-                                matched_properties_.size()));
-}
-
 void MatchResult::Reset() {
   matched_properties_.clear();
   is_cacheable_ = true;

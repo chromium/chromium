@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_expansion-inl.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_interpolations.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
@@ -332,11 +333,18 @@ void StyleCascade::AnalyzeIfNeeded() {
 }
 
 void StyleCascade::AnalyzeMatchResult() {
-  for (auto e : match_result_.Expansions(GetDocument(), CascadeFilter())) {
-    for (; !e.AtEnd(); e.Next()) {
-      const CSSProperty& property = ResolveSurrogate(e.Property());
-      map_.Add(property.GetCSSPropertyName(), e.Priority());
-    }
+  int index = 0;
+  for (const MatchedProperties& properties :
+       match_result_.GetMatchedProperties()) {
+    ExpandCascade(properties, GetDocument(), CascadeFilter(), index++,
+                  [this](CascadePriority cascade_priority,
+                         const CSSProperty& css_property,
+                         const CSSValue& css_value [[maybe_unused]],
+                         uint16_t tree_order [[maybe_unused]]) {
+                    const CSSProperty& property =
+                        ResolveSurrogate(css_property);
+                    map_.Add(property.GetCSSPropertyName(), cascade_priority);
+                  });
   }
 }
 
@@ -440,27 +448,34 @@ void StyleCascade::ApplyWebkitBorderImage(CascadeResolver& resolver) {
 }
 
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
-  for (auto e : match_result_.Expansions(GetDocument(), resolver.filter_)) {
-    for (; !e.AtEnd(); e.Next()) {
-      auto priority = CascadePriority(e.Priority(), resolver.generation_);
-      const CSSProperty& property = ResolveSurrogate(e.Property());
-      CascadePriority* p = map_.Find(property.GetCSSPropertyName());
-      if (!p || *p >= priority)
-        continue;
-      *p = priority;
-      CascadeOrigin origin = priority.GetOrigin();
-      const CSSValue* value =
-          Resolve(property, e.Value(), priority, origin, resolver);
-      // TODO(futhark): Use a user scope TreeScope to support tree-scoped names
-      // for animations in user stylesheets.
-      const TreeScope* tree_scope = nullptr;
-      if (origin == CascadeOrigin::kAuthor)
-        tree_scope = &match_result_.ScopeFromTreeOrder(e.TreeOrder());
-      else if (origin == CascadeOrigin::kAuthorPresentationalHint)
-        tree_scope = &GetDocument();
-      StyleBuilder::ApplyProperty(property, state_,
-                                  ScopedCSSValue(*value, tree_scope));
-    }
+  int index = 0;
+  for (const MatchedProperties& properties :
+       match_result_.GetMatchedProperties()) {
+    ExpandCascade(
+        properties, GetDocument(), resolver.filter_, index++,
+        [this, &resolver](CascadePriority cascade_priority,
+                          const CSSProperty& css_property,
+                          const CSSValue& css_value, uint16_t tree_order) {
+          auto priority =
+              CascadePriority(cascade_priority, resolver.generation_);
+          const CSSProperty& property = ResolveSurrogate(css_property);
+          CascadePriority* p = map_.Find(property.GetCSSPropertyName());
+          if (!p || *p >= priority)
+            return;
+          *p = priority;
+          CascadeOrigin origin = priority.GetOrigin();
+          const CSSValue* value =
+              Resolve(property, css_value, priority, origin, resolver);
+          // TODO(futhark): Use a user scope TreeScope to support tree-scoped
+          // names for animations in user stylesheets.
+          const TreeScope* tree_scope = nullptr;
+          if (origin == CascadeOrigin::kAuthor)
+            tree_scope = &match_result_.ScopeFromTreeOrder(tree_order);
+          else if (origin == CascadeOrigin::kAuthorPresentationalHint)
+            tree_scope = &GetDocument();
+          StyleBuilder::ApplyProperty(property, state_,
+                                      ScopedCSSValue(*value, tree_scope));
+        });
   }
 }
 
