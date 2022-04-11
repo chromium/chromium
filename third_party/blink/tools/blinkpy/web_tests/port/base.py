@@ -1515,6 +1515,13 @@ class Port(object):
             [name, value] = string_variable.split('=', 1)
             clean_env[name] = value
 
+        if self.host.platform.is_linux():
+            path_to_libs = self._filesystem.join(self.apache_server_root(), 'lib')
+            if clean_env.get('LD_LIBRARY_PATH'):
+                clean_env['LD_LIBRARY_PATH'] = path_to_libs + ':' + clean_env['LD_LIBRARY_PATH']
+            else:
+                clean_env['LD_LIBRARY_PATH'] = path_to_libs
+
         return clean_env
 
     def show_results_html_file(self, results_filename):
@@ -1902,7 +1909,8 @@ class Port(object):
                                      config_file_name)
 
     def _apache_version(self):
-        config = self._executive.run_command([self.path_to_apache(), '-v'])
+        env = self.setup_environ_for_server()
+        config = self._executive.run_command([self.path_to_apache(), '-v'], env=env)
         # Log version including patch level.
         _log.debug(
             'Found apache version %s',

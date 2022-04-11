@@ -1195,6 +1195,10 @@ if (!is_ios) {
       ]
     }
 
+    if (is_linux || is_fuchsia) {
+      data += [ "//third_party/apache-linux/" ]
+    }
+
     if (is_android) {
       data += [
         "//third_party/catapult/",

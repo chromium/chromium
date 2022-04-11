@@ -108,6 +108,10 @@ class LinuxPort(base.Port):
         return 'linux'
 
     def path_to_apache(self):
+        if self.host.platform.is_linux():
+            # use the system httpd on freebsd
+            return self._path_from_chromium_base(
+                'third_party', 'apache-linux', 'bin', 'httpd')
         # The Apache binary path can vary depending on OS and distribution
         # See http://wiki.apache.org/httpd/DistrosDefaultLayout
         for path in ['/usr/sbin/httpd', '/usr/sbin/apache2']:
@@ -115,6 +119,12 @@ class LinuxPort(base.Port):
                 return path
         _log.error('Could not find apache. Not installed or unknown path.')
         return None
+
+    def path_to_apache_config_file(self):
+        if self.host.platform.is_linux():
+            config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
+            return self._filesystem.join(self.apache_config_directory(), config_file_basename)
+        return super(LinuxPort, self).path_to_apache_config_file()
 
     def setup_test_run(self):
         super(LinuxPort, self).setup_test_run()
