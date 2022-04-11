@@ -43,7 +43,8 @@ class TimeZoneMonitor {
      */
     private TimeZoneMonitor(long nativePtr) {
         mNativePtr = nativePtr;
-        ContextUtils.getApplicationContext().registerReceiver(mBroadcastReceiver, mFilter);
+        ContextUtils.registerNonExportedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mBroadcastReceiver, mFilter);
     }
 
     @CalledByNative
