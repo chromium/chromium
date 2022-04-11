@@ -38,6 +38,27 @@ action("embed_js_in_cpp") {
   args += rebase_path(js_files, root_build_dir)
 }
 
+action("embed_mobile_devices_in_cpp") {
+  script = "embed_mobile_devices_in_cpp.py"
+
+  ts_files = [ "//third_party/devtools-frontend/src/front_end/models/emulation/EmulatedDevices.ts" ]
+  inputs = [
+    "//chrome/VERSION",
+    "cpp_source.py",
+  ]
+  inputs += ts_files
+
+  outputs = [
+    "$target_gen_dir/chrome/mobile_device_list.cc",
+    "$target_gen_dir/chrome/mobile_device_list.h",
+  ]
+  args = [
+    "--directory",
+    rebase_path("$target_gen_dir/chrome", root_build_dir),
+  ]
+  args += rebase_path(ts_files, root_build_dir)
+}
+
 action("embed_user_data_dir_in_cpp") {
   script = "embed_user_data_dir_in_cpp.py"
 
@@ -113,8 +134,6 @@ source_set("automation_client_lib") {
     "chrome/log.h",
     "chrome/mobile_device.cc",
     "chrome/mobile_device.h",
-    "chrome/mobile_device_list.cc",
-    "chrome/mobile_device_list.h",
     "chrome/mobile_emulation_override_manager.cc",
     "chrome/mobile_emulation_override_manager.h",
     "chrome/navigation_tracker.cc",
@@ -176,10 +195,12 @@ source_set("automation_client_lib") {
 
   # Also compile the generated files.
   sources += get_target_outputs(":embed_js_in_cpp")
+  sources += get_target_outputs(":embed_mobile_devices_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
 
   deps = [
     ":embed_js_in_cpp",
+    ":embed_mobile_devices_in_cpp",
     ":embed_user_data_dir_in_cpp",
     "//base",
     "//base/third_party/dynamic_annotations",

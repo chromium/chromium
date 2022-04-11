@@ -11,16 +11,20 @@ argument.  The list of known devices will be written to a C-style string to be
 parsed with JSONReader.
 """
 
+import ast
 import json
 import optparse
 import os
-import re
-import subprocess
 import sys
 
 import chrome_paths
 import cpp_source
 
+_EMULATED_DEVICES_BEGIN = '// DEVICE-LIST-BEGIN'
+_EMULATED_DEVICES_END = '// DEVICE-LIST-END'
+_EMULATED_DEVICES_IF = '/* DEVICE-LIST-IF-JS */'
+_EMULATED_DEVICES_ELSE = '/* DEVICE-LIST-ELSE'
+_EMULATED_DEVICES_ENDIF = 'DEVICE-LIST-END-IF */'
 
 def main():
   parser = optparse.OptionParser()
@@ -50,47 +54,71 @@ def main():
 
   devices = {}
   file_name = args[0]
-  inside_list = False
   with open(file_name, 'r') as f:
-    emulated_devices = json.load(f)
-  extensions = emulated_devices['extensions']
-  for extension in extensions:
-    if extension['type'] == 'emulated-device':
-      device = extension['device']
-      title = device['title']
-      titles = [title]
-      # For 'iPhone 6/7/8', also add ['iPhone 6', 'iPhone 7', 'iPhone 8'] for
-      # backward compatibility.
-      if '/' in title:
-        words = title.split()
-        for i in range(len(words)):
-          if '/' in words[i]:
-            # Only support one word containing '/'
-            break
-        tokens = words[i].split('/')
-        for token in tokens:
-          words[i] = token
-          titles.append(' '.join(words))
-      for title in titles:
-        devices[title] = {
-          'userAgent': device['user-agent'].replace('%s', version),
-          'width': device['screen']['vertical']['width'],
-          'height': device['screen']['vertical']['height'],
-          'deviceScaleFactor': device['screen']['device-pixel-ratio'],
-          'touch': 'touch' in device['capabilities'],
-          'mobile': 'mobile' in device['capabilities'],
-        }
+    data = f.read()
+
+    # Extract the list from the source file.
+    begin_position = data.find(_EMULATED_DEVICES_BEGIN)
+    end_position = data.find(_EMULATED_DEVICES_END)
+    if begin_position == -1 or end_position == -1:
+      print('Could not find list of emulatedDevices in %s' % file_name)
+      return 1
+    begin_position += len(_EMULATED_DEVICES_BEGIN)
+    list_string = '[' + data[begin_position:end_position] + ']'
+
+    # Only used the non-localized strings in the list.
+    if_position = list_string.find(_EMULATED_DEVICES_IF)
+    while if_position != -1:
+      else_position = list_string.find(_EMULATED_DEVICES_ELSE)
+      if else_position == -1:
+        print('Could not find list of emulatedDevices in %s' % file_name)
+        return 1
+      else_position += len(_EMULATED_DEVICES_ELSE)
+      list_string = list_string[0:if_position] + list_string[else_position::]
+
+      endif_position = list_string.find(_EMULATED_DEVICES_ENDIF)
+      if endif_position == -1:
+        print('Could not find list of emulatedDevices in %s' % file_name)
+        return 1
+      list_string = list_string[0:endif_position] + \
+          list_string[endif_position + len(_EMULATED_DEVICES_ENDIF)::]
+
+      if_position = list_string.find(_EMULATED_DEVICES_IF)
+
+    # Do a bunch of substitutions to get something parseable by Python.
+    list_string = list_string.replace('true', 'True')
+    list_string = list_string.replace('false', 'False')
+    emulated_devices = ast.literal_eval(list_string)
+  for device in emulated_devices:
+    title = device['title']
+    titles = [title]
+    # For 'iPhone 6/7/8', also add ['iPhone 6', 'iPhone 7', 'iPhone 8'] for
+    # backward compatibility.
+    if '/' in title:
+      words = title.split()
+      for i in range(len(words)):
+        if '/' in words[i]:
+          # Only support one word containing '/'
+          break
+      tokens = words[i].split('/')
+      for token in tokens:
+        words[i] = token
+        titles.append(' '.join(words))
+    for title in titles:
+      devices[title] = {
+        'userAgent': device['user-agent'].replace('%s', version),
+        'width': device['screen']['vertical']['width'],
+        'height': device['screen']['vertical']['height'],
+        'deviceScaleFactor': device['screen']['device-pixel-ratio'],
+        'touch': 'touch' in device['capabilities'],
+        'mobile': 'mobile' in device['capabilities'],
+      }
 
   output_dir = 'chrome/test/chromedriver/chrome'
   cpp_source.WriteSource('mobile_device_list',
                          output_dir,
                          options.directory,
                          {'kMobileDevices': json.dumps(devices)})
-
-  clang_format = ['clang-format', '-i']
-  subprocess.Popen(clang_format + ['%s/mobile_device_list.cc' % output_dir])
-  subprocess.Popen(clang_format + ['%s/mobile_device_list.h' % output_dir])
-
 
 if __name__ == '__main__':
   sys.exit(main())
