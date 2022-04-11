@@ -146,18 +146,22 @@ bool ProcessAshAcceleratorIfPossible(Surface* surface, ui::KeyEvent* event) {
   if (CanConsumeAshAccelerators(surface))
     return false;
 
-  // Ctrl-N (new window), Shift-Ctrl-N (new incognite window), Ctrl-T (new tab),
-  // and Shit-Ctrl-T (restore tab) need to be sent to the active client even
-  // when the active window is lacros-chrome, since the ash-chrome does not
-  // handle these new-window requests properly at this moment.
-  // TODO(fukino): Remove this workaround once ash-chrome has an implementation
-  // to handle new-window requests when lacros-chrome browser window is active.
-  // crbug.com/1172189.
+  // TODO(crbug.com/1301977): Remove this workaround on fixing acceleartor
+  // handling for lacros.
   const ui::Accelerator kAppHandlingAccelerators[] = {
+      // Ctrl-N (new window), Shift-Ctrl-N (new incognite window), Ctrl-T (new
+      // tab), and Shit-Ctrl-T (restore tab) need to be sent to the active
+      // client even when the active window is lacros-chrome, since the
+      // ash-chrome does not handle these new-window requests properly at this
+      // moment.
       {ui::VKEY_N, ui::EF_CONTROL_DOWN},
       {ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
       {ui::VKEY_T, ui::EF_CONTROL_DOWN},
       {ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
+      // Also forward Ctrl-/ and Shift-Ctrl-/ so Lacros processes the help app
+      // opening while it can be intercepted.
+      {ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
   };
   ui::Accelerator accelerator(*event);
   if (base::Contains(kAppHandlingAccelerators, accelerator))
