@@ -332,11 +332,11 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
     offsets_to_use = &offsets;
   }
 
-  absl::optional<SkColor> solid_color =
+  absl::optional<SkColor4f> solid_color =
       SolidColorAnalyzer::DetermineIfSolidColor(
           &paint_op_buffer_, rect, max_ops_to_analyze, offsets_to_use);
   if (solid_color) {
-    *color = *solid_color;
+    *color = solid_color->toSkColor();
     return true;
   }
   return false;

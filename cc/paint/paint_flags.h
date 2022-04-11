@@ -42,9 +42,11 @@ class CC_PAINT_EXPORT PaintFlags {
   }
   ALWAYS_INLINE void setStyle(Style style) { bitfields_.style_ = style; }
   ALWAYS_INLINE SkColor getColor() const { return color_.toSkColor(); }
+  ALWAYS_INLINE SkColor4f getColor4f() const { return color_; }
   ALWAYS_INLINE void setColor(SkColor color) {
     color_ = SkColor4f::FromColor(color);
   }
+  ALWAYS_INLINE void setColor4f(SkColor4f color) { color_ = color; }
   ALWAYS_INLINE uint8_t getAlpha() const {
     return SkColorGetA(color_.toSkColor());
   }
