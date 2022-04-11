@@ -139,6 +139,9 @@ struct VaapiVideoEncodeAccelerator::BitstreamBufferRef {
   const off_t offset;
 };
 
+// static
+base::AtomicRefCount VaapiVideoEncodeAccelerator::num_instances_(0);
+
 VideoEncodeAccelerator::SupportedProfiles
 VaapiVideoEncodeAccelerator::GetSupportedProfiles() {
   if (IsConfiguredForTesting())
@@ -147,7 +150,8 @@ VaapiVideoEncodeAccelerator::GetSupportedProfiles() {
 }
 
 VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
-    : output_buffer_byte_size_(0),
+    : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
+      output_buffer_byte_size_(0),
       state_(kUninitialized),
       child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
@@ -173,8 +177,11 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
 VaapiVideoEncodeAccelerator::~VaapiVideoEncodeAccelerator() {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
+
+  num_instances_.Decrement();
 }
 
 bool VaapiVideoEncodeAccelerator::Initialize(
@@ -184,6 +191,11 @@ bool VaapiVideoEncodeAccelerator::Initialize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DCHECK_EQ(state_, kUninitialized);
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
+
+  if (!can_use_encoder_) {
+    MEDIA_LOG(ERROR, media_log.get()) << "Too many encoders are allocated";
+    return false;
+  }
 
   if (AttemptedInitialization()) {
     MEDIA_LOG(ERROR, media_log.get())

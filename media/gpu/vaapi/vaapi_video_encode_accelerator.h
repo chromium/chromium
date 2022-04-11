@@ -215,6 +215,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
     return !supported_profiles_for_testing_.empty();
   }
 
+  // Having too many encoder instances at once may cause us to run out of FDs
+  // and subsequently crash (crbug.com/1289465). To avoid that, we limit the
+  // maximum number of encoder instances that can exist at once.
+  // |num_instances_| tracks that number.
+  static constexpr int kMaxNumOfInstances = 10;
+  static base::AtomicRefCount num_instances_;
+  const bool can_use_encoder_;
+
   // The unchanged values are filled upon the construction. The varied values
   // are filled properly during encoding.
   VideoEncoderInfo encoder_info_;
