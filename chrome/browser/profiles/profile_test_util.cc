@@ -11,10 +11,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace profiles::testing {
@@ -51,5 +52,17 @@ void SwitchToProfileSync(const base::FilePath& path, bool always_create) {
   profiles::SwitchToProfile(path, always_create, future.GetCallback());
   ASSERT_TRUE(future.Wait()) << "profiles::SwitchToProfile() did not complete";
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+
+ScopedNonEnterpriseDomainSetterForTesting::
+    ScopedNonEnterpriseDomainSetterForTesting(const char* domain) {
+  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(domain);
+}
+
+ScopedNonEnterpriseDomainSetterForTesting::
+    ~ScopedNonEnterpriseDomainSetterForTesting() {
+  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(nullptr);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace profiles::testing

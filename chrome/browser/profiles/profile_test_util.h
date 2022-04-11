@@ -21,6 +21,21 @@ Profile* CreateProfileSync(ProfileManager* profile_manager,
 #if !BUILDFLAG(IS_ANDROID)
 // Helper to call `::profiles::SwitchToProfile()` synchronously during tests.
 void SwitchToProfileSync(const base::FilePath& path, bool always_create = true);
+
+// Sets `policy::BrowserPolicyConnector::non_managed_domain_for_testing` to the
+// provided domain, and clears it when this object goes out of scope.
+class ScopedNonEnterpriseDomainSetterForTesting {
+ public:
+  // Uses `example.com` by default, value chosen as it is the one used at  a
+  // pretty basic level in tests (`user_manager::kStubUserEmail`)
+  // This is needed to prevent `TurnSyncOnHelper` for trying to make network
+  // calls to fetch policy for the current account.
+  // TODO(https://crbug.com/1311650): Try to get saner defaults for stub user
+  // info or allowlisted domains.
+  explicit ScopedNonEnterpriseDomainSetterForTesting(
+      const char* domain = "example.com");
+  virtual ~ScopedNonEnterpriseDomainSetterForTesting();
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace profiles::testing
