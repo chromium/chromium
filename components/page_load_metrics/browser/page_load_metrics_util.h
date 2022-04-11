@@ -28,6 +28,11 @@
   UMA_HISTOGRAM_CUSTOM_COUNTS(                      \
       histogram_name, static_cast<int>((bytes) / 1024), 1, 500 * 1024, 50)
 
+// Up to 1 minute with 50 buckets.
+#define INPUT_DELAY_HISTOGRAM(name, sample)                       \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(60), 50)
+
 #define PAGE_RESOURCE_COUNT_HISTOGRAM UMA_HISTOGRAM_COUNTS_10000
 
 namespace page_load_metrics {
@@ -93,6 +98,12 @@ struct PageAbortInfo {
   // The time from navigation start to the time the page load was aborted.
   const base::TimeDelta time_to_abort;
 };
+
+// UMA histogram function for logging the max cumulative shift score. Adjusts
+// the layout shift score to 10000x for better bucketing at the low end in UMA.
+void UmaMaxCumulativeShiftScoreHistogram10000x(
+    const std::string& name,
+    const page_load_metrics::NormalizedCLSData& normalized_cls_data);
 
 // Returns true if:
 // - We have timing information for the event.
