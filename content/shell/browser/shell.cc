@@ -520,6 +520,16 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
   if (registry->SilentlyHandleRegisterHandlerRequest(handler))
     return;
 
+  if (!user_gesture && !windows_.empty()) {
+    // TODO(jfernandez): This is not strictly needed, but we need a way to
+    // inform the observers in browser tests that the request has been
+    // cancelled, to avoid timeouts. Chrome just holds the handler as pending in
+    // the PageContentSettingsDelegate, but we don't have such thing in the
+    // Content Shell.
+    registry->OnDenyRegisterProtocolHandler(handler);
+    return;
+  }
+
   // FencedFrames can not register to handle any protocols.
   if (requesting_frame->IsNestedWithinFencedFrame()) {
     registry->OnIgnoreRegisterProtocolHandler(handler);

@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -193,6 +194,41 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
                              ->tab_strip_model()
                              ->GetActiveWebContents()
                              ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
+                       IgnoreRequestWithoutUserGesture) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* content_settings =
+      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
+          web_contents);
+
+  // Ensure the registry is currently empty.
+  GURL url("web+search:testing");
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+
+  // Ensure there is no registration pending.
+  ASSERT_TRUE(content_settings->pending_protocol_handler().IsEmpty());
+
+  // Attempt to add an entry.
+  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
+      web_contents,
+      "navigator.registerProtocolHandler('web+"
+      "search', 'test.html?%s', 'test');"));
+
+  // Verify the registration is ignored if no user gesture involved.
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+
+  // Verify the handler registration is pending.
+  ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
 }
 
 // FencedFrames can not register to handle any protocols.

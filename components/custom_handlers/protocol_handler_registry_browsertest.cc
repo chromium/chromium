@@ -122,6 +122,32 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
 
 // https://crbug.com/178097: Implement registerProtocolHandler on Android
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
+                       IgnoreRequestWithoutUserGesture) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Ensure the registry is currently empty.
+  GURL url("web+search:testing");
+  ProtocolHandlerRegistry* registry =
+      SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser_context(), true);
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+
+  // Attempt to add an entry.
+  ProtocolHandlerChangeWaiter waiter(registry);
+  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
+      web_contents(),
+      "navigator.registerProtocolHandler('web+"
+      "search', 'test.html?%s', 'test');"));
+  waiter.Wait();
+
+  // Verify the registration is ignored if no user gesture involved.
+  ASSERT_EQ(1u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_FALSE(registry->IsHandledProtocol(url.scheme()));
+}
+
 // FencedFrames can not register to handle any protocols.
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
