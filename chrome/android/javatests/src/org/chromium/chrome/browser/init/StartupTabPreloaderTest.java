@@ -424,7 +424,6 @@ public class StartupTabPreloaderTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
-    @DisabledTest(message = "https://crbug.com/1012479")
     public void testStartupTabPreloaderWithViewIntentFeatureDisabled() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
