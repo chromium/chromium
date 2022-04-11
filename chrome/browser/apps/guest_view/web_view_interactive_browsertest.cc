@@ -63,6 +63,10 @@
 #include "ui/gfx/range/range.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
+
 using extensions::AppWindow;
 using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewBase;
@@ -982,17 +986,9 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
              NO_TEST_SERVER);
 }
 
-// Disable this on mac, throws an assertion failure on teardown which
-// will result in flakiness:
-//
-// "not is fullscreen state"
-// "*** Assertion failure in -[_NSWindowFullScreenTransition
-//     transitionedWindowFrame],"
-// See similar bug: http://crbug.com/169820.
-//
-// In addition to the above, these tests are flaky on some platforms:
+// These tests are flaky on some platforms:
 // http://crbug.com/468660
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_FullscreenAllow_EmbedderHasPermission \
   FullscreenAllow_EmbedderHasPermission
 #else
@@ -1001,6 +997,10 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        MAYBE_FullscreenAllow_EmbedderHasPermission) {
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
+
   FullscreenTestHelper("testFullscreenAllow",
                        "web_view/fullscreen/embedder_has_permission");
 }
