@@ -20,7 +20,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -31,7 +30,6 @@ import org.chromium.net.test.ServerCertificate;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
-@DisabledTest(message = "https://crbug.com/825270")
 public class PaymentHandlerEnableDelegationsTest {
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
@@ -74,7 +72,7 @@ public class PaymentHandlerEnableDelegationsTest {
             throws Throwable {
         int callCount = helper.getCallCount();
         Assert.assertEquals("\"success\"",
-                mRule.runJavaScriptCodeInCurrentTab(
+                mRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                         "paymentRequestWithOptions(" + paymentOptions + ");"));
         helper.waitForCallback(callCount);
     }
@@ -84,12 +82,9 @@ public class PaymentHandlerEnableDelegationsTest {
     @MediumTest
     public void testShippingDelegation() throws Throwable {
         installPaymentHandlerWithDelegations("['shippingAddress']");
-        // The pay button should be enabled when shipping address is requested and the selected
-        // payment instrument can provide it.
-        createPaymentRequestAndWaitFor("{requestShipping: true}", mRule.getReadyToPay());
-
-        // Click the pay button and wait for success.
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
+        // Since the payment handler can provide shipping and there is only one app, we should skip
+        // the sheet and go straight to payment processing.
+        createPaymentRequestAndWaitFor("{requestShipping: true}", mRule.getDismissed());
     }
 
     @Test
@@ -97,14 +92,11 @@ public class PaymentHandlerEnableDelegationsTest {
     @MediumTest
     public void testContactDelegation() throws Throwable {
         installPaymentHandlerWithDelegations("['payerName', 'payerEmail', 'payerPhone']");
-        // The pay button should be enabled when payer's contact information is requested and the
-        // selected payment instrument can provide it.
+        // Since the payment handler can provide the contact information and there is only one app,
+        // we should skip the sheet and go straight to payment processing.
         createPaymentRequestAndWaitFor(
                 "{requestPayerName: true, requestPayerEmail: true, requestPayerPhone: true}",
-                mRule.getReadyToPay());
-
-        // Click the pay button and wait for success.
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
+                mRule.getDismissed());
     }
 
     @Test
@@ -114,15 +106,12 @@ public class PaymentHandlerEnableDelegationsTest {
     public void testShippingAndContactInfoDelegation() throws Throwable {
         installPaymentHandlerWithDelegations(
                 "['shippingAddress', 'payerName', 'payerEmail', 'payerPhone']");
-        // The pay button should be enabled when shipping address and payer's contact information
-        // are requested and the selected payment instrument can provide them.
+        // Since the payment handler can provide the shipping address and contact information and
+        // there is only one app, we should skip the sheet and go straight to payment processing.
         createPaymentRequestAndWaitFor(
                 "{requestShipping: true, requestPayerName: true, requestPayerEmail: true,"
                         + " requestPayerPhone: true}",
-                mRule.getReadyToPay());
-
-        // Click the pay button and wait for success.
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
+                mRule.getDismissed());
     }
 
     @Test

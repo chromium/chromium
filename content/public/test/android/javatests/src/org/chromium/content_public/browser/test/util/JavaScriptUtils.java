@@ -53,6 +53,39 @@ public class JavaScriptUtils {
     }
 
     /**
+     * Executes the given snippet of JavaScript code within the given ContentView, acting as if a
+     * user gesture is present.
+     * Returns the result of its execution in JSON format.
+     */
+    public static String executeJavaScriptWithUserGestureAndWaitForResult(
+            WebContents webContents, String code) throws TimeoutException {
+        return executeJavaScriptWithUserGestureAndWaitForResult(
+                webContents, code, EVALUATION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Executes the given snippet of JavaScript code within the given WebContents, acting as if a
+     * user gesture is present.
+     * Does not depend on ContentView and TestCallbackHelperContainer.
+     * Returns the result of its execution in JSON format.
+     */
+    public static String executeJavaScriptWithUserGestureAndWaitForResult(
+            final WebContents webContents, final String code, final long timeout,
+            final TimeUnit timeoutUnits) throws TimeoutException {
+        final OnEvaluateJavaScriptResultHelper helper = new OnEvaluateJavaScriptResultHelper();
+        // Calling this from the UI thread causes it to time-out: the UI thread being blocked won't
+        // have a chance to process the JavaScript eval response).
+        Assert.assertFalse("Executing JavaScript should be done from the test thread, "
+                        + " not the UI thread",
+                ThreadUtils.runningOnUiThread());
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> helper.evaluateJavaScriptWithUserGestureForTests(webContents, code));
+        helper.waitUntilHasValue(timeout, timeoutUnits);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", helper.hasValue());
+        return helper.getJsonResultAndClear();
+    }
+
+    /**
      * Executes the given snippet of JavaScript code within the given WebContents and waits for a
      * call to domAutomationController.send(). Returns the result from
      * domAutomationController.send() in JSON format.

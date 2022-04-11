@@ -2497,6 +2497,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 
 void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
     const std::u16string& javascript,
+    JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AssertNonSpeculativeFrame();
@@ -2509,8 +2510,10 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
       blink::mojom::UserActivationNotificationType::kTest);
 
   const bool has_user_gesture = true;
+  const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
-      javascript, false, has_user_gesture, world_id, base::NullCallback());
+      javascript, wants_result, has_user_gesture, world_id,
+      std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecutePluginActionAtLocalLocation(

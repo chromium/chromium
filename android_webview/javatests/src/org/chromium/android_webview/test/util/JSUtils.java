@@ -56,7 +56,7 @@ public class JSUtils {
 
     public static void clickNodeWithUserGesture(WebContents webContents, String nodeId) {
         WebContentsUtils.evaluateJavaScriptWithUserGesture(
-                webContents, createScriptToClickNode(nodeId));
+                webContents, createScriptToClickNode(nodeId), null);
     }
 
     public static String executeJavaScriptAndWaitForResult(Instrumentation instrumentation,

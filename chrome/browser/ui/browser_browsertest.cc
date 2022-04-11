@@ -871,7 +871,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(kOpenNewBeforeUnloadPage);
+      ->ExecuteJavaScriptWithUserGestureForTests(kOpenNewBeforeUnloadPage,
+                                                 base::NullCallback());
 
   // Close the new window with JavaScript, which should show a single
   // beforeunload dialog.  Then show another alert, to make it easy to verify
@@ -880,7 +881,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       ->tab_strip_model()
       ->GetWebContentsAt(0)
       ->GetMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(u"w.close(); alert('bar');");
+      ->ExecuteJavaScriptWithUserGestureForTests(u"w.close(); alert('bar');",
+                                                 base::NullCallback());
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   alert->view()->AcceptAppModalDialog();
 

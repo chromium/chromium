@@ -171,8 +171,8 @@ namespace {
     // Prerendering pages will never have user gesture.
     CHECK(render_frame_host->GetLifecycleState() !=
           RenderFrameHost::LifecycleState::kPrerendering);
-    render_frame_host->ExecuteJavaScriptWithUserGestureForTests(script16,
-                                                                world_id);
+    render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+        script16, base::NullCallback(), world_id);
   } else {
     // Note that |user_gesture| here is ignored when the world is not main. We
     // allow a value of |true| because it's the default, but in blink, the
@@ -848,7 +848,7 @@ void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
       [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
         if (trigger_user_activation) {
           render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-              std::u16string());
+              std::u16string(), base::NullCallback());
         }
 
         // Disable the hang monitor, otherwise there will be a race between the
@@ -1395,7 +1395,7 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
         base::UTF8ToUTF16(script), base::NullCallback());
   } else {
     adapter.render_frame_host()->ExecuteJavaScriptWithUserGestureForTests(
-        base::UTF8ToUTF16(script));
+        base::UTF8ToUTF16(script), base::NullCallback());
   }
 }
 

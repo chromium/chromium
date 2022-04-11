@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   web_contents()->GetMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating([](content::RenderFrameHost* render_frame_host) {
         render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-            std::u16string());
+            std::u16string(), base::NullCallback());
       }));
 
   // Force a process switch by going to a privileged page. The beforeunload
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Give the page a user gesture and try reloading again. This time there
   // should be a dialog. If there is no dialog, the call to Wait will hang.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
   web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   dialog_manager.Wait();
 
@@ -2725,7 +2725,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
   web_contents()->GetMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
@@ -2752,7 +2752,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
 
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.

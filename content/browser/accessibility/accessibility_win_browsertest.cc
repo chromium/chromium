@@ -4601,7 +4601,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // The beforeunload dialog won't be shown unless the page has at
   // least one user gesture on it.
   auto* main_frame = shell()->web_contents()->GetMainFrame();
-  main_frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
+  main_frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
+                                                       base::NullCallback());
 
   // Trigger a reload here, which will get cancelled.
   AppModalDialogWaiter dialog_waiter(shell());

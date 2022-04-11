@@ -579,6 +579,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // activation.
   virtual void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
+      JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
 
   // Tells the renderer to perform a given action on the plugin located at a

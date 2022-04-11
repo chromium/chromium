@@ -82,7 +82,8 @@ content::EvalJsResult EvalJsLocal(
   const std::u16string script16 = base::UTF8ToUTF16(runner_script);
   if (host->GetLifecycleState() !=
       content::RenderFrameHost::LifecycleState::kPrerendering) {
-    host->ExecuteJavaScriptWithUserGestureForTests(script16);  // IN-TEST
+    host->ExecuteJavaScriptWithUserGestureForTests(
+        script16, base::NullCallback());  // IN-TEST
   } else {
     host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
   }

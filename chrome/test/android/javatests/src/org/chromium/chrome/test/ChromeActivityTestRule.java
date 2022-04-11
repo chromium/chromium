@@ -416,6 +416,16 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     /**
+     * Executes the given snippet of JavaScript code within the current tab, acting as if a user
+     * gesture has been made. Returns the result of its execution in JSON format.
+     */
+    public String runJavaScriptCodeWithUserGestureInCurrentTab(String code)
+            throws TimeoutException {
+        return JavaScriptUtils.executeJavaScriptWithUserGestureAndWaitForResult(
+                getActivity().getCurrentWebContents(), code);
+    }
+
+    /**
      * Waits till the WebContents receives the expected page scale factor
      * from the compositor and asserts that this happens.
      */

@@ -2860,7 +2860,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // gesture to allow dialogs.
   wc->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
   script = "window.onbeforeunload=function(e){ return 'x' };";
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.WillWaitForDialog();

@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // Emulate a user gesture so that the current entry won't be skipped due to
   // the history manipulation intervention when we try to navigate back to it.
   web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
 
   // Navigate subframe to an enabled extension URL.
   scoped_refptr<const Extension> extension =

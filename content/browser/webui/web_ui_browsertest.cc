@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
   // renderer.
   main_rfh()->ExecuteJavaScriptWithUserGestureForTests(
       u"chrome.send('messageRequiringGesture');"
-      u"chrome.send('notifyFinish');");
+      u"chrome.send('notifyFinish');",
+      base::NullCallback());
   base::RunLoop run_loop;
   test_handler()->set_finish_closure(run_loop.QuitClosure());
   run_loop.Run();

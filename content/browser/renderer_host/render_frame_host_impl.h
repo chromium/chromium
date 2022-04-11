@@ -378,6 +378,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
   void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
+      JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
   void ExecutePluginActionAtLocalLocation(
       const gfx::Point& local_location,

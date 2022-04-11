@@ -116,8 +116,8 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     navigation_handle->RegisterThrottleForTesting(std::move(throttle));
 
     if (has_user_gesture_) {
-      rfh_->ExecuteJavaScriptWithUserGestureForTests(
-          base::UTF8ToUTF16(script_));
+      rfh_->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script_),
+                                                     base::NullCallback());
     } else {
       rfh_->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script_),
                                       base::NullCallback());

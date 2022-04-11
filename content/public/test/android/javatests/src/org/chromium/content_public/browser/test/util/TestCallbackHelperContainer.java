@@ -104,7 +104,25 @@ public class TestCallbackHelperContainer {
         }
 
         /**
-         * Returns true if the evaluation started by evaluateJavaScriptForTests() has completed.
+         * Starts evaluation of a given JavaScript code on a given webContents, acting as if a user
+         * gesture is present.
+         * @param webContents A WebContents instance to be used.
+         * @param code A JavaScript code to be evaluated.
+         */
+        public void evaluateJavaScriptWithUserGestureForTests(
+                WebContents webContents, String code) {
+            JavaScriptCallback callback = new JavaScriptCallback() {
+                @Override
+                public void handleJavaScriptResult(String jsonResult) {
+                    notifyCalled(jsonResult);
+                }
+            };
+            mJsonResult = null;
+            WebContentsUtils.evaluateJavaScriptWithUserGesture(webContents, code, callback);
+        }
+
+        /**
+         * Returns true if a started JavaScript evaluation has completed.
          */
         public boolean hasValue() {
             return mJsonResult != null;

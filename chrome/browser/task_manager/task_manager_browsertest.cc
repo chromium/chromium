@@ -914,7 +914,8 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
   // corresponding navigation entry is not marked as skippable.
   content::RenderFrameHost* child_frame = ChildFrameAt(tab->GetMainFrame(), 0);
   content::RenderFrameHost* grandchild_frame = ChildFrameAt(child_frame, 0);
-  grandchild_frame->ExecuteJavaScriptWithUserGestureForTests(u"a=5");
+  grandchild_frame->ExecuteJavaScriptWithUserGestureForTests(
+      u"a=5", base::NullCallback());
 
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");

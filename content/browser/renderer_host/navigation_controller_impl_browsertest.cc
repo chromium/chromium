@@ -12080,7 +12080,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadOriginalRequest) {
     std::string script = "history.replaceState({}, '', 'foo');";
     root->render_manager()
         ->current_frame_host()
-        ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script));
+        ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script),
+                                                   base::NullCallback());
     EXPECT_FALSE(shell()->web_contents()->IsLoading());
     shell()->web_contents()->GetController().Reload(
         ReloadType::ORIGINAL_REQUEST_URL, false);

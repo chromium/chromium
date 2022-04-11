@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -587,7 +588,7 @@ void TabImpl::RemoveWebMessageHostFactory(
 void TabImpl::ExecuteScriptWithUserGestureForTests(
     const std::u16string& script) {
   web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      script);
+      script, base::NullCallback());
 }
 
 std::unique_ptr<FaviconFetcher> TabImpl::CreateFaviconFetcher(

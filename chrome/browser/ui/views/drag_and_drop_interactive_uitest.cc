@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1749,7 +1750,8 @@ void DragAndDropBrowserTest::CrossSiteDrag_Step2(
     std::string expected_response = base::StringPrintf("\"i%d\"", i);
     GetRightFrame()->ExecuteJavaScriptWithUserGestureForTests(
         base::UTF8ToUTF16(base::StringPrintf(
-            "domAutomationController.send(%s);", expected_response.c_str())));
+            "domAutomationController.send(%s);", expected_response.c_str())),
+        base::NullCallback());
 
     // Wait until our response comes back (it might be mixed with responses
     // carrying events that are sent by event_monitoring.js).

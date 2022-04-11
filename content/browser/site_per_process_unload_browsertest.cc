@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the page a gesture to allow dialogs.
   web_contents->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+      std::u16string(), base::NullCallback());
 
   // Hang the first contents in a beforeunload dialog.
   BeforeUnloadBlockingDelegate test_delegate(web_contents);

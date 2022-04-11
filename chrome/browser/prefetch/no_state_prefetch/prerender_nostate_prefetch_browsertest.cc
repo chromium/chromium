@@ -402,7 +402,7 @@ class NoStatePrefetchBrowserTest
     if (new_web_contents) {
       NewTabNavigationOrSwapObserver observer;
       render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-          base::ASCIIToUTF16(javascript));
+          base::ASCIIToUTF16(javascript), base::NullCallback());
       observer.Wait();
     } else {
       NavigationOrSwapObserver observer(current_browser()->tab_strip_model(),

@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -248,7 +249,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 
     FullscreenNotificationObserver waiter(browser);
     web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-        u"personalizationTestApi.enterFullscreen();");
+        u"personalizationTestApi.enterFullscreen();", base::NullCallback());
     waiter.Wait();
 
     // After the full screen change is observed, there is a significant delay

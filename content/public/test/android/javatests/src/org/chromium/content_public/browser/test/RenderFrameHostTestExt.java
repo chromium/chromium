@@ -32,7 +32,7 @@ public class RenderFrameHostTestExt {
     }
 
     public void executeJavaScriptWithUserGesture(String script) {
-        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, null, true);
+        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, (String r) -> {}, true);
     }
 
     public void updateVisualState(Callback<Boolean> callback) {
