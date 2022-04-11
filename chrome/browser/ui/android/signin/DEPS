@@ -1,6 +1,7 @@
 include_rules = [
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/test/android",
+  "+components/externalauth/android",
 ]
 
 specific_include_rules = {
@@ -8,13 +9,7 @@ specific_include_rules = {
   : [
   "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java"
   ],
-  "SigninCheckerTest.java": [
-  "+components/externalauth/android/java/src/org/chromium/components/externalauth/ExternalAuthUtils.java"
-  ],
   "SigninPromoController.java": [
   "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java"
-  ],
-  "SigninFirstRunMediator.java": [
-  "+components/externalauth/android/java/src/org/chromium/components/externalauth/ExternalAuthUtils.java"
   ],
 }

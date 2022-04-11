@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.ui.signin;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -24,7 +24,6 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -35,11 +34,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.ui.signin.ConfirmSyncDataStateMachine;
-import org.chromium.chrome.browser.ui.signin.ConfirmSyncDataStateMachineDelegate;
-import org.chromium.chrome.browser.ui.signin.ConsentTextTracker;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.SigninView;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -125,7 +119,7 @@ public abstract class SyncConsentFragmentBase
      * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
-    protected static Bundle createArguments(
+    public static Bundle createArguments(
             @SigninAccessPoint int accessPoint, @Nullable String accountName) {
         Bundle result = new Bundle();
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
