@@ -1060,7 +1060,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   base::ScopedClosureRunner deferred_runner(base::BindOnce(
       [](base::WeakPtr<CaptureModeSession> session,
          std::unique_ptr<bool> should_update_opacity) {
-        if (should_update_opacity && session)
+        if (*should_update_opacity && session)
           session->MaybeUpdateCaptureUisOpacity();
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(should_update_opacity)));
