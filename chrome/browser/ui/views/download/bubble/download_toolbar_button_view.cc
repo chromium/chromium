@@ -52,17 +52,16 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   SetVectorIcons(kDownloadToolbarButtonIcon, kDownloadToolbarButtonIcon);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
-  Profile* profile = browser_->profile();
   SetVisible(false);
 
   scanning_animation_.SetSlideDuration(base::Milliseconds(2500));
   scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
 
-  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(profile);
+  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(browser_);
   // Wait until we're done with everything else before creating `controller_`
   // since it can call `Show()` synchronously.
   controller_ = std::make_unique<DownloadDisplayController>(
-      this, profile, bubble_controller_.get());
+      this, browser_->profile(), bubble_controller_.get());
 }
 
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
@@ -215,6 +214,8 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
 
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
+  if (!bubble_contents_view)
+    return;
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
       std::make_unique<views::BubbleDialogDelegate>(
           this, views::BubbleBorder::TOP_RIGHT);
@@ -254,6 +255,10 @@ void DownloadToolbarButtonView::ButtonPressed() {
 
 std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
     std::vector<DownloadUIModel::DownloadUIModelPtr> model_list) {
+  // Do not create empty partial view.
+  if (is_primary_partial_view_ && model_list.empty())
+    return nullptr;
+
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an

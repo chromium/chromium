@@ -16,6 +16,8 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/download_manager.h"
@@ -69,8 +71,9 @@ using SortedDownloadUIModelSet =
 
 }  // namespace
 
-DownloadBubbleUIController::DownloadBubbleUIController(Profile* profile)
-    : profile_(profile),
+DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
+    : browser_(browser),
+      profile_(browser->profile()),
       download_manager_(profile_->GetDownloadManager()),
       download_notifier_(download_manager_, this),
       aggregator_(OfflineContentAggregatorFactory::GetForKey(
@@ -154,7 +157,9 @@ void DownloadBubbleUIController::OnItemsAdded(
     }
   }
   if (any_new) {
-    display_controller_->OnNewItem(any_in_progress);
+    display_controller_->OnNewItem(/*show_details=*/(
+        any_in_progress &&
+        (browser_ == chrome::FindLastActiveWithProfile(profile_.get()))));
   }
 }
 
@@ -199,18 +204,22 @@ void DownloadBubbleUIController::OnItemUpdated(
                        return FindOfflineItemByContentId(item.id, candidate);
                      }),
       offline_items_.end());
-  MaybeAddOfflineItem(item, /*is_new=*/false);
+  bool was_added = MaybeAddOfflineItem(item, /*is_new=*/false);
   display_controller_->OnUpdatedItem(
-      OfflineItemModel::Wrap(offline_manager_, item)->IsDone());
+      OfflineItemModel::Wrap(offline_manager_, item)->IsDone(),
+      was_added &&
+          (browser_ == chrome::FindLastActiveWithProfile(profile_.get())));
 }
 
 void DownloadBubbleUIController::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  display_controller_->OnUpdatedItem(
-      DownloadItemModel::Wrap(
-          item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>())
-          ->IsDone());
+  auto model = DownloadItemModel::Wrap(
+      item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  bool show_details_if_done =
+      model->ShouldShowInBubble() &&
+      (browser_ == chrome::FindLastActiveWithProfile(profile_.get()));
+  display_controller_->OnUpdatedItem(model->IsDone(), show_details_if_done);
 }
 
 void DownloadBubbleUIController::RemoveContentIdFromPartialView(

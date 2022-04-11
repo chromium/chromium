@@ -75,10 +75,10 @@ class DownloadDisplayController
   // controllers in testing.
   virtual void OnNewItem(bool show_details);
   // Called from bubble controller when an item is updated, with |is_done|
-  // indicating if it was marked done.
-  virtual void OnUpdatedItem(bool is_done);
-  // Called from bubble controller when an item is deleted, with
-  // |show_details| as argument if the partial view should be shown.
+  // indicating if it was marked done, and with
+  // |show_details_if_done| as argument if the partial view should be shown.
+  virtual void OnUpdatedItem(bool is_done, bool show_details_if_done);
+  // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem();
 
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {

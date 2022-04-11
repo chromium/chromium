@@ -51,9 +51,12 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
   }
 }
 
-void DownloadDisplayController::OnUpdatedItem(bool is_done) {
+void DownloadDisplayController::OnUpdatedItem(bool is_done,
+                                              bool show_details_if_done) {
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
+    if (show_details_if_done)
+      display_->ShowDetails();
   }
   UpdateToolbarButtonState();
 }

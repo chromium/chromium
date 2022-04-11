@@ -12,6 +12,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -42,7 +44,7 @@ class MockDownloadDisplayController : public DownloadDisplayController {
       : DownloadDisplayController(nullptr, profile, bubble_controller) {}
   void MaybeShowButtonWhenCreated() override {}
   MOCK_METHOD1(OnNewItem, void(bool));
-  MOCK_METHOD1(OnUpdatedItem, void(bool));
+  MOCK_METHOD2(OnUpdatedItem, void(bool, bool));
   MOCK_METHOD0(OnRemovedItem, void());
 };
 
@@ -91,7 +93,12 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey())
         ->RegisterProvider(kProviderNamespace, content_provider_.get());
 
-    controller_ = std::make_unique<DownloadBubbleUIController>(profile_);
+    window_ = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params(profile_, true);
+    params.type = Browser::TYPE_NORMAL;
+    params.window = window_.get();
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    controller_ = std::make_unique<DownloadBubbleUIController>(browser_.get());
     display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
             profile_, controller_.get());
@@ -200,6 +207,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
   std::unique_ptr<
       NiceMock<offline_items_collection::MockOfflineContentProvider>>
       content_provider_;
+  std::unique_ptr<TestBrowserWindow> window_;
+  std::unique_ptr<Browser> browser_;
   Profile* profile_;
 };
 
@@ -226,14 +235,14 @@ TEST_F(DownloadBubbleUIControllerTest, ProcessesUpdatedItems) {
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(false)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(false, true)).Times(1);
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
 
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
 }
 

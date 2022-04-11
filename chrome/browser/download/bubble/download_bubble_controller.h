@@ -31,7 +31,7 @@ class DownloadBubbleUIController
     : public OfflineContentProvider::Observer,
       public download::AllDownloadItemNotifier::Observer {
  public:
-  explicit DownloadBubbleUIController(Profile* profile);
+  explicit DownloadBubbleUIController(Browser* browser);
   DownloadBubbleUIController(const DownloadBubbleUIController&) = delete;
   DownloadBubbleUIController& operator=(const DownloadBubbleUIController&) =
       delete;
@@ -122,6 +122,7 @@ class DownloadBubbleUIController
   // Common method for getting main and partial views.
   std::vector<DownloadUIModelPtr> GetDownloadUIModels(bool is_main_view);
 
+  raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::DownloadManager> download_manager_;
   download::AllDownloadItemNotifier download_notifier_;
