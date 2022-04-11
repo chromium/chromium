@@ -47,6 +47,7 @@ if (!is_win) {
   source_set("receiver_session") {
     deps = [
       ":core",
+      ":demuxer_stream_data_provider",
       ":network_context",
       ":receiver_session_public",
       ":streaming_session",
@@ -170,6 +171,19 @@ if (!is_win) {
   }
 }
 
+source_set("demuxer_stream_data_provider") {
+  deps = [
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/system",
+  ]
+  visibility = [ ":*" ]
+  sources = [ "demuxer_stream_data_provider.h" ]
+}
+
 source_set("network_context") {
   public = [ "public/network_context_getter.h" ]
   deps = [
@@ -219,12 +233,13 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":browser",
+    ":demuxer_stream_data_provider",
     ":renderer_controls",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
   ]
-  sources = []
+  sources = [ "demuxer_stream_data_provider_unittest.cc" ]
 
   if (!is_win) {
     deps += [

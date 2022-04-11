@@ -8,6 +8,7 @@
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "media/base/demuxer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -25,8 +26,6 @@ class CastStreamingVideoDemuxerStream;
 // as |original_task_runner_|. OnStreamsInitialized() is the only method called
 // on the main thread. Every other method is called on the media thread, whose
 // task runner is |media_task_runner_|.
-// |original_task_runner_| is used to post method calls to |receiver_|, which is
-// guaranteed to outlive this object.
 // TODO(crbug.com/1082821): Simplify the CastStreamingDemuxer initialization
 // sequence when the CastStreamingReceiver Component has been implemented.
 class CastStreamingDemuxer final : public media::Demuxer {
@@ -39,13 +38,14 @@ class CastStreamingDemuxer final : public media::Demuxer {
   CastStreamingDemuxer(const CastStreamingDemuxer&) = delete;
   CastStreamingDemuxer& operator=(const CastStreamingDemuxer&) = delete;
 
-  void OnStreamsInitialized(mojom::AudioStreamInfoPtr audio_stream_info,
-                            mojom::VideoStreamInfoPtr video_stream_info);
+  void OnStreamsInitialized(
+      mojom::AudioStreamInitializationInfoPtr audio_stream_info,
+      mojom::VideoStreamInitializationInfoPtr video_stream_info);
 
  private:
   void OnStreamsInitializedOnMediaThread(
-      mojom::AudioStreamInfoPtr audio_stream_info,
-      mojom::VideoStreamInfoPtr video_stream_info);
+      mojom::AudioStreamInitializationInfoPtr audio_stream_info,
+      mojom::VideoStreamInitializationInfoPtr video_stream_info);
 
   // media::Demuxer implementation.
   std::vector<media::DemuxerStream*> GetAllStreams() override;
@@ -82,6 +82,8 @@ class CastStreamingDemuxer final : public media::Demuxer {
   bool was_initialization_successful_ = false;
   media::PipelineStatusCallback initialized_cb_;
   CastStreamingReceiver* const receiver_;
+
+  base::WeakPtrFactory<CastStreamingDemuxer> weak_factory_;
 };
 
 }  // namespace cast_streaming

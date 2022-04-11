@@ -53,8 +53,8 @@ class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
   // mojom::CastStreamingReceiver implementation.
   void EnableReceiver(EnableReceiverCallback callback) override;
   void OnStreamsInitialized(
-      mojom::AudioStreamInfoPtr audio_stream_info,
-      mojom::VideoStreamInfoPtr video_stream_info) override;
+      mojom::AudioStreamInitializationInfoPtr audio_stream_info,
+      mojom::VideoStreamInitializationInfoPtr video_stream_info) override;
 
   mojo::AssociatedReceiver<mojom::CastStreamingReceiver>
       cast_streaming_receiver_receiver_{this};

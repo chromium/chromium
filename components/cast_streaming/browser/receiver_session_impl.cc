@@ -86,47 +86,58 @@ void ReceiverSessionImpl::OnSessionInitialization(
   DVLOG(1) << __func__;
   DCHECK(audio_stream_info || video_stream_info);
 
-  mojom::AudioStreamInfoPtr mojo_audio_stream_info;
+  mojom::AudioStreamInitializationInfoPtr audio_info;
   if (audio_stream_info) {
-    mojo_audio_stream_info =
-        mojom::AudioStreamInfo::New(audio_stream_info->decoder_config,
-                                    audio_remote_.BindNewPipeAndPassReceiver(),
-                                    std::move(audio_stream_info->data_pipe));
+    mojo::PendingRemote<mojom::AudioBufferRequester> audio_receiver;
+    audio_demuxer_stream_data_provider_ =
+        std::make_unique<AudioDemuxerStreamDataProvider>(
+            audio_receiver.InitWithNewPipeAndPassReceiver(),
+            cast_streaming_session_.GetAudioBufferRequester(),
+            base::BindOnce(&ReceiverSessionImpl::OnMojoDisconnect,
+                           weak_factory_.GetWeakPtr()),
+            std::move(audio_stream_info->decoder_config));
+    audio_info = mojom::AudioStreamInitializationInfo::New(
+        std::move(audio_receiver),
+        mojom::AudioStreamInfo::New(
+            audio_demuxer_stream_data_provider_->config(),
+            std::move(std::move(audio_stream_info->data_pipe))));
   }
 
-  mojom::VideoStreamInfoPtr mojo_video_stream_info;
+  mojom::VideoStreamInitializationInfoPtr video_info;
   if (video_stream_info) {
-    mojo_video_stream_info =
-        mojom::VideoStreamInfo::New(video_stream_info->decoder_config,
-                                    video_remote_.BindNewPipeAndPassReceiver(),
-                                    std::move(video_stream_info->data_pipe));
+    mojo::PendingRemote<mojom::VideoBufferRequester> video_receiver;
+    video_demuxer_stream_data_provider_ =
+        std::make_unique<VideoDemuxerStreamDataProvider>(
+            video_receiver.InitWithNewPipeAndPassReceiver(),
+            cast_streaming_session_.GetVideoBufferRequester(),
+            base::BindOnce(&ReceiverSessionImpl::OnMojoDisconnect,
+                           weak_factory_.GetWeakPtr()),
+            std::move(video_stream_info->decoder_config));
+    video_info = mojom::VideoStreamInitializationInfo::New(
+        std::move(video_receiver),
+        mojom::VideoStreamInfo::New(
+            video_demuxer_stream_data_provider_->config(),
+            std::move(std::move(video_stream_info->data_pipe))));
   }
 
-  cast_streaming_receiver_->OnStreamsInitialized(
-      std::move(mojo_audio_stream_info), std::move(mojo_video_stream_info));
+  cast_streaming_receiver_->OnStreamsInitialized(std::move(audio_info),
+                                                 std::move(video_info));
 
-  if (client_) {
-    if (audio_stream_info) {
-      client_->OnAudioConfigUpdated(audio_stream_info->decoder_config);
-    }
-    if (video_stream_info) {
-      client_->OnVideoConfigUpdated(video_stream_info->decoder_config);
-    }
-  }
+  InformClientOfConfigChange();
 }
 
 void ReceiverSessionImpl::OnAudioBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
-  DCHECK(audio_remote_);
-  audio_remote_->ProvideBuffer(std::move(buffer));
+  DCHECK(audio_demuxer_stream_data_provider_);
+  audio_demuxer_stream_data_provider_->ProvideBuffer(std::move(buffer));
 }
 
 void ReceiverSessionImpl::OnVideoBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
-  DCHECK(video_remote_);
-  video_remote_->ProvideBuffer(std::move(buffer));
+  DCHECK(video_demuxer_stream_data_provider_);
+  video_demuxer_stream_data_provider_->ProvideBuffer(std::move(buffer));
 }
 
 void ReceiverSessionImpl::OnSessionReinitialization(
@@ -136,23 +147,33 @@ void ReceiverSessionImpl::OnSessionReinitialization(
         video_stream_info) {
   DVLOG(1) << __func__;
   DCHECK(audio_stream_info || video_stream_info);
+  DCHECK_EQ(!!audio_stream_info, !!audio_demuxer_stream_data_provider_);
+  DCHECK_EQ(!!video_stream_info, !!video_demuxer_stream_data_provider_);
 
   if (audio_stream_info) {
-    audio_remote_->OnNewAudioConfig(audio_stream_info->decoder_config,
-                                    std::move(audio_stream_info->data_pipe));
+    audio_demuxer_stream_data_provider_->OnNewStreamInfo(
+        std::move(audio_stream_info->decoder_config),
+        std::move(audio_stream_info->data_pipe));
   }
 
   if (video_stream_info) {
-    video_remote_->OnNewVideoConfig(video_stream_info->decoder_config,
-                                    std::move(video_stream_info->data_pipe));
+    video_demuxer_stream_data_provider_->OnNewStreamInfo(
+        std::move(video_stream_info->decoder_config),
+        std::move(video_stream_info->data_pipe));
   }
 
+  InformClientOfConfigChange();
+}
+
+void ReceiverSessionImpl::InformClientOfConfigChange() {
   if (client_) {
-    if (audio_stream_info) {
-      client_->OnAudioConfigUpdated(audio_stream_info->decoder_config);
+    if (audio_demuxer_stream_data_provider_) {
+      client_->OnAudioConfigUpdated(
+          audio_demuxer_stream_data_provider_->config());
     }
-    if (video_stream_info) {
-      client_->OnVideoConfigUpdated(video_stream_info->decoder_config);
+    if (video_demuxer_stream_data_provider_) {
+      client_->OnVideoConfigUpdated(
+          video_demuxer_stream_data_provider_->config());
     }
   }
 }
@@ -165,10 +186,8 @@ void ReceiverSessionImpl::OnSessionEnded() {
 
   // Tear down all remaining Mojo objects if needed. This is necessary if the
   // Cast Streaming Session ending was initiated by the receiver component.
-  if (audio_remote_)
-    audio_remote_.reset();
-  if (video_remote_)
-    video_remote_.reset();
+  audio_demuxer_stream_data_provider_.reset();
+  video_demuxer_stream_data_provider_.reset();
 }
 
 void ReceiverSessionImpl::OnMojoDisconnect() {
@@ -185,8 +204,8 @@ void ReceiverSessionImpl::OnMojoDisconnect() {
   cast_streaming_session_.Stop();
 
   // Tear down all remaining Mojo objects.
-  audio_remote_.reset();
-  video_remote_.reset();
+  audio_demuxer_stream_data_provider_.reset();
+  video_demuxer_stream_data_provider_.reset();
 }
 
 ReceiverSessionImpl::RendererControllerImpl::RendererControllerImpl(

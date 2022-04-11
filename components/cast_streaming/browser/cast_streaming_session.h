@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/cast/message_port/message_port.h"
@@ -102,6 +103,12 @@ class CastStreamingSession {
   // lifespan of this object and only after a call to Start().
   void Stop();
 
+  // Return a callback that may be used to request a buffer of the specified
+  // type, to be returned asynchronously through the client API. May only be
+  // called following a call to Start() and prior to a call to Stop().
+  base::RepeatingClosure GetAudioBufferRequester();
+  base::RepeatingClosure GetVideoBufferRequester();
+
  private:
   // Owns the Open Screen ReceiverSession. The Streaming Session is tied to the
   // lifespan of this object.
@@ -118,6 +125,12 @@ class CastStreamingSession {
 
     ReceiverSessionClient(const ReceiverSessionClient&) = delete;
     ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
+
+    // Requests a new buffer of the specified type, which will be provided
+    // Return a callback that may be used to request a buffer of the specified
+    // type, to be returned asynchronously through the |client_|.
+    base::RepeatingClosure GetAudioBufferRequester();
+    base::RepeatingClosure GetVideoBufferRequester();
 
    private:
     void OnInitializationTimeout();

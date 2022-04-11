@@ -6,34 +6,10 @@ module cast_streaming.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
 
-// Renderer-implemented interface that is used to receive metadata for buffers.
-interface CastStreamingBufferReceiver {
-  // Provide metadata for a buffer to the Cast Streaming Receiver in the
-  // renderer process. The buffer data itself is on the associated |data_pipe|,
-  // from AudioStreamInfo or VideoStreamInfo.
-  // This is called for every new buffer pushed in the associated |data_pipe|.
-  ProvideBuffer(media.mojom.DecoderBuffer buffer);
-
-  // Signals the audio decoder configuration has changed. After this call,
-  // CastStreamingBufferReceiver.ProvideBuffer() will be called on every new
-  // frame. The buffer data itself is on |data_pipe|.
-  OnNewAudioConfig(media.mojom.AudioDecoderConfig decoder_config,
-                   handle<data_pipe_consumer> data_pipe);
-
-  // Signals the video configuration has changed. After this call,
-  // CastStreamingBufferReceiver.ProvideBuffer() will be called on every new
-  // frame. The buffer data itself is on |data_pipe|.
-  OnNewVideoConfig(media.mojom.VideoDecoderConfig decoder_config,
-                   handle<data_pipe_consumer> data_pipe);
-};
-
 // Information about a Cast Streaming audio stream.
 struct AudioStreamInfo {
   // Audio decoder configuration.
   media.mojom.AudioDecoderConfig decoder_config;
-
-  // Audio buffer metadata receiver.
-  pending_receiver<CastStreamingBufferReceiver> buffer_receiver;
 
   // Mojo data pipe over which audio buffer data is sent.
   handle<data_pipe_consumer> data_pipe;
@@ -44,11 +20,62 @@ struct VideoStreamInfo {
   // Video decoder configuration.
   media.mojom.VideoDecoderConfig decoder_config;
 
-  // Video buffer metadata receiver.
-  pending_receiver<CastStreamingBufferReceiver> buffer_receiver;
-
   // Mojo data pipe over which video buffer data is sent.
   handle<data_pipe_consumer> data_pipe;
+};
+
+// Provides a "pull" mechanism to request DecoderBuffer frames of audio data.
+// This will be used by the DemuxerStream within the renderer process to
+// request from the browser process a new frame of audio data to play out.
+interface AudioBufferRequester {
+  // Requests more information about the cast streaming session's data stream to
+  // the renderer process. This will be in the form of one |buffer|, and
+  // potentially one |stream_info|.
+  //
+  // The |buffer| data itself is on the associated |data_pipe|, from the
+  // AudioStreamInfo most recently provided during this or a prior call to this
+  // method. This is called for every new buffer pushed in the associated
+  // |data_pipe|.
+  //
+  // |stream_info| is provided only when the audio configuration has changed.
+  // The new |decoder_config| and |data_pipe| provided in this instance should
+  // be used for this and all future calls of this method, until a new
+  // |stream_info| is provided.
+  //
+  // Only one call to this method may be in-flight at a time. Or, in other
+  // words, this method may not be called a second time until the prior call
+  // returns.
+  GetBuffer() => (AudioStreamInfo? stream_info,
+                  media.mojom.DecoderBuffer buffer);
+};
+
+// Provides a "pull" mechanism to request DecoderBuffer frames of video data.
+// This will be used by the DemuxerStream within the renderer process to
+// request from the browser process a new frame of video data to display.
+interface VideoBufferRequester {
+  // As AudioBufferRequester::GetBuffer() above.
+  GetBuffer() => (VideoStreamInfo? stream_info,
+                  media.mojom.DecoderBuffer buffer);
+};
+
+// Initialization information for an audio DemuxerStream.
+struct AudioStreamInitializationInfo {
+  // The mojo pipe that should be used to request audio buffers.
+  pending_remote<AudioBufferRequester> buffer_requester;
+
+  // The initial config and data pipe that should be used for buffers received
+  // by renderer process.
+  AudioStreamInfo stream_initialization_info;
+};
+
+// Initialization information for a video DemuxerStream.
+struct VideoStreamInitializationInfo {
+  // The mojo pipe that should be used to request video buffers.
+  pending_remote<VideoBufferRequester> buffer_requester;
+
+  // The initial config and data pipe that should be used for buffers received
+  // by renderer process.
+  VideoStreamInfo stream_initialization_info;
 };
 
 // Implemented by the renderer, used to start the Cast Streaming Session.
@@ -61,11 +88,9 @@ interface CastStreamingReceiver {
   EnableReceiver() => ();
 
   // Called when the streams have been successfully initialized. At least one of
-  // |audio_stream_info| or |video_stream_info| must be set. This will only be
-  // called once per the lifetime of CastStreamingReceiver. After this call,
-  // CastStreamingBufferReceiver.ProvideBuffer() will be called on every new
-  // frame.
+  // |audio_buffer_requester| or |video_buffer_requester| must be set. This will
+  // only be called once per the lifetime of CastStreamingReceiver.
   OnStreamsInitialized(
-      AudioStreamInfo? audio_stream_info,
-      VideoStreamInfo? video_stream_info);
+      AudioStreamInitializationInfo? audio_buffer_requester,
+      VideoStreamInitializationInfo? video_buffer_requester);
 };

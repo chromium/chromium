@@ -21,7 +21,8 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                     base::SequencedTaskRunnerHandle::Get()),
       frame_duration_(frame_duration),
-      on_new_frame_(std::move(on_new_frame)) {
+      on_new_frame_(std::move(on_new_frame)),
+      weak_factory_{this} {
   DCHECK(receiver_);
   receiver_->SetConsumer(this);
   MojoResult result =
@@ -36,6 +37,16 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
 
 StreamConsumer::~StreamConsumer() {
   receiver_->SetConsumer(nullptr);
+}
+
+void StreamConsumer::ReadFrame() {
+  DCHECK(!is_read_pending_);
+  is_read_pending_ = true;
+  MaybeSendNextFrame();
+}
+
+base::WeakPtr<StreamConsumer> StreamConsumer::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void StreamConsumer::CloseDataPipeOnError() {
@@ -68,24 +79,28 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
     return;
   }
 
-  // Advance to the next frame if a new one is ready.
-  int next_frame_buffer_size = receiver_->AdvanceToNextFrame();
-  if (next_frame_buffer_size != openscreen::cast::Receiver::kNoFramesReady)
-    OnFramesReady(next_frame_buffer_size);
+  MaybeSendNextFrame();
 }
 
 void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
-  DCHECK(data_pipe_);
-  on_new_frame_.Run();
+  MaybeSendNextFrame();
+}
 
-  if (pending_buffer_remaining_bytes_ != 0) {
-    // There already is a pending frame. Ignore this one for now.
+void StreamConsumer::MaybeSendNextFrame() {
+  if (!is_read_pending_ || pending_buffer_remaining_bytes_ > 0) {
     return;
   }
 
+  const int current_frame_buffer_size = receiver_->AdvanceToNextFrame();
+  if (current_frame_buffer_size == openscreen::cast::Receiver::kNoFramesReady) {
+    return;
+  }
+
+  on_new_frame_.Run();
+
   void* buffer = nullptr;
-  uint32_t buffer_size = next_frame_buffer_size;
-  uint32_t mojo_buffer_size = next_frame_buffer_size;
+  uint32_t buffer_size = current_frame_buffer_size;
+  uint32_t mojo_buffer_size = current_frame_buffer_size;
 
   if (buffer_size > kMaxFrameSize) {
     LOG(ERROR) << "[ssrc:" << receiver_->ssrc() << "] "
@@ -157,6 +172,7 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
            << "Received new frame. Timestamp: " << playout_time
            << ", is_key_frame: " << is_key_frame;
 
+  is_read_pending_ = false;
   frame_received_cb_.Run(media::mojom::DecoderBuffer::New(
       playout_time /* timestamp */, frame_duration_,
       false /* is_end_of_stream */, buffer_size, is_key_frame,

@@ -35,8 +35,8 @@ void CastStreamingReceiver::SetDemuxer(CastStreamingDemuxer* demuxer) {
   if (demuxer_) {
     // We do not support more than one active CastStreamingDemuxer in the same
     // RenderFrame. Return early here.
-    demuxer->OnStreamsInitialized(mojom::AudioStreamInfoPtr(),
-                                  mojom::VideoStreamInfoPtr());
+    demuxer->OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
+                                  mojom::VideoStreamInitializationInfoPtr());
     return;
   }
 
@@ -48,8 +48,8 @@ void CastStreamingReceiver::SetDemuxer(CastStreamingDemuxer* demuxer) {
   } else {
     // The Cast Streaming Sender disconnected after |demuxer| was instantiated
     // but before |demuxer| was initialized on the media thread.
-    demuxer->OnStreamsInitialized(mojom::AudioStreamInfoPtr(),
-                                  mojom::VideoStreamInfoPtr());
+    demuxer->OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
+                                  mojom::VideoStreamInitializationInfoPtr());
   }
 }
 
@@ -100,8 +100,8 @@ void CastStreamingReceiver::OnReceiverDisconnected() {
   enable_receiver_callback_.Reset();
 
   if (demuxer_ && !is_demuxer_initialized_) {
-    OnStreamsInitialized(mojom::AudioStreamInfoPtr(),
-                         mojom::VideoStreamInfoPtr());
+    OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
+                         mojom::VideoStreamInitializationInfoPtr());
   }
 }
 
@@ -116,8 +116,8 @@ void CastStreamingReceiver::EnableReceiver(EnableReceiverCallback callback) {
 }
 
 void CastStreamingReceiver::OnStreamsInitialized(
-    mojom::AudioStreamInfoPtr audio_stream_info,
-    mojom::VideoStreamInfoPtr video_stream_info) {
+    mojom::AudioStreamInitializationInfoPtr audio_stream_info,
+    mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_demuxer_initialized_);

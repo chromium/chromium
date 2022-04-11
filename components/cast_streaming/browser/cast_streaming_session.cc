@@ -72,6 +72,20 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
           base::Unretained(this)));
 }
 
+base::RepeatingClosure
+CastStreamingSession::ReceiverSessionClient::GetAudioBufferRequester() {
+  DCHECK(audio_consumer_);
+  return base::BindRepeating(&StreamConsumer::ReadFrame,
+                             audio_consumer_->GetWeakPtr());
+}
+
+base::RepeatingClosure
+CastStreamingSession::ReceiverSessionClient::GetVideoBufferRequester() {
+  DCHECK(video_consumer_);
+  return base::BindRepeating(&StreamConsumer::ReadFrame,
+                             video_consumer_->GetWeakPtr());
+}
+
 CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() = default;
 
 void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
@@ -264,12 +278,12 @@ void CastStreamingSession::ReceiverSessionClient::OnError(
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnDataTimeout() {
-  DVLOG(1) << __func__;
+  DLOG(ERROR) << __func__ << ": Session ended due to timeout";
   receiver_session_.reset();
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed() {
-  DVLOG(1) << __func__;
+  DLOG(ERROR) << __func__ << ": Session ended due to cast channel closure";
   receiver_session_.reset();
 }
 
@@ -295,6 +309,16 @@ void CastStreamingSession::Stop() {
   DVLOG(1) << __func__;
   DCHECK(receiver_session_);
   receiver_session_.reset();
+}
+
+base::RepeatingClosure CastStreamingSession::GetAudioBufferRequester() {
+  DCHECK(receiver_session_);
+  return receiver_session_->GetAudioBufferRequester();
+}
+
+base::RepeatingClosure CastStreamingSession::GetVideoBufferRequester() {
+  DCHECK(receiver_session_);
+  return receiver_session_->GetVideoBufferRequester();
 }
 
 }  // namespace cast_streaming
