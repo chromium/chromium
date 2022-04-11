@@ -28,9 +28,17 @@ Result PrivateNetworkAccessCheckInternal(
   }
 
   if (target_address_space != mojom::IPAddressSpace::kUnknown) {
-    return resource_address_space == target_address_space
-               ? Result::kAllowedByTargetIpAddressSpace
-               : Result::kBlockedByTargetIpAddressSpace;
+    if (resource_address_space == target_address_space) {
+      return Result::kAllowedByTargetIpAddressSpace;
+    }
+
+    if (client_security_state &&
+        client_security_state->private_network_request_policy ==
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
+      return Result::kAllowedByPolicyPreflightWarn;
+    }
+
+    return Result::kBlockedByTargetIpAddressSpace;
   }
 
   if (!client_security_state) {

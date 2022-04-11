@@ -35,6 +35,8 @@ base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "blocked-by-policy-preflight-warn";
     case Result::kBlockedByPolicyPreflightBlock:
       return "blocked-by-policy-preflight-block";
+    case Result::kAllowedByPolicyPreflightWarn:
+      return "allowed-by-policy-preflight-warn";
   }
 }
 
@@ -46,6 +48,7 @@ absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedByPolicyAllow:
     case Result::kAllowedByPolicyWarn:
     case Result::kAllowedByTargetIpAddressSpace:
+    case Result::kAllowedByPolicyPreflightWarn:
       return absl::nullopt;
     case Result::kBlockedByLoadOption:
       // TODO(https:/crbug.com/1254689): Return better error than this, which

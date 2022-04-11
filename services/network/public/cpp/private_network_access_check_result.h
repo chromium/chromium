@@ -51,8 +51,13 @@ enum class PrivateNetworkAccessCheckResult {
   // `kUnknown` and policy is `kPreflightBlock`.
   kBlockedByPolicyPreflightBlock = 9,
 
+  // Request carries a `target_ip_address_space` that differs from the actual
+  // resource address space, but the policy is `kPreflightWarn` so the request
+  // should not fail.
+  kAllowedByPolicyPreflightWarn = 10,
+
   // Required for UMA histogram logging.
-  kMaxValue = kBlockedByPolicyPreflightBlock,
+  kMaxValue = kAllowedByPolicyPreflightWarn,
 };
 
 // Returns a human-readable string representing `result`, suitable for logging.
