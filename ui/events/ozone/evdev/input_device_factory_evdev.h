@@ -21,7 +21,6 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
-#include "ui/events/ozone/evdev/input_device_opener.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -51,8 +50,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
  public:
   InputDeviceFactoryEvdev(
       std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
-      CursorDelegateEvdev* cursor,
-      std::unique_ptr<InputDeviceOpener> input_device_opener);
+      CursorDelegateEvdev* cursor);
 
   InputDeviceFactoryEvdev(const InputDeviceFactoryEvdev&) = delete;
   InputDeviceFactoryEvdev& operator=(const InputDeviceFactoryEvdev&) = delete;
@@ -183,9 +181,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // The latest stylus state, updated every time a stylus report comes.
   InProgressStylusState latest_stylus_state_;
-
-  // Handles ioctl calls and creation of event converters.
-  const std::unique_ptr<InputDeviceOpener> input_device_opener_;
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_{this};

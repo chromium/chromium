@@ -52,6 +52,24 @@ namespace ui {
 
 namespace {
 
+struct OpenInputDeviceParams {
+  // Unique identifier for the new device.
+  int id;
+
+  // Device path to open.
+  base::FilePath path;
+
+  // Dispatcher for events.
+  DeviceEventDispatcherEvdev* dispatcher;
+
+  // State shared between devices.
+  CursorDelegateEvdev* cursor;
+#if defined(USE_EVDEV_GESTURES)
+  GesturePropertyProvider* gesture_property_provider;
+#endif
+  SharedPalmDetectionFilterState* shared_palm_state;
+};
+
 #if defined(USE_EVDEV_GESTURES)
 void SetGestureIntProperty(GesturePropertyProvider* provider,
                            int id,
@@ -77,6 +95,100 @@ void SetGestureBoolProperty(GesturePropertyProvider* provider,
 
 #endif
 
+std::unique_ptr<EventConverterEvdev> CreateConverter(
+    const OpenInputDeviceParams& params,
+    base::ScopedFD fd,
+    const EventDeviceInfo& devinfo) {
+#if defined(USE_LIBINPUT)
+  // Use LibInputEventConverter for odd touchpads
+  if (devinfo.UseLibinput()) {
+    return LibInputEventConverter::Create(params.path, params.id, devinfo,
+                                          params.cursor, params.dispatcher);
+  }
+#endif
+
+#if defined(USE_EVDEV_GESTURES)
+  // Touchpad or mouse: use gestures library.
+  // EventReaderLibevdevCros -> GestureInterpreterLibevdevCros -> DispatchEvent
+  if (devinfo.HasTouchpad() || devinfo.HasMouse() ||
+      devinfo.HasPointingStick()) {
+    std::unique_ptr<GestureInterpreterLibevdevCros> gesture_interp =
+        std::make_unique<GestureInterpreterLibevdevCros>(
+            params.id, params.cursor, params.gesture_property_provider,
+            params.dispatcher);
+    return std::make_unique<EventReaderLibevdevCros>(std::move(fd), params.path,
+                                                     params.id, devinfo,
+                                                     std::move(gesture_interp));
+  }
+#endif
+
+  // Touchscreen: use TouchEventConverterEvdev.
+  if (devinfo.HasTouchscreen()) {
+    return TouchEventConverterEvdev::Create(
+        std::move(fd), params.path, params.id, devinfo,
+        params.shared_palm_state, params.dispatcher);
+  }
+
+  // Graphics tablet
+  if (devinfo.HasTablet()) {
+    return base::WrapUnique<EventConverterEvdev>(new TabletEventConverterEvdev(
+        std::move(fd), params.path, params.id, params.cursor, devinfo,
+        params.dispatcher));
+  }
+
+  if (devinfo.HasGamepad()) {
+    return base::WrapUnique<EventConverterEvdev>(new GamepadEventConverterEvdev(
+        std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+  }
+
+  if (devinfo.IsStylusButtonDevice()) {
+    return base::WrapUnique<EventConverterEvdev>(
+        new StylusButtonEventConverterEvdev(
+            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kEnableMicrophoneMuteSwitchDeviceSwitch) &&
+      devinfo.IsMicrophoneMuteSwitchDevice()) {
+    return base::WrapUnique<EventConverterEvdev>(
+        new MicrophoneMuteSwitchEventConverterEvdev(
+            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+  }
+
+  // Everything else: use EventConverterEvdevImpl.
+  return base::WrapUnique<EventConverterEvdevImpl>(
+      new EventConverterEvdevImpl(std::move(fd), params.path, params.id,
+                                  devinfo, params.cursor, params.dispatcher));
+}
+
+// Open an input device and construct an EventConverterEvdev.
+std::unique_ptr<EventConverterEvdev> OpenInputDevice(
+    const OpenInputDeviceParams& params) {
+  const base::FilePath& path = params.path;
+  TRACE_EVENT1("evdev", "OpenInputDevice", "path", path.value());
+
+  base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
+  if (fd.get() < 0) {
+    PLOG(ERROR) << "Cannot open " << path.value();
+    return nullptr;
+  }
+
+  // Use monotonic timestamps for events. The touch code in particular
+  // expects event timestamps to correlate to the monotonic clock
+  // (base::TimeTicks).
+  unsigned int clk = CLOCK_MONOTONIC;
+  if (ioctl(fd.get(), EVIOCSCLOCKID, &clk))
+    PLOG(ERROR) << "failed to set CLOCK_MONOTONIC";
+
+  EventDeviceInfo devinfo;
+  if (!devinfo.Initialize(fd.get(), path)) {
+    LOG(ERROR) << "Failed to get device information for " << path.value();
+    return nullptr;
+  }
+
+  return CreateConverter(params, std::move(fd), devinfo);
+}
+
 bool IsUncategorizedDevice(const EventConverterEvdev& converter) {
   return !converter.HasTouchscreen() && !converter.HasKeyboard() &&
          !converter.HasMouse() && !converter.HasPointingStick() &&
@@ -87,16 +199,14 @@ bool IsUncategorizedDevice(const EventConverterEvdev& converter) {
 
 InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
     std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
-    CursorDelegateEvdev* cursor,
-    std::unique_ptr<InputDeviceOpener> input_device_opener)
+    CursorDelegateEvdev* cursor)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       cursor_(cursor),
       shared_palm_state_(new SharedPalmDetectionFilterState),
 #if defined(USE_EVDEV_GESTURES)
       gesture_property_provider_(new GesturePropertyProvider),
 #endif
-      dispatcher_(std::move(dispatcher)),
-      input_device_opener_(std::move(input_device_opener)) {
+      dispatcher_(std::move(dispatcher)) {
 }
 
 InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() = default;
@@ -114,8 +224,7 @@ void InputDeviceFactoryEvdev::AddInputDevice(int id,
   params.gesture_property_provider = gesture_property_provider_.get();
 #endif
 
-  std::unique_ptr<EventConverterEvdev> converter =
-      input_device_opener_->OpenInputDevice(params);
+  std::unique_ptr<EventConverterEvdev> converter = OpenInputDevice(params);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
