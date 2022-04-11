@@ -218,8 +218,14 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   // Check loadValue color is correctly formatted before further processing.
   for (wtf_size_t i = 0; i < color_attachment_count; ++i) {
+    const auto& maybe_color_attachment = descriptor->colorAttachments()[i];
+    // Check if the color attachment is null since it is a sparse array
+    if (!maybe_color_attachment) {
+      continue;
+    }
+
     const GPURenderPassColorAttachment* color_attachment =
-        descriptor->colorAttachments()[i];
+        maybe_color_attachment.Get();
 
     if (color_attachment->hasLoadOp()) {
       if (color_attachment->hasClearValue() &&
@@ -256,7 +262,6 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   }
 
   std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
-
   if (color_attachment_count > 0) {
     color_attachments = AsDawnType(descriptor->colorAttachments());
     dawn_desc.colorAttachments = color_attachments.get();

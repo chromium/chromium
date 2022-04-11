@@ -231,10 +231,13 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   dawn_fragment->entry_point = descriptor->entryPoint().Ascii();
   dawn_fragment->dawn_desc.entryPoint = dawn_fragment->entry_point.c_str();
 
-  dawn_fragment->targets = AsDawnType(descriptor->targets());
+  dawn_fragment->dawn_desc.targets = nullptr;
   dawn_fragment->dawn_desc.targetCount =
       static_cast<uint32_t>(descriptor->targets().size());
-  dawn_fragment->dawn_desc.targets = dawn_fragment->targets.get();
+  if (dawn_fragment->dawn_desc.targetCount > 0) {
+    dawn_fragment->targets = AsDawnType(descriptor->targets());
+    dawn_fragment->dawn_desc.targets = dawn_fragment->targets.get();
+  }
 
   // In order to maintain proper ownership we have to process the blend states
   // for each target outside of AsDawnType().
@@ -242,7 +245,11 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   // stay stable.
   dawn_fragment->blend_states.resize(descriptor->targets().size());
   for (wtf_size_t i = 0; i < descriptor->targets().size(); ++i) {
-    const GPUColorTargetState* color_target = descriptor->targets()[i];
+    const auto& maybe_color_target = descriptor->targets()[i];
+    if (!maybe_color_target) {
+      continue;
+    }
+    const GPUColorTargetState* color_target = maybe_color_target.Get();
     if (color_target->hasBlend()) {
       dawn_fragment->blend_states[i] = AsDawnType(color_target->blend());
       dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];

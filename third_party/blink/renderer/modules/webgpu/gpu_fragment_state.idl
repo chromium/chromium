@@ -5,5 +5,5 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUFragmentState : GPUProgrammableStage {
-  required sequence<GPUColorTargetState> targets;
+  required sequence<GPUColorTargetState?> targets;
 };
