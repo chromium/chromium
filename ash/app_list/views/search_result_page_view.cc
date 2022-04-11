@@ -328,7 +328,8 @@ gfx::Size SearchResultPageView::CalculatePreferredSize() const {
       std::max(kMinHeight,
                productivity_launcher_search_view_->TabletModePreferredHeight() +
                    kActiveSearchBoxHeight + kSearchBoxBottomSpacing +
-                   kSeparatorThickness),
+                   kSeparatorThickness +
+                   kExpandedSearchBoxCornerRadiusForProductivityLauncher),
       AppListPage::contents_view()->height());
   return gfx::Size(kWidth, adjusted_height);
 }
