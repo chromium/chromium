@@ -1604,6 +1604,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
                                               curr_nalu_->size);
             DCHECK_EQ(1u, subsamples.size());
             sei_subsamples_.push_back(subsamples[0]);
+            // Since the SEI is encrypted, do not try to parse it below as it
+            // may fail or yield incorrect results.
+            DVLOG(3) << "Skipping parsing of encrypted SEI NALU";
+            break;
           }
         }
         if (state_ == State::kAfterReset && !recovery_frame_cnt_ &&

@@ -227,21 +227,17 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto slice_param_buf = std::make_unique<VACencSliceParameterBufferH264>();
-  // For AMD, we get the slice parameters as structures in the first encrypted
+  // For AMD, we get the slice parameters as structures in the last encrypted
   // range.
   if (IsTranscrypted()) {
-    if (data.size() != 1) {
-      DLOG(ERROR) << "Incorrect number of spans for AMD encrypted slice header";
-      return DecodeStatus::kFail;
-    }
-    if (subsamples[0].cypher_bytes < kAmdEncryptedSliceHeaderSize) {
+    if (subsamples.back().cypher_bytes < kAmdEncryptedSliceHeaderSize) {
       DLOG(ERROR) << "AMD CENCv1 data is wrong size: "
-                  << subsamples[0].cypher_bytes;
+                  << subsamples.back().cypher_bytes;
       return DecodeStatus::kFail;
     }
     const AMD_SLICE_PARAMS* amd_slice_params =
-        reinterpret_cast<const AMD_SLICE_PARAMS*>(data[0].data() +
-                                                  subsamples[0].clear_bytes);
+        reinterpret_cast<const AMD_SLICE_PARAMS*>(
+            data.back().data() + subsamples.back().clear_bytes);
     // Fill in the AMD specific params.
     slice_header_out->bottom_field_flag =
         amd_slice_params->va_param.bottom_field_flag;
