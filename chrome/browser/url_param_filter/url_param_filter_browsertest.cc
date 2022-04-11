@@ -25,6 +25,8 @@ class ContextMenuIncognitoFilterBrowserTest : public InProcessBrowserTest {
       "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
   constexpr static const char kCrossOtrRefreshCountMetricName[] =
       "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
+  constexpr static const char kFilteredParamCountMetricName[] =
+      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
 
   void SetUpInProcessBrowserTestFixture() override {
     // Enable open in incognito param filtering, with rules for:
@@ -88,6 +90,71 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(307), 1);
+  histogram_tester.ExpectBucketCount(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+}
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it filters only main frame navigations.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+                       OpenIncognitoUrlParamFilterSubresources) {
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/url_param_filter/test.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL(
+      "/url_param_filter/test.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // Ensure that we don't apply filters to subresource requests, even when
+  // there's a destination rule for the domain/param pair.
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          tab,
+          "document.getElementById('dummy-frame').src.endsWith('plzblock=1')"));
+  EXPECT_EQ(true, content::EvalJs(tab,
+                                  "document.getElementById('dummy-script').src."
+                                  "endsWith('plzblock=1')"));
+
+  // The response was a 200, and the navigation went from normal-->OTR browsing.
+  // Because we intervened, an artificial redirect was injected, so we also
+  // expect a 307.
+  histogram_tester.ExpectBucketCount(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
+  // Ensure we only see the two params on the main navigation being filtered;
+  // the other plzblock instances are on js or subframe requests, so should not
+  // be filtered.
+  EXPECT_EQ(histogram_tester.GetTotalSum(kFilteredParamCountMetricName), 2);
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
