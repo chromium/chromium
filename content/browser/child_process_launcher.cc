@@ -135,14 +135,12 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
 }
 
 bool ChildProcessLauncher::IsStarting() {
-  // TODO(crbug.com/469248): This fails in some tests.
-  // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return starting_;
 }
 
 const base::Process& ChildProcessLauncher::GetProcess() const {
-  // TODO(crbug.com/469248): This fails in some tests.
-  // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_.process;
 }
 
