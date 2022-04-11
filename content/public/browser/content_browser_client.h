@@ -20,6 +20,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -2217,6 +2218,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if First-Party Sets is enabled. The value of this method
   // should not change in a single browser session.
   virtual bool IsFirstPartySetsEnabled();
+
+  // Returns a base::Value::Dict containing the value of the First-Party Sets
+  // Overrides enterprise policy.
+  // If the policy was not present or it was invalid, this returns an empty
+  // base::Value::Dict.
+  virtual base::Value::Dict GetFirstPartySetsOverrides();
 
   // Gets information required for an alternative error page from web app's
   // manifest for |url|, including theme color, background color and app short
