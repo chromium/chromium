@@ -296,7 +296,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::WINDOW_PLACEMENT:
       icon = &vector_icons::kSelectWindowIcon;
       break;
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
       icon = &vector_icons::kFontDownloadIcon;
       break;
     case ContentSettingsType::HID_GUARD:

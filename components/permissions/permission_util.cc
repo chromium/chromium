@@ -76,7 +76,7 @@ std::string PermissionUtil::GetPermissionString(
       return "CameraPanTiltZoom";
     case ContentSettingsType::WINDOW_PLACEMENT:
       return "WindowPlacement";
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
       return "LocalFonts";
     case ContentSettingsType::DISPLAY_CAPTURE:
       return "DisplayCapture";
@@ -166,7 +166,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::WINDOW_PLACEMENT:
       *out = PermissionType::WINDOW_PLACEMENT;
       break;
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
       *out = PermissionType::LOCAL_FONTS;
       break;
     case ContentSettingsType::IDLE_DETECTION:
@@ -208,7 +208,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::STORAGE_ACCESS:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
     case ContentSettingsType::WINDOW_PLACEMENT:
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
     case ContentSettingsType::IDLE_DETECTION:
     case ContentSettingsType::DISPLAY_CAPTURE:
       return true;

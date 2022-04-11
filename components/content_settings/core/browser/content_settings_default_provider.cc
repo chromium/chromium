@@ -50,6 +50,8 @@ const char kObsoletePluginsDataDefaultPref[] =
     "profile.default_content_setting_values.flash_data";
 const char kObsoleteFileHandlingDefaultPref[] =
     "profile.default_content_setting_values.file_handling";
+const char kObsoleteFontAccessDefaultPref[] =
+    "profile.default_content_setting_values.font_access";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -132,6 +134,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePluginsDataDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteFileHandlingDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteFontAccessDefaultPref, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -416,6 +419,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
   prefs_->ClearPref(kObsoleteFileHandlingDefaultPref);
+  prefs_->ClearPref(kObsoleteFontAccessDefaultPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 

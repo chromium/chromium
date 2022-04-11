@@ -10,7 +10,7 @@
 LocalFontsPermissionContext::LocalFontsPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
-                            ContentSettingsType::FONT_ACCESS,
+                            ContentSettingsType::LOCAL_FONTS,
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 

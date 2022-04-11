@@ -88,7 +88,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM, 68},
     {ContentSettingsType::WINDOW_PLACEMENT, 69},
     {ContentSettingsType::INSECURE_PRIVATE_NETWORK, 70},
-    {ContentSettingsType::FONT_ACCESS, 71},
+    {ContentSettingsType::LOCAL_FONTS, 71},
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, 72},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, 73},
     {ContentSettingsType::DISPLAY_CAPTURE, 74},

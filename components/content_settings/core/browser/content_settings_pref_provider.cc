@@ -61,6 +61,8 @@ const char kObsoletePluginsDataExceptionsPref[] =
     "profile.content_settings.exceptions.flash_data";
 const char kObsoleteFileHandlingExceptionsPref[] =
     "profile.content_settings.exceptions.file_handling";
+const char kObsoleteFontAccessExceptionsPref[] =
+    "profile.content_settings.exceptions.font_access";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -101,6 +103,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
   registry->RegisterDictionaryPref(kObsoleteFileHandlingExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoleteFontAccessExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 }
@@ -287,6 +290,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
   prefs_->ClearPref(kObsoleteFileHandlingExceptionsPref);
+  prefs_->ClearPref(kObsoleteFontAccessExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 }

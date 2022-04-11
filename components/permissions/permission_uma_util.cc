@@ -951,7 +951,7 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.WindowPlacement",
                                     action, PermissionAction::NUM);
       break;
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
       base::UmaHistogramEnumeration("Permissions.Action.LocalFonts", action,
                                     PermissionAction::NUM);
       break;

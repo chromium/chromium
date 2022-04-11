@@ -149,7 +149,7 @@ ContentSettingsType PermissionTypeToContentSettingSafe(
     case PermissionType::WINDOW_PLACEMENT:
       return ContentSettingsType::WINDOW_PLACEMENT;
     case PermissionType::LOCAL_FONTS:
-      return ContentSettingsType::FONT_ACCESS;
+      return ContentSettingsType::LOCAL_FONTS;
     case PermissionType::DISPLAY_CAPTURE:
       return ContentSettingsType::DISPLAY_CAPTURE;
     case PermissionType::NUM:

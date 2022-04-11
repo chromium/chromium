@@ -76,12 +76,12 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kContentPasteIcon;
     case RequestType::kDiskQuota:
       return vector_icons::kFolderIcon;
-    case RequestType::kLocalFonts:
-      return vector_icons::kFontDownloadIcon;
     case RequestType::kGeolocation:
       return vector_icons::kLocationOnIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesIcon;
+    case RequestType::kLocalFonts:
+      return vector_icons::kFontDownloadIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicIcon;
     case RequestType::kMidiSysex:
@@ -154,7 +154,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
       return RequestType::kClipboard;
 #if !BUILDFLAG(IS_ANDROID)
-    case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::LOCAL_FONTS:
       return RequestType::kLocalFonts;
 #endif
     case ContentSettingsType::GEOLOCATION:
@@ -219,7 +219,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::CLIPBOARD_READ_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kLocalFonts:
-      return ContentSettingsType::FONT_ACCESS;
+      return ContentSettingsType::LOCAL_FONTS;
 #endif
     case RequestType::kGeolocation:
       return ContentSettingsType::GEOLOCATION;
