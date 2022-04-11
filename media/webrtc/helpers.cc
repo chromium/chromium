@@ -251,8 +251,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
 #else
   apm_config.echo_canceller.mobile_mode = false;
 #endif
-  apm_config.residual_echo_detector.enabled = false;
-
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   apm_config.transient_suppression.enabled =
       settings.transient_noise_suppression;
