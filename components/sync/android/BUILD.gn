@@ -24,5 +24,6 @@ java_cpp_enum("java_enums") {
     "//components/sync/base/model_type.h",
     "//components/sync/base/passphrase_enums.h",
     "//components/sync/driver/sync_service_utils.h",
+    "//components/sync/driver/sync_user_settings.h",
   ]
 }

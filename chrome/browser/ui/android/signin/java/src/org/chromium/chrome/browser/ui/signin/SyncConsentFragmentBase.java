@@ -24,6 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -34,6 +35,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -180,10 +183,51 @@ public abstract class SyncConsentFragmentBase
      * The sync consent was accepted.
      * @param accountName The name of the account
      * @param settingsClicked Whether the user requested to see their sync settings
-     * @param callback The callback invoke when sign-in process is finished or aborted
+     * @param callback The callback invoked when the process of enabling sync is finished or aborted
      */
     protected abstract void onSyncAccepted(
             String accountName, boolean settingsClicked, Runnable callback);
+
+    /**
+     * Called if signinAndEnableSync() succeeds.
+     * @param settingsClicked Whether the user requested to see their sync settings
+     */
+    protected abstract void closeAndMaybeOpenSyncSettings(boolean settingsClicked);
+
+    // TODO(crbug.com/1302635): |callback| is only used to set |mIsSigninInProgress| to false. Once
+    // this method replaces onSyncAccepted(), the field can be set directly.
+    protected void signinAndEnableSync(
+            String accountName, boolean settingsClicked, Runnable callback) {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
+            @Nullable
+            Account account = AccountUtils.findAccountByName(accounts, accountName);
+            if (account == null) {
+                callback.run();
+                return;
+            }
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                    Profile.getLastUsedRegularProfile());
+            signinManager.signinAndEnableSync(
+                    mSigninAccessPoint, account, new SigninManager.SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                                    Profile.getLastUsedRegularProfile(), true);
+                            if (!settingsClicked) {
+                                SyncService.get().setFirstSetupComplete(
+                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            }
+                            closeAndMaybeOpenSyncSettings(settingsClicked);
+                            callback.run();
+                        }
+
+                        @Override
+                        public void onSignInAborted() {
+                            callback.run();
+                        }
+                    });
+        });
+    }
 
     @Override
     public void onAttach(Context context) {

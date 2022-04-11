@@ -360,6 +360,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
+    &syncer::kEnableSyncImmediatelyInFRE,
     &syncer::kSyncTrustedVaultPassphraseRecovery,
     &syncer::kSyncAndroidPromosWithSingleButton,
     &subresource_filter::kSafeBrowsingSubresourceFilter,

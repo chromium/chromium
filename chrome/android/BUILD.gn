@@ -660,7 +660,6 @@ android_library("chrome_java") {
     ":chrome_android_java_google_api_keys_srcjar",
     ":chrome_strict_mode_switch",
     ":resource_id_javagen",
-    ":sync_user_settings_enums_java",
     ":vr_build_config",
     "//chrome:assist_ranker_prediction_enum_javagen",
     "//chrome:instant_apps_reasons_enum_javagen",
@@ -887,10 +886,6 @@ java_cpp_enum("chrome_vr_android_java_enums_srcjar") {
     "//chrome/browser/vr/ui_test_input.h",
     "//chrome/browser/vr/ui_unsupported_mode.h",
   ]
-}
-
-java_cpp_enum("sync_user_settings_enums_java") {
-  sources = [ "//components/sync/driver/sync_user_settings.h" ]
 }
 
 proto_java_library("update_proto_java") {
