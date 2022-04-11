@@ -1371,27 +1371,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.DarkResumeActionResult"
-    enum="ShillSuspendTerminationDarkResumeActionResult"
-    expires_after="2022-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the number of dark resume
-    actions that successfully complete or fail when shill suspends.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DarkResumeActionsTimeTaken" units="ms"
-    expires_after="2022-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the time in milliseconds it
-    takes dark resume actions to complete when shill suspends.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.DeviceConnectionStatus" enum="ConnectionStatus"
     expires_after="2022-04-17">
   <owner>stevenjb@chromium.org</owner>
@@ -2034,49 +2013,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.WiFi.DarkResumeScanNumRetries" units="units"
-    expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric sampling the number of times a dark resume scan is
-    retried in a single dark resume.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.DarkResumeScanRetryResult"
-    enum="DarkResumeScanRetryResult" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks whether dark resume scan retries led to
-    the system suspending from dark resume in a connected state. This metric is
-    only recorded in dark resumes when at least one dark resume scan retry was
-    launched.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.DarkResumeUnmatchedScanResultsReceived"
-    enum="DarkResumeUnmatchedScanResultReceived" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks whether any unmatched scan results are
-    received during dark resume cycles. An unmatched scan result is a set of
-    scan results received by shill in response to a scan request that was not
-    sent directly by shill in the same dark resume cycle.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.DarkResumeWakeReason"
-    enum="DarkResumeWakeReason" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks the wake reason for dark resume.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Wifi.DevicePresenceStatus" enum="BooleanPresent"
     expires_after="2022-12-01">
   <owner>norvez@chromium.org</owner>
@@ -2472,48 +2408,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.WiFi.SuspendDurationWoWOffConnected"
-    units="seconds" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Time spent in suspended state, on a resume, for the case when wake on wifi
-    is disabled (WoWOff), and after resume, the NIC is found to be already
-    connected.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.SuspendDurationWoWOffDisconnected"
-    units="seconds" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Time spent in suspended state, on a resume, for the case when wake on wifi
-    is enabled (WoWOff), and after resume, the NIC is found to be disconnected.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.SuspendDurationWoWOnConnected"
-    units="seconds" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Time spent in suspended state, on a resume, for the case when wake on wifi
-    is enabled (WoWOn), and after resume, the NIC is found to be already
-    connected.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.SuspendDurationWoWOnDisconnected"
-    units="seconds" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Time spent in suspended state, on a resume, for the case when wake on wifi
-    is enabled (WoWOn), and after resume, the NIC is found to be disconnected.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.WiFi.TimeFromRekeyToFailureSeconds"
     units="seconds" expires_after="2022-12-01">
   <owner>billyzhao@chromium.org</owner>
@@ -2686,61 +2580,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS network performance metric that tracks the result of
     user-initiated WiFi connection attempts.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.VerifyWakeOnWiFiSettingsResult"
-    enum="VerifyWakeOnWiFiSettingsResult" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the number of times NIC wake on
-    WiFi settings verification succeeds or fails in shill. This metric is
-    recorded every time wake on WiFi settings are requested and verified after
-    the NIC is programmed with wake on WiFi settings.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.WakeOnWiFiFeaturesEnabledState"
-    enum="WakeOnWiFiFeaturesEnabledState" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network usage metric that tracks the wake on WiFi features that
-    are enabled in shill. Recorded once every 10 minutes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.WakeOnWiFiThrottled"
-    enum="WakeOnWiFiThrottled" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks whether wake on WiFi was disabled
-    during a period of system suspension because of too many dark resume wakes.
-    This metric is only recorded for system suspends where wake on WiFi
-    functionality has been programmed into the NIC.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.WakeReasonReceivedBeforeOnDarkResume"
-    enum="WakeReasonReceivedBeforeOnDarkResume" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks whether a wake reason was received
-    during dark resume before executing WakeOnWiFi::OnDarkResume.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.WiFiConnectionStatusAfterWake"
-    enum="WiFiConnectionStatusAfterWake" expires_after="2022-12-01">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network usage metric that tracks the WiFi connection status after
-    waking from suspend, both when wake on WiFi is enabled and disabled.
-    Recorded 1 second after waking from suspend.
   </summary>
 </histogram>
 
