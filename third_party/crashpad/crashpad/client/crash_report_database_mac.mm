@@ -43,6 +43,10 @@
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/metrics.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "util/ios/scoped_background_task.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace crashpad {
 
 namespace {
@@ -182,6 +186,10 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
     //! \brief Stores the flock of the file for the duration of
     //!     GetReportForUploading() and RecordUploadAttempt().
     base::ScopedFD lock_fd;
+#if BUILDFLAG(IS_IOS)
+    //! \brief Obtain a background task assertion while a flock is in use.
+    internal::ScopedBackgroundTask ios_background_task{"UploadReportMac"};
+#endif  // BUILDFLAG(IS_IOS)
   };
 
   //! \brief Locates a crash report in the database by UUID.

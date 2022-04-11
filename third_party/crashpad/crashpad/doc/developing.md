@@ -46,8 +46,9 @@ the `$PATH` environment variable:
       Windows](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/).
     * On Linux, obtain appropriate tools for C++ development through any
       appropriate means including the system’s package manager. On Debian and
-      Debian-based distributions, the `build-essential` and `zlib1g-dev`
-      packages should suffice.
+      Debian-based distributions, the `build-essential`, `zlib1g-dev`, and any
+      one of the `libcurl4-*-dev` packages such as `libcurl4-openssl-dev` should
+      suffice.
  * Chromium’s
    [depot_tools](https://www.chromium.org/developers/how-tos/depottools).
  * [Git](https://git-scm.com/). This is provided by Xcode on macOS, by
