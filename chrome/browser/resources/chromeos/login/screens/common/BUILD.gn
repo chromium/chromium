@@ -43,6 +43,7 @@ group("polymer3_elements") {
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
+    ":theme_selection_module",
     ":tpm_error_module",
     ":user_creation_module",
     ":wrong_hwid_module",
@@ -95,6 +96,7 @@ js_type_check("closure_compile_module_local") {
     ":signin_fatal_error.m",
     ":smart_privacy_protection.m",
     ":sync_consent.m",
+    ":theme_selection.m",
     ":tpm_error.m",
     ":user_creation.m",
     ":wrong_hwid.m",
@@ -584,6 +586,19 @@ js_library("sync_consent.m") {
   extra_deps = [ ":sync_consent_module" ]
 }
 
+js_library("theme_selection.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":theme_selection_module" ]
+}
+
 js_library("tpm_error.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/tpm_error.m.js" ]
   deps = [
@@ -882,6 +897,14 @@ polymer_modulizer("smart_privacy_protection") {
 polymer_modulizer("sync_consent") {
   js_file = "sync_consent.js"
   html_file = "sync_consent.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("theme_selection") {
+  js_file = "theme_selection.js"
+  html_file = "theme_selection.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

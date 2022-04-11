@@ -48,7 +48,7 @@
       }
 
       .legal-info {
-        color: var(--google-grey-700);
+        color: var(--cros-text-color-secondary);
       }
 
       #toggleRow {
@@ -91,6 +91,17 @@
       #finalAccessibilityPage oobe-a11y-option:last-of-type {
         border-bottom: var(--oobe-a11y-dialog-list-item-border);
       }
+
+      h1 {
+        color: var(--cros-text-color-primary);
+      }
+
+      #marketingOptInSubtitleWithDeviceName,
+      #marketingOptInSubtitle,
+      #chromebookUpdatesOptionLabel {
+        color: var(--cros-text-color-secondary);
+      }
+
     </style>
     <oobe-adaptive-dialog id="marketingOptInOverviewDialog" role="dialog"
         for-step="overview"
@@ -103,11 +114,12 @@
       </h1>
       <div slot="subtitle">
         <!-- No marketing opt in -->
-        <div hidden="[[marketingOptInVisible_]]">
+        <div hidden="[[marketingOptInVisible_]]"
+          id="marketingOptInSubtitleWithDeviceName">
           [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
         </div>
         <!-- Marketing opt in -->
-        <div hidden="[[!marketingOptInVisible_]]">
+        <div hidden="[[!marketingOptInVisible_]]" id="marketingOptInSubtitle">
           [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
         </div>
 

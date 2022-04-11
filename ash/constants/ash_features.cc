@@ -566,6 +566,10 @@ const base::Feature kEnableKioskEnrollmentInOobe{
 const base::Feature kEnableOobeNetworkScreenSkip{
     "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables skipping of network screen.
+const base::Feature kEnableOobeThemeSelection{
+    "EnableOobeThemeSelection", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing notification after the password change for SAML users.
 const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
     "EnableSamlNotificationOnPasswordChangeSuccess",
@@ -1916,6 +1920,10 @@ bool IsOobeQuickStartEnabled() {
 
 bool IsOobeNewRecommendAppsEnabled() {
   return base::FeatureList::IsEnabled(kOobeNewRecommendApps);
+}
+
+bool IsOobeThemeSelectionEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOobeThemeSelection);
 }
 
 bool IsPcieBillboardNotificationEnabled() {

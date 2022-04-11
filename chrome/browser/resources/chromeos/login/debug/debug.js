@@ -539,6 +539,10 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'theme-selection',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'reset',
       kind: ScreenKind.OTHER,
       states: [

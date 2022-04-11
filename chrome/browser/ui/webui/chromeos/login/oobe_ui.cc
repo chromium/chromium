@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
@@ -533,6 +534,8 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<GuestTosScreenHandler>());
 
   AddScreenHandler(std::make_unique<SmartPrivacyProtectionScreenHandler>());
+
+  AddScreenHandler(std::make_unique<ThemeSelectionScreenHandler>());
 
   Profile* profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.

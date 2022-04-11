@@ -2133,6 +2133,8 @@ source_set("chromeos") {
     "../ash/login/screens/sync_consent_screen.h",
     "../ash/login/screens/terms_of_service_screen.cc",
     "../ash/login/screens/terms_of_service_screen.h",
+    "../ash/login/screens/theme_selection_screen.cc",
+    "../ash/login/screens/theme_selection_screen.h",
     "../ash/login/screens/tpm_error_screen.cc",
     "../ash/login/screens/tpm_error_screen.h",
     "../ash/login/screens/update_required_screen.cc",

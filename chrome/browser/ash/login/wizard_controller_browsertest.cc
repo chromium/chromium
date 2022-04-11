@@ -3287,6 +3287,58 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   EXPECT_EQ(*guid, "wpa-psk-network-guid");
 }
 
+class WizardControllerThemeSelectionDefaultSettingsTest
+    : public WizardControllerTest {
+ public:
+ protected:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_};
+  LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
+                                 &gaia_mixin_};
+  AccountId user_{
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionDefaultSettingsTest,
+                       SkipThemeSelection) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+  login_mixin_.LoginAsNewRegularUser();
+  WizardController::default_controller()->AdvanceToScreen(
+      GestureNavigationScreenView::kScreenId);
+  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
+}
+
+class WizardControllerThemeSelectionEnabledTest
+    : public WizardControllerThemeSelectionDefaultSettingsTest {
+ public:
+  WizardControllerThemeSelectionEnabledTest() {
+    feature_list_.InitAndEnableFeature(features::kEnableOobeThemeSelection);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionEnabledTest,
+                       TransitionToMarketingOptIn) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+  login_mixin_.LoginAsNewRegularUser();
+  WizardController::default_controller()->AdvanceToScreen(
+      ThemeSelectionScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"theme-selection", "nextButton"});
+  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionEnabledTest,
+                       TransitionToThemeSelection) {
+  login_mixin_.LoginAsNewRegularUser();
+  WizardController::default_controller()->AdvanceToScreen(
+      GestureNavigationScreenView::kScreenId);
+  OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+}
+
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
 
 // TODO(merkulova): Add tests for bluetooth HID detection screen variations when

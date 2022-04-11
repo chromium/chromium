@@ -15,7 +15,9 @@
 
 html,
 body {
+  background-color: var(--cros-bg-color);
   height: 100%;
+  transition: background-color 250ms linear;
   width: 100%;
 }
 
@@ -38,12 +40,6 @@ body {
   padding: 0;
   position: fixed;
   top: 0;
-}
-
-/* Keep full-screen white background even when user signs into session after
- * oobe */
-html[screen=oobe] body {
-  background-color: white;
 }
 
 /* New dialog size */

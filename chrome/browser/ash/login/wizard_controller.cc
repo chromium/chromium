@@ -97,6 +97,7 @@
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
+#include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
@@ -173,6 +174,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
@@ -247,6 +249,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::MarketingOptInScreenView::kScreenId,
     chromeos::MultiDeviceSetupScreenView::kScreenId,
     chromeos::ConsolidatedConsentScreenView::kScreenId,
+    chromeos::ThemeSelectionScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
@@ -773,6 +776,10 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSmartPrivacyProtectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<ThemeSelectionScreen>(
+      oobe_ui->GetView<ThemeSelectionScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
+                          weak_factory_.GetWeakPtr())));
   return result;
 }
 
@@ -903,6 +910,10 @@ void WizardController::ShowSyncConsentScreen() {
 
 void WizardController::ShowFingerprintSetupScreen() {
   SetCurrentScreen(GetScreen(FingerprintSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowThemeSelectionScreen() {
+  SetCurrentScreen(GetScreen(ThemeSelectionScreenView::kScreenId));
 }
 
 void WizardController::ShowMarketingOptInScreen() {
@@ -1237,6 +1248,13 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
       if (LoginDisplayHost::default_host()->HasUserPods())
         LoginDisplayHost::default_host()->HideOobeDialog();
   }
+}
+
+void WizardController::OnThemeSelectionScreenExit(
+    ThemeSelectionScreen::Result result) {
+  OnScreenExit(ThemeSelectionScreenView::kScreenId,
+               ThemeSelectionScreen::GetResultString(result));
+  ShowMarketingOptInScreen();
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1744,8 +1762,7 @@ void WizardController::OnGestureNavigationScreenExit(
     GestureNavigationScreen::Result result) {
   OnScreenExit(GestureNavigationScreenView::kScreenId,
                GestureNavigationScreen::GetResultString(result));
-
-  ShowMarketingOptInScreen();
+  ShowThemeSelectionScreen();
 }
 
 void WizardController::OnMarketingOptInScreenExit(
@@ -2171,7 +2188,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == OsTrialScreenView::kScreenId ||
              screen_id == ParentalHandoffScreenView::kScreenId ||
              screen_id == HWDataCollectionView::kScreenId ||
-             screen_id == SmartPrivacyProtectionView::kScreenId) {
+             screen_id == SmartPrivacyProtectionView::kScreenId ||
+             screen_id == ThemeSelectionScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

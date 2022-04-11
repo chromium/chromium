@@ -55,11 +55,13 @@
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
+#include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -285,6 +287,7 @@ class WizardController : public OobeUI::Observer {
   void ShowLacrosDataMigrationScreen();
   void ShowConsolidatedConsentScreen();
   void ShowGuestTosScreen();
+  void ShowThemeSelectionScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -362,6 +365,7 @@ class WizardController : public OobeUI::Observer {
   void OnHWDataCollectionScreenExit(HWDataCollectionScreen::Result result);
   void OnSmartPrivacyProtectionScreenExit(
       SmartPrivacyProtectionScreen::Result result);
+  void OnThemeSelectionScreenExit(ThemeSelectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

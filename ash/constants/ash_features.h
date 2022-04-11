@@ -231,6 +231,8 @@ extern const base::Feature kEnableKioskEnrollmentInOobe;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobeNetworkScreenSkip;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableOobeThemeSelection;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlReauthenticationOnLockscreen;
@@ -675,6 +677,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeNetworkScreenSkipEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeConsolidatedConsentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeQuickStartEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeNewRecommendAppsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeThemeSelectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPcieBillboardNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskShelfEnabled();

@@ -3552,6 +3552,7 @@ if (!is_android) {
         "../browser/ash/login/screens/smart_privacy_protection_screen_browsertest.cc",
         "../browser/ash/login/screens/sync_consent_browsertest.cc",
         "../browser/ash/login/screens/terms_of_service_screen_browsertest.cc",
+        "../browser/ash/login/screens/theme_selection_screen_browsertest.cc",
         "../browser/ash/login/screens/update_required_screen_browsertest.cc",
         "../browser/ash/login/screens/update_screen_browsertest.cc",
         "../browser/ash/login/screens/user_creation_screen_browsertest.cc",

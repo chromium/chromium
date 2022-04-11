@@ -6196,4 +6196,29 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     ChromeOS-URLs
   </message>
 
+  <!-- Theme Selection -->
+  <message name="IDS_THEME_SELECTION_TITLE" desc="Title of the theme selection screen.">
+    Before we let you go...
+  </message>
+  <message name="IDS_THEME_SELECTION_DESCRIPTION" desc="Description of the theme selection screen.">
+    You can adjust the schedule in Personalisation Hub, as well as set Wallpaper, Screensaver, and customize system colors.
+  </message>
+  <message name="IDS_THEME_LIGHT_LABEL" desc="Name of the light theme button">
+    Light mode
+  </message>
+  <message name="IDS_THEME_LIGHT_DESCRIPTION" desc="Description of the light theme button">
+    Keep things light and airy.
+  </message>
+  <message name="IDS_THEME_DARK_LABEL" desc="Name of the dark theme button">
+    Dark mode
+  </message>
+  <message name="IDS_THEME_DARK_DESCRIPTION" desc="Description of the dark theme button">
+    For those low light rooms. Optimize for your battery life, too.
+  </message>
+  <message name="IDS_THEME_AUTO_LABEL" desc="Name of the auto theme button">
+    Auto mode
+  </message>
+  <message name="IDS_THEME_AUTO_DESCRIPTION" desc="Description of the auto theme button">
+    Light mode at sunrise, and dark mode at sunset. It switches automatically for you.
+  </message>
 </grit-part>
