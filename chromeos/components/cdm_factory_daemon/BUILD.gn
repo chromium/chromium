@@ -36,7 +36,7 @@ component("cdm_factory_daemon_browser") {
     ]
     deps += [
       "//ash",
-      "//chromeos/dbus/cdm_factory_daemon",
+      "//chromeos/ash/components/dbus/cdm_factory_daemon",
       "//ui/display/manager",
     ]
   }

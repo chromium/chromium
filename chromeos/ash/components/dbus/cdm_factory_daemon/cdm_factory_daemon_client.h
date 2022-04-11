@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
-#define CHROMEOS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // CdmFactoryDaemonClient is used to communicate with the CdmFactoryDaemon
 // service which provides a Content Decryption Module implementation for Chrome.
@@ -54,11 +54,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
   virtual ~CdmFactoryDaemonClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CdmFactoryDaemonClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
