@@ -40,6 +40,7 @@ class QuickAnswersStateAsh : public ash::SessionObserver,
   void UpdateUnitConversionEnabled();
   void OnApplicationLocaleReady();
   void UpdatePreferredLanguages();
+  void UpdateSpokenFeedbackEnabled();
 
   // Time when the notice is shown.
   base::TimeTicks consent_start_time_;

@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_switches.h"
@@ -35,8 +35,6 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace quick_answers {
-
-using ::ash::AccessibilityManager;
 
 namespace {
 
@@ -171,7 +169,7 @@ gfx::Size UserConsentView::CalculatePreferredSize() const {
 void UserConsentView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
   // button, otherwise retain to read out its contents.
-  if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+  if (QuickAnswersState::Get()->spoken_feedback_enabled()) {
     no_thanks_button_->RequestFocus();
   }
 }
@@ -204,7 +202,7 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 std::vector<views::View*> UserConsentView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
   // The view itself is not included in focus loop, unless screen-reader is on.
-  if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+  if (QuickAnswersState::Get()->spoken_feedback_enabled()) {
     focusable_views.push_back(this);
   }
   focusable_views.push_back(no_thanks_button_);

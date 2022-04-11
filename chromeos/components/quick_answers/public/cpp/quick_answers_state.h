@@ -69,6 +69,7 @@ class QuickAnswersState {
   const std::string& preferred_languages() const {
     return preferred_languages_;
   }
+  bool spoken_feedback_enabled() const { return spoken_feedback_enabled_; }
   bool is_eligible() const { return is_eligible_; }
 
   void set_eligibility_for_testing(bool is_eligible) {
@@ -112,6 +113,9 @@ class QuickAnswersState {
   // The list of preferred languages, separated by comma.
   // (ex. "en-US,zh,fr").
   std::string preferred_languages_;
+
+  // Whether the a11y spoken feedback tool is enabled.
+  bool spoken_feedback_enabled_;
 
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.

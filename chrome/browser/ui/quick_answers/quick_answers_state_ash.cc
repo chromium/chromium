@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/language/core/browser/pref_names.h"
@@ -85,6 +86,10 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
       language::prefs::kPreferredLanguages,
       base::BindRepeating(&QuickAnswersStateAsh::UpdatePreferredLanguages,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+      base::BindRepeating(&QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
@@ -93,6 +98,7 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   UpdateUnitConversionEnabled();
   OnApplicationLocaleReady();
   UpdatePreferredLanguages();
+  UpdateSpokenFeedbackEnabled();
 
   prefs_initialized_ = true;
 
@@ -174,36 +180,28 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
 void QuickAnswersStateAsh::UpdateConsentStatus() {
   auto consent_status = static_cast<ConsentStatus>(
       pref_change_registrar_->prefs()->GetInteger(kQuickAnswersConsentStatus));
-  if (consent_status_ == consent_status) {
-    return;
-  }
+
   consent_status_ = consent_status;
 }
 
 void QuickAnswersStateAsh::UpdateDefinitionEnabled() {
   auto definition_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersDefinitionEnabled);
-  if (definition_enabled_ == definition_enabled) {
-    return;
-  }
+
   definition_enabled_ = definition_enabled;
 }
 
 void QuickAnswersStateAsh::UpdateTranslationEnabled() {
   auto translation_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersTranslationEnabled);
-  if (translation_enabled_ == translation_enabled) {
-    return;
-  }
+
   translation_enabled_ = translation_enabled;
 }
 
 void QuickAnswersStateAsh::UpdateUnitConversionEnabled() {
   auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersUnitConversionEnabled);
-  if (unit_conversion_enabled_ == unit_conversion_enabled) {
-    return;
-  }
+
   unit_conversion_enabled_ = unit_conversion_enabled;
 }
 
@@ -237,8 +235,13 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
 void QuickAnswersStateAsh::UpdatePreferredLanguages() {
   auto preferred_languages = pref_change_registrar_->prefs()->GetString(
       language::prefs::kPreferredLanguages);
-  if (preferred_languages_ == preferred_languages) {
-    return;
-  }
+
   preferred_languages_ = preferred_languages;
+}
+
+void QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled() {
+  auto spoken_feedback_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      ash::prefs::kAccessibilitySpokenFeedbackEnabled);
+
+  spoken_feedback_enabled_ = spoken_feedback_enabled;
 }

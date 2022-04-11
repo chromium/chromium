@@ -16,7 +16,7 @@ namespace {
 
 using quick_answers::prefs::ConsentStatus;
 
-void SetPref(crosapi::mojom::PrefPath path, const base::Value& value) {
+void SetPref(crosapi::mojom::PrefPath path, base::Value value) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
       !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
@@ -30,6 +30,8 @@ void SetPref(crosapi::mojom::PrefPath path, const base::Value& value) {
 }  // namespace
 
 QuickAnswersStateLacros::QuickAnswersStateLacros() {
+  // The observers are fired immediate with the current pref value on
+  // initialization.
   settings_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kQuickAnswersEnabled,
       base::BindRepeating(&QuickAnswersStateLacros::OnSettingsEnabledChanged,
@@ -59,6 +61,11 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
       crosapi::mojom::PrefPath::kPreferredLanguages,
       base::BindRepeating(&QuickAnswersStateLacros::OnPreferredLanguagesChanged,
                           base::Unretained(this)));
+  spoken_feedback_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
+      base::BindRepeating(
+          &QuickAnswersStateLacros::OnSpokenFeedbackEnabledChanged,
+          base::Unretained(this)));
   impression_count_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
       base::BindRepeating(&QuickAnswersStateLacros::OnImpressionCountChanged,
@@ -125,8 +132,7 @@ void QuickAnswersStateLacros::OnConsentResult(ConsentResultType result) {
   consent_start_time_ = base::TimeTicks();
 }
 
-void QuickAnswersStateLacros::OnSettingsEnabledChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   bool settings_enabled = value.GetBool();
 
@@ -146,32 +152,29 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(
     observer.OnSettingsEnabled(settings_enabled_);
 }
 
-void QuickAnswersStateLacros::OnConsentStatusChanged(const base::Value& value) {
+void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
   DCHECK(value.is_int());
   consent_status_ =
       static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
 }
 
-void QuickAnswersStateLacros::OnDefinitionEnabledChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   definition_enabled_ = value.GetBool();
 }
 
-void QuickAnswersStateLacros::OnTranslationEnabledChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnTranslationEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   translation_enabled_ = value.GetBool();
 }
 
 void QuickAnswersStateLacros::OnUnitConversionEnabledChanged(
-    const base::Value& value) {
+    base::Value value) {
   DCHECK(value.is_bool());
   unit_conversion_enabled_ = value.GetBool();
 }
 
-void QuickAnswersStateLacros::OnApplicationLocaleChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
   DCHECK(value.is_string());
   auto locale = value.GetString();
 
@@ -198,20 +201,23 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(
   UpdateEligibility();
 }
 
-void QuickAnswersStateLacros::OnPreferredLanguagesChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
   DCHECK(value.is_string());
   preferred_languages_ = value.GetString();
 }
 
-void QuickAnswersStateLacros::OnImpressionCountChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnImpressionCountChanged(base::Value value) {
   DCHECK(value.is_int());
   impression_count_ = value.GetInt();
 }
 
-void QuickAnswersStateLacros::OnImpressionDurationChanged(
-    const base::Value& value) {
+void QuickAnswersStateLacros::OnImpressionDurationChanged(base::Value value) {
   DCHECK(value.is_int());
   impression_duration_ = value.GetInt();
+}
+
+void QuickAnswersStateLacros::OnSpokenFeedbackEnabledChanged(
+    base::Value value) {
+  DCHECK(value.is_bool());
+  spoken_feedback_enabled_ = value.GetBool();
 }

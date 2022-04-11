@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
@@ -95,13 +96,62 @@ TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
 
   EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_FALSE(observer()->settings_enabled());
+  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+            quick_answers::prefs::ConsentStatus::kUnknown);
 
   // The observer class should get an notification when the pref value changes.
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
   EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_TRUE(observer()->settings_enabled());
 
+  // Consent status should also be set to accepted since the feature is
+  // explicitly enabled.
+  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+            quick_answers::prefs::ConsentStatus::kAccepted);
+
   QuickAnswersState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
+  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+            quick_answers::prefs::ConsentStatus::kUnknown);
+
+  prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
+                      quick_answers::prefs::ConsentStatus::kRejected);
+  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+            quick_answers::prefs::ConsentStatus::kRejected);
+
+  prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
+                      quick_answers::prefs::ConsentStatus::kAccepted);
+  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+            quick_answers::prefs::ConsentStatus::kAccepted);
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdateDefinitionEnabled) {
+  // Definition subfeature is default on.
+  EXPECT_TRUE(QuickAnswersState::Get()->definition_enabled());
+
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersDefinitionEnabled,
+                      false);
+  EXPECT_FALSE(QuickAnswersState::Get()->definition_enabled());
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdateTranslationEnabled) {
+  // Translation subfeature is default on.
+  EXPECT_TRUE(QuickAnswersState::Get()->translation_enabled());
+
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersTranslationEnabled,
+                      false);
+  EXPECT_FALSE(QuickAnswersState::Get()->translation_enabled());
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdateUnitConversionEnabled) {
+  // Unit conversion subfeature is default on.
+  EXPECT_TRUE(QuickAnswersState::Get()->unit_conversion_enabled());
+
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersUnitConversionEnabled,
+                      false);
+  EXPECT_FALSE(QuickAnswersState::Get()->unit_conversion_enabled());
 }
 
 TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {
@@ -118,6 +168,22 @@ TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {
   EXPECT_EQ(observer()->application_locale(), application_locale);
 
   QuickAnswersState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdatePreferredLanguages) {
+  EXPECT_TRUE(QuickAnswersState::Get()->preferred_languages().empty());
+
+  const std::string preferred_languages = "en-US,zh";
+  prefs()->SetString(language::prefs::kPreferredLanguages, preferred_languages);
+  EXPECT_EQ(QuickAnswersState::Get()->preferred_languages(),
+            preferred_languages);
+}
+
+TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
+  EXPECT_FALSE(QuickAnswersState::Get()->spoken_feedback_enabled());
+
+  prefs()->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
+  EXPECT_TRUE(QuickAnswersState::Get()->spoken_feedback_enabled());
 }
 
 TEST_F(QuickAnswersStateAshTest, LocaleEligible) {

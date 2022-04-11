@@ -24,15 +24,16 @@ class QuickAnswersStateLacros : public QuickAnswersState {
   void StartConsent() override;
   void OnConsentResult(ConsentResultType result) override;
 
-  void OnSettingsEnabledChanged(const base::Value& value);
-  void OnConsentStatusChanged(const base::Value& value);
-  void OnDefinitionEnabledChanged(const base::Value& value);
-  void OnTranslationEnabledChanged(const base::Value& value);
-  void OnUnitConversionEnabledChanged(const base::Value& value);
-  void OnApplicationLocaleChanged(const base::Value& value);
-  void OnPreferredLanguagesChanged(const base::Value& value);
-  void OnImpressionCountChanged(const base::Value& value);
-  void OnImpressionDurationChanged(const base::Value& value);
+  void OnSettingsEnabledChanged(base::Value value);
+  void OnConsentStatusChanged(base::Value value);
+  void OnDefinitionEnabledChanged(base::Value value);
+  void OnTranslationEnabledChanged(base::Value value);
+  void OnUnitConversionEnabledChanged(base::Value value);
+  void OnApplicationLocaleChanged(base::Value value);
+  void OnPreferredLanguagesChanged(base::Value value);
+  void OnSpokenFeedbackEnabledChanged(base::Value value);
+  void OnImpressionCountChanged(base::Value value);
+  void OnImpressionDurationChanged(base::Value value);
 
   // Time when the notice is shown.
   base::TimeTicks consent_start_time_;
@@ -40,6 +41,7 @@ class QuickAnswersStateLacros : public QuickAnswersState {
   int impression_count_ = 0;
   int impression_duration_ = 0;
 
+  // Observers to track pref changes from ash.
   std::unique_ptr<CrosapiPrefObserver> settings_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> consent_status_observer_;
   std::unique_ptr<CrosapiPrefObserver> definition_enabled_observer_;
@@ -47,6 +49,7 @@ class QuickAnswersStateLacros : public QuickAnswersState {
   std::unique_ptr<CrosapiPrefObserver> unit_conversion_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> application_locale_observer_;
   std::unique_ptr<CrosapiPrefObserver> preferred_languages_observer_;
+  std::unique_ptr<CrosapiPrefObserver> spoken_feedback_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> impression_count_observer_;
   std::unique_ptr<CrosapiPrefObserver> impression_duration_observer_;
 };
