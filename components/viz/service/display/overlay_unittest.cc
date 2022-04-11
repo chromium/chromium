@@ -1461,6 +1461,9 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
 
   const gfx::Rect kExpectedDamage[] = {
       kInFrontDamage, kInFrontDamage,
+      // As the overlay transitions to transparent it must contribute damage.
+      gfx::UnionRects(kInFrontDamage, kOverlayDisplayRect),
+      // After the transition, the overlay itself doesn't contribute damage.
       gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage)};
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
@@ -1485,8 +1488,8 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
         child_provider_.get(), damaged_shared_quad_state, pass.get(),
         kOverlayDisplayRect);
 
-    // On the last iteration we test non opaque overlays.
-    quad->needs_blending = i == 2;
+    // After the first two frames we test non opaque overlays.
+    quad->needs_blending = i >= 2;
 
     CreateFullscreenOpaqueQuad(resource_provider_.get(),
                                pass->shared_quad_state_list.back(), pass.get());
@@ -2844,6 +2847,76 @@ TEST_F(TransitionOverlayTypeTest, DamageChangeOnTransistionOverlayType) {
     } else if (i >= kOverlayFrameEnd) {
       EXPECT_GE(candidate_list[0].plane_z_order, 0);
       // Underlay to pure overlay transition should not produce any damage.
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    }
+  }
+}
+
+TEST_F(TransitionOverlayTypeTest, DamageWhenOverlayBecomesTransparent) {
+  constexpr gfx::Rect kTopLeft(0, 0, 128, 128);
+  // constexpr gfx::Rect kOccludesTopLeft(64, 64, 128, 128);
+
+  static const int kTransparentFrameStart = 3;
+  for (int i = 0; i < 8; ++i) {
+    SCOPED_TRACE(i);
+
+    auto pass = CreateRenderPass();
+    damage_rect_ = kTopLeft;
+
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    if (i < kTransparentFrameStart) {
+      // Create opaque candidate in top left.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      sqs->overlay_damage_index = surface_damage_rect_list.size();
+      surface_damage_rect_list.emplace_back(kTopLeft);
+      CreateCandidateQuadAt(resource_provider_.get(),
+                            child_resource_provider_.get(),
+                            child_provider_.get(), sqs, pass.get(), kTopLeft);
+    } else {
+      // Create transparent candidate in top left.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      sqs->overlay_damage_index = surface_damage_rect_list.size();
+      surface_damage_rect_list.emplace_back(kTopLeft);
+      CreateTransparentCandidateQuadAt(
+          resource_provider_.get(), child_resource_provider_.get(),
+          child_provider_.get(), sqs, pass.get(), kTopLeft);
+    }
+    overlay_processor_->AddExpectedRect(gfx::RectF(kTopLeft));
+
+    {
+      // Add something behind it.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      CreateFullscreenOpaqueQuad(resource_provider_.get(), sqs, pass.get());
+    }
+
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+
+    ASSERT_EQ(candidate_list.size(), 1U);
+
+    if (i < kTransparentFrameStart) {
+      // A pure overlay does not produce damage on promotion and all associated
+      // damage with this quad is excluded.
+      EXPECT_EQ(candidate_list[0].plane_z_order, 1);
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    } else if (i == kTransparentFrameStart) {
+      // When an opaque overlay becomes transparent it must contribute damage to
+      // update any damage we may have occluded while it was opaque.
+      EXPECT_EQ(candidate_list[0].plane_z_order, 1);
+      EXPECT_EQ(damage_rect_, kTopLeft);
+    } else if (i > kTransparentFrameStart) {
+      // After the overlay is transparent it doesn't need to contribute damage.
+      EXPECT_EQ(candidate_list[0].plane_z_order, 1);
       EXPECT_TRUE(damage_rect_.IsEmpty());
     }
   }
