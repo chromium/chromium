@@ -6934,7 +6934,7 @@
             ]
         }
     ],
-    "SurfaceSyncThrottling": [
+    "SurfaceSyncThrottlingRelaunch": [
         {
             "platforms": [
                 "android",
