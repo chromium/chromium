@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -162,12 +163,6 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 // Tests that cache is not used when selecting omnibox suggested website, even
 // though cache for that website exists.
 - (void)testCachingBehaviorOnSelectOmniboxSuggestion {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   web::test::SetUpHttpServer(std::make_unique<CacheTestResponseProvider>());
 
   // Clear the history to ensure expected omnibox autocomplete results.
@@ -183,11 +178,18 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
   // Type a search into omnnibox and select the first suggestion (second row)
   [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"omnibox suggestion 1"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [[[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_kindOfClassName(@"OmniboxPopupRowCell"),
+                     grey_descendant(
+                         chrome_test_util::StaticTextWithAccessibilityLabel(
+                             base::SysUTF8ToNSString(
+                                 cacheTestFirstPageURL.GetContent()))),
+                     grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               @"OmniboxPopupTableViewAccessibilityIdentifier")]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
 
   // Verify title and hitCount. Cache should not be used.
   [ChromeEarlGrey waitForWebStateContainingText:"First Page"];
