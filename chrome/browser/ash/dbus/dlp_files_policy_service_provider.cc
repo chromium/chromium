@@ -58,7 +58,7 @@ void DlpFilesPolicyServiceProvider::IsRestricted(
             "Unable to parse IsRestrictedRequest"));
     return;
   }
-  if (!request.has_source_url()) {
+  if (request.source_urls_size() == 0) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS,
@@ -77,14 +77,16 @@ void DlpFilesPolicyServiceProvider::IsRestricted(
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (dlp_rules_manager) {
-    policy::DlpRulesManager::Level level =
-        dlp_rules_manager->IsRestrictedDestination(
-            GURL(request.source_url()), GURL(request.destination_url()),
-            policy::DlpRulesManager::Restriction::kFiles,
-            /*out_source_pattern=*/nullptr,
-            /*out_destination_pattern=*/nullptr);
-    if (level == policy::DlpRulesManager::Level::kBlock)
-      restricted = true;
+    for (const auto& source_url : request.source_urls()) {
+      policy::DlpRulesManager::Level level =
+          dlp_rules_manager->IsRestrictedDestination(
+              GURL(source_url), GURL(request.destination_url()),
+              policy::DlpRulesManager::Restriction::kFiles,
+              /*out_source_pattern=*/nullptr,
+              /*out_destination_pattern=*/nullptr);
+      if (level == policy::DlpRulesManager::Level::kBlock)
+        restricted = true;
+    }
   }
 
   dlp::IsRestrictedResponse response_proto;
