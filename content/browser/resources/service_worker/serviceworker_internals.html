@@ -119,12 +119,12 @@
       </div>
       <div class="registration-controls" jsdisplay="!$this.unregistered">
         <button href="#" class="unregister"
-            jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope}">
+            jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope,storage_key:storage_key}">
           Unregister
         </button>
         <button href="#" class="start"
             jsdisplay="$this.active.running_status != 'RUNNING'"
-             jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope}">
+             jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope,storage_key:storage_key}">
           Start
         </button>
         <span class="operation-status" style="display: none">Running...</span>
