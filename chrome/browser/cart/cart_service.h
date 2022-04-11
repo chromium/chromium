@@ -45,11 +45,6 @@ class CartService : public history::HistoryServiceObserver,
   ~CartService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  // Appends utm_source to the end of |base_url|. It will append only for
-  // partner merchants and the RBD fast path flag is on, will append
-  // "chrome_cart_no_rbd" when is_discount_enabled is false, and
-  // "chrome_cart_rbd" when is_discount_enabled is true.
-  static GURL AppendUTM(const GURL& base_url, bool is_discount_enabled);
   // Gets called when cart module is temporarily hidden.
   void Hide();
   // Gets called when restoring the temporarily hidden cart module.
@@ -137,6 +132,15 @@ class CartService : public history::HistoryServiceObserver,
   // Gets called when user has click the 'Continue' button in the discount
   // consent.
   void InterestedInDiscountConsent() override;
+  // Appends UTM tags to the end of |base_url|. It will always append
+  // "utm_source=chrome" and "utm_medium=app". It will also append
+  // "utm_campaign" which can be one of the below three values:
+  // * "utm_campaign=chrome-cart" for non-partner merchant carts.
+  // * "utm_campaign=chrome-cart-discount-on" for partner merchant carts with
+  //   discount enabled.
+  // * "utm_campaign=chrome-cart-discount-off" for partner merchant carts with
+  //   discount disabled.
+  const GURL AppendUTM(const GURL& base_url);
 
  private:
   friend class CartServiceFactory;

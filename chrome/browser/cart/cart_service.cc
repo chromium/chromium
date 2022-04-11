@@ -39,8 +39,11 @@
 
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
-constexpr char kNoRbdUtmTag[] = "chrome_cart_no_rbd";
-constexpr char kRbdUtmTag[] = "chrome_cart_rbd";
+constexpr char kUTMSourceTag[] = "chrome";
+constexpr char kUTMMediumTag[] = "app";
+constexpr char kUTMCampaignChromeCartTag[] = "chrome-cart";
+constexpr char kUTMCampaignDiscountTag[] = "chrome-cart-discount-on";
+constexpr char kUTMCampaignNoDiscountTag[] = "chrome-cart-discount-off";
 constexpr char kCartPrefsKey[] = "chrome_cart";
 
 constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
@@ -50,7 +53,7 @@ constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
 
 constexpr base::FeatureParam<bool> kRbdUtmParam{
     &ntp_features::kNtpChromeCartModule,
-    ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam, false};
+    ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam, true};
 
 constexpr base::FeatureParam<bool> kBypassDisocuntFetchingThreshold{
     &commerce::kCommerceDeveloper, "bypass-discount-fetching-threshold", false};
@@ -170,19 +173,6 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kDiscountConsentLastShownInVariation, 0);
   registry->RegisterBooleanPref(prefs::kDiscountConsentShowInterest, false);
   registry->RegisterIntegerPref(prefs::kDiscountConsentShowInterestIn, 0);
-}
-
-GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
-  DCHECK(base_url.is_valid() &&
-         commerce::IsRuleDiscountPartnerMerchant(base_url));
-
-  if (kRbdUtmParam.Get()) {
-    return net::AppendOrReplaceQueryParameter(
-        base_url, "utm_source",
-        is_discount_enabled ? kRbdUtmTag : kNoRbdUtmTag);
-  } else {
-    return base_url;
-  }
 }
 
 void CartService::Hide() {
@@ -315,6 +305,23 @@ void CartService::InterestedInDiscountConsent() {
   profile_->GetPrefs()->SetInteger(
       prefs::kDiscountConsentShowInterestIn,
       commerce::kNtpChromeCartModuleDiscountConsentNtpVariation.Get());
+}
+
+const GURL CartService::AppendUTM(const GURL& base_url) {
+  DCHECK(base_url.is_valid());
+  if (!kRbdUtmParam.Get())
+    return base_url;
+  auto url = base_url;
+  url = net::AppendOrReplaceQueryParameter(url, "utm_source", kUTMSourceTag);
+  url = net::AppendOrReplaceQueryParameter(url, "utm_medium", kUTMMediumTag);
+  if (commerce::IsPartnerMerchant(base_url)) {
+    return net::AppendOrReplaceQueryParameter(url, "utm_campaign",
+                                              IsCartDiscountEnabled()
+                                                  ? kUTMCampaignDiscountTag
+                                                  : kUTMCampaignNoDiscountTag);
+  }
+  return net::AppendOrReplaceQueryParameter(url, "utm_campaign",
+                                            kUTMCampaignChromeCartTag);
 }
 
 void CartService::ShouldShowDiscountConsent(
@@ -478,11 +485,7 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
 void CartService::GetDiscountURL(
     const GURL& cart_url,
     base::OnceCallback<void(const ::GURL&)> callback) {
-  auto url = cart_url;
-  if (commerce::IsRuleDiscountPartnerMerchant(cart_url)) {
-    url = AppendUTM(cart_url, IsCartDiscountEnabled());
-  }
-
+  auto url = AppendUTM(cart_url);
   if (!commerce::IsRuleDiscountPartnerMerchant(cart_url) ||
       !IsCartDiscountEnabled()) {
     std::move(callback).Run(url);
@@ -530,9 +533,8 @@ void CartService::OnDiscountURLFetched(
     base::OnceCallback<void(const ::GURL&)> callback,
     const cart_db::ChromeCartContentProto& cart_proto,
     const GURL& discount_url) {
-  std::move(callback).Run(discount_url.is_valid()
-                              ? AppendUTM(discount_url, IsCartDiscountEnabled())
-                              : default_cart_url);
+  std::move(callback).Run(discount_url.is_valid() ? AppendUTM(discount_url)
+                                                  : default_cart_url);
   if (discount_url.is_valid()) {
     CacheUsedDiscounts(cart_proto);
     CleanUpDiscounts(cart_proto);

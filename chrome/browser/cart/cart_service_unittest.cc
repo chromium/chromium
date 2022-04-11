@@ -1356,8 +1356,12 @@ class CartServiceDiscountTest : public CartServiceTest {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     base::FieldTrialParams cart_params, coupon_params;
-    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
+        "true";
     cart_params["partner-merchant-pattern"] = "(foo.com)";
+    cart_params
+        [ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam] =
+            "false";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
     coupon_params["coupon-partner-merchant-pattern"] = "(bar.com)";
@@ -1845,14 +1849,14 @@ TEST_F(CartServiceSkipExtractionTest, TestLoadCartForSkippedMerchants) {
   run_loop[3].Run();
 }
 
-class CartServiceRbdFastPathTest : public CartServiceTest {
+class CartServiceCartURLUTMTest : public CartServiceTest {
  public:
-  CartServiceRbdFastPathTest() {
+  CartServiceCartURLUTMTest() {
     // This needs to be called before any tasks that run on other threads check
     // if a feature is enabled.
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
          {"partner-merchant-pattern", "(foo.com)"},
          {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
           "true"}});
@@ -1863,28 +1867,52 @@ class CartServiceRbdFastPathTest : public CartServiceTest {
   }
 };
 
-TEST_F(CartServiceRbdFastPathTest, TestAppendUTM) {
+TEST_F(CartServiceCartURLUTMTest, TestAppendUTMForPartnerMerchants) {
   EXPECT_FALSE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_no_rbd"),
-            CartService::AppendUTM(GURL(kMockMerchantURLA), false));
+  EXPECT_EQ(GURL("https://"
+                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart-discount-off"),
+            service_->AppendUTM(GURL(kMockMerchantURLA)));
 
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
-            CartService::AppendUTM(GURL(kMockMerchantURLA), true));
+  EXPECT_EQ(GURL("https://"
+                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart-discount-on"),
+            service_->AppendUTM(GURL(kMockMerchantURLA)));
 }
 
-TEST_F(CartServiceRbdFastPathTest, TestAppendUTMAvoidDuplicates) {
-  std::string merchantUrl = "https://www.foo.com";
+TEST_F(CartServiceCartURLUTMTest, TestAppendUTMForNonPartnerMerchants) {
   EXPECT_FALSE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_no_rbd"),
-            CartService::AppendUTM(GURL(kMockMerchantURLA), false));
+  EXPECT_EQ(GURL("https://"
+                 "www.bar.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart"),
+            service_->AppendUTM(GURL(kMockMerchantURLB)));
 
-  merchantUrl = "https://www.foo.com?utm_source=chrome_cart_no_rbd";
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
-            CartService::AppendUTM(GURL(kMockMerchantURLA), true));
+  EXPECT_EQ(GURL("https://"
+                 "www.bar.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart"),
+            service_->AppendUTM(GURL(kMockMerchantURLB)));
+}
+
+TEST_F(CartServiceCartURLUTMTest, TestAppendUTMAvoidDuplicates) {
+  GURL merchantUrl = GURL("https://www.foo.com");
+  EXPECT_FALSE(service_->IsCartDiscountEnabled());
+  merchantUrl = service_->AppendUTM(GURL(merchantUrl));
+  EXPECT_EQ(GURL("https://"
+                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart-discount-off"),
+            merchantUrl);
+
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  EXPECT_TRUE(service_->IsCartDiscountEnabled());
+  merchantUrl = service_->AppendUTM(GURL(merchantUrl));
+  EXPECT_EQ(GURL("https://"
+                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
+                 "chrome-cart-discount-on"),
+            merchantUrl);
 }
 
 class FakeFetchDiscountWorker : public FetchDiscountWorker {
@@ -1925,7 +1953,7 @@ class CartServiceDiscountFetchTest : public CartServiceTest {
     // if a feature is enabled.
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
          {"discount-fetch-delay", "2s"}});
   }
 
@@ -2157,7 +2185,8 @@ class CartServiceDiscountConsentV2Test : public CartServiceTest {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     base::FieldTrialParams consent_v2_params, cart_params;
-    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
+        "true";
     cart_params["partner-merchant-pattern"] = "(foo.com)";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
