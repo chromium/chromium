@@ -208,20 +208,26 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLogin(
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
     base::Time delete_begin,
-    base::Time delete_end) {
+    base::Time delete_end,
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PasswordStoreChangeList changes;
-  if (login_db_ && login_db_->RemoveLoginsCreatedBetween(
-                       delete_begin, delete_end, &changes)) {
-    if (sync_bridge_ && !changes.empty())
-      sync_bridge_->ActOnPasswordStoreChanges(changes);
-  }
+  bool success = login_db_ && login_db_->RemoveLoginsCreatedBetween(
+                                  delete_begin, delete_end, &changes);
+  if (success && sync_bridge_ && !changes.empty())
+    sync_bridge_->ActOnPasswordStoreChanges(changes);
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
+  metrics_recorder.RecordMetrics(
+      success,
+      /*error=*/success
+          ? absl::nullopt
+          : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+                PasswordStoreBackendError::kUnrecoverable));
   return changes;
 }
 

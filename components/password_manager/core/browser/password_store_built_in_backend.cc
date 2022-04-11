@@ -165,12 +165,16 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
     PasswordStoreChangeListReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreBuiltInBackend"),
+          MetricInfix("RemoveLoginsCreatedBetweenAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          delete_begin, delete_end),
+          delete_begin, delete_end, std::move(metrics_recorder)),
       std::move(callback));
 }
 
