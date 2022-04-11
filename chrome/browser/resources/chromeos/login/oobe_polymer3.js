@@ -14,6 +14,7 @@ import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/app_launch_splash.m.js';
 import 'chrome://oobe/screens/common/adb_sideloading.m.js';
 import 'chrome://oobe/screens/common/arc_terms_of_service.m.js';
+import 'chrome://oobe/screens/common/assistant_optin.m.js';
 import 'chrome://oobe/screens/common/autolaunch.m.js';
 import 'chrome://oobe/screens/common/consolidated_consent.m.js';
 import 'chrome://oobe/screens/common/device_disabled.m.js';

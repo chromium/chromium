@@ -16,6 +16,7 @@ group("polymer3_elements") {
     ":app_downloading_module",
     ":app_launch_splash_module",
     ":arc_terms_of_service_module",
+    ":assistant_optin_module",
     ":autolaunch_module",
     ":consolidated_consent_module",
     ":device_disabled_module",
@@ -67,6 +68,8 @@ js_type_check("closure_compile_module_local") {
     ":app_downloading.m",
     ":app_launch_splash.m",
     ":arc_terms_of_service.m",
+
+    #":assistant_optin.m",
     ":autolaunch.m",
     ":consolidated_consent.m",
     ":device_disabled.m",
@@ -164,6 +167,12 @@ js_library("arc_terms_of_service.m") {
     "$externs_path/webview_tag.js",
   ]
   extra_deps = [ ":arc_terms_of_service_module" ]
+}
+
+js_library("assistant_optin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.m.js" ]
+  deps = []
+  extra_deps = [ ":assistant_optin_module" ]
 }
 
 js_library("autolaunch.m") {
@@ -657,6 +666,14 @@ polymer_modulizer("app_launch_splash") {
 polymer_modulizer("arc_terms_of_service") {
   js_file = "arc_terms_of_service.js"
   html_file = "arc_terms_of_service.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("assistant_optin") {
+  js_file = "assistant_optin.js"
+  html_file = "assistant_optin.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

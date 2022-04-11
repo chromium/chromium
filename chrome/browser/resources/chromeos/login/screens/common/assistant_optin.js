@@ -6,24 +6,39 @@
  * @fileoverview Oobe Assistant OptIn Flow screen implementation.
  */
 
-Polymer({
-  is: 'assistant-optin-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const AssistantOptinBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  EXTERNAL_API: [
-    'reloadContent',
-    'addSettingZippy',
-    'showNextScreen',
-    'onVoiceMatchUpdate',
-    'onValuePropUpdate',
-  ],
+/**
+ * @polymer
+ */
+class AssistantOptin extends AssistantOptinBase {
+  static get is() {
+    return 'assistant-optin-element';
+  }
+
+  /* #html_template_placeholder */
+
+  get EXTERNAL_API() {
+    return [
+      'reloadContent', 'addSettingZippy', 'showNextScreen',
+      'onVoiceMatchUpdate', 'onValuePropUpdate'
+    ];
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('AssistantOptInFlowScreen', {
       resetAllowed: false,
     });
-  },
+  }
 
   /**
    * Returns default event target element.
@@ -31,12 +46,12 @@ Polymer({
    */
   get defaultControl() {
     return this.$.card;
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
@@ -45,7 +60,7 @@ Polymer({
    */
   onBeforeShow(data) {
     this.$.card.onShow();
-  },
+  }
 
   /**
    * Reloads localized strings.
@@ -54,7 +69,7 @@ Polymer({
    */
   reloadContent(data) {
     this.$.card.reloadContent(data);
-  },
+  }
 
   /**
    * Add a setting zippy object in the corresponding screen.
@@ -64,7 +79,7 @@ Polymer({
    */
   addSettingZippy(type, data) {
     this.$.card.addSettingZippy(type, data);
-  },
+  }
 
   /**
    * Show the next screen in the flow.
@@ -72,7 +87,7 @@ Polymer({
    */
   showNextScreen() {
     this.$.card.showNextScreen();
-  },
+  }
 
   /**
    * Called when the Voice match state is updated.
@@ -81,7 +96,7 @@ Polymer({
    */
   onVoiceMatchUpdate(state) {
     this.$.card.onVoiceMatchUpdate(state);
-  },
+  }
 
   /**
    * Called to show the next settings when there are multiple unbundled
@@ -89,5 +104,7 @@ Polymer({
    */
   onValuePropUpdate() {
     this.$.card.onValuePropUpdate();
-  },
-});
+  }
+}
+
+customElements.define(AssistantOptin.is, AssistantOptin);
