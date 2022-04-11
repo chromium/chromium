@@ -16,6 +16,9 @@ namespace {
 
 base::FilePath::CharType kFileName[] = FILE_PATH_LITERAL("test_file");
 
+// Represents gibberish that gets appended to the file.
+constexpr char kGibberish[] = "dfnsdfjdsn";
+
 // Represents an OS key.
 constexpr char kValidKeyWrappedBase64[] =
     "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3VGyKUYrI0M5VOGIw0dh3D0s26"
@@ -75,9 +78,72 @@ class LinuxKeyPersistenceDelegateTest : public testing::Test {
     return base::WriteFile(GetKeyFilePath(), content);
   }
 
+  std::string GetFileContents() {
+    std::string file_contents;
+    base::ReadFileToString(GetKeyFilePath(), &file_contents);
+    return file_contents;
+  }
+
   base::ScopedTempDir scoped_dir_;
   LinuxKeyPersistenceDelegate persistence_delegate_;
 };
+
+// Tests when the file does not exist and a write operation is attempted.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_FileDoesNotExist) {
+  EXPECT_FALSE(persistence_delegate_.StoreKeyPair(
+      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
+  EXPECT_FALSE(base::PathExists(GetKeyFilePath()));
+}
+
+// Tests storing a key with an unspecified trust level.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_UnspecifiedKey) {
+  CreateFile("");
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
+      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
+  EXPECT_EQ("", GetFileContents());
+}
+
+// Tests when a OS key is stored and file contents are modified before storing
+// a new OS key pair.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
+  CreateFile("");
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
+      BPKUR::CHROME_BROWSER_OS_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidOSKeyFileContent, GetFileContents());
+
+  // Modifying file contents
+  base::File file = base::File(GetKeyFilePath(),
+                               base::File::FLAG_OPEN | base::File::FLAG_APPEND);
+  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  std::string expected_file_contents(kValidOSKeyFileContent);
+  expected_file_contents.append(kGibberish);
+  EXPECT_EQ(expected_file_contents, GetFileContents());
+
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
+      BPKUR::CHROME_BROWSER_OS_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidOSKeyFileContent, GetFileContents());
+}
+
+// Tests when a TPM key is stored and file contents are modified before storing
+// a new TPM key pair.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidTPMKeyPair) {
+  CreateFile("");
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
+      BPKUR::CHROME_BROWSER_TPM_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidTPMKeyFileContent, GetFileContents());
+
+  // Modifying file contents
+  base::File file = base::File(GetKeyFilePath(),
+                               base::File::FLAG_OPEN | base::File::FLAG_APPEND);
+  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  std::string expected_file_contents(kValidTPMKeyFileContent);
+  expected_file_contents.append(kGibberish);
+  EXPECT_EQ(expected_file_contents, GetFileContents());
+
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
+      BPKUR::CHROME_BROWSER_TPM_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidTPMKeyFileContent, GetFileContents());
+}
 
 // Tests trying to load a key when there is no file.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_NoKeyFile) {
@@ -167,6 +233,19 @@ TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_KeyNotBase64) {
   auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
   EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
   EXPECT_TRUE(wrapped.empty());
+}
+
+// Tests the flow of both storing and loading a key.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreAndLoadKeyPair) {
+  ASSERT_TRUE(CreateFile(""));
+  auto trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+  auto wrapped = ParseKeyWrapped(kValidKeyWrappedBase64);
+  EXPECT_TRUE(persistence_delegate_.StoreKeyPair(trust_level, wrapped));
+
+  auto [loaded_trust_level, loaded_wrapped] =
+      persistence_delegate_.LoadKeyPair();
+  EXPECT_EQ(trust_level, loaded_trust_level);
+  EXPECT_EQ(wrapped, loaded_wrapped);
 }
 
 }  // namespace enterprise_connectors

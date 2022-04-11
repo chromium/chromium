@@ -116,15 +116,13 @@ bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
 bool LinuxKeyPersistenceDelegate::StoreKeyPair(
     KeyPersistenceDelegate::KeyTrustLevel trust_level,
     std::vector<uint8_t> wrapped) {
+  base::File file = OpenSigningKeyFile(base::File::FLAG_OPEN_TRUNCATED |
+                                       base::File::FLAG_WRITE);
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
     DCHECK_EQ(wrapped.size(), 0u);
-    base::File file = OpenSigningKeyFile(base::File::FLAG_OPEN_TRUNCATED |
-                                         base::File::FLAG_WRITE);
     return file.error_details() == base::File::FILE_OK;
   }
 
-  base::File file =
-      OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
     return LogFailure(
         "Device trust key rotation failed. Could not open the signing key file "
