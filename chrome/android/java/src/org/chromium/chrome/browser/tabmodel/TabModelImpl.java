@@ -373,25 +373,30 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public boolean closeTab(Tab tabToClose, boolean animate, boolean uponExit, boolean canUndo) {
-        return closeTab(tabToClose, null, animate, uponExit, canUndo, canUndo);
+        return closeTab(tabToClose, null, animate, uponExit, canUndo, canUndo, true);
     }
 
     @Override
     public boolean closeTab(
             Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
-        return closeTab(tab, recommendedNextTab, animate, uponExit, canUndo, canUndo);
+        return closeTab(tab, recommendedNextTab, animate, uponExit, canUndo, canUndo, true);
     }
 
     /**
      * See TabModel.java documentation for description of other parameters.
-     * @param notify Whether or not to notify observers about the pending closure. If this is
-     *               {@code true}, {@link #supportsPendingClosures()} is {@code true},
-     *               and canUndo is {@code true}, observers will be notified of the pending
-     *               closure. Observers will still be notified of a committed/cancelled closure
-     *               even if they are not notified of a pending closure to start with.
+     * @param notifyPending Whether or not to notify observers about the pending closure. If this is
+     *                      {@code true}, {@link #supportsPendingClosures()} is {@code true},
+     *                      and canUndo is {@code true}, observers will be notified of the pending
+     *                      closure. Observers will still be notified of a committed/cancelled
+     *                      closure even if they are not notified of a pending closure to start
+     *                      with.
+     * @param notifyDidCloseAlone Whether to notify observers that this tab is closing by itself for
+     *                            {@link TabModelObserver#didCloseTabs} if the closure cannot be
+     *                            undone. This should be {@code true} if closing the tab by itself,
+     *                            and {@code false} if closing as part of a multiple tab closure.
      */
     private boolean closeTab(Tab tabToClose, Tab recommendedNextTab, boolean animate,
-            boolean uponExit, boolean canUndo, boolean notify) {
+            boolean uponExit, boolean canUndo, boolean notifyPending, boolean notifyDidCloseAlone) {
         if (tabToClose == null) {
             assert false : "Tab is null!";
             return false;
@@ -405,12 +410,12 @@ public class TabModelImpl extends TabModelJniBridge {
         canUndo &= supportsPendingClosures();
 
         startTabClosure(tabToClose, recommendedNextTab, animate, uponExit, canUndo);
-        if (notify && canUndo) {
+        if (notifyPending && canUndo) {
             mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tabToClose));
             for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
         }
         if (!canUndo) {
-            if (notify) {
+            if (notifyDidCloseAlone) {
                 notifyDidCloseTabs(Collections.singletonList(tabToClose));
             }
             finalizeTabClosure(tabToClose, false);
@@ -433,7 +438,7 @@ public class TabModelImpl extends TabModelJniBridge {
             notifyDidCloseTabs(tabs);
         }
         for (Tab tab : tabs) {
-            closeTab(tab, null, false, false, canUndo, false);
+            closeTab(tab, null, false, false, canUndo, false, false);
         }
         if (allowUndo) {
             mPendingTabClosureManager.addTabClosureEvent(tabs);
@@ -458,7 +463,7 @@ public class TabModelImpl extends TabModelJniBridge {
             notifyDidCloseTabs(mTabs);
             while (getCount() > 0) {
                 Tab tab = getTabAt(0);
-                closeTab(tab, null, true, uponExit, false, false);
+                closeTab(tab, null, true, uponExit, false, false, false);
             }
             return;
         }
@@ -471,7 +476,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
-            closeTab(tab, null, false, false, true, false);
+            closeTab(tab, null, false, false, true, false, false);
         }
 
         if (supportsPendingClosures()) {

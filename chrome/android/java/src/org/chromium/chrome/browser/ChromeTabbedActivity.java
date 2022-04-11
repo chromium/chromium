@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -296,6 +297,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabModelSelectorBase mTabModelSelector;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private TabModelSelectorTabModelObserver mTabModelObserver;
+    private HistoricalTabModelObserver mHistoricalTabModelObserver;
 
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
     private TabModalLifetimeHandler mTabModalHandler;
@@ -585,6 +587,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
+
+            // For saving non-incognito tab closures for Recent Tabs.
+            mHistoricalTabModelObserver =
+                    new HistoricalTabModelObserver(mTabModelSelector.getModel(false));
 
             mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
                 @Override
@@ -2547,6 +2553,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelectorTabObserver = null;
         }
+
+        if (mHistoricalTabModelObserver != null) mHistoricalTabModelObserver.destroy();
 
         if (mTabModelObserver != null) mTabModelObserver.destroy();
 

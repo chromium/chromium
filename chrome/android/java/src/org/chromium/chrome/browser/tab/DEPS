@@ -48,6 +48,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  'HistoricalTabModelObserver\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
+    "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
+    "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
+  ],
   'HistoricalTabSaverImpl\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],

@@ -49,8 +49,6 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaver;
-import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaverImpl;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -107,7 +105,6 @@ public class TabPersistentStore {
     private static final String MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE_PARAM =
             "migrate_to_critical_persisted_tab_data_batch_size";
     private TabModelObserver mTabModelObserver;
-    private HistoricalTabSaver mHistoricalTabSaver;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -188,12 +185,10 @@ public class TabPersistentStore {
             }
         };
 
-        mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModelSelector.getModel(false));
         mTabModelObserver = new TabModelObserver() {
             @Override
             public void didCloseTab(Tab tab) {
                 PersistedTabData.onTabClose(tab);
-                if (!tab.isIncognito()) mHistoricalTabSaver.createHistoricalTab(tab);
                 removeTabFromQueues(tab);
             }
 

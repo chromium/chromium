@@ -234,6 +234,7 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";
     public static final String BOOKMARK_BOTTOM_SHEET = "BookmarkBottomSheet";
+    public static final String BULK_TAB_RESTORE = "BulkTabRestore";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CCT_BACKGROUND_TAB = "CCTBackgroundTab";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
@@ -444,6 +445,7 @@ public abstract class ChromeFeatureList {
     public static final String QUERY_TILES = "QueryTiles";
     public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";
     public static final String QUERY_TILES_SEGMENTATION = "QueryTilesSegmentation";
+    public static final String QUICK_ACTION_SEARCH_WIDGET = "QuickActionSearchWidgetAndroid";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String REACHED_CODE_PROFILER = "ReachedCodeProfiler";
     public static final String READ_LATER = "ReadLater";

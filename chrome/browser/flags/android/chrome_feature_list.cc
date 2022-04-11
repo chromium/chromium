@@ -171,6 +171,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppToWebAttribution,
     &kBackgroundThreadPool,
     &kBookmarkBottomSheet,
+    &kBulkTabRestore,
     &kCastDeviceFilter,
     &kCloseAllTabsModalDialog,
     &kCloseTabSuggestions,
@@ -434,6 +435,9 @@ const base::Feature kBackgroundThreadPool{"BackgroundThreadPool",
 
 const base::Feature kBookmarkBottomSheet{"BookmarkBottomSheet",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kBulkTabRestore{"BulkTabRestore",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kConditionalTabStripAndroid{
     "ConditionalTabStripAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
