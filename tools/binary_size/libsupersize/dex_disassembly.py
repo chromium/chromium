@@ -247,11 +247,22 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
 
 
 def _GetTopChangedSymbols(delta_size_info):
-  sorted_symbols = [
-      symbol for symbol in delta_size_info.raw_symbols
-      if symbol.section_name.endswith('dex.method') and symbol.after_symbol
-  ]
-  sorted_symbols.sort(key=lambda x: -abs(x.size))
+  def filter_symbol(symbol):
+    # We are only looking for symbols where the after_symbol exists, as
+    # if it does not exist it does not provide much value in a side
+    # by side code breakdown.
+    if not symbol.after_symbol:
+      return False
+    # Currently restricting the symbols to .dex.method symbols only.
+    if not symbol.section_name.endswith('dex.method'):
+      return False
+    # Symbols which have changed under 10 bytes do not add much value.
+    if abs(symbol.pss) < 10:
+      return False
+    return True
+
+  sorted_symbols = delta_size_info.raw_symbols.Filter(filter_symbol).Sorted(
+      reverse=True)
   return sorted_symbols
 
 
