@@ -1,0 +1,13 @@
+per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+
+# Prefer sending CLs to the owners listed below.
+# Use chromium-metrics-reviews@google.com as a backup.
+
+# For Privacy.*
+andzaytsev@google.com
+dullweber@chromium.org
+harrisonsean@chromium.org
+
+# For PrivacySandbox.AggregationService.*
+csharrison@chromium.org
+johnidel@chromium.org
