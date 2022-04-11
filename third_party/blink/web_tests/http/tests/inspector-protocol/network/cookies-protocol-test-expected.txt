@@ -184,14 +184,17 @@ Running test: deleteAllCookies
 
 Running test: setPartitionedCookie
 Setting Cookie
-setCookie failed: Partitioned cookies disabled. Cannot set cookie partition key
-Num of cookies 0
+Num of cookies 1
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
 Setting Cookie
-setCookie failed: Partitioned cookies disabled. Cannot set cookie partition key
-Num of cookies 0
+Num of cookies 2
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
 Setting Cookie
-setCookie failed: Partitioned cookies disabled. Cannot set cookie partition key
-Num of cookies 0
+Num of cookies 3
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session
 
 Running test: deleteAllCookies
 
@@ -200,17 +203,20 @@ Num of cookies 0
 
 Running test: setPartitionedCookies
 Adding multiple cookies
-Num of cookies 0
+Num of cookies 3
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session
 
 Running test: getPartitionedCookie
 Num of cookies 1
-name: __Host-foo, value: bar, domain: example.test, path: /, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
 
 Running test: deleteAllCookies
 
 Running test: getPartitionedCookieFromOpaqueOrigin
 Num of cookies 1
-name: __Host-foo, value: bar, domain: example.test, path: /, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: <opaque>, secure, session, None
 
 Running test: deleteAllCookies
 
