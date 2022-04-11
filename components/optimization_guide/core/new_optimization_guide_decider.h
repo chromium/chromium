@@ -38,6 +38,13 @@ class NewOptimizationGuideDecider {
       proto::OptimizationType optimization_type,
       OptimizationGuideDecisionCallback callback) = 0;
 
+  // Returns whether |optimization_type| can be applied for |url|. This should
+  // only be called for main frame navigations or future main frame navigations.
+  virtual OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      proto::OptimizationType optimization_type,
+      OptimizationMetadata* optimization_metadata) = 0;
+
  protected:
   NewOptimizationGuideDecider() = default;
   virtual ~NewOptimizationGuideDecider() = default;

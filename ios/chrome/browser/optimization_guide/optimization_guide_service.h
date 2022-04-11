@@ -106,7 +106,7 @@ class OptimizationGuideService
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
-      optimization_guide::OptimizationMetadata* optimization_metadata);
+      optimization_guide::OptimizationMetadata* optimization_metadata) override;
 
   // Invokes |callback| with the decision for the URL contained in
   // |navigation_context| and |optimization_type|, when sufficient information
