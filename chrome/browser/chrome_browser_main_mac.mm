@@ -23,11 +23,9 @@
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/mac/developer_id_certificate_reauthorize.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
-#include "chrome/browser/mac/purge_stale_screen_capture_permission.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
@@ -120,9 +118,6 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   chrome::BuildMainMenu(NSApp, app_controller,
                         l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), false);
   [app_controller mainMenuCreated];
-
-  chrome::DeveloperIDCertificateReauthorizeInApp();
-  chrome::PurgeStaleScreenCapturePermission();
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);

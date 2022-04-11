@@ -1576,49 +1576,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
 
   xattr -d -r "${QUARANTINE_ATTR}" "${installed_app}" 2> /dev/null
 
-  # Do Developer ID certificate reauthorization. This involves running a stub
-  # executable within the newly-updated .app bundle. The stub loads the updated
-  # framework and jumps to it to perform the reauthorization. The stub
-  # executable is an unbundled (flat file) executable whose identifier for code
-  # signing purposes matches the main application's bundle identifier, so it's
-  # permitted access to Keychain items in the same manner as the main
-  # application. The stub executable remains signed by the old certificate even
-  # after the rest of Chrome has switched to the new certificate, so it
-  # maintains Chrome's identity and access to the Safe Storage Keychain item
-  # even if that Keychain item's access was locked to the old certificate.
-  #
-  # Doing a reauthorization step at update time reauthorizes Keychain items for
-  # users who never bother restarting Chrome, but it only works for non-system
-  # ticket installations of Chrome, because the updater runs as root when on a
-  # system ticket, and root can't access individual user Keychains. Additional
-  # opportunities for reauthorization exist within the application itself either
-  # by performing the reauthorization directly (if permitted) or by launching
-  # the same stub executable as is used here.
-  #
-  # Even if the reauthorization tool is launched, it doesn't necessarily try
-  # to do anything. It will only attempt to perform a reauthorization if it
-  # determines that no reauthorization has been completed.
-  note "maybe performing Developer ID certificate reauthorization"
-
-  if [[ -z "${system_ticket}" ]]; then
-    local developer_id_certificate_reauthorize_path="\
-${new_versioned_dir}/Helpers/developer_id_certificate_reauthorize"
-    note "developer_id_certificate_reauthorize_path = \
-${developer_id_certificate_reauthorize_path}"
-
-    local new_bundleid_app="$(defaults read "${installed_app_plist}" \
-                                            "${APP_BUNDLEID_KEY}" || true)"
-    note "new_bundleid_app = ${new_bundleid_app}"
-
-    if [[ -x "${developer_id_certificate_reauthorize_path}" ]]; then
-      note "performing Developer ID certificate reauthorization"
-      "${developer_id_certificate_reauthorize_path}" "${new_bundleid_app}"
-    fi
-  else
-    note "system ticket, not performing \
-Developer ID certificate reauthorization"
-  fi
-
   # Great success!
   note "done!"
 
