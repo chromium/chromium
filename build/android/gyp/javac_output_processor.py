@@ -9,6 +9,7 @@ import os
 import pathlib
 import re
 import sys
+import traceback
 
 from util import build_utils
 
@@ -106,8 +107,14 @@ class JavacOutputProcessor:
     previous_line = next(lines, None)
     line = next(lines, None)
     while previous_line != None:
-      elaborated_lines = self._ElaborateLineForUnknownSymbol(
-          previous_line, line)
+      try:
+        elaborated_lines = self._ElaborateLineForUnknownSymbol(
+            previous_line, line)
+      except Exception:
+        elaborated_lines = ["Error in _ElaborateLineForUnknownSymbol ---"]
+        elaborated_lines += traceback.format_exc().splitlines()
+        elaborated_lines += ["--- end _ElaborateLineForUnknownSymbol error"]
+        elaborated_lines += [previous_line]
       for elaborated_line in elaborated_lines:
         yield elaborated_line
 
