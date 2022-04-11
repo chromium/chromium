@@ -2599,25 +2599,6 @@
             ]
         }
     ],
-    "DefaultPassthroughCommandDecoder": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "DrDc",
-                    "enable_features": [
-                        "EnableDrDc"
-                    ],
-                    "disable_features": [
-                        "DefaultPassthroughCommandDecoder",
-                        "RawDraw"
-                    ]
-                }
-            ]
-        }
-    ],
     "DelayFirstParkingOfStrings": [
         {
             "platforms": [
@@ -6050,6 +6031,24 @@
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
                         "QueryTilesInOmnibox"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RawDrawAndDrDc": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DrDc",
+                    "enable_features": [
+                        "EnableDrDc"
+                    ],
+                    "disable_features": [
+                        "RawDraw"
                     ]
                 }
             ]
