@@ -2903,15 +2903,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 }
 
-// Failing on Mac11. https://crbug.com/1315068
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PreflightConnectionReusedHttp1 \
-  DISABLED_PreflightConnectionReusedHttp1
-#else
-#define MAYBE_PreflightConnectionReusedHttp1 PreflightConnectionReusedHttp1
-#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       MAYBE_PreflightConnectionReusedHttp1) {
+                       PreflightConnectionReusedHttp1) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   EXPECT_EQ(true, EvalJs(root_frame_host(),
@@ -2931,7 +2924,17 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   // request might not reuse the initial connection and opens its own. In those
   // cases, it is extremely likely that the final request will reuse the first
   // socket.
+  //
+  // TODO(https://crbug.com/1315068): Find out why the connection is not re-used
+  // on Mac 11. Likely culprit is some kind of race condition, since the socket
+  // closure during 1) above is not synchronized with 2) and 3).
+#if BUILDFLAG(IS_MAC)
+  int connection_count = SecureLocalServer().ConnectionCount();
+  EXPECT_GE(connection_count, 2);  // At least 2 connections.
+  EXPECT_LE(connection_count, 3);  // No more than 3 connections.
+#else
   EXPECT_EQ(SecureLocalServer().ConnectionCount(), 2);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
