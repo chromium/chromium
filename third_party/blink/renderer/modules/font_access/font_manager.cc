@@ -12,7 +12,6 @@
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_query_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -50,9 +49,10 @@ ScriptPromise FontManager::query(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  remote_manager_->EnumerateLocalFonts(WTF::Bind(
-      &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
-      WrapPersistent(resolver), WrapPersistent(options)));
+  remote_manager_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
+      WTF::Bind(&FontManager::DidGetEnumerationResponse,
+                WrapWeakPersistent(this), WrapPersistent(options))));
+
   return promise;
 }
 
@@ -62,16 +62,10 @@ void FontManager::Trace(blink::Visitor* visitor) const {
 }
 
 void FontManager::DidGetEnumerationResponse(
-    ScriptPromiseResolver* resolver,
     const QueryOptions* options,
+    ScriptPromiseResolver* resolver,
     FontEnumerationStatus status,
     base::ReadOnlySharedMemoryRegion region) {
-  DCHECK(resolver);
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     resolver->GetScriptState()))
-    return;
-
-  ScriptState::Scope script_state_scope(resolver->GetScriptState());
   if (RejectPromiseIfNecessary(status, resolver))
     return;
 

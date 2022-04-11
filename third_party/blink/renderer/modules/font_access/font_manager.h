@@ -39,8 +39,8 @@ class FontManager final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
  private:
-  void DidGetEnumerationResponse(ScriptPromiseResolver* resolver,
-                                 const QueryOptions* options,
+  void DidGetEnumerationResponse(const QueryOptions* options,
+                                 ScriptPromiseResolver* resolver,
                                  mojom::blink::FontEnumerationStatus,
                                  base::ReadOnlySharedMemoryRegion);
   // Returns whether the resolver has rejected.
