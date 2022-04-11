@@ -27,17 +27,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <meta name='mobile-web-app-capable' content='yes'>
     <meta name='apple-mobile-web-app-capable' content='yes'>
 
-    <meta http-equiv="origin-trial" data-expires="2021-02-16" content="AsJ99WEM5bgoOEDTva9eWNnhIwCkDnYPf2Mu0y/TGocIZSFVDzr6CLe4uqQajojLFmxFhfvyexBYUGVW5hWalwsAAABkeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSTGlnaHRFc3RpbWF0aW9uIiwiZXhwaXJ5IjoxNjEzNDk4MzgwfQ==">
     <link href='../css/common.css' rel='stylesheet'>
 
-    <!--The polyfill is not needed for browser that have native API support,
-        but is linked by these samples for wider compatibility.-->
-    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
-    <script src='../js/xrray-polyfill.js' type='module'></script>
-    <script src='../js/webxr-polyfill.js'></script>
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.139.2/build/three.module.js"
+        }
+      }
+    </script>
 
     <script src='../js/webxr-button.js'></script>
-    <script src="https://willcassella.github.io/three.js/build/three.min.js"></script>
 
     <title>Lighting estimation</title>
 
@@ -61,7 +62,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       </details>
     </header>
 
-    <script>
+    <script type="module">
+      import * as THREE from 'three';
+
       function init() {
         const ctx = {};
 
@@ -80,6 +83,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           canvas: canvas,
           context: ctx.gl,
         });
+        ctx.renderer.physicallyCorrectLights = true;
+        ctx.renderer.xr.enabled = true;
 
         // Construct a Three.JS scene
         ctx.scene = new THREE.Scene();
@@ -89,11 +94,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         ctx.cubeTarget = new THREE.WebGLCubeRenderTarget(16);
         ctx.threeEnvMap = ctx.cubeTarget.texture;
         ctx.scene.environment = ctx.threeEnvMap;
-        let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
-        rendererProps.__webglInit = true;
 
         // Set up the camera
-        ctx.camera = new THREE.Camera(); // WebXR gives us the projection matrix to use, so don't bother with PerspectiveCamera
+        ctx.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20 );
         ctx.scene.add(ctx.camera);
 
         // Add a sphere
@@ -133,21 +136,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ctx.glBinding = new XRWebGLBinding(session, ctx.gl);
 
           session.updateRenderState({ baseLayer: new XRWebGLLayer(session, ctx.gl) });
-          session.requestReferenceSpace('local').then(refSpace => onReceivedReferenceSpace(ctx, refSpace));
+          ctx.renderer.xr.setReferenceSpaceType('local');
 
-          if (document.getElementById('useRGBA').checked) {
-            session.requestLightProbe({reflectionFormat: "rgba16f"}).then((lightProbe) => {
-              onReceivedLightProbe(ctx, lightProbe);
-            }).catch(err => console.error(err));
-          } else {
-            session.requestLightProbe().then((lightProbe) => {
-              onReceivedLightProbe(ctx, lightProbe);
-            }).catch(err => console.error(err));
-          }
+          ctx.renderer.xr.setSession(session).then(() => {
+            if (document.getElementById('useRGBA').checked) {
+              session.requestLightProbe({reflectionFormat: "rgba16f"}).then((lightProbe) => {
+                onReceivedLightProbe(ctx, lightProbe);
+              }).catch(err => console.error(err));
+            } else {
+              session.requestLightProbe().then((lightProbe) => {
+                onReceivedLightProbe(ctx, lightProbe);
+              }).catch(err => console.error(err));
+            }
 
-          ctx.reflectionChanged = true;
-
-          session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
+            ctx.reflectionChanged = true;
+            ctx.renderer.setAnimationLoop((time, frame) => {
+              render(ctx, time, frame);
+            });
+          });
         });
       }
 
@@ -160,42 +166,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         ctx.reflectionChanged = true;
       }
 
-      function onReceivedReferenceSpace(ctx, refSpace) {
-        ctx.referenceSpace = refSpace;
-      }
-
       function onSessionEnded(ctx) {
         ctx.renderer.setAnimationLoop(null);
         ctx.xrButton.setSession(null);
       }
 
-      function update(ctx, t, frame) {
-        // Loop
-        ctx.session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
-
-        // Reset renderer state
-        ctx.renderer.state.reset();
-
-        // Update rendering parameters
-        const baseLayer = ctx.session.renderState.baseLayer;
-
-        ctx.renderer.setFramebuffer(baseLayer.framebuffer);
-        ctx.renderer.setSize(baseLayer.framebufferWidth, baseLayer.framebufferHeight);
-
-        // Update camera pose from reference space
-        if (ctx.referenceSpace) {
-          const pose = frame.getViewerPose(ctx.referenceSpace);
-          if (pose && pose.views.length > 0) {
-            const view = pose.views[0];
-
-            ctx.camera.matrix.fromArray(view.transform.matrix);
-            ctx.camera.updateTransforms();
-            ctx.camera.projectionMatrix.fromArray(view.projectionMatrix);
-          }
-        }
-
+      function render(ctx, time, frame) {
         // Get ambient lighting estimation
-        if (ctx.xrLightProbe) {
+        if (frame && ctx.xrLightProbe) {
           const estimate = frame.getLightEstimate(ctx.xrLightProbe);
 
           if (estimate) {
@@ -230,8 +208,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             }
             ctx.reflectionChanged = false;
           }
+
         } else {
-          console.log("Session light estimation not available");
+          console.log("light probe not available");
         }
 
         // Render the scene
