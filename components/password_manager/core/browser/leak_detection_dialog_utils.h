@@ -78,8 +78,8 @@ std::u16string GetLeakDetectionTooltip();
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(CredentialLeakType leak_type);
 
-// Checks whether the leak dialog should show change password button.
-bool ShouldShowChangePasswordButton(CredentialLeakType leak_type);
+// Checks whether the leak dialog should show automatic change password button.
+bool ShouldShowAutomaticChangePasswordButton(CredentialLeakType leak_type);
 
 // Checks whether the leak dialog should show cancel button.
 bool ShouldShowCancelButton(CredentialLeakType leak_type);

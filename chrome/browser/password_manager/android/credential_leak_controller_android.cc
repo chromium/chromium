@@ -119,6 +119,7 @@ bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {
   return password_manager::ShouldShowCancelButton(leak_type_);
 }
 
-bool CredentialLeakControllerAndroid::ShouldShowChangePasswordButton() const {
-  return password_manager::ShouldShowChangePasswordButton(leak_type_);
+bool CredentialLeakControllerAndroid::ShouldShowAutomaticChangePasswordButton()
+    const {
+  return password_manager::ShouldShowAutomaticChangePasswordButton(leak_type_);
 }

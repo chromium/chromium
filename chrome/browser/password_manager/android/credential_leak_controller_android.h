@@ -68,7 +68,7 @@ class CredentialLeakControllerAndroid {
 
   // Whether the "change password automatically" button is available. Varies by
   // leak type.
-  bool ShouldShowChangePasswordButton() const;
+  bool ShouldShowAutomaticChangePasswordButton() const;
 
  private:
   // Used to customize the UI.

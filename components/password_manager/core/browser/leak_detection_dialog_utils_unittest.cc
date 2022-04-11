@@ -336,22 +336,22 @@ TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
       CreateLeakType(is_saved, is_reused, is_syncing, HasChangeScript(false));
   SCOPED_TRACE(testing::Message() << leak_type);
 
-  EXPECT_FALSE(ShouldShowChangePasswordButton(leak_type));
+  EXPECT_FALSE(ShouldShowAutomaticChangePasswordButton(leak_type));
   EXPECT_NE(l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY),
             GetAcceptButtonLabel(leak_type));
 }
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
-       ShouldShowChangePasswordButton) {
+       ShouldShowAutomaticChangePasswordButton) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
 
-  // ShouldCheckPasswords and ShouldShowChangePasswordButton
+  // ShouldCheckPasswords and ShouldShowAutomaticChangePasswordButton
   // should never be true both.
   EXPECT_FALSE(ShouldCheckPasswords(GetParam().leak_type) &&
-               ShouldShowChangePasswordButton(GetParam().leak_type));
+               ShouldShowAutomaticChangePasswordButton(GetParam().leak_type));
 
   EXPECT_EQ(GetParam().should_show_change_password_button,
-            ShouldShowChangePasswordButton(GetParam().leak_type));
+            ShouldShowAutomaticChangePasswordButton(GetParam().leak_type));
 }
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
