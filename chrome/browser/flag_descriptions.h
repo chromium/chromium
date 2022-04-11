@@ -364,9 +364,6 @@ extern const char kDiscountConsentV2Description[];
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
-extern const char kDnsOverHttpsName[];
-extern const char kDnsOverHttpsDescription[];
-
 extern const char kDnsHttpssvcName[];
 extern const char kDnsHttpssvcDescription[];
 

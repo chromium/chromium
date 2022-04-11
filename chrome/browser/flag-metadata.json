@@ -1326,11 +1326,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "dns-over-https",
-    "owners": [ "ericorth", "doh-core@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "dns-proxy-enable-doh",
     "owners": [ "garrick", "jasongustaman" ],
     "expiry_milestone": 104

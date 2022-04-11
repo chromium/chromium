@@ -259,12 +259,6 @@ extern const char kIsolatedSandboxedIframesDescription[] =
     "a given site will be placed into the same process, but alternative models "
     "may be introduced in future experiments.";
 
-const char kDnsOverHttpsName[] = "Secure DNS lookups";
-const char kDnsOverHttpsDescription[] =
-    "Enables DNS over HTTPS. When this feature is enabled, your browser may "
-    "try to use a secure HTTPS connection to look up the addresses of websites "
-    "and other web resources.";
-
 const char kAssistantConsentModalName[] = "AssistantConsentModal";
 const char kAssistantConsentModalDescription[] =
     "Enables the modal version of the Assistant voice search consent dialog.";
