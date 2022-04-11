@@ -779,10 +779,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestUpdateResult"
-    enum="WebAppManifestUpdateResult" expires_after="2022-04-24">
+    enum="WebAppManifestUpdateResult" expires_after="2023-04-24">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
   <summary>
     Records the result of web app manifest update checks during page
     navigations. Note that &quot;No app in scope&quot; results are ignored due
