@@ -27,7 +27,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         value: () => [],
       },
 
-      font_name_: {
+      fontName: {
         type: String,
       }
     };
@@ -36,19 +36,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private apiProxy_: ReadAnythingApiProxy = ReadAnythingApiProxy.getInstance();
   private listenerIds_: number[];
   private paragraphs_: string[];
-  private font_name_: string;
+  private fontName: string;
 
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
-  private default_font_name: string = 'standard';
-  private valid_font_names: {name: string, css_class: string}[] = [
-    {name: 'Standard', css_class: 'standard'},
-    {name: 'Serif', css_class: 'serif'},
-    {name: 'Sans-serif', css_class: 'sans-serif'},
-    {name: 'Arial', css_class: 'arial'},
-    {name: 'Open Sans', css_class: 'open-sans'},
-    {name: 'Calibri', css_class: 'calibri'}
+  private defaultFontName: string = 'standard';
+  private validFontNames: {name: string, cssClass: string}[] = [
+    {name: 'Standard', cssClass: 'standard'},
+    {name: 'Serif', cssClass: 'serif'},
+    {name: 'Sans-serif', cssClass: 'sans-serif'},
+    {name: 'Arial', cssClass: 'arial'},
+    {name: 'Open Sans', cssClass: 'open-sans'},
+    {name: 'Calibri', cssClass: 'calibri'}
   ];
 
   override connectedCallback() {
@@ -61,7 +61,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
               this.showEssentialContent_(essentialContent)),
 
       callbackRouter.onFontNameChange.addListener(
-          (new_font_name: string) => this.updateFontName_(new_font_name))
+          (newFontName: string) => this.updateFontName_(newFontName))
     ];
     this.apiProxy_.showUI();
   }
@@ -77,14 +77,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.paragraphs_ = essentialContent;
   }
 
-  updateFontName_(new_font_name: string) {
+  updateFontName_(newFontName: string) {
     // Validate that the given font name is a valid choice, or use the default.
-    const validFontName = this.valid_font_names.find(
-        (f: {name: string, css_class: string}) => f.name === new_font_name);
+    const validFontName = this.validFontNames.find(
+        (f: {name: string, cssClass: string}) => f.name === newFontName);
     if (!validFontName) {
-      this.font_name_ = this.default_font_name;
+      this.fontName = this.defaultFontName;
     } else {
-      this.font_name_ = validFontName.css_class;
+      this.fontName = validFontName.cssClass;
     }
   }
 }
