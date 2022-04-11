@@ -260,7 +260,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       this.authView_.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
-        js: {code: INJECTED_WEBVIEW_SCRIPT},
+        js: {code: KEYBOARD_UTILS_FOR_INJECTION},
         run_at: 'document_start'
       }]);
     }

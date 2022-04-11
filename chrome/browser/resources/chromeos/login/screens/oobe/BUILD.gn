@@ -108,7 +108,7 @@ js_library("enterprise_enrollment.m") {
     "../../../keyboard:keyboard_utils.m",
     "../../components:display_manager_types.m",
     "../../components:gaia_dialog.m",
-    "../../components:keyboard_utils_for_injection",
+    "../../components:keyboard_utils_for_injection.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/buttons:oobe_back_button.m",

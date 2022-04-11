@@ -203,6 +203,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "components/gaia_input_form.js",
     "components/gaia_button.html",
     "components/gaia_button.js",
+    "components/keyboard_utils_for_injection.html",
     "components/long_touch_detector.html",
     "components/long_touch_detector.js",
     "components/network_select_login.html",

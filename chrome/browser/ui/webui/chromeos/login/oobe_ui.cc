@@ -164,6 +164,8 @@ constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kKeyboardUtilsForInjectionPath[] =
     "components/keyboard_utils_for_injection.js";
+constexpr char kKeyboardUtilsForInjectionModulePath[] =
+    "components/keyboard_utils_for_injection.m.js";
 
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
@@ -373,6 +375,8 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
   source->AddResourcePath(kKeyboardUtilsForInjectionPath,
                           IDR_KEYBOARD_UTILS_FOR_INJECTION_JS);
+  source->AddResourcePath(kKeyboardUtilsForInjectionModulePath,
+                          IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
   source->DisableTrustedTypesCSP();

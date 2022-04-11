@@ -25,7 +25,6 @@ js_type_check("closure_compile_local") {
     ":fake_oobe",
     ":hd_iron_icon",
     ":html_echo",
-    ":keyboard_utils_for_injection",
     ":long_touch_detector",
     ":oobe_select",
     ":oobe_types",
@@ -51,6 +50,8 @@ group("closure_compile_module") {
     ":gaia_input_form.m",
     ":hd_iron_icon.m",
     ":html_echo.m",
+    ":keyboard_utils_for_injection",
+    ":keyboard_utils_for_injection.m",
     ":long_touch_detector.m",
     ":network_select_login.m",
     ":notification_card.m",
@@ -135,9 +136,6 @@ js_library("hd_iron_icon") {
 js_library("html_echo") {
 }
 
-js_library("keyboard_utils_for_injection") {
-}
-
 js_library("long_touch_detector") {
 }
 
@@ -215,6 +213,12 @@ js_library("html_echo.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":html_echo_module" ]
+}
+
+js_library("keyboard_utils_for_injection.m") {
+}
+
+js_library("keyboard_utils_for_injection") {
 }
 
 js_library("long_touch_detector.m") {
