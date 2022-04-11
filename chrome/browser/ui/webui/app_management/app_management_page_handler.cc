@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #include "url/gurl.h"
 
@@ -462,6 +463,22 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   }
 
   return app;
+}
+
+void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&proxy](const apps::AppUpdate& update) {
+        if (update.InstallSource() == apps::InstallSource::kPlayStore) {
+          GURL url("https://play.google.com/store/apps/details?id=" +
+                   update.PublisherId());
+          proxy->LaunchAppWithUrl(
+              arc::kPlayStoreAppId, ui::EF_NONE, url,
+              apps::mojom::LaunchSource::kFromChromeInternal);
+        }
+      });
+#endif
 }
 
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {

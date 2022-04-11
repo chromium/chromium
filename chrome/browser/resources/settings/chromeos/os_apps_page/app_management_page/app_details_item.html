@@ -5,8 +5,12 @@
     localized-string="$i18n{appManagementAppDetailsTitle}">
   </localized-link>
 </div>
-<div class="indented-permission-block" id="type">
-  [[getTypeAndSourceString_(app)]]
+<div class="indented-permission-block" id="type-and-source">
+  <localized-link
+    on-link-clicked="onStoreLinkClicked_"
+    localized-string="[[getTypeAndSourceString_(app)]]">
+    [[getTypeAndSourceString_(app)]]
+  </localized-link>
 </div>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
   <div class="indented-permission-block" id="version">

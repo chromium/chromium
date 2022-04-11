@@ -9,6 +9,8 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {BrowserProxy} from './browser_proxy.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -28,7 +30,10 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
 
   static get properties() {
     return {
-      app: appManagement.mojom.App,
+      /** @private {!Object} */
+      app: {
+        type: Object,
+      },
 
       hidden: {
         type: Boolean,
@@ -124,14 +129,43 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
    * @private
    */
   getTypeAndSourceString_(app) {
-    if (app.installSource === InstallSource.kSystem) {
-      return this.i18n('appManagementAppDetailsTypeCrosSystem');
-    } else if (app.installSource === InstallSource.kUnknown) {
-      return this.getTypeString_(app);
+    switch (app.installSource) {
+      case InstallSource.kSystem:
+        return this.i18n('appManagementAppDetailsTypeCrosSystem');
+      case InstallSource.kPlayStore:
+        return this.i18nAdvanced(
+            'appManagementAppDetailsTypeAndSourceCombined', {
+              substitutions: [
+                String(this.getTypeString_(app)),
+                String(this.getInstallSourceString_(app))
+              ]
+            });
+      case InstallSource.kBrowser:
+      case InstallSource.kChromeWebStore:
+      case InstallSource.kUnknown:
+        return this.getTypeString_(app);
+      default:
+        console.error('Install source not recognised.');
+        return this.getTypeString_(app);
     }
-    return this.i18n(
-        'appManagementAppDetailsTypeAndSourceCombined',
-        this.getTypeString_(app), this.getInstallSourceString_(app));
+  }
+
+  /**
+   * Opens the store page for an app when the link is clicked.
+   *
+   * @param {!Event} e
+   * @private
+   * @suppress {missingProperties} //TODO(crbug/1315057): Fix closure issue.
+   */
+  onStoreLinkClicked_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+
+    if (this.app !== null) {
+      BrowserProxy.getInstance().handler.openStorePage(this.app.id);
+    }
   }
 
   /**

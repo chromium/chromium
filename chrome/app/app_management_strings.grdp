@@ -134,7 +134,7 @@
     Chrome browser
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
-    <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="INSTALL_SOURCE">$2<ex>Chrome browser</ex></ph>
+    <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
     Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>

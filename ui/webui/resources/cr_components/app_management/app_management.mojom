@@ -196,6 +196,8 @@ interface PageHandler {
   // that link's URL is not valid (i.e. `learn_more_url` was empty). If it's a
   // valid URL instead, this won't be called.
   ShowDefaultAppAssociationsUi();
+  // Opens the store page for an app with the given |app_id|.
+  OpenStorePage(string app_id);
 };
 
 // Frontend interface.

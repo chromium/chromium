@@ -340,6 +340,11 @@ export class FakePageHandler {
   }
 
   /**
+   * @param {string} appId
+   */
+  openStorePage(appId) {}
+
+  /**
    * @param {string} optId
    * @param {Object=} optConfig
    * @return {!Promise<!App>}

@@ -74,6 +74,8 @@ export class FakePageHandler implements PageHandlerInterface {
   defaultAppAssociationsUiWasShown() {
     return this.defaultAppAssociationsShown_;
   }
+
+  openStorePage(_appId: string) {}
 }
 
 export class TestAppManagementBrowserProxy implements BrowserProxy {

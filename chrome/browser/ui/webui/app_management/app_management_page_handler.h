@@ -83,6 +83,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
       apps::RunOnOsLoginMode run_on_os_login_mode) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
   void ShowDefaultAppAssociationsUi() override;
+  void OpenStorePage(const std::string& app_id) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(
