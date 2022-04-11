@@ -9,15 +9,27 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../common/styles.js';
 import './cros_button_style.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {isSelectionEvent} from '../common/utils.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './personalization_theme_element.html.js';
 import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme/theme_controller.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {ThemeObserver} from './theme/theme_observer.js';
+
+export interface PersonalizationThemeElement {
+  $: {
+    keys: IronA11yKeysElement,
+    selector: IronSelectorElement,
+  };
+}
 
 export class PersonalizationThemeElement extends WithPersonalizationStore {
   static get is() {
@@ -33,17 +45,23 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
       // null indicates value is being loaded.
       darkModeEnabled_: Boolean,
       colorModeAutoScheduleEnabled_: Boolean,
-      loading_: {
-        type: Boolean,
-        computed:
-            'computeLoading_(darkModeEnabled_, colorModeAutoScheduleEnabled_)',
+
+      /** The button currently highlighted by keyboard navigation. */
+      selectedButton_: {
+        type: Object,
+        notify: true,
       },
     };
   }
 
   private darkModeEnabled_: boolean|null = null;
   private colorModeAutoScheduleEnabled_: boolean|null = null;
-  private loading_: boolean;
+  private selectedButton_: CrButtonElement;
+
+  override ready() {
+    super.ready();
+    this.$.keys.target = this.$.selector;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -57,12 +75,43 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     initializeData(getThemeProvider(), this.getStore());
   }
 
+  /** Handle keyboard navigation. */
+  private onKeysPress_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    const selector = this.$.selector;
+    const prevButton = this.selectedButton_;
+    switch (e.detail.key) {
+      case 'left':
+        selector.selectPrevious();
+        break;
+      case 'right':
+        selector.selectNext();
+        break;
+      default:
+        return;
+    }
+    // Remove focus state of previous button.
+    if (prevButton) {
+      prevButton.removeAttribute('tabindex');
+    }
+    // Add focus state for new button.
+    if (this.selectedButton_) {
+      this.selectedButton_.setAttribute('tabindex', '0');
+      this.selectedButton_.focus();
+    }
+    e.detail.keyboardEvent.preventDefault();
+  }
+
   private getLightAriaPressed_(): string {
     //  If auto schedule mode is enabled, the system disregards whether dark
     //  mode is enabled or not. To ensure expected behavior, we show that dark
     //  mode can only be selected only when auto schedule mode is disabled and
-    //  dark mode is enabled.
-    return (!this.colorModeAutoScheduleEnabled_ && !this.darkModeEnabled_)
+    //  dark mode is enabled. Also explictly check that these prefs are not null
+    //  to avoid showing this button as selected when the values are being
+    //  fetched.
+    return (this.colorModeAutoScheduleEnabled_ !== null &&
+            this.darkModeEnabled_ !== null &&
+            !this.colorModeAutoScheduleEnabled_ && !this.darkModeEnabled_)
         .toString();
   }
 
@@ -100,11 +149,6 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     setColorModeAutoSchedule(
         !this.colorModeAutoScheduleEnabled_, getThemeProvider(),
         this.getStore());
-  }
-
-  private computeLoading_() {
-    return this.colorModeAutoScheduleEnabled_ === null ||
-        this.darkModeEnabled_ === null;
   }
 }
 
