@@ -470,11 +470,11 @@ int SearchResultView::PreferredHeight() const {
         return kKeyboardShortcutViewHeight;
       return kDefaultViewHeight;
     case SearchResultViewType::kAnswerCard:
-      if (multi_line_label_.has_value()) {
+      if (multi_line_label_height_ > 0) {
         // kDefaultAnswerCardViewHeight is adjusted to accommodate multi-line
         // result's height. The assumed kAnswerCardDetailsLineHeight is replaced
         // with the multi-line label's height.
-        return kDefaultAnswerCardViewHeight + SecondaryTextHeight() -
+        return kDefaultAnswerCardViewHeight + multi_line_label_height_ -
                kAnswerCardDetailsLineHeight;
       }
       return kDefaultAnswerCardViewHeight;
@@ -493,8 +493,8 @@ int SearchResultView::PrimaryTextHeight() const {
 int SearchResultView::SecondaryTextHeight() const {
   if (has_keyboard_shortcut_contents_)
     return kPrimaryTextHeight;
-  if (multi_line_label_.has_value())
-    return multi_line_label_.value()->GetHeightForWidth(kMultilineLabelWidth);
+  if (multi_line_label_height_ > 0)
+    return multi_line_label_height_;
   switch (view_type_) {
     case SearchResultViewType::kClassic:
     case SearchResultViewType::kAnswerCard:
@@ -634,14 +634,6 @@ SearchResultView::SetupContainerViewForTextVector(
     bool has_keyboard_shortcut_contents,
     bool is_multi_line) {
   std::vector<LabelAndTag> label_tags;
-  // Updating the details label should reset our pointer to the last seen
-  // `non_elide_label_` and `multi_line_label_`. `non_elide_label_` and
-  // `multi_line_label_` can only be found in the details text and should be
-  // reset when refreshing the details text.
-  if (label_type == LabelType::kDetails) {
-    non_elided_label_.reset();
-    multi_line_label_.reset();
-  }
   int label_count = 0;
   for (auto& span : text_vector) {
     switch (span.GetType()) {
@@ -669,15 +661,14 @@ SearchResultView::SetupContainerViewForTextVector(
           // Each search result can have up to one non-elided label in its
           // details text.
           DCHECK_EQ(label_type, LabelType::kDetails);
-          DCHECK(!non_elided_label_);
-          non_elided_label_ = label;
+          non_elided_details_label_width_ = label->GetPreferredSize().width();
         }
         if (is_multi_line) {
           // Each search result can have up to one non-elided label in its
           // details text.
           DCHECK_EQ(label_type, LabelType::kDetails);
-          DCHECK(!non_elided_label_);
-          multi_line_label_ = label;
+          multi_line_label_height_ =
+              label->GetHeightForWidth(kMultilineLabelWidth);
         }
 
         label_tags.push_back(LabelAndTag(label, span.GetTextTags()));
@@ -794,6 +785,11 @@ void SearchResultView::UpdateTitleContainer() {
 
 void SearchResultView::UpdateDetailsContainer() {
   should_show_separator_label_ = false;
+  // Updating the details label should reset `multi_line_label_height_` and
+  // `non_elided_details_label_width_`.
+  multi_line_label_height_ = 0;
+  non_elided_details_label_width_ = 0;
+
   details_container_->RemoveAllChildViews();
   details_label_tags_.clear();
   if (!result() || result()->details_text_vector().empty()) {
@@ -1078,16 +1074,11 @@ void SearchResultView::Layout() {
         centered_text_bounds.ClampToCenteredSize(label_size);
         text_container_->SetBoundsRect(centered_text_bounds);
 
-        int details_no_elide_width = 0;
-        if (non_elided_label_.has_value()) {
-          details_no_elide_width =
-              non_elided_label_.value()->GetPreferredSize().width();
-        }
-
         SetFlexBehaviorForTextContents(
             centered_text_bounds.width(),
             separator_label_->GetPreferredSize().width(),
-            details_no_elide_width, title_container_, details_container_);
+            non_elided_details_label_width_, title_container_,
+            details_container_);
 
         break;
       }

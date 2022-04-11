@@ -25,6 +25,7 @@ namespace ash {
 
 namespace test {
 class SearchResultListViewTest;
+class SearchResultViewWidgetTest;
 }  // namespace test
 
 class AppListViewDelegate;
@@ -153,6 +154,11 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
  private:
   friend class test::SearchResultListViewTest;
   friend class SearchResultListView;
+  friend class SearchResultViewWidgetTest;
+
+  void set_multi_line_label_height_for_test(int height) {
+    multi_line_label_height_ = height;
+  }
 
   int PreferredHeight() const;
   int PrimaryTextHeight() const;
@@ -269,11 +275,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   SearchResultViewType view_type_;
 
-  // Search result view can have one non-elided label.
-  absl::optional<views::Label*> non_elided_label_;
+  // Search result view can have one non-elided label. Cache the its for flex
+  // layout weight calculations.
+  int non_elided_details_label_width_ = 0;
 
-  // Search result view can have one multi-line label.
-  absl::optional<views::Label*> multi_line_label_;
+  // Search result view can have one multi-line label. Cache its height for
+  // calculating PreferredHeight() and SecondaryTextHeight().
+  int multi_line_label_height_ = 0;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
 };

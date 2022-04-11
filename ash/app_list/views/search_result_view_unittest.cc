@@ -4,8 +4,10 @@
 
 #include "ash/app_list/views/search_result_view.h"
 
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 
@@ -16,6 +18,75 @@ class SearchResultViewTest : public testing::Test {
   SearchResultViewTest& operator=(const SearchResultViewTest&) = delete;
   ~SearchResultViewTest() override = default;
 };
+
+class SearchResultViewWidgetTest : public views::test::WidgetTest {
+ public:
+  SearchResultViewWidgetTest() = default;
+
+  SearchResultViewWidgetTest(const SearchResultViewWidgetTest&) = delete;
+  SearchResultViewWidgetTest& operator=(const SearchResultViewWidgetTest&) =
+      delete;
+
+  ~SearchResultViewWidgetTest() override = default;
+
+  void SetUp() override {
+    views::test::WidgetTest::SetUp();
+
+    widget_ = CreateTopLevelPlatformWidget();
+
+    answer_card_view_ = std::make_unique<SearchResultView>(
+        /*list_view=*/nullptr, /*view_delegate=*/nullptr,
+        /*dialog_controller=*/nullptr,
+        SearchResultView::SearchResultViewType::kAnswerCard);
+
+    widget_->SetBounds(gfx::Rect(0, 0, 740, 200));
+
+    widget_->GetContentsView()->AddChildView(answer_card_view_.get());
+  }
+
+  void TearDown() override {
+    answer_card_view_.reset();
+    widget_->CloseNow();
+    views::test::WidgetTest::TearDown();
+  }
+
+  SearchResultView* answer_card_view() { return answer_card_view_.get(); }
+
+  void SetSearchResultViewMultilineLabelHeight(
+      SearchResultView* search_result_view,
+      int height) {
+    search_result_view->set_multi_line_label_height_for_test(height);
+  }
+
+  int SearchResultViewPreferredHeight(SearchResultView* search_result_view) {
+    return search_result_view->PreferredHeight();
+  }
+
+ private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  std::unique_ptr<SearchResultView> answer_card_view_;
+  views::Widget* widget_;
+};
+
+TEST_F(SearchResultViewWidgetTest, PreferredHeight) {
+  static constexpr struct TestCase {
+    int multi_line_label_height;
+    int preferred_height;
+  } kTestCases[] = {{.multi_line_label_height = 0, .preferred_height = 80},
+                    {.multi_line_label_height = 18, .preferred_height = 80},
+                    {.multi_line_label_height = 36, .preferred_height = 98},
+                    {.multi_line_label_height = 54, .preferred_height = 116}};
+
+  for (auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Test case: {multi_line_label_height: "
+                 << test_case.multi_line_label_height << "}");
+    SetSearchResultViewMultilineLabelHeight(answer_card_view(),
+                                            test_case.multi_line_label_height);
+    EXPECT_EQ(test_case.preferred_height,
+              SearchResultViewPreferredHeight(answer_card_view()));
+  }
+}
 
 TEST_F(SearchResultViewTest, FlexWeightCalculation) {
   static constexpr struct TestCase {
