@@ -353,7 +353,7 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
     return;
   }
 
-  if (window->GetFrame() != window->GetFrame()->Top()) {
+  if (!window->GetFrame()->IsOutermostMainFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Can only be called from the top-level document.");

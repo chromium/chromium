@@ -272,7 +272,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
             if (!rfhi || !rfhi->IsActive()) {
               return;
             }
-            if (rfhi != rfhi->GetMainFrame()) {
+            if (rfhi->GetParentOrOuterDocument()) {
               // Would be overkill to add thread-hopping just to support a test,
               // so we execute directly.
               bad_message::ReceivedBadMessage(render_process_id,
