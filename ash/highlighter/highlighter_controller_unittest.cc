@@ -228,7 +228,12 @@ TEST_F(HighlighterControllerTest, HighlighterPrediction) {
 }
 
 // Test that stylus gestures are correctly recognized by HighlighterController.
-TEST_F(HighlighterControllerTest, HighlighterGestures) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_HighlighterGestures DISABLED_HighlighterGestures
+#else
+#define MAYBE_HighlighterGestures HighlighterGestures
+#endif
+TEST_F(HighlighterControllerTest, MAYBE_HighlighterGestures) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
