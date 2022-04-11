@@ -534,7 +534,6 @@ InputHandler::InputHandler(bool allow_file_access,
                            bool allow_sending_input_to_browser)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
       host_(nullptr),
-      page_scale_factor_(1.0),
       last_id_(0),
       allow_file_access_(allow_file_access),
       allow_sending_input_to_browser_(allow_sending_input_to_browser) {}
@@ -553,17 +552,9 @@ void InputHandler::SetRenderer(int process_host_id,
     return;
   ClearInputState();
 
-  // When navigating, the new renderer might have a different page scale.
-  // It emits a changed event iff the new page scale is not 1
-  // (see crbug.com/929806)
-  // If attaching to a new host, we've got OnPageScaleFactorChanged(),
-  // so don't override it.
-  if (host_)
-    page_scale_factor_ = 1.0;
-
-  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
+  auto* old_web_contents = WebContentsImpl::FromRenderFrameHostImpl(host_);
   host_ = frame_host;
-  web_contents_ = WebContents::FromRenderFrameHost(host_);
+  web_contents_ = WebContentsImpl::FromRenderFrameHostImpl(host_);
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (old_web_contents)
@@ -576,10 +567,6 @@ void InputHandler::SetRenderer(int process_host_id,
 void InputHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Input::Frontend>(dispatcher->channel());
   Input::Dispatcher::wire(dispatcher, this);
-}
-
-void InputHandler::OnPageScaleFactorChanged(float page_scale_factor) {
-  page_scale_factor_ = page_scale_factor;
 }
 
 Response InputHandler::Disable() {
@@ -992,10 +979,9 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
-  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(web_contents_);
   return blink::PageZoomLevelToZoomFactor(
-             web_contents->GetPendingPageZoomLevel()) *
-         page_scale_factor_;
+             web_contents_->GetPendingPageZoomLevel()) *
+         web_contents_->GetPrimaryPage().GetPageScaleFactor();
 }
 
 void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,

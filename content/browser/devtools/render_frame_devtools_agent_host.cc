@@ -275,8 +275,6 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
   auto* wc = frame_tree_node_
                  ? WebContentsImpl::FromFrameTreeNode(frame_tree_node_)
                  : nullptr;
-  if (wc)
-    page_scale_factor_ = wc->GetPrimaryPage().GetPageScaleFactor();
   WebContentsObserver::Observe(wc);
 }
 
@@ -317,7 +315,6 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   auto input_handler = std::make_unique<protocol::InputHandler>(
       session->GetClient()->MayReadLocalFiles(),
       session->GetClient()->MaySendInputEventsToBrowser());
-  input_handler->OnPageScaleFactorChanged(page_scale_factor_);
   session->AddHandler(std::move(input_handler));
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
@@ -636,13 +633,6 @@ void RenderFrameDevToolsAgentHost::OnVisibilityChanged(
     }
   }
 #endif
-}
-
-void RenderFrameDevToolsAgentHost::OnPageScaleFactorChanged(
-    float page_scale_factor) {
-  page_scale_factor_ = page_scale_factor;
-  for (auto* input : protocol::InputHandler::ForAgentHost(this))
-    input->OnPageScaleFactorChanged(page_scale_factor);
 }
 
 void RenderFrameDevToolsAgentHost::OnNavigationRequestWillBeSent(

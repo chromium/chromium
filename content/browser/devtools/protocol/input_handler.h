@@ -29,6 +29,7 @@ namespace content {
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
+class WebContentsImpl;
 
 namespace protocol {
 
@@ -47,7 +48,6 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void OnPageScaleFactorChanged(float page_scale_factor);
   void StartDragging(const blink::mojom::DragData& drag_data,
                      blink::DragOperationsMask drag_operations_mask,
                      bool* intercepted);
@@ -239,11 +239,10 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
   RenderFrameHostImpl* host_;
   // WebContents associated with the |host_|.
-  WebContents* web_contents_;
+  WebContentsImpl* web_contents_ = nullptr;
   std::unique_ptr<Input::Frontend> frontend_;
   base::flat_set<std::unique_ptr<InputInjector>, base::UniquePtrComparator>
       injectors_;
-  float page_scale_factor_;
   int last_id_;
   bool ignore_input_events_ = false;
   bool intercept_drags_ = false;

@@ -140,7 +140,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void FrameDeleted(int frame_tree_node_id) override;
   void RenderFrameDeleted(RenderFrameHost* rfh) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void OnPageScaleFactorChanged(float page_scale_factor) override;
 
   // RenderProcessHostObserver overrides.
   void RenderProcessExited(RenderProcessHost* host,
@@ -178,8 +177,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
   // The FrameTreeNode associated with this agent.
   FrameTreeNode* frame_tree_node_;
-
-  double page_scale_factor_ = 1;
 };
 
 // Returns the ancestor FrameTreeNode* for which a RenderFrameDevToolsAgentHost
