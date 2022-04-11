@@ -197,9 +197,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
 
   oof_positioned_candidates_.emplace_back(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
-      NGInlineContainer<LogicalOffset>(), needs_block_offset_adjustment,
-      /* containing_block */ NGContainingBlock<LogicalOffset>(),
-      /* fixedpos_containing_block */ NGContainingBlock<LogicalOffset>());
+      NGInlineContainer<LogicalOffset>(), needs_block_offset_adjustment);
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
@@ -224,8 +222,15 @@ void NGContainerFragmentBuilder::AddOutOfFlowInlineChildCandidate(
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
-    const NGLogicalOutOfFlowPositionedNode& descendant) {
+    const NGLogicalOOFNodeForFragmentation& descendant) {
   oof_positioned_fragmentainer_descendants_.push_back(descendant);
+}
+
+void NGContainerFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
+    const NGLogicalOutOfFlowPositionedNode& descendant) {
+  DCHECK(!descendant.is_for_fragmentation);
+  NGLogicalOOFNodeForFragmentation fragmentainer_descendant(descendant);
+  AddOutOfFlowFragmentainerDescendant(fragmentainer_descendant);
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowDescendant(
@@ -277,7 +282,7 @@ void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
 }
 
 void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
-    HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants) {
+    HeapVector<NGLogicalOOFNodeForFragmentation>* descendants) {
   DCHECK(descendants->IsEmpty());
   DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);

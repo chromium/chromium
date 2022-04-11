@@ -158,6 +158,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       TextDirection inline_container_direction);
 
   void AddOutOfFlowFragmentainerDescendant(
+      const NGLogicalOOFNodeForFragmentation& descendant);
+  void AddOutOfFlowFragmentainerDescendant(
       const NGLogicalOutOfFlowPositionedNode& descendant);
 
   void AddOutOfFlowDescendant(
@@ -185,7 +187,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
   void SwapOutOfFlowFragmentainerDescendants(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants);
+      HeapVector<NGLogicalOOFNodeForFragmentation>* descendants);
 
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
@@ -377,7 +379,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   absl::optional<int> lines_until_clamp_;
 
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
-  HeapVector<NGLogicalOutOfFlowPositionedNode>
+  HeapVector<NGLogicalOOFNodeForFragmentation>
       oof_positioned_fragmentainer_descendants_;
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
 

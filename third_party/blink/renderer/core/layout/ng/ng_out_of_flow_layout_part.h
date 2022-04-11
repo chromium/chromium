@@ -134,8 +134,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
     const WritingDirectionMode default_writing_direction;
-    const NGContainingBlock<LogicalOffset>& fixedpos_containing_block;
-    const NGInlineContainer<LogicalOffset>& fixedpos_inline_container;
+    const NGContainingBlock<LogicalOffset> fixedpos_containing_block;
+    const NGInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool inline_container = false;
 
     NodeInfo(NGBlockNode node,
@@ -226,7 +226,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void ComputeInlineContainingBlocks(
       const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
   void ComputeInlineContainingBlocksForFragmentainer(
-      const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
+      const HeapVector<NGLogicalOOFNodeForFragmentation>&);
   // |containing_block_relative_offset| is the accumulated relative offset from
   // the inline's containing block to the fragmentation context root.
   // |containing_block_offset| is the offset of the inline's containing block
@@ -254,7 +254,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // |multicol_children| holds the children of an inner multicol if
   // we are laying out OOF elements inside a nested fragmentation context.
   void LayoutFragmentainerDescendants(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants,
+      HeapVector<NGLogicalOOFNodeForFragmentation>* descendants,
       LogicalOffset fragmentainer_progression,
       bool outer_context_has_fixedpos_container = false,
       HeapVector<MulticolChildInfo>* multicol_children = nullptr);
@@ -346,7 +346,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   // Out-of-flow positioned nodes that we should lay out at a later time. For
   // example, if the containing block has not finished layout.
-  HeapVector<NGLogicalOutOfFlowPositionedNode> delayed_descendants_;
+  HeapVector<NGLogicalOOFNodeForFragmentation> delayed_descendants_;
 
   // Holds the children of an inner multicol if we are laying out OOF elements
   // inside a nested fragmentation context.

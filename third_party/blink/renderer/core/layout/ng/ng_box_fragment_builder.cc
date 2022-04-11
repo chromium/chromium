@@ -585,7 +585,7 @@ void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
 }
 
 void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
-    NGLogicalOutOfFlowPositionedNode& descendant,
+    NGLogicalOOFNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
   if (!PreviousBreakToken())
     return;

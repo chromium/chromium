@@ -20,7 +20,7 @@ namespace blink {
 // once it reaches its containing block. A containing block holds the
 // containing block information needed to place these OOF positioned nodes once
 // they reach the fragmentation context root. See
-// NGPhysicalOOFNodeForFragmentation/NGLogicalOutOfFlowPositionedNode for more
+// NGPhysicalOOFNodeForFragmentation/NGLogicalOOFNodeForFragmentation for more
 // details.
 template <typename OffsetType>
 class NGContainingBlock {
@@ -177,6 +177,46 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   void TraceAfterDispatch(Visitor*) const;
 };
 
+// The logical version of above. It is used within a an algorithm pass (within
+// an |NGContainerFragmentBuilder|), and its logical coordinate system is wrt.
+// the container builder's writing-mode.
+//
+// It is *only* used within an algorithm pass, (it is temporary, and should not
+// be stored/persisted).
+struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
+  DISALLOW_NEW();
+
+ public:
+  Member<LayoutBox> box;
+  NGLogicalStaticPosition static_position;
+  NGInlineContainer<LogicalOffset> inline_container;
+  bool needs_block_offset_adjustment;
+  // Whether or not this is an NGLogicalOOFNodeForFragmentation.
+  unsigned is_for_fragmentation : 1;
+
+  NGLogicalOutOfFlowPositionedNode(
+      NGBlockNode node,
+      NGLogicalStaticPosition static_position,
+      NGInlineContainer<LogicalOffset> inline_container =
+          NGInlineContainer<LogicalOffset>(),
+      bool needs_block_offset_adjustment = false)
+      : box(node.GetLayoutBox()),
+        static_position(static_position),
+        inline_container(inline_container),
+        needs_block_offset_adjustment(needs_block_offset_adjustment),
+        is_for_fragmentation(false) {
+    DCHECK(!inline_container.container ||
+           inline_container.container ==
+               inline_container.container->ContinuationRoot());
+    DCHECK(node.IsBlock());
+  }
+
+  NGBlockNode Node() const { return NGBlockNode(box); }
+
+  void Trace(Visitor* visitor) const;
+  void TraceAfterDispatch(Visitor*) const;
+};
+
 // When fragmentation comes into play, we no longer place a positioned-node as
 // soon as it reaches its containing block. Instead, we continue to bubble the
 // positioned node up until it reaches the fragmentation context root. There, it
@@ -226,26 +266,22 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
   void TraceAfterDispatch(Visitor* visitor) const;
 };
 
-// The logical version of above. It is used within a an algorithm pass (within
-// an |NGContainerFragmentBuilder|), and its logical coordinate system is wrt.
-// the container builder's writing-mode.
+// The logical version of the above. It is used within a an algorithm pass
+// (within an |NGContainerFragmentBuilder|), and its logical coordinate system
+// is wrt. the container builder's writing-mode.
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
 // be stored/persisted).
-struct NGLogicalOutOfFlowPositionedNode final {
+struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
+    : public NGLogicalOutOfFlowPositionedNode {
   DISALLOW_NEW();
 
  public:
-  Member<LayoutBox> box;
-  NGLogicalStaticPosition static_position;
-  NGInlineContainer<LogicalOffset> inline_container;
-  bool needs_block_offset_adjustment;
-  const LayoutUnit fragmentainer_consumed_block_size;
   NGContainingBlock<LogicalOffset> containing_block;
   NGContainingBlock<LogicalOffset> fixedpos_containing_block;
   NGInlineContainer<LogicalOffset> fixedpos_inline_container;
 
-  NGLogicalOutOfFlowPositionedNode(
+  NGLogicalOOFNodeForFragmentation(
       NGBlockNode node,
       NGLogicalStaticPosition static_position,
       NGInlineContainer<LogicalOffset> inline_container =
@@ -257,27 +293,33 @@ struct NGLogicalOutOfFlowPositionedNode final {
           NGContainingBlock<LogicalOffset>(),
       NGInlineContainer<LogicalOffset> fixedpos_inline_container =
           NGInlineContainer<LogicalOffset>())
-      : box(node.GetLayoutBox()),
-        static_position(static_position),
-        inline_container(inline_container),
-        needs_block_offset_adjustment(needs_block_offset_adjustment),
+      : NGLogicalOutOfFlowPositionedNode(node,
+                                         static_position,
+                                         inline_container,
+                                         needs_block_offset_adjustment),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
-    DCHECK(!inline_container.container ||
-           inline_container.container ==
-               inline_container.container->ContinuationRoot());
-    DCHECK(node.IsBlock());
+    is_for_fragmentation = true;
   }
 
-  NGBlockNode Node() const { return NGBlockNode(box); }
+  explicit NGLogicalOOFNodeForFragmentation(
+      const NGLogicalOutOfFlowPositionedNode& oof_node)
+      : NGLogicalOutOfFlowPositionedNode(
+            oof_node.Node(),
+            oof_node.static_position,
+            oof_node.inline_container,
+            oof_node.needs_block_offset_adjustment) {
+    is_for_fragmentation = true;
+  }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(box);
-    visitor->Trace(inline_container);
-    visitor->Trace(containing_block);
-    visitor->Trace(fixedpos_containing_block);
-    visitor->Trace(fixedpos_inline_container);
+  void TraceAfterDispatch(Visitor* visitor) const;
+};
+
+template <>
+struct DowncastTraits<NGLogicalOOFNodeForFragmentation> {
+  static bool AllowFrom(const NGLogicalOutOfFlowPositionedNode& oof_node) {
+    return oof_node.is_for_fragmentation;
   }
 };
 
@@ -339,5 +381,7 @@ WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::NGPhysicalOOFNodeForFragmentation)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::NGLogicalOutOfFlowPositionedNode)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGLogicalOOFNodeForFragmentation)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

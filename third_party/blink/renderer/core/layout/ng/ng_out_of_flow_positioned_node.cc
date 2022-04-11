@@ -21,9 +21,32 @@ void NGPhysicalOutOfFlowPositionedNode::TraceAfterDispatch(
   visitor->Trace(inline_container);
 }
 
+void NGLogicalOutOfFlowPositionedNode::Trace(Visitor* visitor) const {
+  if (is_for_fragmentation) {
+    static_cast<const NGLogicalOOFNodeForFragmentation*>(this)
+        ->TraceAfterDispatch(visitor);
+  } else {
+    TraceAfterDispatch(visitor);
+  }
+}
+
+void NGLogicalOutOfFlowPositionedNode::TraceAfterDispatch(
+    Visitor* visitor) const {
+  visitor->Trace(box);
+  visitor->Trace(inline_container);
+}
+
 void NGPhysicalOOFNodeForFragmentation::TraceAfterDispatch(
     Visitor* visitor) const {
   NGPhysicalOutOfFlowPositionedNode::TraceAfterDispatch(visitor);
+  visitor->Trace(containing_block);
+  visitor->Trace(fixedpos_containing_block);
+  visitor->Trace(fixedpos_inline_container);
+}
+
+void NGLogicalOOFNodeForFragmentation::TraceAfterDispatch(
+    Visitor* visitor) const {
+  NGLogicalOutOfFlowPositionedNode::TraceAfterDispatch(visitor);
   visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
   visitor->Trace(fixedpos_inline_container);

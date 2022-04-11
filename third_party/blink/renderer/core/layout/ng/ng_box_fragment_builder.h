@@ -649,7 +649,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   void AdjustOffsetsForFragmentainerDescendant(
-      NGLogicalOutOfFlowPositionedNode& descendant,
+      NGLogicalOOFNodeForFragmentation& descendant,
       bool only_fixedpos_containing_block = false);
   void AdjustFixedposContainingBlockForFragmentainerDescendants();
   void AdjustFixedposContainingBlockForInnerMulticols();
