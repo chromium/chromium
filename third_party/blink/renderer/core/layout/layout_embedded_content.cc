@@ -100,18 +100,20 @@ const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return absl::nullopt;
 }
 
+LayoutReplaced::ObjectFit LayoutEmbeddedContent::EmbeddedContentTransform(
+    const PhysicalRect& content_rect) const {
+  if (const absl::optional<PhysicalSize> size = FrozenFrameSize()) {
+    // When frozen, place the child frame content at the top-left corner.
+    // TODO(kojii): The `object-fit` behaviors is not implemented yet.
+    return ObjectFit({content_rect.offset, *size});
+  }
+
+  return ObjectFit(content_rect);
+}
+
 LayoutReplaced::ObjectFit LayoutEmbeddedContent::EmbeddedContentTransform()
     const {
-  // Use |Border*()| instead of |Client*()| or |PhysicalContentBoxRect()|
-  // because this function does not take scrollbars into account.
-  // TODO(kojii): This is to match the existing code behavior. Not sure if this
-  // is correct.
-  PhysicalOffset offset(BorderLeft() + PaddingLeft(),
-                        BorderTop() + PaddingTop());
-
-  // TODO(kojii): The `object-fit` behaviors is not implemented yet.
-
-  return ObjectFit(offset);
+  return EmbeddedContentTransform(PhysicalContentBoxRect());
 }
 
 PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
@@ -330,13 +332,9 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
     content_rect.size = View()->ViewRect().size;
   }
 
-  if (const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
-    // TODO(kojii): Setting the `offset` to non-zero values breaks
-    // hit-testing/inputs. Even different size is suspicious, as the input
-    // system forwards mouse events to the child frame even when the mouse is
-    // outside of the child frame. Revisit this when the input system supports
-    // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
-    content_rect.size = *frozen_size;
+  if (FrozenFrameSize()) {
+    // When the size is frozen, return the scaled/offset final rect.
+    content_rect = EmbeddedContentTransform(content_rect).FinalRect();
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the

@@ -81,6 +81,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   // change even when the size of |this| changes.
   virtual const absl::optional<PhysicalSize> FrozenFrameSize() const;
   ObjectFit EmbeddedContentTransform() const;
+  ObjectFit EmbeddedContentTransform(const PhysicalRect& content_rect) const;
 
   PaintLayerType LayerTypeRequired() const override;
 

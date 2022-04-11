@@ -151,7 +151,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // TODO(kojii): scale not implemented yet.
   class ObjectFit {
    public:
-    explicit ObjectFit(PhysicalOffset offset) : offset_(offset) {}
+    explicit ObjectFit(const PhysicalRect final_rect)
+        : final_rect_(final_rect) {}
+
+    // Returns the rect the content is rendered into.
+    const PhysicalRect& FinalRect() const { return final_rect_; }
+    const PhysicalOffset& Offset() const { return final_rect_.offset; }
 
     PhysicalOffset Apply(const PhysicalOffset& offset) const;
     gfx::Rect Apply(const gfx::Rect& rect) const;
@@ -159,7 +164,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     gfx::PointF ApplyInverse(const gfx::PointF& point) const;
 
    private:
-    PhysicalOffset offset_;
+    PhysicalRect final_rect_;
   };
 
   // This function calculates the placement of the replaced contents. It takes
