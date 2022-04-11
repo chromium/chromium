@@ -4,6 +4,9 @@
 
 import("//build/rust/cargo_crate.gni")
 
+# TODO(crbug/1297719): work out why this isn't automatically populated by
+# crates.py
+
 cargo_crate("autocxx_gen") {
   crate_type = "bin"
   crate_root = "crate/src/main.rs"

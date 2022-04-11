@@ -36,6 +36,8 @@ cargo_crate("lib") {
     "clang_5_0",
     "clang_6_0",
     "libloading",
+
+    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
     "static",
   ]
   build_root = "crate/build.rs"
@@ -44,10 +46,4 @@ cargo_crate("lib") {
   # TODO(crbug.com/1304251): The following line arranges for dependent targets
   # to link against clang's static libraries.
   deps += [ "//build/rust/clanglibs" ]
-
-  # TODO(crbug.com/1304254): The following 'rustenv' is set by the dep above
-  # but is unavailable to the build script in cargo_crate.gni so we enforce it
-  # here.
-  rustenv = [ "LIBCLANG_STATIC_PATH=" +
-              rebase_path("//third_party/llvm-build/Release+Asserts/lib") ]
 }

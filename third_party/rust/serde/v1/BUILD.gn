@@ -14,14 +14,9 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
-  deps = [ "//third_party/rust/serde_derive/v1:lib" ]
-  features = [
-    "derive",
-    "serde_derive",
-    "std",
-  ]
   cargo_pkg_version = "1.0.130"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
+  features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
 }

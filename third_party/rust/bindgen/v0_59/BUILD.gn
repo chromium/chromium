@@ -12,6 +12,7 @@ cargo_crate("bindgen") {
   cargo_pkg_version = "0.59.2"
   cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers"
   deps = [
+    # TODO(crbug/1314345): the executable needs to depend on the lib.
     ":lib",
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/cexpr/v0_6:lib",
@@ -34,12 +35,15 @@ cargo_crate("bindgen") {
     "env_logger",
     "log",
     "logging",
+
+    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
     "static",
     "which",
     "which-rustfmt",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
+  build_script_outputs = [ "host-target.txt" ]
 }
 cargo_crate("lib") {
   crate_name = "bindgen"
@@ -75,6 +79,8 @@ cargo_crate("lib") {
     "env_logger",
     "log",
     "logging",
+
+    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
     "static",
     "which",
     "which-rustfmt",

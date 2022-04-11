@@ -51,20 +51,16 @@ features = [ "unbounded_depth", "float_roundtrip" ]
 version = "0.59"
 build-script-outputs = [ "host-target.txt" ]
 features = [ "static" ]
-# TODO(crbug.com/1294010)
-# rustenv = [ "CARGO_PKG_VERSION=0.59" ]
 
 [dependencies.autocxx-bindgen]
 version = "0.59"
 build-script-outputs = [ "host-target.txt" ]
 features = [ "static" ]
-# TODO(crbug.com/1294010)
-# rustenv = [ "CARGO_PKG_VERSION=0.59" ]
 
 [dependencies.rustversion]
 version = "1"
 allow-first-party-usage = false
-build_script_outputs = [ "version.rs" ]
+build-script-outputs = [ "version.rs" ]
 
 # Crates listed in dev-dependencies will have a :test_support GN target
 # built for them in their BUILD.gn file, which is marked testonly=true.
