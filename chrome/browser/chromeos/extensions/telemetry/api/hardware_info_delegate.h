@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
+#include "ash/webui/telemetry_extension_ui/services/probe_service.h"
 #include "base/callback.h"
-#include "base/system/sys_info.h"
 
 namespace chromeos {
 
@@ -38,10 +39,17 @@ class HardwareInfoDelegate {
   HardwareInfoDelegate& operator=(const HardwareInfoDelegate&) = delete;
   virtual ~HardwareInfoDelegate();
 
-  virtual void GetManufacturer(ManufacturerCallback callback);
+  virtual void GetManufacturer(ManufacturerCallback done_cb);
 
  protected:
   HardwareInfoDelegate();
+
+ private:
+  void FallbackHandler(ManufacturerCallback done_cb,
+                       std::string probe_service_result);
+
+  mojo::Remote<ash::health::mojom::ProbeService> remote_probe_service_;
+  ash::ProbeService probe_service_;
 };
 
 }  // namespace chromeos
