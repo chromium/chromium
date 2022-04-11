@@ -102,6 +102,8 @@ blink_modules_sources("webaudio") {
     "delay_processor.h",
     "dynamics_compressor_node.cc",
     "dynamics_compressor_node.h",
+    "gain_handler.cc",
+    "gain_handler.h",
     "gain_node.cc",
     "gain_node.h",
     "iir_dsp_kernel.cc",
