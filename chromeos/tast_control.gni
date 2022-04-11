@@ -246,6 +246,13 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1314935
   "dlp.DataLeakPreventionRulesListClipboardShelf",
+
+  # https://crbug.com/1314923
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_allowed",
+  "dlp.DataLeakPreventionRulesListClipboardOmni",
+
+  # https://crbug.com/1315123
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
