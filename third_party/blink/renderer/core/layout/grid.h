@@ -93,9 +93,7 @@ class CORE_EXPORT Grid {
   bool HasAnyGridItemPaintOrder() const;
 #endif
 
-  class GridIterator {
-    USING_FAST_MALLOC(GridIterator);
-
+  class GridIterator : public GarbageCollected<GridIterator> {
    public:
     virtual LayoutBox* NextGridItem() = 0;
 
@@ -106,6 +104,8 @@ class CORE_EXPORT Grid {
     GridIterator(const GridIterator&) = delete;
     GridIterator& operator=(const GridIterator&) = delete;
     virtual ~GridIterator() = default;
+
+    virtual void Trace(Visitor* visitor) const {}
 
    protected:
     // |direction| is the direction that is fixed to |fixed_track_index| so e.g
@@ -121,7 +121,7 @@ class CORE_EXPORT Grid {
     wtf_size_t child_index_;
   };
 
-  virtual std::unique_ptr<GridIterator> CreateIterator(
+  virtual GridIterator* CreateIterator(
       GridTrackSizingDirection,
       wtf_size_t fixed_track_index,
       wtf_size_t varying_track_index = 0) const = 0;
@@ -279,7 +279,7 @@ class CORE_EXPORT ListGrid final : public Grid {
     return direction == kForRows ? *rows_ : *columns_;
   }
 
-  std::unique_ptr<GridIterator> CreateIterator(
+  GridIterator* CreateIterator(
       GridTrackSizingDirection,
       wtf_size_t fixed_track_index,
       wtf_size_t varying_track_index = 0) const override;
@@ -292,8 +292,6 @@ class CORE_EXPORT ListGrid final : public Grid {
 };
 
 class ListGridIterator final : public Grid::GridIterator {
-  USING_FAST_MALLOC(ListGridIterator);
-
  public:
   ListGridIterator(const ListGrid& grid,
                    GridTrackSizingDirection,
@@ -302,6 +300,11 @@ class ListGridIterator final : public Grid::GridIterator {
   ListGridIterator(const ListGridIterator&) = delete;
   ListGridIterator& operator=(const ListGridIterator&) = delete;
 
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(cell_node_);
+    GridIterator::Trace(visitor);
+  }
+
   LayoutBox* NextGridItem() override;
   std::unique_ptr<GridArea> NextEmptyGridArea(
       wtf_size_t fixed_track_span,
@@ -309,7 +312,7 @@ class ListGridIterator final : public Grid::GridIterator {
 
  private:
   const ListGrid& grid_;
-  Persistent<ListGrid::GridCell> cell_node_;
+  Member<ListGrid::GridCell> cell_node_;
 };
 
 }  // namespace blink

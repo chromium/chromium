@@ -99,7 +99,7 @@ static void IterateGridItemsInTrackIndices(const Grid& grid,
   HeapHashSet<Member<LayoutBox>> items_set;
 #endif
   for (wtf_size_t i = 0; i < track_indices.size(); ++i) {
-    auto iterator = grid.CreateIterator(direction, track_indices[i]);
+    auto* iterator = grid.CreateIterator(direction, track_indices[i]);
     while (LayoutBox* grid_item = iterator->NextGridItem()) {
       const GridSpan& span = grid.GridItemSpan(*grid_item, direction);
       if (i > 0) {

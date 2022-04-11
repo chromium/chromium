@@ -340,12 +340,12 @@ ListGrid::GridCell* ListGrid::GridCell::NextInDirection(
   return direction_ == direction ? Next() : next_ortho_.Get();
 }
 
-std::unique_ptr<Grid::GridIterator> ListGrid::CreateIterator(
+Grid::GridIterator* ListGrid::CreateIterator(
     GridTrackSizingDirection direction,
     wtf_size_t fixed_track_index,
     wtf_size_t varying_track_index) const {
-  return base::WrapUnique(new ListGridIterator(
-      *this, direction, fixed_track_index, varying_track_index));
+  return MakeGarbageCollected<ListGridIterator>(
+      *this, direction, fixed_track_index, varying_track_index);
 }
 
 ListGridIterator::ListGridIterator(const ListGrid& grid,
