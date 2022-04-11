@@ -2388,6 +2388,8 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
       params, layout_info_for_devtools_.get(), &row_cross_size_updates_);
   auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;
   new_builder.SetBoxType(container_builder_.BoxType());
+  algorithm_with_row_cross_sizes.ignore_child_scrollbar_changes_ =
+      ignore_child_scrollbar_changes_;
 
   // We may have aborted layout due to an early break previously. Ensure that
   // the builder detects the correct space shortage, if so.
