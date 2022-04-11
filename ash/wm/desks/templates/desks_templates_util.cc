@@ -46,5 +46,13 @@ bool AreDesksTemplatesEnabled() {
   return features::AreDesksTemplatesEnabled();
 }
 
+bool IsDeskSaveAndRecallEnabled() {
+  return features::IsSavedDesksEnabled();
+}
+
+bool IsSavedDesksEnabled() {
+  return AreDesksTemplatesEnabled() || IsDeskSaveAndRecallEnabled();
+}
+
 }  // namespace desks_templates_util
 }  // namespace ash

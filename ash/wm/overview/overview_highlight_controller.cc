@@ -277,6 +277,8 @@ OverviewHighlightController::GetTraversableViews() const {
 
     if (grid->IsSaveDeskAsTemplateButtonVisible())
       traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());
+    if (grid->IsSaveDeskForLaterButtonVisible())
+      traversable_views.push_back(grid->GetSaveDeskForLaterButton());
   }
   return traversable_views;
 }

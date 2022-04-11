@@ -212,7 +212,7 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
           zero_state_new_desk_button->GetPreferredSize();
 
       const bool should_show_templates_ui =
-          desks_templates_util::AreDesksTemplatesEnabled() &&
+          desks_templates_util::IsSavedDesksEnabled() &&
           DesksTemplatesPresenter::Get()->should_show_templates_ui();
       auto* zero_state_desks_templates_button =
           bar_view_->zero_state_desks_templates_button();
@@ -372,7 +372,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
-  if (desks_templates_util::AreDesksTemplatesEnabled()) {
+  if (desks_templates_util::IsSavedDesksEnabled()) {
     expanded_state_desks_templates_button_ =
         scroll_view_contents_->AddChildView(
             std::make_unique<ExpandedDesksBarButton>(
@@ -933,7 +933,7 @@ void DesksBarView::OnNewDeskButtonPressed(
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
-  if (IsZeroState() || !desks_templates_util::AreDesksTemplatesEnabled())
+  if (IsZeroState() || !desks_templates_util::IsSavedDesksEnabled())
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
@@ -944,7 +944,7 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
 }
 
 void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
-  if (!desks_templates_util::AreDesksTemplatesEnabled())
+  if (!desks_templates_util::IsSavedDesksEnabled())
     return;
 
   const bool should_show_ui =

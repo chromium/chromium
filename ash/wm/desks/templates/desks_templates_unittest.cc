@@ -33,6 +33,7 @@
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
+#include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -191,14 +192,18 @@ class DesksTemplatesTest : public OverviewTestBase {
     return desks_bar_view->expanded_state_desks_templates_button();
   }
 
-  views::Widget* GetSaveDeskAsTemplateButtonForRoot(aura::Window* root_window) {
+  OverviewGrid* GetOverviewGridForRoot(aura::Window* root_window) {
     auto* overview_session = GetOverviewSession();
-    if (!overview_session)
-      return nullptr;
+    return overview_session
+               ? overview_session->GetGridWithRootWindow(root_window)
+               : nullptr;
+  }
 
-    const auto* overview_grid =
-        overview_session->GetGridWithRootWindow(root_window);
-    return overview_grid->save_desk_as_template_widget_.get();
+  SaveDeskTemplateButton* GetSaveDeskAsTemplateButtonForRoot(
+      aura::Window* root_window) {
+    const auto* overview_grid = GetOverviewGridForRoot(root_window);
+    return overview_grid ? overview_grid->GetSaveDeskAsTemplateButton()
+                         : nullptr;
   }
 
   // Shows the desks templates grid by emulating a click on the templates
@@ -320,9 +325,10 @@ class DesksTemplatesTest : public OverviewTestBase {
       WaitForDesksTemplatesUI();
     }
 
-    auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
-    ASSERT_TRUE(save_template->IsVisible());
-    ClickOnView(save_template->GetContentsView());
+    auto* save_template_button = GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    ClickOnView(save_template_button);
     WaitForDesksTemplatesUI();
     // Clicking the save template button selects the newly created template's
     // name field. We can press enter or escape or click to select out of it.
@@ -793,9 +799,8 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
   for (auto& overview_grid : GetOverviewGridList())
     EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
-  auto* save_template =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(save_template->IsVisible());
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 }
 
 // Tests that the save desk as template button is aligned with the first
@@ -811,18 +816,18 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonAligned) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid =
       GetOverviewSession()->GetGridWithRootWindow(root_window);
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(root_window);
 
   auto verify_save_desk_widget_bounds = [&overview_grid,
-                                         save_desk_as_template_widget]() {
+                                         save_desk_as_template_button]() {
     auto& window_list = overview_grid->window_list();
     ASSERT_FALSE(window_list.empty());
     EXPECT_EQ(
         std::round(window_list.front()->target_bounds().x()) + kWindowMargin,
-        save_desk_as_template_widget->GetWindowBoundsInScreen().x());
+        save_desk_as_template_button->GetBoundsInScreen().x());
     EXPECT_EQ(std::round(window_list.front()->target_bounds().y()) - 40,
-              save_desk_as_template_widget->GetWindowBoundsInScreen().y());
+              save_desk_as_template_button->GetBoundsInScreen().y());
   };
 
   verify_save_desk_widget_bounds();
@@ -870,8 +875,7 @@ TEST_F(DesksTemplatesTest, SaveTemplateEnabledDisabled) {
   EXPECT_EQ(0, GetOverviewGridList()[0]->num_unsupported_windows());
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* button = static_cast<PillButton*>(
-      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
+  auto* button = GetSaveDeskAsTemplateButtonForRoot(root);
   EXPECT_EQ(views::Button::STATE_DISABLED, button->GetState());
 
   std::vector<DeskTemplate*> entries = GetAllEntries();
@@ -890,8 +894,7 @@ TEST_F(DesksTemplatesTest, SaveTemplateEnabledDisabled) {
   DeleteTemplate(entries[5]->uuid(), /*expected_current_item_count=*/1);
   EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
 
-  button = static_cast<PillButton*>(
-      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
+  button = GetSaveDeskAsTemplateButtonForRoot(root);
   EXPECT_EQ(views::Button::STATE_NORMAL, button->GetState());
 }
 
@@ -903,15 +906,16 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
   ToggleOverview();
   WaitForDesksTemplatesUI();
 
-  // The `save_desk_as_template_widget` is visible when at least one window is
+  // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_widget);
-  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+  ASSERT_TRUE(save_desk_as_template_button);
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_widget` button.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  // Click on `save_desk_as_template_button`.
+  ClickOnView(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Expect that the Desk Templates grid is visible.
@@ -934,8 +938,7 @@ TEST_F(DesksTemplatesTest, SaveTemplateNudgesNameView) {
   // created template name view.
   ToggleOverview();
   ClickOnView(
-      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow())
-          ->GetContentsView());
+      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
   WaitForDesksTemplatesUI();
   ASSERT_EQ(3ul, GetAllEntries().size());
 
@@ -1510,10 +1513,10 @@ TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
                                                     /*zero_state=*/true);
   auto* expanded_state = GetDesksTemplatesButtonForRoot(root,
                                                         /*zero_state=*/false);
-  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
   EXPECT_TRUE(zero_state->GetVisible());
   EXPECT_FALSE(expanded_state->GetVisible());
-  EXPECT_TRUE(save_template->IsVisible());
+  EXPECT_TRUE(
+      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 
   // Tests that after transitioning, we remain in overview mode and all the
   // buttons are invisible.
@@ -1521,7 +1524,8 @@ TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_FALSE(zero_state->GetVisible());
   EXPECT_FALSE(expanded_state->GetVisible());
-  EXPECT_FALSE(save_template->IsVisible());
+  EXPECT_FALSE(
+      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 }
 
 // Tests that the desks templates grid gets hidden when transitioning to tablet
@@ -1709,9 +1713,10 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
   WaitForDesksTemplatesUI();
-  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
-  ASSERT_TRUE(save_template->IsVisible());
-  ClickOnView(save_template->GetContentsView());
+  auto* save_template_button = GetSaveDeskAsTemplateButtonForRoot(root);
+  ASSERT_TRUE(
+      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+  ClickOnView(save_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Decline the dialog. We should stay in overview and no template should have
@@ -1727,7 +1732,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 
   // Click on the save template button again. The unsupported apps dialog should
   // show up.
-  ClickOnView(save_template->GetContentsView());
+  ClickOnView(save_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Accept the dialog. The template should have been saved and the templates
@@ -1768,10 +1773,9 @@ TEST_F(DesksTemplatesTest, AllUnsupportedAppsDisablesSaveTemplates) {
   EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
   EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
 
-  auto* save_template = static_cast<PillButton*>(
-      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow())
-          ->GetContentsView());
-  EXPECT_EQ(views::Button::STATE_DISABLED, save_template->GetState());
+  auto* save_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
+  EXPECT_EQ(views::Button::STATE_DISABLED, save_template_button->GetState());
 }
 
 // Tests that adding and removing unsupported windows is counted correctly.
@@ -2379,8 +2383,8 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
   auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
   DCHECK(desk_widget);
 
-  auto* save_widget =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  auto* save_widget = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                          ->save_desk_button_container_widget();
   auto* item_widget = GetOverviewItemForWindow(window.get())->item_widget();
 
   // Order should be [focus_widget, item_widget, desk_widget, save_widget].
@@ -2647,15 +2651,16 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateRecordsMetric) {
   // Record histogram
   base::HistogramTester histogram_tester;
 
-  // The `save_desk_as_template_widget` is visible when at least one window is
+  // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_widget);
-  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+  ASSERT_TRUE(save_desk_as_template_button);
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_widget` button.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  // Click on `save_desk_as_template_button`.
+  ClickOnView(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Expect that the Desk Templates grid is visible.
@@ -2691,9 +2696,11 @@ TEST_F(DesksTemplatesTest, UnsupportedAppDialogRecordsMetric) {
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
   WaitForDesksTemplatesUI();
-  views::Widget* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
-  ASSERT_TRUE(save_template->IsVisible());
-  ClickOnView(save_template->GetContentsView());
+  SaveDeskTemplateButton* save_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(root);
+  ASSERT_TRUE(
+      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+  ClickOnView(save_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Now we assert that we've recorded the metric.
@@ -2778,15 +2785,16 @@ TEST_F(DesksTemplatesTest, UserTemplateCountRecordsMetricCorrectly) {
       WaitForDesksTemplatesUI();
     }
 
-    // The `save_desk_as_template_widget` is visible when at least one window is
+    // The `save_desk_as_template_button` is visible when at least one window is
     // open.
-    views::Widget* save_desk_as_template_widget =
+    SaveDeskTemplateButton* save_desk_as_template_button =
         GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-    ASSERT_TRUE(save_desk_as_template_widget);
-    EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+    ASSERT_TRUE(save_desk_as_template_button);
+    EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                    ->IsSaveDeskAsTemplateButtonVisible());
 
-    // Click on `save_desk_as_template_widget` button.
-    ClickOnView(save_desk_as_template_widget->GetContentsView());
+    // Click on `save_desk_as_template_button` button.
+    ClickOnView(save_desk_as_template_button);
     ASSERT_EQ(num_templates + 1, GetAllEntries().size());
 
     // Expect that the Desk Templates grid is visible.
@@ -3231,15 +3239,16 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   ToggleOverview();
   WaitForDesksTemplatesUI();
 
-  // The `save_desk_as_template_widget` is visible when at least one window is
+  // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_widget);
-  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+  ASSERT_TRUE(save_desk_as_template_button);
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_widget` button.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  // Click on `save_desk_as_template_button`.
+  ClickOnView(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
   WaitForDesksTemplatesUI();
   ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
@@ -3253,14 +3262,15 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   ToggleOverview();
   WaitForDesksTemplatesUI();
 
-  save_desk_as_template_widget =
+  save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_widget);
-  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+  ASSERT_TRUE(save_desk_as_template_button);
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_widget` button. At this point the template
+  // Click on `save_desk_as_template_button`. At this point the template
   // name matches the desk name.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_button);
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForDesksTemplatesUI();
   // Newly created template name_view.
@@ -3305,10 +3315,10 @@ TEST_F(DesksTemplatesTest, SelectAllAfterSavingDuplicateTemplate) {
   ToggleOverview();
   WaitForDesksTemplatesUI();
 
-  // Click on `save_desk_as_template_widget` button.
-  views::Widget* save_desk_as_template_widget =
+  // Click on `save_desk_as_template_button` button.
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_button);
   WaitForDesksTemplatesUI();
 
   // Expect that the entire text of the new template is selected.
@@ -3333,16 +3343,17 @@ TEST_F(DesksTemplatesTest, NoSortBeforeNameConfirmed) {
   // Enter overview and save the same desk again.
   ToggleOverview();
   WaitForDesksTemplatesUI();
-  // The `save_desk_as_template_widget` is visible when at least one window is
+  // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_widget);
-  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+  ASSERT_TRUE(save_desk_as_template_button);
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_widget` button. The newly saved template
+  // Click on `save_desk_as_template_button`. The newly saved template
   // should be in the front, even though its name is not in alphabetical order.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_button);
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForDesksTemplatesUI();
 
@@ -3373,10 +3384,10 @@ TEST_F(DesksTemplatesTest, NudgeOnTheCorrectDisplay) {
   ToggleOverview();
   WaitForDesksTemplatesUI();
 
-  // Click on `save_desk_as_template_widget` button on the primary display.
-  views::Widget* save_desk_as_template_widget =
+  // Click on `save_desk_as_template_button` button on the primary display.
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetAllRootWindows()[0]);
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_button);
   WaitForDesksTemplatesUI();
 
   // The desks templates widget associated with the primary display should be
@@ -3415,10 +3426,10 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonVisibleAfterSwipeToClose) {
   // bounds do not intersect (they are both fully visible).
   OverviewItem* item2 = GetOverviewItemForWindow(widget2->GetNativeWindow());
   ASSERT_TRUE(item2);
-  views::Widget* save_desk_as_template_widget =
+  SaveDeskTemplateButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_FALSE(item2->target_bounds().Intersects(
-      gfx::RectF(save_desk_as_template_widget->GetWindowBoundsInScreen())));
+      gfx::RectF(save_desk_as_template_button->GetBoundsInScreen())));
 }
 
 TEST_F(DesksTemplatesTest, AdminTemplate) {

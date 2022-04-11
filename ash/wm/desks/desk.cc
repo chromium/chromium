@@ -82,7 +82,7 @@ bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
   // its desk is removed. The save desk as template widget is not activatable
   // but should also be moved to the next active desk.
   if (window->GetId() == kShellWindowId_DesksBarWindow ||
-      window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow ||
+      window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
       window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow) {
     return true;
   }

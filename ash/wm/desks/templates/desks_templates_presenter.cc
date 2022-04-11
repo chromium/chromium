@@ -126,7 +126,7 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
             const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
       desks_bar_view->UpdateDesksTemplatesButtonVisibility();
       desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
-      overview_grid->UpdateSaveDeskAsTemplateButton();
+      overview_grid->UpdateSaveDeskButtons();
     }
   }
 }

@@ -1801,6 +1801,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON" desc="The text of the button to save the active desk as a template.">
         Save desk as a template
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON" desc="The text of the button to save the active desk for later.">
+        Save desk for later
+      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON" desc="The text of the button to launch the template.">
         Use template
       </message>

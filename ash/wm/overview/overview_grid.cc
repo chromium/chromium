@@ -38,6 +38,7 @@
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
+#include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
@@ -291,15 +292,15 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   return widget;
 }
 
-// Creates `save_desk_as_template_widget_`. It contains a button that saves the
-// active desk as a template.
-std::unique_ptr<views::Widget> CreateSaveDeskAsTemplateWidget(
+// Creates `save_desk_button_container_widget_`. It contains save desk as
+// template button and save for later button.
+std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.name = "SaveDeskAsTemplateWidget";
+  params.name = "SaveDeskButtonContainerWidget";
   params.accept_events = true;
   // This widget is hidden during window dragging, but will become visible on
   // mouse/touch release. Place it in the active desk container so it remains
@@ -313,7 +314,7 @@ std::unique_ptr<views::Widget> CreateSaveDeskAsTemplateWidget(
 
   aura::Window* window = widget->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
-  window->SetId(kShellWindowId_SaveDeskAsTemplateWindow);
+  window->SetId(kShellWindowId_SaveDeskButtonContainer);
   return widget;
 }
 
@@ -521,7 +522,7 @@ void OverviewGrid::PrepareForOverview() {
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
   Shell::Get()->wallpaper_controller()->AddObserver(this);
 
-  UpdateSaveDeskAsTemplateButton();
+  UpdateSaveDeskButtons();
 }
 
 void OverviewGrid::PositionWindows(
@@ -624,7 +625,7 @@ void OverviewGrid::PositionWindows(
     window_item->SetBounds(rects[i], animation_types[i]);
   }
 
-  UpdateSaveDeskAsTemplateButton();
+  UpdateSaveDeskButtons();
 }
 
 OverviewItem* OverviewGrid::GetOverviewItemContaining(
@@ -1743,7 +1744,7 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   PerformFadeInLayer(desks_templates_grid_widget_->GetLayer(),
                      /*animate=*/true);
 
-  UpdateSaveDeskAsTemplateButton();
+  UpdateSaveDeskButtons();
 
   if (was_zero_state) {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
@@ -1853,12 +1854,12 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   no_windows_widget_->SetBoundsCenteredIn(GetGridEffectiveBounds(), animate);
 }
 
-void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
+void OverviewGrid::UpdateSaveDeskButtons() {
   // TODO(crbug.com/1275282): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
   // templates grid. This will be needed when we make it so that switching desks
   // keeps us in overview mode.
-  if (!desks_templates_util::AreDesksTemplatesEnabled())
+  if (!desks_templates_util::IsSavedDesksEnabled())
     return;
 
   // If there is only one item and it is animating to close, hide the widget as
@@ -1876,7 +1877,7 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
       !IsShowingDesksTemplatesGrid();
 
   const bool visibility_changed =
-      target_visible != IsSaveDeskAsTemplateButtonVisible();
+      target_visible != IsSaveDeskButtonContainerVisible();
 
   // Adds or removes the widget from the accessibility focus order when exiting
   // the scope. Skip the update if the widget's visibility hasn't changed.
@@ -1888,63 +1889,63 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
       overview_session_, visibility_changed));
 
   if (!target_visible) {
-    if (save_desk_as_template_widget_) {
+    if (save_desk_button_container_widget_) {
       PerformFadeOutLayer(
-          save_desk_as_template_widget_->GetLayer(),
+          save_desk_button_container_widget_->GetLayer(),
           /*animate=*/true,
-          base::BindOnce(&OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut,
+          base::BindOnce(&OverviewGrid::OnSaveDeskButtonContainerFadedOut,
                          weak_ptr_factory_.GetWeakPtr()));
     }
     return;
   }
 
-  if (!save_desk_as_template_widget_) {
-    save_desk_as_template_widget_ =
-        CreateSaveDeskAsTemplateWidget(root_window_);
-    save_desk_as_template_widget_->SetContentsView(
-        std::make_unique<SaveDeskTemplateButton>(base::BindRepeating(
-            &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
-            weak_ptr_factory_.GetWeakPtr())));
+  // Create `save_desk_button_container_widget_`.
+  if (!save_desk_button_container_widget_) {
+    save_desk_button_container_widget_ =
+        CreateSaveDeskButtonContainerWidget(root_window_);
+    save_desk_button_container_widget_->SetContentsView(
+        std::make_unique<SaveDeskTemplateButtonContainer>(
+            base::BindRepeating(
+                &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&OverviewGrid::OnSaveDeskForLaterButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr())));
   }
 
   // There may be an existing animation in progress triggered by
   // `PerformFadeOutLayer()` above, which animates a widget to 0.f before
-  // calling `OnSaveDeskAsTemplateButtonFadedOut()` to hide the widget on
+  // calling `OnSaveDeskButtonContainerFadedOut()` to hide the widget on
   // animation end. Stop animating so that the callbacks associated get fired,
   // otherwise we may end up trying to show a widget that's already shown.
   // `StopAnimating()` is a no-op if there is no animation in progress.
-  save_desk_as_template_widget_->GetLayer()->GetAnimator()->StopAnimating();
-  save_desk_as_template_widget_->Show();
-  PerformFadeInLayer(save_desk_as_template_widget_->GetLayer(),
+  save_desk_button_container_widget_->GetLayer()
+      ->GetAnimator()
+      ->StopAnimating();
+  save_desk_button_container_widget_->Show();
+  PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
                      /*animate=*/true);
 
-  auto* save_template = static_cast<SaveDeskTemplateButton*>(
-      save_desk_as_template_widget_->GetContentsView());
-  auto* presenter = DesksTemplatesPresenter::Get();
-  int tooltip_text_id;
-  if (presenter->GetEntryCount() >= presenter->GetMaxEntryCount()) {
-    // Disable the button if maximum number of templates has been reached.
-    save_template->SetEnabled(false);
-    tooltip_text_id = IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP;
-  } else if (static_cast<size_t>(num_incognito_windows_ +
-                                 num_unsupported_windows_) == size()) {
-    // Disable the button if the desk has no supported windows.
-    if (num_incognito_windows_ == 0) {
-      tooltip_text_id = IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP;
-    } else if (static_cast<size_t>(num_incognito_windows_) != size()) {
-      tooltip_text_id =
-          IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP;
-    } else {
-      tooltip_text_id = IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP;
-    }
-    save_template->SetEnabled(false);
-  } else {
-    // Enable the button otherwise.
-    save_template->SetEnabled(true);
-    tooltip_text_id = IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON;
-  }
-  save_template->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+  // Enable/disable button and update tooltip.
+  const DesksTemplatesPresenter* desk_templates_presenter =
+      DesksTemplatesPresenter::Get();
+  SaveDeskTemplateButtonContainer* container =
+      static_cast<SaveDeskTemplateButtonContainer*>(
+          save_desk_button_container_widget_->GetContentsView());
+  // TODO(yongshun): Once `GetEntryCount()` and `GetMaxEntryCount()` support
+  // `DeskTemplateType`, update `kSaveForLaterButton` to use its own count.
+  container->UpdateButtonEnableStateAndTooltip(
+      SaveDeskTemplateButton::Type::kSaveAsTemplate,
+      desk_templates_presenter->GetEntryCount(),
+      desk_templates_presenter->GetMaxEntryCount(), num_incognito_windows_,
+      num_unsupported_windows_, size());
+  container->UpdateButtonEnableStateAndTooltip(
+      SaveDeskTemplateButton::Type::kSaveForLater,
+      desk_templates_presenter->GetEntryCount(),
+      desk_templates_presenter->GetMaxEntryCount(), num_incognito_windows_,
+      num_unsupported_windows_, size());
 
+  // Set the widget position above the overview item window and default width
+  // and height.
   gfx::RectF first_overview_item_bounds;
   if (window_list_.front()->animating_to_close()) {
     DCHECK_GT(window_list_.size(), 1u);
@@ -1952,41 +1953,64 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   } else {
     first_overview_item_bounds = window_list_.front()->target_bounds();
   }
+  gfx::Point available_origin =
+      gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +
+      gfx::Vector2d(kWindowMargin, -kSaveDeskAsTemplateOverviewItemSpacingDp);
+  save_desk_button_container_widget_->SetBounds(gfx::Rect(
+      available_origin, save_desk_button_container_widget_->GetContentsView()
+                            ->GetPreferredSize()));
+}
 
-  // Set the widget position above the overview item window and default width
-  // and height.
-  const gfx::Point first_overview_item_origin =
-      gfx::ToRoundedPoint(first_overview_item_bounds.origin());
-  const gfx::Size preferred_size =
-      save_desk_as_template_widget_->GetContentsView()->GetPreferredSize();
-
-  // Animate the widget so it moves with the items. The widget's size isn't
-  // changing, so its ok to use a bounds animation as opposed to a transform
-  // animation.
-  ScopedOverviewAnimationSettings settings(
-      OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
-      save_desk_as_template_widget_->GetNativeWindow());
-  save_desk_as_template_widget_->SetBounds(gfx::Rect(
-      // Align the widget so it is visually aligned with the first overview
-      // item, which has a invisible border of `kWindowMargin` thickness.
-      first_overview_item_origin +
-          gfx::Vector2d(kWindowMargin,
-                        -kSaveDeskAsTemplateOverviewItemSpacingDp),
-      preferred_size));
+bool OverviewGrid::IsSaveDeskButtonContainerVisible() const {
+  // The widget may be visible but in the process of fading away. We treat that
+  // as not visible.
+  return save_desk_button_container_widget_ &&
+         save_desk_button_container_widget_->IsVisible() &&
+         save_desk_button_container_widget_->GetLayer()->GetTargetOpacity() ==
+             1.f;
 }
 
 bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
-  // The widget may be visible but in the process of fading away. We treat that
-  // as not visible.
-  return save_desk_as_template_widget_ &&
-         save_desk_as_template_widget_->IsVisible() &&
-         save_desk_as_template_widget_->GetLayer()->GetTargetOpacity() == 1.f;
+  if (!IsSaveDeskButtonContainerVisible())
+    return false;
+  SaveDeskTemplateButtonContainer* container =
+      static_cast<SaveDeskTemplateButtonContainer*>(
+          save_desk_button_container_widget_->GetContentsView());
+  return container->save_desk_as_template_button() &&
+         container->save_desk_as_template_button()->GetVisible();
+}
+
+bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
+  if (!IsSaveDeskButtonContainerVisible())
+    return false;
+  SaveDeskTemplateButtonContainer* container =
+      static_cast<SaveDeskTemplateButtonContainer*>(
+          save_desk_button_container_widget_->GetContentsView());
+  return container->save_desk_for_later_button() &&
+         container->save_desk_for_later_button()->GetVisible();
 }
 
 SaveDeskTemplateButton* OverviewGrid::GetSaveDeskAsTemplateButton() const {
-  return save_desk_as_template_widget_
-             ? static_cast<SaveDeskTemplateButton*>(
-                   save_desk_as_template_widget_->GetContentsView())
+  return save_desk_button_container_widget_
+             ? static_cast<SaveDeskTemplateButtonContainer*>(
+                   save_desk_button_container_widget_->GetContentsView())
+                   ->save_desk_as_template_button()
+             : nullptr;
+}
+
+SaveDeskTemplateButton* OverviewGrid::GetSaveDeskForLaterButton() const {
+  return save_desk_button_container_widget_
+             ? static_cast<SaveDeskTemplateButtonContainer*>(
+                   save_desk_button_container_widget_->GetContentsView())
+                   ->save_desk_for_later_button()
+             : nullptr;
+}
+
+SaveDeskTemplateButtonContainer*
+OverviewGrid::GetSaveDeskTemplateButtonContainer() const {
+  return save_desk_button_container_widget_
+             ? static_cast<SaveDeskTemplateButtonContainer*>(
+                   save_desk_button_container_widget_->GetContentsView())
              : nullptr;
 }
 
@@ -2429,7 +2453,13 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
   DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kTemplate,
-      save_desk_as_template_widget_->GetNativeWindow()->GetRootWindow());
+      save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
+}
+
+void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
+  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+      DeskTemplateType::kSaveAndRecall,
+      save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }
 
 void OverviewGrid::OnDesksTemplatesGridFadedOut() {
@@ -2440,17 +2470,17 @@ void OverviewGrid::OnDesksTemplatesGridFadedOut() {
 
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
   desks_bar_view_->OnDesksTemplatesGridHidden();
-  UpdateSaveDeskAsTemplateButton();
+  UpdateSaveDeskButtons();
   UpdateNoWindowsWidget(/*no_items=*/empty());
 }
 
-void OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut() {
-  save_desk_as_template_widget_->Hide();
+void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
+  save_desk_button_container_widget_->Hide();
 }
 
 void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
                                                         bool increment) {
-  if (!desks_templates_util::AreDesksTemplatesEnabled())
+  if (!desks_templates_util::IsSavedDesksEnabled())
     return;
 
   // Count apps without full restore in `num_unsupported_windows_`. This is to

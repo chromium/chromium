@@ -1835,6 +1835,8 @@ component("ash") {
     "wm/desks/templates/restore_data_collector.h",
     "wm/desks/templates/save_desk_template_button.cc",
     "wm/desks/templates/save_desk_template_button.h",
+    "wm/desks/templates/save_desk_template_button_container.cc",
+    "wm/desks/templates/save_desk_template_button_container.h",
     "wm/desks/zero_state_button.cc",
     "wm/desks/zero_state_button.h",
     "wm/drag_details.cc",

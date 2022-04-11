@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -38,6 +39,7 @@ class DesksTemplatesGridView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class SaveDeskTemplateButton;
+class SaveDeskTemplateButtonContainer;
 
 // Represents a grid of windows in the Overview Mode in a particular root
 // window, and manages a selection widget that can be moved with the arrow keys.
@@ -366,14 +368,22 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // true.
   void RefreshNoWindowsWidgetBounds(bool animate);
 
-  // Updates the button that saves the active desk as a template. Creates the
-  // button if it hasn't been created already, else it just sets its bounds.
-  void UpdateSaveDeskAsTemplateButton();
+  // Updates bounds, tooltips and a11y focus, as well as handles animations on
+  // `save_desk_button_container_widget_`.
+  void UpdateSaveDeskButtons();
 
+  bool IsSaveDeskButtonContainerVisible() const;
   bool IsSaveDeskAsTemplateButtonVisible() const;
+  bool IsSaveDeskForLaterButtonVisible() const;
 
-  // Returns the button if available, otherwise null.
+  // Returns the save desk as template button if available, otherwise null.
   SaveDeskTemplateButton* GetSaveDeskAsTemplateButton() const;
+
+  // Returns the save desk for later button if available, otherwise null.
+  SaveDeskTemplateButton* GetSaveDeskForLaterButton() const;
+
+  // Returns the save desk button container if available, otherwise null.
+  SaveDeskTemplateButtonContainer* GetSaveDeskTemplateButtonContainer() const;
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -434,8 +444,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return desks_templates_grid_widget_.get();
   }
 
-  views::Widget* save_desk_as_template_widget() const {
-    return save_desk_as_template_widget_.get();
+  views::Widget* save_desk_button_container_widget() const {
+    return save_desk_button_container_widget_.get();
   }
 
   int num_incognito_windows() const { return num_incognito_windows_; }
@@ -513,16 +523,19 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   void UpdateCannotSnapWarningVisibility(bool animate);
 
-  // Called back when the button to save a desk template is pressed.
+  // Called back when the button to save a desk as a template is pressed.
   void OnSaveDeskAsTemplateButtonPressed();
+
+  // Called back when the button to save a desk for later is pressed.
+  void OnSaveDeskForLaterButtonPressed();
 
   // Called when the animation for fading the `desks_templates_grid_widget_` out
   // is completed.
   void OnDesksTemplatesGridFadedOut();
 
-  // Called when the animation for fading the `save_desk_as_template_widget_`
-  // out is completed.
-  void OnSaveDeskAsTemplateButtonFadedOut();
+  // Called when the animation for fading the
+  // `save_desk_button_container_widget_` out is completed.
+  void OnSaveDeskButtonContainerFadedOut();
 
   // Either increment or decrement `num_incognito_windows_` and
   // `num_unsupported_windows`.
@@ -614,9 +627,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The contents view of the above `desks_templates_grid_widget_` if created.
   DesksTemplatesGridView* desks_templates_grid_view_ = nullptr;
 
-  // A widget that contains a button which creates a new desk template when
-  // pressed.
-  std::unique_ptr<views::Widget> save_desk_as_template_widget_;
+  // A widget that contains save desk buttons which save desk as template or for
+  // later when pressed.
+  std::unique_ptr<views::Widget> save_desk_button_container_widget_;
 
   // The number of incognito windows in this grid. Used by Desk Templates to
   // identify the unsupported window type to the user.

@@ -18,10 +18,22 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
  public:
   METADATA_HEADER(SaveDeskTemplateButton);
 
-  explicit SaveDeskTemplateButton(base::RepeatingClosure callback);
+  enum class Type {
+    // Button that saves current desk as template.
+    kSaveAsTemplate = 0,
+
+    // Button that saves current desk for later.
+    kSaveForLater,
+  };
+
+  SaveDeskTemplateButton(base::RepeatingClosure callback,
+                         const std::u16string& text,
+                         Type button_type);
   SaveDeskTemplateButton(const SaveDeskTemplateButton&) = delete;
   SaveDeskTemplateButton& operator=(const SaveDeskTemplateButton&) = delete;
   ~SaveDeskTemplateButton() override;
+
+  Type button_type() const { return button_type_; }
 
  private:
   // OverviewHighlightableView:
@@ -35,6 +47,7 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
   void UpdateBorderState();
 
   base::RepeatingClosure callback_;
+  Type button_type_;
 };
 
 }  // namespace ash
