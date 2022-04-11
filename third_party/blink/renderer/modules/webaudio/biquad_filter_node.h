@@ -26,48 +26,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_NODE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
 class BaseAudioContext;
-class AudioParam;
 class BiquadFilterOptions;
-
-class BiquadFilterHandler : public AudioBasicProcessorHandler,
-                            public base::SupportsWeakPtr<BiquadFilterHandler> {
- public:
-  static scoped_refptr<BiquadFilterHandler> Create(AudioNode&,
-                                                   float sample_rate,
-                                                   AudioParamHandler& frequency,
-                                                   AudioParamHandler& q,
-                                                   AudioParamHandler& gain,
-                                                   AudioParamHandler& detune);
-
-  void Process(uint32_t frames_to_process) override;
-
- private:
-  BiquadFilterHandler(AudioNode&,
-                      float sample_rate,
-                      AudioParamHandler& frequency,
-                      AudioParamHandler& q,
-                      AudioParamHandler& gain,
-                      AudioParamHandler& detune);
-
-  void NotifyBadState() const;
-
-  // Only notify the user of the once.  No need to spam the console with
-  // messages, because once we're in a bad state, it usually stays that way
-  // forever.  Only accessed from audio thread.
-  bool did_warn_bad_filter_state_ = false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-};
+class ExceptionState;
 
 class BiquadFilterNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();

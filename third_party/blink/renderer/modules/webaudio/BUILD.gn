@@ -69,6 +69,8 @@ blink_modules_sources("webaudio") {
     "base_audio_context.h",
     "biquad_dsp_kernel.cc",
     "biquad_dsp_kernel.h",
+    "biquad_filter_handler.cc",
+    "biquad_filter_handler.h",
     "biquad_filter_node.cc",
     "biquad_filter_node.h",
     "biquad_processor.cc",
