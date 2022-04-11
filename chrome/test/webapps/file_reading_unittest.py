@@ -8,10 +8,12 @@ import csv
 from typing import List
 import unittest
 
-from file_reading import enumerate_all_argument_combinations, read_enums_file
+from file_reading import enumerate_all_argument_combinations
+from file_reading import enumerate_markdown_file_lines_to_table_rows
 from file_reading import human_friendly_name_to_canonical_action_name
 from file_reading import get_tests_in_browsertest
 from file_reading import read_actions_file
+from file_reading import read_enums_file
 from file_reading import read_platform_supported_actions
 from file_reading import resolve_bash_style_replacement
 from file_reading import read_unprocessed_coverage_tests_file
@@ -25,6 +27,15 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 
 class TestAnalysisTest(unittest.TestCase):
+    def test_markdown_file_mapping(self):
+        test_input = [
+            "Test", "# Hello", "| #test |", "| ------- | Value |",
+            "| WML | Value | Value", " | ADF |"
+        ]
+        output = enumerate_markdown_file_lines_to_table_rows(test_input)
+        expected = [(4, ["WML", "Value", "Value"]), (5, ["ADF"])]
+        self.assertEqual(expected, output)
+
     def test_argument_combinations(self):
         argument_types: List[ArgEnum] = []
         argument_types.append(ArgEnum("T1", ["T1V1", "T1V2"], None))
@@ -54,11 +65,11 @@ class TestAnalysisTest(unittest.TestCase):
                 "action_with", {"action_with": "arg1_arg2"}))
 
     def test_enums(self):
-        enums_file = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+        enums_file = os.path.join(TEST_DATA_DIR, "test_enums.md")
 
         with open(enums_file, "r", encoding="utf-8") \
                     as enum_types:
-            enums = read_enums_file(csv.reader(enum_types, delimiter='\t'))
+            enums = read_enums_file(enum_types.readlines())
             self.assertEqual(len(enums), 3)
             self.assertIn("Animal", enums)
             animal = enums["Animal"]
@@ -103,10 +114,10 @@ class TestAnalysisTest(unittest.TestCase):
             self.assertEqual(len(state_change_b_full), 3)
 
     def test_action_file_reading(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.md")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
-        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.md")
 
         with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
@@ -114,8 +125,8 @@ class TestAnalysisTest(unittest.TestCase):
                 open (enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
                 csv.reader(supported_actions, delimiter=','))
-            actions_tsv = csv.reader(f, delimiter='\t')
-            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
+            actions_tsv = f.readlines()
+            enums = read_enums_file(enums.readlines())
 
             (actions, action_base_name_to_default_param) = read_actions_file(
                 actions_tsv, enums, supported_actions)
@@ -134,10 +145,10 @@ class TestAnalysisTest(unittest.TestCase):
                 [actions['check_a_Chicken'], actions['check_b_Chicken_Green']])
 
     def test_coverage_file_reading(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.md")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
-        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.md")
 
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
@@ -147,16 +158,16 @@ class TestAnalysisTest(unittest.TestCase):
                 open(enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
                 csv.reader(supported_actions, delimiter=','))
-            actions_tsv = csv.reader(f, delimiter='\t')
-            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
+            actions_tsv = f.readlines()
+            enums = read_enums_file(enums.readlines())
             (actions, action_base_name_to_default_param) = read_actions_file(
                 actions_tsv, enums, supported_actions)
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.tsv")
+                                         "test_unprocessed_coverage.md")
         coverage_tests: List[CoverageTest] = []
         with open(coverage_filename) as f:
-            coverage_tsv = csv.reader(f, delimiter='\t')
+            coverage_tsv = f.readlines()
             coverage_tests = read_unprocessed_coverage_tests_file(
                 coverage_tsv, actions, action_base_name_to_default_param)
 

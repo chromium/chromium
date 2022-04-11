@@ -20,13 +20,13 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
     def test_coverage(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
-        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.md")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.md")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.tsv")
+                                         "test_unprocessed_coverage.md")
 
         custom_partitions = [
             TestPartitionDescription(

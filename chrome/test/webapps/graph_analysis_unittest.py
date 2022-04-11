@@ -20,13 +20,13 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 class GraphAnalysisUnittest(unittest.TestCase):
     def test_test_generation(self):
         self.maxDiff = None
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
-        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.md")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.md")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.tsv")
+                                         "test_unprocessed_coverage.md")
 
         test_partition = TestPartitionDescription(
             action_name_prefixes=set(),
@@ -40,16 +40,15 @@ class GraphAnalysisUnittest(unittest.TestCase):
                 open (enums_filename, "r", encoding="utf-8") as enums, \
                 open(coverage_filename, "r", encoding="utf-8") \
                     as coverage_file:
-            actions_csv = csv.reader(actions_file, delimiter='\t')
-            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
+            enums = read_enums_file(enums.readlines())
             platform_supported_actions = read_platform_supported_actions(
                 csv.reader(supported_actions_file, delimiter=','))
             (actions, action_base_name_to_default_param) = read_actions_file(
-                actions_csv, enums, platform_supported_actions)
+                actions_file.readlines(), enums, platform_supported_actions)
 
-            coverage_csv = csv.reader(coverage_file, delimiter='\t')
             required_coverage_tests = read_unprocessed_coverage_tests_file(
-                coverage_csv, actions, action_base_name_to_default_param)
+                coverage_file.readlines(), actions,
+                action_base_name_to_default_param)
 
             required_coverage_tests = expand_parameterized_tests(
                 required_coverage_tests)

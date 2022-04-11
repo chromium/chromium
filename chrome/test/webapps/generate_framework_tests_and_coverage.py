@@ -60,16 +60,16 @@ def generate_framework_tests_and_coverage(
             if partition_a == partition_b:
                 continue
             check_partition_prefixes(partition_a, partition_b)
-    actions_csv = csv.reader(actions_file, delimiter='\t')
+    actions_csv = actions_file.readlines()
     platform_supported_actions = read_platform_supported_actions(
         csv.reader(supported_framework_action_file, delimiter=','))
-    enums = read_enums_file(csv.reader(enums_file, delimiter='\t'))
+    enums = read_enums_file(enums_file.readlines())
     (actions, action_base_name_to_default_param) = read_actions_file(
         actions_csv, enums, platform_supported_actions)
 
-    coverage_csv = csv.reader(coverage_required_file, delimiter='\t')
     required_coverage_tests = read_unprocessed_coverage_tests_file(
-        coverage_csv, actions, action_base_name_to_default_param)
+        coverage_required_file.readlines(), actions,
+        action_base_name_to_default_param)
 
     required_coverage_tests = expand_parameterized_tests(
         required_coverage_tests)
@@ -183,12 +183,12 @@ def main():
                         format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%H:%M:%S')
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    actions_filename = os.path.join(script_dir, "data", "actions.tsv")
-    enums_filename = os.path.join(script_dir, "data", "enums.tsv")
+    actions_filename = os.path.join(script_dir, "data", "actions.md")
+    enums_filename = os.path.join(script_dir, "data", "enums.md")
     supported_actions_filename = os.path.join(
         script_dir, "data", "framework_supported_actions.csv")
     coverage_required_filename = os.path.join(script_dir, "data",
-                                              "coverage_required.tsv")
+                                              "critical_user_journeys.md")
     coverage_output_dir = os.path.join(script_dir, "coverage")
 
     default_tests_location = os.path.join(script_dir, "..", "..", "browser",

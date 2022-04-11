@@ -20,8 +20,9 @@ Related:
   * [WebAppProvider README.md](/chrome/browser/web_applications/README.md)
 
 ## When to add integration tests?
-A web app feature should have unit tests and browsertests that focus on testing the specific feature itself, the browsertests are capable of testing all the edgecases of the particular feature.
-If a feature affects user-facing flows in any ways, integration tests should also be added to cover updates to web apps' critical user journeys.  They wouldn't be as detailed as the browsertests that focus on all the way you can use the particular code component, but rather aim to cover the major ways users interact with the new feature.
+Any web app feature (or any code in general) should have a combination of unit tests and browser tests that focus on testing the specific feature itself. Unit tests are the least likely to become flaky, and allow fine-grained testing of a system. Browser tests are more likely to be flaky but enable testing with most of the system running. Regular unit tests or browser tests should be used for testing system parts in isolation and for testing minute details like handling of error cases.
+
+Integration tests are required for all critical user journeys for the dPWA (or installable web app) product. If a feature is to be considered "supported" on the dPWA platform, then it MUST have it's critical user journeys described and integration tests generated for these journeys.
 
 ## Future Work
 
@@ -55,7 +56,7 @@ Examples: `check_app_list_empty`, `check_install_icon_shown`, `check_platform_sh
 #### Action Arguments
 When creating tests, there emerged a common scenario where a given action could be applied to multiple different sites. For example, the “navigate the browser to an installable site” action was useful if “site” could be customized.
 
-To accept arguments, list the argument [types][cuj-enums-sheet] you wish to accept in the "Argument Types" column in the actions [sheet][cuj-actions-sheet]. If an required argument type does not exist, please add it to that [sheet][cuj-enums-sheet].
+To accept arguments, list the argument [types][cuj-enums-sheet] you wish to accept in the "Argument Types" column in the actions [file][cuj-actions-sheet]. If an required argument type does not exist, please add it to that [file][cuj-enums-sheet].
 
 To allow for future de-parsing of modes (when generating C++ tests), modes will always be PascalCase.
 
@@ -82,15 +83,21 @@ These actions use the first argument of the parent action as their argument.
 A sequence of actions used to test the WebAppProvider system. A test that can be run by the test framework must not have any "parameterized" actions, as these are supposed to be used to generate multiple tests.
 
 #### Unprocessed Required-coverage tests
-This is the set of tests that, if all executed, should provide full test coverage for the WebAppProvider system. They currently live in this sheet as "unprocessed".
+This is the set of tests that, if all executed, should provide full test coverage for the WebAppProvider system. They currently live in this file as "unprocessed".
 
 #### Required-coverage tests (processed)
-Processed tests go through the following steps from the unprocessed version in the sheet:
+Processed tests go through the following steps from the unprocessed version in the file:
 * Tests with one or more "parameterized" actions have been processed to produce the resulting tests without parameterized actions.
 * Actions in tests that have arguments but do not specify them have the default argument added to them. Default arguments are known only if all argument types have a default value specified.
 
 #### Platform-specific tests
-Some tests are going to be platform-specific. For example, all tests that involve "locally installing" an app are only applicable on Windows/Mac/Linux, as ChromeOS automatically locally installs all apps from sync. Because of this, tests must be able to specify which platforms they should be run on. This is done by specifying the platforms each test applies to in a column on the spreadsheet.
+The first column of the test specifies which platforms the test should be created for:
+- `W` = Windows
+- `M` = Mac
+- `L` = Linux
+- `C` = ChromeOS
+
+This is because some tests need to be platform-specific. For example, all tests that involve "locally installing" an app are only applicable on Windows/Mac/Linux, as ChromeOS automatically locally installs all apps from sync. Because of this, tests must be able to specify which platforms they should be run on.
 
 ### Sync Partition and Default Partition
 Due to some browsertest support limitations, certain actions are only supported in the sync testing framework. Because of this, the script supports a separate "partition" of tests for any test that uses sync actions. This means that at test output time, a test will either go in the "sync" partition or the "default" partition.
@@ -120,7 +127,7 @@ The test data is hosted in this [spreadsheet][cuj-spreadsheet]. To download the 
 This will download the data from the sheet into csv files in the [data/][script-data-dir] directory:
 
 * `actions.csv` This describes all actions that can be used in the required coverage tests (processed or unprocessed).
-* `coverage_required.csv` This is the full list of all tests needed to fully cover the Web App system. The first column specifies the platforms for testing, and the test starts on the fifth column.
+* `coverage_required.csv` This is the full list of all tests needed to fully cover the Web App system. The first column specifies the platforms for testing, and the test starts on the second column.
 
 ### Generating test descriptions & coverage
 
@@ -195,6 +202,23 @@ When adding actions, it may be useful to add information into this state snapsho
 
 Then, this field can be accessed in the `before_state_change_action_state_` and `after_state_change_action_state_` members appropriately.
 
+### Running the tests on Mac
+
+There is a [history](https://crbug.com/1042757) of browser_tests being disabled on Mac trybots & CQ (but they run on the waterfall). To ensure there are no mac failures for changes to integration tests:
+- Click on the "Choose Trybots" button in Gerrit.
+- Filter for "mac"
+- Choose applicable builders from the "luci.chromium.try" section. Examples (from 2022.04.08):
+  - mac11-arm64-rel
+  - mac_chromium_10.11_rel_ng
+  - mac_chromium_10.12_rel_ng
+  - mac_chromium_10.13_rel_ng
+  - mac_chromium_10.14_rel_ng
+  - mac_chromium_10.15_rel_ng
+  - mac_chromium_11.0_rel_ng
+  - mac_chromium_asan_rel_ng
+
+Running tests on these bots MAY have other random failures happening. That is normal.
+
 ### Disabling a Test
 
 Tests can be disabled in the same manner that other integration/browser tests are disabled, using macros. See [on disabling tests](/docs/testing/on_disabling_tests.md) for more information.
@@ -262,9 +286,9 @@ The framework is designed to be able to collapse tests that contain common non-'
 If new actions are required for a test, see [How to create WebApp Integration Tests][how-to-create] for more information about how to add a new action.
 
 [design-doc]: https://docs.google.com/document/d/e/2PACX-1vTFI0sXhZMvvg1B3sctYVUe64WbLVNzuXFUa6f3XyYTzKs2JnuFR8qKNyXYZsxE-rPPvsq__4ZCyrcS/pub
-[cuj-spreadsheet]: https://docs.google.com/spreadsheets/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml
-[cuj-actions-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=1864725389
-[cuj-enums-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=1470912273
+[cuj-spreadsheet]: /chrome/test/webapps/data/critical_user_journeys.md
+[cuj-actions-sheet]: /chrome/test/webapps/data/actions.md
+[cuj-enums-sheet]: /chrome/test/webapps/data/enums.md
 [cuj-coverage-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=884228058
 [how-to-create]: how-to-create-webapp-integration-tests.md
 [script-data-dir]: /chrome/test/webapps/data/

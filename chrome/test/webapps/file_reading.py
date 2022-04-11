@@ -28,7 +28,30 @@ from models import TestPlatform
 MIN_COLUMNS_ENUMS_FILE = 2
 MIN_COLUMNS_ACTIONS_FILE = 5
 MIN_COLUMNS_SUPPORTED_ACTIONS_FILE = 5
-MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE = 6
+MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE = 2
+
+
+def enumerate_markdown_file_lines_to_table_rows(
+        lines: List[str]) -> List[Tuple[int, List[str]]]:
+    output = []
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line.startswith("|"):
+            continue
+        # Remove the pipe character from the beginning and end to prevent an
+        # empty first and last entry.
+        line = line.lstrip('|').rstrip("|")
+        row: List[str] = line.split("|")
+        if len(row) == 0:
+            continue
+        stripped = list(map(str.strip, row))
+        first_item: str = stripped[0]
+        if first_item.startswith("#"):
+            continue
+        if first_item.count('-') == len(first_item):
+            continue
+        output.append((i, stripped))
+    return output
 
 
 def enumerate_all_argument_combinations(argument_types: List[ArgEnum]
@@ -136,15 +159,12 @@ def read_platform_supported_actions(csv_file
     return actions_base_name_to_coverage
 
 
-def read_enums_file(enums_csv_file) -> Dict[str, ArgEnum]:
-    """Reads the enums comma-separated-values file.
+def read_enums_file(enums_file_lines: List[str]) -> Dict[str, ArgEnum]:
+    """Reads the enums markdown file.
     """
     enums_by_type: Dict[str, ArgEnum] = {}
-    for i, row in enumerate(enums_csv_file):
-        if not row:
-            continue
-        if row[0].startswith("#"):
-            continue
+    for i, row in enumerate_markdown_file_lines_to_table_rows(
+            enums_file_lines):
         if len(row) < MIN_COLUMNS_ENUMS_FILE:
             raise ValueError(f"Row {i!r} does not contain enough entries. "
                              f"Got {row}.")
@@ -176,7 +196,7 @@ def read_enums_file(enums_csv_file) -> Dict[str, ArgEnum]:
 
 
 def read_actions_file(
-        actions_csv_file, enums_by_type: Dict[str, ArgEnum],
+        actions_file_lines: List[str], enums_by_type: Dict[str, ArgEnum],
         supported_platform_actions: PartialAndFullCoverageByBaseName
 ) -> Tuple[ActionsByName, Dict[str, str]]:
     """Reads the actions comma-separated-values file.
@@ -193,7 +213,7 @@ def read_actions_file(
     See the README.md for more information about actions and action templates.
 
     Args:
-        actions_csv_file: The comma-separated-values file read to parse all
+        actions_file_lines: The comma-separated-values file read to parse all
                           actions.
         supported_platform_actions: A dictionary of platform to the actions that
                                     are fully or partially covered on that
@@ -214,11 +234,8 @@ def read_actions_file(
     action_base_name_to_default_args: Dict[str, str] = {}
     action_base_names: Set[str] = set()
     all_ids: Set[str] = set()
-    for i, row in enumerate(actions_csv_file):
-        if not row:
-            continue
-        if row[0].startswith("#"):
-            continue
+    for i, row in enumerate_markdown_file_lines_to_table_rows(
+            actions_file_lines):
         if len(row) < MIN_COLUMNS_ACTIONS_FILE:
             raise ValueError(f"Row {i!r} does not contain enough entries. "
                              f"Got {row}.")
@@ -354,15 +371,15 @@ def read_actions_file(
 
 
 def read_unprocessed_coverage_tests_file(
-        coverage_csv_file, actions_by_name: ActionsByName,
+        coverage_file_lines: List[str], actions_by_name: ActionsByName,
         action_base_name_to_default_arg: Dict[str, str]) -> List[CoverageTest]:
-    """Reads the coverage tests comma-separated-values file.
+    """Reads the coverage tests markdown file.
 
     The coverage tests file can have blank entries in the test row, and does not
     have test names.
 
     Args:
-        coverage_csv_file: The comma-separated-values file with all coverage
+        coverage_file_lines: The comma-separated-values file with all coverage
                            tests.
         actions_by_name: An index of action name to Action
         action_base_name_to_default_arg: An index of action base name to
@@ -376,16 +393,15 @@ def read_unprocessed_coverage_tests_file(
     """
     missing_actions = []
     required_coverage_tests = []
-    for i, row in enumerate(coverage_csv_file):
-        if not row:
-            continue
-        if row[0].strip().startswith("#"):
-            continue
+    for i, row in enumerate_markdown_file_lines_to_table_rows(
+            coverage_file_lines):
         if len(row) < MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE:
             raise ValueError(f"Row {i!r} does not have test actions: {row}")
         platforms = TestPlatform.get_platforms_from_chars(row[0])
+        if len(platforms) == 0:
+            raise ValueError(f"Row {i} has invalid platforms: {row[0]}")
         actions = []
-        for action_name in row[4:]:
+        for action_name in row[1:]:
             action_name = action_name.strip()
             if action_name == "":
                 continue
