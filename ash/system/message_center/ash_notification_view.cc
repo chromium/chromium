@@ -65,6 +65,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -737,10 +738,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
   if (message_label()) {
     // `message_label()` is shown only in collapsed mode.
-    if (!expanded) {
-      ConfigureLabelStyle(message_label(), kMessageLabelSize, false);
-      message_center_utils::InitLayerForAnimations(message_label());
-    }
     message_label()->SetVisible(!expanded);
     message_label_in_expanded_state_->SetVisible(expanded &&
                                                  !is_grouped_parent_view_);
@@ -804,7 +801,17 @@ void AshNotificationView::UpdateWithNotification(
   NotificationViewBase::UpdateWithNotification(notification);
 
   CreateOrUpdateSnoozeButton(notification);
+
+  // Configure views style.
   UpdateIconAndButtonsColor(&notification);
+  if (message_label())
+    ConfigureLabelStyle(message_label(), kMessageLabelSize, false);
+  if (inline_reply()) {
+    SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
+    inline_reply()->textfield()->SetTextColor(text_color);
+    inline_reply()->textfield()->set_placeholder_text_color(text_color);
+  }
 }
 
 void AshNotificationView::CreateOrUpdateHeaderView(
@@ -980,6 +987,13 @@ void AshNotificationView::OnThemeChanged() {
   UpdateIconAndButtonsColor(
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id()));
+
+  if (inline_reply()) {
+    SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
+    inline_reply()->textfield()->SetTextColor(text_color);
+    inline_reply()->textfield()->set_placeholder_text_color(text_color);
+  }
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1277,6 +1291,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   // when `message_label()` is truncated).
   if (message_label() && message_label()->GetVisible() &&
       IsMessageLabelTruncated()) {
+    message_center_utils::InitLayerForAnimations(message_label());
     message_center_utils::FadeInView(
         message_label(), kMessageLabelFadeInAnimationDelayMs,
         kMessageLabelFadeInAnimationDurationMs, gfx::Tween::LINEAR,
