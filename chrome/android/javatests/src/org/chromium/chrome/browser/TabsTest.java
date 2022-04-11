@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -473,14 +474,10 @@ public class TabsTest {
     /**
      * Verify that we can open a large number of tabs without running out of
      * memory. This test hammers the "new tab" button quickly to stress the app.
-     *
-     * @LargeTest
-     * @TimeoutScale(10)
-     * @Feature({"Android-TabSwitcher"})
-     *
      */
     @Test
-    @FlakyTest
+    @Manual(message = "Slow test")
+    @Feature({"Android-TabSwitcher"})
     public void testOpenManyTabsQuickly() {
         int startCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         for (int i = 1; i <= STRESSFUL_TAB_COUNT; ++i) {
@@ -494,13 +491,10 @@ public class TabsTest {
     /**
      * Verify that we can open a burst of new tabs, even when there are already
      * a large number of tabs open.
-     * Bug: crbug.com/180718
-     * @EnormousTest
-     * @TimeoutScale(30)
-     * @Feature({"Navigation"})
      */
     @Test
-    @FlakyTest
+    @Manual(message = "Slow test")
+    @Feature({"Navigation"})
     public void testOpenManyTabsInBursts() throws TimeoutException {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         final int burstSize = 5;
@@ -516,13 +510,9 @@ public class TabsTest {
     /**
      * Verify opening 10 tabs at once and that each tab loads when selected.
      */
-    /*
-     * @EnormousTest
-     * @TimeoutScale(30)
-     * @Feature({"Navigation"})
-     */
     @Test
-    @FlakyTest(message = "crbug.com/223110")
+    @Manual(message = "Slow test")
+    @Feature({"Navigation"})
     public void testOpenManyTabsAtOnce10() throws TimeoutException {
         openAndVerifyManyTestTabs(10);
     }
@@ -604,14 +594,8 @@ public class TabsTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
     }
 
-    /**
-     * Flaky on instrumentation-yakju-clankium-ics. See https://crbug.com/431296.
-     * @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-     * @MediumTest
-     * @Feature({"Android-TabSwitcher"})
-     */
     @Test
-    @FlakyTest
+    @FlakyTest(message = "Flaky on instrumentation-yakju-clankium-ics - https://crbug.com/431296")
     public void testQuickSwitchBetweenTabAndSwitcherMode() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         final String[] urls = {
