@@ -4,7 +4,8 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../testing/chromevox_next_e2e_test_base.js', '../testing/fake_objects.js'
+  '../../testing/chromevox_next_e2e_test_base.js',
+  '../../testing/fake_objects.js'
 ]);
 
 /**
@@ -16,10 +17,10 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
     await importModule(
         'BrailleCaptionsBackground',
-        '/chromevox/background/braille_captions_background.js');
+        '/chromevox/background/braille/braille_captions_background.js');
     await importModule(
         'BrailleDisplayManager',
-        '/chromevox/braille/braille_display_manager.js');
+        '/chromevox/background/braille/braille_display_manager.js');
 
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});

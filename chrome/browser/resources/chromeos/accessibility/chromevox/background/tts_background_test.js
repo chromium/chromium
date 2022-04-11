@@ -14,7 +14,8 @@ ChromeVoxTtsBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('TtsBackground', '/chromevox/common/tts_background.js');
+    await importModule(
+        'TtsBackground', '/chromevox/background/tts_background.js');
     window.tts = new TtsBackground();
   }
 

@@ -26,7 +26,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/background/base_automation_handler.js');
     await importModule(
         'BrailleCommandHandler',
-        '/chromevox/background/braille_command_handler.js');
+        '/chromevox/background/braille/braille_command_handler.js');
     await importModule(
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(

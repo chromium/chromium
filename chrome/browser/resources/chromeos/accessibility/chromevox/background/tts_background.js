@@ -7,8 +7,8 @@
  * extension API.
  */
 
-import {AbstractTts} from './abstract_tts.js';
-import {ChromeTtsBase} from './tts_base.js';
+import {AbstractTts} from '../common/abstract_tts.js';
+import {ChromeTtsBase} from '../common/tts_base.js';
 
 const Utterance = class {
   /**

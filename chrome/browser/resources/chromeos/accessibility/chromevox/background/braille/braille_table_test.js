@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /**
  * Test fixture for BrailleTable tests.
@@ -30,7 +30,8 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
       // Ensure we have an English UI language.
       chrome.i18n.getUILanguage = () => 'en';
       let displayName = BrailleTable.getDisplayName(table);
-      assertTrue(!!displayName, 'No display name for table: ' + table.id);
+      assertTrue(
+          Boolean(displayName), 'No display name for table: ' + table.id);
       assertTrue(displayName.length > 0);
 
       // English always uses LibLouis's enDisplayName if possible.

@@ -8,7 +8,6 @@
  *
  */
 
-
 goog.provide('NavBraille');
 
 goog.require('Spannable');

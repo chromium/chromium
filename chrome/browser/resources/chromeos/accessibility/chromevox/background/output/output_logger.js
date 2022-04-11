@@ -27,24 +27,24 @@ OutputRulesStr = class {
       return;
     }
     this.str += str;
-    }
+  }
 
-    /**
-     * @param {string} token
-     * @param {string|undefined} value
-     */
-    writeTokenWithValue(token, value) {
-      if (this.disableLogging()) {
-        return;
-      }
-      this.writeToken(token);
-      if (value) {
-        this.str += value;
-      } else {
-        this.str += 'EMPTY';
-      }
-      this.str += '\n';
+  /**
+   * @param {string} token
+   * @param {string|undefined} value
+   */
+  writeTokenWithValue(token, value) {
+    if (this.disableLogging()) {
+      return;
     }
+    this.writeToken(token);
+    if (value) {
+      this.str += value;
+    } else {
+      this.str += 'EMPTY';
+    }
+    this.str += '\n';
+  }
 
   /** @param {string} token */
   writeToken(token) {
@@ -52,25 +52,25 @@ OutputRulesStr = class {
       return;
     }
     this.str += '$' + token + ': ';
-    }
+  }
 
-    /**
-     * @param {OutputRulesStr.Rule} rule
-     */
-    writeRule(rule) {
-      if (this.disableLogging()) {
-        return;
-      }
-      this.str += 'RULE: ';
-      this.str += rule.event + ' ' + rule.role;
-      if (rule.navigation) {
-        this.str += ' ' + rule.navigation;
-      }
-      if (rule.output) {
-        this.str += ' ' + rule.output;
-      }
-      this.str += '\n';
+  /**
+   * @param {OutputRulesStr.Rule} rule
+   */
+  writeRule(rule) {
+    if (this.disableLogging()) {
+      return;
     }
+    this.str += 'RULE: ';
+    this.str += rule.event + ' ' + rule.role;
+    if (rule.navigation) {
+      this.str += ' ' + rule.navigation;
+    }
+    if (rule.output) {
+      this.str += ' ' + rule.output;
+    }
+    this.str += '\n';
+  }
 
   bufferClear() {
     if (this.disableLogging()) {

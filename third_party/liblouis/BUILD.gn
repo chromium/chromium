@@ -6,8 +6,7 @@ import("//chromecast/chromecast.gni")
 import("liblouis_library.gni")
 
 liblouis_library("liblouis") {
-  dest_dir =
-      "$root_build_dir/resources/chromeos/accessibility/chromevox/braille"
+  dest_dir = "$root_build_dir/resources/chromeos/accessibility/chromevox/background/braille"
 }
 
 if (!is_chromecast) {

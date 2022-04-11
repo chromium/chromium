@@ -19,7 +19,8 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'BrailleBackground', '/chromevox/background/braille_background.js');
+        'BrailleBackground',
+        '/chromevox/background/braille/braille_background.js');
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
@@ -27,7 +28,8 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
         'EditableLine', '/chromevox/background/editing/editable_line.js');
     await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
-    await importModule('TtsBackground', '/chromevox/common/tts_background.js');
+    await importModule(
+        'TtsBackground', '/chromevox/background/tts_background.js');
   }
 
   press(keyCode, modifiers) {

@@ -4,7 +4,7 @@
 
 import {InstanceChecker} from '../../common/instance_checker.js';
 
-import {BrailleCommandHandler} from './braille_command_handler.js';
+import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {CommandHandler} from './command_handler.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';

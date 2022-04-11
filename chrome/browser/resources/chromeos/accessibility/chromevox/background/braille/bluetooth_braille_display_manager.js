@@ -164,117 +164,116 @@ BluetoothBrailleDisplayManager = class {
             this.connectInternal(display);
           });
     }
-    }
+  }
 
-    /**
-     * @param{!chrome.bluetooth.Device} display
-     * @protected *
-     */
-    connectInternal(display) {
-      this.preferredDisplayAddress_ = display.address;
-      localStorage['preferredBrailleDisplayAddress'] = display.address;
-      if (!display.connected) {
-        chrome.bluetoothPrivate.connect(display.address, (result) => {
-          if (!display.paired) {
-            chrome.bluetoothPrivate.pair(display.address);
-          }
-        });
-        return;
-      }
-
-      if (!display.paired) {
-        chrome.bluetoothPrivate.pair(display.address);
-      }
-    }
-
-    /**
-     * Disconnects the given display and clears it from Brltty.
-     * @param{!chrome.bluetooth.Device} display
-     */
-    disconnect(display) {
-      chrome.bluetoothPrivate.disconnectAll(display.address);
-      chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress('');
-    }
-
-    /**
-     * Forgets the given display.
-     * @param {!chrome.bluetooth.Device} display
-     */
-    forget(display) {
-      chrome.bluetoothPrivate.forgetDevice(display.address);
-      chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress('');
-    }
-
-    /**
-     *  Finishes pairing in response to
-     * BluetoothBrailleDisplayListener.onPincodeRequested.
-     * @param{!chrome.bluetooth.Device} display
-     * @param{string} pincode *
-     */
-    finishPairing(display, pincode) {
-      chrome.bluetoothPrivate.setPairingResponse(
-          {response: 'confirm', device: display, pincode}, () => {});
-    }
-
-    /**
-     * @param{ chrome.bluetooth.Device=} opt_device
-     * @protected
-     */
-    handleDevicesChanged(opt_device) {
-      chrome.bluetooth.getDevices((devices) => {
-        const displayList = devices.filter((device) => {
-          return this.displayNamePrefixes_.some((name) => {
-            return device.name && device.name.search(name) === 0;
-          });
-        });
-        if (displayList.length === 0) {
-          return;
+  /**
+   * @param{!chrome.bluetooth.Device} display
+   * @protected *
+   */
+  connectInternal(display) {
+    this.preferredDisplayAddress_ = display.address;
+    localStorage['preferredBrailleDisplayAddress'] = display.address;
+    if (!display.connected) {
+      chrome.bluetoothPrivate.connect(display.address, (result) => {
+        if (!display.paired) {
+          chrome.bluetoothPrivate.pair(display.address);
         }
-        if (opt_device &&
-            !displayList.find((i) => i.name === opt_device.name)) {
-          return;
-        }
+      });
+      return;
+    }
 
-        displayList.forEach((display) => {
-          if (this.preferredDisplayAddress_ === display.address) {
-            this.handlePreferredDisplayConnectionStateChanged(display);
-          }
-        });
-        this.listeners_.forEach((listener) => {
-          listener.onDisplayListChanged(displayList);
+    if (!display.paired) {
+      chrome.bluetoothPrivate.pair(display.address);
+    }
+  }
+
+  /**
+   * Disconnects the given display and clears it from Brltty.
+   * @param{!chrome.bluetooth.Device} display
+   */
+  disconnect(display) {
+    chrome.bluetoothPrivate.disconnectAll(display.address);
+    chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress('');
+  }
+
+  /**
+   * Forgets the given display.
+   * @param {!chrome.bluetooth.Device} display
+   */
+  forget(display) {
+    chrome.bluetoothPrivate.forgetDevice(display.address);
+    chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress('');
+  }
+
+  /**
+   *  Finishes pairing in response to
+   * BluetoothBrailleDisplayListener.onPincodeRequested.
+   * @param{!chrome.bluetooth.Device} display
+   * @param{string} pincode *
+   */
+  finishPairing(display, pincode) {
+    chrome.bluetoothPrivate.setPairingResponse(
+        {response: 'confirm', device: display, pincode}, () => {});
+  }
+
+  /**
+   * @param{ chrome.bluetooth.Device=} opt_device
+   * @protected
+   */
+  handleDevicesChanged(opt_device) {
+    chrome.bluetooth.getDevices((devices) => {
+      const displayList = devices.filter((device) => {
+        return this.displayNamePrefixes_.some((name) => {
+          return device.name && device.name.search(name) === 0;
         });
       });
-    }
-
-    /**
-     * @param{chrome.bluetoothPrivate.PairingEvent} pairingEvent
-     * @protected
-     */
-    handlePairing(pairingEvent) {
-      if (pairingEvent.pairing ===
-          chrome.bluetoothPrivate.PairingEventType.REQUEST_PINCODE) {
-        this.listeners_.forEach(
-            (listener) => listener.onPincodeRequested(pairingEvent.device));
+      if (displayList.length === 0) {
+        return;
       }
-    }
-
-    /**
-     * @param{chrome.bluetooth.Device} display
-     * @protected
-     */
-    handlePreferredDisplayConnectionStateChanged(display) {
-      if (display.connected === this.preferredDisplayConnected_) {
+      if (opt_device && !displayList.find((i) => i.name === opt_device.name)) {
         return;
       }
 
-      this.preferredDisplayConnected_ = display.connected;
+      displayList.forEach((display) => {
+        if (this.preferredDisplayAddress_ === display.address) {
+          this.handlePreferredDisplayConnectionStateChanged(display);
+        }
+      });
+      this.listeners_.forEach((listener) => {
+        listener.onDisplayListChanged(displayList);
+      });
+    });
+  }
 
-      // We do not clear the address seen by Brltty unless the caller explicitly
-      // disconnects or forgets the display via the public methods of this
-      // class.
-      if (display.connected) {
-        chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress(
-            display.address);
-      }
+  /**
+   * @param{chrome.bluetoothPrivate.PairingEvent} pairingEvent
+   * @protected
+   */
+  handlePairing(pairingEvent) {
+    if (pairingEvent.pairing ===
+        chrome.bluetoothPrivate.PairingEventType.REQUEST_PINCODE) {
+      this.listeners_.forEach(
+          (listener) => listener.onPincodeRequested(pairingEvent.device));
     }
+  }
+
+  /**
+   * @param{chrome.bluetooth.Device} display
+   * @protected
+   */
+  handlePreferredDisplayConnectionStateChanged(display) {
+    if (display.connected === this.preferredDisplayConnected_) {
+      return;
+    }
+
+    this.preferredDisplayConnected_ = display.connected;
+
+    // We do not clear the address seen by Brltty unless the caller explicitly
+    // disconnects or forgets the display via the public methods of this
+    // class.
+    if (display.connected) {
+      chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress(
+          display.address);
+    }
+  }
 };

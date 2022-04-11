@@ -5,11 +5,11 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
-import {BrailleCommandData} from '../background/braille_command_data.js';
-import {GestureCommandData} from '../background/gesture_command_data.js';
-import {KeyMap} from '../background/keymaps/key_map.js';
 
+import {BrailleCommandData} from '../common/braille_command_data.js';
 import {CommandStore} from '../common/command_store.js';
+import {GestureCommandData} from '../common/gesture_command_data.js';
+import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
 
 import {ISearchUI} from './i_search.js';

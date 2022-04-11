@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
-GEN_INCLUDE(['../testing/fake_objects.js']);
-GEN_INCLUDE(['../../common/testing/common.js']);
+GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/fake_objects.js']);
+GEN_INCLUDE(['../../../common/testing/common.js']);
 
 /**
  * A fake input field that behaves like the Braille IME and also updates
@@ -432,7 +432,8 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'BrailleInputHandler', '/chromevox/braille/braille_input_handler.js');
+        'BrailleInputHandler',
+        '/chromevox/background/braille/braille_input_handler.js');
 
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();

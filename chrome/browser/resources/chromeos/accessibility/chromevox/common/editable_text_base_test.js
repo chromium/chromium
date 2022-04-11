@@ -120,7 +120,7 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
 ChromeVoxEditableTextUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../../common/closure_shim.js',
-  'chromevox.js',
+  '../background/chromevox.js',
   'msgs.js',
   'tts_interface.js',
 ];

@@ -25,8 +25,9 @@ BrailleTranslatorManager = class {
     this.liblouis_ =
         opt_liblouisForTest ||
         new LibLouis(
-            chrome.extension.getURL('chromevox/braille/liblouis_wrapper.js'),
-            chrome.extension.getURL('chromevox/braille/tables'),
+            chrome.extension.getURL(
+                'chromevox/background/braille/liblouis_wrapper.js'),
+            chrome.extension.getURL('chromevox/background/braille/tables'),
             this.loadLiblouis_.bind(this));
 
     /**

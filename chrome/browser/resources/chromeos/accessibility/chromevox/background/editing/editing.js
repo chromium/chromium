@@ -8,7 +8,8 @@
  */
 import {AbstractTts} from '../../common/abstract_tts.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from '../../common/editable_text_base.js';
-import {BrailleBackground} from '../braille_background.js';
+
+import {BrailleBackground} from '../braille/braille_background.js';
 import {Color} from '../color.js';
 import {ChromeVoxEvent} from '../custom_automation_event.js';
 

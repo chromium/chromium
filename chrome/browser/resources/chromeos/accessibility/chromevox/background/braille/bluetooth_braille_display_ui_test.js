@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
-GEN_INCLUDE(['../testing/fake_objects.js']);
+GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/fake_objects.js']);
 
 /** Test fixture. */
 ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
@@ -43,17 +43,16 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
 ChromeVoxBluetoothBrailleDisplayUITest.prototype.closureModuleDeps =
     ['BluetoothBrailleDisplayManager'];
 
-SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
-      const ui = new BluetoothBrailleDisplayUI();
-      ui.attach(document.body);
-      assertEqualsDOM(
-          this.buildUIExpectation(`
+SYNC_TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
+  const ui = new BluetoothBrailleDisplayUI();
+  ui.attach(document.body);
+  assertEqualsDOM(
+      this.buildUIExpectation(`
               <select aria-labelledby="bluetoothBrailleSelectLabel"></select>
                 <button id="connectOrDisconnect" disabled="">Connect</button>
                 <button id="forget" disabled="">Forget</button>`),
-          document.body.children[0]);
-    });
+      document.body.children[0]);
+});
 
 SYNC_TEST_F(
     'ChromeVoxBluetoothBrailleDisplayUITest',
@@ -202,52 +201,51 @@ SYNC_TEST_F(
       ui.detach();
     });
 
-TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUITest', 'ClickControls', function() {
-      const ui = new BluetoothBrailleDisplayUI();
-      ui.attach(document.body);
+TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'ClickControls', function() {
+  const ui = new BluetoothBrailleDisplayUI();
+  ui.attach(document.body);
 
-      let displays = [];
+  let displays = [];
 
-      // Fake out getDevice using |display| as the backing source which changes
-      // below.
-      chrome.bluetooth.getDevice = (address, callback) => {
-        const display = displays.find((display) => display.address === address);
-        assertNotNullNorUndefined(display);
-        callback(display);
-      };
+  // Fake out getDevice using |display| as the backing source which changes
+  // below.
+  chrome.bluetooth.getDevice = (address, callback) => {
+    const display = displays.find((display) => display.address === address);
+    assertNotNullNorUndefined(display);
+    callback(display);
+  };
 
-      // One display; paired, but not connected.
-      displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
-      ui.onDisplayListChanged(displays);
-      assertEqualsDOM(
-          this.buildUIExpectation(`
+  // One display; paired, but not connected.
+  displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
+  ui.onDisplayListChanged(displays);
+  assertEqualsDOM(
+      this.buildUIExpectation(`
               <select aria-labelledby="bluetoothBrailleSelectLabel">
                 <option id="abcd1234"><span>VarioUltra</span></option>
               </select>
               <button id="connectOrDisconnect">Connect</button>
               <button id="forget">Forget</button>`),
-          document.body.children[0]);
+      document.body.children[0]);
 
-      // Click the connect button. Only connect should be called.
-      chrome.bluetoothPrivate.connect = this.newCallback();
-      chrome.bluetoothPrivate.disconnectAll = assertNotReached;
-      document.getElementById('connectOrDisconnect').onclick();
+  // Click the connect button. Only connect should be called.
+  chrome.bluetoothPrivate.connect = this.newCallback();
+  chrome.bluetoothPrivate.disconnectAll = assertNotReached;
+  document.getElementById('connectOrDisconnect').onclick();
 
-      // Now, update the state to be connected.
-      displays[0].connected = true;
-      ui.onDisplayListChanged(displays);
+  // Now, update the state to be connected.
+  displays[0].connected = true;
+  ui.onDisplayListChanged(displays);
 
-      // Click the disconnect button.
-      chrome.bluetoothPrivate.connect = assertNotReached;
-      chrome.bluetoothPrivate.disconnectAll = this.newCallback();
-      chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
-          this.newCallback();
-      document.getElementById('connectOrDisconnect').onclick();
+  // Click the disconnect button.
+  chrome.bluetoothPrivate.connect = assertNotReached;
+  chrome.bluetoothPrivate.disconnectAll = this.newCallback();
+  chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
+      this.newCallback();
+  document.getElementById('connectOrDisconnect').onclick();
 
-      // Click the forget button.
-      chrome.bluetoothPrivate.forgetDevice = this.newCallback();
-      chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
-          this.newCallback();
-      document.getElementById('forget').onclick();
-    });
+  // Click the forget button.
+  chrome.bluetoothPrivate.forgetDevice = this.newCallback();
+  chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
+      this.newCallback();
+  document.getElementById('forget').onclick();
+});

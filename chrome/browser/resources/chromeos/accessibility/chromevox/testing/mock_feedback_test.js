@@ -36,11 +36,11 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
 
 MockFeedbackUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
-  '../testing/fake_dom.js',
-  '../braille/nav_braille.js',
+  '../testing/fake_dom.js',  // Must come before other files
+  '../background/braille/nav_braille.js',
+  '../background/chromevox.js',
   '../common/abstract_earcons.js',
   '../common/braille_interface.js',
-  '../common/chromevox.js',
   '../common/spannable.js',
   '../common/tts_interface.js',
   'mock_feedback.js',

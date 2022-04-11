@@ -5,17 +5,16 @@
 /**
  * @fileoverview Script that runs on the background page.
  */
-
 import {AbstractTts} from '../common/abstract_tts.js';
 import {CompositeTts} from '../common/composite_tts.js';
-import {ConsoleTts} from '../common/console_tts.js';
 import {ChromeVoxEditableTextBase, TypingEcho} from '../common/editable_text_base.js';
-import {TtsBackground} from '../common/tts_background.js';
 
-import {BrailleBackground} from './braille_background.js';
-import {BrailleCaptionsBackground} from './braille_captions_background.js';
+import {BrailleBackground} from './braille/braille_background.js';
+import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
+import {ConsoleTts} from './console_tts.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';
 import {ChromeVoxPrefs} from './prefs.js';
+import {TtsBackground} from './tts_background.js';
 
 /**
  * This is the legacy ChromeVox background object.

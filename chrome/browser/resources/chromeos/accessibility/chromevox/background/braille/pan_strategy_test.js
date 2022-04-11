@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
 
 /**
  * Test fixture.
@@ -11,8 +11,8 @@ ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {};
 
 /** @override */
 ChromeVoxPanStrategyUnitTest.prototype.extraLibraries = [
-  '../../common/testing/assert_additions.js',
-  '../testing/fake_dom.js',
+  '../../../common/testing/assert_additions.js',
+  '../../testing/fake_dom.js',
   'cursor_dots.js',
   'pan_strategy.js',
 ];

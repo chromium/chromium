@@ -6,11 +6,12 @@
  * @fileoverview ChromeVox options page.
  *
  */
+import {BluetoothBrailleDisplayUI} from '../background/braille/bluetooth_braille_display_ui.js';
+import {ConsoleTts} from '../background/console_tts.js';
 import {ChromeVoxPrefs} from '../background/prefs.js';
-import {BluetoothBrailleDisplayUI} from '../braille/bluetooth_braille_display_ui.js';
+import {TtsBackground} from '../background/tts_background.js';
+
 import {AbstractTts} from '../common/abstract_tts.js';
-import {ConsoleTts} from '../common/console_tts.js';
-import {TtsBackground} from '../common/tts_background.js';
 
 /** @const {string} */
 const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
@@ -139,7 +140,7 @@ export class OptionsPage {
     });
 
     $('openDeveloperLog').addEventListener('click', function(evt) {
-      const logPage = {url: 'chromevox/background/logging/log.html'};
+      const logPage = {url: 'chromevox/log_page/log.html'};
       chrome.tabs.create(logPage);
     });
 

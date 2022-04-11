@@ -7,7 +7,7 @@
  * the background context (background page or options page).
  *
  */
-import {ConsoleTts} from '../common/console_tts.js';
+import {ConsoleTts} from './console_tts.js';
 
 /**
  * This object has default values of preferences and contains the common

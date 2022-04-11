@@ -11,6 +11,10 @@ GEN_INCLUDE([
  * Test fixture for cursors.
  */
 AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
+  constructor() {
+    super(true /* isCommonClass */);
+  }
+
   /** Test cursors.Cursor. @const {string} */
   get CURSOR() {
     return 'cursor';

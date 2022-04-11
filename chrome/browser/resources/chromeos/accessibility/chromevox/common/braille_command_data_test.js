@@ -13,7 +13,7 @@ ChromeVoxBrailleCommandDataTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'BrailleCommandData', '/chromevox/background/braille_command_data.js');
+        'BrailleCommandData', '/chromevox/common/braille_command_data.js');
   }
 };
 
