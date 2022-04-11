@@ -6,6 +6,7 @@
 
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/key.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -40,13 +41,13 @@ SigninError GetSigninError(authpolicy::ErrorType error) {
 }  // namespace
 
 ActiveDirectoryLoginScreen::ActiveDirectoryLoginScreen(
-    ActiveDirectoryLoginView* view,
+    base::WeakPtr<ActiveDirectoryLoginView> view,
     ErrorScreen* error_screen,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(ActiveDirectoryLoginView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       authpolicy_login_helper_(std::make_unique<AuthPolicyHelper>()),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
@@ -60,12 +61,6 @@ ActiveDirectoryLoginScreen::~ActiveDirectoryLoginScreen() {
     view_->Unbind();
 }
 
-void ActiveDirectoryLoginScreen::OnViewDestroyed(
-    ActiveDirectoryLoginView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
 void ActiveDirectoryLoginScreen::ShowImpl() {
   if (!view_)
     return;
@@ -77,7 +72,8 @@ void ActiveDirectoryLoginScreen::ShowImpl() {
 
 void ActiveDirectoryLoginScreen::HideImpl() {
   scoped_observation_.Reset();
-  view_->Reset();
+  if (view_)
+    view_->Reset();
   authpolicy_login_helper_->CancelRequestsAndRestart();
   error_screen_visible_ = false;
   error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
@@ -110,7 +106,8 @@ bool ActiveDirectoryLoginScreen::HandleAccelerator(
 }
 
 void ActiveDirectoryLoginScreen::HandleCancel() {
-  view_->Reset();
+  if (view_)
+    view_->Reset();
   authpolicy_login_helper_->CancelRequestsAndRestart();
   if (LoginDisplayHost::default_host()->HasUserPods()) {
     exit_callback_.Run();
@@ -164,17 +161,21 @@ void ActiveDirectoryLoginScreen::OnAdAuthResult(
       break;
     case authpolicy::ERROR_PARSE_UPN_FAILED:
     case authpolicy::ERROR_BAD_USER_NAME:
-      view_->SetErrorState(
-          username, static_cast<int>(ActiveDirectoryErrorState::BAD_USERNAME));
+      if (view_)
+        view_->SetErrorState(
+            username,
+            static_cast<int>(ActiveDirectoryErrorState::BAD_USERNAME));
       break;
     case authpolicy::ERROR_BAD_PASSWORD:
-      view_->SetErrorState(
-          username,
-          static_cast<int>(ActiveDirectoryErrorState::BAD_AUTH_PASSWORD));
+      if (view_)
+        view_->SetErrorState(
+            username,
+            static_cast<int>(ActiveDirectoryErrorState::BAD_AUTH_PASSWORD));
       break;
     default:
-      view_->SetErrorState(username,
-                           static_cast<int>(ActiveDirectoryErrorState::NONE));
+      if (view_)
+        view_->SetErrorState(username,
+                             static_cast<int>(ActiveDirectoryErrorState::NONE));
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
           GetSigninError(error), /*details=*/std::string());
   }
@@ -194,7 +195,8 @@ void ActiveDirectoryLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
       error_screen_visible_ = false;
       error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
       error_screen_->Hide();
-      view_->Show();
+      if (view_)
+        view_->Show();
     }
   }
 }

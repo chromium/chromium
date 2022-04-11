@@ -719,7 +719,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ActiveDirectoryLoginScreen>(
-      oobe_ui->GetView<ActiveDirectoryLoginScreenHandler>(),
+      oobe_ui->GetView<ActiveDirectoryLoginScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnActiveDirectoryLoginScreenExit,
                           weak_factory_.GetWeakPtr())));

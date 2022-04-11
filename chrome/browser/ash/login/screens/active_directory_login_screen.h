@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
@@ -27,7 +28,7 @@ class ActiveDirectoryLoginScreen
     : public BaseScreen,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
-  ActiveDirectoryLoginScreen(ActiveDirectoryLoginView* view,
+  ActiveDirectoryLoginScreen(base::WeakPtr<ActiveDirectoryLoginView> view,
                              ErrorScreen* error_screen,
                              const base::RepeatingClosure& exit_callback);
 
@@ -36,10 +37,6 @@ class ActiveDirectoryLoginScreen
   ActiveDirectoryLoginScreen(const ActiveDirectoryLoginScreen&) = delete;
   ActiveDirectoryLoginScreen& operator=(const ActiveDirectoryLoginScreen&) =
       delete;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(ActiveDirectoryLoginView* view);
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
@@ -70,7 +67,7 @@ class ActiveDirectoryLoginScreen
   // authenticate users against Active Directory server.
   std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
-  ActiveDirectoryLoginView* view_ = nullptr;
+  base::WeakPtr<ActiveDirectoryLoginView> view_;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 

@@ -26,10 +26,8 @@ ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler()
       "login.ActiveDirectoryLoginScreen.userActed");
 }
 
-ActiveDirectoryLoginScreenHandler::~ActiveDirectoryLoginScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+ActiveDirectoryLoginScreenHandler::~ActiveDirectoryLoginScreenHandler() =
+    default;
 
 void ActiveDirectoryLoginScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -69,12 +67,10 @@ void ActiveDirectoryLoginScreenHandler::Show() {
 
 void ActiveDirectoryLoginScreenHandler::Bind(
     ActiveDirectoryLoginScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void ActiveDirectoryLoginScreenHandler::Unbind() {
-  screen_ = nullptr;
   BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 

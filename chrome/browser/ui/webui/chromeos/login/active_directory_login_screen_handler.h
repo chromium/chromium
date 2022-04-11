@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -17,7 +18,8 @@ namespace chromeos {
 
 // Interface for dependency injection between ActiveDirectoryLoginScreen and its
 // WebUI representation.
-class ActiveDirectoryLoginView {
+class ActiveDirectoryLoginView
+    : public base::SupportsWeakPtr<ActiveDirectoryLoginView> {
  public:
   constexpr static StaticOobeScreenId kScreenId{"offline-ad-login"};
 
@@ -68,8 +70,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void InitializeDeprecated() override;
-
-  ash::ActiveDirectoryLoginScreen* screen_ = nullptr;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
