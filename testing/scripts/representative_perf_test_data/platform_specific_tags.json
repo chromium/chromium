@@ -5,12 +5,12 @@
       {
         "buildername": "Mac Release (Intel)",
         "builder_group": "chromium.gpu",
-        "os": "Mac-10.15.5"
+        "os": "Mac-11.5.2"
       },
       {
         "buildername": "Mac Retina Release (AMD)",
         "builder_group": "chromium.gpu",
-        "os": "Mac-10.14.6"
+        "os": "Mac-12.1"
       }
     ]
   },
