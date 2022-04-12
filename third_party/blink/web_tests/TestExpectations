@@ -3426,7 +3426,8 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-yes-openee-yes-port.sub.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Timeout ]
+# TODO(crbug.com/1315625): Re-enable this test
+crbug.com/626703 external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Skip ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/going-back.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
