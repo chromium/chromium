@@ -1591,10 +1591,10 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessExponentialRamp(
   auto value2 = current_state.value2;
   auto sample_rate = current_state.sample_rate;
 
-  if (value1 * value2 <= 0) {
-    // It's an error if value1 and value2 have opposite signs or if one of
-    // them is zero.  Handle this by propagating the previous value, and
-    // making it the default.
+  if (value1 * value2 <= 0 || time1 >= time2) {
+    // It's an error 1) if `value1` and `value2` have opposite signs or if one
+    // of them is zero, or 2) if `time1` is greater than or equal to `time2`.
+    // Handle this by propagating the previous value.
     value = value1;
 
     for (; write_index < fill_to_frame; ++write_index) {
