@@ -570,7 +570,8 @@ void RecordReadyToCommitMetrics(
     const blink::mojom::CommonNavigationParams& common_params,
     base::TimeTicks ready_to_commit_time,
     NavigationRequest::OriginAgentClusterEndResult
-        origin_agent_cluster_end_result) {
+        origin_agent_cluster_end_result,
+    bool did_receive_early_hints_before_cross_origin_redirect) {
   bool is_main_frame = !new_rfh->GetParent();
   bool is_same_process =
       old_rfh->GetProcess()->GetID() == new_rfh->GetProcess()->GetID();
@@ -665,6 +666,11 @@ void RecordReadyToCommitMetrics(
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.CrossProcess",
                                       transition, kIsBackground, delta);
+    }
+    if (did_receive_early_hints_before_cross_origin_redirect) {
+      LOG_NAVIGATION_TIMING_HISTOGRAM(
+          "TimeToReadyToCommit2.CrossOriginRedirectAfterEarlyHints", transition,
+          kIsBackground, delta);
     }
   }
 
@@ -2667,6 +2673,12 @@ void NavigationRequest::OnRequestRedirected(
   if (commit_params_->origin_to_commit)
     commit_params_->origin_to_commit.reset();
 
+  const bool is_same_origin_redirect =
+      url::Origin::Create(common_params_->url)
+          .IsSameOriginWith(redirect_info.new_url);
+  did_receive_early_hints_before_cross_origin_redirect_ |=
+      did_create_early_hints_manager_params_ && !is_same_origin_redirect;
+
   commit_params_->redirects.push_back(common_params_->url);
   common_params_->url = redirect_info.new_url;
   common_params_->method = redirect_info.new_method;
@@ -3238,6 +3250,8 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
+  // TODO(https://crbug.com/1305896): Store the whole EarlyHints struct instead
+  // of duplicating all of its fields.
   was_resource_hints_received_ = early_hints.was_resource_hints_received;
   early_hints_manager_ = std::move(early_hints.manager);
 
@@ -3673,8 +3687,20 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   CHECK(IsInMainFrame());
   DCHECK(!IsPageActivation());
 
+  // Getting a RenderProcessHost from a tentative RenderFrameHost during
+  // navigation is generally discouraged because it has potential performance
+  // impact (the RenderProcessHost could be discarded without actually being
+  // used after a cross origin redirect). However, Early Hints preloads require
+  // the RenderProcessHost for the tentative RenderFrameHost to set up
+  // URLLoaderFactoryParams accordingly. The performance implication should be
+  // negligible for Early Hints because these are rarely followed by cross
+  // origin redirects. Early Hints preloads before a cross origin redirect don't
+  // make sense since such preloads are not available for the redirected page.
+  // The CrossOriginRedirectAfterEarlyHints variant of
+  // Navigation.MainFrame.TimeToReadyToCommit2 histogram tracks the performance
+  // impacts.
   RenderProcessHost* process = frame_tree_node_->render_manager()
-                                   ->GetSiteInstanceForNavigationRequest(this)
+                                   ->GetFrameHostForNavigation(this)
                                    ->GetProcess();
 
   // The process is shutting down.
@@ -3707,6 +3733,7 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   process->CreateURLLoaderFactory(loader_factory.BindNewPipeAndPassReceiver(),
                                   std::move(url_loader_factory_params));
 
+  did_create_early_hints_manager_params_ = true;
   return NavigationEarlyHintsManagerParams(
       tentative_origin, std::move(isolation_info), std::move(loader_factory));
 }
@@ -6074,9 +6101,10 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     is_same_process_ = render_frame_host_->GetProcess()->GetID() ==
                        previous_render_frame_host->GetProcess()->GetID();
 
-    RecordReadyToCommitMetrics(previous_render_frame_host, render_frame_host_,
-                               *common_params_.get(), ready_to_commit_time_,
-                               origin_agent_cluster_end_result_);
+    RecordReadyToCommitMetrics(
+        previous_render_frame_host, render_frame_host_, *common_params_.get(),
+        ready_to_commit_time_, origin_agent_cluster_end_result_,
+        did_receive_early_hints_before_cross_origin_redirect_);
   }
 
   // TODO(https://crbug.com/888079) Take sandbox into account.

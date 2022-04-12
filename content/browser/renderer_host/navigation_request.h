@@ -1932,6 +1932,15 @@ class CONTENT_EXPORT NavigationRequest
   // response. This is set only for a main frame navigation.
   bool was_resource_hints_received_ = false;
 
+  // Set to true when this navigation has created parameters for
+  // NavigationEarlyHintsManager. Used to check whether cross origin redirects
+  // happened after Early Hints responses are received.
+  bool did_create_early_hints_manager_params_ = false;
+
+  // Set to true when an Early Hints response was received before cross origin
+  // redirects during navigation.
+  bool did_receive_early_hints_before_cross_origin_redirect_ = false;
+
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;

@@ -2277,9 +2277,6 @@ crbug.com/919789 images/image-click-scale-restore-zoomed-image.html [ Timeout ]
 crbug.com/919789 images/image-zoom-to-25.html [ Timeout ]
 crbug.com/919789 images/image-zoom-to-500.html [ Timeout ]
 
-# Early Hints
-crbug.com/1305896 external/wpt/loading/early-hints/redirect-cross-origin-between-early-hints.h2.window.html [ Failure ]
-
 # Sheriff 2020-02-06
 # Flaking on Linux Leak
 crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
