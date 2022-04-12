@@ -62,27 +62,27 @@ export function shareDataPageTestSuite() {
     assertEquals('Send', getElementContent('#buttonSend'));
 
     // Screenshot elements.
-    assertTrue(!!getElement('#screenshot-checkbox'));
-    assertEquals('Screenshot', getElementContent('#screenshot-check-label'));
-    assertTrue(!!getElement('#screenshot-image'));
+    assertTrue(!!getElement('#screenshotCheckbox'));
+    assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
+    assertTrue(!!getElement('#screenshotImage'));
 
     // Add file element.
-    assertEquals('Add file', getElementContent('#add-file'));
+    assertEquals('Add file', getElementContent('#addFile'));
 
     // Email elements.
-    assertEquals('Email', getElementContent('#user-email-label'));
-    assertTrue(!!getElement('#user-email-drop-down'));
+    assertEquals('Email', getElementContent('#userEmailLabel'));
+    assertTrue(!!getElement('#userEmailDropDown'));
 
     // URL elements.
-    assertEquals('share url:', getElementContent('#page-url-label'));
-    assertTrue(!!getElement('#page-url-checkbox'));
-    assertTrue(!!getElement('#page-url-text'));
+    assertEquals('share url:', getElementContent('#pageUrlLabel'));
+    assertTrue(!!getElement('#pageUrlCheckbox'));
+    assertTrue(!!getElement('#pageUrlText'));
 
     // System info label is a localized string in HTML format.
-    assertTrue(getElementContent('#sys-info-label').length > 0);
+    assertTrue(getElementContent('#sysInfoLabel').length > 0);
 
     // Privacy note is a long localized string in HTML format.
-    assertTrue(getElementContent('#privacy-note').length > 0);
+    assertTrue(getElementContent('#privacyNote').length > 0);
   });
 
   // Test that the email drop down is populated with two options.
@@ -90,7 +90,7 @@ export function shareDataPageTestSuite() {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
 
-    const emailDropdown = getElement('#user-email-drop-down');
+    const emailDropdown = getElement('#userEmailDropDown');
     assertTrue(!!emailDropdown);
     assertEquals(2, emailDropdown.options.length);
 
@@ -103,7 +103,7 @@ export function shareDataPageTestSuite() {
     assertEquals('', secondOption.value);
 
     // The user email section should be visible.
-    const userEmailElement = getElement('#user-email');
+    const userEmailElement = getElement('#userEmail');
     assertTrue(!!userEmailElement);
     assertTrue(isVisible(userEmailElement));
   });
@@ -114,7 +114,7 @@ export function shareDataPageTestSuite() {
     page.feedbackContext = fakeEmptyFeedbackContext;
 
     // The user email section should be hidden.
-    const userEmailElement = getElement('#user-email');
+    const userEmailElement = getElement('#userEmail');
     assertTrue(!!userEmailElement);
     assertFalse(isVisible(userEmailElement));
   });
@@ -123,6 +123,6 @@ export function shareDataPageTestSuite() {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
 
-    assertEquals('chrome://tab/', getElement('#page-url-text').value);
+    assertEquals('chrome://tab/', getElement('#pageUrlText').value);
   });
 }

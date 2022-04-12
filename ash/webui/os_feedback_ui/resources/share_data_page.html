@@ -1,6 +1,6 @@
 <style include="os-feedback-shared">
 
-  #privacy-note {
+  #privacyNote {
     font-size: 12px;
     line-height: 20px;
     margin-bottom: 0;
@@ -9,14 +9,14 @@
     text-justify: inter-word;
   }
 
-  #attach-files {
+  #attachFiles {
     display: flex;
     flex-direction: column;
     height: 96px;
     margin-bottom: 24px;
   }
 
-  #attach-files-container {
+  #attachFilesContainer {
     display: flex;
     flex-direction: row;
   }
@@ -28,26 +28,26 @@
     display: flex;
   }
 
-  #screenshot-container {
+  #screenshotContainer {
     align-items: center;
     height: 48px;
     margin-inline-end: 12px;
     width: 50%;
   }
 
-  #add-file {
+  #addFile {
     align-items: center;
     height: 48px;
     margin-inline-start: 12px;
     width: 50%;
   }
 
-  #user-email {
+  #userEmail {
     height: 72px;
     margin-bottom: 24px;
   }
 
-  #share-diagnostic-data {
+  #shareDiagnosticData {
     height: 96px;
     margin-bottom: 24px;
   }
@@ -59,50 +59,50 @@
   </div>
   <div id="content">
     <!-- Attach files -->
-    <div id="attach-files">
+    <div id="attachFiles">
       <p>Attach files</p>
-      <div id="attach-files-container">
+      <div id="attachFilesContainer">
         <!-- Attach a screenshot -->
-        <div id="screenshot-container" class="card-frame">
-          <input id="screenshot-checkbox" type="checkbox"
-              aria-labelledby="screenshot-check-label">
-          <label id="screenshot-check-label">Screenshot</label>
-          <img id="screenshot-image" aria-label="$i18n{screenshotA11y}">
+        <div id="screenshotContainer" class="card-frame">
+          <input id="screenshotCheckbox" type="checkbox"
+              aria-labelledby="screenshotCheckLabel">
+          <label id="screenshotCheckLabel">Screenshot</label>
+          <img id="screenshotImage" aria-label="$i18n{screenshotA11y}">
         </div>
         <!-- Attach a file -->
         <!-- TODO(xiangdongkong): Create a polymer element.-->
-        <div id="add-file" class="card-frame">Add file</div>
+        <div id="addFile" class="card-frame">Add file</div>
       </div>
     </div>
     <!-- User e-mail -->
-    <div id="user-email" class="text-field-container"
+    <div id="userEmail" class="text-field-container"
         hidden$="[[!hasEmail_(feedbackContext)]]">
-      <label id="user-email-label">Email</label>
-      <select id="user-email-drop-down" aria-labelledby="user-email-label">
+      <label id="userEmailLabel">Email</label>
+      <select id="userEmailDropDown" aria-labelledby="userEmailLabel">
         <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
         <option value="">Don't include email address</option>
       </select>
     </div>
     <!-- Diagnostic data -->
-    <div id="share-diagnostic-data">
+    <div id="shareDiagnosticData">
       <p>Share diagnostic data</p>
       <!-- URL -->
-      <div id="page-url" class="checkbox-field-container">
-        <input id="page-url-checkbox" type="checkbox"
-            aria-labelledby="page-url-label" checked>
-        <label id="page-url-label">share url:</label>
-        <input id="page-url-text" aria-labelledby="page-url-label" type="text"
+      <div id="pageUrl" class="checkbox-field-container">
+        <input id="pageUrlCheckbox" type="checkbox" aria-labelledby="pageUrlLabel"
+            checked>
+        <label id="pageUrlLabel">share url:</label>
+        <input id="pageUrlText" aria-labelledby="pageUrlLabel" type="text"
             value$="[[feedbackContext.pageUrl.url]]" dir="ltr">
       </div>
       <!-- System Information -->
-      <div id="sys-info-container" class="checkbox-field-container">
-        <input id="sys-info-checkbox" type="checkbox"
-            aria-labelledby="sys-info-label" checked>
-        <label id="sys-info-label">Send system and app info and metrics</label>
+      <div id="sysInfoContainer" class="checkbox-field-container">
+        <input id="sysInfoCheckbox" type="checkbox" aria-labelledby="sysInfoLabel"
+            checked>
+        <label id="sysInfoLabel">Send system and app info and metrics</label>
       </div>
     </div>
     <!-- Privacy note -->
-    <div id="privacy-note">
+    <div id="privacyNote">
       Go to the Legal Help page to request content changes for legal reasons. Some
       account and system information may be sent to Google. We
       will use the information you give us to help address technical issues and to
