@@ -11,5 +11,6 @@ android.webkit.WebView focusable focused scrollable
 ++++++++++++++android.widget.TextView
 ++++++++++++++android.widget.Button role_description='button' clickable disabled name='mute'
 ++++++++++++android.widget.Button role_description='button' clickable disabled name='enter full screen'
-++++++++++++android.widget.Button role_description='button' clickable disabled name='show more media controls' hint='more options'
+++++++++++++android.view.View role_description='menu pop up button' clickable disabled name='show more media controls' hint='more options'
+++++++++++++++android.widget.TextView
 ++++++++++android.widget.SeekBar role_description='slider' clickable disabled range name='elapsed time: 0:00, video time scrubber 0:00 / 0:00' range_max=100

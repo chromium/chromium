@@ -24,7 +24,7 @@ rootWebArea
 ++++++++++++++++++button name='mute' restriction=disabled
 ++++++++++++++++button name='enter full screen' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++button description='more options' name='show more media controls' descriptionFrom=title restriction=disabled
+++++++++++++++++popUpButton description='more options' name='show more media controls' descriptionFrom=title restriction=disabled
 ++++++++++++++++++genericContainer
 ++++++++++++++slider horizontal name='video time scrubber 0:00 / 0:00' value='elapsed time: 0:00' restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++++++menu ignored invisible

@@ -14,6 +14,6 @@
 ++++++++++++++[push button] name='mute'
 ++++++++++++[push button] name='enter full screen'
 ++++++++++++++[section]
-++++++++++++[push button] name='show more media controls' description='more options' description-from:tooltip
+++++++++++++[push button] name='show more media controls' description='more options' description-from:tooltip haspopup:menu
 ++++++++++++++[section]
 ++++++++++[slider] name='video time scrubber 0:00 / 0:00' horizontal current=0.000000 minimum=0.000000 maximum=100.000000

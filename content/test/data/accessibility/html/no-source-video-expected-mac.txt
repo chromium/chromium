@@ -14,6 +14,6 @@ AXWebArea
 ++++++++++++++AXButton AXDescription='mute'
 ++++++++++++AXButton AXDescription='enter full screen'
 ++++++++++++++AXGroup
-++++++++++++AXButton AXDescription='show more media controls' AXHelp='more options'
+++++++++++++AXPopUpButton AXDescription='show more media controls' AXHelp='more options'
 ++++++++++++++AXGroup
 ++++++++++AXSlider AXDescription='video time scrubber 0:00 / 0:00' AXValue=0
