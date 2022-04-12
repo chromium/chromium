@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
+import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {Error, State} from '../data/state.js';
 
@@ -60,18 +60,17 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   sheetCount: number;
   private summary_: string|null;
 
-  private isPdfOrDrive_(): boolean {
+  private isPdf_(): boolean {
     return this.destination &&
-        (getPrinterTypeForDestination(this.destination) ===
-             PrinterType.PDF_PRINTER ||
-         this.destination.id === GooglePromotedDestinationId.DOCS);
+        getPrinterTypeForDestination(this.destination) ===
+        PrinterType.PDF_PRINTER;
   }
 
   private updateSummary_() {
     switch (this.state) {
       case (State.PRINTING):
-        this.summary_ = loadTimeData.getString(
-            this.isPdfOrDrive_() ? 'saving' : 'printing');
+        this.summary_ =
+            loadTimeData.getString(this.isPdf_() ? 'saving' : 'printing');
         break;
       case (State.READY):
         this.updateSheetsSummary_();
@@ -103,7 +102,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
       return;
     }
 
-    const pageOrSheet = this.isPdfOrDrive_() ? 'Page' : 'Sheet';
+    const pageOrSheet = this.isPdf_() ? 'Page' : 'Sheet';
     PluralStringProxyImpl.getInstance()
         .getPluralString(
             `printPreview${pageOrSheet}SummaryLabel`, this.sheetCount)

@@ -207,7 +207,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
     // Filter out the 'Save to Drive' option so it is not shown in the
     // list of available options.
     return this.destinationStore.destinations().filter(
-        destination => destination.id !== GooglePromotedDestinationId.DOCS &&
+        destination =>
             destination.id !== GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
   }
 

@@ -104,8 +104,7 @@ export class DestinationMatch {
     }
     // </if>
 
-    return destination.id === GooglePromotedDestinationId.DOCS ||
-        destination.id === GooglePromotedDestinationId.SAVE_AS_PDF;
+    return destination.id === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /**

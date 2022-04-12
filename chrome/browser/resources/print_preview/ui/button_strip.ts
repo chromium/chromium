@@ -15,7 +15,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 // </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
+import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {State} from '../data/state.js';
 
@@ -101,16 +101,15 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.fire_('cancel-requested');
   }
 
-  private isPdfOrDrive_(): boolean {
+  private isPdf_(): boolean {
     return this.destination &&
-        (getPrinterTypeForDestination(this.destination) ===
-             PrinterType.PDF_PRINTER ||
-         this.destination.id === GooglePromotedDestinationId.DOCS);
+        getPrinterTypeForDestination(this.destination) ===
+        PrinterType.PDF_PRINTER;
   }
 
   private updatePrintButtonLabel_() {
-    this.printButtonLabel_ = loadTimeData.getString(
-        this.isPdfOrDrive_() ? 'saveButton' : 'printButton');
+    this.printButtonLabel_ =
+        loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
   }
 
   private updatePrintButtonEnabled_() {
@@ -148,7 +147,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     // * This is "real" printing, i.e. not saving to PDF/Drive.
     // * Sheets policy is present.
     // * Either number of sheets is not calculated or exceeds policy limit.
-    return !this.isPdfOrDrive_() && this.maxSheets > 0 &&
+    return !this.isPdf_() && this.maxSheets > 0 &&
         (this.sheetCount === 0 || this.sheetCount > this.maxSheets);
   }
 

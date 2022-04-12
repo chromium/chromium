@@ -168,7 +168,9 @@ export type PrintTicket = Ticket&{
   pageCount: number,
   pageHeight: number,
   pageWidth: number,
+  // <if expr="chromeos_ash or chromeos_lacros">
   printToGoogleDrive: boolean,
+  // </if>
   showSystemDialog: boolean,
 };
 
@@ -1545,7 +1547,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       shouldPrintBackgrounds: this.getSettingValue('cssBackground'),
       shouldPrintSelectionOnly: false,  // only used in print preview
       previewModifiable: this.documentSettings.isModifiable,
-      printToGoogleDrive: destination.id === GooglePromotedDestinationId.DOCS,
       printerType: getPrinterTypeForDestination(destination),
       rasterizePDF: this.getSettingValue('rasterize'),
       scaleFactor:
@@ -1561,11 +1562,11 @@ export class PrintPreviewModelElement extends PolymerElement {
       pageWidth: this.pageSize.width,
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
+      // <if expr="chromeos_ash or chromeos_lacros">
+      printToGoogleDrive:
+          destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
+      // </if>
     };
-    // <if expr="chromeos_ash or chromeos_lacros">
-    ticket['printToGoogleDrive'] = ticket['printToGoogleDrive'] ||
-        destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
-    // </if>
 
     if (openPdfInPreview) {
       ticket['openPDFInPreview'] = openPdfInPreview;

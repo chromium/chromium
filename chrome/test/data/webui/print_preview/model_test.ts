@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, DuplexMode, GooglePromotedDestinationId, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {GooglePromotedDestinationId} from 'chrome://print/print_preview.js';
+// </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -297,7 +300,6 @@ suite(model_test.suiteName, function() {
       shouldPrintBackgrounds: false,
       shouldPrintSelectionOnly: false,
       previewModifiable: true,
-      printToGoogleDrive: false,
       printerType: PrinterType.LOCAL_PRINTER,
       rasterizePDF: false,
       scaleFactor: 100,
@@ -310,13 +312,14 @@ suite(model_test.suiteName, function() {
       pageWidth: 612,
       pageHeight: 792,
       showSystemDialog: false,
+      // <if expr="chromeos_ash or chromeos_lacros">
+      printToGoogleDrive: false,
+      advancedSettings: {
+        printArea: 4,
+        paperType: 0,
+      },
+      // </if>
     };
-    // <if expr="chromeos_ash or chromeos_lacros">
-    expectedDefaultTicketObject.advancedSettings = {
-      printArea: 4,
-      paperType: 0,
-    };
-    // </if>
     assertEquals(JSON.stringify(expectedDefaultTicketObject), defaultTicket);
 
     // Toggle all the values and create a new print ticket.
@@ -335,7 +338,6 @@ suite(model_test.suiteName, function() {
       shouldPrintBackgrounds: true,
       shouldPrintSelectionOnly: false,  // Only for Print Preview.
       previewModifiable: true,
-      printToGoogleDrive: false,
       printerType: PrinterType.LOCAL_PRINTER,
       rasterizePDF: true,
       scaleFactor: 90,
@@ -348,20 +350,23 @@ suite(model_test.suiteName, function() {
       pageWidth: 612,
       pageHeight: 792,
       showSystemDialog: false,
+      // <if expr="chromeos_ash or chromeos_lacros">
+      printToGoogleDrive: false,
+      // </if>
       marginsCustom: {
         marginTop: 100,
         marginRight: 200,
         marginBottom: 300,
         marginLeft: 400,
       },
+      // <if expr="chromeos_ash or chromeos_lacros">
+      pinValue: '0000',
+      advancedSettings: {
+        printArea: 6,
+        paperType: 1,
+      },
+      // </if>
     };
-    // <if expr="chromeos_ash or chromeos_lacros">
-    expectedNewTicketObject.pinValue = '0000';
-    expectedNewTicketObject.advancedSettings = {
-      printArea: 6,
-      paperType: 1,
-    };
-    // </if>
 
     assertEquals(JSON.stringify(expectedNewTicketObject), newTicket);
   });
@@ -440,9 +445,8 @@ suite(model_test.suiteName, function() {
   test(assert(model_test.TestNames.RemoveUnsupportedDestinations), function() {
     const unsupportedPrivet =
         new Destination('PrivetDevice', DestinationOrigin.PRIVET, 'PrivetName');
-    const unsupportedCloud = new Destination(
-        GooglePromotedDestinationId.DOCS, DestinationOrigin.COOKIES,
-        'Save to Google Drive');
+    const unsupportedCloud =
+        new Destination('CloudDevice', DestinationOrigin.COOKIES, 'CloudName');
     const supportedLocal =
         new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
     const stickySettings: {[key: string]: any} = {

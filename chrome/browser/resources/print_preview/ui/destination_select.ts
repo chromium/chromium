@@ -112,9 +112,6 @@ export class PrintPreviewDestinationSelectElement extends
 
     // Check for the Docs or Save as PDF ids first.
     const keyParams = this.selectedValue.split('/');
-    if (keyParams[0] === GooglePromotedDestinationId.DOCS) {
-      return 'print-preview:save-to-drive';
-    }
     if (keyParams[0] === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }

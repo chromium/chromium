@@ -149,10 +149,6 @@ export class PrintPreviewDestinationSelectCrosElement extends
       return 'print-preview:save-to-drive';
     }
 
-    if (keyParams[0] === GooglePromotedDestinationId.DOCS) {
-      return 'print-preview:save-to-drive';
-    }
-
     if (keyParams[0] === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }

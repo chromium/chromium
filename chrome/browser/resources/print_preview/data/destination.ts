@@ -584,7 +584,6 @@ const LOCATION_TAG_PREFIXES: string[] =
  * @enum {string}
  */
 export enum GooglePromotedDestinationId {
-  DOCS = '__google__docs',
   SAVE_AS_PDF = 'Save as PDF',
   // <if expr="chromeos_ash or chromeos_lacros">
   SAVE_TO_DRIVE_CROS = 'Save to Drive CrOS',
