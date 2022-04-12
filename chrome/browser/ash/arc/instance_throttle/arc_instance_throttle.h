@@ -89,6 +89,8 @@ class ArcInstanceThrottle : public KeyedService,
   // Notifies CPU resetriction state to power mojom.
   void NotifyCpuRestriction(CpuRestrictionState cpu_restriction_state);
 
+  ArcBootPhaseThrottleObserver* GetBootObserver();
+
   std::unique_ptr<Delegate> delegate_;
   // True if CPU_RESTRICTION_BACKGROUND_WITH_CFS_QUOTA_ENFORCED has ever been
   // used.
@@ -96,8 +98,6 @@ class ArcInstanceThrottle : public KeyedService,
 
   // Owned by ArcServiceManager.
   ArcBridgeService* const bridge_;
-  // Owned by the parent class, ash::ThrottleService.
-  ArcBootPhaseThrottleObserver* boot_observer_ = nullptr;
 };
 
 }  // namespace arc

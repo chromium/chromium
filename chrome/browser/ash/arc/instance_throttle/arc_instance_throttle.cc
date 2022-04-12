@@ -183,13 +183,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
       bridge_(bridge) {
   AddObserver(std::make_unique<ArcActiveWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcAppLaunchThrottleObserver>());
-
-  {
-    auto boot_observer = std::make_unique<ArcBootPhaseThrottleObserver>();
-    boot_observer_ = boot_observer.get();  // Remember the pointer locally.
-    AddObserver(std::move(boot_observer));
-  }
-
+  AddObserver(std::make_unique<ArcBootPhaseThrottleObserver>());
   AddObserver(std::make_unique<ArcKioskModeThrottleObserver>());
   AddObserver(std::make_unique<ArcPipWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
@@ -224,7 +218,8 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
   // Check if enforcing quota is possible
   bool use_quota = false;
 
-  const absl::optional<bool>& arc_is_booting = boot_observer_->arc_is_booting();
+  const absl::optional<bool>& arc_is_booting =
+      GetBootObserver()->arc_is_booting();
   const bool arc_has_booted = (arc_is_booting && !*arc_is_booting);
   const bool is_throttling = (cpu_restriction_state ==
                               CpuRestrictionState::CPU_RESTRICTION_BACKGROUND);
@@ -255,6 +250,12 @@ void ArcInstanceThrottle::NotifyCpuRestriction(
     return;
   power->OnCpuRestrictionChanged(
       static_cast<mojom::CpuRestrictionState>(cpu_restriction_state));
+}
+
+ArcBootPhaseThrottleObserver* ArcInstanceThrottle::GetBootObserver() {
+  chromeos::ThrottleObserver* observer =
+      GetObserverByName(kArcBootPhaseThrottleObserverName);
+  return static_cast<ArcBootPhaseThrottleObserver*>(observer);
 }
 
 }  // namespace arc

@@ -20,6 +20,8 @@ class BrowserContext;
 
 namespace arc {
 
+constexpr char kArcBootPhaseThrottleObserverName[] = "ArcIsBooting";
+
 // This class observes phases of ARC boot and unthrottles the container
 // when ARC is booting or restarting.
 class ArcBootPhaseThrottleObserver
