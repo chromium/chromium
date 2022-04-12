@@ -6,6 +6,9 @@
 <meta name="assert" content="Checks that ::target-text pseudo-element can be applied on visited links.">
 <link rel="match" href="target-text-008-ref.html">
 <style>
+  a::target-text {
+    background: red;
+  }
   a:visited::target-text {
     color: lime;
     background: green;
