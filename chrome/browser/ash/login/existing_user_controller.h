@@ -155,7 +155,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   FRIEND_TEST_ALL_PREFIXES(ExistingUserControllerTest, ExistingUserLogin);
 
-  class PolicyStoreLoadWaiter;
+  class DeviceLocalAccountPolicyWaiter;
 
   void LoginAsGuest();
   void LoginAsPublicSession(const UserContext& user_context);
@@ -247,13 +247,11 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Sends an accessibility alert event to extension listeners.
   void SendAccessibilityAlert(const std::string& alert_text);
 
-  // Continues public session login if the associated user cloud policy store is
-  // loaded.
+  // Continues public session login if the public session policy is loaded.
   // This is intended to delay public session login if the login is requested
-  // before the policy store is initialized (in which case the login attempt
-  // would fail).
-  void LoginAsPublicSessionWithPolicyStoreReady(
-      const UserContext& user_context);
+  // before the policy is available (in which case the login attempt would
+  // fail).
+  void LoginAsPublicSessionWhenPolicyAvailable(const UserContext& user_context);
 
   // Callback invoked when the keyboard layouts available for a public session
   // have been retrieved. Selects the first layout from the list and continues
@@ -388,9 +386,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   std::unique_ptr<OAuth2TokenInitializer> oauth2_token_initializer_;
 
-  // Used to wait for cloud policy store load during public session login, if
-  // the store is not yet initialized when the login is attempted.
-  std::unique_ptr<PolicyStoreLoadWaiter> policy_store_waiter_;
+  // Used to wait for local account policy during session login, if policy is
+  // not yet available when the login is attempted.
+  std::unique_ptr<DeviceLocalAccountPolicyWaiter> policy_waiter_;
 
   // The source of PIN salts. Used to retrieve PIN during TransformPinKey.
   std::unique_ptr<quick_unlock::PinSaltStorage> pin_salt_storage_;
