@@ -297,11 +297,11 @@ Polymer({
     },
 
     /** @private {boolean} */
-    isTrafficCountersHandlerEnabled_: {
+    isTrafficCountersEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.valueExists('trafficCountersHandlerEnabled') &&
-            loadTimeData.getBoolean('trafficCountersHandlerEnabled');
+        return loadTimeData.valueExists('trafficCountersEnabled') &&
+            loadTimeData.getBoolean('trafficCountersEnabled');
       }
     },
 
@@ -2319,7 +2319,7 @@ Polymer({
    * @private
    */
   showDataUsage_(managedProperties) {
-    if (!this.isTrafficCountersHandlerEnabled_) {
+    if (!this.isTrafficCountersEnabled_) {
       return false;
     }
     return managedProperties && this.guid !== '' &&

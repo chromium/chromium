@@ -5278,15 +5278,10 @@ const char kTouchscreenCalibrationDescription[] =
     "If enabled, the user can calibrate the touch screen displays in "
     "chrome://settings/display.";
 
-const char kTrafficCountersHandlerEnabledName[] =
-    "Traffic counters handler enabled";
-const char kTrafficCountersHandlerEnabledDescription[] =
-    "If enabled, the TrafficCountersHandler class will handle traffic counter "
-    "resets.";
-
-const char kTrafficCountersSettingsUiName[] = "Traffic Counters Settings UI";
-const char kTrafficCountersSettingsUiDescription[] =
-    "If enabled, the SettingsUI will show data usage for cellular networks";
+const char kTrafficCountersEnabledName[] = "Traffic counters enabled";
+const char kTrafficCountersEnabledDescription[] =
+    "If enabled, data usage will be visible in the Cellular Settings UI and "
+    "traffic counters will be automatically reset if that setting is enabled.";
 
 const char kUseFakeDeviceForMediaStreamName[] = "Use fake video capture device";
 const char kUseFakeDeviceForMediaStreamDescription[] =

@@ -7848,10 +7848,9 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordsAccountStorageRevisedOptInFlow)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"traffic-counters-settings-ui",
-     flag_descriptions::kTrafficCountersSettingsUiName,
-     flag_descriptions::kTrafficCountersSettingsUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersSettingsUi)},
+    {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
+     flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersEnabled)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"extensions-menu-access-control",
@@ -8160,13 +8159,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCloseAllTabsModalDialogDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCloseAllTabsModalDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"traffic-counters-handler-enabled",
-     flag_descriptions::kTrafficCountersHandlerEnabledName,
-     flag_descriptions::kTrafficCountersHandlerEnabledDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersHandlerEnabled)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"tailored-security-integration",
      flag_descriptions::kTailoredSecurityIntegrationName,

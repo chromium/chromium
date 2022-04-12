@@ -5654,14 +5654,9 @@
     "expiry_milestone": 103
   },
   {
-    "name": "traffic-counters-handler-enabled",
-    "owners": ["khegde", "stevenjb"],
-    "expiry_milestone": 102
-  },
-  {
-    "name": "traffic-counters-settings-ui",
-    "owners": ["khegde", "stevenjb"],
-    "expiry_milestone": 101
+    "name": "traffic-counters",
+    "owners": ["khorimoto", "cros-connectivity@google.com"],
+    "expiry_milestone": 106
   },
   {
     "name": "translate-assist-content",

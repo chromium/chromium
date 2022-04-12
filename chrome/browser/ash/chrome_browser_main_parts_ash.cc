@@ -1131,7 +1131,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
               ->GetDiagnosticsRemoteAndBindReceiver();
         }));
 
-    if (features::IsTrafficCountersHandlerEnabled()) {
+    if (features::IsTrafficCountersEnabled()) {
       // Initialize the TrafficCountersHandler instance.
       traffic_counters_handler_ =
           std::make_unique<ash::traffic_counters::TrafficCountersHandler>();
@@ -1424,7 +1424,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
-  if (features::IsTrafficCountersHandlerEnabled())
+  if (features::IsTrafficCountersEnabled())
     traffic_counters_handler_.reset();
 
   if (features::IsBluetoothRevampEnabled())

@@ -55,8 +55,8 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
 
 void AddResources(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("trafficCountersHandlerEnabled",
-                          ash::features::IsTrafficCountersHandlerEnabled());
+  html_source->AddBoolean("trafficCountersEnabled",
+                          ash::features::IsTrafficCountersEnabled());
 }
 
 }  // namespace traffic_counters
