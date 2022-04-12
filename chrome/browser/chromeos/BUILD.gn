@@ -4779,6 +4779,8 @@ source_set("unit_tests") {
     "../ash/web_applications/help_app/help_app_discover_tab_notification_unittest.cc",
     "../ash/web_applications/help_app/help_app_notification_controller_unittest.cc",
     "../ash/web_applications/os_settings_web_app_info_unittest.cc",
+    "../ash/web_applications/personalization_app/mock_personalization_app_manager.cc",
+    "../ash/web_applications/personalization_app/mock_personalization_app_manager.h",
     "../ash/web_applications/personalization_app/personalization_app_ambient_provider_impl_unittest.cc",
     "../ash/web_applications/personalization_app/personalization_app_theme_provider_impl_unittest.cc",
     "../ash/web_applications/personalization_app/personalization_app_user_provider_impl_unittest.cc",

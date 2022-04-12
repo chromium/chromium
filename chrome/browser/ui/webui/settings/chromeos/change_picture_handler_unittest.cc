@@ -13,11 +13,15 @@
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/web_applications/personalization_app/mock_personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -27,6 +31,16 @@
 
 namespace chromeos {
 namespace settings {
+
+namespace {
+
+std::unique_ptr<KeyedService> MakeMockPersonalizationAppManager(
+    content::BrowserContext* context) {
+  return std::make_unique<::testing::NiceMock<
+      ::ash::personalization_app::MockPersonalizationAppManager>>();
+}
+
+}  // namespace
 
 class ChangePictureHandlerTest : public testing::Test {
  public:
@@ -43,8 +57,12 @@ class ChangePictureHandlerTest : public testing::Test {
 
     user_manager::User* user = GetFakeUserManager()->AddUser(account_id_);
 
-    testing_profile_ =
-        profile_manager_.CreateTestingProfile(account_id_.GetUserEmail());
+    testing_profile_ = profile_manager_.CreateTestingProfile(
+        account_id_.GetUserEmail(),
+        {{ash::personalization_app::PersonalizationAppManagerFactory::
+              GetInstance(),
+          base::BindRepeating(&MakeMockPersonalizationAppManager)}});
+
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             testing_profile_);
 
@@ -125,6 +143,20 @@ class ChangePictureHandlerTest : public testing::Test {
 
   ash::UserImageManager* GetUserImageManager() {
     return GetFakeUserManager()->GetUserImageManager(account_id_);
+  }
+
+  void ResetHandler() { handler_.reset(); }
+
+  ChangePictureHandler* handler() { return handler_.get(); }
+
+  ::testing::NiceMock<
+      ::ash::personalization_app::MockPersonalizationAppManager>*
+  MockPersonalizationAppManager() {
+    return static_cast<::testing::NiceMock<
+        ::ash::personalization_app::MockPersonalizationAppManager>*>(
+        ::ash::personalization_app::PersonalizationAppManagerFactory::
+            GetForBrowserContext(
+                web_ui()->GetWebContents()->GetBrowserContext()));
   }
 
  private:
@@ -242,6 +274,27 @@ TEST_F(ChangePictureHandlerTest,
                 ->arg1()
                 ->GetString(),
             "profile-image-changed");
+}
+
+TEST_F(ChangePictureHandlerTest, CallsMaybeStartHatsTimerOnDestruction) {
+  EXPECT_CALL(
+      *MockPersonalizationAppManager(),
+      MaybeStartHatsTimer(::ash::personalization_app::HatsSurveyType::kAvatar))
+      .Times(1);
+
+  ResetHandler();
+}
+
+TEST_F(ChangePictureHandlerTest,
+       DoesNotCallMaybeStartHatsTimerOnDestructionIfJavascriptDisallowed) {
+  handler()->DisallowJavascript();
+
+  EXPECT_CALL(
+      *MockPersonalizationAppManager(),
+      MaybeStartHatsTimer(::ash::personalization_app::HatsSurveyType::kAvatar))
+      .Times(0);
+
+  ResetHandler();
 }
 
 }  // namespace settings

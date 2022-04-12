@@ -7,19 +7,12 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/timer/timer.h"
+#include "ash/webui/personalization_app/search/search_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
-
-class HatsNotificationController;
-
 namespace personalization_app {
-
-class SearchHandler;
 
 enum class HatsSurveyType {
   kAvatar,
@@ -35,35 +28,17 @@ enum class HatsSurveyType {
 // personalization features.
 class PersonalizationAppManager : public KeyedService {
  public:
-  explicit PersonalizationAppManager(content::BrowserContext* context);
+  static std::unique_ptr<PersonalizationAppManager> Create(
+      content::BrowserContext* context);
 
-  PersonalizationAppManager(const PersonalizationAppManager& other) = delete;
-  PersonalizationAppManager& operator=(const PersonalizationAppManager& other) =
-      delete;
-
-  ~PersonalizationAppManager() override;
+  ~PersonalizationAppManager() override = default;
 
   // Starts |hats_timer_| to show a Personalization survey if this user is
   // eligible for the survey. Will not start timer if a user has already seen a
   // Personalization survey during this session.
-  void MaybeStartHatsTimer(HatsSurveyType hats_survey_type);
+  virtual void MaybeStartHatsTimer(HatsSurveyType hats_survey_type) = 0;
 
-  SearchHandler* search_handler() { return search_handler_.get(); }
-
- private:
-  // Callback to |hats_timer_|. Will show the given survey type.
-  void OnHatsTimerDone(HatsSurveyType hats_survey_type);
-
-  // KeyedService:
-  void Shutdown() override;
-
-  raw_ptr<content::BrowserContext> context_;
-
-  base::OneShotTimer hats_timer_;
-  scoped_refptr<HatsNotificationController> hats_notification_controller_;
-
-  // Handles running search queries for Personalization App features.
-  std::unique_ptr<SearchHandler> search_handler_;
+  virtual SearchHandler* search_handler() = 0;
 };
 
 }  // namespace personalization_app

@@ -36,7 +36,7 @@ PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
 
 KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new PersonalizationAppManager(context);
+  return PersonalizationAppManager::Create(context).release();
 }
 
 bool PersonalizationAppManagerFactory::ServiceIsNULLWhileTesting() const {

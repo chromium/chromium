@@ -28,6 +28,8 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
+#include "chrome/browser/ash/web_applications/personalization_app/mock_personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -36,10 +38,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome_device_policy.pb.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -174,6 +178,11 @@ base::Value::Dict* GetPhotoFromGooglePhotosPhotosResponse(
   return photo;
 }
 
+std::unique_ptr<KeyedService> MakeMockPersonalizationAppManager(
+    content::BrowserContext* context) {
+  return std::make_unique<::testing::NiceMock<MockPersonalizationAppManager>>();
+}
+
 class TestWallpaperObserver
     : public ash::personalization_app::mojom::WallpaperObserver {
  public:
@@ -235,7 +244,11 @@ class PersonalizationAppWallpaperProviderImplTest
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
+    profile_ = profile_manager_.CreateTestingProfile(
+        kFakeTestEmail,
+        {{ash::personalization_app::PersonalizationAppManagerFactory::
+              GetInstance(),
+          base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
     AddAndLoginUser(
         AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId));
@@ -251,10 +264,20 @@ class PersonalizationAppWallpaperProviderImplTest
         wallpaper_provider_remote_.BindNewPipeAndPassReceiver());
   }
 
+  PersonalizationAppWallpaperProviderImpl::ImageInfo GetDefaultImageInfo() {
+    return {
+        /*in_image_url=*/GURL("http://test_url"),
+        /*in_collection_id=*/"collection_id",
+        /*in_asset_id=*/1,
+        /*in_unit_id=*/1,
+        /*in_type=*/backdrop::Image::IMAGE_TYPE_UNKNOWN,
+    };
+  }
+
   void AddWallpaperImage(
-      uint64_t asset_id,
       const PersonalizationAppWallpaperProviderImpl::ImageInfo& image_info) {
-    wallpaper_provider_->image_asset_id_map_.insert({asset_id, image_info});
+    wallpaper_provider_->image_asset_id_map_.insert(
+        {image_info.asset_id, image_info});
   }
 
   // Returns true if the test should run with the Google Photos Wallpaper
@@ -274,6 +297,16 @@ class PersonalizationAppWallpaperProviderImplTest
 
   PersonalizationAppWallpaperProviderImpl* delegate() {
     return wallpaper_provider_.get();
+  }
+
+  void ResetWallpaperProvider() { wallpaper_provider_.reset(); }
+
+  ::testing::NiceMock<MockPersonalizationAppManager>*
+  MockPersonalizationAppManager() {
+    return static_cast<::testing::NiceMock<
+        ::ash::personalization_app::MockPersonalizationAppManager>*>(
+        ::ash::personalization_app::PersonalizationAppManagerFactory::
+            GetForBrowserContext(profile_));
   }
 
   void SetWallpaperObserver() {
@@ -321,67 +354,55 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
-  const uint64_t asset_id = 1;
-  const GURL image_url("http://test_url");
-  const uint64_t unit_id = 1;
+  auto image_info = GetDefaultImageInfo();
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(asset_id, image_url,
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
                         backdrop::Image::IMAGE_TYPE_UNKNOWN);
 
-  AddWallpaperImage(asset_id, /*image_info=*/{
-                        image_url,
-                        "collection_id",
-                        asset_id,
-                        unit_id,
-                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
-                    });
+  AddWallpaperImage(image_info);
 
   wallpaper_provider_remote()->get()->SelectWallpaper(
-      asset_id, /*preview_mode=*/false,
+      image_info.asset_id, /*preview_mode=*/false,
       base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
   wallpaper_provider_remote()->FlushForTesting();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(ash::WallpaperInfo(
-                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                 absl::make_optional(asset_id), image_url, "collection_id",
-                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/false, /*from_user=*/true,
-                 /*daily_refresh_enabled=*/false, unit_id, variants}),
-            test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_EQ(
+      ash::WallpaperInfo(
+          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+           absl::make_optional(image_info.asset_id), image_info.image_url,
+           "collection_id",
+           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+           /*preview_mode=*/false, /*from_user=*/true,
+           /*daily_refresh_enabled=*/false, image_info.unit_id, variants}),
+      test_wallpaper_controller()->wallpaper_info().value());
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
-  const uint64_t asset_id = 1;
-  const GURL image_url("http://test_url");
-  const uint64_t unit_id = 1;
+  auto image_info = GetDefaultImageInfo();
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(asset_id, image_url,
-                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        image_info.type);
 
-  AddWallpaperImage(asset_id, /*image_info=*/{
-                        image_url,
-                        "collection_id",
-                        asset_id,
-                        unit_id,
-                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
-                    });
+  AddWallpaperImage(image_info);
 
   wallpaper_provider_remote()->get()->SelectWallpaper(
-      asset_id, /*preview_mode=*/true,
+      image_info.asset_id, /*preview_mode=*/true,
       base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
   wallpaper_provider_remote()->FlushForTesting();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(ash::WallpaperInfo(
-                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                 absl::make_optional(asset_id), image_url, "collection_id",
-                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/true, /*from_user=*/true,
-                 /*daily_refresh_enabled=*/false, unit_id, variants}),
-            test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_EQ(
+      ash::WallpaperInfo(
+          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+           absl::make_optional(image_info.asset_id), image_info.image_url,
+           "collection_id",
+           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+           /*preview_mode=*/true, /*from_user=*/true,
+           /*daily_refresh_enabled=*/false, image_info.unit_id, variants}),
+      test_wallpaper_controller()->wallpaper_info().value());
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplTest,
@@ -390,27 +411,19 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
   test_wallpaper_controller()->ShowWallpaperImage(
       CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorBLACK));
 
-  const uint64_t asset_id = 1;
-  const GURL image_url("http://test_url");
-  const uint64_t unit_id = 1;
+  auto image_info = GetDefaultImageInfo();
   std::vector<ash::OnlineWallpaperVariant> variants;
-  variants.emplace_back(asset_id, image_url,
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
                         backdrop::Image::IMAGE_TYPE_UNKNOWN);
 
-  AddWallpaperImage(asset_id, /*image_info=*/{
-                        image_url,
-                        "collection_id",
-                        asset_id,
-                        unit_id,
-                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
-                    });
+  AddWallpaperImage(image_info);
 
   test_wallpaper_controller()->SetOnlineWallpaper(
       {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-       absl::make_optional(asset_id), image_url, "collection_id",
-       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+       absl::make_optional(image_info.asset_id), image_info.image_url,
+       "collection_id", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
-       /*daily_refresh_enabled=*/false, unit_id, variants},
+       /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
       base::DoNothing());
 
   EXPECT_EQ(nullptr, current_wallpaper());
@@ -442,6 +455,28 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
 
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 1);
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), layout);
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplTest,
+       CallsMaybeStartHatsTimerOnDestruction) {
+  // Insert a wallpaper image info to indicate that the user opened the
+  // wallpaper app and requested wallpapers.
+  AddWallpaperImage(GetDefaultImageInfo());
+
+  EXPECT_CALL(*MockPersonalizationAppManager(),
+              MaybeStartHatsTimer(HatsSurveyType::kWallpaper))
+      .Times(1);
+
+  ResetWallpaperProvider();
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplTest,
+       DoesNotCallMaybeStartHatsTimerIfNoWallpaperFetched) {
+  EXPECT_CALL(*MockPersonalizationAppManager(),
+              MaybeStartHatsTimer(HatsSurveyType::kWallpaper))
+      .Times(0);
+
+  ResetWallpaperProvider();
 }
 
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
