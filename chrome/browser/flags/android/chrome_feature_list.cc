@@ -335,6 +335,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxSpareRenderer,
+    &omnibox::kAndroidAuxiliarySearch,
     &omnibox::kUpdatedConnectionSecurityIndicators,
     &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSite,
