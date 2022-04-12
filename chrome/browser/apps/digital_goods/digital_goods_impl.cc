@@ -31,7 +31,11 @@ DigitalGoodsImpl::CreateAndBind(content::RenderFrameHost* render_frame_host) {
 
 mojo::PendingRemote<payments::mojom::DigitalGoods>
 DigitalGoodsImpl::BindRequest() {
-  return receiver_.BindNewPipeAndPassRemote();
+  mojo::PendingRemote<payments::mojom::DigitalGoods> pending_remote;
+  mojo::PendingReceiver<payments::mojom::DigitalGoods> pending_receiver =
+      pending_remote.InitWithNewPipeAndPassReceiver();
+  receiver_set_.Add(this, std::move(pending_receiver));
+  return pending_remote;
 }
 
 void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
@@ -137,7 +141,7 @@ void DigitalGoodsImpl::Consume(const std::string& purchase_token,
 
 // Private methods:
 DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* rfh)
-    : content::DocumentUserData<DigitalGoodsImpl>(rfh), receiver_(this) {}
+    : content::DocumentUserData<DigitalGoodsImpl>(rfh) {}
 
 arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
   return arc::ArcDigitalGoodsBridge::GetForBrowserContext(
