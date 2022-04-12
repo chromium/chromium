@@ -2,6 +2,10 @@
 #
 # The following things should be checked whether they are justified in the
 # CL description:
+# - The prefix of the virtual test suites should not be too long. There is
+#   a 260 characters limit for the length of the path on Windows. The prefix
+#   will be part of the path should a baseline is needed, and will cause
+#   trouble at that time.
 # - If the CL adds virtual tests (by adding new virtual suites or new
 #   directories to existing virtual suties), how many tests the CL adds.
 # - If the number of new tests is big (e.g. >=500)

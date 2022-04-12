@@ -732,7 +732,7 @@
     "args": ["--enable-features=AllowClientHintsToThirdParty"]
   },
   {
-    "prefix": "disable-user-agent-client-hint-feature",
+    "prefix": "disable-ua-client-hint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
     "args": ["--disable-features=UserAgentClientHint"]
@@ -1034,7 +1034,7 @@
     "args": ["--disable-features=DialogFocusNewSpecBehavior"]
   },
   {
-    "prefix": "disable-ua-ch-platform-feature",
+    "prefix": "disable-ua-ch-platform",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
     "args": ["--disable-features=UACHPlatformEnabledByDefault"]
