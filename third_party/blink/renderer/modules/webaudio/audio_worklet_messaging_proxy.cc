@@ -103,19 +103,19 @@ std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {
   return CreateWorkletThreadWithConstraints(
       WorkletObjectProxy(),
       worklet_->GetBaseAudioContext()->HasRealtimeConstraint(),
-      frame->IsMainFrame());
+      frame->IsOutermostMainFrame());
 }
 
 std::unique_ptr<WorkerThread>
 AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
     WorkerReportingProxy& worker_reporting_proxy,
     const bool has_realtime_constraint,
-    const bool is_top_level_frame) {
+    const bool is_outermost_main_frame) {
   if (!has_realtime_constraint) {
     return std::make_unique<OfflineAudioWorkletThread>(worker_reporting_proxy);
   }
 
-  if (is_top_level_frame) {
+  if (is_outermost_main_frame) {
     return std::make_unique<RealtimeAudioWorkletThread>(worker_reporting_proxy);
   }
 
