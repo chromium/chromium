@@ -95,7 +95,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     protected void setPedal(PropertyModel model, @NonNull OmniboxPedal omniboxPedal) {
         model.set(PedalSuggestionViewProperties.PEDAL, omniboxPedal);
         model.set(PedalSuggestionViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
-        final int pedalID = omniboxPedal.getID();
+        final int pedalID = omniboxPedal.getPedalID();
         model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK, v -> {
             SuggestionsMetrics.recordPedalUsed(pedalID);
             mOmniboxPedalDelegate.executeAction(pedalID);
@@ -114,7 +114,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     PedalIcon getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
-        return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getID());
+        return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getPedalID());
     }
 
     /**

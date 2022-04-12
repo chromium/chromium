@@ -149,7 +149,7 @@ public class OmniboxPedalsTest {
         for (int i = 0; i < coordinator.getSuggestionCount(); ++i) {
             AutocompleteMatch suggestion = coordinator.getSuggestionAt(i);
             if (suggestion != null && suggestion.getOmniboxPedal() != null
-                    && suggestion.getOmniboxPedal().getID() == pedalType) {
+                    && suggestion.getOmniboxPedal().getPedalID() == pedalType) {
                 return suggestion;
             }
         }

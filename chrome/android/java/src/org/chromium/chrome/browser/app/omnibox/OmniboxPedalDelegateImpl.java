@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.HistoryActivity;
+import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
@@ -46,7 +47,11 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     }
 
     @Override
-    public void executeAction(@OmniboxPedalType int omniboxActionType) {
+    public void executeAction(int omniboxActionType) {
+        assert (omniboxActionType >= OmniboxPedalType.NONE
+                && omniboxActionType < OmniboxPedalType.TOTAL_COUNT)
+                || (omniboxActionType >= OmniboxActionType.FIRST
+                        && omniboxActionType < OmniboxActionType.LAST);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         switch (omniboxActionType) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
@@ -147,7 +152,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     }
 
     @Override
-    public @NonNull PedalIcon getPedalIcon(@OmniboxPedalType int omniboxActionType) {
+    public @NonNull PedalIcon getPedalIcon(int omniboxActionType) {
         switch (omniboxActionType) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
             case OmniboxPedalType.MANAGE_PASSWORDS:
