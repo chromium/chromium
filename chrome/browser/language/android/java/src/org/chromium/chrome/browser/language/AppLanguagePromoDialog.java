@@ -239,7 +239,14 @@ public class AppLanguagePromoDialog {
         @Override
         public void onClick(View row) {
             LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
-            adapter.setSelectedLanguage(getBindingAdapterPosition());
+            int position = getBindingAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) {
+                // NO_POSITION will be returned if no layout pass has been done since the last call
+                // to RecyclerView.Adapter.notifyDataSetChanged(). In that case we should not
+                // update the new selected language.
+                return;
+            }
+            adapter.setSelectedLanguage(position);
             View positiveButton = row.getRootView().findViewById(R.id.positive_button);
             if (positiveButton != null) {
                 positiveButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
