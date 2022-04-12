@@ -88,16 +88,16 @@ FileSystemDirectoryIterator* FileSystemDirectoryHandle::values(
 ScriptPromise FileSystemDirectoryHandle::getFileHandle(
     ScriptState* script_state,
     const String& name,
-    const FileSystemGetFileOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
-
+    const FileSystemGetFileOptions* options,
+    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
-    return result;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->GetFile(
       name, options->create(),
@@ -126,16 +126,16 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
 ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
     ScriptState* script_state,
     const String& name,
-    const FileSystemGetDirectoryOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
-
+    const FileSystemGetDirectoryOptions* options,
+    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
-    return result;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->GetDirectory(
       name, options->create(),
@@ -164,16 +164,16 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
 ScriptPromise FileSystemDirectoryHandle::removeEntry(
     ScriptState* script_state,
     const String& name,
-    const FileSystemRemoveOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
-
+    const FileSystemRemoveOptions* options,
+    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
-    return result;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->RemoveEntry(
       name, options->recursive(),
@@ -191,16 +191,16 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
 
 ScriptPromise FileSystemDirectoryHandle::resolve(
     ScriptState* script_state,
-    FileSystemHandle* possible_child) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
-
+    FileSystemHandle* possible_child,
+    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
-    return result;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->Resolve(
       possible_child->Transfer(),

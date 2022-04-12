@@ -35,15 +35,20 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
 
   ScriptPromise getFileHandle(ScriptState*,
                               const String& name,
-                              const FileSystemGetFileOptions*);
+                              const FileSystemGetFileOptions*,
+                              ExceptionState&);
   ScriptPromise getDirectoryHandle(ScriptState*,
                                    const String& name,
-                                   const FileSystemGetDirectoryOptions*);
+                                   const FileSystemGetDirectoryOptions*,
+                                   ExceptionState&);
   ScriptPromise removeEntry(ScriptState*,
                             const String& name,
-                            const FileSystemRemoveOptions*);
+                            const FileSystemRemoveOptions*,
+                            ExceptionState&);
 
-  ScriptPromise resolve(ScriptState*, FileSystemHandle* possible_child);
+  ScriptPromise resolve(ScriptState*,
+                        FileSystemHandle* possible_child,
+                        ExceptionState&);
 
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
