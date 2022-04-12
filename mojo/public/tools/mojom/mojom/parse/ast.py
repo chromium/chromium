@@ -9,6 +9,15 @@
 # failures, especially for more complex types.
 
 
+import sys
+
+
+def _IsStrOrUnicode(x):
+  if sys.version_info[0] < 3:
+    return isinstance(x, (unicode, str))
+  return isinstance(x, str)
+
+
 class NodeBase(object):
   """Base class for nodes in the AST."""
 
@@ -87,7 +96,7 @@ class Definition(NodeBase):
   include parameter definitions.) This class is meant to be subclassed."""
 
   def __init__(self, mojom_name, **kwargs):
-    assert isinstance(mojom_name, str)
+    assert _IsStrOrUnicode(mojom_name)
     NodeBase.__init__(self, **kwargs)
     self.mojom_name = mojom_name
 
@@ -99,7 +108,7 @@ class Attribute(NodeBase):
   """Represents an attribute."""
 
   def __init__(self, key, value, **kwargs):
-    assert isinstance(key, str)
+    assert _IsStrOrUnicode(key)
     super(Attribute, self).__init__(**kwargs)
     self.key = key
     self.value = value
@@ -122,10 +131,10 @@ class Const(Definition):
   def __init__(self, mojom_name, attribute_list, typename, value, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     # The typename is currently passed through as a string.
-    assert isinstance(typename, str)
+    assert _IsStrOrUnicode(typename)
     # The value is either a literal (currently passed through as a string) or a
     # "wrapped identifier".
-    assert isinstance(value, (tuple, str))
+    assert _IsStrOrUnicode or isinstance(value, tuple)
     super(Const, self).__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.typename = typename
@@ -161,7 +170,7 @@ class EnumValue(Definition):
     # The optional value is either an int (which is current a string) or a
     # "wrapped identifier".
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
-    assert value is None or isinstance(value, (tuple, str))
+    assert value is None or _IsStrOrUnicode(value) or isinstance(value, tuple)
     super(EnumValue, self).__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.value = value
@@ -184,7 +193,7 @@ class Import(NodeBase):
 
   def __init__(self, attribute_list, import_filename, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
-    assert isinstance(import_filename, str)
+    assert _IsStrOrUnicode(import_filename)
     super(Import, self).__init__(**kwargs)
     self.attribute_list = attribute_list
     self.import_filename = import_filename
@@ -305,10 +314,10 @@ class Parameter(NodeBase):
   """Represents a method request or response parameter."""
 
   def __init__(self, mojom_name, attribute_list, ordinal, typename, **kwargs):
-    assert isinstance(mojom_name, str)
+    assert _IsStrOrUnicode(mojom_name)
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
-    assert isinstance(typename, str)
+    assert _IsStrOrUnicode(typename)
     super(Parameter, self).__init__(**kwargs)
     self.mojom_name = mojom_name
     self.attribute_list = attribute_list
@@ -354,13 +363,13 @@ class StructField(Definition):
 
   def __init__(self, mojom_name, attribute_list, ordinal, typename,
                default_value, **kwargs):
-    assert isinstance(mojom_name, str)
+    assert _IsStrOrUnicode(mojom_name)
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
-    assert isinstance(typename, str)
+    assert _IsStrOrUnicode(typename)
     # The optional default value is currently either a value as a string or a
     # "wrapped identifier".
-    assert default_value is None or isinstance(default_value, str) or \
+    assert default_value is None or _IsStrOrUnicode(default_value) or \
         isinstance(default_value, tuple)
     super(StructField, self).__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
@@ -407,10 +416,10 @@ class Union(Definition):
 
 class UnionField(Definition):
   def __init__(self, mojom_name, attribute_list, ordinal, typename, **kwargs):
-    assert isinstance(mojom_name, str)
+    assert _IsStrOrUnicode(mojom_name)
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
-    assert isinstance(typename, str)
+    assert _IsStrOrUnicode(typename)
     super(UnionField, self).__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal

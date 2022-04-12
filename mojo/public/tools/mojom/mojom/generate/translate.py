@@ -12,10 +12,17 @@ already been parsed and converted to ASTs before.
 import itertools
 import os
 import re
+import sys
 
 from mojom.generate import generator
 from mojom.generate import module as mojom
 from mojom.parse import ast
+
+
+def _IsStrOrUnicode(x):
+  if sys.version_info[0] < 3:
+    return isinstance(x, (unicode, str))
+  return isinstance(x, str)
 
 
 def _DuplicateName(values):
@@ -565,7 +572,7 @@ def _ResolveNumericEnumValues(enum):
       prev_value += 1
 
     # Integral value (e.g: BEGIN = -0x1).
-    elif isinstance(field.value, str):
+    elif _IsStrOrUnicode(field.value):
       prev_value = int(field.value, 0)
 
     # Reference to a previous enum value (e.g: INIT = BEGIN).

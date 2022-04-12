@@ -28,6 +28,11 @@ sys.path.insert(
                  os.pardir, os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+  basestring = str
+  long = int
+
 GENERATOR_PREFIX = 'java'
 
 _spec_to_java_type = {
@@ -144,7 +149,7 @@ def GetInterfaceResponseName(method):
   return UpperCamelCase(method.name) + '_Response'
 
 def ParseStringAttribute(attribute):
-  assert isinstance(attribute, str)
+  assert isinstance(attribute, basestring)
   return attribute
 
 def GetJavaTrueFalse(value):
@@ -333,7 +338,7 @@ def ExpressionToText(context, token, kind_spec=''):
     return _TranslateNamedValue(token)
   if kind_spec.startswith('i') or kind_spec.startswith('u'):
     number = ast.literal_eval(token.lstrip('+ '))
-    if not isinstance(number, int):
+    if not isinstance(number, (int, long)):
       raise ValueError('got unexpected type %r for int literal %r' % (
           type(number), token))
     # If the literal is too large to fit a signed long, convert it to the

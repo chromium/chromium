@@ -12,7 +12,11 @@
 # method = interface.AddMethod('Tat', 0)
 # method.AddParameter('baz', 0, mojom.INT32)
 
-import pickle
+import sys
+if sys.version_info.major == 2:
+  import cPickle as pickle
+else:
+  import pickle
 from uuid import UUID
 
 
