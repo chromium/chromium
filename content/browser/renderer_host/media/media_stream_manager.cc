@@ -468,13 +468,32 @@ void FinalizeGetMediaDeviceIDForHMAC(
                         base::BindOnce(std::move(callback), absl::nullopt));
 }
 
-bool EnableChangeSourceForDevice(const MediaStreamDevice& device) {
+bool ChangeSourceEnabledForDevice(const MediaStreamDevice& device) {
   DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
+  // Show "Change source" button on notification bar only for tab sharing by
+  // desktopCapture API or getDisplayMedia.
   return media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&
          (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
           (device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
            base::FeatureList::IsEnabled(
                media::kShareThisTabInsteadButtonGetDisplayMedia)));
+}
+
+bool ChangeSourceBlocklistedForDevice(const MediaStreamDevice& device) {
+  // Block display of "Change source" button for getDisplayMedia with audio
+  // if ShareThisTabInsteadButtonGetDisplayMediaAudio is disabled.
+  return device.type == MediaStreamType::DISPLAY_AUDIO_CAPTURE &&
+         !base::FeatureList::IsEnabled(
+             media::kShareThisTabInsteadButtonGetDisplayMediaAudio);
+}
+
+bool EnableChangeSource(const MediaStreamDevices& devices) {
+  bool has_change_source_enabled_device = std::any_of(
+      devices.cbegin(), devices.cend(), &ChangeSourceEnabledForDevice);
+  bool has_change_source_blocklisted_device = std::any_of(
+      devices.cbegin(), devices.cend(), &ChangeSourceBlocklistedForDevice);
+  return has_change_source_enabled_device &&
+         !has_change_source_blocklisted_device;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3122,14 +3141,8 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
       label.c_str(), request->requester_id,
       RequestTypeToString(request->request_type())));
 
-  // Show "Change source" button on notification bar only for tab sharing by
-  // desktopCapture API or getDisplayMedia.
-  bool enable_change_source =
-      std::any_of(request->devices.cbegin(), request->devices.cend(),
-                  &EnableChangeSourceForDevice);
-
   MediaStreamUI::SourceCallback device_changed_cb;
-  if (enable_change_source &&
+  if (EnableChangeSource(request->devices) &&
       base::FeatureList::IsEnabled(features::kDesktopCaptureChangeSource)) {
     device_changed_cb = base::BindRepeating(
         &MediaStreamManager::ChangeMediaStreamSourceFromBrowser,

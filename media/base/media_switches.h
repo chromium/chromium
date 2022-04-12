@@ -178,6 +178,8 @@ MEDIA_EXPORT extern const base::Feature kReuseMediaPlayer;
 MEDIA_EXPORT extern const base::Feature kRevokeMediaSourceObjectURLOnAttach;
 MEDIA_EXPORT extern const base::Feature
     kShareThisTabInsteadButtonGetDisplayMedia;
+MEDIA_EXPORT extern const base::Feature
+    kShareThisTabInsteadButtonGetDisplayMediaAudio;
 MEDIA_EXPORT extern const base::Feature kSpeakerChangeDetection;
 MEDIA_EXPORT extern const base::Feature kSpecCompliantCanPlayThrough;
 MEDIA_EXPORT extern const base::Feature kSurfaceLayerForMediaStreams;

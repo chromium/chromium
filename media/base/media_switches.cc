@@ -586,6 +586,17 @@ const base::Feature kShareThisTabInsteadButtonGetDisplayMedia{
     "ShareThisTabInsteadButtonGetDisplayMedia",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If kShareThisTabInsteadButtonGetDisplayMedia is ENABLED, this flag controls
+// whether a "Share this tab instead" button should be enabled for
+// getDisplayMedia captures with audio.
+// If kShareThisTabInsteadButtonGetDisplayMedia is DISABLED, this flag has no
+// effect.
+// Note: This flag does not control if the "Share this tab instead" button is
+// shown for chrome.desktopCapture captures.
+const base::Feature kShareThisTabInsteadButtonGetDisplayMediaAudio{
+    "ShareThisTabInsteadButtonGetDisplayMediaAudio",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable the Speaker Change Detection feature, which inserts a line break when
 // the Speech On-Device API (SODA) detects a speaker change.
 const base::Feature kSpeakerChangeDetection{"SpeakerChangeDetection",
