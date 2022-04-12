@@ -5005,6 +5005,29 @@
             ]
         }
     ],
+    "OnDemandAPIValidation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220414",
+                    "params": {
+                        "use_page_topics": "true"
+                    },
+                    "enable_features": [
+                        "BatchAnnotationsValidation"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDemandAT": [
         {
             "platforms": [
