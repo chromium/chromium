@@ -69,9 +69,10 @@ int main(int argc, char** argv) {
   command_line->AppendSwitchNative(switches::kOzonePlatform,
                                    switches::kHeadless);
 
-  // The default headless resolution (1x1) causes ui/gfx/canvas.cc to crash.
-  // TODO(crbug.com/1292122): Remove workaround once bug is fixed.
-  command_line->AppendSwitchNative(switches::kOzoneOverrideScreenSize, "10,10");
+  // The default headless resolution (1x1) doesn't allow web contents to be
+  // visible. That cause tests that simulate mouse clicks to fail.
+  command_line->AppendSwitchNative(switches::kOzoneOverrideScreenSize,
+                                   "800,600");
 #endif
 
   ChromeTestSuiteRunner runner;
