@@ -11,9 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink::attribution_response_parsing {
 
@@ -475,10 +477,43 @@ TEST(AttributionResponseParsingTest,
 }
 
 TEST(AttributionResponseParsingTest, ParseFilters) {
-  // TODO(apaseltiner): Add comprehensive test cases.
+  const auto make_filter_data_with_keys = [](wtf_size_t n) {
+    JSONObject root;
+    for (wtf_size_t i = 0; i < n; ++i) {
+      root.SetArray(String::Number(i), std::make_unique<JSONArray>());
+    }
+    return root.ToJSONString();
+  };
+
+  const auto make_filter_data_with_key_length = [](wtf_size_t n) {
+    JSONObject root;
+    root.SetArray(String(std::string(n, 'a')), std::make_unique<JSONArray>());
+    return root.ToJSONString();
+  };
+
+  const auto make_filter_data_with_values = [](wtf_size_t n) {
+    auto array = std::make_unique<JSONArray>();
+    for (wtf_size_t i = 0; i < n; ++i) {
+      array->PushString("x");
+    }
+
+    JSONObject root;
+    root.SetArray("a", std::move(array));
+    return root.ToJSONString();
+  };
+
+  const auto make_filter_data_with_value_length = [](wtf_size_t n) {
+    auto array = std::make_unique<JSONArray>();
+    array->PushString(String(std::string(n, 'a')));
+
+    JSONObject root;
+    root.SetArray("a", std::move(array));
+    return root.ToJSONString();
+  };
+
   const struct {
     String description;
-    AtomicString json;
+    String json;
     mojom::blink::AttributionFilterDataPtr expected;
   } kTestCases[] = {
       {
@@ -491,6 +526,57 @@ TEST(AttributionResponseParsingTest, ParseFilters) {
           R"json({"source_type": []})json",
           AttributionFilterDataBuilder().AddFilter("source_type", {}).Build(),
       },
+      {
+          "multiple",
+          R"json({
+            "a": ["b"],
+            "c": ["e", "d"]
+          })json",
+          AttributionFilterDataBuilder()
+              .AddFilter("a", {"b"})
+              .AddFilter("c", {"e", "d"})
+              .Build(),
+      },
+      {
+          "invalid_json",
+          "!",
+          nullptr,
+      },
+      {
+          "not_dictionary",
+          R"json(true)json",
+          nullptr,
+      },
+      {
+          "value_not_array",
+          R"json({"a": true})json",
+          nullptr,
+      },
+      {
+          "array_element_not_string",
+          R"json({"a": [true]})json",
+          nullptr,
+      },
+      {
+          "too_many_keys",
+          make_filter_data_with_keys(51),
+          nullptr,
+      },
+      {
+          "key_too_long",
+          make_filter_data_with_key_length(26),
+          nullptr,
+      },
+      {
+          "too_many_values",
+          make_filter_data_with_values(51),
+          nullptr,
+      },
+      {
+          "value_too_long",
+          make_filter_data_with_value_length(26),
+          nullptr,
+      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -502,6 +588,28 @@ TEST(AttributionResponseParsingTest, ParseFilters) {
     if (test_case.expected) {
       EXPECT_EQ(*test_case.expected, filter_data) << test_case.description;
     }
+  }
+
+  {
+    mojom::blink::AttributionFilterData filter_data;
+    EXPECT_TRUE(ParseFilters(make_filter_data_with_keys(50), filter_data));
+  }
+
+  {
+    mojom::blink::AttributionFilterData filter_data;
+    EXPECT_TRUE(
+        ParseFilters(make_filter_data_with_key_length(25), filter_data));
+  }
+
+  {
+    mojom::blink::AttributionFilterData filter_data;
+    EXPECT_TRUE(ParseFilters(make_filter_data_with_values(50), filter_data));
+  }
+
+  {
+    mojom::blink::AttributionFilterData filter_data;
+    EXPECT_TRUE(
+        ParseFilters(make_filter_data_with_value_length(25), filter_data));
   }
 }
 
@@ -1032,7 +1140,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
           "valid_filters",
           R"json([{
             "trigger_data": "5",
-            "filters": {"SOURCE_TYPE": ["navigation"]}
+            "filters": {"source_type": ["navigation"]}
           }])json",
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
@@ -1042,7 +1150,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
                   /*dedup_key=*/nullptr,
                   /*filters=*/
                   AttributionFilterDataBuilder()
-                      .AddFilter("SOURCE_TYPE", {"navigation"})
+                      .AddFilter("source_type", {"navigation"})
                       .Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1060,7 +1168,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
           "valid_not_filters",
           R"json([{
             "trigger_data": "5",
-            "not_filters": {"SOURCE_TYPE": ["navigation"]}
+            "not_filters": {"source_type": ["navigation"]}
           }])json",
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
@@ -1071,7 +1179,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/
                   AttributionFilterDataBuilder()
-                      .AddFilter("SOURCE_TYPE", {"navigation"})
+                      .AddFilter("source_type", {"navigation"})
                       .Build()))
               .Build(),
       },

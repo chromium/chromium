@@ -320,7 +320,7 @@ bool ParseEventTriggerData(
   return true;
 }
 
-bool ParseFilters(const AtomicString& json_string,
+bool ParseFilters(const String& json_string,
                   mojom::blink::AttributionFilterData& filter_data) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);

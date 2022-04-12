@@ -68,7 +68,7 @@ CORE_EXPORT bool ParseEventTriggerData(
 // }
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseFilters(const AtomicString& json_string,
+CORE_EXPORT bool ParseFilters(const String& json_string,
                               mojom::blink::AttributionFilterData& filter_data);
 
 // Example JSON schema:
