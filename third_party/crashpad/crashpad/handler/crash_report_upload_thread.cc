@@ -311,7 +311,13 @@ CrashReportUploadThread::UploadResult CrashReportUploadThread::UploadReport(
   }
   http_transport->SetBodyStream(http_multipart_builder.GetBodyStream());
   // TODO(mark): The timeout should be configurable by the client.
-  http_transport->SetTimeout(60.0);  // 1 minute.
+#if BUILDFLAG(IS_IOS)
+  // iOS background assertions only last 30 seconds, keep the timeout shorter.
+  double timeout_seconds = 20;
+#else
+  double timeout_seconds = 60;
+#endif
+  http_transport->SetTimeout(timeout_seconds);
 
   std::string url = url_;
   if (options_.identify_client_via_url) {
