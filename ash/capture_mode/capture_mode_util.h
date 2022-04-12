@@ -54,6 +54,16 @@ void TriggerAccessibilityAlert(int message_id);
 // ChromeVox.
 void TriggerAccessibilityAlertSoon(int message_id);
 
+// Returns the next horizontal or vertical snap position based on the current
+// camera preview snap position `current` and the movement. Returns `current` if
+// the movement is not doable based on current snap position.
+CameraPreviewSnapPosition GetCameraNextHorizontalSnapPosition(
+    CameraPreviewSnapPosition current,
+    bool going_left);
+CameraPreviewSnapPosition GetCameraNextVerticalSnapPosition(
+    CameraPreviewSnapPosition current,
+    bool going_up);
+
 // Notification Utils //
 // Constants related to the banner view on the image capture notifications.
 constexpr int kBannerHeightDip = 36;

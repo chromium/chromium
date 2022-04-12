@@ -88,7 +88,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     // CaptureModeSession when it receives a space key event, as the button is
     // not actuallly focused and will do nothing otherwise. Does nothing if the
     // view is not a subclass of Button.
-    void ClickView();
+    virtual void ClickView();
 
    protected:
     // TODO(crbug.com/1182456): This can result in multiple of these objects
@@ -116,6 +116,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     views::View* GetView() override;
     void PseudoFocus() override;
     void PseudoBlur() override;
+    void ClickView() override;
 
     // aura::WindowObserver:
     void OnWindowDestroying(aura::Window* window) override;

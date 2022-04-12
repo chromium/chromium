@@ -155,6 +155,10 @@ void CaptureModeSessionFocusCycler::HighlightableWindow::PseudoBlur() {
   has_focus_ = false;
 }
 
+void CaptureModeSessionFocusCycler::HighlightableWindow::ClickView() {
+  // A HighlightableWindow is not clickable.
+}
+
 void CaptureModeSessionFocusCycler::HighlightableWindow::OnWindowDestroying(
     aura::Window* window) {
   session_->focus_cycler_->highlightable_windows_.erase(window);
@@ -283,9 +287,7 @@ bool CaptureModeSessionFocusCycler::HasFocus() const {
 bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   if (current_focus_group_ == FocusGroup::kNone ||
       current_focus_group_ == FocusGroup::kSelection ||
-      current_focus_group_ == FocusGroup::kPendingSettings ||
-      current_focus_group_ == FocusGroup::kCaptureWindow ||
-      current_focus_group_ == FocusGroup::kCameraPreview) {
+      current_focus_group_ == FocusGroup::kPendingSettings) {
     return false;
   }
 

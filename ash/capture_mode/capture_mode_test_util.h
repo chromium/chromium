@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace base {
@@ -69,7 +70,7 @@ base::FilePath CreateCustomFolderInUserDownloadsPath(
 // Sends a press release key combo `count` times.
 void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
-             bool shift_down = false,
+             int flags = ui::EF_NONE,
              int count = 1);
 
 // Defines a helper class to allow setting up and testing the Projector feature

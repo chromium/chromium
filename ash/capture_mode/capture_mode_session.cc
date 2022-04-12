@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
@@ -1042,6 +1043,14 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   if (folder_selection_dialog_controller_) {
     if (folder_selection_dialog_controller_->ShouldConsumeEvent(event))
       event->StopPropagation();
+    return;
+  }
+
+  auto* camera_controller = controller_->camera_controller();
+  auto* camera_preview_view =
+      camera_controller ? camera_controller->camera_preview_view() : nullptr;
+  if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
+    event->StopPropagation();
     return;
   }
 

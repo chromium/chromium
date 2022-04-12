@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -43,6 +44,12 @@ const gfx::VectorIcon& GetIconOfResizeButton(
     const bool is_camera_preview_collapsed) {
   return is_camera_preview_collapsed ? kCaptureModeCameraPreviewExpandIcon
                                      : kCaptureModeCameraPreviewCollapseIcon;
+}
+
+bool IsArrowKeyEvent(const ui::KeyEvent* event) {
+  const ui::KeyboardCode key_code = event->key_code();
+  return key_code == ui::VKEY_DOWN || key_code == ui::VKEY_RIGHT ||
+         key_code == ui::VKEY_LEFT || key_code == ui::VKEY_UP;
 }
 
 }  // namespace
@@ -83,6 +90,33 @@ CameraPreviewView::CameraPreviewView(
 }
 
 CameraPreviewView::~CameraPreviewView() = default;
+
+bool CameraPreviewView::MaybeHandleKeyEvent(const ui::KeyEvent* event) {
+  if (!has_focus())
+    return false;
+
+  if (!event->IsControlDown() || !IsArrowKeyEvent(event))
+    return false;
+
+  const CameraPreviewSnapPosition current_snap_position =
+      camera_controller_->camera_preview_snap_position();
+  CameraPreviewSnapPosition new_snap_position = current_snap_position;
+  const ui::KeyboardCode key_code = event->key_code();
+  if (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
+    new_snap_position = capture_mode_util::GetCameraNextHorizontalSnapPosition(
+        current_snap_position, /*going_left=*/key_code == ui::VKEY_LEFT);
+  } else {
+    DCHECK(key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN);
+    new_snap_position = capture_mode_util::GetCameraNextVerticalSnapPosition(
+        current_snap_position, /*going_up=*/key_code == ui::VKEY_UP);
+  }
+
+  if (new_snap_position == current_snap_position)
+    return false;
+
+  camera_controller_->SetCameraPreviewSnapPosition(new_snap_position);
+  return true;
+}
 
 void CameraPreviewView::AddedToWidget() {
   camera_video_host_view_->Attach(camera_video_renderer_.host_window());

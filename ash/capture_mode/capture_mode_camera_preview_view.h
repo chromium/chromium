@@ -52,6 +52,11 @@ class CameraPreviewView
   const CameraId& camera_id() const { return camera_id_; }
   CaptureModeButton* resize_button() const { return resize_button_; }
 
+  // Returns true if the `event` has been handled by CameraPrevieView. It
+  // happens if it is control+arrow keys, which will be used to move the camera
+  // preview to different snap positions.
+  bool MaybeHandleKeyEvent(const ui::KeyEvent* event);
+
   // views::View:
   void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
