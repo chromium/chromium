@@ -6,9 +6,6 @@
  * @fileoverview Add functionality related to getting search engine details.
  */
 
-/* Beginning of anonymous object. */
-(function() {
-
 /**
  * Encodes |url| in "application/x-www-form-urlencoded" content type of <form>.
  * The standard is defined in:
@@ -309,5 +306,3 @@ if (document.readyState == 'complete') {
 } else {
   window.addEventListener('load', findOpenSearchLink);
 }
-
-}());  // End of anonymous object

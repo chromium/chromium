@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
 
 #include "base/no_destructor.h"
-//#import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 

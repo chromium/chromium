@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("search_engines") {
@@ -105,12 +105,7 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_checked("search_engine_js") {
+optimize_js("search_engine_js") {
+  primary_script = "resources/search_engine.js"
   sources = [ "resources/search_engine.js" ]
-
-  js_modules = [
-    "//ios/web/web_state/js/resources/base.js",
-    "//ios/web/web_state/js/resources/common.js",
-    "//ios/web/js_messaging/resources/message.js",
-  ]
 }
