@@ -112,7 +112,8 @@
                     "enable_features": [
                         "DynamicColorAndroid",
                         "DynamicColorButtonsAndroid"
-                    ]
+                    ],
+                    "min_os_version": "12.0.0"
                 }
             ]
         }
