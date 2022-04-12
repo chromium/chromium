@@ -70,8 +70,6 @@ class PLATFORM_EXPORT FormDataElement final {
   FormDataElement& operator=(const FormDataElement&);
   FormDataElement& operator=(FormDataElement&&);
 
-  bool IsSafeToSendToAnotherThread() const;
-
   enum Type { kData, kEncodedFile, kEncodedBlob, kDataPipe } type_;
   Vector<char> data_;
   String filename_;

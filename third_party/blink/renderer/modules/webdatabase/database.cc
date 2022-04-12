@@ -107,7 +107,6 @@ class DatabaseVersionCache {
       EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
     mutex_.AssertAcquired();
     String string_id = origin + "/" + name;
-    DCHECK(string_id.IsSafeToSendToAnotherThread());
 
     DatabaseGuid guid;
     auto origin_name_to_guid_it = origin_name_to_guid_.find(string_id);

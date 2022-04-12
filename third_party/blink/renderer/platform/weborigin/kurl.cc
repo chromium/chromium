@@ -1018,11 +1018,6 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   }
 }
 
-bool KURL::IsSafeToSendToAnotherThread() const {
-  return string_.IsSafeToSendToAnotherThread() &&
-         (!inner_url_ || inner_url_->IsSafeToSendToAnotherThread());
-}
-
 void KURL::WriteIntoTrace(perfetto::TracedValue context) const {
   return perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }

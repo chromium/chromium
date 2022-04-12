@@ -479,7 +479,6 @@ class WTF_EXPORT String {
   float ToFloat(bool* ok = nullptr) const;
 
   [[nodiscard]] String IsolatedCopy() const;
-  bool IsSafeToSendToAnotherThread() const;
 
 #ifdef __OBJC__
   String(NSString*);

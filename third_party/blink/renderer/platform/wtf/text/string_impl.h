@@ -231,8 +231,6 @@ class WTF_EXPORT StringImpl {
 
   bool IsLowerASCII() const;
 
-  bool IsSafeToSendToAnotherThread() const;
-
   // The high bits of 'hash' are always empty, but we prefer to store our
   // flags in the low bits because it makes them slightly more efficient to
   // access.  So, we shift left and right when setting and getting our hash

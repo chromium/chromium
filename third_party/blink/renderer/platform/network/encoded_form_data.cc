@@ -35,11 +35,6 @@ FormDataElement::FormDataElement() : type_(kData) {}
 FormDataElement::FormDataElement(const Vector<char>& array)
     : type_(kData), data_(array) {}
 
-bool FormDataElement::IsSafeToSendToAnotherThread() const {
-  return filename_.IsSafeToSendToAnotherThread() &&
-         blob_uuid_.IsSafeToSendToAnotherThread();
-}
-
 FormDataElement::FormDataElement(
     const String& filename,
     int64_t file_start,
@@ -243,13 +238,7 @@ uint64_t EncodedFormData::SizeInBytes() const {
 }
 
 bool EncodedFormData::IsSafeToSendToAnotherThread() const {
-  if (!HasOneRef())
-    return false;
-  for (auto& element : elements_) {
-    if (!element.IsSafeToSendToAnotherThread())
-      return false;
-  }
-  return true;
+  return HasOneRef();
 }
 
 }  // namespace blink

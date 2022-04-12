@@ -110,7 +110,6 @@ class ClipboardTextWriter final : public ClipboardWriter {
     String wtf_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(raw_data->Data()),
                          raw_data->ByteLength());
-    DCHECK(wtf_string.IsSafeToSendToAnotherThread());
     PostCrossThreadTask(*task_runner, FROM_HERE,
                         CrossThreadBindOnce(&ClipboardTextWriter::Write,
                                             WrapCrossThreadPersistent(writer),

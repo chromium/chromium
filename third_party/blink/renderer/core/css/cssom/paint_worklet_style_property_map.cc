@@ -76,10 +76,8 @@ bool BuildNativeValues(const ComputedStyle& style,
                 /* allow_visited_style */ false);
     if (value->GetType() == CrossThreadStyleValue::StyleValueType::kUnknownType)
       return false;
-    String key = CSSProperty::Get(property_id).GetPropertyNameString();
-    if (!key.IsSafeToSendToAnotherThread())
-      key = key.IsolatedCopy();
-    data.Set(key, std::move(value));
+    data.Set(CSSProperty::Get(property_id).GetPropertyNameString(),
+             std::move(value));
   }
   return true;
 }
@@ -112,11 +110,7 @@ bool BuildCustomValues(
               ref.GetProperty().PropertyID()));
       input_property_keys.emplace_back(property_name.Utf8(), element_id);
     }
-    // Ensure that the String can be safely passed cross threads.
-    String key = property_name.GetString();
-    if (!key.IsSafeToSendToAnotherThread())
-      key = key.IsolatedCopy();
-    data.Set(key, std::move(value));
+    data.Set(property_name.GetString(), std::move(value));
   }
   return true;
 }

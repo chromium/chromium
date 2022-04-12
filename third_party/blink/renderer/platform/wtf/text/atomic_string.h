@@ -215,10 +215,6 @@ class WTF_EXPORT AtomicString {
     return string_.CharactersSizeInBytes();
   }
 
-  bool IsSafeToSendToAnotherThread() const {
-    return string_.IsSafeToSendToAnotherThread();
-  }
-
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #ifndef NDEBUG

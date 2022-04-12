@@ -381,10 +381,6 @@ String String::IsolatedCopy() const {
   return impl_->IsolatedCopy();
 }
 
-bool String::IsSafeToSendToAnotherThread() const {
-  return !impl_ || impl_->IsSafeToSendToAnotherThread();
-}
-
 void String::Split(const StringView& separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {

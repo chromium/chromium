@@ -227,8 +227,6 @@ class PLATFORM_EXPORT KURL {
 
   const KURL* InnerURL() const { return inner_url_.get(); }
 
-  bool IsSafeToSendToAnotherThread() const;
-
   bool PotentiallyDanglingMarkup() const {
     return parsed_.potentially_dangling_markup;
   }

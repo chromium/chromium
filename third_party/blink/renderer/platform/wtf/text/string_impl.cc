@@ -103,18 +103,6 @@ unsigned StringImpl::ComputeASCIIFlags() const {
   return new_flags;
 }
 
-bool StringImpl::IsSafeToSendToAnotherThread() const {
-  if (IsStatic())
-    return true;
-  // AtomicStrings are not safe to send between threads as ~StringImpl()
-  // will try to remove them from the wrong AtomicStringTable.
-  if (IsAtomic())
-    return false;
-  if (HasOneRef())
-    return true;
-  return false;
-}
-
 #if DCHECK_IS_ON()
 std::string StringImpl::AsciiForDebugging() const {
   return String(IsolatedCopy()->Substring(0, 128)).Ascii();
