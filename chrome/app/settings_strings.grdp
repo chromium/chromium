@@ -2203,7 +2203,7 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Space or Tab
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space" meaning="Describes the tab key or button on the user’s keyboard.">
     Tab
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_SITES" desc="Label for button that expands the Site Search list of search engines to show all entries">
