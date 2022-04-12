@@ -77,7 +77,7 @@ class PdfPrintManager : public printing::PrintManager,
   void PrintingFailed(int32_t cookie) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
-                           base::Value job_settings,
+                           base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override;

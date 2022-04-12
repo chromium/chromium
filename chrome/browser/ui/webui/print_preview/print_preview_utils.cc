@@ -183,7 +183,7 @@ void ConvertPrinterListForCallback(
   std::move(done_callback).Run();
 }
 
-void StartLocalPrint(base::Value job_settings,
+void StartLocalPrint(base::Value::Dict job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback) {
@@ -200,8 +200,8 @@ void StartLocalPrint(base::Value job_settings,
     return;
   }
 
-  if (job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false) ||
-      job_settings.FindBoolKey(kSettingOpenPDFInPreview).value_or(false)) {
+  if (job_settings.FindBool(kSettingShowSystemDialog).value_or(false) ||
+      job_settings.FindBool(kSettingOpenPDFInPreview).value_or(false)) {
     // Run the callback early, or the modal dialogs will prevent the preview
     // from closing until they do.
     std::move(callback).Run(base::Value());
@@ -212,16 +212,16 @@ void StartLocalPrint(base::Value job_settings,
       preview_web_contents->GetMainFrame(), std::move(callback));
 }
 
-bool ParseSettings(const base::Value& settings,
+bool ParseSettings(const base::Value::Dict& settings,
                    std::string* out_destination_id,
                    std::string* out_capabilities,
                    gfx::Size* out_page_size,
                    base::Value* out_ticket) {
-  const std::string* ticket_opt = settings.FindStringKey(kSettingTicket);
+  const std::string* ticket_opt = settings.FindString(kSettingTicket);
   const std::string* capabilities_opt =
-      settings.FindStringKey(kSettingCapabilities);
-  out_page_size->SetSize(settings.FindIntKey(kSettingPageWidth).value_or(0),
-                         settings.FindIntKey(kSettingPageHeight).value_or(0));
+      settings.FindString(kSettingCapabilities);
+  out_page_size->SetSize(settings.FindInt(kSettingPageWidth).value_or(0),
+                         settings.FindInt(kSettingPageHeight).value_or(0));
   if (!ticket_opt || !capabilities_opt || out_page_size->IsEmpty()) {
     NOTREACHED();
     return false;
@@ -231,7 +231,7 @@ bool ParseSettings(const base::Value& settings,
   if (!ticket_value)
     return false;
 
-  *out_destination_id = *settings.FindStringKey(kSettingDeviceName);
+  *out_destination_id = *settings.FindString(kSettingDeviceName);
   *out_capabilities = *capabilities_opt;
   *out_ticket = std::move(*ticket_value);
   return true;

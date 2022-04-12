@@ -563,14 +563,15 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   PrintSettings print_settings;
   print_settings.set_device_name(kDefaultPrinterName16);
   print_settings.set_dpi(kPrintSettingsOverrideDpi);
-  base::Value job_settings = PrintSettingsToJobSettingsDebug(print_settings);
-  job_settings.SetIntKey(kSettingPrinterType,
-                         static_cast<int>(mojom::PrinterType::kLocal));
+  base::Value::Dict job_settings =
+      PrintSettingsToJobSettingsDebug(print_settings);
+  job_settings.Set(kSettingPrinterType,
+                   static_cast<int>(mojom::PrinterType::kLocal));
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->UpdatePrintSettings(
-      std::move(job_settings.GetDict()),
+      std::move(job_settings),
       base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();
@@ -591,10 +592,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   // Updating for an invalid printer should not return print settings.
   print_settings.set_device_name(kInvalidPrinterName16);
   job_settings = PrintSettingsToJobSettingsDebug(print_settings);
-  job_settings.SetIntKey(kSettingPrinterType,
-                         static_cast<int>(mojom::PrinterType::kLocal));
+  job_settings.Set(kSettingPrinterType,
+                   static_cast<int>(mojom::PrinterType::kLocal));
   GetPrintBackendService()->UpdatePrintSettings(
-      std::move(job_settings.GetDict()),
+      std::move(job_settings),
       base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();

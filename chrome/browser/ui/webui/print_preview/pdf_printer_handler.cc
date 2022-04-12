@@ -258,7 +258,7 @@ void PdfPrinterHandler::StartGetCapability(const std::string& destination_id,
 
 void PdfPrinterHandler::StartPrint(
     const std::u16string& job_title,
-    base::Value settings,
+    base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   print_data_ = print_data;
@@ -296,7 +296,7 @@ void PdfPrinterHandler::StartPrint(
   bool prompt_user = !cmdline->HasSwitch(switches::kKioskModePrinting);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   use_drive_mount_ =
-      settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false);
+      settings.FindBool(kSettingPrintToGoogleDrive).value_or(false);
 #endif
 
   SelectFile(path, initiator, prompt_user);

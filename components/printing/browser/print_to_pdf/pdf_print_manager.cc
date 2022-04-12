@@ -184,7 +184,7 @@ void PdfPrintManager::PrintingFailed(int32_t cookie) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PdfPrintManager::UpdatePrintSettings(
     int32_t cookie,
-    base::Value job_settings,
+    base::Value::Dict job_settings,
     UpdatePrintSettingsCallback callback) {
   // UpdatePrintSettingsCallback() should never be called on
   // PdfPrintManager, since it is only triggered by Print Preview.

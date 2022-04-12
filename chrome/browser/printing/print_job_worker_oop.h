@@ -69,7 +69,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
                                bool has_selection,
                                bool is_scripted,
                                SettingsCallback callback) override;
-  void UpdatePrintSettings(base::Value new_settings,
+  void UpdatePrintSettings(base::Value::Dict new_settings,
                            SettingsCallback callback) override;
   void OnFailure() override;
 

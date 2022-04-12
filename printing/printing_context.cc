@@ -92,37 +92,35 @@ mojom::ResultCode PrintingContext::OnError() {
 }
 
 mojom::ResultCode PrintingContext::UsePdfSettings() {
-  base::Value pdf_settings(base::Value::Type::DICTIONARY);
-  pdf_settings.SetBoolKey(kSettingHeaderFooterEnabled, false);
-  pdf_settings.SetBoolKey(kSettingShouldPrintBackgrounds, false);
-  pdf_settings.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
-  pdf_settings.SetIntKey(kSettingMarginsType,
-                         static_cast<int>(mojom::MarginType::kNoMargins));
-  pdf_settings.SetBoolKey(kSettingCollate, true);
-  pdf_settings.SetIntKey(kSettingCopies, 1);
-  pdf_settings.SetIntKey(kSettingColor,
-                         static_cast<int>(mojom::ColorModel::kColor));
-  pdf_settings.SetIntKey(kSettingDpiHorizontal, kPointsPerInch);
-  pdf_settings.SetIntKey(kSettingDpiVertical, kPointsPerInch);
-  pdf_settings.SetIntKey(
-      kSettingDuplexMode,
-      static_cast<int>(printing::mojom::DuplexMode::kSimplex));
-  pdf_settings.SetBoolKey(kSettingLandscape, false);
-  pdf_settings.SetStringKey(kSettingDeviceName, "");
-  pdf_settings.SetIntKey(kSettingPrinterType,
-                         static_cast<int>(mojom::PrinterType::kPdf));
-  pdf_settings.SetIntKey(kSettingScaleFactor, 100);
-  pdf_settings.SetBoolKey(kSettingRasterizePdf, false);
-  pdf_settings.SetIntKey(kSettingPagesPerSheet, 1);
+  base::Value::Dict pdf_settings;
+  pdf_settings.Set(kSettingHeaderFooterEnabled, false);
+  pdf_settings.Set(kSettingShouldPrintBackgrounds, false);
+  pdf_settings.Set(kSettingShouldPrintSelectionOnly, false);
+  pdf_settings.Set(kSettingMarginsType,
+                   static_cast<int>(mojom::MarginType::kNoMargins));
+  pdf_settings.Set(kSettingCollate, true);
+  pdf_settings.Set(kSettingCopies, 1);
+  pdf_settings.Set(kSettingColor, static_cast<int>(mojom::ColorModel::kColor));
+  pdf_settings.Set(kSettingDpiHorizontal, kPointsPerInch);
+  pdf_settings.Set(kSettingDpiVertical, kPointsPerInch);
+  pdf_settings.Set(kSettingDuplexMode,
+                   static_cast<int>(printing::mojom::DuplexMode::kSimplex));
+  pdf_settings.Set(kSettingLandscape, false);
+  pdf_settings.Set(kSettingDeviceName, "");
+  pdf_settings.Set(kSettingPrinterType,
+                   static_cast<int>(mojom::PrinterType::kPdf));
+  pdf_settings.Set(kSettingScaleFactor, 100);
+  pdf_settings.Set(kSettingRasterizePdf, false);
+  pdf_settings.Set(kSettingPagesPerSheet, 1);
   return UpdatePrintSettings(std::move(pdf_settings));
 }
 
 mojom::ResultCode PrintingContext::UpdatePrintSettings(
-    base::Value job_settings) {
+    base::Value::Dict job_settings) {
   ResetSettings();
   {
     std::unique_ptr<PrintSettings> settings =
-        PrintSettingsFromJobSettings(job_settings.GetDict());
+        PrintSettingsFromJobSettings(job_settings);
     if (!settings) {
       NOTREACHED();
       return OnError();
@@ -131,7 +129,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   }
 
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
-      job_settings.FindIntKey(kSettingPrinterType).value());
+      job_settings.FindInt(kSettingPrinterType).value());
   if (printer_type == mojom::PrinterType::kPrivetDeprecated ||
       printer_type == mojom::PrinterType::kCloudDeprecated) {
     NOTREACHED();
@@ -139,7 +137,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   }
 
   bool open_in_external_preview =
-      !!job_settings.FindKey(kSettingOpenPDFInPreview);
+      job_settings.contains(kSettingOpenPDFInPreview);
 
   if (!open_in_external_preview &&
       (printer_type == mojom::PrinterType::kPdf ||
@@ -166,9 +164,9 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
     .external_preview = open_in_external_preview,
 #endif
     .show_system_dialog =
-        job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false),
+        job_settings.FindBool(kSettingShowSystemDialog).value_or(false),
 #if BUILDFLAG(IS_WIN)
-    .page_count = job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0)
+    .page_count = job_settings.FindInt(kSettingPreviewPageCount).value_or(0)
 #endif
   };
   return UpdatePrinterSettings(printer_settings);

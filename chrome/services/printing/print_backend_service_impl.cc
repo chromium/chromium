@@ -623,7 +623,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   std::unique_ptr<PrintingContext> context =
       PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
   mojom::ResultCode result =
-      context->UpdatePrintSettings(base::Value(std::move(job_settings)));
+      context->UpdatePrintSettings(std::move(job_settings));
 
   if (result != mojom::ResultCode::kSuccess) {
     std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));

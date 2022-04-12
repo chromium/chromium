@@ -161,7 +161,7 @@ void ExtensionPrinterHandler::StartGetCapability(
 
 void ExtensionPrinterHandler::StartPrint(
     const std::u16string& job_title,
-    base::Value settings,
+    base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   auto print_job = std::make_unique<extensions::PrinterProviderPrintJob>();

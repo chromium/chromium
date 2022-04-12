@@ -24,10 +24,10 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     const base::Value::Dict& job_settings);
 
 // Use for debug/test only, because output is not completely consistent with
-// format of `PrintSettingsFromJobSettings` input.  The returned value is a
-// dictionary type.
+// format of `PrintSettingsFromJobSettings` input.
 COMPONENT_EXPORT(PRINTING)
-base::Value PrintSettingsToJobSettingsDebug(const PrintSettings& settings);
+base::Value::Dict PrintSettingsToJobSettingsDebug(
+    const PrintSettings& settings);
 
 }  // namespace printing
 

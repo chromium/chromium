@@ -223,7 +223,7 @@ void UpdatePrintSettingsOnIO(
     int32_t cookie,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
     scoped_refptr<PrintQueriesQueue> queue,
-    base::Value job_settings) {
+    base::Value::Dict job_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(cookie);
   if (!printer_query) {
@@ -569,7 +569,7 @@ class TestPrintViewManager : public PrintViewManager {
 
   // printing::mojom::PrintManagerHost:
   void UpdatePrintSettings(int32_t cookie,
-                           base::Value job_settings,
+                           base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

@@ -68,7 +68,7 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value settings,
+                  base::Value::Dict settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
   void StartGetEulaUrl(const std::string& destination_id,
@@ -78,7 +78,7 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
       PrinterStatusRequestCallback callback) override;
 
  private:
-  void OnProfileUsernameReady(base::Value settings,
+  void OnProfileUsernameReady(base::Value::Dict settings,
                               scoped_refptr<base::RefCountedMemory> print_data,
                               PrinterHandler::PrintCallback callback,
                               const absl::optional<std::string>& username);

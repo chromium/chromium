@@ -62,7 +62,7 @@ class PrintJobWorker {
                            SettingsCallback callback);
 
   // Set the new print settings from a dictionary value.
-  void SetSettings(base::Value new_settings, SettingsCallback callback);
+  void SetSettings(base::Value::Dict new_settings, SettingsCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Set the new print settings from a POD type.
@@ -145,7 +145,7 @@ class PrintJobWorker {
                                        SettingsCallback callback);
 
   // Called on the UI thread to update the print settings.
-  virtual void UpdatePrintSettings(base::Value new_settings,
+  virtual void UpdatePrintSettings(base::Value::Dict new_settings,
                                    SettingsCallback callback);
 
   // Discards the current document, the current page and cancels the printing

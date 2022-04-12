@@ -46,33 +46,33 @@ PageMargins GetCustomMarginsFromJobSettings(const base::Value::Dict& settings) {
 
 void SetMarginsToJobSettings(const std::string& json_path,
                              const PageMargins& margins,
-                             base::Value& job_settings) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey(kSettingMarginTop, margins.top);
-  dict.SetIntKey(kSettingMarginBottom, margins.bottom);
-  dict.SetIntKey(kSettingMarginLeft, margins.left);
-  dict.SetIntKey(kSettingMarginRight, margins.right);
-  job_settings.SetKey(json_path, std::move(dict));
+                             base::Value::Dict& job_settings) {
+  base::Value::Dict dict;
+  dict.Set(kSettingMarginTop, margins.top);
+  dict.Set(kSettingMarginBottom, margins.bottom);
+  dict.Set(kSettingMarginLeft, margins.left);
+  dict.Set(kSettingMarginRight, margins.right);
+  job_settings.Set(json_path, std::move(dict));
 }
 
 void SetSizeToJobSettings(const std::string& json_path,
                           const gfx::Size& size,
-                          base::Value& job_settings) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("width", size.width());
-  dict.SetIntKey("height", size.height());
-  job_settings.SetKey(json_path, std::move(dict));
+                          base::Value::Dict& job_settings) {
+  base::Value::Dict dict;
+  dict.Set("width", size.width());
+  dict.Set("height", size.height());
+  job_settings.Set(json_path, std::move(dict));
 }
 
 void SetRectToJobSettings(const std::string& json_path,
                           const gfx::Rect& rect,
-                          base::Value& job_settings) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("x", rect.x());
-  dict.SetIntKey("y", rect.y());
-  dict.SetIntKey("width", rect.width());
-  dict.SetIntKey("height", rect.height());
-  job_settings.SetKey(json_path, std::move(dict));
+                          base::Value::Dict& job_settings) {
+  base::Value::Dict dict;
+  dict.Set("x", rect.x());
+  dict.Set("y", rect.y());
+  dict.Set("width", rect.width());
+  dict.Set("height", rect.height());
+  job_settings.Set(json_path, std::move(dict));
 }
 
 }  // namespace
@@ -247,52 +247,51 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   return settings;
 }
 
-base::Value PrintSettingsToJobSettingsDebug(const PrintSettings& settings) {
-  base::Value job_settings(base::Value::Type::DICTIONARY);
+base::Value::Dict PrintSettingsToJobSettingsDebug(
+    const PrintSettings& settings) {
+  base::Value::Dict job_settings;
 
-  job_settings.SetBoolKey(kSettingHeaderFooterEnabled,
-                          settings.display_header_footer());
-  job_settings.SetStringKey(kSettingHeaderFooterTitle, settings.title());
-  job_settings.SetStringKey(kSettingHeaderFooterURL, settings.url());
-  job_settings.SetBoolKey(kSettingShouldPrintBackgrounds,
-                          settings.should_print_backgrounds());
-  job_settings.SetBoolKey(kSettingShouldPrintSelectionOnly,
-                          settings.selection_only());
-  job_settings.SetIntKey(kSettingMarginsType,
-                         static_cast<int>(settings.margin_type()));
+  job_settings.Set(kSettingHeaderFooterEnabled,
+                   settings.display_header_footer());
+  job_settings.Set(kSettingHeaderFooterTitle, settings.title());
+  job_settings.Set(kSettingHeaderFooterURL, settings.url());
+  job_settings.Set(kSettingShouldPrintBackgrounds,
+                   settings.should_print_backgrounds());
+  job_settings.Set(kSettingShouldPrintSelectionOnly, settings.selection_only());
+  job_settings.Set(kSettingMarginsType,
+                   static_cast<int>(settings.margin_type()));
   if (!settings.ranges().empty()) {
-    base::ListValue page_range_array;
+    base::Value::List page_range_array;
     for (const auto& range : settings.ranges()) {
-      auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-      dict->SetIntKey(kSettingPageRangeFrom, range.from + 1);
-      dict->SetIntKey(kSettingPageRangeTo, range.to + 1);
+      base::Value::Dict dict;
+      dict.Set(kSettingPageRangeFrom, static_cast<int>(range.from + 1));
+      dict.Set(kSettingPageRangeTo, static_cast<int>(range.to + 1));
       page_range_array.Append(std::move(dict));
     }
-    job_settings.SetKey(kSettingPageRange, std::move(page_range_array));
+    job_settings.Set(kSettingPageRange, std::move(page_range_array));
   }
 
-  job_settings.SetBoolKey(kSettingCollate, settings.collate());
-  job_settings.SetIntKey(kSettingCopies, settings.copies());
-  job_settings.SetIntKey(kSettingColor, static_cast<int>(settings.color()));
-  job_settings.SetIntKey(kSettingDuplexMode,
-                         static_cast<int>(settings.duplex_mode()));
-  job_settings.SetBoolKey(kSettingLandscape, settings.landscape());
-  job_settings.SetStringKey(kSettingDeviceName, settings.device_name());
-  job_settings.SetIntKey(kSettingDpiHorizontal, settings.dpi_horizontal());
-  job_settings.SetIntKey(kSettingDpiVertical, settings.dpi_vertical());
-  job_settings.SetIntKey(
-      kSettingScaleFactor,
-      static_cast<int>((settings.scale_factor() * 100.0) + 0.5));
-  job_settings.SetBoolKey(kSettingRasterizePdf, settings.rasterize_pdf());
-  job_settings.SetIntKey(kSettingPagesPerSheet, settings.pages_per_sheet());
+  job_settings.Set(kSettingCollate, settings.collate());
+  job_settings.Set(kSettingCopies, settings.copies());
+  job_settings.Set(kSettingColor, static_cast<int>(settings.color()));
+  job_settings.Set(kSettingDuplexMode,
+                   static_cast<int>(settings.duplex_mode()));
+  job_settings.Set(kSettingLandscape, settings.landscape());
+  job_settings.Set(kSettingDeviceName, settings.device_name());
+  job_settings.Set(kSettingDpiHorizontal, settings.dpi_horizontal());
+  job_settings.Set(kSettingDpiVertical, settings.dpi_vertical());
+  job_settings.Set(kSettingScaleFactor,
+                   static_cast<int>((settings.scale_factor() * 100.0) + 0.5));
+  job_settings.Set(kSettingRasterizePdf, settings.rasterize_pdf());
+  job_settings.Set(kSettingPagesPerSheet, settings.pages_per_sheet());
 
   // Following values are not read form JSON by InitSettings, so do not have
   // common public constants. So just serialize in "debug" section.
-  base::Value debug(base::Value::Type::DICTIONARY);
-  debug.SetIntKey("dpi", settings.dpi());
-  debug.SetIntKey("deviceUnitsPerInch", settings.device_units_per_inch());
-  debug.SetBoolKey("support_alpha_blend", settings.should_print_backgrounds());
-  debug.SetStringKey("media_vendor_id", settings.requested_media().vendor_id);
+  base::Value::Dict debug;
+  debug.Set("dpi", settings.dpi());
+  debug.Set("deviceUnitsPerInch", settings.device_units_per_inch());
+  debug.Set("support_alpha_blend", settings.should_print_backgrounds());
+  debug.Set("media_vendor_id", settings.requested_media().vendor_id);
   SetSizeToJobSettings("media_size", settings.requested_media().size_microns,
                        debug);
   SetMarginsToJobSettings("requested_custom_margins_in_points",
@@ -304,7 +303,7 @@ base::Value PrintSettingsToJobSettingsDebug(const PrintSettings& settings) {
   SetRectToJobSettings("overlay_area", page_setup.overlay_area(), debug);
   SetRectToJobSettings("content_area", page_setup.content_area(), debug);
   SetRectToJobSettings("printable_area", page_setup.printable_area(), debug);
-  job_settings.SetKey("debug", std::move(debug));
+  job_settings.Set("debug", std::move(debug));
 
   return job_settings;
 }

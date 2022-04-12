@@ -307,7 +307,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 
 void LocalPrinterHandlerDefault::StartPrint(
     const std::u16string& job_title,
-    base::Value settings,
+    base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   StartLocalPrint(std::move(settings), std::move(print_data),

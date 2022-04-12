@@ -156,7 +156,7 @@ void PrinterQuery::GetSettingsFromUser(uint32_t expected_page_count,
                                     is_modifiable)));
 }
 
-void PrinterQuery::SetSettings(base::Value new_settings,
+void PrinterQuery::SetSettings(base::Value::Dict new_settings,
                                base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 

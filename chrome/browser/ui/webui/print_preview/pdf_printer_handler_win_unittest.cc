@@ -61,7 +61,8 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
   }
 
   void StartPrintToPdf(const std::u16string& job_title) {
-    StartPrint(job_title, base::Value(), nullptr, base::DoNothing());
+    StartPrint(job_title, /*settings=*/base::Value::Dict(),
+               /*print_data=*/nullptr, base::DoNothing());
     run_loop_.Run();
   }
 

@@ -33,12 +33,12 @@ namespace printing {
 namespace {
 
 mojom::PrintTargetType DeterminePrintTargetType(
-    const base::Value& job_settings) {
+    const base::Value::Dict& job_settings) {
 #if BUILDFLAG(IS_MAC)
-  if (job_settings.FindKey(kSettingOpenPDFInPreview))
+  if (job_settings.contains(kSettingOpenPDFInPreview))
     return mojom::PrintTargetType::kExternalPreview;
 #endif
-  if (job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false))
+  if (job_settings.FindBool(kSettingShowSystemDialog).value_or(false))
     return mojom::PrintTargetType::kSystemDialog;
   return mojom::PrintTargetType::kDirectToDevice;
 }
@@ -298,14 +298,12 @@ void PrintJobWorkerOop::InvokeGetSettingsWithUI(uint32_t document_page_count,
 #endif
 }
 
-void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
+void PrintJobWorkerOop::UpdatePrintSettings(base::Value::Dict new_settings,
                                             SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Don't use as a const reference, since that reference into `new_settings`
-  // isn't safe after TakeDictDeprecated() destroys the internal dictionary for
-  // it.
-  std::string device_name = *new_settings.FindStringKey(kSettingDeviceName);
+  // Do not take a const reference, as `new_settings` will be modified below.
+  std::string device_name = *new_settings.FindString(kSettingDeviceName);
 
   // Save the print target type from the settings, since this will be needed
   // later when printing is started.
@@ -316,7 +314,7 @@ void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
       PrintBackendServiceManager::GetInstance();
 
   service_mgr.UpdatePrintSettings(
-      device_name, std::move(new_settings.GetDict()),
+      device_name, std::move(new_settings),
       base::BindOnce(&PrintJobWorkerOop::OnDidUpdatePrintSettings,
                      ui_weak_factory_.GetWeakPtr(), device_name,
                      std::move(callback)));

@@ -177,7 +177,7 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
 }
 void LocalPrinterHandlerChromeos::StartPrint(
     const std::u16string& job_title,
-    base::Value settings,
+    base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -209,13 +209,13 @@ void LocalPrinterHandlerChromeos::StartPrint(
 }
 
 void LocalPrinterHandlerChromeos::OnProfileUsernameReady(
-    base::Value settings,
+    base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrinterHandler::PrintCallback callback,
     const absl::optional<std::string>& username) {
   if (username.has_value() && !username->empty()) {
-    settings.SetKey(kSettingUsername, base::Value(*username));
-    settings.SetKey(kSettingSendUserInfo, base::Value(true));
+    settings.Set(kSettingUsername, *username);
+    settings.Set(kSettingSendUserInfo, true);
   }
   StartLocalPrint(std::move(settings), std::move(print_data),
                   preview_web_contents_, std::move(callback));

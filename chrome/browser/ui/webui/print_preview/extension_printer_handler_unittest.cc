@@ -722,7 +722,8 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kPdfSettings), print_data,
+      title, std::move(base::JSONReader::Read(kPdfSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -758,7 +759,8 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf_Reset) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kPdfSettings), print_data,
+      title, std::move(base::JSONReader::Read(kPdfSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -783,7 +785,8 @@ TEST_F(ExtensionPrinterHandlerTest, Print_All) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kAllTypesSettings), print_data,
+      title, std::move(base::JSONReader::Read(kAllTypesSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -820,7 +823,9 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,
+      title,
+      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -873,7 +878,8 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kDuplexSettings), print_data,
+      title, std::move(base::JSONReader::Read(kDuplexSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -926,7 +932,9 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_Reset) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,
+      title,
+      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(0u, call_count);
@@ -954,7 +962,8 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_InvalidTicket) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kInvalidSettings), print_data,
+      title, std::move(base::JSONReader::Read(kInvalidSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(1u, call_count);
@@ -975,7 +984,9 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_FailedConversion) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,
+      title,
+      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
   EXPECT_EQ(1u, call_count);

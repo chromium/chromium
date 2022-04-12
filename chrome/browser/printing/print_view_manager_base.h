@@ -65,7 +65,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // `job_settings`. Runs `callback` with an error string on failure and with an
   // empty string if the print job is started successfully. `rfh` is the render
   // frame host for the preview initiator contents respectively.
-  void PrintForPrintPreview(base::Value job_settings,
+  void PrintForPrintPreview(base::Value::Dict job_settings,
                             scoped_refptr<base::RefCountedMemory> print_data,
                             content::RenderFrameHost* rfh,
                             PrinterHandler::PrintCallback callback);
@@ -99,7 +99,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
-                           base::Value job_settings,
+                           base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 #endif
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
@@ -181,8 +181,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                         mojom::PrintCompositor::Status status,
                         base::ReadOnlySharedMemoryRegion region);
 
-// Helpers for PrintForPrintPreview();
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  // Helpers for PrintForPrintPreview();
   void OnPrintSettingsDone(scoped_refptr<base::RefCountedMemory> print_data,
                            uint32_t page_count,
                            PrinterHandler::PrintCallback callback,

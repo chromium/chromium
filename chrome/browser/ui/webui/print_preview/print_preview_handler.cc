@@ -783,7 +783,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
   handler->StartPrint(print_preview_ui()->initiator_title(),
-                      base::Value(std::move(settings)), data,
+                      std::move(settings), data,
                       base::BindOnce(&PrintPreviewHandler::OnPrintResult,
                                      weak_factory_.GetWeakPtr(), callback_id));
 }

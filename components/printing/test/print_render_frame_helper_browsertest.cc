@@ -324,7 +324,7 @@ class TestPrintManagerHost
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
-                           base::Value job_settings,
+                           base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
     auto params = printing::mojom::PrintPagesParams::New();
     params->params = printing::mojom::PrintParams::New();
@@ -333,32 +333,34 @@ class TestPrintManagerHost
     // Check and make sure the required settings are all there.
     // We don't actually care about the values.
     absl::optional<int> margins_type =
-        job_settings.FindIntKey(kSettingMarginsType);
+        job_settings.FindInt(kSettingMarginsType);
     if (!margins_type.has_value() ||
-        !job_settings.FindBoolKey(kSettingLandscape) ||
-        !job_settings.FindBoolKey(kSettingCollate) ||
-        !job_settings.FindIntKey(kSettingColor) ||
-        !job_settings.FindIntKey(kSettingPrinterType) ||
-        !job_settings.FindBoolKey(kIsFirstRequest) ||
-        !job_settings.FindStringKey(kSettingDeviceName) ||
-        !job_settings.FindIntKey(kSettingDuplexMode) ||
-        !job_settings.FindIntKey(kSettingCopies) ||
-        !job_settings.FindIntKey(kPreviewUIID) ||
-        !job_settings.FindIntKey(kPreviewRequestID)) {
+        !job_settings.FindBool(kSettingLandscape) ||
+        !job_settings.FindBool(kSettingCollate) ||
+        !job_settings.FindInt(kSettingColor) ||
+        !job_settings.FindInt(kSettingPrinterType) ||
+        !job_settings.FindBool(kIsFirstRequest) ||
+        !job_settings.FindString(kSettingDeviceName) ||
+        !job_settings.FindInt(kSettingDuplexMode) ||
+        !job_settings.FindInt(kSettingCopies) ||
+        !job_settings.FindInt(kPreviewUIID) ||
+        !job_settings.FindInt(kPreviewRequestID)) {
       std::move(callback).Run(std::move(params), canceled);
       return;
     }
 
     // Just return the default settings.
-    const base::Value* page_range = job_settings.FindListKey(kSettingPageRange);
+    const base::Value::List* page_range =
+        job_settings.FindList(kSettingPageRange);
     PageRanges new_ranges;
     if (page_range) {
-      for (const base::Value& dict : page_range->GetListDeprecated()) {
-        if (!dict.is_dict())
+      for (const base::Value& value : *page_range) {
+        if (!value.is_dict())
           continue;
 
-        absl::optional<int> range_from = dict.FindIntKey(kSettingPageRangeFrom);
-        absl::optional<int> range_to = dict.FindIntKey(kSettingPageRangeTo);
+        const auto& dict = value.GetDict();
+        absl::optional<int> range_from = dict.FindInt(kSettingPageRangeFrom);
+        absl::optional<int> range_to = dict.FindInt(kSettingPageRangeTo);
         if (!range_from || !range_to)
           continue;
 
@@ -372,14 +374,14 @@ class TestPrintManagerHost
     }
 
     // Get media size
-    const base::Value* media_size_value =
-        job_settings.FindDictKey(kSettingMediaSize);
+    const base::Value::Dict* media_size_value =
+        job_settings.FindDict(kSettingMediaSize);
     gfx::Size page_size;
     if (media_size_value) {
       absl::optional<int> width_microns =
-          media_size_value->FindIntKey(kSettingMediaSizeWidthMicrons);
+          media_size_value->FindInt(kSettingMediaSizeWidthMicrons);
       absl::optional<int> height_microns =
-          media_size_value->FindIntKey(kSettingMediaSizeHeightMicrons);
+          media_size_value->FindInt(kSettingMediaSizeHeightMicrons);
 
       if (width_microns && height_microns) {
         float device_microns_per_unit =
@@ -391,16 +393,16 @@ class TestPrintManagerHost
 
     // Get scaling
     absl::optional<int> setting_scale_factor =
-        job_settings.FindIntKey(kSettingScaleFactor);
+        job_settings.FindInt(kSettingScaleFactor);
     int scale_factor = setting_scale_factor.value_or(100);
 
     std::vector<uint32_t> pages(PageRange::GetPages(new_ranges));
     printer_->UpdateSettings(cookie, params.get(), pages, margins_type.value(),
                              page_size, scale_factor);
     absl::optional<bool> selection_only =
-        job_settings.FindBoolKey(kSettingShouldPrintSelectionOnly);
+        job_settings.FindBool(kSettingShouldPrintSelectionOnly);
     absl::optional<bool> should_print_backgrounds =
-        job_settings.FindBoolKey(kSettingShouldPrintBackgrounds);
+        job_settings.FindBool(kSettingShouldPrintBackgrounds);
     params->params->selection_only = selection_only.value();
     params->params->should_print_backgrounds = should_print_backgrounds.value();
     std::move(callback).Run(std::move(params), canceled);

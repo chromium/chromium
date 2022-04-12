@@ -108,7 +108,7 @@ class PrinterHandler {
   // |print_data|: The document bytes to print.
   // |callback| should be called in the response to the request.
   virtual void StartPrint(const std::u16string& job_title,
-                          base::Value settings,
+                          base::Value::Dict settings,
                           scoped_refptr<base::RefCountedMemory> print_data,
                           PrintCallback callback) = 0;
 

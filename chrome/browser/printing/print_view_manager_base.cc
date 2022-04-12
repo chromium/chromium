@@ -108,7 +108,7 @@ void OnPrintSettingsDoneWrapper(PrintSettingsCallback settings_callback,
       base::BindOnce(std::move(settings_callback), std::move(query)));
 }
 
-void CreateQueryWithSettings(base::Value job_settings,
+void CreateQueryWithSettings(base::Value::Dict job_settings,
                              content::GlobalRenderFrameHostId rfh_id,
                              scoped_refptr<PrintQueriesQueue> queue,
                              PrintSettingsCallback callback) {
@@ -223,7 +223,7 @@ void UpdatePrintSettingsOnIO(
     int32_t cookie,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
     scoped_refptr<PrintQueriesQueue> queue,
-    base::Value job_settings,
+    base::Value::Dict job_settings,
     base::WeakPtr<PrintViewManagerBase> manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(cookie);
@@ -343,7 +343,7 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::PrintForPrintPreview(
-    base::Value job_settings,
+    base::Value::Dict job_settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     content::RenderFrameHost* rfh,
     PrinterHandler::PrintCallback callback) {
@@ -351,7 +351,7 @@ void PrintViewManagerBase::PrintForPrintPreview(
   PrintSettingsCallback settings_callback =
       base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
                      weak_ptr_factory_.GetWeakPtr(), print_data,
-                     job_settings.FindIntKey(kSettingPreviewPageCount).value(),
+                     job_settings.FindInt(kSettingPreviewPageCount).value(),
                      std::move(callback));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -655,7 +655,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::UpdatePrintSettings(
     int32_t cookie,
-    base::Value job_settings,
+    base::Value::Dict job_settings,
     UpdatePrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!printing_enabled_.GetValue()) {
@@ -664,7 +664,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
-  if (!job_settings.FindIntKey(kSettingPrinterType)) {
+  if (!job_settings.FindInt(kSettingPrinterType)) {
     UpdatePrintSettingsReply(std::move(callback),
                              CreateEmptyPrintPagesParamsPtr(), false);
     return;
@@ -677,7 +677,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
   if (prefs && prefs->HasPrefPath(prefs::kPrintRasterizePdfDpi)) {
     int value = prefs->GetInteger(prefs::kPrintRasterizePdfDpi);
     if (value > 0)
-      job_settings.SetIntKey(kSettingRasterizePdfDpi, value);
+      job_settings.Set(kSettingRasterizePdfDpi, value);
   }
 
   auto callback_wrapper =

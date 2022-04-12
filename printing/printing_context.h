@@ -98,9 +98,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   virtual mojom::ResultCode UpdatePrinterSettings(
       const PrinterSettings& printer_settings) = 0;
 
-  // Updates Print Settings. `job_settings` contains all print job
-  // settings information.
-  mojom::ResultCode UpdatePrintSettings(base::Value job_settings);
+  // Updates Print Settings. `job_settings` contains all print job settings
+  // information.
+  mojom::ResultCode UpdatePrintSettings(base::Value::Dict job_settings);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates Print Settings.
