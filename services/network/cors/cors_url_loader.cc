@@ -493,6 +493,7 @@ void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
     }
   }
 
+  has_forwarded_response_ = true;
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
 
   response_head->response_type = response_tainting_;
@@ -886,21 +887,29 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     DCHECK(status.cors_error_status->resource_address_space !=
            mojom::IPAddressSpace::kUnknown);
 
-    // If we only send a preflight because of Private Network Access, and we are
-    // configured to ignore errors caused by Private Network Access, then we
-    // should ignore any preflight error, as if we had never sent the preflight.
-    // Otherwise, if we had sent a preflight before we noticed the private
-    // network access, then we rely on `PreflightController` to ignore
-    // PNA-specific preflight errors during this second preflight request.
-    should_ignore_preflight_errors_ =
-        ShouldIgnorePrivateNetworkAccessErrors() &&
-        !(NeedsPreflight(request_).has_value() && fetch_cors_flag_);
+    // We should never send a preflight request for PNA after having already
+    // forwarded response headers to our client. See https://crbug.com/1279376.
+    if (!has_forwarded_response_) {
+      // If we only send a preflight because of Private Network Access, and we
+      // are configured to ignore errors caused by Private Network Access, then
+      // we should ignore any preflight error, as if we had never sent the
+      // preflight. Otherwise, if we had sent a preflight before we noticed the
+      // private network access, then we rely on `PreflightController` to ignore
+      // PNA-specific preflight errors during this second preflight request.
+      should_ignore_preflight_errors_ =
+          ShouldIgnorePrivateNetworkAccessErrors() &&
+          !(NeedsPreflight(request_).has_value() && fetch_cors_flag_);
 
-    network_client_receiver_.reset();
-    request_.target_ip_address_space =
-        status.cors_error_status->resource_address_space;
-    StartRequest();
-    return;
+      network_client_receiver_.reset();
+      request_.target_ip_address_space =
+          status.cors_error_status->resource_address_space;
+      StartRequest();
+      return;
+    }
+
+    // DCHECK that we never run into this scenario, but fail the request for
+    // safety if this ever happens in production.
+    NOTREACHED();
   }
 
   net_log_.EndEvent(net::NetLogEventType::CORS_REQUEST);

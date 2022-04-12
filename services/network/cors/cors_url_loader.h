@@ -226,6 +226,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // https://fetch.spec.whatwg.org/#concept-request-redirect-count
   int redirect_count_ = 0;
 
+  // Whether we have called `OnReceiveResponse()` on `forwarding_client_` yet.
+  bool has_forwarded_response_ = false;
+
   // https://fetch.spec.whatwg.org/#timing-allow-failed
   bool timing_allow_failed_flag_ = false;
 
