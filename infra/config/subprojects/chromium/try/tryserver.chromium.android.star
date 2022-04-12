@@ -478,10 +478,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android_mojo",
-)
-
-try_.builder(
     name = "android_n5x_swarming_dbg",
 )
 

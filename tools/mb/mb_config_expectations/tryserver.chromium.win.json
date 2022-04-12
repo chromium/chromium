@@ -343,16 +343,6 @@
       "use_goma": true
     }
   },
-  "win_mojo": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "win_optional_gpu_tests_rel": {
     "gn_args": {
       "dcheck_always_on": true,

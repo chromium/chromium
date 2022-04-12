@@ -5548,54 +5548,6 @@
     },
   },
   {
-    'name': 'chromium.mojo',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'Mojo Android': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MMB29Q',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
-          'hard_timeout': 3600,
-        },
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'mojo_android_gtests',
-        },
-      },
-      'Mojo ChromiumOS': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'mojo_chromiumos_fyi_gtests',
-        },
-      },
-      'Mojo Linux': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'mojo_linux_gtests',
-        },
-      },
-      'Mojo Windows': {
-        'test_suites': {
-          'gtest_tests': 'mojo_windows_gtests',
-        },
-      },
-      'mac-mojo-rel': {
-        'mixins': [
-          'mac_10.13',
-        ],
-      },
-    },
-  },
-  {
     'name': 'chromium.reclient.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

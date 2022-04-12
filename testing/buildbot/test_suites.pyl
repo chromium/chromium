@@ -4326,20 +4326,12 @@
       'mac_signing_tests': {},
     },
 
-    'mojo_chromiumos_specific_gtests': {
-      'wayland_client_perftests': {},
-    },
-
     'mojo_python_unittests_isolated_scripts': {
       'mojo_python_unittests': {
         'resultdb': {
           'enable': True,
         },
       },
-    },
-
-    'mojo_windows_specific_gtests': {
-      'services_unittests': {},
     },
 
     'monochrome_public_apk_checker_isolated_script': {
@@ -6794,22 +6786,6 @@
       'components_perftests_isolated_scripts',
       'telemetry_android_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts_android',
-    ],
-
-    'mojo_android_gtests': [
-    ],
-
-    'mojo_chromiumos_fyi_gtests': [
-      'aura_gtests',
-      'mojo_chromiumos_specific_gtests',
-    ],
-
-    'mojo_linux_gtests': [
-    ],
-
-    'mojo_windows_gtests': [
-      'mojo_windows_specific_gtests',
-      'network_service_fyi_gtests',
     ],
 
     'monochrome_public_apk_checker_isolated_script_and_sizes': [

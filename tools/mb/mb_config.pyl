@@ -585,14 +585,6 @@
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
     },
 
-    'chromium.mojo': {
-      'Mojo Android': 'android_release_bot_minimal_symbols_arm64_reclient',
-      'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
-      'Mojo Linux': 'release_trybot_minimal_symbols_reclient',
-      'Mojo Windows': 'release_bot_x86_minimal_symbols_reclient',
-      'mac-mojo-rel': 'release_trybot_minimal_symbols',
-    },
-
     'chromium.perf': {
       'Android Builder Perf': 'official_goma_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_goma_minimal_symbols_android_arm64',
@@ -890,7 +882,6 @@
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86',
       'android_coverage': 'android_debug_trybot_java_coverage',
       'android_cronet': 'android_cronet_release_trybot_arm_no_neon',
-      'android_mojo': 'android_release_trybot_arm64',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
@@ -1117,8 +1108,6 @@
       'linux_layout_tests_layout_ng_disabled': 'release_trybot',
       'linux-layout-tests-edit-ng': 'release_trybot',
       'linux-blink-web-tests-force-accessibility-rel': 'release_trybot',
-      'linux_mojo': 'release_trybot',
-      'linux_mojo_chromeos': 'chromeos_with_codecs_release_trybot',
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'linux_upload_clang': 'release_bot',
       'linux_vr': 'vr_release_trybot',
@@ -1264,7 +1253,6 @@
       'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win_chromium_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols',
       'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot',
-      'win_mojo': 'release_trybot_x86',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'win_upload_clang': 'release_bot',
     },
@@ -1607,10 +1595,6 @@
 
     'android_release_trybot': [
       'android', 'release_trybot', 'strip_debug_info',
-    ],
-
-    'android_release_trybot_arm64': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
     ],
 
     'android_release_trybot_arm64_fastbuild_webview_trichrome': [
@@ -3212,10 +3196,6 @@
       'release_bot', 'x86', 'minimal_symbols',
     ],
 
-    'release_bot_x86_minimal_symbols_reclient': [
-      'release_bot_reclient', 'x86', 'minimal_symbols',
-    ],
-
     'release_bot_minimal_symbols_enable_archive_compression_reclient': [
       'release_bot_reclient', 'minimal_symbols', 'enable_archive_compression'
     ],
@@ -3322,10 +3302,6 @@
 
     'release_rust_intree_linux_x64': [
       'release_trybot_minimal_symbols', 'enable_rust', 'use_chromium_rust_toolchain', 'x64',
-    ],
-
-    'release_trybot_minimal_symbols': [
-      'release_trybot_minimal_symbols',
     ],
 
     'release_trybot_minimal_symbols_reclient': [

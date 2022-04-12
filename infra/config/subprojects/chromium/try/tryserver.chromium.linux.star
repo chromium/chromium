@@ -492,14 +492,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_mojo",
-)
-
-try_.builder(
-    name = "linux_mojo_chromeos",
-)
-
-try_.builder(
     name = "linux_upload_clang",
     builderless = True,
     cores = 32,
