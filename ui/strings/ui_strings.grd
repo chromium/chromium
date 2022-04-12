@@ -519,6 +519,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ACCNAME_MENU" desc="The accessible name for the Menu button.">
         Menu
       </message>
+      <message name="IDS_APP_ACCNAME_FLOAT" desc="The accessible name for the Floating button.">
+        Float
+      </message>
       <message name="IDS_APP_ACCNAME_COLOR_CHOOSER_HEX_INPUT" desc="The accessible name for the color chooser hexadecimal input field">
         Hex color value
       </message>

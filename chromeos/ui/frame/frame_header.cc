@@ -378,6 +378,8 @@ void FrameHeader::SetCaptionButtonContainer(
                                             chromeos::kFloatWindowIcon);
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
                                             views::kWindowControlCloseIcon);
+  caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
+                                            chromeos::kFloatButtonIcon);
   UpdateSnapIcons();
 
   // Perform layout to ensure the container height is correct.

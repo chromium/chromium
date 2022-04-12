@@ -197,6 +197,7 @@
 #include "chromeos/dbus/usb/usbguard_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/system/devicemode.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -1401,7 +1402,7 @@ void Shell::Init(
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   }
 
-  if (features::IsFloatWindowEnabled())
+  if (chromeos::wm::features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();
 
   // Injects the factory which fulfills the implementation of the text context

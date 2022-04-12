@@ -79,11 +79,12 @@ enum ShellWindowId {
   // The container for top-level windows with the 'always-on-top' flag set.
   kShellWindowId_AlwaysOnTopContainer,
 
+  // The container for the floating window.
+  // Experimental feature, please don't use this container.
+  kShellWindowId_FloatContainer,
+
   // The container for the app list.
   kShellWindowId_AppListContainer,
-
-  // The container for the floating window.
-  kShellWindowId_FloatContainer,
 
   // The container for the home screen, e.g. the app list in tablet mode.
   kShellWindowId_HomeScreenContainer,

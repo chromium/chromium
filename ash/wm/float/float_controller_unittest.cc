@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -24,7 +25,8 @@ class WindowFloatTest : public AshTestBase {
 
   void SetUp() override {
     // Ensure float feature is enabled.
-    scoped_feature_list_.InitAndEnableFeature(features::kFloatWindow);
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kFloatWindow);
     AshTestBase::SetUp();
   }
 

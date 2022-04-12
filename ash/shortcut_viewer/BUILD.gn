@@ -36,6 +36,7 @@ source_set("shortcut_viewer") {
     "//ash/shortcut_viewer/strings",
     "//cc/paint",
     "//chromeos/ui/base",
+    "//chromeos/ui/wm",
     "//ui/accessibility",
     "//ui/aura",
     "//ui/chromeos/events",

@@ -33,6 +33,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -151,7 +152,7 @@ bool ShouldExcludeItem(const ash::KeyboardShortcutItem& item) {
     case IDS_KSV_DESCRIPTION_PRIVACY_SCREEN_TOGGLE:
       return !ash::Shell::Get()->privacy_screen_controller()->IsSupported();
     case IDS_KSV_DESCRIPTION_FLOAT:
-      return !ash::features::IsFloatWindowEnabled();
+      return !chromeos::wm::features::IsFloatWindowEnabled();
   }
 
   return false;

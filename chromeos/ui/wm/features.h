@@ -12,10 +12,13 @@ namespace chromeos {
 namespace wm {
 namespace features {
 
+COMPONENT_EXPORT(CHROMEOS_UI_WM)
+extern const base::Feature kFloatWindow;
 // Enable Vertical Snap.
 COMPONENT_EXPORT(CHROMEOS_UI_WM)
 extern const base::Feature kVerticalSnap;
 
+COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsFloatWindowEnabled();
 COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsVerticalSnapEnabled();
 
 }  // namespace features

@@ -6,10 +6,14 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
@@ -101,6 +105,27 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     generator->ClickLeftButton();
     base::RunLoop().RunUntilIdle();
   }
+};
+
+// Test float button requires kFloatWindow feature to be enabled during setup.
+class WindowFloatButtonTest : public FrameCaptionButtonContainerViewTest {
+ public:
+  WindowFloatButtonTest() = default;
+
+  WindowFloatButtonTest(const WindowFloatButtonTest&) = delete;
+  WindowFloatButtonTest& operator=(const WindowFloatButtonTest&) = delete;
+
+  ~WindowFloatButtonTest() override = default;
+
+  void SetUp() override {
+    // Ensure float feature is enabled.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kFloatWindow);
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test how the allowed actions affect which caption buttons are visible.
@@ -296,6 +321,38 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
   ClickSizeButton(&testApi);
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(called);
+}
+
+// Test float button behavior.
+TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  container.Layout();
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  FloatController* controller = Shell::Get()->float_controller();
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      testApi.float_button()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check if window is floated.
+  auto* window = widget->GetNativeWindow();
+  EXPECT_TRUE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_TRUE(controller->IsFloated(window));
+
+  generator->MoveMouseTo(
+      testApi.float_button()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check if window is unfloated.
+  EXPECT_FALSE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_FALSE(controller->IsFloated(window));
 }
 
 }  // namespace ash

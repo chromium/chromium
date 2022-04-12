@@ -99,10 +99,6 @@ ASH_EXPORT void ShiftPrimaryDisplay();
 // Toogles to show and hide the calendar widget.
 ASH_EXPORT void ToggleCalendar();
 
-// Toggles the floating state. If the floating window feature is enabled, it
-// will keep the window always on top.
-ASH_EXPORT void ToggleFloating();
-
 // Toggles the fullscreen state. The behavior can be overridden
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();

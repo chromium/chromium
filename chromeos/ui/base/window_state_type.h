@@ -65,10 +65,6 @@ bool IsPinnedWindowStateType(WindowStateType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsFullscreenOrPinnedWindowStateType(WindowStateType type);
 
-// Returns true if |type| is kFloating.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-bool IsFloatingStateType(WindowStateType type);
-
 // Returns true if |type| is MAXIMIZED, FULLSCREEN, PINNED, or TRUSTED_PINNED.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type);

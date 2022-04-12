@@ -225,14 +225,6 @@ void ToggleCalendar() {
   }
 }
 
-void ToggleFloating() {
-  DCHECK(features::IsFloatWindowEnabled());
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return;
-  Shell::Get()->float_controller()->ToggleFloatCurrentWindow(active_window);
-}
-
 void ToggleFullscreen() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)

@@ -704,11 +704,6 @@ const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
 const base::Feature kFloatingWorkspace{"FloatingWorkspace",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a window to float.
-// https://crbug.com/1240411
-const base::Feature kFloatWindow{"CrOSLabsFloatWindow",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to allow keeping full screen mode after unlock.
 const base::Feature kFullscreenAfterUnlockAllowed = {
     "FullscreenAfterUnlockAllowed", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2131,10 +2126,6 @@ bool IsWebUITabStripTabDragIntegrationEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
-}
-
-bool IsFloatWindowEnabled() {
-  return base::FeatureList::IsEnabled(kFloatWindow);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

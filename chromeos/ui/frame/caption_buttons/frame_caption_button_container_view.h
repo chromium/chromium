@@ -7,10 +7,12 @@
 
 #include <map>
 
+#include "base/check.h"
 #include "base/component_export.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -83,6 +85,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
       return container_view_->custom_button_;
     }
 
+    views::FrameCaptionButton* float_button() const {
+      DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+      return container_view_->float_button_;
+    }
+
    private:
     FrameCaptionButtonContainerView* container_view_;
   };
@@ -150,6 +157,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
                      views::CaptionButtonIcon icon,
                      Animate animate);
 
+  void FloatButtonPressed();
   void MinimizeButtonPressed();
   void SizeButtonPressed();
   void CloseButtonPressed();
@@ -176,10 +184,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
   views::FrameCaptionButton* custom_button_ = nullptr;
+  views::FrameCaptionButton* float_button_ = nullptr;
   views::FrameCaptionButton* menu_button_ = nullptr;
   views::FrameCaptionButton* minimize_button_ = nullptr;
   views::FrameCaptionButton* size_button_ = nullptr;
   views::FrameCaptionButton* close_button_ = nullptr;
+
+  // Change float button status.
+  void ToggleFloatButton();
 
   // Mapping of the image needed to paint a button for each of the values of
   // CaptionButtonIcon.

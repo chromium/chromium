@@ -8,28 +8,13 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/check_op.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 
 namespace ash {
 
 FloatController::FloatController() = default;
 
 FloatController::~FloatController() = default;
-
-void FloatController::ToggleFloatCurrentWindow(aura::Window* window) {
-  DCHECK(features::IsFloatWindowEnabled());
-  // If try to float the same window again, will toggle unfloat.
-  // Since only one floating window is allowed, reset other floating window.
-  if (window == ResetFloatedWindow())
-    return;
-  // Float current window.
-  float_window_ = window;
-  float_window_observation_.Observe(float_window_);
-  aura::Window* float_container =
-      window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
-  if (window->parent() != float_container)
-    float_container->AddChild(window);
-}
 
 bool FloatController::IsFloated(aura::Window* window) const {
   DCHECK(window);
@@ -42,16 +27,31 @@ void FloatController::OnWindowDestroying(aura::Window* window) {
   float_window_ = nullptr;
 }
 
-aura::Window* FloatController::ResetFloatedWindow() {
-  aura::Window* floated_window = float_window_;
-  if (float_window_) {
-    // Reparent window to active desk container.
-    desks_util::GetActiveDeskContainerForRoot(float_window_->GetRootWindow())
-        ->AddChild(float_window_);
-    float_window_observation_.Reset();
-    float_window_ = nullptr;
-  }
-  return floated_window;
+void FloatController::Float(aura::Window* window) {
+  // Only one floating window is allowed, reset previously floated window.
+  ResetFloatedWindow();
+  DCHECK(!float_window_);
+  DCHECK(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  float_window_ = window;
+  float_window_observation_.Observe(float_window_);
+  aura::Window* float_container =
+      window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
+  if (window->parent() != float_container)
+    float_container->AddChild(window);
+}
+
+void FloatController::Unfloat(aura::Window* window) {
+  DCHECK(!window->GetProperty(chromeos::kWindowFloatTypeKey));
+  // Re-parent window to active desk container.
+  desks_util::GetActiveDeskContainerForRoot(float_window_->GetRootWindow())
+      ->AddChild(float_window_);
+  float_window_observation_.Reset();
+  float_window_ = nullptr;
+}
+
+void FloatController::ResetFloatedWindow() {
+  if (float_window_)
+    float_window_->SetProperty(chromeos::kWindowFloatTypeKey, false);
 }
 
 }  // namespace ash

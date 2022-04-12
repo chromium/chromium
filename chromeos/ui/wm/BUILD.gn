@@ -16,11 +16,14 @@ source_set("wm") {
     "desks/desks_helper.h",
     "features.cc",
     "features.h",
+    "window_util.cc",
+    "window_util.h",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chromeos/ui/base",
     "//ui/aura",
     "//ui/base",
   ]

@@ -25,22 +25,23 @@ class ASH_EXPORT FloatController : public aura::WindowObserver {
 
   aura::Window* float_window() { return float_window_; }
 
-  // Float the window if it is not previously floated, otherwise unfloat.
-  // Only one floating window is allowed, floating a new window will
-  // unfloat the other floated window (if any).
-  void ToggleFloatCurrentWindow(aura::Window* window);
-
-  // Return true if |window| is floated, otherwise false.
+  // Return true if `window` is floated, otherwise false.
   bool IsFloated(aura::Window* window) const;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
+  friend class WindowState;
+
+  // Floats/Unfloats `window`.
+  // Only one floating window is allowed, floating a new window will
+  // unfloat the other floated window (if any).
+  void Float(aura::Window* window);
+  void Unfloat(aura::Window* window);
+
   // Unfloats floated window.
-  // If no window is floated previously, return nullptr,
-  // otherwise return the floated window.
-  aura::Window* ResetFloatedWindow();
+  void ResetFloatedWindow();
 
   // Only one floating window is allowed, updated when a new window
   // is floated.

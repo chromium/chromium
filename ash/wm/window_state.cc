@@ -23,6 +23,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
@@ -41,6 +42,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
@@ -1098,6 +1100,16 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     } else {
       // Currently "restore" is not implemented.
       NOTIMPLEMENTED();
+    }
+    return;
+  }
+  if (key == chromeos::kWindowFloatTypeKey) {
+    DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+    auto* const float_controller = Shell::Get()->float_controller();
+    if (window->GetProperty(chromeos::kWindowFloatTypeKey)) {
+      float_controller->Float(window);
+    } else {
+      float_controller->Unfloat(window);
     }
     return;
   }

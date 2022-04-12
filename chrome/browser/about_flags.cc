@@ -5943,7 +5943,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPipRoundedCorners)},
     {"cros-labs-float-window", flag_descriptions::kFloatWindow,
      flag_descriptions::kFloatWindowDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFloatWindow)},
+     FEATURE_VALUE_TYPE(chromeos::wm::features::kFloatWindow)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
