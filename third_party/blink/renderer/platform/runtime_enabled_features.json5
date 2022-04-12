@@ -1268,6 +1268,7 @@
     {
       name: "HTMLPopupAttribute",
       status: "experimental",
+      implied_by: ["HTMLSelectMenuElement","HTMLSelectMenuElementUsesPopupAttribute"],
     },
     {
       name: "HTMLPopupElement",
@@ -1277,6 +1278,10 @@
     {
       name: "HTMLSelectMenuElement",
       status: "experimental",
+      implied_by: ["HTMLSelectMenuElementUsesPopupAttribute"],
+    },
+    {
+      name: "HTMLSelectMenuElementUsesPopupAttribute",
     },
     {
       name: "IDBBatchGetAll",

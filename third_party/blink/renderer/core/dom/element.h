@@ -161,6 +161,9 @@ enum class PopupValueType {
   kHint,
   kAsync,
 };
+constexpr const char* kPopupTypeValuePopup = "popup";
+constexpr const char* kPopupTypeValueHint = "hint";
+constexpr const char* kPopupTypeValueAsync = "async";
 
 typedef HeapVector<Member<Attr>> AttrNodeList;
 

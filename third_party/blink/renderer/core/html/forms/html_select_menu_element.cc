@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -129,6 +130,12 @@ void HTMLSelectMenuElement::SelectMutationCallback::AttributeChanged(
       SlotChanged(old_value);
       SlotChanged(new_value);
     }
+  } else if (name == html_names::kPopupAttr) {
+    // We unconditionally update the listbox part here, because this popup
+    // attribute change could either be on the existing listbox part, or on
+    // an earlier child of the <selectmenu> which makes FirstValidListboxPart()
+    // return a different element.
+    select_->UpdateListboxPart();
   }
 }
 
@@ -176,7 +183,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
 
   EnsureUserAgentShadowRoot();
@@ -245,11 +253,18 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
 
-  SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
-  listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
-  listbox_part_->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
-  listbox_part_->SetShadowPseudoId(
-      AtomicString("-internal-selectmenu-listbox"));
+  Element* new_popup;
+  if (RuntimeEnabledFeatures::
+          HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
+    new_popup = MakeGarbageCollected<HTMLDivElement>(document);
+    new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValuePopup);
+  } else {
+    new_popup = MakeGarbageCollected<HTMLPopupElement>(document);
+  }
+  new_popup->setAttribute(html_names::kPartAttr, kListboxPartName);
+  new_popup->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
+  new_popup->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
+  SetListboxPart(new_popup);
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -310,13 +325,28 @@ bool HTMLSelectMenuElement::open() const {
   // a replacement listbox part. Instead of null checks like this,
   // we should consider refusing to render the control at all if
   // either of the key parts (button or listbox) are missing.
-  return listbox_part_ != nullptr && listbox_part_->open();
+  if (!listbox_part_)
+    return false;
+  if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
+    return popup_element->open();
+  } else {
+    DCHECK(RuntimeEnabledFeatures::
+               HTMLSelectMenuElementUsesPopupAttributeEnabled());
+    return listbox_part_->popupOpen();
+  }
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
-    listbox_part_->SetNeedsRepositioningForSelectMenu(true);
-    listbox_part_->show();
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
+      popup_element->SetNeedsRepositioningForSelectMenu(true);
+      popup_element->show();
+    } else {
+      DCHECK(RuntimeEnabledFeatures::
+                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
+      // TODO(masonf): Need to set NeedsRepositioningForSelectMenu here.
+      listbox_part_->showPopup();
+    }
     if (selectedOption()) {
       selectedOption()->focus();
     }
@@ -329,29 +359,49 @@ void HTMLSelectMenuElement::CloseListbox() {
     if (button_part_) {
       button_part_->focus();
     }
-    listbox_part_->hide();
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
+      popup_element->hide();
+    } else {
+      DCHECK(RuntimeEnabledFeatures::
+                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
+      listbox_part_->hidePopup();
+    }
 
     if (selectedOption() != selected_option_when_listbox_opened_)
       DispatchChangeEvent();
   }
 }
 
-void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* new_listbox_part) {
+bool HTMLSelectMenuElement::SetListboxPart(Element* new_listbox_part) {
   if (listbox_part_ == new_listbox_part)
-    return;
+    return false;
 
   if (listbox_part_) {
-    listbox_part_->SetOwnerSelectMenuElement(nullptr);
-    listbox_part_->SetNeedsRepositioningForSelectMenu(false);
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
+      popup_element->SetOwnerSelectMenuElement(nullptr);
+      popup_element->SetNeedsRepositioningForSelectMenu(false);
+    } else {
+      DCHECK(RuntimeEnabledFeatures::
+                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
+      // TODO(masonf): Need to clear NeedsRepositioningForSelectMenu and
+      // OwnerSelectMenuElement.
+    }
   }
 
   if (new_listbox_part) {
-    new_listbox_part->SetOwnerSelectMenuElement(this);
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*new_listbox_part)) {
+      popup_element->SetOwnerSelectMenuElement(this);
+    } else {
+      DCHECK(RuntimeEnabledFeatures::
+                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
+      // TODO(masonf): Need to set NeedsRepositioningForSelectMenu here.
+    }
   } else {
     QueueCheckForMissingParts();
   }
 
   listbox_part_ = new_listbox_part;
+  return true;
 }
 
 bool HTMLSelectMenuElement::IsValidButtonPart(const Node* node,
@@ -385,14 +435,24 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
-  if (!IsA<HTMLPopupElement>(element)) {
+  DCHECK(!element->HasValidPopupAttribute() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (!IsA<HTMLPopupElement>(element) && !element->HasValidPopupAttribute()) {
     if (show_warning) {
+      const char* error_message =
+          RuntimeEnabledFeatures::
+                  HTMLSelectMenuElementUsesPopupAttributeEnabled()
+              ? "Found non-popup element labeled as listbox under "
+                "<selectmenu>, which is not allowed. The <selectmenu>'s "
+                "listbox element must have a valid value set for the 'popup' "
+                "attribute. This <selectmenu> will not be fully functional."
+              : "Found non-<popup> element labeled as listbox under "
+                "<selectmenu>, but only a <popup> can be used for the "
+                "<selectmenu>'s listbox part. This <selectmenu> will not be "
+                "fully functional.";
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Found non-<popup> element labeled as listbox under <selectmenu>, "
-          "but only a <popup> can be used for the <selectmenu>'s listbox "
-          "part. This <selectmenu> will not be fully functional."));
+          mojom::blink::ConsoleMessageLevel::kWarning, error_message));
     }
     return false;
   }
@@ -554,7 +614,6 @@ void HTMLSelectMenuElement::ListboxPartInserted(Element* new_listbox_part) {
   if (!IsValidListboxPart(new_listbox_part, /*show_warning=*/true)) {
     return;
   }
-
   UpdateListboxPart();
 }
 
@@ -562,18 +621,12 @@ void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
   if (listbox_part_ != listbox_part) {
     return;
   }
-
   UpdateListboxPart();
 }
 
 void HTMLSelectMenuElement::UpdateListboxPart() {
-  auto* new_listbox_part = DynamicTo<HTMLPopupElement>(FirstValidListboxPart());
-  if (listbox_part_ == new_listbox_part) {
+  if (!SetListboxPart(FirstValidListboxPart()))
     return;
-  }
-
-  SetListboxPart(new_listbox_part);
-
   ResetOptionParts();
 }
 

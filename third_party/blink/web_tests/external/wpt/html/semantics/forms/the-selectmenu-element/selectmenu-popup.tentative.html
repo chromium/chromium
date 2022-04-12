@@ -64,6 +64,8 @@
     await clickOn(selectMenu0Child3);
     assert_equals(selectMenu0.value, "two", "Clicking a non-option should not change the value");
     assert_equals(selectMenu0.open, true);
+    await clickOn(selectMenu0Child2);
+    assert_equals(selectMenu0.open, false);
   }, "Opening the popup and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {

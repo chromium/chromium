@@ -2345,11 +2345,11 @@ void Element::UpdatePopupAttribute(String value) {
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return;
   PopupValueType type = PopupValueType::kNone;
-  if (EqualIgnoringASCIICase(value, "popup")) {
+  if (EqualIgnoringASCIICase(value, kPopupTypeValuePopup)) {
     type = PopupValueType::kPopup;
-  } else if (EqualIgnoringASCIICase(value, "hint")) {
+  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
     type = PopupValueType::kHint;
-  } else if (EqualIgnoringASCIICase(value, "async")) {
+  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueAsync)) {
     type = PopupValueType::kAsync;
   } else {
     if (HasValidPopupAttribute()) {
