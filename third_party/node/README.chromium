@@ -199,3 +199,19 @@ TypeScript source code.
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for Trusted Types
+Short Name: @types/trusted-types
+URL: https://www.npmjs.com/package/@types/trusted-types
+Version: 1.0.6
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+Trusted Types:
+
+Description:
+This package contains type definitions for Web Trusted Types.
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/trusted-types
+
+Local Modifications:
+(none)

@@ -12,6 +12,8 @@
 @types/google.analytics/*.d.ts
 @types/mocha/index.d.ts
 @types/offscreencanvas/index.d.ts
+@types/trusted-types
+@types/trusted-types/*.d.ts
 @types/w3c-css-typed-object-model-level-1
 @types/w3c-css-typed-object-model-level-1/*.d.ts
 @types/w3c-image-capture

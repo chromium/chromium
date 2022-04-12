@@ -10,6 +10,7 @@
     "@types/google.analytics": "0.0.42",
     "@types/mocha": "9.0.0",
     "@types/offscreencanvas": "2019.6.4",
+    "@types/trusted-types": "1.0.6",
     "@types/w3c-css-typed-object-model-level-1": "20180410.0.4",
     "@types/w3c-image-capture": "1.0.4",
     "@types/webrtc": "0.0.31",
