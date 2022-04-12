@@ -21,6 +21,15 @@ namespace history_clusters {
 // should be separately canonicalized by TemplateURLService and not sent here.
 GURL ComputeURLForDeduping(const GURL& url);
 
+// Generates a keyword from the URL used for looking up relevant clusters to a
+// given URL. Does everything that ComputeURLForDeduping() does and additionally
+// applies history::VisitSegmentDatabase::ComputeSegmentName() to the resulting
+// URL to maximize coverage.
+//
+// Note, this is NOT meant to be applied to Search Result Page URLs. Those
+// should be separately canonicalized by TemplateURLService and not sent here.
+std::string ComputeURLKeywordForLookup(const GURL& url);
+
 // Stable sorts visits according to score, then reverse-chronologically.
 void StableSortVisits(std::vector<history::ClusterVisit>* visits);
 

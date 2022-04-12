@@ -33,6 +33,26 @@ TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
       << "Sanity check when no replacements needed.";
 }
 
+TEST(HistoryClustersUtilTest, ComputeURLKeywordForLookup) {
+  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://www.google.com/")),
+            "http://google.com/")
+      << "Strip off WWW.";
+  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("https://google.com/")),
+            "http://google.com/")
+      << "Normalizes scheme to http.";
+  EXPECT_EQ(
+      ComputeURLKeywordForLookup(GURL("http://google.com/path?foo=bar#reftag")),
+      "http://google.com/path")
+      << "Strips ref and query, leaves path.";
+  EXPECT_EQ(ComputeURLKeywordForLookup(
+                GURL("https://www.google.com/path?foo=bar#reftag")),
+            "http://google.com/path")
+      << "Does all of the above at once.";
+  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://google.com/path")),
+            "http://google.com/path")
+      << "Sanity check when no replacements needed.";
+}
+
 TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
   std::vector<history::Cluster> all_clusters;
   all_clusters.push_back(

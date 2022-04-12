@@ -171,9 +171,11 @@ class HistoryClustersService : public base::SupportsUserData,
   // keystroke, the cache may be ready and return true then.
   bool DoesQueryMatchAnyCluster(const std::string& query);
 
-  // Returns true if `stripped_url` is part of a significant cluster. This may
-  // kick off a cache refresh while still immediately returning false.
-  bool DoesURLMatchAnyCluster(const std::string& stripped_url);
+  // Returns true if `url_keyword` matches a URL in a significant cluster. This
+  // may kick off a cache refresh while still immediately returning false.
+  // `url_keyword` is derived from a given URL by ComputeURLKeywordForLookup().
+  // SRP URLs canonicalized by TemplateURLService should be passed in directly.
+  bool DoesURLMatchAnyCluster(const std::string& url_keyword);
 
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();

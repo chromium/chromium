@@ -30,12 +30,12 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_types.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -349,7 +349,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 }
 
 bool HistoryClustersService::DoesURLMatchAnyCluster(
-    const std::string& stripped_url) {
+    const std::string& url_keyword) {
   if (!IsJourneysEnabled())
     return false;
 
@@ -359,8 +359,8 @@ bool HistoryClustersService::DoesURLMatchAnyCluster(
 
   StartKeywordCacheRefresh();
 
-  return short_url_keywords_cache_.contains(stripped_url) ||
-         all_url_keywords_cache_.contains(stripped_url);
+  return short_url_keywords_cache_.contains(url_keyword) ||
+         all_url_keywords_cache_.contains(url_keyword);
 }
 
 void HistoryClustersService::ClearKeywordCache() {
@@ -455,8 +455,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     if (url_keyword_accumulator->size() < max_keyword_phrases) {
       for (const auto& visit : cluster.visits) {
         url_keyword_accumulator->push_back(
-            history::VisitSegmentDatabase::ComputeSegmentName(
-                visit.normalized_url));
+            (!visit.annotated_visit.content_annotations.search_normalized_url
+                  .is_empty())
+                ? visit.normalized_url.spec()
+                : ComputeURLKeywordForLookup(visit.normalized_url));
       }
     }
   }

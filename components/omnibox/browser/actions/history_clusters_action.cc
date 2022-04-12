@@ -9,11 +9,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_service.h"
@@ -95,12 +95,10 @@ void AttachHistoryClustersActions(
       // We do the URL stripping here, because we need it to both execute the
       // query, as well as to feed it into the action chip so the chip navigates
       // to the right place (with the query pre-populated).
-      std::string stripped_url =
-          history::VisitSegmentDatabase::ComputeSegmentName(
-              match.destination_url);
-      if (service->DoesURLMatchAnyCluster(stripped_url)) {
-        match.action =
-            base::MakeRefCounted<HistoryClustersAction>(stripped_url);
+      std::string url_keyword =
+          history_clusters::ComputeURLKeywordForLookup(match.destination_url);
+      if (service->DoesURLMatchAnyCluster(url_keyword)) {
+        match.action = base::MakeRefCounted<HistoryClustersAction>(url_keyword);
       }
     }
 

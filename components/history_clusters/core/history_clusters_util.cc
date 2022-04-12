@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/query_parser/query_parser.h"
@@ -128,6 +129,11 @@ GURL ComputeURLForDeduping(const GURL& url) {
 
   url_for_deduping = url_for_deduping.ReplaceComponents(replacements);
   return url_for_deduping;
+}
+
+std::string ComputeURLKeywordForLookup(const GURL& url) {
+  return history::VisitSegmentDatabase::ComputeSegmentName(
+      ComputeURLForDeduping(url));
 }
 
 void StableSortVisits(std::vector<history::ClusterVisit>* visits) {
