@@ -1,19 +1,11 @@
 # Automate running browserbench.org benchmarks
 
-## MotionMark
-
-The script in `motionmark.py` helps automatically run MotionMark1.2 benchmark in
-a browser and extract a score out of it.
-
-The following command line flags are supported:
+The following command line flags are supported for all benchmarks:
 
 - `-b`': The browser to run the benchmark in. The valid options currently are
          'chrome' and 'safari'.
 
 - `-e`: Path to the executable for the driver binary.
-
-- `-s`: The name of the test suite to run. The default is 'MotionMark'. The name
-        has to be an exact match (e.g. 'HTML suite', etc.).
 
 - `-a`: Additional command-line arguments to use when launching the browser.
         Currently supported only for Chrome (i.e. with `-b chrome`).
@@ -23,6 +15,17 @@ The following command line flags are supported:
 
 - `-o`: Path to the output json file.
 
+## MotionMark
+
+The script in `motionmark.py` helps automatically run MotionMark1.2 benchmark in
+a browser and extract a score out of it.
+
+This script supports the following additional command line flags:
+
+- `-s`: The name of the test suite to run. The default is 'MotionMark'. The name
+        has to be an exact match (e.g. 'HTML suite', etc.).
+
+
 Example usage:
 
 ```
@@ -31,4 +34,19 @@ Example usage:
       -e out/Default/chromedriver                     \
       -a 'enable-features=CanvasOopRasterization'     \
       -o motionmark.json
+```
+
+
+## Speedometer
+
+This script in `speedometer.py` runs Speedometer2.0 benchmark in a browser, and
+extracts the score out of it.
+
+Example usage:
+
+```
+  python3 tools/browserbench-webdriver/speedometer.py  \
+      -b chrome                                        \
+      -e out/Default/chromedriver                      \
+      -o speedometer.json
 ```

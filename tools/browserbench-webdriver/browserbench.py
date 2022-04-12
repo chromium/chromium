@@ -1,0 +1,112 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from optparse import OptionParser
+from selenium import webdriver
+
+import json
+import sys
+import time
+
+
+class BrowserBench(object):
+  def __init__(self, name):
+    self._name = name
+    self._output = None
+    self._githash = None
+    self._browser = None
+
+  @staticmethod
+  def _CreateChromeDriver(optargs):
+    options = webdriver.ChromeOptions()
+    options.add_argument('enable-benchmarking')
+    if optargs.arguments:
+      for arg in optargs.arguments.split(','):
+        options.add_argument(arg)
+    service = webdriver.chrome.service.Service(
+        executable_path=optargs.executable)
+    chrome = webdriver.Chrome(service=service, options=options)
+    return chrome
+
+  @staticmethod
+  def _CreateDriver(optargs):
+    if optargs.browser == 'chrome':
+      return BrowserBench._CreateChromeDriver(optargs)
+    elif optargs.browser == 'safari':
+      return webdriver.Safari(executable_path=optargs.executable
+                              ) if optargs.executable else webdriver.Safari()
+    else:
+      return None
+
+  def _ProduceOutput(self, measurements):
+    data = {
+        'version': 1,
+        'git_hash': self._githash,
+        'key': {
+            'test': self._name,
+            'browser': self._browser,
+        },
+        'measurements': measurements
+    }
+    print(json.dumps(data, sort_keys=True, indent=2, separators=(',', ': ')))
+    if self._output:
+      with open(self._output, 'w') as file:
+        file.write(json.dumps(data))
+
+  def Run(self):
+    '''Runs the benchmark.
+
+    Runs the benchmark end-to-end, starting from parsing the command line
+    arguments (see README.md for details), and ending with producing the output
+    to the standard output, as well as any output file specified in the command
+    line arguments.
+    '''
+
+    parser = OptionParser()
+    parser.add_option('-b',
+                      '--browser',
+                      dest='browser',
+                      help='The browser to use to run MotionMark in.')
+    parser.add_option('-e',
+                      '--executable-path',
+                      dest='executable',
+                      help='Path to the executable to the driver binary.')
+    parser.add_option('-a',
+                      '--arguments',
+                      dest='arguments',
+                      help='Extra arguments to pass to the browser.')
+    parser.add_option('-g',
+                      '--githash',
+                      dest='githash',
+                      help='A git-hash associated with this run.')
+    parser.add_option('-o',
+                      '--output',
+                      dest='output',
+                      help='Path to the output json file.')
+    self.AddExtraParserOptions(parser)
+
+    (optargs, args) = parser.parse_args()
+    self._githash = optargs.githash or 'deadbeef'
+    self._output = optargs.output
+    self._browser = optargs.browser
+
+    self.UpdateParseArgs(optargs)
+
+    driver = BrowserBench._CreateDriver(optargs)
+    if not driver:
+      sys.stderr.write('Could not create a driver. Aborting.\n')
+      sys.exit(1)
+    driver.set_window_size(900, 780)
+
+    measurements = self.RunAndExtractMeasurements(driver, optargs)
+    self._ProduceOutput(measurements)
+
+  def AddExtraParserOptions(self, parser):
+    pass
+
+  def UpdateParseArgs(self, optargs):
+    pass
+
+  def RunAndExtractMeasurements(self, driver, optargs):
+    return {'error': 'Benchmark has not been set up correctly.'}
