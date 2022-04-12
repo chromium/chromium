@@ -484,11 +484,6 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
-      'linux-xenial-rel': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-        ],
-      },
       # TODO (crbug.com/1254971) Re-enable once fixed
       'mac-osxbeta-rel': {
         'experiment_percentage': 0,
@@ -782,11 +777,6 @@
         'swarming': {
           'quickrun_shards': 20,
         },
-      },
-      'linux-trusty-rel': {
-       'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_trusty_rel.browser_tests.filter',
-        ],
       },
       'mac-code-coverage': {
         'args': [
@@ -2463,11 +2453,6 @@
           'shards': 20,
         },
       },
-      'linux-xenial-rel': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-        ],
-      },
     },
   },
   'notification_helper_unittests': {
@@ -3055,24 +3040,6 @@
         # TODO(b/188822176): Restore to 100% when we have additional capacity.
         'experiment_percentage': 0,
       },
-      'linux-bionic-rel': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
-      'linux-trusty-rel': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
-      'linux-xenial-rel': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
     },
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
@@ -3344,7 +3311,6 @@
   'webdriver_tests_suite': {
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
-      'linux-xenial-rel',
     ],
   },
   'webgl2_conformance_gl_passthrough_tests': {

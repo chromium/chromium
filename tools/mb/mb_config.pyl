@@ -553,11 +553,8 @@
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
       'linux-bfcache-rel': 'release_bot_blink_reclient',
-      'linux-bionic-rel': 'gpu_tests_release_bot_reclient',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
-      'linux-trusty-rel': 'gpu_tests_release_bot_reclient',
-      'linux-xenial-rel': 'gpu_tests_release_bot_reclient',
     },
 
     'chromium.mac': {
@@ -1072,7 +1069,6 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
       'linux-bfcache-rel': 'release_bot_blink',
-      'linux-bionic-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
@@ -1091,13 +1087,11 @@
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
-      'linux-trusty-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-viz-rel': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot',
       'linux-wpt-identity-fyi-rel': 'release_trybot',
       'linux-wpt-input-fyi-rel': 'release_trybot',
       'linux-webkit-msan-rel': 'msan_release_bot',
-      'linux-xenial-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux_chromium_archive_rel_ng': 'release_bot',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
@@ -2676,10 +2670,6 @@
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage': [
       'gpu_tests', 'release_trybot', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation'
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
     ],
 
     # Keep in sync with

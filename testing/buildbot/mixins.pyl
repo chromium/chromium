@@ -613,13 +613,6 @@
       },
     },
   },
-  'linux-trusty': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-14.04',
-      },
-    },
-  },
   'linux-xenial': {
     'swarming': {
       'dimensions': {

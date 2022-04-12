@@ -199,12 +199,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-bionic-rel",
-    goma_jobs = goma.jobs.J150,
-    os = os.LINUX_BIONIC,
-)
-
-try_.builder(
     name = "linux-blink-heap-verification-try",
 )
 
@@ -337,18 +331,6 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-)
-
-try_.builder(
-    name = "linux-trusty-rel",
-    goma_jobs = goma.jobs.J150,
-    os = os.LINUX_TRUSTY,
-)
-
-try_.builder(
-    name = "linux-xenial-rel",
-    goma_jobs = goma.jobs.J150,
-    os = os.LINUX_XENIAL,
 )
 
 try_.builder(
