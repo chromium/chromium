@@ -185,8 +185,13 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
   switcher_view_->RemoveAllChildViews();
-  switcher_view_->AddChildView(GetPrimaryView());
-  bubble_delegate_->SizeToContents();
+  std::unique_ptr<views::View> primary_view = GetPrimaryView();
+  if (primary_view) {
+    switcher_view_->AddChildView(std::move(primary_view));
+    bubble_delegate_->SizeToContents();
+  } else {
+    CloseDialog(views::Widget::ClosedReason::kUnspecified);
+  }
 }
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
