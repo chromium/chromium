@@ -39,7 +39,10 @@ struct CORE_EXPORT CSSPropertyValueMetadata {
                            bool implicit);
 
   CSSPropertyID ShorthandID() const;
-  CSSPropertyID PropertyID() const;
+  CSSPropertyID PropertyID() const {
+    return ConvertToCSSPropertyID(property_id_);
+  }
+
   CSSPropertyName Name() const;
 
   AtomicString custom_name_;
