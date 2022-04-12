@@ -84,14 +84,14 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     options.begin_time = std::max(begin_time_limit_,
                                   GetBeginTimeOnDayBoundary(options.end_time));
 
-    auto newly_fetched_annotated_visits =
-        backend->GetAnnotatedVisits(options, &limited_by_max_count);
+    // Tack on all the newly fetched visits onto our accumulator vector.
+    AddUnclusteredVisits(backend, options, &limited_by_max_count);
 
     // If we didn't get enough visits, ask for another day's worth from
     // History and call this method again when done.
-    if (limited_by_max_count && !newly_fetched_annotated_visits.empty()) {
-      continuation_end_time_ =
-          newly_fetched_annotated_visits.back().visit_row.visit_time;
+    if (limited_by_max_count) {
+      DCHECK(!annotated_visits_.empty());
+      continuation_end_time_ = annotated_visits_.back().visit_row.visit_time;
     } else {
       continuation_end_time_ = options.begin_time;
     }
@@ -104,12 +104,29 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     // or `original_end_time_` can be older than now.
     exhausted_history_ =
         !limited_by_max_count && continuation_end_time_ <= begin_time_limit_;
-
-    // Tack on all the newly fetched visits onto our accumulator vector.
-    base::ranges::move(newly_fetched_annotated_visits,
-                       std::back_inserter(annotated_visits_));
   }
 
+  AddIncompleteVisits(backend);
+
+  RemoveVisitsFromSync();
+
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
+      query_visits_timer.Elapsed());
+
+  return true;
+}
+
+void GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
+    history::HistoryBackend* backend,
+    history::QueryOptions options,
+    bool* limited_by_max_count) {
+  base::ranges::move(backend->GetAnnotatedVisits(options, limited_by_max_count),
+                     std::back_inserter(annotated_visits_));
+}
+
+void GetAnnotatedVisitsToCluster::AddIncompleteVisits(
+    history::HistoryBackend* backend) {
   // Now we have enough visits for clustering, add all incomplete visits
   // between the current `options.begin_time` and `original_end_time`, as
   // otherwise they will be mysteriously missing from the Clusters UI. They
@@ -142,8 +159,8 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     }
 
     // Discard any incomplete visits that were already fetched from History.
-    // This can happen when History finishes writing the rows after we
-    // snapshot the incomplete visits at the beginning of this task.
+    // This can happen when History finishes writing the rows after we snapshot
+    // the incomplete visits at the beginning of this task.
     // https://crbug.com/1252047.
     history::VisitID visit_id =
         incomplete_visit_context_annotations.visit_row.visit_id;
@@ -179,7 +196,9 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
          first_redirect.opener_visit,
          visit_source});
   }
+}
 
+void GetAnnotatedVisitsToCluster::RemoveVisitsFromSync() {
   // Filter out visits from sync.
   // TODO(manukh): Consider allowing the clustering backend to handle sync
   //  visits.
@@ -190,12 +209,6 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
                                        history::SOURCE_SYNCED;
                               }),
       annotated_visits_.end());
-
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
-      query_visits_timer.Elapsed());
-
-  return true;
 }
 
 void GetAnnotatedVisitsToCluster::DoneRunOnMainThread() {

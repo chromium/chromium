@@ -46,6 +46,20 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   void DoneRunOnMainThread() override;
 
  private:
+  // Helper for `RunOnDBThread()` that adds complete but unclustered visits
+  // from `backend` to `annotated_visits_`.
+  void AddUnclusteredVisits(history::HistoryBackend* backend,
+                            history::QueryOptions options,
+                            bool* limited_by_max_count);
+
+  // Helper for `RunOnDBThread()` that adds incomplete visits from
+  // `incomplete_visit_map_` to `annotated_visits_`.
+  void AddIncompleteVisits(history::HistoryBackend* backend);
+
+  // Helper for `RunOnDBThread()` that removes synced visits from
+  // `annotated_visits_`.
+  void RemoveVisitsFromSync();
+
   // Incomplete visits that have history rows and are withing the time frame of
   // the completed visits fetched will be appended to the annotated visits
   // returned for clustering. It's used in the DB thread as each filtered visit
