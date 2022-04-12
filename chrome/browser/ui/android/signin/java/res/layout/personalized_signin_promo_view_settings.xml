@@ -3,53 +3,37 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PreferenceLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
-        style="@style/PreferenceLayout"
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        android:id="@+id/signin_promo_view_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/MaterialCardStyle">
 
-        <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
-            android:id="@+id/signin_promo_view_wrapper"
+        <org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView
+            android:id="@+id/signin_promo_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/MaterialCardStyle">
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
 
-            <org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView
-                android:id="@+id/signin_promo_view_container"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:paddingBottom="16dp">
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp">
+                <include layout="@layout/personalized_signin_promo_view_header"/>
+            </FrameLayout>
 
-                    <include layout="@layout/personalized_signin_promo_view_header"/>
-                </FrameLayout>
-
-                <include layout="@layout/personalized_signin_promo_view_body"/>
-            </org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView>
-        </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
-    </FrameLayout>
-
-    <TextView
-        android:id="@android:id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <FrameLayout
-        android:id="@android:id/widget_frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+            <include layout="@layout/personalized_signin_promo_view_body"/>
+        </org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView>
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+</FrameLayout>

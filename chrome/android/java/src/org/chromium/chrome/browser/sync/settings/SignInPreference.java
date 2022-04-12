@@ -137,7 +137,6 @@ public class SignInPreference
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
-        setWidgetLayoutResource(0);
         setViewEnabled(false);
         setOnPreferenceClickListener(pref -> {
             ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
@@ -156,7 +155,6 @@ public class SignInPreference
 
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        setWidgetLayoutResource(0);
         setViewEnabled(true);
         setOnPreferenceClickListener(pref
                 -> SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
@@ -176,7 +174,6 @@ public class SignInPreference
         setSummary(accountName);
         setFragment(AccountManagementFragment.class.getName());
         setIcon(profileData.getImage());
-        setWidgetLayoutResource(0);
         setViewEnabled(true);
         setOnPreferenceClickListener(null);
 

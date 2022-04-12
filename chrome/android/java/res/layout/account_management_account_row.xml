@@ -47,10 +47,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@android:id/widget_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" />
-
 </LinearLayout>
