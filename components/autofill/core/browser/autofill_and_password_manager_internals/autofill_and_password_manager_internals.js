@@ -94,22 +94,6 @@ function getUrlHashParam(key) {
   return decodeURIComponent(match[1]);
 }
 
-
-function addLog(logText) {
-  const logDiv = $('log-entries');
-  if (!logDiv) {
-    return;
-  }
-  const scrollAfterInsert = needsScrollDown();
-  logDiv.appendChild(document.createElement('hr'));
-  const textDiv = document.createElement('div');
-  textDiv.innerText = logText;
-  logDiv.appendChild(textDiv);
-  if (scrollAfterInsert) {
-    scrollDown();
-  }
-}
-
 // Converts an internal representation of nodes to actual DOM nodes that can
 // be attached to the DOM. The internal representation has the following
 // properties for each node:
