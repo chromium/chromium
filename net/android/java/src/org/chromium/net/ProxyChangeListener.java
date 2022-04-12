@@ -262,17 +262,19 @@ public class ProxyChangeListener {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // Proxy change broadcast receiver for Pre-M. Uses reflection to extract proxy
             // information from the intent extra.
-            ContextUtils.getApplicationContext().registerReceiver(mProxyReceiver, filter);
+            ContextUtils.registerNonExportedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), mProxyReceiver, filter);
         } else {
             // Register the instance of ProxyReceiver with an empty intent filter, so that it is
             // still found via reflection, but is not called by the system. See: crbug.com/851995
-            ContextUtils.getApplicationContext().registerReceiver(
-                    mProxyReceiver, new IntentFilter());
+            ContextUtils.registerNonExportedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), mProxyReceiver, new IntentFilter());
 
             // Create a BroadcastReceiver that uses M+ APIs to fetch the proxy confuguration from
             // ConnectionManager.
             mRealProxyReceiver = new ProxyBroadcastReceiver(this);
-            ContextUtils.getApplicationContext().registerReceiver(mRealProxyReceiver, filter);
+            ContextUtils.registerNonExportedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), mRealProxyReceiver, filter);
         }
     }
 
