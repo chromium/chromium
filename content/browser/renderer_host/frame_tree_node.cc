@@ -299,6 +299,10 @@ bool FrameTreeNode::IsMainFrame() const {
   return frame_tree_->root() == this;
 }
 
+bool FrameTreeNode::IsOutermostMainFrame() {
+  return !GetParentOrOuterDocument();
+}
+
 void FrameTreeNode::ResetForNavigation() {
   // This frame has had its user activation bits cleared in the renderer before
   // arriving here. We just need to clear them here and in the other renderer

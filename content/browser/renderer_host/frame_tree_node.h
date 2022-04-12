@@ -101,7 +101,14 @@ class CONTENT_EXPORT FrameTreeNode {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Frame trees may be nested so it can be the case that IsMainFrame() is true,
+  // but is not the outermost main frame. In particular, !IsMainFrame() cannot
+  // be used to check if the frame is an embedded frame -- use
+  // !IsOutermostMainFrame() instead. NB: this does not escape guest views;
+  // IsOutermostMainFrame will be true for the outermost main frame in an inner
+  // guest view.
   bool IsMainFrame() const;
+  bool IsOutermostMainFrame();
 
   // Clears any state in this node which was set by the document itself (CSP &
   // UserActivationState) and notifies proxies as appropriate. Invoked after
