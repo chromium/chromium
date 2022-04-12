@@ -3714,11 +3714,13 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       # Save mapping files since they are needed by:
       # 1) Checking for ForTesting methods.
       # 2) SuperSize adding disassembly to symbols.
-      # Save apk files because they are needed for SuperSize disassembly.
+      # Save apk and unstripped library because they are needed for collecting
+      # disassembly of large symbols.
       archive_files = mapping_files + [
                         "apks/$_trichrome_library_basename",
                         "apks/$_trichrome_chrome_basename",
                         "apks/$_trichrome_webview_basename",
+                        "lib.unstripped/libmonochrome__combined.so",
                       ]
       to_resource_sizes_py = {
         apk_name = "apks/resource_size_config_trichrome"
