@@ -26,8 +26,8 @@ namespace {
 const char kWebFramesManagerJavaScriptFeatureKeyName[] =
     "web_frames_manager_java_script_feature";
 
-const char kSetupFrameScriptName[] = "setup_frame_js";
-const char kFrameListenersScriptName[] = "frame_listeners_js";
+const char kSetupFrameScriptName[] = "setup_frame";
+const char kFrameListenersScriptName[] = "frame_listeners";
 
 // Message handler called when a frame becomes available.
 NSString* const kFrameAvailableScriptHandlerName = @"FrameBecameAvailable";

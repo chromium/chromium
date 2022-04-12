@@ -2,15 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file adheres to closure-compiler conventions in order to enable
-// compilation with ADVANCED_OPTIMIZATIONS. See http://goo.gl/FwOgy
-
-goog.provide('__crWeb.frameListeners');
-
-// Requires __crWeb.common and __crWeb.message.
-
-/* Beginning of anonymous object. */
-(function() {
+// Requires functions from common.js and message.js.
 
 window.addEventListener('unload', function(event) {
   __gCrWeb.common.sendWebKitMessage('FrameBecameUnavailable',
@@ -42,5 +34,3 @@ window.addEventListener('message', function(message) {
     }
   }
 });
-
-}());  // End of anonymous object

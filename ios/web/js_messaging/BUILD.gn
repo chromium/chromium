@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -126,17 +126,17 @@ source_set("scoped_wk_script_message_handler") {
   ]
 }
 
-js_compile_bundle("setup_frame_js") {
+optimize_js("setup_frame_js") {
   visibility = [ ":js_messaging" ]
-  closure_entry_point = "__crWeb.setupFrame"
 
+  primary_script = "resources/setup_frame.js"
   sources = [ "resources/setup_frame.js" ]
 }
 
-js_compile_bundle("frame_listeners_js") {
+optimize_js("frame_listeners_js") {
   visibility = [ ":js_messaging" ]
-  closure_entry_point = "__crWeb.frameListeners"
 
+  primary_script = "resources/frame_listeners.js"
   sources = [ "resources/frame_listeners.js" ]
 }
 
