@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -80,13 +80,25 @@ public final class FirstRunSignInProcessor {
         }
 
         // TODO(https://crbug.com/795292): Move this to SyncConsentFirstRunFragment.
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            Account account = AccountUtils.findAccountByName(accounts, accountName);
-            if (account == null) {
-                setFirstRunFlowSignInComplete(true);
-            } else {
-                signinAndEnableSync(account, activity);
-            }
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        accountManagerFacade.getAccounts().then(accounts -> {
+            AccountUtils.checkChildAccountStatus(
+                    accountManagerFacade, accounts, (isChild, unused) -> {
+                        if (isChild) {
+                            // Child account sign-ins are handled by SigninChecker.
+                            setFirstRunFlowSignInComplete(true);
+                            return;
+                        }
+
+                        Account account = AccountUtils.findAccountByName(accounts, accountName);
+                        if (account == null) {
+                            setFirstRunFlowSignInComplete(true);
+                            return;
+                        }
+
+                        signinAndEnableSync(account, activity);
+                    });
         });
     }
 
@@ -139,8 +151,7 @@ public final class FirstRunSignInProcessor {
      * Sets the "pending First Run Experience sign-in requests" preference.
      * @param isComplete Whether there is no pending sign-in requests from the First Run Experience.
      */
-    @VisibleForTesting
-    public static void setFirstRunFlowSignInComplete(boolean isComplete) {
+    private static void setFirstRunFlowSignInComplete(boolean isComplete) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_COMPLETE, isComplete);
     }

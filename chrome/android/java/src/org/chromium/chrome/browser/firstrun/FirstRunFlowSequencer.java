@@ -165,11 +165,6 @@ public abstract class FirstRunFlowSequencer  {
         return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mIsChild);
     }
 
-    @VisibleForTesting
-    protected void setFirstRunFlowSignInComplete() {
-        FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
-    }
-
     private void initializeSharedState(boolean isChild, List<Account> accounts) {
         mIsChild = isChild;
         mGoogleAccounts = accounts;
@@ -180,9 +175,6 @@ public abstract class FirstRunFlowSequencer  {
         freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
 
         onFlowIsKnown(freProperties);
-        if (mIsChild) {
-            setFirstRunFlowSignInComplete();
-        }
     }
 
     /**

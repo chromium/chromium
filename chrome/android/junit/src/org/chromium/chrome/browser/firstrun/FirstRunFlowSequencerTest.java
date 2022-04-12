@@ -94,7 +94,6 @@ public class FirstRunFlowSequencerTest {
     private static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {
         public Bundle returnedBundle;
         public boolean calledOnFlowIsKnown;
-        public boolean calledSetFirstRunFlowSignInComplete;
 
         public TestFirstRunFlowSequencer(Activity activity) {
             super(activity);
@@ -105,11 +104,6 @@ public class FirstRunFlowSequencerTest {
             calledOnFlowIsKnown = true;
             if (freProperties != null) updateFirstRunProperties(freProperties);
             returnedBundle = freProperties;
-        }
-
-        @Override
-        protected void setFirstRunFlowSignInComplete() {
-            calledSetFirstRunFlowSignInComplete = true;
         }
     }
 
@@ -156,7 +150,6 @@ public class FirstRunFlowSequencerTest {
 
         verifyNumberOfAccountsRecorded(0);
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
@@ -176,7 +169,6 @@ public class FirstRunFlowSequencerTest {
 
         verifyNumberOfAccountsRecorded(1);
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
@@ -196,7 +188,6 @@ public class FirstRunFlowSequencerTest {
 
         verifyNumberOfAccountsRecorded(0);
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
@@ -218,7 +209,6 @@ public class FirstRunFlowSequencerTest {
 
         verifyNumberOfAccountsRecorded(0);
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
         final Bundle bundle = mSequencer.returnedBundle;
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
@@ -240,7 +230,6 @@ public class FirstRunFlowSequencerTest {
 
         verifyNumberOfAccountsRecorded(1);
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
         final Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
