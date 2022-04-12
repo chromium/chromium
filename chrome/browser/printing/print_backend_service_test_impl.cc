@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -71,7 +70,7 @@ void PrintBackendServiceTestImpl::FetchCapabilities(
 }
 
 void PrintBackendServiceTestImpl::UpdatePrintSettings(
-    base::flat_map<std::string, base::Value> job_settings,
+    base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   if (terminate_receiver_) {
     TerminateConnection();

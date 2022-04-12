@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/services/printing/print_backend_service_impl.h"
@@ -48,7 +47,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
   void UpdatePrintSettings(
-      base::flat_map<std::string, base::Value> job_settings,
+      base::Value::Dict job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;
 

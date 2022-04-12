@@ -145,7 +145,7 @@ interface PrintBackendService {
   // the device settings.  The driver to be used is expected to be identified
   // in the `job_settings` map by an entry with key
   // `printing::kSettingDeviceName`.
-  UpdatePrintSettings(map<string, mojo_base.mojom.Value> job_settings)
+  UpdatePrintSettings(mojo_base.mojom.DictionaryValue job_settings)
     => (PrintSettingsResult settings);
 
   // Submit the document identified by `document_cookie` to be printed.

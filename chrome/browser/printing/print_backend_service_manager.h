@@ -100,7 +100,7 @@ class PrintBackendServiceManager {
 #endif
   void UpdatePrintSettings(
       const std::string& printer_name,
-      base::flat_map<std::string, base::Value> job_settings,
+      base::Value::Dict job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback);
   void StartPrinting(
       const std::string& printer_name,

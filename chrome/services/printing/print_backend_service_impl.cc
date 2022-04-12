@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
@@ -584,7 +583,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
 #endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
-    base::flat_map<std::string, base::Value> job_settings,
+    base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   if (!print_backend_) {
     DLOG(ERROR) << "Print backend instance needs initialization for locale.";
@@ -593,36 +592,27 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
     return;
   }
 
-  auto item = job_settings.find(kSettingDeviceName);
-  if (item == job_settings.end()) {
-    DLOG(ERROR) << "Job settings are missing specification of printer name";
+  const std::string* printer_name = job_settings.FindString(kSettingDeviceName);
+  if (!printer_name) {
+    DLOG(ERROR) << "Job settings is missing printer name";
     std::move(callback).Run(
         mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
   }
-  const base::Value& device_name_value = item->second;
-  if (!device_name_value.is_string()) {
-    DLOG(ERROR) << "Invalid type for job settings device name entry, is type "
-                << device_name_value.type();
-    std::move(callback).Run(
-        mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
-    return;
-  }
-  const std::string& printer_name = device_name_value.GetString();
 
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-      print_backend_->GetPrinterDriverInfo(printer_name));
+      print_backend_->GetPrinterDriverInfo(*printer_name));
 
 #if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   // Try to fill in advanced settings based upon basic info options.
   PrinterBasicInfo basic_info;
-  if (print_backend_->GetPrinterBasicInfo(printer_name, &basic_info) ==
+  if (print_backend_->GetPrinterBasicInfo(*printer_name, &basic_info) ==
       mojom::ResultCode::kSuccess) {
-    base::Value advanced_settings(base::Value::Type::DICTIONARY);
+    base::Value::Dict advanced_settings;
     for (const auto& pair : basic_info.options)
-      advanced_settings.SetStringKey(pair.first, pair.second);
+      advanced_settings.Set(pair.first, pair.second);
 
-    job_settings[kSettingAdvancedSettings] = std::move(advanced_settings);
+    job_settings.Set(kSettingAdvancedSettings, std::move(advanced_settings));
   }
 #endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 

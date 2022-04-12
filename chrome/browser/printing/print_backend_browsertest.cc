@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->UpdatePrintSettings(
-      std::move(job_settings).TakeDictDeprecated(),
+      std::move(job_settings.GetDict()),
       base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   job_settings.SetIntKey(kSettingPrinterType,
                          static_cast<int>(mojom::PrinterType::kLocal));
   GetPrintBackendService()->UpdatePrintSettings(
-      std::move(job_settings).TakeDictDeprecated(),
+      std::move(job_settings.GetDict()),
       base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();

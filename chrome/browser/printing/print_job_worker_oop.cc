@@ -316,7 +316,7 @@ void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
       PrintBackendServiceManager::GetInstance();
 
   service_mgr.UpdatePrintSettings(
-      device_name, std::move(new_settings).TakeDictDeprecated(),
+      device_name, std::move(new_settings.GetDict()),
       base::BindOnce(&PrintJobWorkerOop::OnDidUpdatePrintSettings,
                      ui_weak_factory_.GetWeakPtr(), device_name,
                      std::move(callback)));
