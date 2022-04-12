@@ -117,7 +117,6 @@ js_library("pointers") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
   ]
 
   externs_list =
@@ -144,7 +143,6 @@ js_library("storage") {
     "..:route_observer_behavior",
     "..:route_origin_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

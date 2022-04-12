@@ -250,7 +250,6 @@ js_library("supported_links_item") {
     ":supported_links_overlapping_apps_dialog",
     ":util",
     "../..:metrics_recorder",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",

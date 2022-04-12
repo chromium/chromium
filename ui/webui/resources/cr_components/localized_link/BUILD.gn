@@ -2,21 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [ ":localized_link" ]
-}
-
-js_library("localized_link") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
 html_to_js("web_components") {
-  js_files = [ "localized_link.js" ]
+  js_files = [ "localized_link.ts" ]
 }

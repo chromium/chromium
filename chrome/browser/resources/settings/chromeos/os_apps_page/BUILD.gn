@@ -46,7 +46,6 @@ js_library("os_apps_page") {
     "./app_management_page:store_client",
     "./app_notifications_page:mojo_interface_provider",
     "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
