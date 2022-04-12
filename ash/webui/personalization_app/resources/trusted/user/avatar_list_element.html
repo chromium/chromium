@@ -81,13 +81,16 @@
     display: none;
   }
 </style>
-<iron-list items="[[options_]]" grid>
+<iron-list items="[[options_]]" role="listbox"
+    aria-setsize$="[[options_.length]]" grid>
   <template>
     <div class="option-container">
-      <div id$="[[item.id]]" class$="[[item.class]]"
+      <div id$="[[item.id]]" class$="[[item.class]]" role="option"
           on-click="onOptionSelected_" on-keypress="onOptionSelected_"
           tabindex$="[[tabIndex]]"
-          aria-selected$="[[item.selected]]"
+          aria-posinset$="[[getAriaIndex_(index)]]"
+          aria-selected$="[[getAriaSelected_(item, image_)]]"
+          aria-label$="[[item.title]]"
           data-id$="[[item.defaultImageIndex]]">
         <paper-ripple class="circle"></paper-ripple>
         <img class$="[[getImageClassForOption_(item)]]"

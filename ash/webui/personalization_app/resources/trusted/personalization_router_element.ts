@@ -199,7 +199,11 @@ export class PersonalizationRouter extends PolymerElement {
           document.title =
               loadTimeData.getString('ambientModeTopicSourceArtGallery');
         }
+        break;
       }
+      case Paths.User:
+        document.title = loadTimeData.getString('avatarLabel');
+        break;
     }
   }
 }

@@ -2310,6 +2310,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
         Go to account settings
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_GOOGLE_PROFILE_PHOTO" desc="Title for the Google profile photo option.">
+        Google profile photo
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CHOOSE_A_FILE" desc="Title for the select a custom file option.">
+        Choose a file
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_LAST_EXTERNAL_IMAGE" desc="Title for the existing photo from camera or file option.">
+        Existing photo from camera or file
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

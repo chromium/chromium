@@ -8,6 +8,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
@@ -129,4 +130,9 @@ export function getTopicSourceName(topicSource: TopicSource): string {
  */
 export function getZerosArray(x: number): number[] {
   return new Array(x).fill(0);
+}
+
+/** Converts a String16 to a JavaScript String. */
+export function decodeString16(str: String16|null): string {
+  return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
 }

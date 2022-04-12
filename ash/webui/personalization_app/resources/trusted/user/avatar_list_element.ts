@@ -13,6 +13,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
 import {DefaultUserImage, UserImage} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {decodeString16} from '../utils.js';
 
 import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';
@@ -24,13 +25,12 @@ export interface AvatarList {
   $: {avatarCamera: AvatarCamera};
 }
 
-
 type Option = {
   id: string,
   class: string,
   imgSrc: string,
   icon: string,
-  selected: string,
+  title: string,
   defaultImageIndex?: number|null,
 };
 
@@ -105,7 +105,7 @@ export class AvatarList extends WithPersonalizationStore {
   private computeOptions_(
       isCameraPresent: boolean, profileImage: Url|null,
       lastExternalUserImageUrl: Url|null,
-      defaultUserImages_: Array<DefaultUserImage>|null, image: UserImage|null) {
+      defaultUserImages_: Array<DefaultUserImage>|null) {
     const options = [] as Option[];
     if (isCameraPresent) {
       // Add camera and video options.
@@ -114,14 +114,14 @@ export class AvatarList extends WithPersonalizationStore {
         class: 'avatar-button-container',
         imgSrc: '',
         icon: 'personalization:camera',
-        selected: 'false',
+        title: this.i18n('takeWebcamPhoto'),
       });
       options.push({
         id: 'openVideo',
         class: 'avatar-button-container',
         imgSrc: '',
         icon: 'personalization:loop',
-        selected: 'false',
+        title: this.i18n('takeWebcamVideo'),
       });
     }
     // Add open folder option.
@@ -130,7 +130,7 @@ export class AvatarList extends WithPersonalizationStore {
       class: 'avatar-button-container',
       imgSrc: '',
       icon: 'personalization:folder',
-      selected: 'false',
+      title: this.i18n('chooseAFile'),
     });
     if (profileImage) {
       options.push({
@@ -138,7 +138,7 @@ export class AvatarList extends WithPersonalizationStore {
         class: 'image-container',
         imgSrc: profileImage.url,
         icon: 'personalization:checkmark',
-        selected: (!!image && !!image.profileImage).toString(),
+        title: this.i18n('googleProfilePhoto'),
       });
     }
     if (lastExternalUserImageUrl) {
@@ -147,7 +147,7 @@ export class AvatarList extends WithPersonalizationStore {
         class: 'image-container',
         imgSrc: lastExternalUserImageUrl.url,
         icon: 'personalization:checkmark',
-        selected: (!!image && !!image.externalImage).toString(),
+        title: this.i18n('lastExternalImageTitle'),
       });
     }
     if (isNonEmptyArray(defaultUserImages_)) {
@@ -157,9 +157,7 @@ export class AvatarList extends WithPersonalizationStore {
           class: 'image-container',
           imgSrc: defaultImage.url.url,
           icon: 'personalization:checkmark',
-          selected: (!!image && !!image.defaultImage &&
-                     image.defaultImage.index === defaultImage.index)
-                        .toString(),
+          title: decodeString16(defaultImage.title),
           defaultImageIndex: defaultImage.index,
         });
       });
@@ -272,6 +270,30 @@ export class AvatarList extends WithPersonalizationStore {
 
   private onCameraClosed_() {
     this.cameraMode_ = null;
+  }
+
+  private getAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  private getAriaSelected_(option: Option, image: UserImage|null): string {
+    switch (option.id) {
+      case 'openCamera':
+        return 'fasle';
+      case 'openVideo':
+        return 'false';
+      case 'openFolder':
+        return 'false';
+      case 'profileImage':
+        return (!!image && !!image.profileImage).toString();
+      case 'lastExternalImage':
+        return (!!image && !!image.externalImage).toString();
+      default:
+        // Handle default user image.
+        return (!!image && !!image.defaultImage &&
+                image.defaultImage.index === option.defaultImageIndex)
+            .toString();
+    }
   }
 }
 
