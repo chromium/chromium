@@ -3962,8 +3962,7 @@ if (is_android) {
 
     public_deps = [
       ":jni_java",
-      "//build/android:build_config_java",
-      "//build/android:native_libraries_java",
+      "//build/android:build_java",
     ]
 
     sources = [
@@ -4031,17 +4030,10 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/AccessedByNative.java",
       "android/java/src/org/chromium/base/annotations/CalledByNative.java",
       "android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
-      "android/java/src/org/chromium/base/annotations/CheckDiscard.java",
-      "android/java/src/org/chromium/base/annotations/DoNotClassMerge.java",
-      "android/java/src/org/chromium/base/annotations/DoNotInline.java",
-      "android/java/src/org/chromium/base/annotations/IdentifierNameString.java",
       "android/java/src/org/chromium/base/annotations/JNIAdditionalImport.java",
       "android/java/src/org/chromium/base/annotations/JNINamespace.java",
       "android/java/src/org/chromium/base/annotations/JniIgnoreNatives.java",
-      "android/java/src/org/chromium/base/annotations/MainDex.java",
-      "android/java/src/org/chromium/base/annotations/MockedInTests.java",
       "android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
-      "android/java/src/org/chromium/base/annotations/UsedByReflection.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForM.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForN.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForO.java",

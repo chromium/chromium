@@ -44,6 +44,22 @@ if (enable_java_templates) {
     # be created when creating an apk.
     jar_excluded_patterns = [ "*/NativeLibraries.class" ]
   }
+
+  android_library("build_java") {
+    public_deps = [
+      ":build_config_java",
+      ":native_libraries_java",
+    ]
+    sources = [
+      "java/src/org/chromium/base/annotations/CheckDiscard.java",
+      "java/src/org/chromium/base/annotations/DoNotClassMerge.java",
+      "java/src/org/chromium/base/annotations/DoNotInline.java",
+      "java/src/org/chromium/base/annotations/IdentifierNameString.java",
+      "java/src/org/chromium/base/annotations/MainDex.java",
+      "java/src/org/chromium/base/annotations/MockedInTests.java",
+      "java/src/org/chromium/base/annotations/UsedByReflection.java",
+    ]
+  }
 }
 
 python_library("devil_chromium_py") {

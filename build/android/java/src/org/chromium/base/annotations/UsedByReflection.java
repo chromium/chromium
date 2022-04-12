@@ -16,9 +16,7 @@ import java.lang.annotation.Target;
  * it is kept - either its class must be referenced elsewhere in the program, or
  * the class must be annotated with this as well.
  */
-@Target({
-        ElementType.METHOD, ElementType.FIELD, ElementType.TYPE,
-        ElementType.CONSTRUCTOR })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE, ElementType.CONSTRUCTOR})
 public @interface UsedByReflection {
     String value();
 }
