@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cups_proxy/fake_cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/cups_proxy/fake_cups_proxy_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeCupsProxyClient::FakeCupsProxyClient() = default;
 FakeCupsProxyClient::~FakeCupsProxyClient() = default;
@@ -28,4 +28,4 @@ void FakeCupsProxyClient::BootstrapMojoConnection(
   std::move(result_callback).Run(success);
 }
 
-}  // namespace chromeos
+}  // namespace ash

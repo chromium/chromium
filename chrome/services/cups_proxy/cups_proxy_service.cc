@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/proxy_manager.h"
-#include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -54,7 +54,7 @@ void CupsProxyService::BindToCupsProxyDaemon(
 
   // Send the file descriptor for the other end of |platform_channel| to the
   // CupsProxyDaemon over D-Bus.
-  chromeos::CupsProxyClient::Get()->BootstrapMojoConnection(
+  ash::CupsProxyClient::Get()->BootstrapMojoConnection(
       platform_channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&CupsProxyService::OnBindToCupsProxyDaemon,
                      weak_factory_.GetWeakPtr()));

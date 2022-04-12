@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_
-#define CHROMEOS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // D-Bus client for the CupsProxyDaemon.
 //
@@ -62,11 +62,6 @@ class COMPONENT_EXPORT(CUPS_PROXY) CupsProxyClient {
   virtual ~CupsProxyClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CupsProxyClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_

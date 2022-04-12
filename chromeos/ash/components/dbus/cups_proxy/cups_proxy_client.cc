@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cups_proxy/fake_cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/cups_proxy/fake_cups_proxy_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -105,4 +105,4 @@ CupsProxyClient* CupsProxyClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

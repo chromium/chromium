@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
@@ -28,7 +29,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -121,7 +121,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::CrosHealthdClient>(bus);
   InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
   InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
-  InitializeDBusClient<chromeos::CupsProxyClient>(bus);
+  InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<chromeos::FederatedClient>(bus);
@@ -237,7 +237,7 @@ void ShutdownDBus() {
   chromeos::FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
-  chromeos::CupsProxyClient::Shutdown();
+  CupsProxyClient::Shutdown();
   chromeos::CryptohomePkcs11Client::Shutdown();
   chromeos::CryptohomeMiscClient::Shutdown();
   chromeos::CrosHealthdClient::Shutdown();
