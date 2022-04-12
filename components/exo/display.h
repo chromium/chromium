@@ -10,22 +10,20 @@
 #include <memory>
 #include <string>
 
+#include "base/files/scoped_file.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/seat.h"
-
-#if defined(USE_OZONE)
-#include "base/files/scoped_file.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#endif
 
 namespace gfx {
 class ClientNativePixmapFactory;
 }
 
 namespace exo {
+class Buffer;
 class ClientControlledShellSurface;
 class DataDevice;
 class DataDeviceDelegate;
@@ -43,10 +41,6 @@ class ShellSurface;
 class ToastSurface;
 class ToastSurfaceManager;
 class XdgShellSurface;
-#endif
-
-#if defined(USE_OZONE)
-class Buffer;
 #endif
 
 // The core display class. This class provides functions for creating surfaces
@@ -79,14 +73,12 @@ class Display {
   std::unique_ptr<SharedMemory> CreateSharedMemory(
       base::UnsafeSharedMemoryRegion shared_memory_region);
 
-#if defined(USE_OZONE)
   // Creates a buffer for a Linux DMA-buf file descriptor.
   std::unique_ptr<Buffer> CreateLinuxDMABufBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::NativePixmapHandle handle,
       bool y_invert);
-#endif  // defined(USE_OZONE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates a shell surface for an existing surface.
@@ -150,9 +142,7 @@ class Display {
 
   bool shutdown_ = false;
 
-#if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
-#endif  // defined(USE_OZONE)
 };
 
 }  // namespace exo

@@ -38,6 +38,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include <linux-dmabuf-unstable-v1-server-protocol.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -72,9 +73,11 @@
 #include "components/exo/wayland/zcr_secure_output.h"
 #include "components/exo/wayland/zcr_stylus.h"
 #include "components/exo/wayland/zcr_vsync_feedback.h"
+#include "components/exo/wayland/zwp_linux_dmabuf.h"
 #include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <idle-inhibit-unstable-v1-server-protocol.h>
@@ -108,12 +111,6 @@
 #include "components/exo/wayland/zcr_color_manager.h"
 #endif
 
-#endif
-
-#if defined(USE_OZONE)
-#include <linux-dmabuf-unstable-v1-server-protocol.h>
-#include "components/exo/wayland/zwp_linux_dmabuf.h"
-#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if defined(USE_FULLSCREEN_SHELL)
@@ -276,10 +273,8 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
   wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
-#if defined(USE_OZONE)
   wl_global_create(wl_display_.get(), &zwp_linux_dmabuf_v1_interface,
                    kZwpLinuxDmabufVersion, display_, bind_linux_dmabuf);
-#endif
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
                    bind_subcompositor);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())

@@ -4,6 +4,7 @@
 
 #include "components/exo/display.h"
 
+#include <GLES2/gl2extchromium.h>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -13,6 +14,7 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/exo/buffer.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
@@ -22,19 +24,14 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
-#include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
-#include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
-
-#if defined(USE_OZONE)
-#include <GLES2/gl2extchromium.h>
-#include "components/exo/buffer.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
 #include "ui/ozone/public/ozone_switches.h"
-#endif
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shell_window_ids.h"
@@ -54,12 +51,8 @@ namespace exo {
 
 Display::Display()
     : seat_(nullptr),
-#if defined(USE_OZONE)
       client_native_pixmap_factory_(
-          gfx::CreateClientNativePixmapFactoryDmabuf())
-#endif
-{
-}
+          gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 Display::Display(
@@ -103,7 +96,6 @@ std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
   return std::make_unique<SharedMemory>(std::move(shared_memory_region));
 }
 
-#if defined(USE_OZONE)
 std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -137,7 +129,6 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
       GL_COMMANDS_COMPLETED_CHROMIUM, use_zero_copy,
       /*is_overlay_candidate=*/true, y_invert);
 }
-#endif  // defined(USE_OZONE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {

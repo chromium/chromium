@@ -22,12 +22,9 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if defined(USE_OZONE)
 #include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
-#endif
 
 namespace exo {
 namespace {
@@ -110,7 +107,6 @@ TEST_F(DisplayTest, CreateSharedMemory) {
   EXPECT_FALSE(shm2);
 }
 
-#if defined(USE_OZONE)
 // The test crashes: crbug.com/622724
 TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
   const gfx::Size buffer_size(256, 256);
@@ -142,8 +138,6 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
 
 // TODO(dcastagna): Add YV12 unittest once we can allocate the buffer
 // via Ozone. crbug.com/618516
-
-#endif
 
 TEST_F(DisplayTest, CreateShellSurface) {
   Display display;

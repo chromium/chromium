@@ -11,6 +11,8 @@ import("//components/exo/buildflags.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
+assert(use_ozone)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "ENABLE_COLOR_MANAGER=$enable_color_manager" ]
@@ -305,10 +307,6 @@ source_set("unit_tests") {
   ]
 
   sources = [ "mime_utils_unittest.cc" ]
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
 
   if (is_chromeos_ash) {
     sources += [
