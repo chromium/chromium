@@ -3003,14 +3003,14 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il dispositivo non è gestito o se è presente un solo utente, il criterio viene ignorato e la notifica viene sempre visualizzata.
 
       Se sono presenti diversi account utente su un dispositivo gestito, la notifica viene visualizzata soltanto se il criterio è stato attivato.</translation>
-<translation id="4293593564662654474">Questo criterio consente di disattivare la funzionalità First-Party Sets.
+<translation id="4293593564662654474">Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
 
-                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità First-Party Sets viene attivata.
+                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità degli insiemi proprietari viene attivata.
 
-                  Se questo criterio viene impostato su Disattivato, la funzionalità First-Party Sets viene disattivata.
+                  Se questo criterio viene impostato su Disattivato, la funzionalità degli insiemi proprietari viene disattivata.
 
-                  Lo stato della funzionalità First-Party Sets stabilisce se Chrome recupera o meno l'elenco di First-Party Sets.
-                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate a First-Party Sets (ad esempio l'attributo per i cookie SameParty).</translation>
+                  Lo stato della funzionalità degli insiemi proprietari stabilisce se Chrome recupera o meno l'elenco di insiemi proprietari.
+                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate agli insiemi proprietari (ad esempio l'attributo per i cookie SameParty).</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>

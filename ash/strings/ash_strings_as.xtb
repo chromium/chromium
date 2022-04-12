@@ -3,7 +3,7 @@
 <translationbundle lang="as">
 <translation id="1012876632442809908">USB-C ডিভাইচ (সন্মুখৰ প’র্ট)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />ক <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
-<translation id="1013923882670373915">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ যোৰা লাগিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচত এই পিন ক'ডটো দিয়ক: <ph name="PINCODE" /></translation>
+<translation id="1013923882670373915">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচত এই পিন ক'ডটো দিয়ক: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">স্ক্ৰীনকাষ্ট কৰা সঁজুলি</translation>
 <translation id="1024261588257374085">আংশিক স্ক্ৰীনশ্বট বাছনি কৰা হ'ল</translation>
 <translation id="1032891413405719768">ষ্টাইলাছৰ বেটাৰী কম আছে</translation>
@@ -237,7 +237,7 @@
 <translation id="2408955596600435184">আপোনাৰ পিন দিয়ক</translation>
 <translation id="2412593942846481727">আপডে’ট উপলব্ধ</translation>
 <translation id="2427507373259914951">বাওঁফালে ক্লিক কৰা কার্য</translation>
-<translation id="2429753432712299108">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ যোৰা লাগিবলৈ অনুমতি বিচাৰে। গ্ৰহণ কৰাৰ আগতে অনুগ্ৰহ কৰি এই পাছকীটো যে সেই ডিভাইচটোত দেখুওৱা হৈছে সেইয়া নিশ্চিত কৰক: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। গ্ৰহণ কৰাৰ আগতে অনুগ্ৰহ কৰি এই পাছকীটো যে সেই ডিভাইচটোত দেখুওৱা হৈছে সেইয়া নিশ্চিত কৰক: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="243878895369688216">কালি খুলিছিল</translation>
 <translation id="24452542372838207">জাননী বিস্তাৰ কৰক</translation>
@@ -584,7 +584,7 @@
 <translation id="4505050298327493054">সক্ৰিয় ডেস্ক৷</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4518404433291145981">আপোনাৰ Chromebook আনলক কৰিবলৈ, প্ৰথমে আপোনাৰ ফ’নটো আনলক কৰক</translation>
-<translation id="4527045527269911712">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ যোৰা লাগিবলৈ অনুমতি বিচাৰে।</translation>
+<translation id="4527045527269911712">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে।</translation>
 <translation id="453661520163887813">সম্পূর্ণ হ'বলৈ <ph name="TIME" /> বাকী</translation>
 <translation id="4538824937723742295">পূৰ্ণ স্ক্রীনৰ স্ক্ৰীনশ্বট লওক</translation>
 <translation id="4544483149666270818">ৰেকৰ্ড কৰিবলৈ এখন ৱিণ্ড’ বাছনি কৰক</translation>
@@ -908,7 +908,7 @@
 <translation id="6637729079642709226">সময় সলনি কৰক</translation>
 <translation id="6641720045729354415">লাইভ কেপশ্বন ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
-<translation id="6650933572246256093">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ যোৰা লাগিবলৈ অনুমতি বিচাৰে৷ অনুগ্ৰহ কৰি সেই ডিভাইচটোত এই পাছক’ডটো দিয়ক: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচটোত এই পাছক’ডটো দিয়ক: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6665545700722362599">ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহক অৱস্থান, ডিভাইচৰ মাইক্ৰ’ফ’ন, কেমেৰা বা অন্য সুবিধাসমূহ ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="6667908387435388584">আপোনাৰ ফ'নৰ হ'টস্প'টৰ সৈতে সংযোগ কৰক, আপোনাৰ ডিভাইচটো নিৰৱ কৰক আৰু সেইটোৰ অৱস্থান নিৰ্ধাৰণ কৰক আৰু আপোনাৰ ফ'নত খোলা শেহতীয়া Chromeৰ টেবসমূহ চাওক</translation>
