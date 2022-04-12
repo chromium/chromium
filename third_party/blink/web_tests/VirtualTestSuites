@@ -1026,6 +1026,12 @@
     "args": ["--stable-release-mode"]
   },
   {
+    "prefix": "selectmenu-new-popup",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [],
+    "args": ["--enable-blink-features=HTMLSelectMenuElementUsesPopupAttribute"]
+  },
+  {
     "prefix": "dialogfocus-old-behavior",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

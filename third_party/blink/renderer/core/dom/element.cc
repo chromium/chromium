@@ -2414,8 +2414,7 @@ void Element::hidePopup() {
   DCHECK(isConnected());
   GetPopupData()->setOpen(false);
   GetPopupData()->setInvoker(nullptr);
-  // TODO(masonf): We should also clear |needs_repositioning_for_select_menu_|
-  // when that exists on PopupData.
+  GetPopupData()->setNeedsRepositioningForSelectMenu(false);
   GetDocument().HideAllPopupsUntil(this);
   // Remove this popup from the stack and the top layer.
   auto& stack = GetDocument().PopupElementStack();
@@ -2617,6 +2616,90 @@ Element* Element::anchorElement() const {
     return nullptr;
   return GetTreeScope().getElementById(anchor_id);  // may be null
 }
+
+void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  auto& popup_data = EnsureElementRareData().EnsurePopupData();
+  if (popup_data.needsRepositioningForSelectMenu() == flag)
+    return;
+  popup_data.setNeedsRepositioningForSelectMenu(flag);
+  if (flag) {
+    SetHasCustomStyleCallbacks();
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::Create(
+                            style_change_reason::kPopupVisibilityChange));
+  }
+}
+
+void Element::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  EnsureElementRareData().EnsurePopupData().setOwnerSelectMenuElement(element);
+}
+
+// TODO(crbug.com/1197720): The popup position should be provided by the new
+// anchored positioning scheme.
+void Element::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  DCHECK(GetPopupData()->needsRepositioningForSelectMenu());
+  auto* owner_select = GetPopupData()->ownerSelectMenuElement();
+  DCHECK(owner_select);
+
+  LocalDOMWindow* window = GetDocument().domWindow();
+  if (!window)
+    return;
+
+  gfx::RectF anchor_rect_in_screen =
+      owner_select->GetBoundingClientRectNoLifecycleUpdate();
+  const float anchor_zoom =
+      owner_select->GetLayoutObject()
+          ? owner_select->GetLayoutObject()->StyleRef().EffectiveZoom()
+          : 1;
+  anchor_rect_in_screen.Scale(anchor_zoom);
+  // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
+  // trigger a re-entrant style and layout update.
+  int avail_width = GetDocument().View()->Size().width();
+  int avail_height = GetDocument().View()->Size().height();
+  gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
+
+  // Position the listbox part where is more space available.
+  const float available_space_above =
+      anchor_rect_in_screen.y() - avail_rect.y();
+  const float available_space_below =
+      avail_rect.bottom() - anchor_rect_in_screen.bottom();
+  if (available_space_below < available_space_above) {
+    style.SetMaxHeight(Length::Fixed(available_space_above));
+    style.SetBottom(
+        Length::Fixed(avail_rect.bottom() - anchor_rect_in_screen.y()));
+    style.SetTop(Length::Auto());
+  } else {
+    style.SetMaxHeight(Length::Fixed(available_space_below));
+    style.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
+  }
+
+  const float available_space_if_left_anchored =
+      avail_rect.right() - anchor_rect_in_screen.x();
+  const float available_space_if_right_anchored =
+      anchor_rect_in_screen.right() - avail_rect.x();
+  style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
+  if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
+      available_space_if_left_anchored > available_space_if_right_anchored) {
+    style.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
+    style.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
+  } else {
+    style.SetRight(
+        Length::Fixed(avail_rect.right() - anchor_rect_in_screen.right()));
+    style.SetLeft(Length::Auto());
+    style.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
+  }
+}
+
 bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }
@@ -7056,7 +7139,18 @@ void Element::DidRecalcStyle(const StyleRecalcChange) {
 scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(HasCustomStyleCallbacks());
-  return OriginalStyleForLayoutObject(style_recalc_context);
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
+  // TODO(crbug.com/1197720): This logic is for positioning the selectmenu
+  // popup. This should be replaced by the new anchored positioning scheme.
+  if (HasValidPopupAttribute() &&
+      GetPopupData()->needsRepositioningForSelectMenu()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+           RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+    AdjustPopupPositionForSelectMenu(*style);
+  }
+  return style;
 }
 
 void Element::CloneAttributesFrom(const Element& other) {

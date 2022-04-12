@@ -23,9 +23,7 @@ namespace blink {
 HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
-      had_initiallyopen_when_parsed_(false),
-      needs_repositioning_for_select_menu_(false),
-      owner_select_menu_element_(nullptr) {
+      had_initiallyopen_when_parsed_(false) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kPopupElement);
   SetHasCustomStyleCallbacks();
@@ -47,7 +45,6 @@ void HTMLPopupElement::hide() {
   if (!open_)
     return;
   open_ = false;
-  needs_repositioning_for_select_menu_ = false;
   DCHECK(isConnected());
   GetDocument().HideAllPopupsUntil(this);
   PopPopupElement(this);
@@ -138,103 +135,6 @@ void HTMLPopupElement::PopPopupElement(HTMLPopupElement* popup) {
   DCHECK(stack.back() == popup);
   stack.pop_back();
   GetDocument().RemoveFromTopLayer(popup);
-}
-
-// TODO(crbug.com/1197720): The popup position should be provided by the new
-// anchored positioning scheme.
-void HTMLPopupElement::SetNeedsRepositioningForSelectMenu(bool flag) {
-  if (needs_repositioning_for_select_menu_ == flag)
-    return;
-
-  needs_repositioning_for_select_menu_ = flag;
-  if (needs_repositioning_for_select_menu_)
-    MarkStyleDirty();
-}
-
-// TODO(crbug.com/1197720): The popup position should be provided by the new
-// anchored positioning scheme.
-bool HTMLPopupElement::NeedsRepositioningForSelectMenu() const {
-  return needs_repositioning_for_select_menu_;
-}
-
-// TODO(crbug.com/1197720): The popup position should be provided by the new
-// anchored positioning scheme.
-void HTMLPopupElement::SetOwnerSelectMenuElement(
-    HTMLSelectMenuElement* owner_select_menu_element) {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  owner_select_menu_element_ = owner_select_menu_element;
-}
-
-// TODO(crbug.com/1197720): The popup position should be provided by the new
-// anchored positioning scheme.
-scoped_refptr<ComputedStyle> HTMLPopupElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  scoped_refptr<ComputedStyle> style =
-      OriginalStyleForLayoutObject(style_recalc_context);
-  if (NeedsRepositioningForSelectMenu())
-    AdjustPopupPositionForSelectMenu(*style);
-  return style;
-}
-
-// TODO(crbug.com/1197720): The popup position should be provided by the new
-// anchored positioning scheme.
-void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
-  if (!needs_repositioning_for_select_menu_ || !owner_select_menu_element_)
-    return;
-
-  LocalDOMWindow* window = GetDocument().domWindow();
-  if (!window)
-    return;
-
-  gfx::RectF anchor_rect_in_screen =
-      owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate();
-  const float anchor_zoom = owner_select_menu_element_->GetLayoutObject()
-                                ? owner_select_menu_element_->GetLayoutObject()
-                                      ->StyleRef()
-                                      .EffectiveZoom()
-                                : 1;
-  anchor_rect_in_screen.Scale(anchor_zoom);
-  // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
-  // trigger a re-entrant style and layout update.
-  int avail_width = GetDocument().View()->Size().width();
-  int avail_height = GetDocument().View()->Size().height();
-  gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
-
-  // Position the listbox part where is more space available.
-  const float available_space_above =
-      anchor_rect_in_screen.y() - avail_rect.y();
-  const float available_space_below =
-      avail_rect.bottom() - anchor_rect_in_screen.bottom();
-  if (available_space_below < available_space_above) {
-    style.SetMaxHeight(Length::Fixed(available_space_above));
-    style.SetBottom(
-        Length::Fixed(avail_rect.bottom() - anchor_rect_in_screen.y()));
-    style.SetTop(Length::Auto());
-  } else {
-    style.SetMaxHeight(Length::Fixed(available_space_below));
-    style.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
-  }
-
-  const float available_space_if_left_anchored =
-      avail_rect.right() - anchor_rect_in_screen.x();
-  const float available_space_if_right_anchored =
-      anchor_rect_in_screen.right() - avail_rect.x();
-  style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
-  if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
-      available_space_if_left_anchored > available_space_if_right_anchored) {
-    style.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
-    style.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
-  } else {
-    style.SetRight(
-        Length::Fixed(avail_rect.right() - anchor_rect_in_screen.right()));
-    style.SetLeft(Length::Auto());
-    style.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
-  }
-}
-
-void HTMLPopupElement::Trace(Visitor* visitor) const {
-  visitor->Trace(owner_select_menu_element_);
-  HTMLElement::Trace(visitor);
 }
 
 }  // namespace blink

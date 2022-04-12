@@ -329,22 +329,19 @@ bool HTMLSelectMenuElement::open() const {
     return false;
   if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
     return popup_element->open();
-  } else {
-    DCHECK(RuntimeEnabledFeatures::
-               HTMLSelectMenuElementUsesPopupAttributeEnabled());
+  } else if (RuntimeEnabledFeatures::
+                 HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
     return listbox_part_->popupOpen();
   }
+  return false;
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
+    listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
-      popup_element->SetNeedsRepositioningForSelectMenu(true);
       popup_element->show();
     } else {
-      DCHECK(RuntimeEnabledFeatures::
-                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
-      // TODO(masonf): Need to set NeedsRepositioningForSelectMenu here.
       listbox_part_->showPopup();
     }
     if (selectedOption()) {
@@ -361,9 +358,8 @@ void HTMLSelectMenuElement::CloseListbox() {
     }
     if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
       popup_element->hide();
-    } else {
-      DCHECK(RuntimeEnabledFeatures::
-                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
+    } else if (RuntimeEnabledFeatures::
+                   HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
       listbox_part_->hidePopup();
     }
 
@@ -377,25 +373,12 @@ bool HTMLSelectMenuElement::SetListboxPart(Element* new_listbox_part) {
     return false;
 
   if (listbox_part_) {
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
-      popup_element->SetOwnerSelectMenuElement(nullptr);
-      popup_element->SetNeedsRepositioningForSelectMenu(false);
-    } else {
-      DCHECK(RuntimeEnabledFeatures::
-                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
-      // TODO(masonf): Need to clear NeedsRepositioningForSelectMenu and
-      // OwnerSelectMenuElement.
-    }
+    listbox_part_->SetOwnerSelectMenuElement(nullptr);
+    listbox_part_->SetNeedsRepositioningForSelectMenu(false);
   }
 
   if (new_listbox_part) {
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*new_listbox_part)) {
-      popup_element->SetOwnerSelectMenuElement(this);
-    } else {
-      DCHECK(RuntimeEnabledFeatures::
-                 HTMLSelectMenuElementUsesPopupAttributeEnabled());
-      // TODO(masonf): Need to set NeedsRepositioningForSelectMenu here.
-    }
+    new_listbox_part->SetOwnerSelectMenuElement(this);
   } else {
     QueueCheckForMissingParts();
   }
