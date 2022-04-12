@@ -598,7 +598,9 @@
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
         'swarming': {
-          'shards': 48,
+          # This should be reverted to 48 before end of April 2022, when the slowdown is fixed.
+          # crbug.com/1313907
+          'shards': 72,
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
