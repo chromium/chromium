@@ -2,6 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview 'edit-hostname-dialog' is a component allowing the
+ * user to edit the device hostname.
+ */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
+import {SetDeviceNameResult} from './device_name_util.js';
+
 /** @type {number} */
 const MAX_INPUT_LENGTH = 15;
 
@@ -15,56 +33,54 @@ const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
 /**
- * @fileoverview 'edit-hostname-dialog' is a component allowing the
- * user to edit the device hostname.
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../../settings_shared_css.js';
+const EditHostnameDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+/** @polymer */
+class EditHostnameDialogElement extends EditHostnameDialogElementBase {
+  static get is() {
+    return 'edit-hostname-dialog';
+  }
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
-import {SetDeviceNameResult} from './device_name_util.js';
+  static get properties() {
+    return {
+      /** @private {string} */
+      deviceName_: {
+        type: String,
+        value: '',
+        observer: 'onDeviceNameChanged_',
+      },
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'edit-hostname-dialog',
+      /** @private {boolean} */
+      isInputInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-  behaviors: [
-    I18nBehavior,
-  ],
+      /** @private {string} */
+      inputCountString_: {
+        type: String,
+        computed: 'computeInputCountString_(deviceName_)',
+      }
 
-  properties: {
-    /** @private {string} */
-    deviceName_: {
-      type: String,
-      value: '',
-      observer: 'onDeviceNameChanged_',
-    },
+    };
+  }
 
-    /** @private {boolean} */
-    isInputInvalid_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+  constructor() {
+    super();
 
-    /** @private {string} */
-    inputCountString_: {
-      type: String,
-      computed: 'computeInputCountString_(deviceName_)',
-    }
-  },
+    /** @private {DeviceNameBrowserProxy} */
+    this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
+  }
 
   /**
    * Returns a formatted string containing the current number of characters
@@ -77,12 +93,12 @@ Polymer({
         'aboutDeviceNameInputCharacterCount',
         this.deviceName_.length.toLocaleString(),
         MAX_INPUT_LENGTH.toLocaleString());
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * Observer for deviceName_ that sanitizes its value by removing any
@@ -113,17 +129,16 @@ Polymer({
         this.deviceName_.match(UNALLOWED_CHARACTERS)) {
       this.isInputInvalid_ = true;
     }
-  },
+  }
 
   /** @private */
   onDoneTap_() {
-    DeviceNameBrowserProxyImpl.getInstance()
-        .attemptSetDeviceName(this.deviceName_)
+    this.deviceNameBrowserProxy_.attemptSetDeviceName(this.deviceName_)
         .then(result => {
           this.handleSetDeviceNameResponse_(result);
         });
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @param {SetDeviceNameResult} result
@@ -133,5 +148,7 @@ Polymer({
     if (result !== SetDeviceNameResult.UPDATE_SUCCESSFUL) {
       console.error('ERROR IN UPDATE', result);
     }
-  },
-});
+  }
+}
+
+customElements.define(EditHostnameDialogElement.is, EditHostnameDialogElement);

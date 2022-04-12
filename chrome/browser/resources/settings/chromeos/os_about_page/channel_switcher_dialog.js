@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview 'settings-channel-switcher-dialog' is a component allowing the
+ * user to switch between release channels (dev, beta, stable). A
+ * |target-channel-changed| event is fired if the user does select a different
+ * release channel to notify parents of this dialog.
+ */
+
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
@@ -9,15 +16,12 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared_css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 
-
-/**
- */
 const WarningMessage = {
   NONE: -1,
   ENTERPRISE_MANAGED: 0,
@@ -25,80 +29,99 @@ const WarningMessage = {
   UNSTABLE: 2,
 };
 
-/**
- * @fileoverview 'settings-channel-switcher-dialog' is a component allowing the
- * user to switch between release channels (dev, beta, stable). A
- * |target-channel-changed| event is fired if the user does select a different
- * release channel to notify parents of this dialog.
- */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-channel-switcher-dialog',
+/** @polymer */
+class SettingsChannelSwitcherDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-channel-switcher-dialog';
+  }
 
-  properties: {
-    /** @private */
-    browserChannelEnum_: {
-      type: Object,
-      value: BrowserChannel,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!BrowserChannel} */
-    currentChannel_: String,
+  static get properties() {
+    return {
+      /** @private */
+      browserChannelEnum_: {
+        type: Object,
+        value: BrowserChannel,
+      },
 
-    /** @private {!BrowserChannel} */
-    targetChannel_: String,
+      /** @private {!BrowserChannel} */
+      currentChannel_: String,
 
-    /**
-     * Controls which of the two action buttons is visible.
-     * @private {?{changeChannel: boolean, changeChannelAndPowerwash: boolean}}
-     */
-    shouldShowButtons_: {
-      type: Object,
-      value: null,
-    },
-  },
+      /** @private {!BrowserChannel} */
+      targetChannel_: String,
 
-  /** @private {?AboutPageBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Controls which of the two action buttons is visible.
+       * @private {?{changeChannel: boolean, changeChannelAndPowerwash:
+       *     boolean}}
+       */
+      shouldShowButtons_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {AboutPageBrowserProxy} */
+    this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
   ready() {
-    this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
+    super.ready();
+
     this.browserProxy_.getChannelInfo().then(info => {
       this.currentChannel_ = info.currentChannel;
       this.targetChannel_ = info.targetChannel;
       // Pre-populate radio group with target channel.
-      const radioGroup = this.$$('cr-radio-group');
+      const radioGroup = this.shadowRoot.querySelector('cr-radio-group');
       radioGroup.selected = this.targetChannel_;
       radioGroup.focus();
     });
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onChangeChannelTap_() {
-    const selectedChannel = this.$$('cr-radio-group').selected;
+    const selectedChannel =
+        this.shadowRoot.querySelector('cr-radio-group').selected;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
-    this.fire('target-channel-changed', selectedChannel);
-  },
+    this.fireTargetChannelChangedEvent_(selectedChannel);
+  }
 
   /** @private */
   onChangeChannelAndPowerwashTap_() {
-    const selectedChannel = this.$$('cr-radio-group').selected;
+    const selectedChannel =
+        this.shadowRoot.querySelector('cr-radio-group').selected;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();
-    this.fire('target-channel-changed', selectedChannel);
-  },
+    this.fireTargetChannelChangedEvent_(selectedChannel);
+  }
+
+  /** @private */
+  fireTargetChannelChangedEvent_(detail = {}) {
+    const event = new CustomEvent(
+        'target-channel-changed', {bubbles: true, composed: true, detail});
+    this.dispatchEvent(event);
+  }
 
   /**
    * @param {boolean} changeChannel Whether the changeChannel button should be
@@ -117,11 +140,12 @@ Polymer({
       changeChannel: changeChannel,
       changeChannelAndPowerwash: changeChannelAndPowerwash,
     };
-  },
+  }
 
   /** @private */
   onChannelSelectionChanged_() {
-    const selectedChannel = this.$$('cr-radio-group').selected;
+    const selectedChannel =
+        this.shadowRoot.querySelector('cr-radio-group').selected;
 
     // Selected channel is the same as the target channel so only show 'cancel'.
     if (selectedChannel === this.targetChannel_) {
@@ -157,7 +181,7 @@ Polymer({
       }
       this.updateButtons_(true, false);
     }
-  },
+  }
 
   /**
    * @param {string} format
@@ -167,5 +191,9 @@ Polymer({
    */
   substituteString_(format, replacement) {
     return loadTimeData.substituteString(format, replacement);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsChannelSwitcherDialogElement.is,
+    SettingsChannelSwitcherDialogElement);

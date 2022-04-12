@@ -11,42 +11,58 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo} from './about_page_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-update-warning-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsUpdateWarningDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class SettingsUpdateWarningDialogElement extends
+    SettingsUpdateWarningDialogElementBase {
+  static get is() {
+    return 'settings-update-warning-dialog';
+  }
 
-  properties: {
-    /** @type {!AboutPageUpdateInfo|undefined} */
-    updateInfo: {
-      type: Object,
-      observer: 'updateInfoChanged_',
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?AboutPageBrowserProxy} */
-  browserProxy_: null,
+  static get properties() {
+    return {
+      /** @type {!AboutPageUpdateInfo|undefined} */
+      updateInfo: {
+        type: Object,
+        observer: 'updateInfoChanged_',
+      },
+    };
+  }
 
-  /** @override */
-  ready() {
+  constructor() {
+    super();
+
+    /** @private {AboutPageBrowserProxy} */
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onContinueTap_() {
@@ -58,13 +74,17 @@ Polymer({
         /** @type {!string} */ (this.updateInfo.version),
         /** @type {!string} */ (this.updateInfo.size));
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   updateInfoChanged_() {
-    this.$$('#update-warning-message').innerHTML = this.i18n(
-        'aboutUpdateWarningMessage',
-        // Convert bytes to megabytes
-        Math.floor(Number(this.updateInfo.size) / (1024 * 1024)));
-  },
-});
+    this.shadowRoot.querySelector('#update-warning-message').innerHTML =
+        this.i18n(
+            'aboutUpdateWarningMessage',
+            // Convert bytes to megabytes
+            Math.floor(Number(this.updateInfo.size) / (1024 * 1024)));
+  }
+}
+
+customElements.define(
+    SettingsUpdateWarningDialogElement.is, SettingsUpdateWarningDialogElement);

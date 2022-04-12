@@ -91,7 +91,8 @@ suite('AboutPageTest', function() {
    * @return {!HTMLButtonElement}
    */
   function getDeepLinkButtonElementById(id) {
-    return page.$$(`#${id}`).shadowRoot.querySelector('cr-icon-button');
+    return page.shadowRoot.querySelector(`#${id}`).shadowRoot.querySelector(
+        'cr-icon-button');
   }
 
   /**
@@ -99,9 +100,10 @@ suite('AboutPageTest', function() {
    * incoming 'update-status-changed' events.
    */
   test('IconAndMessageUpdates', function() {
-    const icon = page.$$('iron-icon');
+    const icon = page.shadowRoot.querySelector('iron-icon');
     assertTrue(!!icon);
-    const statusMessageEl = page.$$('#updateStatusMessage div');
+    const statusMessageEl =
+        page.shadowRoot.querySelector('#updateStatusMessage div');
     let previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.CHECKING);
@@ -147,18 +149,21 @@ suite('AboutPageTest', function() {
   test('ErrorMessageWithHtml', function() {
     const htmlError = 'hello<br>there<br>was<pre>an</pre>error';
     fireStatusChanged(UpdateStatus.FAILED, {message: htmlError});
-    const statusMessageEl = page.$$('#updateStatusMessage div');
+    const statusMessageEl =
+        page.shadowRoot.querySelector('#updateStatusMessage div');
     assertEquals(htmlError, statusMessageEl.innerHTML);
   });
 
   test('FailedLearnMoreLink', function() {
     // Check that link is shown when update failed.
     fireStatusChanged(UpdateStatus.FAILED, {message: 'foo'});
-    assertTrue(!!page.$$('#updateStatusMessage a:not([hidden])'));
+    assertTrue(!!page.shadowRoot.querySelector(
+        '#updateStatusMessage a:not([hidden])'));
 
     // Check that link is hidden when update hasn't failed.
     fireStatusChanged(UpdateStatus.UPDATED, {message: ''});
-    assertTrue(!!page.$$('#updateStatusMessage a[hidden]'));
+    assertTrue(
+        !!page.shadowRoot.querySelector('#updateStatusMessage a[hidden]'));
   });
 
   test('Relaunch', function() {
@@ -178,7 +183,8 @@ suite('AboutPageTest', function() {
       isManaged: true,
     });
     await initNewPage();
-    const statusMessageEl = page.$$('#updateStatusMessage div');
+    const statusMessageEl =
+        page.shadowRoot.querySelector('#updateStatusMessage div');
 
     const progress = 90;
     fireStatusChanged(
@@ -335,7 +341,7 @@ suite('AboutPageTest', function() {
   /**
    * Test that release notes button can toggled by feature flags.
    * Test that release notes button handles offline/online mode properly.
-   * page.$$("#") is used to access items inside dom-if.
+   * page.shadowRoot.querySelector("#") is used to access items inside dom-if.
    */
   test('ReleaseNotes', async () => {
     const releaseNotes = null;
@@ -346,7 +352,8 @@ suite('AboutPageTest', function() {
      *     visible.
      */
     function checkReleaseNotesOnline(isShowing) {
-      const releaseNotesOnlineEl = page.$$('#releaseNotesOnline');
+      const releaseNotesOnlineEl =
+          page.shadowRoot.querySelector('#releaseNotesOnline');
       assertEquals(isShowing, !!releaseNotesOnlineEl);
     }
 
@@ -356,7 +363,8 @@ suite('AboutPageTest', function() {
      *     visible.
      */
     function checkReleaseNotesOffline(isShowing) {
-      const releaseNotesOfflineEl = page.$$('#releaseNotesOffline');
+      const releaseNotesOfflineEl =
+          page.shadowRoot.querySelector('#releaseNotesOffline');
       // According to
       // https://polymer-library.polymer-project.org/1.0/api/elements/dom-if
       // the element will not be removed from the dom if already rendered.
@@ -378,7 +386,7 @@ suite('AboutPageTest', function() {
     checkReleaseNotesOnline(true);
     checkReleaseNotesOffline(false);
 
-    page.$$('#releaseNotesOnline').click();
+    page.shadowRoot.querySelector('#releaseNotesOnline').click();
     return aboutBrowserProxy.whenCalled('launchReleaseNotes');
   });
 
@@ -395,8 +403,9 @@ suite('AboutPageTest', function() {
 
     flush();
 
-    const deepLinkElement = page.$$('#releaseNotesOffline')
-                                .shadowRoot.querySelector('cr-icon-button');
+    const deepLinkElement =
+        page.shadowRoot.querySelector('#releaseNotesOffline')
+            .shadowRoot.querySelector('cr-icon-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -439,10 +448,11 @@ suite('AboutPageTest', function() {
     assertFalse(page.$.aboutTPMFirmwareUpdate.hidden);
     page.$.aboutTPMFirmwareUpdate.click();
     await flushTasks();
-    const dialog = page.$$('os-settings-powerwash-dialog');
+    const dialog =
+        page.shadowRoot.querySelector('os-settings-powerwash-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
-    dialog.$$('#powerwash').click();
+    dialog.shadowRoot.querySelector('#powerwash').click();
     const requestTpmFirmwareUpdate =
         await lifetimeBrowserProxy.whenCalled('factoryReset');
     assertTrue(requestTpmFirmwareUpdate);
@@ -470,7 +480,7 @@ suite('AboutPageTest', function() {
       assertEquals(isShowing, page.$.updateStatusMessage.hidden);
 
       if (isShowing) {
-        const icon = page.$$('iron-icon');
+        const icon = page.shadowRoot.querySelector('iron-icon');
         assertTrue(!!icon);
         assertEquals(null, icon.src);
         assertEquals('os-settings:end-of-life', icon.icon);
@@ -515,7 +525,8 @@ suite('AboutPageTest', function() {
     page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
-    const buildInfoPage = page.$$('settings-detailed-build-info');
+    const buildInfoPage =
+        page.shadowRoot.querySelector('settings-detailed-build-info');
     assertTrue(!!buildInfoPage);
     assertTrue(!!buildInfoPage.$['endOfLifeSectionContainer']);
     assertTrue(buildInfoPage.$['endOfLifeSectionContainer'].hidden);
@@ -528,7 +539,8 @@ suite('AboutPageTest', function() {
 
     async function checkEndOfLifeSection() {
       await aboutBrowserProxy.whenCalled('getEndOfLifeInfo');
-      const buildInfoPage = page.$$('settings-detailed-build-info');
+      const buildInfoPage =
+          page.shadowRoot.querySelector('settings-detailed-build-info');
       assertTrue(!!buildInfoPage.$['endOfLifeSectionContainer']);
       assertFalse(buildInfoPage.$['endOfLifeSectionContainer'].hidden);
     }
@@ -541,7 +553,8 @@ suite('AboutPageTest', function() {
     page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
-    const buildInfoPage = page.$$('settings-detailed-build-info');
+    const buildInfoPage =
+        page.shadowRoot.querySelector('settings-detailed-build-info');
     assertTrue(!!buildInfoPage);
     assertTrue(!!buildInfoPage.$['endOfLifeSectionContainer']);
     assertTrue(buildInfoPage.$['endOfLifeSectionContainer'].hidden);
@@ -695,7 +708,7 @@ suite('DetailedBuildInfoTest', function() {
     await browserProxy.whenCalled('canChangeChannel');
     await waitAfterNextRender(page);
 
-    const changeChannelButton = page.$$('cr-button');
+    const changeChannelButton = page.shadowRoot.querySelector('cr-button');
     assertTrue(!!changeChannelButton);
     assertEquals(canChangeChannel, !changeChannelButton.disabled);
   }
@@ -720,7 +733,8 @@ suite('DetailedBuildInfoTest', function() {
     await browserProxy.whenCalled('canChangeChannel');
     await waitAfterNextRender(page);
 
-    const policyIndicator = page.$$('#changeChannelPolicyIndicator');
+    const policyIndicator =
+        page.shadowRoot.querySelector('#changeChannelPolicyIndicator');
     assertEquals(!policyIndicator, canChangeChannel);
     if (!canChangeChannel) {
       if (isManaged) {
@@ -802,7 +816,7 @@ suite('DetailedBuildInfoTest', function() {
 
     flush();
 
-    const deepLinkElement = page.$$('cr-button');
+    const deepLinkElement = page.shadowRoot.querySelector('cr-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -812,7 +826,8 @@ suite('DetailedBuildInfoTest', function() {
   async function checkCopyBuildDetailsButton() {
     page = document.createElement('settings-detailed-build-info');
     document.body.appendChild(page);
-    const copyBuildDetailsButton = page.$$('cr-icon-button');
+    const copyBuildDetailsButton =
+        page.shadowRoot.querySelector('cr-icon-button');
     await browserProxy.whenCalled('getVersionInfo');
     await browserProxy.whenCalled('getChannelInfo');
     await browserProxy.whenCalled('canChangeChannel');
@@ -854,7 +869,7 @@ suite('DetailedBuildInfoTest', function() {
 
     flush();
 
-    const deepLinkElement = page.$$('cr-icon-button');
+    const deepLinkElement = page.shadowRoot.querySelector('cr-icon-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -879,7 +894,8 @@ suite('DetailedBuildInfoTest', function() {
         'settings.updateDeviceNameMetadata',
         {deviceName: testDeviceName, deviceNameState: deviceNameState});
 
-    assertEquals(page.$$('#deviceName').innerText, testDeviceName);
+    assertEquals(
+        page.shadowRoot.querySelector('#deviceName').innerText, testDeviceName);
 
     let canEditDeviceName = null;
     switch (deviceNameState) {
@@ -890,12 +906,14 @@ suite('DetailedBuildInfoTest', function() {
         canEditDeviceName = false;
     }
 
-    const canEditDeviceNameButton = page.$$('cr-icon-button');
+    const canEditDeviceNameButton =
+        page.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!canEditDeviceNameButton);
     assertEquals(canEditDeviceName, !canEditDeviceNameButton.disabled);
 
     flushAsync();
-    const policyIndicator = page.$$('#editHostnamePolicyIndicator');
+    const policyIndicator =
+        page.shadowRoot.querySelector('#editHostnamePolicyIndicator');
     if (deviceNameState === DeviceNameState.CAN_BE_MODIFIED) {
       assertFalse(!!policyIndicator);
     } else if (
@@ -965,16 +983,17 @@ suite('EditHostnameDialogTest', function() {
     document.body.appendChild(page);
 
     await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
-    const editHostnameButton = page.$$('#editHostnameButton');
+    const editHostnameButton =
+        page.shadowRoot.querySelector('#editHostnameButton');
     assertTrue(!!editHostnameButton);
     editHostnameButton.click();
     flush();
 
-    dialog = page.$$('edit-hostname-dialog');
+    dialog = page.shadowRoot.querySelector('edit-hostname-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
 
-    dialog.$$('#cancel').click();
+    dialog.shadowRoot.querySelector('#cancel').click();
     flush();
     assertFalse(dialog.$.dialog.open);
   });
@@ -985,8 +1004,8 @@ suite('EditHostnameDialogTest', function() {
    * @param {string} inputCount The length of value in string format
    */
   function assertInput(value, invalid, valueLength) {
-    const inputBox = dialog.$$('#deviceName');
-    const inputCount = dialog.$$('#inputCount');
+    const inputBox = dialog.shadowRoot.querySelector('#deviceName');
+    const inputCount = dialog.shadowRoot.querySelector('#inputCount');
     assertTrue(!!inputBox);
     assertTrue(!!inputCount);
 
@@ -996,8 +1015,8 @@ suite('EditHostnameDialogTest', function() {
 
     // Done button should be disabled when input is invalid and cancel button
     // should be always enabled.
-    const doneButton = dialog.$$('#done');
-    const cancelButton = dialog.$$('#cancel');
+    const doneButton = dialog.shadowRoot.querySelector('#done');
+    const cancelButton = dialog.shadowRoot.querySelector('#cancel');
     assertTrue(!!doneButton);
     assertTrue(!!cancelButton);
     assertEquals(invalid, doneButton.disabled);
@@ -1021,7 +1040,7 @@ suite('EditHostnameDialogTest', function() {
 
     dialog = document.createElement('edit-hostname-dialog');
     document.body.appendChild(dialog);
-    const inputBox = dialog.$$('#deviceName');
+    const inputBox = dialog.shadowRoot.querySelector('#deviceName');
     assertTrue(!!inputBox);
 
     // Test empty name, which is the value on opening dialog.
@@ -1120,8 +1139,8 @@ suite('EditHostnameDialogTest', function() {
 
     deviceNameBrowserProxy.setDeviceNameResult(
         SetDeviceNameResult.UPDATE_SUCCESSFUL);
-    dialog.$$('#deviceName').value = 'TestName';
-    dialog.$$('#done').click();
+    dialog.shadowRoot.querySelector('#deviceName').value = 'TestName';
+    dialog.shadowRoot.querySelector('#done').click();
     flush();
 
     await deviceNameBrowserProxy.whenCalled('attemptSetDeviceName');
@@ -1155,7 +1174,7 @@ suite('ChannelSwitcherDialogTest', function() {
   });
 
   test('Initialization', function() {
-    const radioGroup = dialog.$$('cr-radio-group');
+    const radioGroup = dialog.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!radioGroup);
     assertTrue(!!dialog.$.warningSelector);
     assertTrue(!!dialog.$.changeChannel);
@@ -1257,8 +1276,8 @@ suite('AboutPageTest_OfficialBuild', function() {
 
     flush();
 
-    const deepLinkElement =
-        page.$$('#reportIssue').shadowRoot.querySelector('cr-icon-button');
+    const deepLinkElement = page.shadowRoot.querySelector('#reportIssue')
+                                .shadowRoot.querySelector('cr-icon-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -1276,7 +1295,7 @@ suite('AboutPageTest_OfficialBuild', function() {
 
     flush();
 
-    const deepLinkElement = page.$$('#aboutProductTos');
+    const deepLinkElement = page.shadowRoot.querySelector('#aboutProductTos');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
