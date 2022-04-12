@@ -104,8 +104,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
-// Flaky test. See crbug.com/1275849.
-- (void)DISABLED_testSyncDownloadBookmark {
+- (void)testSyncDownloadBookmark {
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:0];
   const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
@@ -222,8 +221,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that update to autofill profile injected in FakeServer gets synced to
 // client.
-// Flaky test. See crbug.com/1276654.
-- (void)DISABLED_testSyncUpdateAutofillProfile {
+- (void)testSyncUpdateAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   const std::string kUpdatedFullName = "Roger Rabbit";
@@ -271,8 +269,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
-// Flaky test. See crbug.com/1276413.
-- (void)DISABLED_testSyncDeleteAutofillProfile {
+- (void)testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
