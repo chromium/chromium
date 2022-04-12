@@ -547,7 +547,7 @@
       'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-bionic-rel': 'gpu_tests_release_bot_reclient',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
-      'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
+      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
       'linux-trusty-rel': 'gpu_tests_release_bot_reclient',
       'linux-xenial-rel': 'gpu_tests_release_bot_reclient',
     },
@@ -1072,7 +1072,7 @@
       'linux-extended-tracing-rel': 'release_trybot_extended_tracing',
       'linux-fieldtrial-fyi-rel': 'release_bot_minimal_symbols',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
-      'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
+      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
       'linux-headless-shell-rel': 'headless_shell_release_bot',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
@@ -3313,9 +3313,8 @@
       'release_trybot', 'x86',
     ],
 
-    'release_bot_x86_minimal_symbols_no_clang_cxx11': [
-      'release_bot', 'x86', 'minimal_symbols', 'no_clang', 'use_cxx11',
-      'no_goma',
+    'release_bot_minimal_symbols_no_clang_cxx11': [
+      'release_bot', 'minimal_symbols', 'no_clang', 'use_cxx11', 'no_goma',
     ],
 
     'tsan_disable_nacl_debug_bot_reclient': [
