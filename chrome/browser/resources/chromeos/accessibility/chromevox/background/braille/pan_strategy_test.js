@@ -7,14 +7,18 @@ GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
 /**
  * Test fixture.
  */
-ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {};
+ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {
+  /** @override */
+  async setUpDeferred() {
+    await importModule('CursorDots', '/chromevox/braille/cursor_dots.js');
+    await importModule('PanStrategy', '/chromevox/braille/pan_strategy.js');
+  }
+};
 
 /** @override */
 ChromeVoxPanStrategyUnitTest.prototype.extraLibraries = [
   '../../../common/testing/assert_additions.js',
   '../../testing/fake_dom.js',
-  'cursor_dots.js',
-  'pan_strategy.js',
 ];
 
 

@@ -7,6 +7,8 @@
  */
 import {BrailleCaptionsBackground} from './braille_captions_background.js';
 
+import {PanStrategy} from './pan_strategy.js';
+
 export class BrailleDisplayManager {
   /**
    * @param {!BrailleTranslatorManager} translatorManager Keeps track

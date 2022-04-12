@@ -36,7 +36,6 @@ goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('Output');
 goog.require('OutputEventType');
-goog.require('PanStrategy');
 goog.require('PanelCommand');
 goog.require('PhoneticData');
 goog.require('QueueMode');
