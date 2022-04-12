@@ -249,7 +249,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
-      AttributionInfo attribution_info,
+      const AttributionInfo& attribution_info,
       const AttributionTrigger& trigger,
       bool top_level_filters_match,
       absl::optional<AttributionReport>& report,
@@ -345,7 +345,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   AttributionTrigger::AggregatableResult
   MaybeCreateAggregatableAttributionReport(
-      AttributionInfo attribution_info,
+      const AttributionInfo& attribution_info,
       const AttributionTrigger& trigger,
       bool top_level_filters_match,
       absl::optional<AttributionReport>& report)
