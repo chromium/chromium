@@ -28,11 +28,6 @@ Result PrivateNetworkAccessCheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
-  if (previous_response_address_space.has_value() &&
-      resource_address_space != *previous_response_address_space) {
-    return Result::kBlockedByInconsistentIpAddressSpace;
-  }
-
   if (target_address_space != mojom::IPAddressSpace::kUnknown) {
     if (resource_address_space == target_address_space) {
       return Result::kAllowedByTargetIpAddressSpace;
@@ -45,6 +40,26 @@ Result PrivateNetworkAccessCheckInternal(
     }
 
     return Result::kBlockedByTargetIpAddressSpace;
+  }
+
+  if (previous_response_address_space.has_value() &&
+      resource_address_space != *previous_response_address_space) {
+    // `previous_response_address_space` behaves similarly to
+    // `target_address_space`, except `kUnknown` is also subject to checks
+    // (instead absl::nullopt indicates that no check should be performed).
+    //
+    // If the policy is `kPreflightWarn`, the request should not fail just
+    // because of this check - PNA checks are only experimentally turned on
+    // for this request. Further checks should not be run, otherwise we might
+    // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
+    // sent, thus causing https://crbug.com/1279376 all over again.
+    if (client_security_state &&
+        client_security_state->private_network_request_policy ==
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
+      return Result::kAllowedByPolicyPreflightWarn;
+    }
+
+    return Result::kBlockedByInconsistentIpAddressSpace;
   }
 
   if (!client_security_state) {

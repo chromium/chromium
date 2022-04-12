@@ -51,9 +51,9 @@ enum class PrivateNetworkAccessCheckResult {
   // `kUnknown` and policy is `kPreflightBlock`.
   kBlockedByPolicyPreflightBlock = 9,
 
-  // Request carries a `target_ip_address_space` that differs from the actual
-  // resource address space, but the policy is `kPreflightWarn` so the request
-  // should not fail.
+  // The result should have instead been `kBlockedByTargetIpAddressSpace` or
+  // `kBlockedByInconsistentIpAddressSpace`, but the policy is `kPreflightWarn`
+  // so the request was allowed.
   kAllowedByPolicyPreflightWarn = 10,
 
   // Request connected to two different IP address spaces for the same response.

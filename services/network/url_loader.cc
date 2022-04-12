@@ -1140,8 +1140,10 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     // other CORS errors.
     cors_error_status_ = CorsErrorStatus(*cors_error, target_ip_address_space_,
                                          *response_ip_address_space_);
-    if (result ==
-        PrivateNetworkAccessCheckResult::kBlockedByInconsistentIpAddressSpace) {
+    if (result == PrivateNetworkAccessCheckResult::
+                      kBlockedByInconsistentIpAddressSpace ||
+        result ==
+            PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
       return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
     }
     return net::ERR_FAILED;

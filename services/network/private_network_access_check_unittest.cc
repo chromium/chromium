@@ -151,6 +151,24 @@ TEST(PrivateNetworkAccessCheckTest, AllowedByTargetIpAddressSpace) {
       kHistogramName, Result::kAllowedByTargetIpAddressSpace, 1);
 }
 
+TEST(PrivateNetworkAccessCheckTest, AllowedByPolicyPreflightWarnInconsistent) {
+  base::HistogramTester histogram_tester;
+
+  mojom::ClientSecurityState state;
+  state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+
+  EXPECT_EQ(PrivateNetworkAccessCheck(&state, mojom::IPAddressSpace::kUnknown,
+                                      mojom::IPAddressSpace::kPublic,
+                                      mojom::kURLLoadOptionNone,
+                                      mojom::IPAddressSpace::kPrivate),
+            Result::kAllowedByPolicyPreflightWarn);
+
+  histogram_tester.ExpectUniqueSample(kHistogramName,
+                                      Result::kAllowedByPolicyPreflightWarn, 1);
+}
+
 TEST(PrivateNetworkAccessCheckTest, BlockedByInconsistentIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
