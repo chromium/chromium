@@ -31,13 +31,13 @@ enum class DiscoveryError {
   kErrorMalformedData   // Failed to parse received data.
 };
 
-// TODO(melzhang) : |results| can be made const ref.
 using ResultCallback =
     base::OnceCallback<void(const std::vector<Result>& results,
                             DiscoveryError error)>;
 
 using RepeatingResultCallback =
     base::RepeatingCallback<void(const std::vector<Result>& results)>;
+
 using ResultCallbackList =
     base::RepeatingCallbackList<void(const std::vector<Result>& results)>;
 

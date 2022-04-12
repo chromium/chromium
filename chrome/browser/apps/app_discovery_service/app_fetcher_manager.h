@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 
 class Profile;
@@ -40,6 +41,8 @@ class AppFetcherManager {
   static void SetOverrideFetcherForTesting(AppFetcher* fetcher);
 
  private:
+  raw_ptr<Profile> profile_;
+
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
   std::unique_ptr<AppFetcher> game_fetcher_;
 

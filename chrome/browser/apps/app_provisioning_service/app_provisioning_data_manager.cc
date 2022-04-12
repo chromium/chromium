@@ -29,7 +29,8 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
     return;
   }
 
-  std::unique_ptr<proto::AppData> app_data = std::make_unique<proto::AppData>();
+  std::unique_ptr<proto::AppWithLocaleList> app_data =
+      std::make_unique<proto::AppWithLocaleList>();
   if (!app_data->ParseFromString(binary_pb)) {
     LOG(ERROR) << "Failed to parse protobuf";
     return;
@@ -61,8 +62,7 @@ void AppProvisioningDataManager::RemoveObserver(Observer* observer) {
 }
 
 void AppProvisioningDataManager::NotifyObserver(Observer& observer) {
-  // TODO(melzhang) : Send through |app_data_| here.
-  observer.OnAppDataUpdated(nullptr);
+  observer.OnAppDataUpdated(*app_data_.get());
 }
 
 }  // namespace apps

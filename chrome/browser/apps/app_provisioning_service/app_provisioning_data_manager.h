@@ -23,7 +23,7 @@ class AppProvisioningDataManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) {}
+    virtual void OnAppDataUpdated(const proto::AppWithLocaleList& app_data) {}
   };
 
   static AppProvisioningDataManager* Get();
@@ -56,7 +56,7 @@ class AppProvisioningDataManager {
   void NotifyObserver(Observer& observer);
 
   // The latest app data. Starts out as null.
-  std::unique_ptr<proto::AppData> app_data_;
+  std::unique_ptr<proto::AppWithLocaleList> app_data_;
 
   base::ObserverList<Observer> observers_;
 };

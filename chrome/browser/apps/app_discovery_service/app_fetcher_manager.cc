@@ -21,9 +21,10 @@ base::CallbackListSubscription AppFetcher::RegisterForAppUpdates(
 AppFetcher* AppFetcherManager::g_test_fetcher_ = nullptr;
 
 AppFetcherManager::AppFetcherManager(Profile* profile)
-    : recommended_arc_app_fetcher_(
+    : profile_(profile),
+      recommended_arc_app_fetcher_(
           std::make_unique<RecommendedArcAppFetcher>()),
-      game_fetcher_(std::make_unique<GameFetcher>()) {}
+      game_fetcher_(std::make_unique<GameFetcher>(profile_)) {}
 
 AppFetcherManager::~AppFetcherManager() = default;
 

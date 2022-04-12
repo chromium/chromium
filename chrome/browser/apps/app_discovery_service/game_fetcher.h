@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
@@ -18,7 +19,7 @@ namespace apps {
 class GameFetcher : public AppFetcher,
                     public AppProvisioningDataManager::Observer {
  public:
-  GameFetcher();
+  explicit GameFetcher(Profile* profile);
   GameFetcher(const GameFetcher&) = delete;
   GameFetcher& operator=(const GameFetcher&) = delete;
   ~GameFetcher() override;
@@ -29,10 +30,15 @@ class GameFetcher : public AppFetcher,
       RepeatingResultCallback callback) override;
 
   // AppProvisioningDataManager::Observer:
-  void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) override;
+  void OnAppDataUpdated(const proto::AppWithLocaleList& app_data) override;
 
  private:
-  ResultCallback callback_;
+  std::vector<Result> GetAppsForCurrentLocale(
+      const proto::AppWithLocaleList& app_data);
+
+  std::vector<Result> last_results_;
+
+  raw_ptr<Profile> profile_;
 
   ResultCallbackList result_callback_list_;
 
