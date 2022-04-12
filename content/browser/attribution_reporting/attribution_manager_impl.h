@@ -154,7 +154,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       AggregationService::AssemblyStatus status);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
-  void OnReportStored(CreateReportResult result);
+  void OnReportStored(AttributionTrigger trigger, CreateReportResult result);
 
   void MaybeSendDebugReport(AttributionReport&&);
 

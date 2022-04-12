@@ -12,13 +12,15 @@
 namespace content {
 
 CreateReportResult::CreateReportResult(
+    base::Time trigger_time,
     AttributionTrigger::EventLevelResult event_level_status,
     AttributionTrigger::AggregatableResult aggregatable_status,
-    std::vector<AttributionReport> dropped_reports,
+    absl::optional<AttributionReport> replaced_event_level_report,
     std::vector<AttributionReport> new_reports)
-    : event_level_status_(event_level_status),
+    : trigger_time_(trigger_time),
+      event_level_status_(event_level_status),
       aggregatable_status_(aggregatable_status),
-      dropped_reports_(std::move(dropped_reports)),
+      replaced_event_level_report_(std::move(replaced_event_level_report)),
       new_reports_(std::move(new_reports)) {
   DCHECK_EQ(
       event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess ||
@@ -27,6 +29,11 @@ CreateReportResult::CreateReportResult(
           aggregatable_status_ ==
               AttributionTrigger::AggregatableResult::kSuccess,
       !new_reports_.empty());
+
+  DCHECK_EQ(
+      replaced_event_level_report_.has_value(),
+      event_level_status_ ==
+          AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
 }
 
 CreateReportResult::~CreateReportResult() = default;

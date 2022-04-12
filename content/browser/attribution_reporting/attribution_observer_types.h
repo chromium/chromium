@@ -7,10 +7,12 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -34,11 +36,12 @@ struct CONTENT_EXPORT DeactivatedSource {
 
 class CONTENT_EXPORT CreateReportResult {
  public:
-  explicit CreateReportResult(
-      AttributionTrigger::EventLevelResult event_level_status,
-      AttributionTrigger::AggregatableResult aggregatable_status,
-      std::vector<AttributionReport> dropped_reports = {},
-      std::vector<AttributionReport> new_reports = {});
+  CreateReportResult(base::Time trigger_time,
+                     AttributionTrigger::EventLevelResult event_level_status,
+                     AttributionTrigger::AggregatableResult aggregatable_status,
+                     absl::optional<AttributionReport>
+                         replaced_event_level_report = absl::nullopt,
+                     std::vector<AttributionReport> new_reports = {});
   ~CreateReportResult();
 
   CreateReportResult(const CreateReportResult&);
@@ -46,6 +49,8 @@ class CONTENT_EXPORT CreateReportResult {
 
   CreateReportResult& operator=(const CreateReportResult&);
   CreateReportResult& operator=(CreateReportResult&&);
+
+  base::Time trigger_time() const { return trigger_time_; }
 
   AttributionTrigger::EventLevelResult event_level_status() const {
     return event_level_status_;
@@ -55,8 +60,8 @@ class CONTENT_EXPORT CreateReportResult {
     return aggregatable_status_;
   }
 
-  const std::vector<AttributionReport>& dropped_reports() const {
-    return dropped_reports_;
+  const absl::optional<AttributionReport>& replaced_event_level_report() const {
+    return replaced_event_level_report_;
   }
 
   const std::vector<AttributionReport>& new_reports() const {
@@ -66,15 +71,13 @@ class CONTENT_EXPORT CreateReportResult {
   std::vector<AttributionReport>& new_reports() { return new_reports_; }
 
  private:
+  base::Time trigger_time_;
+
   AttributionTrigger::EventLevelResult event_level_status_;
 
   AttributionTrigger::AggregatableResult aggregatable_status_;
 
-  // `AttributionTrigger::EventLevelResult::kInternalError` and
-  // `AttributionTrigger::AggregatableResult::kInternalError` are only
-  // associated with a dropped report if the browser succeeded in running the
-  // source-to-attribute logic.
-  std::vector<AttributionReport> dropped_reports_;
+  absl::optional<AttributionReport> replaced_event_level_report_;
 
   // Empty unless `event_level_status` is `kSuccess` or
   // `kSuccessDroppedLowerPriority` or `aggregatable_status` is

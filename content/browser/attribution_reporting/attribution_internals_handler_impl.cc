@@ -44,6 +44,12 @@ namespace {
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;
 
+attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
+    absl::optional<uint64_t> debug_key) {
+  return debug_key ? attribution_internals::mojom::DebugKey::New(*debug_key)
+                   : nullptr;
+}
+
 base::flat_map<std::string, attribution_internals::mojom::AggregatableKeyPtr>
 Convert(const AttributionAggregatableSource& aggregatable_source) {
   const proto::AttributionAggregatableSource& proto =
@@ -68,10 +74,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.ConversionDestination().Serialize(), source.reporting_origin(),
       source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.source_type(), source.priority(),
-      source.debug_key()
-          ? attribution_internals::mojom::DebugKey::New(*source.debug_key())
-          : nullptr,
-      dedup_keys, source.filter_data().filter_values(),
+      WebUIDebugKey(source.debug_key()), dedup_keys,
+      source.filter_data().filter_values(),
       Convert(source.aggregatable_source()), attributability);
 }
 
@@ -355,99 +359,108 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 
 namespace {
 
-absl::optional<attribution_internals::mojom::WebUIReport::Status>
-GetDroppedReportStatus(AttributionTrigger::EventLevelResult status) {
+using AggregatableStatus = ::content::AttributionTrigger::AggregatableResult;
+using EventLevelStatus = ::content::AttributionTrigger::EventLevelResult;
+using WebUITriggerStatus = ::attribution_internals::mojom::WebUITrigger::Status;
+
+WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
   switch (status) {
-    case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
-    case AttributionTrigger::EventLevelResult::kPriorityTooLow:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedDueToLowPriority;
-    case AttributionTrigger::EventLevelResult::kDroppedForNoise:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedForNoise;
-    case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedDueToExcessiveAttributions;
-    case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedDueToExcessiveReportingOrigins;
-    case AttributionTrigger::EventLevelResult::kDeduplicated:
-      return attribution_internals::mojom::WebUIReport::Status::kDeduplicated;
-    case AttributionTrigger::EventLevelResult::
-        kNoCapacityForConversionDestination:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kNoReportCapacityForDestinationSite;
-    case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kNoMatchingSourceFilterData;
-    case AttributionTrigger::EventLevelResult::kInternalError:
-      return attribution_internals::mojom::WebUIReport::Status::kInternalError;
-    case AttributionTrigger::EventLevelResult::kSuccess:
-    case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
-      // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
-      return absl::nullopt;
+    case EventLevelStatus::kSuccess:
+    case EventLevelStatus::kSuccessDroppedLowerPriority:
+      return WebUITriggerStatus::kSuccess;
+    case EventLevelStatus::kInternalError:
+      return WebUITriggerStatus::kInternalError;
+    case EventLevelStatus::kNoCapacityForConversionDestination:
+      return WebUITriggerStatus::kNoReportCapacityForDestinationSite;
+    case EventLevelStatus::kNoMatchingImpressions:
+      return WebUITriggerStatus::kNoMatchingSources;
+    case EventLevelStatus::kDeduplicated:
+      return WebUITriggerStatus::kDeduplicated;
+    case EventLevelStatus::kExcessiveAttributions:
+      return WebUITriggerStatus::kExcessiveAttributions;
+    case EventLevelStatus::kPriorityTooLow:
+      return WebUITriggerStatus::kLowPriority;
+    case EventLevelStatus::kDroppedForNoise:
+      return WebUITriggerStatus::kNoised;
+    case EventLevelStatus::kExcessiveReportingOrigins:
+      return WebUITriggerStatus::kExcessiveReportingOrigins;
+    case EventLevelStatus::kNoMatchingSourceFilterData:
+      return WebUITriggerStatus::kNoMatchingSourceFilterData;
   }
 }
 
-absl::optional<attribution_internals::mojom::WebUIReport::Status>
-GetDroppedReportStatus(AttributionTrigger::AggregatableResult status) {
+WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
   switch (status) {
-    case AttributionTrigger::AggregatableResult::kExcessiveAttributions:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedDueToExcessiveAttributions;
-    case AttributionTrigger::AggregatableResult::kExcessiveReportingOrigins:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kDroppedDueToExcessiveReportingOrigins;
-    case AttributionTrigger::AggregatableResult::
-        kNoCapacityForConversionDestination:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kNoReportCapacityForDestinationSite;
-    case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kNoMatchingSourceFilterData;
-    case AttributionTrigger::AggregatableResult::kInsufficientBudget:
-      return attribution_internals::mojom::WebUIReport::Status::
-          kInsufficientAggregatableBudget;
-    case AttributionTrigger::AggregatableResult::kInternalError:
-      return attribution_internals::mojom::WebUIReport::Status::kInternalError;
-    case AttributionTrigger::AggregatableResult::kSuccess:
-    case AttributionTrigger::AggregatableResult::kNoHistograms:
-    case AttributionTrigger::AggregatableResult::kNoMatchingImpressions:
-    case AttributionTrigger::AggregatableResult::kNotRegistered:
-      // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
-      // TODO(linnan): Surface `kNoHistograms` in internals UI.
-      return absl::nullopt;
+    case AggregatableStatus::kSuccess:
+      return WebUITriggerStatus::kSuccess;
+    case AggregatableStatus::kInternalError:
+      return WebUITriggerStatus::kInternalError;
+    case AggregatableStatus::kNoCapacityForConversionDestination:
+      return WebUITriggerStatus::kNoReportCapacityForDestinationSite;
+    case AggregatableStatus::kNoMatchingImpressions:
+      return WebUITriggerStatus::kNoMatchingSources;
+    case AggregatableStatus::kExcessiveAttributions:
+      return WebUITriggerStatus::kExcessiveAttributions;
+    case AggregatableStatus::kExcessiveReportingOrigins:
+      return WebUITriggerStatus::kExcessiveReportingOrigins;
+    case AggregatableStatus::kNoHistograms:
+      return WebUITriggerStatus::kNoHistograms;
+    case AggregatableStatus::kInsufficientBudget:
+      return WebUITriggerStatus::kInsufficientBudget;
+    case AggregatableStatus::kNoMatchingSourceFilterData:
+      return WebUITriggerStatus::kNoMatchingSourceFilterData;
+    case AggregatableStatus::kNotRegistered:
+      return WebUITriggerStatus::kNotRegistered;
   }
 }
 
 }  // namespace
 
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
+    const AttributionTrigger& trigger,
     const CreateReportResult& result) {
-  for (const AttributionReport& dropped_report : result.dropped_reports()) {
-    struct Visitor {
-      const CreateReportResult& result;
+  auto web_ui_trigger = attribution_internals::mojom::WebUITrigger::New();
+  web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
+  web_ui_trigger->destination_origin = trigger.destination_origin();
+  web_ui_trigger->reporting_origin = trigger.reporting_origin();
+  web_ui_trigger->filters = trigger.filters().filter_values();
+  web_ui_trigger->debug_key = WebUIDebugKey(trigger.debug_key());
+  web_ui_trigger->event_level_status =
+      GetWebUITriggerStatus(result.event_level_status());
+  web_ui_trigger->aggregatable_status =
+      GetWebUITriggerStatus(result.aggregatable_status());
 
-      absl::optional<attribution_internals::mojom::WebUIReport::Status>
-      operator()(const AttributionReport::EventLevelData&) {
-        return GetDroppedReportStatus(result.event_level_status());
-      }
+  for (const auto& event_trigger : trigger.event_triggers()) {
+    web_ui_trigger->event_triggers.emplace_back(
+        base::in_place,
+        /*data=*/event_trigger.data,
+        /*priority=*/event_trigger.priority,
+        /*deduplication_key=*/event_trigger.dedup_key
+            ? attribution_internals::mojom::DedupKey::New(
+                  *event_trigger.dedup_key)
+            : nullptr,
+        /*filters=*/event_trigger.filters.filter_values(),
+        /*not_filters=*/event_trigger.not_filters.filter_values());
+  }
 
-      absl::optional<attribution_internals::mojom::WebUIReport::Status>
-      operator()(const AttributionReport::AggregatableAttributionData&) {
-        return GetDroppedReportStatus(result.aggregatable_status());
-      }
-    };
+  for (auto& observer : observers_) {
+    observer->OnTriggerHandled(web_ui_trigger.Clone());
+  }
 
-    absl::optional<attribution_internals::mojom::WebUIReport::Status> status =
-        absl::visit(Visitor{.result = result}, dropped_report.data());
-    DCHECK(status.has_value());
+  if (const absl::optional<AttributionReport>& report =
+          result.replaced_event_level_report()) {
+    DCHECK_EQ(
+        result.event_level_status(),
+        AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
 
-    auto report = WebUIReport(dropped_report, /*is_debug_report=*/false,
-                              /*http_response_code=*/0, *status);
+    auto web_ui_report =
+        WebUIReport(*report, /*is_debug_report=*/false,
+                    /*http_response_code=*/0,
+                    attribution_internals::mojom::WebUIReport::Status::
+                        kReplacedByHigherPriorityReport);
 
     for (auto& observer : observers_) {
-      observer->OnReportDropped(report.Clone());
+      observer->OnReportDropped(web_ui_report.Clone());
     }
   }
 }

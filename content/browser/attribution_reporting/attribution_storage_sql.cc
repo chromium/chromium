@@ -710,32 +710,27 @@ bool IsSuccessResult(absl::optional<AggregatableResult> result) {
 }
 
 CreateReportResult AssembleReportResult(
+    base::Time trigger_time,
     EventLevelResult event_level_status,
     AggregatableResult aggregatable_status,
     absl::optional<AttributionReport> new_event_level_report,
     absl::optional<AttributionReport> new_aggregatable_report,
     absl::optional<AttributionReport> replaced_event_level_report) {
-  std::vector<AttributionReport> dropped_reports;
   std::vector<AttributionReport> new_reports;
 
   if (IsSuccessResult(event_level_status)) {
     DCHECK(new_event_level_report.has_value());
     new_reports.push_back(std::move(*new_event_level_report));
-    if (replaced_event_level_report.has_value())
-      dropped_reports.push_back(std::move(*replaced_event_level_report));
-  } else if (new_event_level_report.has_value()) {
-    dropped_reports.push_back(std::move(*new_event_level_report));
   }
 
   if (IsSuccessResult(aggregatable_status)) {
     DCHECK(new_aggregatable_report.has_value());
     new_reports.push_back(std::move(*new_aggregatable_report));
-  } else if (new_aggregatable_report.has_value()) {
-    dropped_reports.push_back(std::move(*new_aggregatable_report));
   }
 
-  return CreateReportResult(event_level_status, aggregatable_status,
-                            std::move(dropped_reports), std::move(new_reports));
+  return CreateReportResult(
+      trigger_time, event_level_status, aggregatable_status,
+      std::move(replaced_event_level_report), std::move(new_reports));
 }
 
 }  // namespace
@@ -743,6 +738,8 @@ CreateReportResult AssembleReportResult(
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     const AttributionTrigger& trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Time trigger_time = base::Time::Now();
 
   // Declarations for all of the various pieces of information which may be
   // collected and/or returned as a result of computing new reports in order to
@@ -768,7 +765,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   : new_aggregatable_status;
         DCHECK(aggregatable_status.has_value());
 
-        return AssembleReportResult(*event_level_status, *aggregatable_status,
+        return AssembleReportResult(trigger_time, *event_level_status,
+                                    *aggregatable_status,
                                     std::move(new_event_level_report),
                                     std::move(new_aggregatable_report),
                                     std::move(replaced_event_level_report));
@@ -817,8 +815,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       /*trigger_not_filters=*/AttributionFilterData());
 
   AttributionInfo attribution_info(std::move(source_to_attribute->source),
-                                   /*time=*/base::Time::Now(),
-                                   trigger.debug_key());
+                                   trigger_time, trigger.debug_key());
 
   absl::optional<uint64_t> dedup_key;
   if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(

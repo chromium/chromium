@@ -263,7 +263,8 @@ class AttributionEventHandler : public AttributionObserver {
     rejected_sources_.push_back(std::move(dict));
   }
 
-  void OnTriggerHandled(const CreateReportResult& result) override {
+  void OnTriggerHandled(const AttributionTrigger& trigger,
+                        const CreateReportResult& result) override {
     DCHECK(!input_values_.empty());
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();

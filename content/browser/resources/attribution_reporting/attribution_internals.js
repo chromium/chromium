@@ -9,7 +9,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportType, SourceType, WebUIReport, WebUIReport_Status, WebUISource, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
+import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportType, SourceType, WebUIReport, WebUIReport_Status, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -343,7 +343,7 @@ class Table {
     thead.appendChild(tr);
 
     self.tbody = self.ownerDocument.createElement('tbody');
-    self.setSpanningText('Loading...');
+    self.setSpanningText(self.model.emptyRowText);
 
     const table = self.ownerDocument.createElement('table');
     table.appendChild(thead);
@@ -538,6 +538,87 @@ class SourceTableModel extends TableModel {
   }
 }
 
+class Trigger {
+  /**
+   * @param {!WebUITrigger} mojo
+   */
+  constructor(mojo) {
+    this.triggerTime = new Date(mojo.triggerTime);
+    this.destinationOrigin = OriginToText(mojo.destinationOrigin);
+    this.reportingOrigin = OriginToText(mojo.reportingOrigin);
+    this.filters = JSON.stringify(mojo.filters, null, ' ');
+    this.debugKey = mojo.debugKey ? mojo.debugKey.value : '';
+
+    this.eventTriggers = JSON.stringify(
+        mojo.eventTriggers.map((e) => {
+          // Omit the dedup key, filters, and not filters if they are empty for
+          // brevity.
+          return {
+            'data': e.data,
+            'priority': e.priority,
+            'deduplication_key': e.dedupKey ? e.dedupKey.value : undefined,
+            'filters': Object.entries(e.filters).length > 0 ? e.filters :
+                                                              undefined,
+            'not_filters': Object.entries(e.notFilters).length > 0 ?
+                e.notFilters :
+                undefined,
+          };
+        }),
+        bigint_replacer, ' ');
+
+    this.eventLevelStatus = TriggerStatusToText(mojo.eventLevelStatus);
+    this.aggregatableStatus = TriggerStatusToText(mojo.aggregatableStatus);
+  }
+}
+
+/** @extends {TableModel<Trigger>} */
+class TriggerTableModel extends TableModel {
+  constructor() {
+    super();
+
+    this.cols = [
+      new DateColumn('Trigger Time', (e) => e.triggerTime),
+      new ValueColumn('Event-Level Status', (e) => e.eventLevelStatus),
+      new ValueColumn('Aggregatable Status', (e) => e.aggregatableStatus),
+      new ValueColumn('Destination', (e) => e.destinationOrigin),
+      new ValueColumn('Report To', (e) => e.reportingOrigin),
+      new ValueColumn('Debug Key', (e) => e.debugKey),
+      new CodeColumn('Filters', (e) => e.filters),
+      new CodeColumn('Event Triggers', (e) => e.eventTriggers),
+    ];
+
+    this.emptyRowText = 'No triggers.';
+
+    // Sort by trigger time by default.
+    this.sortIdx = 0;
+
+    /** @type {!Array<!Trigger>} */
+    this.triggers = [];
+  }
+
+  /** @override */
+  getRows() {
+    return this.triggers;
+  }
+
+  /** @param {!Trigger} trigger */
+  addTrigger(trigger) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.triggers.length >= 1000) {
+      this.triggers = [];
+    }
+
+    this.triggers.push(trigger);
+    this.notifyRowsChanged();
+  }
+
+  clear() {
+    this.triggers = [];
+    this.notifyRowsChanged();
+  }
+}
+
 class Report extends Selectable {
   /**
    * @param {!WebUIReport} mojo
@@ -568,26 +649,8 @@ class Report extends Selectable {
       case WebUIReport_Status.kPending:
         this.status = 'Pending';
         break;
-      case WebUIReport_Status.kDroppedDueToExcessiveAttributions:
-        this.status = 'Dropped due to excessive attributions';
-        break;
-      case WebUIReport_Status.kDroppedDueToExcessiveReportingOrigins:
-        this.status = 'Dropped due to excessive reporting origins';
-        break;
-      case WebUIReport_Status.kDroppedDueToLowPriority:
-        this.status = 'Dropped due to low priority';
-        break;
-      case WebUIReport_Status.kDroppedForNoise:
-        this.status = 'Dropped for noise';
-        break;
-      case WebUIReport_Status.kDeduplicated:
-        this.status = 'Deduplicated';
-        break;
-      case WebUIReport_Status.kNoReportCapacityForDestinationSite:
-        this.status = 'No report capacity for destination site';
-        break;
-      case WebUIReport_Status.kInternalError:
-        this.status = 'Internal error';
+      case WebUIReport_Status.kReplacedByHigherPriorityReport:
+        this.status = 'Replaced by higher-priority report';
         break;
       case WebUIReport_Status.kProhibitedByBrowserPolicy:
         this.status = 'Prohibited by browser policy';
@@ -595,14 +658,8 @@ class Report extends Selectable {
       case WebUIReport_Status.kNetworkError:
         this.status = 'Network error';
         break;
-      case WebUIReport_Status.kNoMatchingSourceFilterData:
-        this.status = 'Dropped due to no matching source filter data';
-        break;
       case WebUIReport_Status.kFailedToAssemble:
         this.status = 'Dropped due to assembly failure';
-        break;
-      case WebUIReport_Status.kInsufficientAggregatableBudget:
-        this.status = 'Dropped due to insufficient aggregatable budget';
         break;
     }
   }
@@ -823,6 +880,9 @@ let pageHandler = null;
 /** @type {?SourceTableModel} */
 let sourceTableModel = null;
 
+/** @type {?TriggerTableModel} */
+let triggerTableModel = null;
+
 /** @type {?EventLevelReportTableModel} */
 let eventLevelReportTableModel = null;
 
@@ -895,6 +955,43 @@ function AttributabilityToText(attributability) {
 }
 
 /**
+ * @param {WebUITrigger_Status} status
+ * @return {string}
+ */
+function TriggerStatusToText(status) {
+  switch (status) {
+    case WebUITrigger_Status.kSuccess:
+      return 'Success: Report stored';
+    case WebUITrigger_Status.kInternalError:
+      return 'Failure: Internal error';
+    case WebUITrigger_Status.kNoMatchingSources:
+      return 'Failure: No matching sources';
+    case WebUITrigger_Status.kNoMatchingSourceFilterData:
+      return 'Failure: No matching source filter data';
+    case WebUITrigger_Status.kNoReportCapacityForDestinationSite:
+      return 'Failure: No report capacity for destination site';
+    case WebUITrigger_Status.kExcessiveAttributions:
+      return 'Failure: Excessive attributions';
+    case WebUITrigger_Status.kExcessiveReportingOrigins:
+      return 'Failure: Excessive reporting origins';
+    case WebUITrigger_Status.kDeduplicated:
+      return 'Failure: Deduplicated against an earlier report';
+    case WebUITrigger_Status.kLowPriority:
+      return 'Failure: Priority too low';
+    case WebUITrigger_Status.kNoised:
+      return 'Failure: Noised';
+    case WebUITrigger_Status.kNoHistograms:
+      return 'Failure: No source histograms';
+    case WebUITrigger_Status.kInsufficientBudget:
+      return 'Failure: Insufficient budget';
+    case WebUITrigger_Status.kNotRegistered:
+      return 'Failure: No aggregatable data present';
+    default:
+      return status.toString();
+  }
+}
+
+/**
  * Fetch all sources, pending reports, and sent reports from the
  * backend and populate the tables. Also update measurement enabled status.
  */
@@ -958,6 +1055,7 @@ function updateReports(reportType) {
  */
 function clearStorage() {
   sourceTableModel.clear();
+  triggerTableModel.clear();
   eventLevelReportTableModel.clear();
   aggregatableAttributionReportTableModel.clear();
   pageHandler.clearStorage();
@@ -1002,6 +1100,11 @@ class Observer {
   onReportDropped(mojo) {
     addSentOrDroppedReport(mojo);
   }
+
+  /** @override */
+  onTriggerHandled(mojo) {
+    triggerTableModel.addTrigger(new Trigger(mojo));
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1009,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
   pageHandler = AttributionInternalsHandler.getRemote();
 
   sourceTableModel = new SourceTableModel();
+  triggerTableModel = new TriggerTableModel();
   eventLevelReportTableModel = new EventLevelReportTableModel(
       getRequiredElement('show-debug-event-reports'),
       getRequiredElement('send-reports'));
@@ -1021,6 +1125,8 @@ document.addEventListener('DOMContentLoaded', function() {
   $('clear-data').addEventListener('click', clearStorage);
 
   Table.decorate(getRequiredElement('source-table-wrapper'), sourceTableModel);
+  Table.decorate(
+      getRequiredElement('trigger-table-wrapper'), triggerTableModel);
   Table.decorate(
       getRequiredElement('report-table-wrapper'), eventLevelReportTableModel);
   Table.decorate(

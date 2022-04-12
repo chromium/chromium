@@ -273,7 +273,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    DroppedReportsAre(SizeIs(1))));
+                    ReplacedEventLevelReportIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -594,11 +594,7 @@ TEST_F(AttributionStorageTest, MaxConversionsPerOrigin) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
-                    DroppedReportsAre(
-                        ElementsAre(EventLevelDataIs(TriggerDataIs(5)),
-                                    AggregatableAttributionDataIs(
-                                        AggregatableHistogramContributionsAre(
-                                            std::move(contributions)))))));
+                    ReplacedEventLevelReportIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
@@ -844,7 +840,7 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
-            DroppedReportsAre(SizeIs(2))));
+            ReplacedEventLevelReportIs(absl::nullopt)));
 
   const auto source = source_builder.SetDefaultFilterData().BuildStored();
   auto contributions =
@@ -1281,7 +1277,7 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                   TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
-                    DroppedReportsAre(IsEmpty())));
+                    ReplacedEventLevelReportIs(absl::nullopt)));
 
   // This conversion should replace the one above because it has a higher
   // priority.
@@ -1290,8 +1286,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::
                             kSuccessDroppedLowerPriority),
-                    DroppedReportsAre(
-                        ElementsAre(EventLevelDataIs(TriggerDataIs(20u))))));
+                    ReplacedEventLevelReportIs(
+                        Optional(EventLevelDataIs(TriggerDataIs(20u))))));
 
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
@@ -1305,8 +1301,7 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                   TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    DroppedReportsAre(
-                        ElementsAre(EventLevelDataIs(TriggerDataIs(23u))))));
+                    ReplacedEventLevelReportIs(absl::nullopt)));
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1462,8 +1457,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
           .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
             result.event_level_status());
-  EXPECT_THAT(result.dropped_reports(),
-              ElementsAre(EventLevelDataIs(TriggerDataIs(74))));
+  EXPECT_EQ(result.replaced_event_level_report(), absl::nullopt);
 
   // Shouldn't be stored because conversion destination and dedup key match.
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
@@ -1699,8 +1693,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    DroppedReportsAre(ElementsAre(ReportSourceIs(
-                        builder.SetDefaultFilterData().BuildStored())))));
+                    ReplacedEventLevelReportIs(absl::nullopt)));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
@@ -2590,20 +2583,19 @@ TEST_F(
   // limit; the event-level report itself shouldn't be stored as we've already
   // reached the maximum number of event-level reports per source, whereas the
   // aggregatable report is still stored.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
-              .SetTriggerData(5)
-              .Build()),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            DroppedReportsAre(ElementsAre(EventLevelDataIs(TriggerDataIs(5)))),
-            NewReportsAre(ElementsAre(AggregatableAttributionDataIs(
-                AggregatableHistogramContributionsAre(
-                    DefaultAggregatableHistogramContributions(
-                        /*histogram_values=*/{5})))))));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
+                      .SetTriggerData(5)
+                      .Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    NewReportsAre(ElementsAre(AggregatableAttributionDataIs(
+                        AggregatableHistogramContributionsAre(
+                            DefaultAggregatableHistogramContributions(
+                                /*histogram_values=*/{5})))))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(

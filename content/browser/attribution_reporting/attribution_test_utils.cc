@@ -383,9 +383,10 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 }
 
 void MockAttributionManager::NotifyTriggerHandled(
+    const AttributionTrigger& trigger,
     const CreateReportResult& result) {
   for (auto& observer : observers_)
-    observer.OnTriggerHandled(result);
+    observer.OnTriggerHandled(trigger, result);
 }
 
 void MockAttributionManager::SetDataHostManager(

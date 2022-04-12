@@ -76,7 +76,8 @@ class AttributionInternalsHandlerImpl
   void OnReportSent(const AttributionReport& report,
                     bool is_debug_report,
                     const SendResult& info) override;
-  void OnTriggerHandled(const CreateReportResult& result) override;
+  void OnTriggerHandled(const AttributionTrigger& trigger,
+                        const CreateReportResult& result) override;
 
   raw_ptr<WebUI> web_ui_;
   std::unique_ptr<AttributionManagerProvider> manager_provider_;

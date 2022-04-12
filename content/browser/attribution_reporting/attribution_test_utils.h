@@ -351,7 +351,8 @@ class MockAttributionManager : public AttributionManager {
   void NotifyReportSent(const AttributionReport& report,
                         bool is_debug_report,
                         const SendResult& info);
-  void NotifyTriggerHandled(const CreateReportResult& result);
+  void NotifyTriggerHandled(const AttributionTrigger& trigger,
+                            const CreateReportResult& result);
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager> manager);
 
@@ -397,7 +398,8 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnTriggerHandled,
-              (const CreateReportResult& result),
+              (const AttributionTrigger& trigger,
+               const CreateReportResult& result),
               (override));
 };
 
@@ -928,8 +930,9 @@ MATCHER_P(CreateReportAggregatableStatusIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(DroppedReportsAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.dropped_reports(), result_listener);
+MATCHER_P(ReplacedEventLevelReportIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.replaced_event_level_report(),
+                            result_listener);
 }
 
 MATCHER_P(DeactivatedSourceIs, matcher, "") {

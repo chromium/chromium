@@ -11,6 +11,7 @@
 
 namespace content {
 
+class AttributionTrigger;
 class CreateReportResult;
 
 struct DeactivatedSource;
@@ -43,7 +44,8 @@ class AttributionObserver : public base::CheckedObserver {
                             const SendResult& info) {}
 
   // Called when a trigger is registered, regardless of success.
-  virtual void OnTriggerHandled(const CreateReportResult& result) {}
+  virtual void OnTriggerHandled(const AttributionTrigger& trigger,
+                                const CreateReportResult& result) {}
 };
 
 }  // namespace content
