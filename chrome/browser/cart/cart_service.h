@@ -102,6 +102,9 @@ class CartService : public history::HistoryServiceObserver,
   // Decides whether to show the consent card in module for rule-based discount,
   // and returns it in the callback.
   void ShouldShowDiscountConsent(base::OnceCallback<void(bool)> callback);
+  // Decides whether to show the discount toggle in the customize_modules
+  // setting page.
+  bool ShouldShowDiscountToggle();
   // Returns whether the rule-based discount feature in cart module is enabled,
   // and user has chosen to opt-in the feature.
   bool IsCartDiscountEnabled();

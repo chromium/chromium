@@ -451,6 +451,10 @@ void CartService::ShouldShowDiscountConsentCallback(
   std::move(callback).Run(should_show);
 }
 
+bool CartService::ShouldShowDiscountToggle() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged);
+}
+
 bool CartService::IsCartDiscountEnabled() {
   if (!commerce::IsCartDiscountFeatureEnabled()) {
     return false;

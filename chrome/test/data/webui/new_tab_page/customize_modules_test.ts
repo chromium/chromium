@@ -57,6 +57,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
     cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: false}));
   });
 
   [true, false].forEach(visible => {
@@ -183,7 +185,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   test('discount toggle shows correct config', async () => {
     // Arrange.
-    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
@@ -214,7 +217,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   test(`discount toggle sets discount status`, async () => {
     // Arrange.
-    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
@@ -234,7 +238,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   test(`toggling off cart module hides discount toggle`, async () => {
     // Arrange.
-    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
@@ -285,7 +290,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   test('record disable discount', async () => {
     // Arrange.
-    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
@@ -307,7 +313,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   test('record enable discount', async () => {
     // Arrange.
-    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
     const customizeModules = await createCustomizeModules(false, [
@@ -325,5 +332,37 @@ suite('NewTabPageCustomizeModulesTest', () => {
     // Assert.
     assertDeepEquals(true, cartHandler.getArgs('setDiscountEnabled')[0]);
     assertEquals(1, metrics.count('NewTabPage.Carts.EnableDiscount'));
+  });
+
+  test('discount toggle is visible', async () => {
+    // Arrange.
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+    cartHandler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: false}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+    ]);
+    const subToggleRows =
+        customizeModules.shadowRoot!.querySelectorAll('.discount-toggle-row');
+
+    // Assert.
+    assertEquals(1, subToggleRows.length);
+  });
+
+  test('discount toggle is not visible', async () => {
+    // Arrange.
+    cartHandler.setResultFor(
+        'getDiscountToggleVisible', Promise.resolve({toggleVisible: false}));
+    cartHandler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: false}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+    ]);
+    const subToggleRows =
+        customizeModules.shadowRoot!.querySelectorAll('.discount-toggle-row');
+
+    // Assert.
+    assertEquals(0, subToggleRows.length);
   });
 });
