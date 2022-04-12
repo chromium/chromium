@@ -59,6 +59,15 @@ LEGACY_EMBEDDED_JSON_ALLOWLIST = [
     # complex schemas using stringified JSON - instead, store them as dicts.
 ]
 
+# List of 'integer' policies that allow a negative 'minimum' value.
+LEGACY_NEGATIVE_MINIMUM_ALLOWED = [
+    'PrintJobHistoryExpirationPeriod',
+    'GaiaOfflineSigninTimeLimitDays',
+    'SAMLOfflineSigninTimeLimit',
+    'GaiaLockScreenOfflineSigninTimeLimitDays',
+    'SamlLockScreenOfflineSigninTimeLimitDays',
+]
+
 # List of policies where not all properties are required to be presented in the
 # example value. This could be useful e.g. in case of mutually exclusive fields.
 # See crbug.com/1068257 for the details.
@@ -483,6 +492,14 @@ class PolicyTemplateChecker(object):
                    'not store complex data as stringified JSON - instead, ' +
                    'store it in a dict and define it in "schema".') %
                   policy.get('name'))
+
+    # Checks that integer policies do not allow negative values.
+    if (policy_type == 'int' and schema.get('minimum', 0) < 0
+        and policy.get('name') not in LEGACY_NEGATIVE_MINIMUM_ALLOWED):
+      self._Error(f"Integer policy {policy.get('name')} allows negative values "
+                  f"('minimum' is {schema.get('minimum')}). Negative values "
+                  "are forbidden and could silently be replaced with zeros "
+                  "when using them. See also https://crbug.com/1115976")
 
   def _CheckTotalDevicePolicyExternalDataMaxSize(self, policy_definitions):
     total_device_policy_external_data_max_size = 0
