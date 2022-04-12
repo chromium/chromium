@@ -158,4 +158,23 @@ TEST_F(MediaNotificationProviderImplTest, NotifyObserverOnListChangeTest) {
   SimulateHideNotification(id);
 }
 
+// Regression test for https://crbug.com/1312419. This should not crash on ASan
+// builds (or any other build of course).
+TEST_F(MediaNotificationProviderImplTest, DontUseDeletedListView) {
+  // Simulate a media session item.
+  auto id = base::UnguessableToken::Create();
+  SimulateShowNotification(id);
+  provider()->SetColorTheme(media_message_center::NotificationTheme());
+
+  // Create a list view with that item.
+  std::unique_ptr<views::View> view =
+      provider()->GetMediaNotificationListView(1);
+
+  // Delete the list view.
+  view.reset();
+
+  // Hide the item. This should not call into the deleted view.
+  SimulateHideNotification(id);
+}
+
 }  // namespace ash

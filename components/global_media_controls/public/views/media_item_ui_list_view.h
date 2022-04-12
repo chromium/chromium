@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
@@ -45,6 +46,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
 
   bool empty() { return items_.empty(); }
 
+  base::WeakPtr<MediaItemUIListView> GetWeakPtr();
+
   const std::map<const std::string, MediaItemUIView*>& items_for_testing()
       const {
     return items_;
@@ -54,6 +57,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   std::map<const std::string, MediaItemUIView*> items_;
 
   absl::optional<SeparatorStyle> separator_style_;
+
+  base::WeakPtrFactory<MediaItemUIListView> weak_factory_{this};
 };
 
 }  // namespace global_media_controls

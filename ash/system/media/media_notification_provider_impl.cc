@@ -90,7 +90,7 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
       std::make_unique<global_media_controls::MediaItemUIListView>(
           global_media_controls::MediaItemUIListView::SeparatorStyle(
               color_theme_->separator_color, separator_thickness));
-  active_session_view_ = notification_list_view.get();
+  active_session_view_ = notification_list_view->GetWeakPtr();
   item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration(
       "Media.GlobalMediaControls.EntryPoint",

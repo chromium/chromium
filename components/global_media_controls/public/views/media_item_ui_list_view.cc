@@ -101,6 +101,10 @@ void MediaItemUIListView::HideItem(const std::string& id) {
   PreferredSizeChanged();
 }
 
+base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 BEGIN_METADATA(MediaItemUIListView, views::ScrollView)
 END_METADATA
 
