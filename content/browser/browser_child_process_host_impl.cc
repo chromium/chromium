@@ -705,7 +705,8 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
 bool BrowserChildProcessHostImpl::IsProcessLaunched() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  return child_process_.get() && child_process_->GetProcess().IsValid();
+  return child_process_.get() && !child_process_->IsStarting() &&
+         child_process_->GetProcess().IsValid();
 }
 
 // static

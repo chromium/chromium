@@ -141,6 +141,7 @@ bool ChildProcessLauncher::IsStarting() {
 
 const base::Process& ChildProcessLauncher::GetProcess() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!starting_);
   return process_.process;
 }
 

@@ -2224,9 +2224,10 @@ void RenderProcessHostImpl::WriteIntoTrace(
   proto.Set(TraceProto::kBrowserContext, browser_context_);
 
   // Pid() can be called only on valid process, so we should check for this
-  // before accessing it.
+  // before accessing it. In addition, Pid() should only be read once the
+  // process has finished starting.
   // TODO(ssid): Consider moving this to ChildProcessLauncher proto field.
-  if (child_process_launcher_) {
+  if (child_process_launcher_ && !child_process_launcher_->IsStarting()) {
     const base::Process& process = child_process_launcher_->GetProcess();
     if (process.IsValid())
       proto->set_child_process_id(process.Pid());
