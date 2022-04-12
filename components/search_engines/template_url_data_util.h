@@ -15,6 +15,9 @@ class Value;
 namespace TemplateURLPrepopulateData {
 struct PrepopulatedEngine;
 }
+namespace TemplateURLStarterPackData {
+struct StarterPackEngine;
+}
 
 struct TemplateURLData;
 
@@ -36,5 +39,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 // TODO(a-v-y) Migrate to single TemplateURLData serialization format.
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     const base::Value& engine);
+
+// Creates a TemplateURLData structure from a StarterPackEngine struct.
+std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
+    const TemplateURLStarterPackData::StarterPackEngine& engine);
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_DATA_UTIL_H_

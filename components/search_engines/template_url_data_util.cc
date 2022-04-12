@@ -13,6 +13,8 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -384,4 +386,17 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         preconnect_to_search_url.compare("ALLOWED") == 0, *id);
   }
   return nullptr;
+}
+
+std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
+    const TemplateURLStarterPackData::StarterPackEngine& engine) {
+  auto turl = std::make_unique<TemplateURLData>();
+  turl->SetShortName(l10n_util::GetStringUTF16(engine.name_message_id));
+  turl->SetKeyword(u"@" + l10n_util::GetStringUTF16(engine.keyword_message_id));
+  turl->SetURL(engine.search_url);
+  turl->favicon_url = GURL(ToStringPiece(engine.favicon_url));
+  turl->starter_pack_id = engine.id;
+  turl->is_active = TemplateURLData::ActiveStatus::kTrue;
+
+  return turl;
 }

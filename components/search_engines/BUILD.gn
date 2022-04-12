@@ -45,6 +45,8 @@ static_library("search_engines") {
     "template_url_service.h",
     "template_url_service_client.h",
     "template_url_service_observer.h",
+    "template_url_starter_pack_data.cc",
+    "template_url_starter_pack_data.h",
     "util.cc",
     "util.h",
   ]
