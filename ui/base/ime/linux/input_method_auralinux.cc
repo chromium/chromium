@@ -358,15 +358,11 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   // |context_simple_| can be used in any textfield, including password box, and
   // even if the focused text input client's text input type is
   // ui::TEXT_INPUT_TYPE_NONE.
-  if (GetTextInputClient())
+  auto* client = GetTextInputClient();
+  if (client)
     context_simple_->Focus();
   else
     context_simple_->Blur();
-}
-
-void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
-  UpdateContextFocusState();
-  InputMethodBase::OnTextInputTypeChanged(client);
 
   LinuxInputMethodContext* context =
       text_input_type_ != TEXT_INPUT_TYPE_NONE &&
@@ -376,6 +372,11 @@ void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
   int flags = client ? client->GetTextInputFlags() : TEXT_INPUT_FLAG_NONE;
   context->SetContentType(text_input_type_, flags,
                           client && client->ShouldDoLearning());
+}
+
+void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
+  UpdateContextFocusState();
+  InputMethodBase::OnTextInputTypeChanged(client);
   // TODO(yoichio): Support inputmode HTML attribute.
 }
 

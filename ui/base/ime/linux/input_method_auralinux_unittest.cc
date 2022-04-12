@@ -90,6 +90,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     return &virtual_keyboard_controller_;
   }
 
+  TextInputType input_type() const { return input_type_; }
+  int input_flags() const { return input_flags_; }
+  bool should_do_learning() const { return should_do_learning_; }
+
  protected:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override {
     if (!is_sync_mode_) {
@@ -159,7 +163,11 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void SetContentType(TextInputType input_type,
                       int input_flags,
-                      bool should_do_learning) override {}
+                      bool should_do_learning) override {
+    input_type_ = input_type;
+    input_flags_ = input_flags;
+    should_do_learning_ = should_do_learning;
+  }
 
  private:
   LinuxInputMethodContextDelegate* delegate_;
@@ -169,6 +177,9 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool eat_key_;
   bool focused_;
   gfx::Rect cursor_position_;
+  TextInputType input_type_;
+  int input_flags_;
+  bool should_do_learning_;
 };
 
 class LinuxInputMethodContextFactoryForTesting
@@ -942,6 +953,25 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
 TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {
   EXPECT_EQ(input_method_auralinux_->GetVirtualKeyboardController(),
             context_->GetVirtualKeyboardController());
+}
+
+TEST_F(InputMethodAuraLinuxTest, SetContentTypeWithUpdateFocus) {
+  auto client1 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  auto client2 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_URL);
+
+  input_method_auralinux_->SetFocusedTextInputClient(client1.get());
+
+  EXPECT_EQ(TEXT_INPUT_TYPE_TEXT, context_->input_type());
+
+  input_method_auralinux_->SetFocusedTextInputClient(client2.get());
+
+  EXPECT_EQ(TEXT_INPUT_TYPE_URL, context_->input_type());
+
+  input_method_auralinux_->SetFocusedTextInputClient(client1.get());
+
+  EXPECT_EQ(TEXT_INPUT_TYPE_TEXT, context_->input_type());
 }
 
 }  // namespace
