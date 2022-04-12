@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -206,36 +207,38 @@ public class IPHCommandBuilder {
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
-        if (mOnDismissCallback == null) {
-            mOnDismissCallback = NO_OP_RUNNABLE;
-        }
-        if (mOnShowCallback == null) {
-            mOnShowCallback = NO_OP_RUNNABLE;
-        }
+        try (TraceEvent te = TraceEvent.scoped("IPHCommandBuilder::build")) {
+            if (mOnDismissCallback == null) {
+                mOnDismissCallback = NO_OP_RUNNABLE;
+            }
+            if (mOnShowCallback == null) {
+                mOnShowCallback = NO_OP_RUNNABLE;
+            }
 
-        if (mOnBlockedCallback == null) {
-            mOnBlockedCallback = NO_OP_RUNNABLE;
-        }
+            if (mOnBlockedCallback == null) {
+                mOnBlockedCallback = NO_OP_RUNNABLE;
+            }
 
-        if (mContentString == null) {
-            assert mResources != null;
-            mContentString = mResources.getString(mStringId);
-        }
+            if (mContentString == null) {
+                assert mResources != null;
+                mContentString = mResources.getString(mStringId);
+            }
 
-        if (mAccessibilityText == null) {
-            assert mResources != null;
-            mAccessibilityText = mResources.getString(mAccessibilityStringId);
-        }
+            if (mAccessibilityText == null) {
+                assert mResources != null;
+                mAccessibilityText = mResources.getString(mAccessibilityStringId);
+            }
 
-        if (mInsetRect == null && mAnchorRect == null) {
-            int yInsetPx =
-                    mResources.getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
-            mInsetRect = new Rect(0, 0, 0, yInsetPx);
-        }
+            if (mInsetRect == null && mAnchorRect == null) {
+                int yInsetPx = mResources.getDimensionPixelOffset(
+                        R.dimen.iph_text_bubble_menu_anchor_y_inset);
+                mInsetRect = new Rect(0, 0, 0, yInsetPx);
+            }
 
-        return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
-                mAnchorView, mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mInsetRect,
-                mAutoDismissTimeout, mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow,
-                mPreferredVerticalOrientation);
+            return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
+                    mAnchorView, mOnDismissCallback, mOnShowCallback, mOnBlockedCallback,
+                    mInsetRect, mAutoDismissTimeout, mViewRectProvider, mHighlightParams,
+                    mAnchorRect, mRemoveArrow, mPreferredVerticalOrientation);
+        }
     }
 }

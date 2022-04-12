@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,12 +59,15 @@ public class UserEducationHelper {
      * should.
      */
     public void requestShowIPH(IPHCommand iphCommand) {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. Currently always original
-        // profile is used not to start popping IPH messages as soon as opening an incognito tab.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
+            // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+            // incognito profile) instead of always using regular profile. Currently always original
+            // profile is used not to start popping IPH messages as soon as opening an incognito
+            // tab.
+            Profile profile = Profile.getLastUsedRegularProfile();
+            final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+        }
     }
 
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
