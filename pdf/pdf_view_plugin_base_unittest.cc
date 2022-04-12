@@ -142,8 +142,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
 
-  void SendMessage(base::Value message) override {
-    sent_messages_.push_back(std::move(message));
+  void SendMessage(base::Value::Dict message) override {
+    sent_messages_.push_back(base::Value(std::move(message)));
   }
 
   MOCK_METHOD(void, SaveAs, (), (override));
@@ -202,10 +202,10 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 };
 
 base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "formFocusChange");
-  message.SetBoolKey("focused", false);
-  return message;
+  base::Value::Dict message;
+  message.Set("type", "formFocusChange");
+  message.Set("focused", false);
+  return base::Value(std::move(message));
 }
 
 base::Value::Dict CreateSaveRequestMessage(
@@ -220,21 +220,21 @@ base::Value::Dict CreateSaveRequestMessage(
 
 base::Value CreateExpectedSaveToBufferResponse(const std::string& token,
                                                bool edit_mode) {
-  base::Value expected_response(base::Value::Type::DICTIONARY);
-  expected_response.SetStringKey("type", "saveData");
-  expected_response.SetStringKey("token", token);
-  expected_response.SetStringKey("fileName", kDefaultDownloadFileName);
-  expected_response.SetBoolKey("editModeForTesting", edit_mode);
-  expected_response.SetKey(
+  base::Value::Dict expected_response;
+  expected_response.Set("type", "saveData");
+  expected_response.Set("token", token);
+  expected_response.Set("fileName", kDefaultDownloadFileName);
+  expected_response.Set("editModeForTesting", edit_mode);
+  expected_response.Set(
       "dataToSave", base::Value(base::make_span(TestPDFiumEngine::kSaveData)));
-  return expected_response;
+  return base::Value(std::move(expected_response));
 }
 
 base::Value CreateExpectedSaveToFileResponse(const std::string& token) {
-  base::Value expected_response(base::Value::Type::DICTIONARY);
-  expected_response.SetStringKey("type", "consumeSaveToken");
-  expected_response.SetStringKey("token", token);
-  return expected_response;
+  base::Value::Dict expected_response;
+  expected_response.Set("type", "consumeSaveToken");
+  expected_response.Set("token", token);
+  return base::Value(std::move(expected_response));
 }
 
 }  // namespace
@@ -599,12 +599,13 @@ TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.EnteredEditMode();
 
-  base::Value expected_response(base::Value::Type::DICTIONARY);
-  expected_response.SetStringKey("type", "setIsEditing");
+  base::Value::Dict expected_response;
+  expected_response.Set("type", "setIsEditing");
 
   EXPECT_TRUE(fake_plugin_.edit_mode_for_testing());
   ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
-  EXPECT_EQ(expected_response, fake_plugin_.sent_messages()[0]);
+  EXPECT_EQ(base::Value(std::move(expected_response)),
+            fake_plugin_.sent_messages()[0]);
 }
 
 using PdfViewPluginBaseSaveTest = PdfViewPluginBaseWithEngineTest;

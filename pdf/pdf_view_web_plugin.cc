@@ -204,7 +204,7 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     return GetFrame()->GetScrollOffset();
   }
 
-  void PostMessage(base::Value message) override {
+  void PostMessage(base::Value::Dict message) override {
     post_message_sender_.Post(std::move(message));
   }
 
@@ -385,10 +385,10 @@ bool PdfViewWebPlugin::InitializeCommon(
 }
 
 void PdfViewWebPlugin::SendSetSmoothScrolling() {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setSmoothScrolling");
-  message.SetBoolKey("smoothScrolling",
-                     blink::Platform::Current()->IsScrollAnimatorEnabled());
+  base::Value::Dict message;
+  message.Set("type", "setSmoothScrolling");
+  message.Set("smoothScrolling",
+              blink::Platform::Current()->IsScrollAnimatorEnabled());
   SendMessage(std::move(message));
 }
 
@@ -940,7 +940,7 @@ void PdfViewWebPlugin::OnDocumentLoadComplete() {
   SendMetadata();
 }
 
-void PdfViewWebPlugin::SendMessage(base::Value message) {
+void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
   container_wrapper_->PostMessage(std::move(message));
 }
 
@@ -1187,7 +1187,7 @@ void PdfViewWebPlugin::SendAttachments() {
   if (attachment_infos.empty())
     return;
 
-  base::Value attachments(base::Value::Type::LIST);
+  base::Value::List attachments;
   for (const DocumentAttachmentInfo& attachment_info : attachment_infos) {
     // Send `size` as -1 to indicate that the attachment is too large to be
     // downloaded.
@@ -1195,80 +1195,79 @@ void PdfViewWebPlugin::SendAttachments() {
                          ? static_cast<int>(attachment_info.size_bytes)
                          : -1;
 
-    base::Value attachment(base::Value::Type::DICTIONARY);
-    attachment.SetStringKey("name", attachment_info.name);
-    attachment.SetIntKey("size", size);
-    attachment.SetBoolKey("readable", attachment_info.is_readable);
+    base::Value::Dict attachment;
+    attachment.Set("name", attachment_info.name);
+    attachment.Set("size", size);
+    attachment.Set("readable", attachment_info.is_readable);
     attachments.Append(std::move(attachment));
   }
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "attachments");
-  message.SetKey("attachmentsData", std::move(attachments));
+  base::Value::Dict message;
+  message.Set("type", "attachments");
+  message.Set("attachmentsData", std::move(attachments));
   SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::SendBookmarks() {
-  base::Value bookmarks = engine()->GetBookmarks();
-  if (bookmarks.GetListDeprecated().empty())
+  base::Value::List bookmarks = engine()->GetBookmarks();
+  if (bookmarks.empty())
     return;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "bookmarks");
-  message.SetKey("bookmarksData", std::move(bookmarks));
+  base::Value::Dict message;
+  message.Set("type", "bookmarks");
+  message.Set("bookmarksData", std::move(bookmarks));
   SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::SendMetadata() {
-  base::Value metadata(base::Value::Type::DICTIONARY);
+  base::Value::Dict metadata;
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
 
   const std::string version = FormatPdfVersion(document_metadata.version);
   if (!version.empty())
-    metadata.SetStringKey("version", version);
+    metadata.Set("version", version);
 
-  metadata.SetStringKey("fileSize",
-                        ui::FormatBytes(document_metadata.size_bytes));
+  metadata.Set("fileSize", ui::FormatBytes(document_metadata.size_bytes));
 
-  metadata.SetBoolKey("linearized", document_metadata.linearized);
+  metadata.Set("linearized", document_metadata.linearized);
 
   if (!document_metadata.title.empty())
-    metadata.SetStringKey("title", document_metadata.title);
+    metadata.Set("title", document_metadata.title);
 
   if (!document_metadata.author.empty())
-    metadata.SetStringKey("author", document_metadata.author);
+    metadata.Set("author", document_metadata.author);
 
   if (!document_metadata.subject.empty())
-    metadata.SetStringKey("subject", document_metadata.subject);
+    metadata.Set("subject", document_metadata.subject);
 
   if (!document_metadata.keywords.empty())
-    metadata.SetStringKey("keywords", document_metadata.keywords);
+    metadata.Set("keywords", document_metadata.keywords);
 
   if (!document_metadata.creator.empty())
-    metadata.SetStringKey("creator", document_metadata.creator);
+    metadata.Set("creator", document_metadata.creator);
 
   if (!document_metadata.producer.empty())
-    metadata.SetStringKey("producer", document_metadata.producer);
+    metadata.Set("producer", document_metadata.producer);
 
   if (!document_metadata.creation_date.is_null()) {
-    metadata.SetStringKey("creationDate", base::TimeFormatShortDateAndTime(
-                                              document_metadata.creation_date));
+    metadata.Set("creationDate", base::TimeFormatShortDateAndTime(
+                                     document_metadata.creation_date));
   }
 
   if (!document_metadata.mod_date.is_null()) {
-    metadata.SetStringKey("modDate", base::TimeFormatShortDateAndTime(
-                                         document_metadata.mod_date));
+    metadata.Set("modDate",
+                 base::TimeFormatShortDateAndTime(document_metadata.mod_date));
   }
 
-  metadata.SetStringKey("pageSize",
-                        FormatPageSize(engine()->GetUniformPageSizePoints()));
+  metadata.Set("pageSize",
+               FormatPageSize(engine()->GetUniformPageSizePoints()));
 
-  metadata.SetBoolKey("canSerializeDocument",
-                      IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
+  metadata.Set("canSerializeDocument",
+               IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "metadata");
-  message.SetKey("metadataData", std::move(metadata));
+  base::Value::Dict message;
+  message.Set("type", "metadata");
+  message.Set("metadataData", std::move(metadata));
   SendMessage(std::move(message));
 }
 

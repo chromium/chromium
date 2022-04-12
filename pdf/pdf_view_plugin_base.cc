@@ -103,14 +103,14 @@ enum class PinchPhase {
 // If the "type" value of `message` is "foo", then the `reply_type` must be
 // "fooReply". The `message` from the embedder must have a "messageId" value
 // that will be copied to the reply message.
-base::Value PrepareReplyMessage(base::StringPiece reply_type,
-                                const base::Value::Dict& message) {
+base::Value::Dict PrepareReplyMessage(base::StringPiece reply_type,
+                                      const base::Value::Dict& message) {
   DCHECK_EQ(reply_type, *message.FindString("type") + "Reply");
 
   base::Value::Dict reply;
   reply.Set("type", reply_type);
   reply.Set("messageId", *message.FindString("messageId"));
-  return base::Value(std::move(reply));
+  return reply;
 }
 
 bool IsPrintPreviewUrl(base::StringPiece url) {
@@ -194,15 +194,15 @@ void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
 }
 
 void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "documentDimensions");
-  message.SetIntKey("width", layout.size().width());
-  message.SetIntKey("height", layout.size().height());
-  message.SetKey("layoutOptions", base::Value(layout.options().ToValue()));
-  base::Value page_dimensions_list(base::Value::Type::LIST);
+  base::Value::Dict message;
+  message.Set("type", "documentDimensions");
+  message.Set("width", layout.size().width());
+  message.Set("height", layout.size().height());
+  message.Set("layoutOptions", layout.options().ToValue());
+  base::Value::List page_dimensions;
   for (size_t i = 0; i < layout.page_count(); ++i)
-    page_dimensions_list.Append(base::Value(DictFromRect(layout.page_rect(i))));
-  message.SetKey("pageDimensions", std::move(page_dimensions_list));
+    page_dimensions.Append(base::Value(DictFromRect(layout.page_rect(i))));
+  message.Set("pageDimensions", std::move(page_dimensions));
   SendMessage(std::move(message));
 
   // Reload the accessibility tree on layout changes because the relative page
@@ -229,18 +229,18 @@ void PdfViewPluginBase::DidScroll(const gfx::Vector2d& offset) {
 void PdfViewPluginBase::ScrollToX(int x_screen_coords) {
   const float x_scroll_pos = x_screen_coords / device_scale_;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setScrollPosition");
-  message.SetDoubleKey("x", x_scroll_pos);
+  base::Value::Dict message;
+  message.Set("type", "setScrollPosition");
+  message.Set("x", static_cast<double>(x_scroll_pos));
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::ScrollToY(int y_screen_coords) {
   const float y_scroll_pos = y_screen_coords / device_scale_;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setScrollPosition");
-  message.SetDoubleKey("y", y_scroll_pos);
+  base::Value::Dict message;
+  message.Set("type", "setScrollPosition");
+  message.Set("y", static_cast<double>(y_scroll_pos));
   SendMessage(std::move(message));
 }
 
@@ -248,10 +248,10 @@ void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
   const float x_delta = delta.x() / device_scale_;
   const float y_delta = delta.y() / device_scale_;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "scrollBy");
-  message.SetDoubleKey("x", x_delta);
-  message.SetDoubleKey("y", y_delta);
+  base::Value::Dict message;
+  message.Set("type", "scrollBy");
+  message.Set("x", static_cast<double>(x_delta));
+  message.Set("y", static_cast<double>(y_delta));
   SendMessage(std::move(message));
 }
 
@@ -259,18 +259,18 @@ void PdfViewPluginBase::ScrollToPage(int page) {
   if (!engine_ || engine_->GetNumberOfPages() == 0)
     return;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "goToPage");
-  message.SetIntKey("page", page);
+  base::Value::Dict message;
+  message.Set("type", "goToPage");
+  message.Set("page", page);
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::NavigateTo(const std::string& url,
                                    WindowOpenDisposition disposition) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "navigate");
-  message.SetStringKey("url", url);
-  message.SetIntKey("disposition", static_cast<int>(disposition));
+  base::Value::Dict message;
+  message.Set("type", "navigate");
+  message.Set("url", url);
+  message.Set("disposition", static_cast<int>(disposition));
   SendMessage(std::move(message));
 }
 
@@ -278,21 +278,21 @@ void PdfViewPluginBase::NavigateToDestination(int page,
                                               const float* x,
                                               const float* y,
                                               const float* zoom) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "navigateToDestination");
-  message.SetIntKey("page", page);
+  base::Value::Dict message;
+  message.Set("type", "navigateToDestination");
+  message.Set("page", page);
   if (x)
-    message.SetDoubleKey("x", *x);
+    message.Set("x", static_cast<double>(*x));
   if (y)
-    message.SetDoubleKey("y", *y);
+    message.Set("y", static_cast<double>(*y));
   if (zoom)
-    message.SetDoubleKey("zoom", *zoom);
+    message.Set("zoom", static_cast<double>(*zoom));
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "touchSelectionOccurred");
+  base::Value::Dict message;
+  message.Set("type", "touchSelectionOccurred");
   SendMessage(std::move(message));
 }
 
@@ -301,14 +301,14 @@ void PdfViewPluginBase::GetDocumentPassword(
   DCHECK(password_callback_.is_null());
   password_callback_ = std::move(callback);
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "getPassword");
+  base::Value::Dict message;
+  message.Set("type", "getPassword");
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::Beep() {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "beep");
+  base::Value::Dict message;
+  message.Set("type", "beep");
   SendMessage(std::move(message));
 }
 
@@ -321,13 +321,13 @@ void PdfViewPluginBase::Email(const std::string& to,
                               const std::string& bcc,
                               const std::string& subject,
                               const std::string& body) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "email");
-  message.SetStringKey("to", net::EscapeUrlEncodedData(to, false));
-  message.SetStringKey("cc", net::EscapeUrlEncodedData(cc, false));
-  message.SetStringKey("bcc", net::EscapeUrlEncodedData(bcc, false));
-  message.SetStringKey("subject", net::EscapeUrlEncodedData(subject, false));
-  message.SetStringKey("body", net::EscapeUrlEncodedData(body, false));
+  base::Value::Dict message;
+  message.Set("type", "email");
+  message.Set("to", net::EscapeUrlEncodedData(to, false));
+  message.Set("cc", net::EscapeUrlEncodedData(cc, false));
+  message.Set("bcc", net::EscapeUrlEncodedData(bcc, false));
+  message.Set("subject", net::EscapeUrlEncodedData(subject, false));
+  message.Set("body", net::EscapeUrlEncodedData(body, false));
   SendMessage(std::move(message));
 }
 
@@ -454,9 +454,9 @@ void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
 }
 
 void PdfViewPluginBase::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "formFocusChange");
-  message.SetBoolKey("focused", type != PDFEngine::FocusFieldType::kNoFocus);
+  base::Value::Dict message;
+  message.Set("type", "formFocusChange");
+  message.Set("focused", type != PDFEngine::FocusFieldType::kNoFocus);
   SendMessage(std::move(message));
 
   SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
@@ -471,9 +471,9 @@ SkColor PdfViewPluginBase::GetBackgroundColor() {
 }
 
 void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setIsSelecting");
-  message.SetBoolKey("isSelecting", is_selecting);
+  base::Value::Dict message;
+  message.Set("type", "setIsSelecting");
+  message.Set("isSelecting", is_selecting);
   SendMessage(std::move(message));
 }
 
@@ -503,15 +503,15 @@ void PdfViewPluginBase::EnteredEditMode() {
   edit_mode_ = true;
   SetPluginCanSave(true);
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "setIsEditing");
+  base::Value::Dict message;
+  message.Set("type", "setIsEditing");
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "documentFocusChanged");
-  message.SetBoolKey("hasFocus", document_has_focus);
+  base::Value::Dict message;
+  message.Set("type", "documentFocusChanged");
+  message.Set("hasFocus", document_has_focus);
   SendMessage(std::move(message));
 }
 
@@ -585,13 +585,13 @@ void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
 void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
   engine()->KillFormFocus();
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "saveData");
-  message.SetStringKey("token", token);
-  message.SetStringKey("fileName", GetFileNameForSaveFromUrl(url_));
+  base::Value::Dict message;
+  message.Set("type", "saveData");
+  message.Set("token", token);
+  message.Set("fileName", GetFileNameForSaveFromUrl(url_));
 
   // Expose `edit_mode_` state for integration testing.
-  message.SetBoolKey("editModeForTesting", edit_mode_);
+  message.Set("editModeForTesting", edit_mode_);
 
   base::Value data_to_save;
   if (edit_mode_) {
@@ -611,14 +611,14 @@ void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
 #endif  // BUILDFLAG(ENABLE_INK)
   }
 
-  message.SetKey("dataToSave", std::move(data_to_save));
+  message.Set("dataToSave", std::move(data_to_save));
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "consumeSaveToken");
-  message.SetStringKey("token", token);
+  base::Value::Dict message;
+  message.Set("type", "consumeSaveToken");
+  message.Set("token", token);
   SendMessage(std::move(message));
 }
 
@@ -626,15 +626,15 @@ void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
   last_progress_sent_ = percentage;
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "loadProgress");
-  message.SetDoubleKey("progress", percentage);
+  base::Value::Dict message;
+  message.Set("type", "loadProgress");
+  message.Set("progress", percentage);
   SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::SendPrintPreviewLoadedNotification() {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "printPreviewLoaded");
+  base::Value::Dict message;
+  message.Set("type", "printPreviewLoaded");
   SendMessage(std::move(message));
 }
 
@@ -1053,8 +1053,9 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
                               ? base::checked_cast<int>(named_destination->page)
                               : -1;
 
-  base::Value reply = PrepareReplyMessage("getNamedDestinationReply", message);
-  reply.SetIntKey("pageNumber", page_number);
+  base::Value::Dict reply =
+      PrepareReplyMessage("getNamedDestinationReply", message);
+  reply.Set("pageNumber", page_number);
 
   if (named_destination.has_value() && !named_destination->view.empty()) {
     std::ostringstream view_stream;
@@ -1066,7 +1067,7 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
       view_stream << "," << named_destination->xyz_params;
     }
 
-    reply.SetStringKey("namedDestinationView", view_stream.str());
+    reply.Set("namedDestinationView", view_stream.str());
   }
 
   SendMessage(std::move(reply));
@@ -1084,15 +1085,16 @@ void PdfViewPluginBase::HandleGetSelectedTextMessage(
   std::string selected_text;
   base::RemoveChars(engine()->GetSelectedText(), "\r", &selected_text);
 
-  base::Value reply = PrepareReplyMessage("getSelectedTextReply", message);
-  reply.SetStringKey("selectedText", selected_text);
+  base::Value::Dict reply =
+      PrepareReplyMessage("getSelectedTextReply", message);
+  reply.Set("selectedText", selected_text);
   SendMessage(std::move(reply));
 }
 
 void PdfViewPluginBase::HandleGetThumbnailMessage(
     const base::Value::Dict& message) {
   const int page_index = message.FindInt("page").value();
-  base::Value reply = PrepareReplyMessage("getThumbnailReply", message);
+  base::Value::Dict reply = PrepareReplyMessage("getThumbnailReply", message);
 
   engine()->RequestThumbnail(page_index, device_scale_,
                              base::BindOnce(&PdfViewPluginBase::SendThumbnail,
@@ -1210,8 +1212,8 @@ void PdfViewPluginBase::HandleSaveAttachmentMessage(
   base::Value data_to_save(
       IsSaveDataSizeValid(data.size()) ? data : std::vector<uint8_t>());
 
-  base::Value reply = PrepareReplyMessage("saveAttachmentReply", message);
-  reply.SetKey("dataToSave", std::move(data_to_save));
+  base::Value::Dict reply = PrepareReplyMessage("saveAttachmentReply", message);
+  reply.Set("dataToSave", std::move(data_to_save));
   SendMessage(std::move(reply));
 }
 
@@ -1476,13 +1478,14 @@ void PdfViewPluginBase::ClearDeferredInvalidates() {
   deferred_invalidates_.clear();
 }
 
-void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
-  DCHECK_EQ(*reply.FindStringKey("type"), "getThumbnailReply");
-  DCHECK(reply.FindStringKey("messageId"));
+void PdfViewPluginBase::SendThumbnail(base::Value::Dict reply,
+                                      Thumbnail thumbnail) {
+  DCHECK_EQ(*reply.FindString("type"), "getThumbnailReply");
+  DCHECK(reply.FindString("messageId"));
 
-  reply.SetKey("imageData", base::Value(thumbnail.TakeData()));
-  reply.SetIntKey("width", thumbnail.image_size().width());
-  reply.SetIntKey("height", thumbnail.image_size().height());
+  reply.Set("imageData", thumbnail.TakeData());
+  reply.Set("width", thumbnail.image_size().width());
+  reply.Set("height", thumbnail.image_size().height());
   SendMessage(std::move(reply));
 }
 

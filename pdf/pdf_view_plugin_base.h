@@ -235,7 +235,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Enqueues a "message" event carrying `message` to the embedder. Messages are
   // guaranteed to be received in the order that they are sent. This method is
   // non-blocking.
-  virtual void SendMessage(base::Value message) = 0;
+  virtual void SendMessage(base::Value::Dict message) = 0;
 
   // Invokes the "SaveAs" dialog.
   virtual void SaveAs() = 0;
@@ -458,7 +458,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void ClearDeferredInvalidates();
 
   // Sends the thumbnail image data.
-  void SendThumbnail(base::Value reply, Thumbnail thumbnail);
+  void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
 
   // Starts loading accessibility information.
   void LoadAccessibility();

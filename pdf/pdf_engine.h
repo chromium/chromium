@@ -426,7 +426,7 @@ class PDFEngine {
   // - "page" - an int Value.
   // - "children" - a list of Values, with each entry containing
   //   a dictionary Value of the same structure.
-  virtual base::Value GetBookmarks() = 0;
+  virtual base::Value::List GetBookmarks() = 0;
 
   // Append blank pages to make a 1-page document to a `num_pages` document.
   // Always retain the first page data.

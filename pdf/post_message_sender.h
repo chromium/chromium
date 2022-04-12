@@ -6,11 +6,8 @@
 #define PDF_POST_MESSAGE_SENDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "v8/include/v8-forward.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace blink {
 class WebPluginContainer;
@@ -30,7 +27,7 @@ class PostMessageSender final {
   ~PostMessageSender();
 
   // Enqueues a "message" event carrying `message` to the plugin embedder.
-  void Post(base::Value message);
+  void Post(base::Value::Dict message);
 
  private:
   const raw_ptr<V8ValueConverter> v8_value_converter_;

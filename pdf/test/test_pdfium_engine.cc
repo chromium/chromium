@@ -49,8 +49,8 @@ int TestPDFiumEngine::GetNumberOfPages() const {
   return static_cast<int>(kPageNumber);
 }
 
-base::Value TestPDFiumEngine::GetBookmarks() {
-  return base::Value(base::Value::Type::LIST);
+base::Value::List TestPDFiumEngine::GetBookmarks() {
+  return base::Value::List();
 }
 
 uint32_t TestPDFiumEngine::GetLoadedByteSize() {

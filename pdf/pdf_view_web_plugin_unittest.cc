@@ -174,7 +174,7 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
 
   MOCK_METHOD(gfx::PointF, GetScrollPosition, (), (override));
 
-  MOCK_METHOD(void, PostMessage, (base::Value), (override));
+  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
 
   MOCK_METHOD(void, UsePluginAsFindHandler, (), (override));
 
@@ -893,22 +893,22 @@ class PdfViewWebPluginWithoutDocInfoTest : public PdfViewWebPluginTest {
     return std::make_unique<NiceMock<MockUrlLoader>>();
   }
 
-  static base::Value CreateExpectedNoMetadataResponse() {
-    base::Value metadata(base::Value::Type::DICTIONARY);
-    metadata.SetStringKey("fileSize", "0 B");
-    metadata.SetBoolKey("linearized", false);
-    metadata.SetStringKey("pageSize", "Varies");
-    metadata.SetBoolKey("canSerializeDocument", true);
+  static base::Value::Dict CreateExpectedNoMetadataResponse() {
+    base::Value::Dict metadata;
+    metadata.Set("fileSize", "0 B");
+    metadata.Set("linearized", false);
+    metadata.Set("pageSize", "Varies");
+    metadata.Set("canSerializeDocument", true);
 
-    base::Value message(base::Value::Type::DICTIONARY);
-    message.SetStringKey("type", "metadata");
-    message.SetKey("metadataData", std::move(metadata));
+    base::Value::Dict message;
+    message.Set("type", "metadata");
+    message.Set("metadataData", std::move(metadata));
     return message;
   }
 };
 
 TEST_F(PdfViewWebPluginWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
-  const base::Value expect_metadata = CreateExpectedNoMetadataResponse();
+  const base::Value::Dict expect_metadata = CreateExpectedNoMetadataResponse();
   EXPECT_CALL(*wrapper_ptr_, PostMessage);
   EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
   plugin_->DocumentLoadComplete();
@@ -924,28 +924,28 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
       InitializeDocumentMetadata();
     }
 
-    base::Value GetBookmarks() override {
+    base::Value::List GetBookmarks() override {
       // Create `bookmark1` which navigates to an in-doc position. This bookmark
       // will be in the top-level bookmark list.
-      base::Value bookmark1(base::Value::Type::DICTIONARY);
-      bookmark1.SetStringKey("title", "Bookmark 1");
-      bookmark1.SetIntKey("page", 2);
-      bookmark1.SetIntKey("x", 10);
-      bookmark1.SetIntKey("y", 20);
-      bookmark1.SetDoubleKey("zoom", 2.0);
+      base::Value::Dict bookmark1;
+      bookmark1.Set("title", "Bookmark 1");
+      bookmark1.Set("page", 2);
+      bookmark1.Set("x", 10);
+      bookmark1.Set("y", 20);
+      bookmark1.Set("zoom", 2.0);
 
       // Create `bookmark2` which navigates to a web page. This bookmark will be
       // a child of `bookmark1`.
-      base::Value bookmark2(base::Value::Type::DICTIONARY);
-      bookmark2.SetStringKey("title", "Bookmark 2");
-      bookmark2.SetStringKey("uri", "test.com");
+      base::Value::Dict bookmark2;
+      bookmark2.Set("title", "Bookmark 2");
+      bookmark2.Set("uri", "test.com");
 
-      base::Value children_of_bookmark1(base::Value::Type::LIST);
+      base::Value::List children_of_bookmark1;
       children_of_bookmark1.Append(std::move(bookmark2));
-      bookmark1.SetKey("children", std::move(children_of_bookmark1));
+      bookmark1.Set("children", std::move(children_of_bookmark1));
 
       // Create the top-level bookmark list.
-      base::Value bookmarks(base::Value::Type::LIST);
+      base::Value::List bookmarks;
       bookmarks.Append(std::move(bookmark1));
       return bookmarks;
     }
@@ -1004,72 +1004,74 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
     return std::make_unique<NiceMock<MockUrlLoader>>();
   }
 
-  static base::Value CreateExpectedAttachmentsResponse() {
-    base::Value attachments(base::Value::Type::LIST);
+  static base::Value::Dict CreateExpectedAttachmentsResponse() {
+    base::Value::List attachments;
     {
-      base::Value attachment(base::Value::Type::DICTIONARY);
-      attachment.SetStringKey("name", "attachment1.txt");
-      attachment.SetIntKey("size", 13);
-      attachment.SetBoolKey("readable", true);
+      base::Value::Dict attachment;
+      attachment.Set("name", "attachment1.txt");
+      attachment.Set("size", 13);
+      attachment.Set("readable", true);
       attachments.Append(std::move(attachment));
     }
     {
-      base::Value attachment(base::Value::Type::DICTIONARY);
-      attachment.SetStringKey("name", "attachment2.pdf");
-      attachment.SetIntKey("size", 0);
-      attachment.SetBoolKey("readable", false);
+      base::Value::Dict attachment;
+      attachment.Set("name", "attachment2.pdf");
+      attachment.Set("size", 0);
+      attachment.Set("readable", false);
       attachments.Append(std::move(attachment));
     }
     {
-      base::Value attachment(base::Value::Type::DICTIONARY);
-      attachment.SetStringKey("name", "attachment3.mov");
-      attachment.SetIntKey("size", -1);
-      attachment.SetBoolKey("readable", true);
+      base::Value::Dict attachment;
+      attachment.Set("name", "attachment3.mov");
+      attachment.Set("size", -1);
+      attachment.Set("readable", true);
       attachments.Append(std::move(attachment));
     }
 
-    base::Value message(base::Value::Type::DICTIONARY);
-    message.SetStringKey("type", "attachments");
-    message.SetKey("attachmentsData", std::move(attachments));
+    base::Value::Dict message;
+    message.Set("type", "attachments");
+    message.Set("attachmentsData", std::move(attachments));
     return message;
   }
 
-  static base::Value CreateExpectedBookmarksResponse(base::Value bookmarks) {
-    base::Value message(base::Value::Type::DICTIONARY);
-    message.SetStringKey("type", "bookmarks");
-    message.SetKey("bookmarksData", std::move(bookmarks));
+  static base::Value::Dict CreateExpectedBookmarksResponse(
+      base::Value::List bookmarks) {
+    base::Value::Dict message;
+    message.Set("type", "bookmarks");
+    message.Set("bookmarksData", std::move(bookmarks));
     return message;
   }
 
-  static base::Value CreateExpectedMetadataResponse() {
-    base::Value metadata(base::Value::Type::DICTIONARY);
-    metadata.SetStringKey("version", "1.7");
-    metadata.SetStringKey("fileSize", "13 B");
-    metadata.SetBoolKey("linearized", true);
+  static base::Value::Dict CreateExpectedMetadataResponse() {
+    base::Value::Dict metadata;
+    metadata.Set("version", "1.7");
+    metadata.Set("fileSize", "13 B");
+    metadata.Set("linearized", true);
 
-    metadata.SetStringKey("title", "Title");
-    metadata.SetStringKey("author", "Author");
-    metadata.SetStringKey("subject", "Subject");
-    metadata.SetStringKey("keywords", "Keywords");
-    metadata.SetStringKey("creator", "Creator");
-    metadata.SetStringKey("producer", "Producer");
-    metadata.SetStringKey("creationDate", "5/4/21, 4:12:13 AM");
-    metadata.SetStringKey("modDate", "6/4/21, 8:16:17 AM");
-    metadata.SetStringKey("pageSize", "13.89 × 16.67 in (portrait)");
-    metadata.SetBoolKey("canSerializeDocument", true);
+    metadata.Set("title", "Title");
+    metadata.Set("author", "Author");
+    metadata.Set("subject", "Subject");
+    metadata.Set("keywords", "Keywords");
+    metadata.Set("creator", "Creator");
+    metadata.Set("producer", "Producer");
+    metadata.Set("creationDate", "5/4/21, 4:12:13 AM");
+    metadata.Set("modDate", "6/4/21, 8:16:17 AM");
+    metadata.Set("pageSize", "13.89 × 16.67 in (portrait)");
+    metadata.Set("canSerializeDocument", true);
 
-    base::Value message(base::Value::Type::DICTIONARY);
-    message.SetStringKey("type", "metadata");
-    message.SetKey("metadataData", std::move(metadata));
+    base::Value::Dict message;
+    message.Set("type", "metadata");
+    message.Set("metadataData", std::move(metadata));
     return message;
   }
 };
 
 TEST_F(PdfViewWebPluginWithDocInfoTest, DocumentLoadCompletePostMessages) {
-  const base::Value expect_attachments = CreateExpectedAttachmentsResponse();
-  const base::Value expect_bookmarks =
+  const base::Value::Dict expect_attachments =
+      CreateExpectedAttachmentsResponse();
+  const base::Value::Dict expect_bookmarks =
       CreateExpectedBookmarksResponse(engine_ptr_->GetBookmarks());
-  const base::Value expect_metadata = CreateExpectedMetadataResponse();
+  const base::Value::Dict expect_metadata = CreateExpectedMetadataResponse();
   EXPECT_CALL(*wrapper_ptr_, PostMessage);
   EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_attachments))));
   EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_bookmarks))));

@@ -136,7 +136,7 @@ class PDFiumEngine : public PDFEngine,
   std::vector<uint8_t> GetAttachmentData(size_t index) override;
   const DocumentMetadata& GetDocumentMetadata() const override;
   int GetNumberOfPages() const override;
-  base::Value GetBookmarks() override;
+  base::Value::List GetBookmarks() override;
   absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
@@ -575,11 +575,12 @@ class PDFiumEngine : public PDFEngine,
   void KillTouchTimer();
   void HandleLongPress(const blink::WebTouchEvent& event);
 
-  // Returns a base::Value (representing a bookmark), which in turn contains
-  // child base::Value dictionaries (representing the child bookmarks).
-  // If nullptr is passed in as the bookmark then we traverse from the "root".
-  // Note that the "root" bookmark contains no useful information.
-  base::Value TraverseBookmarks(FPDF_BOOKMARK bookmark, unsigned int depth);
+  // Returns a dictionary representing a bookmark, which in turn contains child
+  // dictionaries representing the child bookmarks. If `bookmark` is null, then
+  // this method traverses from the root of the bookmarks tree. Note that the
+  // root bookmark contains no useful information.
+  base::Value::Dict TraverseBookmarks(FPDF_BOOKMARK bookmark,
+                                      unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,

@@ -97,7 +97,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual gfx::PointF GetScrollPosition() = 0;
 
     // Enqueues a "message" event carrying `message` to the plugin embedder.
-    virtual void PostMessage(base::Value message) = 0;
+    virtual void PostMessage(base::Value::Dict message) = 0;
 
     // Tells the embedder to allow the plugin to handle find requests.
     virtual void UsePluginAsFindHandler() = 0;
@@ -301,7 +301,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
   void OnDocumentLoadComplete() override;
-  void SendMessage(base::Value message) override;
+  void SendMessage(base::Value::Dict message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   void SetFormTextFieldInFocus(bool in_focus) override;

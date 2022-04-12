@@ -160,23 +160,23 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   if (!opt_type)
     return base::Value(base::Value::Type::NONE);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey("type", *opt_type);
+  base::Value::Dict result;
+  result.Set("type", *opt_type);
 
   absl::optional<std::u16string> opt_alt =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetAltText, struct_elem),
           true);
   if (opt_alt)
-    result.SetStringKey("alt", *opt_alt);
+    result.Set("alt", *opt_alt);
 
   absl::optional<std::u16string> opt_lang =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetLang, struct_elem), true);
   if (opt_lang)
-    result.SetStringKey("lang", *opt_lang);
+    result.Set("lang", *opt_lang);
 
-  base::Value children(base::Value::Type::LIST);
+  base::Value::List children;
   for (int i = 0; i < children_count; i++) {
     FPDF_STRUCTELEMENT child_elem =
         FPDF_StructElement_GetChildAtIndex(struct_elem, i);
@@ -189,10 +189,10 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   // use "~children" instead of "children" because we pretty-print the
   // result of this as JSON and the keys are sorted; it's much easier to
   // understand when the children are the last key.
-  if (!children.GetListDeprecated().empty())
-    result.SetKey("~children", std::move(children));
+  if (!children.empty())
+    result.Set("~children", std::move(children));
 
-  return result;
+  return base::Value(std::move(result));
 }
 
 }  // namespace
