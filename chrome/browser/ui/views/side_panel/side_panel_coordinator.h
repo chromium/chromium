@@ -13,6 +13,7 @@
 
 class Browser;
 class BrowserView;
+class ReadAnythingCoordinator;
 class SidePanelComboboxModel;
 
 namespace views {
@@ -43,6 +44,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void Show(absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt);
   void Close();
   void Toggle();
+
+  ReadAnythingCoordinator* read_anything_coordinator() {
+    return read_anything_coordinator_.get();
+  }
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -93,6 +98,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
   raw_ptr<views::Combobox> header_combobox_ = nullptr;
+
+  // Used to coordinate the "Read Anything" component, instantiated in
+  // CreateReadAnythingWebView.
+  std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
 
   // TODO(pbos): Add awareness of tab registries here. This probably needs to
   // know the tab registry it's currently monitoring.

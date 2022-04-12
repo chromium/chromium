@@ -58,7 +58,3 @@ void ReadAnythingUI::CreatePageHandler(
   if (embedder())
     embedder()->ShowUI();
 }
-
-void ReadAnythingUI::HandleFontChange(const std::string& new_font_name) {
-  read_anything_page_handler_->HandleFontChange(new_font_name);
-}

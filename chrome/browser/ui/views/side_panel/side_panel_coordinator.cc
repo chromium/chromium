@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_container_view.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -379,10 +380,12 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
   return bookmarks_web_view;
 }
 
-// TODO(1266555): Replace this with a coordinator that will own the component.
+// The ownership of the container view moves to the caller of this function.
 std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
     Browser* browser) {
-  return std::make_unique<ReadAnythingContainerView>(browser);
+  read_anything_coordinator_ =
+      std::make_unique<ReadAnythingCoordinator>(browser);
+  return read_anything_coordinator_->GetContainerView();
 }
 
 std::unique_ptr<views::View> SidePanelCoordinator::CreateUserNoteView(

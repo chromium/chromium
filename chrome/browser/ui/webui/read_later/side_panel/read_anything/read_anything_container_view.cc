@@ -16,7 +16,9 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
-ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
+ReadAnythingContainerView::ReadAnythingContainerView(
+    std::unique_ptr<ReadAnythingToolbarView> toolbar,
+    std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content) {
   // Create and set a FlexLayout LayoutManager for this view, set background.
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical)
@@ -28,53 +30,29 @@ ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
   SetBackground(
       views::CreateThemedSolidBackground(this, ui::kColorPrimaryBackground));
 
-  // Create the toolbar for the side panel.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      base::BindRepeating(&ReadAnythingContainerView::HandleFontChange,
-                          weak_pointer_factory_.GetWeakPtr()));
+  // Set flex behavior on provided toolbar and content, and include a separator.
   toolbar->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kScaleToMaximum)
           .WithOrder(1));
 
-  // Create a separator.
   auto separator = std::make_unique<views::Separator>();
   separator->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kScaleToMaximum)
           .WithOrder(2));
-
-  // Create the main content view for the side panel.
-  auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
-      browser,
-      /* on_show_cb= */ base::RepeatingClosure(),
-      /* close_cb= */ base::RepeatingClosure(),
-      /* contents_wrapper= */
-      std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
-          /* browser_context= */ browser->profile(),
-          /* task_manager_string_id= */ IDS_READ_ANYTHING_TITLE,
-          /* webui_resizes_host= */ false,
-          /* esc_closes_ui= */ false));
-  content_web_view->SetProperty(
+  content->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(3));
 
-  // Add all components to view.
+  // Add all views as children.
   AddChildView(std::move(toolbar));
   AddChildView(std::move(separator));
-  content_web_view_ = AddChildView(std::move(content_web_view));
+  AddChildView(std::move(content));
 }
 
 ReadAnythingContainerView::~ReadAnythingContainerView() = default;
-
-// TODO(1266555): Move this into a controller and remove.
-void ReadAnythingContainerView::HandleFontChange(
-    const std::string& new_font_name) {
-  content_web_view_->contents_wrapper()->GetWebUIController()->HandleFontChange(
-      new_font_name);
-}

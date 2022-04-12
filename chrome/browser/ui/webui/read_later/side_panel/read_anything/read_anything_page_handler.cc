@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_coordinator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -19,9 +21,31 @@
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<read_anything::mojom::Page> page,
     mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
-    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {
+  // Register |this| as a |ReadAnythingModel::Observer| with the coordinator
+  // for the component. This will allow the IPC to update the front-end web ui.
 
-ReadAnythingPageHandler::~ReadAnythingPageHandler() = default;
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+  browser_view_ = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view_)
+    return;
+  browser_view_->side_panel_coordinator()
+      ->read_anything_coordinator()
+      ->AddObserver(this);
+}
+
+ReadAnythingPageHandler::~ReadAnythingPageHandler() {
+  // Remove |this| from the observer list of |ReadAnythingModel|.
+  if (browser_view_) {
+    DCHECK(
+        browser_view_->side_panel_coordinator()->read_anything_coordinator());
+    browser_view_->side_panel_coordinator()
+        ->read_anything_coordinator()
+        ->RemoveObserver(this);
+  }
+}
 
 void ReadAnythingPageHandler::ShowUI() {
   Browser* browser = chrome::FindLastActive();
@@ -72,7 +96,7 @@ void ReadAnythingPageHandler::OnAXTreeDistilled(
   page_->OnEssentialContent(std::move(content));
 }
 
-void ReadAnythingPageHandler::HandleFontChange(
+void ReadAnythingPageHandler::OnFontNameUpdated(
     const std::string& new_font_name) {
   page_->OnFontNameChange(new_font_name);
 }

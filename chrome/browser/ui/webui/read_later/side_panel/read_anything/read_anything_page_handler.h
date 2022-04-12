@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything.mojom.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_model.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,7 +19,8 @@ namespace ui {
 struct AXTreeUpdate;
 }
 
-class ReadAnythingPageHandler : public read_anything::mojom::PageHandler {
+class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
+                                public ReadAnythingModel::Observer {
  public:
   explicit ReadAnythingPageHandler(
       mojo::PendingRemote<read_anything::mojom::Page> page,
@@ -29,13 +32,16 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler {
   // read_anything::mojom::PageHandler:
   void ShowUI() override;
 
-  void HandleFontChange(const std::string& new_font_name);
+  // ReadAnythingModel::Observer:
+  void OnFontNameUpdated(const std::string& new_font_name) override;
 
  private:
   // Callback method which receives an AXTree snapshot and a list of AXNodes
   // which correspond to nodes in the tree that contain main content.
   void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
                          const std::vector<ui::AXNodeID>& text_node_ids);
+
+  BrowserView* browser_view_;
 
   mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
   mojo::Remote<read_anything::mojom::Page> page_;

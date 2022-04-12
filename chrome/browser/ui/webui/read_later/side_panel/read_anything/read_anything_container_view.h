@@ -9,21 +9,21 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/views/view.h"
 
-class Browser;
 class ReadAnythingUI;
+class ReadAnythingToolbarView;
 
-// Generic View to hold the entirety of the "Read Anything" side panel.
+// Generic View to hold the entirety of the "Read Anything" component.
 class ReadAnythingContainerView : public views::View {
  public:
-  explicit ReadAnythingContainerView(Browser* browser);
+  explicit ReadAnythingContainerView(
+      std::unique_ptr<ReadAnythingToolbarView> toolbar,
+      std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content);
   ReadAnythingContainerView(const ReadAnythingContainerView&) = delete;
+  ReadAnythingContainerView& operator=(const ReadAnythingContainerView&) =
+      delete;
   ~ReadAnythingContainerView() override;
 
  private:
-  void HandleFontChange(const std::string& new_font_name);
-
-  raw_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content_web_view_;
-
   base::WeakPtrFactory<ReadAnythingContainerView> weak_pointer_factory_{this};
 };
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTAINER_VIEW_H_
