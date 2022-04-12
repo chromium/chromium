@@ -12,8 +12,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.util.Pair;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -73,11 +71,15 @@ public class PendingDialogContainerTest {
         assertTrue(
                 "model2 should exist after insertion.", mPendingDialogContainer.contains(model2));
 
-        Pair<PropertyModel, Integer> nextDialog =
+        PendingDialogContainer.PendingDialogType nextDialog =
                 mPendingDialogContainer.getNextPendingDialog(new HashSet<>());
         // Model2 should be put in first because |showAsNext| was set to true for it.
         assertEquals("model2 should be the next dialog to be shown because of |showAsNext| to true",
-                model2, nextDialog.first);
+                model2, nextDialog.propertyModel);
+        assertEquals("The dialog type should never change for a pending dialog.",
+                ModalDialogType.APP, nextDialog.dialogType);
+        assertEquals("The dialog priority should never change for a pending dialog.",
+                ModalDialogPriority.LOW, nextDialog.dialogPriority);
 
         // Check getNextPendingDialog removes the property model.
         assertFalse("getNextPendingDialog should have removed the model2 from pending dialog"
@@ -104,12 +106,17 @@ public class PendingDialogContainerTest {
         assertTrue(
                 "model2 should exist after insertion.", mPendingDialogContainer.contains(model2));
 
-        Pair<PropertyModel, Integer> nextDialog =
+        PendingDialogContainer.PendingDialogType nextDialog =
                 mPendingDialogContainer.getNextPendingDialog(new HashSet<>());
         // Even though model2 is TAB based dialog, this is the next dialog in line because of its
         // priority.
         assertEquals("model2 should be the next dialog because of higher priority than model1.",
-                model2, nextDialog.first);
+                model2, nextDialog.propertyModel);
+        assertEquals("The dialog type should never change for a pending dialog.",
+                ModalDialogType.TAB, nextDialog.dialogType);
+        assertEquals("The dialog priority should never change for a pending dialog.",
+                ModalDialogPriority.HIGH, nextDialog.dialogPriority);
+
         // Check getNextPendingDialog removes the property model.
         assertFalse("getNextPendingDialog should have removed the model2 from"
                         + " pending dialog container.",

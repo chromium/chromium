@@ -4,7 +4,6 @@
 
 package org.chromium.ui.modaldialog;
 
-import android.util.Pair;
 import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
@@ -484,11 +483,10 @@ public class ModalDialogManager {
     /** Helper method for showing the next available dialog in the pending dialog list. */
     private void showNextDialog() {
         assert !isShowing();
-        Pair<PropertyModel, Integer> nextDialog =
+        PendingDialogContainer.PendingDialogType nextDialog =
                 mPendingDialogContainer.getNextPendingDialog(mSuspendedTypes);
         if (nextDialog == null) return;
-
-        showDialog(nextDialog.first, nextDialog.second);
+        showDialog(nextDialog.propertyModel, nextDialog.dialogType, nextDialog.dialogPriority);
     }
 
     // This calls onLastDialogDismissed() if there are no pending dialogs.

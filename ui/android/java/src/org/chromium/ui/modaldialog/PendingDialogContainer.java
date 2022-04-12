@@ -4,8 +4,6 @@
 
 package org.chromium.ui.modaldialog;
 
-import android.util.Pair;
-
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Consumer;
@@ -25,6 +23,22 @@ import java.util.Set;
  * ModalDialogType} and {@link ModalDialogPriority}.
  */
 class PendingDialogContainer {
+    /**
+     *  A class representing the attributes of a pending dialog.
+     */
+    class PendingDialogType {
+        public final PropertyModel propertyModel;
+        public final @ModalDialogType int dialogType;
+        public final @ModalDialogPriority int dialogPriority;
+
+        PendingDialogType(
+                PropertyModel model, @ModalDialogType int type, @ModalDialogPriority int priority) {
+            propertyModel = model;
+            dialogType = type;
+            dialogPriority = priority;
+        }
+    }
+
     /**
      * Mapping of the lists of pending dialogs based on {@link ModalDialogType} and {@link
      * ModalDialogPriority} of the dialogs.
@@ -174,11 +188,12 @@ class PendingDialogContainer {
      * Returns the next dialog whose {@link ModalDialogType} is not suspended from showing and also
      * removes it from the pending dialogs.
      *
-     * @return The {@link PropertyModel} model associated with the next dialog to be shown,
+     * @return The {@link PropertyModel}, the {@link ModalDialogType} and the {@link
+     *         ModalDialogPriority} of the model associated with the next dialog to be shown,
      *         otherwise null if not found.
      */
     @Nullable
-    Pair<PropertyModel, Integer> getNextPendingDialog(Set<Integer> suspendedTypes) {
+    PendingDialogType getNextPendingDialog(Set<Integer> suspendedTypes) {
         for (@ModalDialogPriority int priority = ModalDialogPriority.RANGE_MAX;
                 priority >= ModalDialogPriority.RANGE_MIN; --priority) {
             for (@ModalDialogType int type = ModalDialogType.RANGE_MAX;
@@ -192,7 +207,7 @@ class PendingDialogContainer {
                     if (dialogs.isEmpty()) {
                         mPendingDialogs.remove(key);
                     }
-                    return new Pair<>(model, type);
+                    return new PendingDialogType(model, type, priority);
                 }
             }
         }
