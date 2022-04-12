@@ -6,7 +6,7 @@
  * @fileoverview Puts text on a braille display.
  */
 import {BrailleCaptionsBackground} from './braille_captions_background.js';
-
+import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {PanStrategy} from './pan_strategy.js';
 
 export class BrailleDisplayManager {

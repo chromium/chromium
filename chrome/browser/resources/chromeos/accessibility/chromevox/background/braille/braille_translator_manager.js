@@ -6,13 +6,7 @@
  * @fileoverview Keeps track of the current braille translators.
  */
 
-goog.provide('BrailleTranslatorManager');
-
-goog.require('BrailleTable');
-goog.require('ExpandingBrailleTranslator');
-goog.require('LibLouis');
-
-BrailleTranslatorManager = class {
+export class BrailleTranslatorManager {
   /**
    * @param {LibLouis=} opt_liblouisForTest Liblouis instance to use
    *     for testing.
@@ -237,4 +231,4 @@ BrailleTranslatorManager = class {
   async loadTablesForTest() {
     await this.fetchTables_();
   }
-};
+}

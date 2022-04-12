@@ -22,6 +22,9 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
         'BrailleDisplayManager',
         '/chromevox/background/braille/braille_display_manager.js');
     await importModule(
+        'BrailleTranslatorManager',
+        '/chromevox/background/braille/braille_translator_manager.js');
+    await importModule(
         'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js');
 
     /** @const */

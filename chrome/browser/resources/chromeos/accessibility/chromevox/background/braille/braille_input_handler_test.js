@@ -434,6 +434,9 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'BrailleInputHandler',
         '/chromevox/background/braille/braille_input_handler.js');
+    await importModule(
+        'BrailleTranslatorManager',
+        '/chromevox/background/braille/braille_translator_manager.js');
 
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();

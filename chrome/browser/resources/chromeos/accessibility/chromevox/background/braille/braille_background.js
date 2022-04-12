@@ -8,6 +8,7 @@
 import {BrailleDisplayManager} from './braille_display_manager.js';
 import {BrailleInputHandler} from './braille_input_handler.js';
 import {BrailleKeyEventRewriter} from './braille_key_event_rewriter.js';
+import {BrailleTranslatorManager} from './braille_translator_manager.js';
 
 /**
  * @implements {BrailleInterface}

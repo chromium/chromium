@@ -9,10 +9,11 @@
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 goog.require('BrailleTable');
-goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
 goog.require('EventStreamLogger');
+goog.require('ExpandingBrailleTranslator');
 goog.require('ExtensionBridge');
+goog.require('LibLouis');
 goog.require('LogStore');
 goog.require('Msgs');
 goog.require('PanelCommand');
