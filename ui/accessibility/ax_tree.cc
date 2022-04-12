@@ -1191,81 +1191,83 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         if (table_info_entry != table_info_map_.end()) {
           table_info_entry->second->Invalidate();
 #if defined(AX_EXTRA_MAC_NODES)
-        // It will emit children changed notification on mac to make sure that
-        // extra mac accessibles are recreated.
-        changes.emplace_back(node, AXTreeObserver::NODE_CHANGED);
+          // It will emit children changed notification on mac to make sure that
+          // extra mac accessibles are recreated.
+          changes.emplace_back(node, AXTreeObserver::NODE_CHANGED);
 #endif
         }
-      table_ids_checked.insert(node->id());
-      node = node->parent();
+        table_ids_checked.insert(node->id());
+        node = node->parent();
       }
     }
 
-  // Clears |node_set_size_pos_in_set_info_map_|
-  node_set_size_pos_in_set_info_map_.clear();
+    // Clears |node_set_size_pos_in_set_info_map_|
+    node_set_size_pos_in_set_info_map_.clear();
 
-  std::set<AXNodeID> visited_observer_changes;
-  for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
-    AXNode* node = GetFromId(updated_node_data.id);
-    if (!node || !visited_observer_changes.emplace(updated_node_data.id).second)
-      continue;
+    std::set<AXNodeID> visited_observer_changes;
+    for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
+      AXNode* node = GetFromId(updated_node_data.id);
+      if (!node ||
+          !visited_observer_changes.emplace(updated_node_data.id).second)
+        continue;
 
-    bool is_new_node = update_state.IsCreatedNode(node);
-    bool is_reparented_node = update_state.IsReparentedNode(node);
+      bool is_new_node = update_state.IsCreatedNode(node);
+      bool is_reparented_node = update_state.IsReparentedNode(node);
 
-    AXTreeObserver::ChangeType change = AXTreeObserver::NODE_CHANGED;
-    if (is_new_node) {
-      if (is_reparented_node) {
-        // A reparented subtree is any new node whose parent either doesn't
-        // exist, or whose parent is not new.
-        // Note that we also need to check for the special case when we update
-        // the root without replacing it.
-        bool is_subtree = !node->parent() ||
-                          !update_state.IsCreatedNode(node->parent()) ||
-                          (node->parent() == root_ && root_updated);
-        change = is_subtree ? AXTreeObserver::SUBTREE_REPARENTED
-                            : AXTreeObserver::NODE_REPARENTED;
-      } else {
-        // A new subtree is any new node whose parent is either not new, or
-        // whose parent happens to be new only because it has been reparented.
-        // Note that we also need to check for the special case when we update
-        // the root without replacing it.
-        bool is_subtree = !node->parent() ||
-                          !update_state.IsCreatedNode(node->parent()) ||
-                          update_state.IsRemovedNode(node->parent()) ||
-                          (node->parent() == root_ && root_updated);
-        change = is_subtree ? AXTreeObserver::SUBTREE_CREATED
-                            : AXTreeObserver::NODE_CREATED;
+      AXTreeObserver::ChangeType change = AXTreeObserver::NODE_CHANGED;
+      if (is_new_node) {
+        if (is_reparented_node) {
+          // A reparented subtree is any new node whose parent either doesn't
+          // exist, or whose parent is not new.
+          // Note that we also need to check for the special case when we update
+          // the root without replacing it.
+          bool is_subtree = !node->parent() ||
+                            !update_state.IsCreatedNode(node->parent()) ||
+                            (node->parent() == root_ && root_updated);
+          change = is_subtree ? AXTreeObserver::SUBTREE_REPARENTED
+                              : AXTreeObserver::NODE_REPARENTED;
+        } else {
+          // A new subtree is any new node whose parent is either not new, or
+          // whose parent happens to be new only because it has been reparented.
+          // Note that we also need to check for the special case when we update
+          // the root without replacing it.
+          bool is_subtree = !node->parent() ||
+                            !update_state.IsCreatedNode(node->parent()) ||
+                            update_state.IsRemovedNode(node->parent()) ||
+                            (node->parent() == root_ && root_updated);
+          change = is_subtree ? AXTreeObserver::SUBTREE_CREATED
+                              : AXTreeObserver::NODE_CREATED;
+        }
+      }
+      changes.push_back(AXTreeObserver::Change(node, change));
+    }
+
+    // Clear cached information in `AXComputedNodeData` for every node that has
+    // been changed in any way, including because of changes to one of its
+    // descendants.
+    std::set<AXNodeID> cleared_computed_node_data_ids;
+    for (AXNodeID node_id : update_state.node_data_changed_ids) {
+      AXNode* node = GetFromId(node_id);
+      while (node) {
+        if (cleared_computed_node_data_ids.insert(node->id()).second)
+          node->ClearComputedNodeData();
+        node = node->parent();
       }
     }
-    changes.push_back(AXTreeObserver::Change(node, change));
-  }
 
-  // Clear cached information in `AXComputedNodeData` for every node that has
-  // been changed in any way, including because of changes to one of its
-  // descendants.
-  std::set<AXNodeID> cleared_computed_node_data_ids;
-  for (AXNodeID node_id : update_state.node_data_changed_ids) {
-    AXNode* node = GetFromId(node_id);
-    while (node) {
-      if (cleared_computed_node_data_ids.insert(node->id()).second)
-        node->ClearComputedNodeData();
-      node = node->parent();
+    // Update the unignored cached values as necessary, ensuring that we only
+    // update once for each unignored node.
+    // If the node is ignored, we must update from an unignored ancestor.
+    std::set<AXNodeID> updated_unignored_cached_values_ids;
+    for (AXNodeID node_id :
+         update_state.invalidate_unignored_cached_values_ids) {
+      AXNode* unignored_ancestor = GetUnignoredAncestorFromId(node_id);
+      if (unignored_ancestor &&
+          updated_unignored_cached_values_ids.insert(unignored_ancestor->id())
+              .second) {
+        unignored_ancestor->UpdateUnignoredCachedValues();
+      }
     }
-  }
-
-  // Update the unignored cached values as necessary, ensuring that we only
-  // update once for each unignored node.
-  // If the node is ignored, we must update from an unignored ancestor.
-  std::set<AXNodeID> updated_unignored_cached_values_ids;
-  for (AXNodeID node_id : update_state.invalidate_unignored_cached_values_ids) {
-    AXNode* unignored_ancestor = GetUnignoredAncestorFromId(node_id);
-    if (unignored_ancestor &&
-        updated_unignored_cached_values_ids.insert(unignored_ancestor->id())
-            .second) {
-      unignored_ancestor->UpdateUnignoredCachedValues();
-    }
-  }
 
   }  // tree_update_in_progress.
 
