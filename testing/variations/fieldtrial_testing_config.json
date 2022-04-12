@@ -3778,24 +3778,6 @@
             ]
         }
     ],
-    "IOSDiscoverFeedFastFollows": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "PostM98_Enabled_SRS",
-                    "params": {
-                        "DiscoverFeedSRSReconstructedTemplatesEnabled": "true"
-                    },
-                    "enable_features": [
-                        "IOSDiscoverFeedStaticResourceServing"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnableUnrealizedWebStates": [
         {
             "platforms": [
@@ -3896,6 +3878,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSSharedHighlightingV2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSStaticResourceServing": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SRS",
+                    "params": {
+                        "DiscoverFeedSRSReconstructedTemplatesEnabled": "true"
+                    },
+                    "enable_features": [
+                        "EnableDiscoverFeedStaticResourceServing"
                     ]
                 }
             ]
