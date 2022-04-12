@@ -154,19 +154,31 @@ def CheckUpdatedNaClSDK(input_api, output_api):
   verify_ppapi_py = os.path.join(input_api.change.RepositoryRoot(),
                                  'native_client_sdk', 'src', 'build_tools',
                                  'verify_ppapi.py')
-  # TODO(crbug.com/1222512): Use sys.executable instead of
-  # input_api.python_executable once idl_tests.py is py3 compatible, drop
-  # shell=True.
-  cmd = [input_api.python_executable, verify_ppapi_py] + nacl_sdk_files
-  return RunCmdAndCheck(cmd,
-                        'PPAPI Interface modified without updating NaCl SDK.\n'
-                        '(note that some dev interfaces should not be added '
-                        'the NaCl SDK; when in doubt, ask a ppapi OWNER.\n'
-                        'To ignore a file, add it to IGNORED_FILES in '
-                        'native_client_sdk/src/build_tools/verify_ppapi.py)',
-                        output_api,
-                        warning=True,
-                        shell=input_api.is_windows)
+  # When running git cl presubmit --all this presubmit may be asked to check
+  # ~300 files, leading to a command line that is ~9,500 characters, which
+  # exceeds the Windows 8191 character cmd.exe limit and causes cryptic failures
+  # with no context. To avoid these we break the command up into smaller pieces.
+  # The error is:
+  #     The command line is too long.
+  files_per_command = 25 if input_api.is_windows else 1000
+  results = []
+  for i in range(0, len(nacl_sdk_files), files_per_command):
+    # TODO(crbug.com/1222512): Use sys.executable instead of
+    # input_api.python_executable once idl_tests.py is py3 compatible, drop
+    # shell=True.
+    cmd = [input_api.python_executable, verify_ppapi_py
+           ] + nacl_sdk_files[i:i + files_per_command]
+    results.extend(
+        RunCmdAndCheck(
+            cmd,'PPAPI Interface modified without updating NaCl SDK.\n'
+                '(note that some dev interfaces should not be added '
+                'the NaCl SDK; when in doubt, ask a ppapi OWNER.\n'
+                'To ignore a file, add it to IGNORED_FILES in '
+                'native_client_sdk/src/build_tools/verify_ppapi.py)',
+                output_api,
+                warning=True,
+                shell=input_api.is_windows))
+  return results
 
 # Verify that changes to ppapi/thunk/interfaces_* files have a corresponding
 # change to tools/metrics/histograms/enums.xml for UMA tracking.
