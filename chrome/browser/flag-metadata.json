@@ -2398,7 +2398,7 @@
     "owners": [ "robsc", "napper", "adlr" ],
     // We add a neural net to change how fingers are handled. We set a milestone
     // deep into the future to allow for experiments.
-    "expiry_milestone": 90
+    "expiry_milestone": 130
   },
   {
     "name": "enable-new-download-api",
