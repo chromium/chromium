@@ -25,6 +25,8 @@ RTCRtpSynchronizationSourcesFromRTCRtpSources(
       window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
 
   HeapVector<Member<RTCRtpSynchronizationSource>> synchronization_sources;
+  if (!rtp_sources)
+    return synchronization_sources;
   for (const auto& rtp_source : *rtp_sources) {
     if (rtp_source->SourceType() != RTCRtpSource::Type::kSSRC)
       continue;
@@ -60,6 +62,8 @@ RTCRtpContributingSourcesFromRTCRtpSources(
       window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
 
   HeapVector<Member<RTCRtpContributingSource>> contributing_sources;
+  if (!rtp_sources)
+    return contributing_sources;
   for (const auto& rtp_source : *rtp_sources) {
     if (rtp_source->SourceType() != RTCRtpSource::Type::kCSRC)
       continue;
