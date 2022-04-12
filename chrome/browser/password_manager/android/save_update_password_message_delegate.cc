@@ -167,8 +167,10 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   if (!update_password) {
     message_->SetSecondaryIconResourceId(
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-    message_->SetSecondaryButtonMenuText(
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
+    message_->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
+        password_manager::features::UsesUnifiedPasswordManagerUi()
+            ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
+            : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
     message_->SetSecondaryActionCallback(base::BindOnce(
         &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
         base::Unretained(this)));

@@ -325,8 +325,6 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
-            GetMessageWrapper()->GetSecondaryButtonMenuText());
 
   if (IsParamFeatureEnabled()) {
     // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
@@ -337,7 +335,9 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
     EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
                   IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
               GetMessageWrapper()->GetIconResourceId());
-
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM),
+        GetMessageWrapper()->GetSecondaryButtonMenuText());
   } else {
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
               GetMessageWrapper()->GetTitle());
@@ -350,6 +350,8 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
     EXPECT_EQ(
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
         GetMessageWrapper()->GetIconResourceId());
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
+              GetMessageWrapper()->GetSecondaryButtonMenuText());
   }
 
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
