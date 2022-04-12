@@ -204,251 +204,75 @@ class CrostiniManager::CrostiniRestarter
                     CrostiniManager* crostini_manager,
                     ContainerId container_id,
                     RestartOptions options,
-                    CrostiniManager::CrostiniResultCallback callback)
-      : profile_(profile),
-        crostini_manager_(crostini_manager),
-        container_id_(std::move(container_id)),
-        options_(std::move(options)),
-        completed_callback_(std::move(callback)),
-        restart_id_(next_restart_id_++) {}
+                    CrostiniManager::CrostiniResultCallback callback);
+  ~CrostiniRestarter() override;
 
-  void Restart() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
-      LOG(ERROR) << "Crostini UI not allowed for profile "
-                 << profile_->GetProfileUserName();
-      std::move(completed_callback_).Run(CrostiniResult::NOT_ALLOWED);
-      return;
-    }
-
-    crostini_manager_->AddVmShutdownObserver(this);
-
-    StartStage(mojom::InstallerState::kStart);
-    is_initial_install_ =
-        crostini_manager_->GetCrostiniDialogStatus(DialogType::INSTALLER);
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-
-    auto vm_info = crostini_manager_->GetVmInfo(container_id_.vm_name);
-    // If vm is stopping, we wait until OnVmShutdown() to kick it off.
-    if (vm_info && vm_info->state == VmState::STOPPING) {
-      LOG(WARNING) << "Delay restart due to vm stopping";
-    } else {
-      ContinueRestart();
-    }
-  }
-
+  void Restart();
   void AddObserver(CrostiniManager::RestartObserver* observer) {
     observer_list_.AddObserver(observer);
   }
 
-  void RunCallback(CrostiniResult result) {
-    // Observer should not be called if we have completed.
-    observer_list_.Clear();
-
-    DCHECK_EQ(result_, CrostiniResult::NEVER_FINISHED);
-    result_ = result;
-
-    if (completed_callback_) {
-      std::move(completed_callback_).Run(result_);
-    }
-  }
+  // This gets called exactly once, at the end of the restart, either from
+  // Abort() or from CrostiniManager::FinishRestart().
+  void RunCallback(CrostiniResult result);
 
   // ash::VmShutdownObserver
-  void OnVmShutdown(const std::string& vm_name) override {
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    if (vm_name == container_id_.vm_name) {
-      if (is_running_) {
-        LOG(WARNING) << "Unexpected VM shutdown during restart for " << vm_name;
-        FinishRestart(CrostiniResult::RESTART_FAILED_VM_STOPPED);
-      } else {
-        // We can only get here if Restart() was called to register the shutdown
-        // observer, and since is_running_ is false, we are waiting for this
-        // shutdown to actually kick off the process.
-        VLOG(1) << "resume restart on vm shutdown";
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&CrostiniRestarter::ContinueRestart,
-                                      weak_ptr_factory_.GetWeakPtr()));
-      }
-    }
-  }
+  void OnVmShutdown(const std::string& vm_name) override;
 
-  void Timeout(mojom::InstallerState state) {
-    CrostiniResult result = CrostiniResult::UNKNOWN_STATE_TIMED_OUT;
-    LOG(ERROR) << "Timed out in state " << state;
-    switch (state) {
-      case mojom::InstallerState::kInstallImageLoader:
-        result = CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kCreateDiskImage:
-        result = CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kStartTerminaVm:
-        result = CrostiniResult::START_TERMINA_VM_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kStartLxd:
-        result = CrostiniResult::START_LXD_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kCreateContainer:
-        result = CrostiniResult::CREATE_CONTAINER_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kSetupContainer:
-        result = CrostiniResult::SETUP_CONTAINER_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kStartContainer:
-        result = CrostiniResult::START_CONTAINER_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kConfigureContainer:
-      case mojom::InstallerState::kStart:
-        NOTREACHED();
-    }
-    // Note: FinishRestart may delete |this|.
-    FinishRestart(result);
-  }
+  void Timeout(mojom::InstallerState state);
 
-  void Abort(base::OnceClosure callback) {
-    abort_callbacks_.push_back(std::move(callback));
-    if (abort_callbacks_.size() > 1) {
-      // The subsequent steps only need to be run once.
-      return;
-    }
-
-    // Run the main callback immediately, but wait for the current step to
-    // finish before invoking the abort callback.
-    RunCallback(CrostiniResult::RESTART_ABORTED);
-    if (stage_ == mojom::InstallerState::kInstallImageLoader) {
-      // TerminaInstaller offers a way to cancel installation, which also
-      // prevents any callback from running. In this case we can proceed
-      // directly to running the abort callbacks.
-      crostini_manager_->CancelInstallTermina();
-      // Callers may not expect their callback to be run within the same task.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](base::WeakPtr<CrostiniRestarter> weak_this) {
-                           if (weak_this) {
-                             weak_this->ReturnEarlyIfAborted();
-                           }
-                         },
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
-
+  // On abort, |completed_callback_| is immediately invoked via RunCallback().
+  // We wait for the current stage to complete and then quit the flow and call
+  // |callback|.
+  void Abort(base::OnceClosure callback);
   // If this method returns true, then |this| may have been deleted and it is
   // unsafe to refer to any member variables.
-  bool ReturnEarlyIfAborted() {
-    if (!is_aborted())
-      return false;
+  bool ReturnEarlyIfAborted();
 
-    for (auto& abort_callback : abort_callbacks_) {
-      std::move(abort_callback).Run();
-    }
-    FinishRestart(CrostiniResult::RESTART_ABORTED);
-    return true;
-  }
-
-  void OnContainerDownloading(int download_percent) {
-    if (!is_running_) {
-      return;
-    }
-    if (stage_timeout_timer_.IsRunning()) {
-      // We got a progress message, reset the timeout duration back to full.
-      stage_timeout_timer_.Reset();
-    }
-    for (auto& observer : observer_list_) {
-      observer.OnContainerDownloading(download_percent);
-    }
-  }
-
+  // These are called directly from CrostiniManager.
+  void OnContainerDownloading(int download_percent);
   void OnLxdContainerStarting(
-      vm_tools::cicerone::LxdContainerStartingSignal_Status status) {
-    if (!is_running_ || !stage_timeout_timer_.IsRunning() ||
-        status != vm_tools::cicerone::LxdContainerStartingSignal::STARTING ||
-        stage_ != mojom::InstallerState::kStartContainer) {
-      VLOG(1) << "Got start container message but status is " << status
-              << " and stage is " << stage_ << " so not extending timeout";
-      return;
-    }
-    // We got a progress message, reset the timeout duration back to full.
-    VLOG(1) << "Got start container heartbeat so extending timeout";
-    stage_timeout_timer_.Reset();
-  }
+      vm_tools::cicerone::LxdContainerStartingSignal_Status status);
 
   CrostiniManager::RestartId restart_id() const { return restart_id_; }
   const ContainerId& container_id() { return container_id_; }
   bool is_aborted() const { return !abort_callbacks_.empty(); }
   bool DidSuccessfulFullRestart() { return did_successful_full_restart_; }
 
-  ~CrostiniRestarter() override {
-    // Do not record results if this restart was triggered by the installer.
-    // The crostini installer has its own histograms that should be kept
-    // separate.
-    if (!is_initial_install_) {
-      base::UmaHistogramEnumeration("Crostini.RestarterResult", result_);
-    }
-    crostini_manager_->RemoveVmShutdownObserver(this);
-    if (completed_callback_) {
-      LOG(ERROR) << "Destroying without having called the callback.";
-    }
-  }
-
   // This is public so CallRestarterStartLxdContainerFinishedForTesting can call
   // it.
-  void StartLxdContainerFinished(CrostiniResult result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    CloseCrostiniUpdateFilesystemView();
-    for (auto& observer : observer_list_) {
-      observer.OnContainerStarted(result);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartContainer);
-    if (result != CrostiniResult::SUCCESS) {
-      LOG(ERROR) << "Failed to Start Lxd Container.";
-      FinishRestart(result);
-      return;
-    }
-
-    // If arc sideloading is enabled, configure the container for that.
-    crostini_manager_->ConfigureForArcSideload();
-
-    // If default termina/penguin, then sshfs mount and reshare folders, else we
-    // are finished. Also, a lot of unit tests don't inject a fake container so
-    // it's possible in tests to end up here without a running container. Don't
-    // try mounting sshfs in that case.
-    auto info = crostini_manager_->GetContainerInfo(container_id_);
-    if (container_id_ == ContainerId::GetDefault() && info) {
-      crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
-                                            true);
-    }
-
-    did_successful_full_restart_ = true;
-    FinishRestart(result);
-  }
+  void StartLxdContainerFinished(CrostiniResult result);
 
  private:
-  void ContinueRestart() {
-    is_running_ = true;
-    // Skip to the end immediately if testing.
-    if (crostini_manager_->skip_restart_for_testing()) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CrostiniRestarter::StartLxdContainerFinished,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         CrostiniResult::SUCCESS));
-      return;
-    }
+  void StartStage(mojom::InstallerState stage);
+  void EmitMetricIfInIncorrectState(mojom::InstallerState expected);
 
-    StartStage(mojom::InstallerState::kInstallImageLoader);
-    crostini_manager_->InstallTermina(
-        base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
-                       weak_ptr_factory_.GetWeakPtr()),
-        is_initial_install_);
-  }
+  // In a successful complete restart, every function in the below list in
+  // called in order, from Restart() to FinishRestart(). If the restarter is
+  // aborted or an operation fails or times out, it proceeds directly to
+  // FinishRestart().
+
+  // Public function - Restart();
+  void ContinueRestart();
+  void LoadComponentFinished(CrostiniResult result);
+  void CreateDiskImageFinished(int64_t disk_size_bytes,
+                               bool success,
+                               vm_tools::concierge::DiskImageStatus status,
+                               const base::FilePath& result_path);
+  // chromeos::SchedulerConfigurationManagerBase::Observer:
+  void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
+  void StartTerminaVmFinished(bool success);
+  void GetTerminaVmKernelVersionFinished(
+      const absl::optional<std::string>& maybe_kernel_version);
+  void SharePathsFinished(bool success, const std::string& failure_reason);
+  void StartLxdFinished(CrostiniResult result);
+  void CreateLxdContainerFinished(CrostiniResult result);
+  void SetUpLxdContainerUserFinished(bool success);
+  // Public function - StartLxdContainerFinished(CrostiniResult result);
+  // FinishRestart function can cause |this| to be deleted, so callers should
+  // return immediately after calling this. This should be called exactly once
+  // per restarter.
+  void FinishRestart(CrostiniResult result);
 
   base::OneShotTimer stage_timeout_timer_;
   base::TimeTicks stage_start_;
@@ -473,250 +297,6 @@ class CrostiniManager::CrostiniRestarter
       // it doesn't have a timeout.
       {mojom::InstallerState::kConfigureContainer, base::Hours(0)},
   };
-
-  void StartStage(mojom::InstallerState stage) {
-    int finished_stage = static_cast<int>(stage) - 1;
-    if (finished_stage >= 0) {
-      EmitTimeInStageHistogram(
-          base::TimeTicks::Now() - stage_start_,
-          static_cast<mojom::InstallerState>(finished_stage));
-    }
-    this->stage_ = stage;
-    stage_start_ = base::TimeTicks::Now();
-    DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
-    auto delay = stage_timeouts_[stage];
-    stage_timeout_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&CrostiniRestarter::Timeout,
-                       weak_ptr_factory_.GetWeakPtr(), stage));
-
-    for (auto& observer : observer_list_) {
-      observer.OnStageStarted(stage);
-    }
-  }
-
-  // This function can cause |this| to be deleted, so callers should return
-  // immediately after calling this.
-  void FinishRestart(CrostiniResult result) {
-    // RunCallback() is usually invoked from CrostiniManager::FinishRestart()
-    // but when aborted is explicitly called earlier.
-    DCHECK(result_ == CrostiniResult::NEVER_FINISHED ||
-           result_ == CrostiniResult::RESTART_ABORTED);
-    EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
-
-    // CrostiniManager::FinishRestart deletes |this|, sometimes synchronously.
-    crostini_manager_->FinishRestart(this, result);
-  }
-
-  void EmitMetricIfInIncorrectState(mojom::InstallerState expected) {
-    if (expected != stage_) {
-      base::UmaHistogramEnumeration("Crostini.InvalidStateTransition",
-                                    expected);
-    }
-  }
-
-  void LoadComponentFinished(CrostiniResult result) {
-    for (auto& observer : observer_list_) {
-      observer.OnComponentLoaded(result);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kInstallImageLoader);
-    if (result != CrostiniResult::SUCCESS) {
-      FinishRestart(result);
-      return;
-    }
-    // Set the pref here, after we first successfully install something
-    profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
-
-    // Allow concierge to choose an appropriate disk image size.
-    int64_t disk_size_bytes = options_.disk_size_bytes.value_or(0);
-    // If we have an already existing disk, CreateDiskImage will just return its
-    // path so we can pass it to StartTerminaVm.
-    StartStage(mojom::InstallerState::kCreateDiskImage);
-    crostini_manager_->CreateDiskImage(
-        container_id_.vm_name,
-        vm_tools::concierge::StorageLocation::STORAGE_CRYPTOHOME_ROOT,
-        disk_size_bytes,
-        base::BindOnce(&CrostiniRestarter::CreateDiskImageFinished,
-                       weak_ptr_factory_.GetWeakPtr(), disk_size_bytes));
-  }
-
-  void CreateDiskImageFinished(int64_t disk_size_bytes,
-                               bool success,
-                               vm_tools::concierge::DiskImageStatus status,
-                               const base::FilePath& result_path) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    for (auto& observer : observer_list_) {
-      observer.OnDiskImageCreated(success, status, disk_size_bytes);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateDiskImage);
-    if (!success) {
-      FinishRestart(CrostiniResult::CREATE_DISK_IMAGE_FAILED);
-      return;
-    }
-    crostini_manager_->EmitVmDiskTypeMetric(container_id_.vm_name);
-    disk_path_ = result_path;
-
-    auto* scheduler_configuration_manager =
-        g_browser_process->platform_part()->scheduler_configuration_manager();
-    absl::optional<std::pair<bool, size_t>> scheduler_configuration =
-        scheduler_configuration_manager->GetLastReply();
-    if (!scheduler_configuration) {
-      // Wait for the configuration to become available.
-      LOG(WARNING) << "Scheduler configuration is not yet ready";
-      scheduler_configuration_manager->AddObserver(this);
-      return;
-    }
-    OnConfigurationSet(scheduler_configuration->first,
-                       scheduler_configuration->second);
-  }
-
-  // chromeos::SchedulerConfigurationManagerBase::Observer:
-  void OnConfigurationSet(bool success, size_t num_cores_disabled) override {
-    // Note: On non-x86_64 devices, the configuration request to debugd always
-    // fails. It is WAI, and to support that case, don't log anything even when
-    // |success| is false. |num_cores_disabled| is always set regardless of
-    // whether the call is successful.
-    g_browser_process->platform_part()
-        ->scheduler_configuration_manager()
-        ->RemoveObserver(this);
-    StartStage(mojom::InstallerState::kStartTerminaVm);
-    crostini_manager_->StartTerminaVm(
-        container_id_.vm_name, disk_path_, num_cores_disabled,
-        base::BindOnce(&CrostiniRestarter::StartTerminaVmFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void StartTerminaVmFinished(bool success) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    for (auto& observer : observer_list_) {
-      observer.OnVmStarted(success);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartTerminaVm);
-    if (!success) {
-      FinishRestart(CrostiniResult::VM_START_FAILED);
-      return;
-    }
-    // Cache kernel version for enterprise reporting, if it is enabled
-    // by policy, and we are in the default Termina case.
-    if (profile_->GetPrefs()->GetBoolean(
-            crostini::prefs::kReportCrostiniUsageEnabled) &&
-        container_id_.vm_name == kCrostiniDefaultVmName) {
-      crostini_manager_->GetTerminaVmKernelVersion(
-          base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-
-    if (options_.start_vm_only) {
-      FinishRestart(CrostiniResult::SUCCESS);
-      return;
-    }
-
-    // Share any non-persisted paths for the VM.
-    guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
-        container_id_.vm_name, options_.share_paths, /*persist=*/false,
-        base::BindOnce(&CrostiniRestarter::SharePathsFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void SharePathsFinished(bool success, const std::string& failure_reason) {
-    if (!success) {
-      LOG(WARNING) << "Failed to share paths: " << failure_reason;
-    }
-    StartStage(mojom::InstallerState::kStartLxd);
-    crostini_manager_->StartLxd(
-        container_id_.vm_name,
-        base::BindOnce(&CrostiniRestarter::StartLxdFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void StartLxdFinished(CrostiniResult result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    for (auto& observer : observer_list_) {
-      observer.OnLxdStarted(result);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartLxd);
-    if (result != CrostiniResult::SUCCESS ||
-        options_.stop_after_lxd_available) {
-      FinishRestart(result);
-      return;
-    }
-    StartStage(mojom::InstallerState::kCreateContainer);
-    crostini_manager_->CreateLxdContainer(
-        container_id_, options_.image_server_url, options_.image_alias,
-        base::BindOnce(&CrostiniRestarter::CreateLxdContainerFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void GetTerminaVmKernelVersionFinished(
-      const absl::optional<std::string>& maybe_kernel_version) {
-    // In the error case, Crostini should still start, so we do not propagate
-    // errors any further here. Also, any error would already have been logged
-    // by CrostiniManager, so here we just (re)set the kernel version pref to
-    // the empty string in case the response is empty.
-    std::string kernel_version;
-    if (maybe_kernel_version.has_value()) {
-      kernel_version = maybe_kernel_version.value();
-    }
-    WriteTerminaVmKernelVersionToPrefsForReporting(profile_->GetPrefs(),
-                                                   kernel_version);
-  }
-
-  void CreateLxdContainerFinished(CrostiniResult result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    for (auto& observer : observer_list_) {
-      observer.OnContainerCreated(result);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateContainer);
-    if (result != CrostiniResult::SUCCESS) {
-      LOG(ERROR) << "Failed to Create Lxd Container.";
-      FinishRestart(result);
-      return;
-    }
-    StartStage(mojom::InstallerState::kSetupContainer);
-    crostini_manager_->SetUpLxdContainerUser(
-        container_id_,
-        options_.container_username.value_or(
-            DefaultContainerUserNameForProfile(profile_)),
-        base::BindOnce(&CrostiniRestarter::SetUpLxdContainerUserFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void SetUpLxdContainerUserFinished(bool success) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    for (auto& observer : observer_list_) {
-      observer.OnContainerSetup(success);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    EmitMetricIfInIncorrectState(mojom::InstallerState::kSetupContainer);
-    if (!success) {
-      FinishRestart(CrostiniResult::CONTAINER_SETUP_FAILED);
-      return;
-    }
-
-    StartStage(mojom::InstallerState::kStartContainer);
-    crostini_manager_->StartLxdContainer(
-        container_id_,
-        base::BindOnce(&CrostiniRestarter::StartLxdContainerFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 
   Profile* profile_;
   // This isn't accessed after the CrostiniManager is destroyed and we need a
@@ -746,6 +326,496 @@ class CrostiniManager::CrostiniRestarter
 
 CrostiniManager::RestartId
     CrostiniManager::CrostiniRestarter::next_restart_id_ = 0;
+
+CrostiniManager::CrostiniRestarter::CrostiniRestarter(
+    Profile* profile,
+    CrostiniManager* crostini_manager,
+    ContainerId container_id,
+    RestartOptions options,
+    CrostiniManager::CrostiniResultCallback callback)
+    : profile_(profile),
+      crostini_manager_(crostini_manager),
+      container_id_(std::move(container_id)),
+      options_(std::move(options)),
+      completed_callback_(std::move(callback)),
+      restart_id_(next_restart_id_++) {}
+
+CrostiniManager::CrostiniRestarter::~CrostiniRestarter() {
+  // Do not record results if this restart was triggered by the installer.
+  // The crostini installer has its own histograms that should be kept
+  // separate.
+  if (!is_initial_install_) {
+    base::UmaHistogramEnumeration("Crostini.RestarterResult", result_);
+  }
+  crostini_manager_->RemoveVmShutdownObserver(this);
+  if (completed_callback_) {
+    LOG(ERROR) << "Destroying without having called the callback.";
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::Restart() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
+    LOG(ERROR) << "Crostini UI not allowed for profile "
+               << profile_->GetProfileUserName();
+    std::move(completed_callback_).Run(CrostiniResult::NOT_ALLOWED);
+    return;
+  }
+
+  crostini_manager_->AddVmShutdownObserver(this);
+
+  StartStage(mojom::InstallerState::kStart);
+  is_initial_install_ =
+      crostini_manager_->GetCrostiniDialogStatus(DialogType::INSTALLER);
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+
+  auto vm_info = crostini_manager_->GetVmInfo(container_id_.vm_name);
+  // If vm is stopping, we wait until OnVmShutdown() to kick it off.
+  if (vm_info && vm_info->state == VmState::STOPPING) {
+    LOG(WARNING) << "Delay restart due to vm stopping";
+  } else {
+    ContinueRestart();
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::RunCallback(CrostiniResult result) {
+  // Observer should not be called if we have completed.
+  observer_list_.Clear();
+
+  DCHECK_EQ(result_, CrostiniResult::NEVER_FINISHED);
+  result_ = result;
+
+  if (completed_callback_) {
+    std::move(completed_callback_).Run(result_);
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::OnVmShutdown(
+    const std::string& vm_name) {
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  if (vm_name == container_id_.vm_name) {
+    if (is_running_) {
+      LOG(WARNING) << "Unexpected VM shutdown during restart for " << vm_name;
+      FinishRestart(CrostiniResult::RESTART_FAILED_VM_STOPPED);
+    } else {
+      // We can only get here if Restart() was called to register the shutdown
+      // observer, and since is_running_ is false, we are waiting for this
+      // shutdown to actually kick off the process.
+      VLOG(1) << "resume restart on vm shutdown";
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&CrostiniRestarter::ContinueRestart,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
+  CrostiniResult result = CrostiniResult::UNKNOWN_STATE_TIMED_OUT;
+  LOG(ERROR) << "Timed out in state " << state;
+  switch (state) {
+    case mojom::InstallerState::kInstallImageLoader:
+      result = CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kCreateDiskImage:
+      result = CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kStartTerminaVm:
+      result = CrostiniResult::START_TERMINA_VM_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kStartLxd:
+      result = CrostiniResult::START_LXD_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kCreateContainer:
+      result = CrostiniResult::CREATE_CONTAINER_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kSetupContainer:
+      result = CrostiniResult::SETUP_CONTAINER_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kStartContainer:
+      result = CrostiniResult::START_CONTAINER_TIMED_OUT;
+      break;
+    case mojom::InstallerState::kConfigureContainer:
+    case mojom::InstallerState::kStart:
+      NOTREACHED();
+  }
+  // Note: FinishRestart may delete |this|.
+  FinishRestart(result);
+}
+
+void CrostiniManager::CrostiniRestarter::Abort(base::OnceClosure callback) {
+  abort_callbacks_.push_back(std::move(callback));
+  if (abort_callbacks_.size() > 1) {
+    // The subsequent steps only need to be run once.
+    return;
+  }
+
+  // Run the main callback immediately, but wait for the current step to
+  // finish before invoking the abort callback.
+  RunCallback(CrostiniResult::RESTART_ABORTED);
+  if (stage_ == mojom::InstallerState::kInstallImageLoader) {
+    // TerminaInstaller offers a way to cancel installation, which also
+    // prevents any callback from running. In this case we can proceed
+    // directly to running the abort callbacks.
+    crostini_manager_->CancelInstallTermina();
+    // Callers may not expect their callback to be run within the same task.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<CrostiniRestarter> weak_this) {
+                         if (weak_this) {
+                           weak_this->ReturnEarlyIfAborted();
+                         }
+                       },
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+bool CrostiniManager::CrostiniRestarter::ReturnEarlyIfAborted() {
+  if (!is_aborted())
+    return false;
+
+  for (auto& abort_callback : abort_callbacks_) {
+    std::move(abort_callback).Run();
+  }
+  FinishRestart(CrostiniResult::RESTART_ABORTED);
+  return true;
+}
+
+void CrostiniManager::CrostiniRestarter::OnContainerDownloading(
+    int download_percent) {
+  if (!is_running_) {
+    return;
+  }
+  if (stage_timeout_timer_.IsRunning()) {
+    // We got a progress message, reset the timeout duration back to full.
+    stage_timeout_timer_.Reset();
+  }
+  for (auto& observer : observer_list_) {
+    observer.OnContainerDownloading(download_percent);
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::OnLxdContainerStarting(
+    vm_tools::cicerone::LxdContainerStartingSignal_Status status) {
+  if (!is_running_ || !stage_timeout_timer_.IsRunning() ||
+      status != vm_tools::cicerone::LxdContainerStartingSignal::STARTING ||
+      stage_ != mojom::InstallerState::kStartContainer) {
+    VLOG(1) << "Got start container message but status is " << status
+            << " and stage is " << stage_ << " so not extending timeout";
+    return;
+  }
+  // We got a progress message, reset the timeout duration back to full.
+  VLOG(1) << "Got start container heartbeat so extending timeout";
+  stage_timeout_timer_.Reset();
+}
+
+void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
+    CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  CloseCrostiniUpdateFilesystemView();
+  for (auto& observer : observer_list_) {
+    observer.OnContainerStarted(result);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kStartContainer);
+  if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to Start Lxd Container.";
+    FinishRestart(result);
+    return;
+  }
+
+  // If arc sideloading is enabled, configure the container for that.
+  crostini_manager_->ConfigureForArcSideload();
+
+  // If default termina/penguin, then sshfs mount and reshare folders, else we
+  // are finished. Also, a lot of unit tests don't inject a fake container so
+  // it's possible in tests to end up here without a running container. Don't
+  // try mounting sshfs in that case.
+  auto info = crostini_manager_->GetContainerInfo(container_id_);
+  if (container_id_ == ContainerId::GetDefault() && info) {
+    crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
+                                          true);
+  }
+
+  did_successful_full_restart_ = true;
+  FinishRestart(result);
+}
+
+void CrostiniManager::CrostiniRestarter::StartStage(
+    mojom::InstallerState stage) {
+  int finished_stage = static_cast<int>(stage) - 1;
+  if (finished_stage >= 0) {
+    EmitTimeInStageHistogram(
+        base::TimeTicks::Now() - stage_start_,
+        static_cast<mojom::InstallerState>(finished_stage));
+  }
+  this->stage_ = stage;
+  stage_start_ = base::TimeTicks::Now();
+  DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
+  auto delay = stage_timeouts_[stage];
+  stage_timeout_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&CrostiniRestarter::Timeout,
+                     weak_ptr_factory_.GetWeakPtr(), stage));
+
+  for (auto& observer : observer_list_) {
+    observer.OnStageStarted(stage);
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::EmitMetricIfInIncorrectState(
+    mojom::InstallerState expected) {
+  if (expected != stage_) {
+    base::UmaHistogramEnumeration("Crostini.InvalidStateTransition", expected);
+  }
+}
+
+void CrostiniManager::CrostiniRestarter::ContinueRestart() {
+  is_running_ = true;
+  // Skip to the end immediately if testing.
+  if (crostini_manager_->skip_restart_for_testing()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CrostiniRestarter::StartLxdContainerFinished,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  CrostiniResult::SUCCESS));
+    return;
+  }
+
+  StartStage(mojom::InstallerState::kInstallImageLoader);
+  crostini_manager_->InstallTermina(
+      base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
+                     weak_ptr_factory_.GetWeakPtr()),
+      is_initial_install_);
+}
+
+void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
+    CrostiniResult result) {
+  for (auto& observer : observer_list_) {
+    observer.OnComponentLoaded(result);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kInstallImageLoader);
+  if (result != CrostiniResult::SUCCESS) {
+    FinishRestart(result);
+    return;
+  }
+  // Set the pref here, after we first successfully install something
+  profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
+
+  // Allow concierge to choose an appropriate disk image size.
+  int64_t disk_size_bytes = options_.disk_size_bytes.value_or(0);
+  // If we have an already existing disk, CreateDiskImage will just return its
+  // path so we can pass it to StartTerminaVm.
+  StartStage(mojom::InstallerState::kCreateDiskImage);
+  crostini_manager_->CreateDiskImage(
+      container_id_.vm_name,
+      vm_tools::concierge::StorageLocation::STORAGE_CRYPTOHOME_ROOT,
+      disk_size_bytes,
+      base::BindOnce(&CrostiniRestarter::CreateDiskImageFinished,
+                     weak_ptr_factory_.GetWeakPtr(), disk_size_bytes));
+}
+
+void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
+    int64_t disk_size_bytes,
+    bool success,
+    vm_tools::concierge::DiskImageStatus status,
+    const base::FilePath& result_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnDiskImageCreated(success, status, disk_size_bytes);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateDiskImage);
+  if (!success) {
+    FinishRestart(CrostiniResult::CREATE_DISK_IMAGE_FAILED);
+    return;
+  }
+  crostini_manager_->EmitVmDiskTypeMetric(container_id_.vm_name);
+  disk_path_ = result_path;
+
+  auto* scheduler_configuration_manager =
+      g_browser_process->platform_part()->scheduler_configuration_manager();
+  absl::optional<std::pair<bool, size_t>> scheduler_configuration =
+      scheduler_configuration_manager->GetLastReply();
+  if (!scheduler_configuration) {
+    // Wait for the configuration to become available.
+    LOG(WARNING) << "Scheduler configuration is not yet ready";
+    scheduler_configuration_manager->AddObserver(this);
+    return;
+  }
+  OnConfigurationSet(scheduler_configuration->first,
+                     scheduler_configuration->second);
+}
+
+// chromeos::SchedulerConfigurationManagerBase::Observer:
+void CrostiniManager::CrostiniRestarter::OnConfigurationSet(
+    bool success,
+    size_t num_cores_disabled) {
+  // Note: On non-x86_64 devices, the configuration request to debugd always
+  // fails. It is WAI, and to support that case, don't log anything even when
+  // |success| is false. |num_cores_disabled| is always set regardless of
+  // whether the call is successful.
+  g_browser_process->platform_part()
+      ->scheduler_configuration_manager()
+      ->RemoveObserver(this);
+  StartStage(mojom::InstallerState::kStartTerminaVm);
+  crostini_manager_->StartTerminaVm(
+      container_id_.vm_name, disk_path_, num_cores_disabled,
+      base::BindOnce(&CrostiniRestarter::StartTerminaVmFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnVmStarted(success);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kStartTerminaVm);
+  if (!success) {
+    FinishRestart(CrostiniResult::VM_START_FAILED);
+    return;
+  }
+  // Cache kernel version for enterprise reporting, if it is enabled
+  // by policy, and we are in the default Termina case.
+  if (profile_->GetPrefs()->GetBoolean(
+          crostini::prefs::kReportCrostiniUsageEnabled) &&
+      container_id_.vm_name == kCrostiniDefaultVmName) {
+    crostini_manager_->GetTerminaVmKernelVersion(
+        base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (options_.start_vm_only) {
+    FinishRestart(CrostiniResult::SUCCESS);
+    return;
+  }
+
+  // Share any non-persisted paths for the VM.
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
+      container_id_.vm_name, options_.share_paths, /*persist=*/false,
+      base::BindOnce(&CrostiniRestarter::SharePathsFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::GetTerminaVmKernelVersionFinished(
+    const absl::optional<std::string>& maybe_kernel_version) {
+  // In the error case, Crostini should still start, so we do not propagate
+  // errors any further here. Also, any error would already have been logged
+  // by CrostiniManager, so here we just (re)set the kernel version pref to
+  // the empty string in case the response is empty.
+  std::string kernel_version;
+  if (maybe_kernel_version.has_value()) {
+    kernel_version = maybe_kernel_version.value();
+  }
+  WriteTerminaVmKernelVersionToPrefsForReporting(profile_->GetPrefs(),
+                                                 kernel_version);
+}
+
+void CrostiniManager::CrostiniRestarter::SharePathsFinished(
+    bool success,
+    const std::string& failure_reason) {
+  if (!success) {
+    LOG(WARNING) << "Failed to share paths: " << failure_reason;
+  }
+  StartStage(mojom::InstallerState::kStartLxd);
+  crostini_manager_->StartLxd(
+      container_id_.vm_name,
+      base::BindOnce(&CrostiniRestarter::StartLxdFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::StartLxdFinished(
+    CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnLxdStarted(result);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kStartLxd);
+  if (result != CrostiniResult::SUCCESS || options_.stop_after_lxd_available) {
+    FinishRestart(result);
+    return;
+  }
+  StartStage(mojom::InstallerState::kCreateContainer);
+  crostini_manager_->CreateLxdContainer(
+      container_id_, options_.image_server_url, options_.image_alias,
+      base::BindOnce(&CrostiniRestarter::CreateLxdContainerFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
+    CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnContainerCreated(result);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateContainer);
+  if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to Create Lxd Container.";
+    FinishRestart(result);
+    return;
+  }
+  StartStage(mojom::InstallerState::kSetupContainer);
+  crostini_manager_->SetUpLxdContainerUser(
+      container_id_,
+      options_.container_username.value_or(
+          DefaultContainerUserNameForProfile(profile_)),
+      base::BindOnce(&CrostiniRestarter::SetUpLxdContainerUserFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  for (auto& observer : observer_list_) {
+    observer.OnContainerSetup(success);
+  }
+  if (ReturnEarlyIfAborted()) {
+    return;
+  }
+  EmitMetricIfInIncorrectState(mojom::InstallerState::kSetupContainer);
+  if (!success) {
+    FinishRestart(CrostiniResult::CONTAINER_SETUP_FAILED);
+    return;
+  }
+
+  StartStage(mojom::InstallerState::kStartContainer);
+  crostini_manager_->StartLxdContainer(
+      container_id_,
+      base::BindOnce(&CrostiniRestarter::StartLxdContainerFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
+  // RunCallback() is usually invoked from CrostiniManager::FinishRestart()
+  // but when aborted is explicitly called earlier.
+  DCHECK(result_ == CrostiniResult::NEVER_FINISHED ||
+         result_ == CrostiniResult::RESTART_ABORTED);
+  EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
+
+  // CrostiniManager::FinishRestart deletes |this|, sometimes synchronously.
+  crostini_manager_->FinishRestart(this, result);
+}
+
 // Unit tests need this initialized to true. In Browser tests and real life,
 // it is updated via MaybeUpdateCrostini.
 bool CrostiniManager::is_dev_kvm_present_ = true;
