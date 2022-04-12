@@ -311,6 +311,20 @@ void UpdateServiceProxy::Update(
                              reply:reply];
 }
 
+void UpdateServiceProxy::RunInstaller(const std::string& app_id,
+                                      const base::FilePath& installer_path,
+                                      const std::string& install_args,
+                                      const std::string& install_data,
+                                      const std::string& install_settings,
+                                      StateChangeCallback state_update,
+                                      Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  // TODO(crbug.com/1286574): implement.
+  NOTIMPLEMENTED();
+}
+
 void UpdateServiceProxy::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;

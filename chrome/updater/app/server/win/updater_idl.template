@@ -96,7 +96,14 @@ interface IUpdater : IUnknown {
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);
-};
+  HRESULT RunInstaller(
+      [in, string] const WCHAR* app_id,
+      [in, string] const WCHAR* installer_path,
+      [in, string] const WCHAR* install_args,
+      [in, string] const WCHAR* install_data,
+      [in, string] const WCHAR* install_settings,
+      [in] IUpdaterObserver* observer);
+  };
 
 [
   uuid(PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC),

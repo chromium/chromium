@@ -8,6 +8,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -374,6 +376,97 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
 
   // Always return S_OK from this function. Errors must be reported using the
   // observer interface.
+  return S_OK;
+}
+
+HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
+                                  const wchar_t* installer_path,
+                                  const wchar_t* install_args,
+                                  const wchar_t* install_data,
+                                  const wchar_t* install_settings,
+                                  IUpdaterObserver* observer) {
+  for (const wchar_t* str :
+       {app_id, installer_path, install_args, install_data, install_settings}) {
+    constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
+    if (wcsnlen_s(str, kMaxStringLen) >= kMaxStringLen) {
+      return E_INVALIDARG;
+    }
+  }
+
+  std::string app_id_str;
+  if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &app_id_str)) {
+    return E_INVALIDARG;
+  }
+
+  if (!installer_path) {
+    return E_INVALIDARG;
+  }
+
+  std::string install_args_str;
+  if (install_args && !base::WideToUTF8(install_args, wcslen(install_args),
+                                        &install_args_str)) {
+    return E_INVALIDARG;
+  }
+
+  std::string install_settings_str;
+  if (install_settings &&
+      !base::WideToUTF8(install_settings, wcslen(install_settings),
+                        &install_settings_str)) {
+    return E_INVALIDARG;
+  }
+
+  std::string install_data_str;
+  if (install_data && !base::WideToUTF8(install_data, wcslen(install_data),
+                                        &install_data_str)) {
+    return E_INVALIDARG;
+  }
+
+  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+
+  // This task runner is responsible for sequencing the COM calls and callbacks.
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UpdateService> update_service,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             const std::string& app_id, const base::FilePath& installer_path,
+             const std::string& install_args, const std::string& install_data,
+             const std::string& install_settings,
+             IUpdaterObserverPtr observer) {
+            update_service->RunInstaller(
+                app_id, installer_path, install_args, install_data,
+                install_settings,
+                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
+                                    base::Owned(new StateChangeCallbackFilter(
+                                        task_runner, observer))),
+                base::BindOnce(
+                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+                       IUpdaterObserverPtr observer,
+                       const UpdateService::Result result) {
+                      // TODO(crbug.com/1286574): Once `result` is expanded
+                      // with more detailed installation result, convert and
+                      // forward the details to `CompleteStatusImpl`.
+                      task_runner->PostTaskAndReplyWithResult(
+                          FROM_HERE,
+                          base::BindOnce(
+                              &IUpdaterObserver::OnComplete, observer,
+                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                                  static_cast<int>(result), L"")),
+                          base::BindOnce([](HRESULT hr) {
+                            DVLOG(2) << "UpdaterImpl::RunInstaller "
+                                     << "callback returned " << std::hex << hr;
+                          }));
+                    },
+                    task_runner, observer));
+          },
+          com_server->update_service(), task_runner, app_id_str,
+          base::FilePath(installer_path), install_args_str, install_data_str,
+          install_settings_str, IUpdaterObserverPtr(observer)));
+
   return S_OK;
 }
 

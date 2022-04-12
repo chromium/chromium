@@ -23,6 +23,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -322,18 +323,22 @@ Installer::Result MakeInstallerResult(
 // The installer progress is written by the application installer as a value
 // under the application's client state in the Windows registry and read by
 // polling in a loop, while waiting for the installer to exit.
-Installer::Result Installer::RunApplicationInstaller(
+AppInstallerResult RunApplicationInstaller(
+    const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
-    ProgressCallback progress_callback) {
+    InstallProgressCallback progress_callback) {
+  if (!base::PathExists(app_installer))
+    return AppInstallerResult(kErrorMissingRunableFile);
+
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
-    return Installer::Result(
+    return AppInstallerResult(
         update_client::InstallError::LAUNCH_PROCESS_FAILED);
   }
 
-  DeleteInstallerOutput(updater_scope_, app_id());
+  DeleteInstallerOutput(app_info.scope, app_info.app_id);
 
   const std::wstring argsw = base::UTF8ToWide(arguments);
   const std::wstring cmdline =
@@ -346,7 +351,7 @@ Installer::Result Installer::RunApplicationInstaller(
   options.start_hidden = true;
   options.environment = {
       {ENV_GOOGLE_UPDATE_IS_MACHINE,
-       updater_scope_ == UpdaterScope::kSystem ? L"1" : L"0"}};
+       app_info.scope == UpdaterScope::kSystem ? L"1" : L"0"}};
 
   auto process = base::LaunchProcess(cmdline, options);
   int exit_code = -1;
@@ -354,7 +359,7 @@ Installer::Result Installer::RunApplicationInstaller(
   do {
     bool wait_result = process.WaitForExitWithTimeout(
         base::Seconds(kWaitForInstallerProgressSec), &exit_code);
-    auto progress = GetInstallerProgress(updater_scope_, app_id());
+    auto progress = GetInstallerProgress(app_info.scope, app_info.app_id);
     DVLOG(3) << "installer progress: " << progress;
     progress_callback.Run(progress);
     if (wait_result) {
@@ -364,8 +369,8 @@ Installer::Result Installer::RunApplicationInstaller(
   } while (base::Time::NowFromSystemTime() - time_begin <=
            base::Seconds(kWaitForAppInstallerSec));
 
-  return MakeInstallerResult(GetInstallerOutcome(updater_scope_, app_id()),
-                             exit_code);
+  return MakeInstallerResult(
+      GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
 }
 
 }  // namespace updater

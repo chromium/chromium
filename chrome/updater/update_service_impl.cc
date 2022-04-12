@@ -17,10 +17,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -39,10 +42,12 @@
 #include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -337,8 +342,6 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   const auto app_ids = persisted_data_->GetAppIds();
   DCHECK(base::Contains(app_ids, kUpdaterAppId));
 
-  using Callback = base::OnceCallback<void(Result)>;
-
   const Priority priority = Priority::kBackground;
   ShouldBlockUpdateForMeteredNetwork(
       priority,
@@ -387,6 +390,72 @@ void UpdateServiceImpl::Update(
           state_update, std::move(callback),
           AppInstallDataIndex({std::make_pair(app_id, install_data_index)}),
           priority, policy_same_version_update));
+}
+
+void UpdateServiceImpl::RunInstaller(const std::string& app_id,
+                                     const base::FilePath& installer_path,
+                                     const std::string& install_args,
+                                     const std::string& install_data,
+                                     const std::string& install_settings,
+                                     StateChangeCallback state_update,
+                                     Callback callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  int policy = kPolicyEnabled;
+  if (IsUpdateDisabledByPolicy(app_id, Priority::kForeground,
+                               PolicySameVersionUpdate::kAllowed, policy)) {
+    HandleUpdateDisabledByPolicy(app_id, policy,
+                                 PolicySameVersionUpdate::kAllowed,
+                                 state_update, std::move(callback));
+    return;
+  }
+
+  const base::Version pv = persisted_data_->GetProductVersion(app_id);
+  AppInfo app_info(GetUpdaterScope(), app_id,
+                   pv.IsValid() ? persisted_data_->GetAP(app_id) : "", pv,
+                   pv.IsValid()
+                       ? persisted_data_->GetExistenceCheckerPath(app_id)
+                       : base::FilePath());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const AppInfo& app_info, const base::FilePath& installer_path,
+             const std::string& install_args, const std::string& install_data,
+             StateChangeCallback state_update) {
+            base::ScopedTempDir temp_dir;
+            if (!temp_dir.CreateUniqueTempDir()) {
+              return InstallerResult(kErrorApplicationInstallerFailed,
+                                     kErrorCreatingTempDir);
+            }
+
+            return RunApplicationInstaller(
+                app_info, installer_path, install_args,
+                WriteInstallerDataToTempFile(temp_dir.GetPath(), install_data),
+                base::BindRepeating(
+                    [](StateChangeCallback state_update,
+                       const std::string& app_id, int progress) {
+                      UpdateState state;
+                      state.app_id = app_id;
+                      state.state = UpdateState::State::kInstalling;
+                      state.install_progress = progress;
+                      state_update.Run(state);
+                    },
+                    state_update, app_info.app_id));
+          },
+          app_info, installer_path, install_args, install_data, state_update),
+      base::BindOnce(
+          [](Callback callback, const InstallerResult& result) {
+            // TODO(crbug.com/1286574): Perform post-install actions, such as
+            // send pings.
+
+            // TODO(crbug.com/1286574): Expand arguments in `Callback` to take
+            // more installation result details.
+            std::move(callback).Run(result.error == 0 ? Result::kSuccess
+                                                      : Result::kInstallFailed);
+          },
+          std::move(callback)));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(

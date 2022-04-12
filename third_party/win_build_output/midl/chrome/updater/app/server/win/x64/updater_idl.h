@@ -727,6 +727,14 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
             /* [in] */ IUpdaterObserver *observer) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE RunInstaller( 
+            /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *installer_path,
+            /* [string][in] */ const WCHAR *install_args,
+            /* [string][in] */ const WCHAR *install_data,
+            /* [string][in] */ const WCHAR *install_settings,
+            /* [in] */ IUpdaterObserver *observer) = 0;
+        
     };
     
     
@@ -789,6 +797,16 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [in] */ IUpdaterObserver *observer);
         
+        DECLSPEC_XFGVIRT(IUpdater, RunInstaller)
+        HRESULT ( STDMETHODCALLTYPE *RunInstaller )( 
+            IUpdater * This,
+            /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *installer_path,
+            /* [string][in] */ const WCHAR *install_args,
+            /* [string][in] */ const WCHAR *install_data,
+            /* [string][in] */ const WCHAR *install_settings,
+            /* [in] */ IUpdaterObserver *observer);
+        
         END_INTERFACE
     } IUpdaterVtbl;
 
@@ -829,6 +847,9 @@ EXTERN_C const IID IID_IUpdater;
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
+
+#define IUpdater_RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer)	\
+    ( (This)->lpVtbl -> RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer) ) 
 
 #endif /* COBJMACROS */
 

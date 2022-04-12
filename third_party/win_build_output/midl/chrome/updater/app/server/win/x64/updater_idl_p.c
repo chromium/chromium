@@ -47,7 +47,7 @@
 #include "updater_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   145                               
-#define PROC_FORMAT_STRING_SIZE   733                               
+#define PROC_FORMAT_STRING_SIZE   801                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   1            
@@ -827,6 +827,67 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 730 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure RunInstaller */
+
+/* 732 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 734 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 738 */	NdrFcShort( 0x9 ),	/* 9 */
+/* 740 */	NdrFcShort( 0x40 ),	/* X64 Stack size/offset = 64 */
+/* 742 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 744 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 746 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x7,		/* 7 */
+/* 748 */	0xa,		/* 10 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 750 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 752 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 754 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 756 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 758 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 760 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
+/* 762 */	NdrFcShort( 0x58 ),	/* Type Offset=88 */
+
+	/* Parameter installer_path */
+
+/* 764 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 766 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
+/* 768 */	NdrFcShort( 0x58 ),	/* Type Offset=88 */
+
+	/* Parameter install_args */
+
+/* 770 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 772 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
+/* 774 */	NdrFcShort( 0x58 ),	/* Type Offset=88 */
+
+	/* Parameter install_data */
+
+/* 776 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 778 */	NdrFcShort( 0x20 ),	/* X64 Stack size/offset = 32 */
+/* 780 */	NdrFcShort( 0x58 ),	/* Type Offset=88 */
+
+	/* Parameter install_settings */
+
+/* 782 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 784 */	NdrFcShort( 0x28 ),	/* X64 Stack size/offset = 40 */
+/* 786 */	NdrFcShort( 0x58 ),	/* Type Offset=88 */
+
+	/* Parameter observer */
+
+/* 788 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 790 */	NdrFcShort( 0x30 ),	/* X64 Stack size/offset = 48 */
+/* 792 */	NdrFcShort( 0x7e ),	/* Type Offset=126 */
+
+	/* Return value */
+
+/* 794 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 796 */	NdrFcShort( 0x38 ),	/* X64 Stack size/offset = 56 */
+/* 798 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -1258,7 +1319,8 @@ static const unsigned short IUpdater_FormatStringOffsetTable[] =
     532,
     600,
     638,
-    694
+    694,
+    732
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdater_ProxyInfo =
@@ -1282,7 +1344,7 @@ static const MIDL_SERVER_INFO IUpdater_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(9) _IUpdaterProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(10) _IUpdaterProxyVtbl = 
 {
     &IUpdater_ProxyInfo,
     &IID_IUpdater,
@@ -1294,14 +1356,15 @@ CINTERFACE_PROXY_VTABLE(9) _IUpdaterProxyVtbl =
     (void *) (INT_PTR) -1 /* IUpdater::RegisterApp */ ,
     (void *) (INT_PTR) -1 /* IUpdater::RunPeriodicTasks */ ,
     (void *) (INT_PTR) -1 /* IUpdater::Update */ ,
-    (void *) (INT_PTR) -1 /* IUpdater::UpdateAll */
+    (void *) (INT_PTR) -1 /* IUpdater::UpdateAll */ ,
+    (void *) (INT_PTR) -1 /* IUpdater::RunInstaller */
 };
 
 const CInterfaceStubVtbl _IUpdaterStubVtbl =
 {
     &IID_IUpdater,
     &IUpdater_ServerInfo,
-    9,
+    10,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };

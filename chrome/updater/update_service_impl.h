@@ -13,7 +13,9 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "chrome/updater/update_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -53,6 +55,13 @@ class UpdateServiceImpl : public UpdateService {
               PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
+  void RunInstaller(const std::string& app_id,
+                    const base::FilePath& installer_path,
+                    const std::string& install_args,
+                    const std::string& install_data,
+                    const std::string& install_settings,
+                    StateChangeCallback state_update,
+                    Callback callback) override;
 
   void Uninitialize() override;
 

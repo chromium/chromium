@@ -14,19 +14,21 @@
 
 namespace updater {
 
-Installer::Result Installer::RunApplicationInstaller(
+AppInstallerResult RunApplicationInstaller(
+    const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
-    ProgressCallback /*progress_callback*/) {
+    InstallProgressCallback /*progress_callback*/) {
   DVLOG(1) << "Running application install from DMG at " << app_installer;
   // InstallFromArchive() returns the exit code of the script. 0 is success and
   // anything else should be an error.
-  const int exit_code =
-      InstallFromArchive(app_installer, checker_path_, ap_, updater_scope_, pv_,
-                         arguments, installer_data_file);
-  return exit_code == 0 ? Result()
-                        : Result(kErrorApplicationInstallerFailed, exit_code);
+  const int exit_code = InstallFromArchive(
+      app_installer, app_info.ecp, app_info.ap, app_info.scope,
+      app_info.version, arguments, installer_data_file);
+  return exit_code == 0
+             ? AppInstallerResult()
+             : AppInstallerResult(kErrorApplicationInstallerFailed, exit_code);
 }
 
 }  // namespace updater

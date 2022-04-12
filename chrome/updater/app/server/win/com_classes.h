@@ -102,6 +102,12 @@ class UpdaterImpl
                         BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
+  IFACEMETHODIMP RunInstaller(const wchar_t* app_id,
+                              const wchar_t* installer_path,
+                              const wchar_t* install_args,
+                              const wchar_t* install_data,
+                              const wchar_t* install_settings,
+                              IUpdaterObserver* observer) override;
 
  private:
   ~UpdaterImpl() override = default;

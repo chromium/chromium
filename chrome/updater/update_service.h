@@ -83,6 +83,9 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // IPC connection to the remote process failed for some reason.
     kIPCConnectionFailed = 9,
 
+    // Failed to run app installer.
+    kInstallFailed = 10,
+
     // Update EnumTraits<UpdateService::Result> when adding new values.
   };
 
@@ -197,6 +200,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
   using RegisterAppCallback =
       base::OnceCallback<void(const RegistrationResponse&)>;
+  using InstallerResult = update_client::CrxInstaller::Result;
 
   // Returns the version of the active updater. The version object is invalid
   // if an error (including timeout) occurs.
@@ -232,17 +236,41 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //     state. It will not be called after the completion |callback| is posted.
   //   |callback|: Posted after the update stops, successfully or otherwise.
   //
-  // |state_update| arg:
-  //    UpdateState: the new state of this update request.
+  //   |state_update| arg:
+  //     UpdateState: the new state of this update request.
   //
-  // |callback| arg:
-  //    Result: the final result from the update engine.
+  //   |callback| arg:
+  //     Result: the final result from the update engine.
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index,
                       Priority priority,
                       PolicySameVersionUpdate policy_same_version_update,
                       StateChangeCallback state_update,
                       Callback callback) = 0;
+
+  // Install an app by running its installer.
+  // TODO(crbug.com/1286574): perform necessary actions after install, such as
+  // sending install ping and/or run post-install command.
+  //
+  // Args:
+  //   |app_id|: ID of app to install.
+  //   |app_installer|: Offline installer path.
+  //   |arguments|: Arguments to run the installer.
+  //   |install_data|: Server install data extracted from the offline manifest.
+  //   |install_settings|: An optional serialized dictionary to customize the
+  //       installation.
+  //   |state_update| arg:
+  //     UpdateState: the new state of this install request.
+  //
+  //   |callback| arg:
+  //     Result: the final result from the update engine.
+  virtual void RunInstaller(const std::string& app_id,
+                            const base::FilePath& installer_path,
+                            const std::string& install_args,
+                            const std::string& install_data,
+                            const std::string& install_settings,
+                            StateChangeCallback state_update,
+                            Callback callback) = 0;
 
   // Provides a way to commit data or clean up resources before the task
   // scheduler is shutting down.
@@ -259,7 +287,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kIPCConnectionFailed;
+  static constexpr Result last_elem = Result::kInstallFailed;
 };
 
 template <>
