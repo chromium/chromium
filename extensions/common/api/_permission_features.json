@@ -78,8 +78,14 @@
   "audio": [
     {
       "channel": "stable",
-      "extension_types": ["extension", "platform_app"],
+      "extension_types": ["platform_app"],
       "platforms": ["chromeos"],
+      "session_types": ["kiosk"]
+    },
+    {
+      "channel": "dev",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos", "lacros"],
       "session_types": ["kiosk"]
     },
     {
@@ -729,12 +735,17 @@
       ]
     }
   ],
-  "virtualKeyboard": {
+  "virtualKeyboard": [{
     "channel": "stable",
-    "extension_types": ["platform_app", "extension"],
+    "extension_types": ["platform_app"],
+    "platforms": ["chromeos"],
+    "session_types": ["kiosk"]
+  }, {
+    "channel": "dev",
+    "extension_types": ["extension"],
     "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk"]
-  },
+  }],
   "virtualKeyboardPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
