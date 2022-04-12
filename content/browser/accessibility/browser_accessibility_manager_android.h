@@ -56,11 +56,12 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
-  // Helper methods to set/check if image descriptions are allowed.
-  void set_allow_image_descriptions(bool allow_image_descriptions) {
-    allow_image_descriptions_ = allow_image_descriptions;
+  void set_allow_image_descriptions_for_testing(bool is_allowed) {
+    allow_image_descriptions_ = is_allowed;
   }
-  bool AllowImageDescriptions() { return allow_image_descriptions_; }
+  bool should_allow_image_descriptions() const {
+    return allow_image_descriptions_;
+  }
 
   // By default, the tree is pruned for a better screen reading experience,
   // including:
@@ -163,7 +164,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // See docs for set_prune_tree_for_screen_reader, above.
   bool prune_tree_for_screen_reader_;
 
-  // Whether this manager allows image descriptions.
+  // Whether or not image descriptions are allowed for this instance, set
+  // during construction with the value from WebContentsAccessibilityAndroid.
   bool allow_image_descriptions_ = false;
 
   // Only set on the root BrowserAccessibilityManager. Keeps track of if

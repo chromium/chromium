@@ -293,11 +293,7 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     jboolean allow_image_descriptions) {
-  BrowserAccessibilityManagerAndroid* manager =
-      GetRootBrowserAccessibilityManager();
-  if (manager) {
-    manager->set_allow_image_descriptions(allow_image_descriptions);
-  }
+  allow_image_descriptions_ = allow_image_descriptions;
 }
 
 void WebContentsAccessibilityAndroid::SetAXMode(

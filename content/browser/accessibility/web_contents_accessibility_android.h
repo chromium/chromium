@@ -371,6 +371,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
 
+  bool should_allow_image_descriptions() const {
+    return allow_image_descriptions_;
+  }
   bool ShouldRespectDisplayedPasswordText();
   bool ShouldExposePasswordText();
   void HandlePageLoaded(int32_t unique_id);
@@ -414,6 +417,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   const raw_ptr<WebContentsImpl> web_contents_;
 
   bool frame_info_initialized_;
+
+  // Whether or not this instance should allow the image descriptions feature
+  // to be enabled, set from the Java-side code.
+  bool allow_image_descriptions_;
 
   float page_scale_ = 1.f;
 
