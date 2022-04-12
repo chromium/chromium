@@ -6202,6 +6202,14 @@ others/histograms.xml -->
   <int value="2" label="Preflight call ignored"/>
 </enum>
 
+<enum name="AutofillCreditCardSaveFlowResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Denied"/>
+  <int value="2" label="Ignored"/>
+  <int value="3"
+      label="Interacted then ignored (user didn't explicitly cancel/accept)"/>
+</enum>
+
 <enum name="AutofillCreditCardSeamlessnessBitmask">
   <summary>
     A bitmask indicating which credit card field types were autofilled.

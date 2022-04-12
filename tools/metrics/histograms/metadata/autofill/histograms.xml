@@ -928,6 +928,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveSituation}"
+    enum="AutofillCreditCardSaveFlowResult" expires_after="M110">
+  <owner>lazzzis@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    credit card prompt when card is saved to for a {SaveDestination} save,
+    {SaveSituation}. Note that this metric concerns the result of final save,
+    rather than the CTR of the prompt, and this metric should record when a
+    decision of whether card will be saved or not is made.
+  </summary>
+  <token key="SaveDestination">
+    <variant name="Local" summary="local"/>
+    <variant name="Server" summary="server"/>
+  </token>
+  <token key="SaveSituation">
+    <variant name="" summary="aggregated across all situations"/>
+    <variant name=".RequestingCardholderName"
+        summary="explicitly requesting cardholder name"/>
+    <variant name=".RequestingExpirationDate"
+        summary="explicitly requesting expiration date"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
     expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

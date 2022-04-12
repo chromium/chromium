@@ -30,6 +30,12 @@ SaveCardMessageControllerAndroid::SaveCardMessageControllerAndroid() {}
 
 SaveCardMessageControllerAndroid::~SaveCardMessageControllerAndroid() {
   DismissMessage();
+  // The dialog has shown before but user didn't take any action, like
+  // user navigates to ToS page and then closes the previous tab.
+  if (is_dialog_shown_ && !HadUserInteraction()) {
+    OnPromptCompleted(SaveCreditCardPromptResult::kInteractedAndIgnored,
+                      /*user_provided_details=*/{});
+  }
 }
 
 void SaveCardMessageControllerAndroid::Show(
@@ -135,9 +141,8 @@ void SaveCardMessageControllerAndroid::HandleMessageDismiss(
       !HadUserInteraction()) {
     // Gesture: users explicitly swipe the UI to dismiss the message
     bool gesture_dismiss = dismiss_reason == messages::DismissReason::GESTURE;
-    OnPromptCompleted(gesture_dismiss
-                          ? AutofillClient::SaveCardOfferUserDecision::kDeclined
-                          : AutofillClient::SaveCardOfferUserDecision::kIgnored,
+    OnPromptCompleted(gesture_dismiss ? SaveCreditCardPromptResult::kDenied
+                                      : SaveCreditCardPromptResult::kIgnored,
                       /*user_provided_details=*/{});
   }
   // Reset all if we won't show dialogs in the next steps
@@ -172,7 +177,7 @@ void SaveCardMessageControllerAndroid::MaybeShowDialog() {
     is_dialog_shown_ = true;
     FixDate();
   } else {
-    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
+    OnPromptCompleted(SaveCreditCardPromptResult::kAccepted, {});
   }
 }
 
@@ -200,7 +205,7 @@ void SaveCardMessageControllerAndroid::ConfirmSaveCard() {
 void SaveCardMessageControllerAndroid::OnNameConfirmed(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name) {
-  OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+  OnPromptCompleted(SaveCreditCardPromptResult::kAccepted,
                     {base::android::ConvertJavaStringToUTF16(name),
                      std::u16string(), std::u16string()});
 }
@@ -210,13 +215,13 @@ void SaveCardMessageControllerAndroid::OnDateConfirmed(
     const base::android::JavaParamRef<jstring>& month,
     const base::android::JavaParamRef<jstring>& year) {
   OnPromptCompleted(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      SaveCreditCardPromptResult::kAccepted,
       {std::u16string(), base::android::ConvertJavaStringToUTF16(month),
        base::android::ConvertJavaStringToUTF16(year)});
 }
 
 void SaveCardMessageControllerAndroid::OnSaveCardConfirmed(JNIEnv* env) {
-  OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
+  OnPromptCompleted(SaveCreditCardPromptResult::kAccepted, {});
 }
 
 // --- Dialog Dismissed ---
@@ -226,7 +231,7 @@ void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
     return;
   }
   if (!HadUserInteraction()) {
-    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kDeclined,
+    OnPromptCompleted(SaveCreditCardPromptResult::kInteractedAndIgnored,
                       /*user_provided_details=*/{});
   }
   ResetInternal();
@@ -255,25 +260,37 @@ bool SaveCardMessageControllerAndroid::IsGooglePayBrandingEnabled() const {
 }
 
 void SaveCardMessageControllerAndroid::OnPromptCompleted(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
+    SaveCreditCardPromptResult save_result,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   MessageMetrics message_state;
   MessageDialogPromptMetrics dialog_state;
-  switch (user_decision) {
-    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+  AutofillClient::SaveCardOfferUserDecision user_decision;
+  switch (save_result) {
+    case SaveCreditCardPromptResult::kAccepted:
+      user_decision = AutofillClient::SaveCardOfferUserDecision::kAccepted;
       message_state = MessageMetrics::kAccepted;
       dialog_state = MessageDialogPromptMetrics::kAccepted;
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case SaveCreditCardPromptResult::kDenied:
+      user_decision = AutofillClient::SaveCardOfferUserDecision::kDeclined;
       message_state = MessageMetrics::kDenied;
       dialog_state = MessageDialogPromptMetrics::kDenied;
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+    case SaveCreditCardPromptResult::kIgnored:
+      user_decision = AutofillClient::SaveCardOfferUserDecision::kIgnored;
+      message_state = MessageMetrics::kIgnored;
+      dialog_state = MessageDialogPromptMetrics::kIgnored;
+      break;
+    case SaveCreditCardPromptResult::kInteractedAndIgnored:
+      // kIgnore in following metrics is equivalent to kInteractedAndIgnored and
+      // kIgnored of SaveCreditCardPromptResult.
+      user_decision = AutofillClient::SaveCardOfferUserDecision::kIgnored;
       message_state = MessageMetrics::kIgnored;
       dialog_state = MessageDialogPromptMetrics::kIgnored;
       break;
   }
   LogAutofillCreditCardMessageMetrics(message_state, is_upload_, options_);
+  LogSaveCreditCardPromptResult(save_result, is_upload_, options_);
   if (is_upload_) {
     if (is_dialog_shown_) {
       LogAutofillCreditCardMessageDialogPromptMetrics(dialog_state, options_,
