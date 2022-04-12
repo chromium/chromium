@@ -292,6 +292,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.MAX_UNTHROTTLED_TIMEOUT_NESTING_LEVEL,
                     "Increases the nesting threshold before which "
                             + "setTimeout(..., <4ms) starts being clamped to 4 ms."),
+            Flag.baseFeature(BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
+                    "Enables establishing the GPU channel asnchronously when requesting a new "
+                            + "layer tree frame sink."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
