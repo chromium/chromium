@@ -10,6 +10,7 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -175,6 +176,30 @@ export class PersonalizationRouter extends PolymerElement {
     if (!isPathValid(path) || isAmbientPathNotAllowed(path)) {
       // Reset the path to root.
       this.setProperties({path_: Paths.Root, queryParams_: {}});
+    }
+
+    // Update the page title when the path changes.
+    // TODO(b/228967523): Wallpaper related pages have been handled in their
+    // specific Polymer elements so they are skipped here. See if we can move
+    // them here.
+    switch (path) {
+      case Paths.Root:
+        document.title = loadTimeData.getString('personalizationTitle');
+        break;
+      case Paths.Ambient:
+        document.title = loadTimeData.getString('screensaverLabel');
+        break;
+      case Paths.AmbientAlbums: {
+        assert(!!this.queryParams_.topicSource);
+        if (this.queryParams_.topicSource ===
+            TopicSource.kGooglePhotos.toString()) {
+          document.title =
+              loadTimeData.getString('ambientModeTopicSourceGooglePhotos');
+        } else {
+          document.title =
+              loadTimeData.getString('ambientModeTopicSourceArtGallery');
+        }
+      }
     }
   }
 }

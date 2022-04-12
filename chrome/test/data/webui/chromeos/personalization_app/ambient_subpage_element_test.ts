@@ -297,8 +297,8 @@ suite('AmbientSubpageTest', function() {
         assertEquals(
             AnimationTheme.kFeelTheBreeze, feelTheBreeze.animationTheme);
 
-        assertFalse(feelTheBreeze.checked);
-        assertTrue(slideshow.checked);
+        assertEquals(feelTheBreeze.ariaSelected, 'false');
+        assertEquals(slideshow.ariaSelected, 'true');
 
         personalizationStore.expectAction(
             AmbientActionName.SET_ANIMATION_THEME);

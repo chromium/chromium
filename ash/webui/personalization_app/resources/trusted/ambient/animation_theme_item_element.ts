@@ -32,12 +32,6 @@ export class AnimationThemeItem extends WithPersonalizationStore {
   static get properties() {
     return {
       animationTheme: AnimationTheme,
-      checked: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        notify: true,
-      },
       itemDescription_: {
         type: String,
         computed: 'computeItemDescription_(animationTheme)',
@@ -50,7 +44,6 @@ export class AnimationThemeItem extends WithPersonalizationStore {
   }
 
   animationTheme: AnimationTheme;
-  checked: boolean;
   private itemDescription_: string;
   private imgSrc_: string;
 

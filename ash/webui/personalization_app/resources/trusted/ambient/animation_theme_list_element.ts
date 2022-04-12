@@ -33,18 +33,16 @@ export class AnimationThemeList extends WithPersonalizationStore {
       },
 
       selectedAnimationTheme: AnimationTheme,
-
-      disabled: Boolean,
     };
   }
 
   animationThemes: Array<AnimationTheme>;
-  disabled: boolean;
   private selectedAnimationTheme: AnimationTheme;
 
-  private isSelected_(
-      animationTheme: AnimationTheme, selectedAnimationTheme: AnimationTheme) {
-    return animationTheme === selectedAnimationTheme;
+  private getAriaSelected_(
+      animationTheme: AnimationTheme,
+      selectedAnimationTheme: AnimationTheme): string {
+    return (animationTheme === selectedAnimationTheme).toString();
   }
 }
 
