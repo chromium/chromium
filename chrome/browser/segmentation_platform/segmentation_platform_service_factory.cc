@@ -20,8 +20,10 @@
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -85,11 +87,15 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
 
   auto model_provider_factory = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, task_runner);
+  auto* ukm_data_manager = UkmDatabaseClient::GetInstance().GetUkmDataManager();
+  ukm_data_manager->OnUkmAllowedStateChanged(
+      g_browser_process->GetMetricsServicesManager()
+          ->IsUkmAllowedForAllProfiles());
 
   auto* service = new SegmentationPlatformServiceImpl(
       std::move(model_provider_factory), db_provider, storage_dir,
-      UkmDatabaseClient::GetInstance().GetUkmDataManager(), profile->GetPrefs(),
-      history_service, task_runner, clock, GetSegmentationPlatformConfig());
+      ukm_data_manager, profile->GetPrefs(), history_service, task_runner,
+      clock, GetSegmentationPlatformConfig());
 
   service->SetUserData(kSegmentationPlatformProfileObserverKey,
                        std::make_unique<SegmentationPlatformProfileObserver>(

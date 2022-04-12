@@ -5,6 +5,8 @@
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 
 #include "base/check_op.h"
+#include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
@@ -52,15 +54,19 @@ UrlSignalHandler* UkmDataManagerImpl::GetOrCreateUrlHandler() {
   return url_signal_handler_.get();
 }
 
-void UkmDataManagerImpl::NotifyCanObserveUkm(
-    ukm::UkmRecorderImpl* ukm_recorder) {
+void UkmDataManagerImpl::NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
+                                             PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK(ukm_database_);
   ukm_observer_ = std::make_unique<UkmObserver>(
-      ukm_recorder, ukm_database_.get(), GetOrCreateUrlHandler());
+      ukm_recorder, ukm_database_.get(), GetOrCreateUrlHandler(), this);
   if (pending_ukm_config_) {
     ukm_observer_->StartObserving(*pending_ukm_config_);
     pending_ukm_config_.reset();
+  }
+  prefs_ = pref_service;
+  if (is_ukm_allowed_.has_value()) {
+    OnUkmAllowedStateChanged(is_ukm_allowed_.value());
   }
 }
 
@@ -105,6 +111,32 @@ void UkmDataManagerImpl::RemoveRef() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_GT(ref_count_, 0);
   ref_count_--;
+}
+
+void UkmDataManagerImpl::OnUkmAllowedStateChanged(bool allowed) {
+  if (!prefs_) {
+    is_ukm_allowed_ = allowed;
+    return;
+  }
+
+  if (!allowed) {
+    prefs_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
+                    base::Time::Max());
+    return;
+  }
+  // Update the most recent allowed time if needed.
+  base::Time most_recent_allowed = GetUkmMostRecentAllowedTime();
+  if (most_recent_allowed.is_null() ||
+      most_recent_allowed == base::Time::Max()) {
+    prefs_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
+                    base::Time::Now());
+  }
+}
+
+base::Time UkmDataManagerImpl::GetUkmMostRecentAllowedTime() const {
+  if (prefs_)
+    return prefs_->GetTime(kSegmentationUkmMostRecentAllowedTimeKey);
+  return base::Time::Max();
 }
 
 }  // namespace segmentation_platform

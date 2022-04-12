@@ -53,7 +53,8 @@ void UkmDatabaseClient::PreProfileInit() {
   // PreProfileInit(). If this changes the metrics service is created on-demand,
   // so will get created by calling GetMetricsServicesManager().
   ukm_data_manager_->NotifyCanObserveUkm(
-      g_browser_process->GetMetricsServicesManager()->GetUkmService());
+      g_browser_process->GetMetricsServicesManager()->GetUkmService(),
+      g_browser_process->local_state());
 }
 
 void UkmDatabaseClient::PostMessageLoopRun() {

@@ -71,6 +71,9 @@ class MetricsServicesManager {
   // Gets the current state of metrics consent.
   bool IsMetricsConsentGiven() const;
 
+  // Returns true iff UKM is allowed for all profiles.
+  bool IsUkmAllowedForAllProfiles();
+
   // Returns the default entropy provider.
   std::unique_ptr<const base::FieldTrial::EntropyProvider>
   CreateEntropyProviderForTesting();

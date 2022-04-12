@@ -7,8 +7,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefService;
 
 namespace segmentation_platform {
 
@@ -26,10 +31,14 @@ class UkmDataManagerImpl : public UkmDataManager {
 
   void InitializeForTesting(std::unique_ptr<UkmDatabase> ukm_database);
 
+  // Gets the most recent time when UKM is allowed.
+  base::Time GetUkmMostRecentAllowedTime() const;
+
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path) override;
   bool IsUkmEngineEnabled() override;
-  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) override;
+  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
+                           PrefService* pref_service) override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
   void StopObservingUkm() override;
@@ -37,6 +46,7 @@ class UkmDataManagerImpl : public UkmDataManager {
   UkmDatabase* GetUkmDatabase() override;
   void AddRef() override;
   void RemoveRef() override;
+  void OnUkmAllowedStateChanged(bool allowed) override;
 
  private:
   int ref_count_ = 0;
@@ -45,6 +55,9 @@ class UkmDataManagerImpl : public UkmDataManager {
   std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<UkmConfig> pending_ukm_config_;
 
+  absl::optional<bool> is_ukm_allowed_;
+
+  raw_ptr<PrefService> prefs_ = nullptr;
   SEQUENCE_CHECKER(sequence_check_);
 };
 

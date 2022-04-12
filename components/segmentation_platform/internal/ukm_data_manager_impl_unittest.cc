@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
@@ -136,6 +137,7 @@ class UkmDataManagerImplTest : public testing::Test {
   ~UkmDataManagerImplTest() override = default;
 
   void SetUp() override {
+    SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     auto ukm_db = std::make_unique<MockUkmDatabase>();
@@ -179,8 +181,8 @@ class UkmDataManagerImplTest : public testing::Test {
   raw_ptr<MockUkmDatabase> ukm_database_;
   std::unique_ptr<UkmDataManagerImpl> data_manager_;
   std::vector<std::unique_ptr<TestServicesForPlatform>> platform_services_;
-
   std::vector<ukm::mojom::UkmEntryPtr> db_entries_;
+  TestingPrefServiceSimple prefs_;
 };
 
 MATCHER_P(HasEventHash, event_hash, "") {
@@ -216,7 +218,7 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
 TEST_F(UkmDataManagerImplTest, UkmSourceObservation) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
 
-  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get());
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
 
   // Create a platform that observes PageLoad events.
   TestServicesForPlatform& platform1 = CreatePlatform();
@@ -250,7 +252,7 @@ TEST_F(UkmDataManagerImplTest, UkmEntryObservation) {
   // Not added since UkmDataManager is not notified for UKM observation.
   ukm_recorder_->AddEntry(GetSamplePageLoadEntry());
 
-  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get());
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
 
   // Not added since it is not PageLoad event.
   ukm_recorder_->AddEntry(GetSamplePaintPreviewEntry());
@@ -272,7 +274,7 @@ TEST_F(UkmDataManagerImplTest, UkmServiceCreatedBeforePlatform) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
 
   // Observation is available before platforms are created.
-  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get());
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
 
   TestServicesForPlatform& platform1 = CreatePlatform();
   platform1.AddModel(PageLoadModelMetadata());
@@ -300,7 +302,7 @@ TEST_F(UkmDataManagerImplTest, UkmServiceCreatedBeforePlatform) {
 TEST_F(UkmDataManagerImplTest, UrlValidationWithHistory) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
 
-  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get());
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
   TestServicesForPlatform& platform1 = CreatePlatform();
   platform1.AddModel(PageLoadModelMetadata());
 
@@ -330,7 +332,7 @@ TEST_F(UkmDataManagerImplTest, MultiplePlatforms) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
   const GURL kUrl2 = GURL("https://www.url2.com/");
 
-  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get());
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
 
   // Create 2 platforms, and 1 of them observing UKM events.
   TestServicesForPlatform& platform1 = CreatePlatform();
@@ -396,6 +398,31 @@ TEST_F(UkmDataManagerImplTest, MultiplePlatforms) {
 
   RemovePlatform(&platform2);
   RemovePlatform(&platform3);
+}
+
+// Tests that the most recent time for UKM allowed state is correctly set and
+// read.
+TEST_F(UkmDataManagerImplTest, GetUkmMostRecentAllowedTime) {
+  // Without PrefService, base::Time::Max() will be returned.
+  data_manager_->OnUkmAllowedStateChanged(true);
+  EXPECT_EQ(data_manager_->GetUkmMostRecentAllowedTime(), base::Time::Max());
+
+  data_manager_->NotifyCanObserveUkm(ukm_recorder_.get(), &prefs_);
+  EXPECT_LE(data_manager_->GetUkmMostRecentAllowedTime(), base::Time::Now());
+
+  // Change the allowed state to false, the start time should now be set to
+  // Time::Max().
+  ukm_recorder_->OnUkmAllowedStateChanged(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::Time::Max(), data_manager_->GetUkmMostRecentAllowedTime());
+
+  // Change the allowed state to true, the new start time should be close to
+  // now.
+  base::Time now = base::Time::Now();
+  ukm_recorder_->OnUkmAllowedStateChanged(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_LE(now, data_manager_->GetUkmMostRecentAllowedTime());
+  EXPECT_LE(data_manager_->GetUkmMostRecentAllowedTime(), base::Time::Now());
 }
 
 }  // namespace segmentation_platform

@@ -47,6 +47,10 @@ class SegmentationPlatformService : public KeyedService,
   // should be called for the Profile registry.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Registers preferences used by this class in the provided |registry|.  This
+  // should be called for the local state registry.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   using SegmentSelectionCallback =
       base::OnceCallback<void(const SegmentSelectionResult&)>;
 

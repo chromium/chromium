@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_H_
 
+class PrefService;
+
 namespace base {
 class FilePath;
 }
@@ -42,7 +44,8 @@ class UkmDataManager {
   virtual bool IsUkmEngineEnabled() = 0;
 
   // Must be called when UKM service is available to start observing metrics.
-  virtual void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) = 0;
+  virtual void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
+                                   PrefService* pref_service) = 0;
 
   // Can be called at any time, irrespective of UKM observer's lifetime. If
   // NotifyCanObserveUkm() was already called, then starts observing UKM with
@@ -69,6 +72,9 @@ class UkmDataManager {
   // object.
   virtual void AddRef() = 0;
   virtual void RemoveRef() = 0;
+
+  // Called when UKM allowed state is changed.
+  virtual void OnUkmAllowedStateChanged(bool allowed) = 0;
 };
 
 }  // namespace segmentation_platform

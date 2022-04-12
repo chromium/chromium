@@ -1148,6 +1148,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::TPMAutoUpdateModePolicyHandler::RegisterPrefs(registry);
   quirks::QuirksManager::RegisterPrefs(registry);
+  segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
+      registry);
   UpgradeDetectorChromeos::RegisterPrefs(registry);
   RegisterNearbySharingLocalPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

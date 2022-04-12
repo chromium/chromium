@@ -26,7 +26,7 @@ class MockUkmDataManager : public UkmDataManager {
 
   MOCK_METHOD(void,
               NotifyCanObserveUkm,
-              (ukm::UkmRecorderImpl * ukm_recorder),
+              (ukm::UkmRecorderImpl * ukm_recorder, PrefService* pref_service),
               (override));
 
   MOCK_METHOD(void, StartObservingUkm, (const UkmConfig& config), (override));
@@ -41,6 +41,8 @@ class MockUkmDataManager : public UkmDataManager {
 
   MOCK_METHOD(void, AddRef, (), (override));
   MOCK_METHOD(void, RemoveRef, (), (override));
+
+  MOCK_METHOD(void, OnUkmAllowedStateChanged, (bool allowed), (override));
 };
 
 }  // namespace segmentation_platform

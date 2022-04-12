@@ -10,6 +10,8 @@
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
+#include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +71,8 @@ class UkmObserverTest : public testing::Test {
         std::make_unique<UrlSignalHandler>(ukm_database_.get());
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_observer_ = std::make_unique<UkmObserver>(
-        ukm_recorder_.get(), ukm_database_.get(), url_signal_handler_.get());
+        ukm_recorder_.get(), ukm_database_.get(), url_signal_handler_.get(),
+        &ukm_data_manager_);
   }
 
   void TearDown() override {
@@ -103,6 +106,7 @@ class UkmObserverTest : public testing::Test {
   std::unique_ptr<UrlSignalHandler> url_signal_handler_;
   std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   std::unique_ptr<UkmObserver> ukm_observer_;
+  UkmDataManagerImpl ukm_data_manager_;
 };
 
 TEST_F(UkmObserverTest, EmptyConfig) {

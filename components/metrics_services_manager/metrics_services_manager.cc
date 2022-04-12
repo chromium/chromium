@@ -177,4 +177,8 @@ bool MetricsServicesManager::IsMetricsConsentGiven() const {
   return client_->IsMetricsConsentGiven();
 }
 
+bool MetricsServicesManager::IsUkmAllowedForAllProfiles() {
+  return metrics_service_client_->IsUkmAllowedForAllProfiles();
+}
+
 }  // namespace metrics_services_manager

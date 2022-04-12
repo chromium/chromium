@@ -310,4 +310,10 @@ void SegmentationPlatformService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kSegmentationResultPref);
 }
 
+void SegmentationPlatformService::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kSegmentationUkmMostRecentAllowedTimeKey,
+                             base::Time());
+}
+
 }  // namespace segmentation_platform

@@ -22,7 +22,8 @@ class DummyUkmDataManager : public UkmDataManager {
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path) override;
   bool IsUkmEngineEnabled() override;
-  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) override;
+  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
+                           PrefService* pref_service) override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
   void StopObservingUkm() override;
@@ -30,6 +31,7 @@ class DummyUkmDataManager : public UkmDataManager {
   UkmDatabase* GetUkmDatabase() override;
   void AddRef() override;
   void RemoveRef() override;
+  void OnUkmAllowedStateChanged(bool allowed) override;
 };
 
 }  // namespace segmentation_platform

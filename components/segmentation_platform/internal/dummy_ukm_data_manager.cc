@@ -18,7 +18,8 @@ bool DummyUkmDataManager::IsUkmEngineEnabled() {
 }
 
 void DummyUkmDataManager::NotifyCanObserveUkm(
-    ukm::UkmRecorderImpl* ukm_recorder) {}
+    ukm::UkmRecorderImpl* ukm_recorder,
+    PrefService* pref_service) {}
 
 void DummyUkmDataManager::StartObservingUkm(const UkmConfig& config) {}
 
@@ -39,5 +40,7 @@ UkmDatabase* DummyUkmDataManager::GetUkmDatabase() {
 void DummyUkmDataManager::AddRef() {}
 
 void DummyUkmDataManager::RemoveRef() {}
+
+void DummyUkmDataManager::OnUkmAllowedStateChanged(bool allowed) {}
 
 }  // namespace segmentation_platform

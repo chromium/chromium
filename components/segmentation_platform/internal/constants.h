@@ -10,6 +10,9 @@ namespace segmentation_platform {
 // The path to the pref storing the segmentation result.
 extern const char kSegmentationResultPref[];
 
+// The path to the pref storing when UKM are allowed recently.
+extern const char kSegmentationUkmMostRecentAllowedTimeKey[];
+
 extern const char kSegmentationPlatformRefreshResultsSwitch[];
 
 }  // namespace segmentation_platform

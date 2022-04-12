@@ -7,10 +7,10 @@
 #include <cstdint>
 
 #include "base/rand_util.h"
-#include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
+#include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
@@ -18,32 +18,33 @@ namespace segmentation_platform {
 
 UkmObserver::UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
                          UkmDatabase* ukm_database,
-                         UrlSignalHandler* url_signal_handler)
+                         UrlSignalHandler* url_signal_handler,
+                         UkmDataManagerImpl* ukm_data_manager)
     : ukm_database_(ukm_database),
       url_signal_handler_(url_signal_handler),
-      ukm_recorder_(ukm_recorder) {}
+      ukm_recorder_(ukm_recorder),
+      ukm_data_manager_(ukm_data_manager) {
+  // Listen to |OnUkmAllowedStateChanged| event.
+  ukm_recorder_->AddUkmRecorderObserver(base::flat_set<uint64_t>(), this);
+}
 
 UkmObserver::~UkmObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  if (config_)
-    ukm_recorder_->RemoveUkmRecorderObserver(this);
+  ukm_recorder_->RemoveUkmRecorderObserver(this);
 }
 
 void UkmObserver::StartObserving(const UkmConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
 
-  bool was_observing = true;
   if (!config_) {
     config_ = std::make_unique<UkmConfig>();
-    was_observing = false;
   }
 
   UkmConfig::MergeResult result = config_->Merge(config);
   if (result == UkmConfig::NO_NEW_EVENT)
     return;
 
-  if (was_observing)
-    ukm_recorder_->RemoveUkmRecorderObserver(this);
+  ukm_recorder_->RemoveUkmRecorderObserver(this);
   ukm_recorder_->AddUkmRecorderObserver(config_->GetRawObservedEvents(), this);
 }
 
@@ -79,6 +80,10 @@ void UkmObserver::OnUpdateSourceURL(ukm::SourceId source_id,
 void UkmObserver::PauseOrResumeObservation(bool pause) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   paused_ = pause;
+}
+
+void UkmObserver::OnUkmAllowedStateChanged(bool allowed) {
+  ukm_data_manager_->OnUkmAllowedStateChanged(allowed);
 }
 
 }  // namespace segmentation_platform

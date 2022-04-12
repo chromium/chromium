@@ -20,6 +20,7 @@ namespace segmentation_platform {
 class UkmDatabase;
 class UrlSignalHandler;
 class UkmConfig;
+class UkmDataManagerImpl;
 
 // Observes UKM metrics and URL source and stores the relevant data in UKM
 // database.
@@ -27,7 +28,8 @@ class UkmObserver : public ukm::UkmRecorderObserver {
  public:
   UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
               UkmDatabase* ukm_database,
-              UrlSignalHandler* url_signal_handler);
+              UrlSignalHandler* url_signal_handler,
+              UkmDataManagerImpl* ukm_data_manager);
   ~UkmObserver() override;
 
   UkmObserver(UkmObserver&) = delete;
@@ -46,6 +48,7 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
   void OnUpdateSourceURL(ukm::SourceId source_id,
                          const std::vector<GURL>& urls) override;
+  void OnUkmAllowedStateChanged(bool allowed) override;
 
  private:
   // Owned by UkmDataManagerImpl. The manager guarantees that database is
@@ -61,6 +64,9 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   // Currently observed config.
   std::unique_ptr<UkmConfig> config_;
   bool paused_ = false;
+
+  // Class that owns this object.
+  raw_ptr<UkmDataManagerImpl> ukm_data_manager_;
 
   SEQUENCE_CHECKER(sequence_check_);
 };
