@@ -17,29 +17,28 @@
 namespace autofill_assistant {
 
 // Note: this operator must be defined in the same namespace as the type it is
-// intended for, i.e., StartupUtil::StartupMode.
-std::ostream& operator<<(std::ostream& out,
-                         const StartupUtil::StartupMode& result) {
+// intended for, i.e., StartupMode.
+std::ostream& operator<<(std::ostream& out, const StartupMode& result) {
   switch (result) {
-    case StartupUtil::StartupMode::FEATURE_DISABLED:
+    case StartupMode::FEATURE_DISABLED:
       out << "FEATURE_DISABLED";
       break;
-    case StartupUtil::StartupMode::MANDATORY_PARAMETERS_MISSING:
+    case StartupMode::MANDATORY_PARAMETERS_MISSING:
       out << "MANDATORY_PARAMETERS_MISSING";
       break;
-    case StartupUtil::StartupMode::SETTING_DISABLED:
+    case StartupMode::SETTING_DISABLED:
       out << "SETTING_DISABLED";
       break;
-    case StartupUtil::StartupMode::NO_INITIAL_URL:
+    case StartupMode::NO_INITIAL_URL:
       out << "NO_INITIAL_URL";
       break;
-    case StartupUtil::StartupMode::START_REGULAR:
+    case StartupMode::START_REGULAR:
       out << "START_REGULAR";
       break;
-    case StartupUtil::StartupMode::START_BASE64_TRIGGER_SCRIPT:
+    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
       out << "START_BASE64_TRIGGER_SCRIPT";
       break;
-    case StartupUtil::StartupMode::START_RPC_TRIGGER_SCRIPT:
+    case StartupMode::START_RPC_TRIGGER_SCRIPT:
       out << "START_RPC_TRIGGER_SCRIPT";
       break;
   }
@@ -48,7 +47,6 @@ std::ostream& operator<<(std::ostream& out,
 
 namespace {
 
-using StartupMode = StartupUtil::StartupMode;
 using features::kAutofillAssistant;
 using features::kAutofillAssistantChromeEntry;
 using features::kAutofillAssistantLoadDFMForTriggerScripts;
@@ -125,7 +123,7 @@ std::ostream& operator<<(std::ostream& out, const TestFeatureConfig& config) {
   return out;
 }
 
-std::string ToString(const StartupUtil::StartupMode& result) {
+std::string ToString(const StartupMode& result) {
   std::ostringstream stream;
   stream << result;
   return stream.str();

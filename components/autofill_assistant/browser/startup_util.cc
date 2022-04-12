@@ -23,7 +23,7 @@ using autofill_assistant::features::kAutofillAssistantProactiveHelp;
 StartupUtil::StartupUtil() = default;
 StartupUtil::~StartupUtil() = default;
 
-StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
+StartupMode StartupUtil::ChooseStartupModeForIntent(
     const TriggerContext& trigger_context,
     const Options& options) const {
   const auto& script_parameters = trigger_context.GetScriptParameters();

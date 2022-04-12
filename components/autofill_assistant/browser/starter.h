@@ -92,11 +92,11 @@ class Starter : public content::WebContentsObserver,
 
   // Installs the feature module if necessary, otherwise directly invokes
   // |OnFeatureModuleInstalled|.
-  void MaybeInstallFeatureModule(StartupUtil::StartupMode startup_mode);
+  void MaybeInstallFeatureModule(StartupMode startup_mode);
 
   // Stops the startup if the installation failed. Otherwise, proceeds with the
   // next step of the startup process.
-  void OnFeatureModuleInstalled(StartupUtil::StartupMode startup_mode,
+  void OnFeatureModuleInstalled(StartupMode startup_mode,
                                 Metrics::FeatureModuleInstallation result);
 
   // Starts a trigger script and waits for it to finish in

@@ -36,8 +36,6 @@
 
 namespace autofill_assistant {
 
-using StartupMode = StartupUtil::StartupMode;
-
 namespace {
 
 // When starting trigger scripts, depending on incoming script parameters, we

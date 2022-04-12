@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
+#include "components/autofill_assistant/browser/startup_util.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -158,21 +159,21 @@ int64_t ExtractExperimentsFromScriptParameters(
 }
 
 Metrics::AutofillAssistantStarted ToAutofillAssistantStarted(
-    StartupUtil::StartupMode event) {
+    StartupMode event) {
   switch (event) {
-    case StartupUtil::StartupMode::FEATURE_DISABLED:
+    case StartupMode::FEATURE_DISABLED:
       return Metrics::AutofillAssistantStarted::FAILED_FEATURE_DISABLED;
-    case StartupUtil::StartupMode::MANDATORY_PARAMETERS_MISSING:
+    case StartupMode::MANDATORY_PARAMETERS_MISSING:
       return Metrics::AutofillAssistantStarted::
           FAILED_MANDATORY_PARAMETER_MISSING;
-    case StartupUtil::StartupMode::SETTING_DISABLED:
+    case StartupMode::SETTING_DISABLED:
       return Metrics::AutofillAssistantStarted::FAILED_SETTING_DISABLED;
-    case StartupUtil::StartupMode::NO_INITIAL_URL:
+    case StartupMode::NO_INITIAL_URL:
       return Metrics::AutofillAssistantStarted::FAILED_NO_INITIAL_URL;
-    case StartupUtil::StartupMode::START_REGULAR:
+    case StartupMode::START_REGULAR:
       return Metrics::AutofillAssistantStarted::OK_IMMEDIATE_START;
-    case StartupUtil::StartupMode::START_BASE64_TRIGGER_SCRIPT:
-    case StartupUtil::StartupMode::START_RPC_TRIGGER_SCRIPT:
+    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
+    case StartupMode::START_RPC_TRIGGER_SCRIPT:
       return Metrics::AutofillAssistantStarted::OK_DELAYED_START;
   }
 }
@@ -344,12 +345,12 @@ void Metrics::RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
 // static
 void Metrics::RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
                                          ukm::SourceId source_id,
-                                         StartupUtil::StartupMode startup_mode,
+                                         StartupMode startup_mode,
                                          bool feature_module_installed,
                                          bool is_first_time_user) {
   TriggerScriptStarted event;
   switch (startup_mode) {
-    case StartupUtil::StartupMode::FEATURE_DISABLED:
+    case StartupMode::FEATURE_DISABLED:
       if (base::FeatureList::IsEnabled(
               features::kAutofillAssistantProactiveHelp) &&
           !feature_module_installed) {
@@ -358,21 +359,21 @@ void Metrics::RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
         event = TriggerScriptStarted::FEATURE_DISABLED;
       }
       break;
-    case StartupUtil::StartupMode::SETTING_DISABLED:
+    case StartupMode::SETTING_DISABLED:
       event = TriggerScriptStarted::PROACTIVE_TRIGGERING_DISABLED;
       break;
-    case StartupUtil::StartupMode::NO_INITIAL_URL:
+    case StartupMode::NO_INITIAL_URL:
       event = TriggerScriptStarted::NO_INITIAL_URL;
       break;
-    case StartupUtil::StartupMode::MANDATORY_PARAMETERS_MISSING:
+    case StartupMode::MANDATORY_PARAMETERS_MISSING:
       event = TriggerScriptStarted::MANDATORY_PARAMETER_MISSING;
       break;
-    case StartupUtil::StartupMode::START_BASE64_TRIGGER_SCRIPT:
-    case StartupUtil::StartupMode::START_RPC_TRIGGER_SCRIPT:
+    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
+    case StartupMode::START_RPC_TRIGGER_SCRIPT:
       event = is_first_time_user ? TriggerScriptStarted::FIRST_TIME_USER
                                  : TriggerScriptStarted::RETURNING_USER;
       break;
-    case StartupUtil::StartupMode::START_REGULAR:
+    case StartupMode::START_REGULAR:
       // Regular starts do not record impressions for |TriggerScriptStarted|.
       return;
   }
@@ -474,7 +475,7 @@ void Metrics::RecordDependenciesInvalidated(
 void Metrics::RecordStartRequest(ukm::UkmRecorder* ukm_recorder,
                                  ukm::SourceId source_id,
                                  const ScriptParameters& script_parameters,
-                                 StartupUtil::StartupMode event) {
+                                 StartupMode event) {
   ukm::builders::AutofillAssistant_StartRequest(source_id)
       .SetCaller(static_cast<int64_t>(
           ExtractCallerFromScriptParameters(script_parameters)))
@@ -559,6 +560,239 @@ void Metrics::RecordOnboardingFetcherResult(
     OnboardingFetcherResultStatus status) {
   DCHECK_LE(status, OnboardingFetcherResultStatus::kMaxValue);
   base::UmaHistogramEnumeration(kOnboardingFetcherResultStatus, status);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const Metrics::DropOutReason& reason) {
+#ifdef NDEBUG
+  // Non-debugging builds write the enum number.
+  out << static_cast<int>(reason);
+  return out;
+#else
+  // Debugging builds write a string representation of |reason|.
+  switch (reason) {
+    case Metrics::DropOutReason::AA_START:
+      out << "AA_START";
+      break;
+    case Metrics::DropOutReason::AUTOSTART_TIMEOUT:
+      out << "AUTOSTART_TIMEOUT";
+      break;
+    case Metrics::DropOutReason::NO_SCRIPTS:
+      out << "NO_SCRIPTS";
+      break;
+    case Metrics::DropOutReason::CUSTOM_TAB_CLOSED:
+      out << "CUSTOM_TAB_CLOSED";
+      break;
+    case Metrics::DropOutReason::DECLINED:
+      out << "DECLINED";
+      break;
+    case Metrics::DropOutReason::SHEET_CLOSED:
+      out << "SHEET_CLOSED";
+      break;
+    case Metrics::DropOutReason::SCRIPT_FAILED:
+      out << "SCRIPT_FAILED";
+      break;
+    case Metrics::DropOutReason::NAVIGATION:
+      out << "NAVIGATION";
+      break;
+    case Metrics::DropOutReason::OVERLAY_STOP:
+      out << "OVERLAY_STOP";
+      break;
+    case Metrics::DropOutReason::PR_FAILED:
+      out << "PR_FAILED";
+      break;
+    case Metrics::DropOutReason::CONTENT_DESTROYED:
+      out << "CONTENT_DESTROYED";
+      break;
+    case Metrics::DropOutReason::RENDER_PROCESS_GONE:
+      out << "RENDER_PROCESS_GONE";
+      break;
+    case Metrics::DropOutReason::INTERSTITIAL_PAGE:
+      out << "INTERSTITIAL_PAGE";
+      break;
+    case Metrics::DropOutReason::SCRIPT_SHUTDOWN:
+      out << "SCRIPT_SHUTDOWN";
+      break;
+    case Metrics::DropOutReason::SAFETY_NET_TERMINATE:
+      out << "SAFETY_NET_TERMINATE";
+      break;
+    case Metrics::DropOutReason::TAB_DETACHED:
+      out << "TAB_DETACHED";
+      break;
+    case Metrics::DropOutReason::TAB_CHANGED:
+      out << "TAB_CHANGED";
+      break;
+    case Metrics::DropOutReason::GET_SCRIPTS_FAILED:
+      out << "GET_SCRIPTS_FAILED";
+      break;
+    case Metrics::DropOutReason::GET_SCRIPTS_UNPARSABLE:
+      out << "GET_SCRIPTS_UNPARSEABLE";
+      break;
+    case Metrics::DropOutReason::NO_INITIAL_SCRIPTS:
+      out << "NO_INITIAL_SCRIPTS";
+      break;
+    case Metrics::DropOutReason::DFM_INSTALL_FAILED:
+      out << "DFM_INSTALL_FAILED";
+      break;
+    case Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE:
+      out << "DOMAIN_CHANGE_DURING_BROWSE_MODE";
+      break;
+    case Metrics::DropOutReason::BACK_BUTTON_CLICKED:
+      out << "BACK_BUTTON_CLICKED";
+      break;
+    case Metrics::DropOutReason::ONBOARDING_BACK_BUTTON_CLICKED:
+      out << "ONBOARDING_BACK_BUTTON_CLICKED";
+      break;
+    case Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING:
+      out << "NAVIGATION_WHILE_RUNNING";
+      break;
+    case Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY:
+      out << "UI_CLOSED_UNEXPECTEDLY";
+      break;
+    case Metrics::DropOutReason::ONBOARDING_NAVIGATION:
+      out << "ONBOARDING_NAVIGATION";
+      break;
+    case Metrics::DropOutReason::ONBOARDING_DIALOG_DISMISSED:
+      out << "ONBOARDING_DIALOG_DISMISSED";
+      break;
+    case Metrics::DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS:
+      out << "MULTIPLE_AUTOSTARTABLE_SCRIPTS";
+      break;
+      // Do not add default case to force compilation error for new values.
+  }
+  return out;
+#endif  // NDEBUG
+}
+
+std::ostream& operator<<(std::ostream& out, const Metrics::Onboarding& metric) {
+#ifdef NDEBUG
+  // Non-debugging builds write the enum number.
+  out << static_cast<int>(metric);
+  return out;
+#else
+  // Debugging builds write a string representation of |metric|.
+  switch (metric) {
+    case Metrics::Onboarding::OB_SHOWN:
+      out << "OB_SHOWN";
+      break;
+    case Metrics::Onboarding::OB_NOT_SHOWN:
+      out << "OB_NOT_SHOWN";
+      break;
+    case Metrics::Onboarding::OB_ACCEPTED:
+      out << "OB_ACCEPTED";
+      break;
+    case Metrics::Onboarding::OB_CANCELLED:
+      out << "OB_CANCELLED";
+      break;
+    case Metrics::Onboarding::OB_NO_ANSWER:
+      out << "OB_NO_ANSWER";
+      break;
+      // Do not add default case to force compilation error for new values.
+  }
+  return out;
+#endif  // NDEBUG
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const Metrics::TriggerScriptFinishedState& state) {
+#ifdef NDEBUG
+  // Non-debugging builds write the enum number.
+  out << static_cast<int>(state);
+  return out;
+#else
+  // Debugging builds write a string representation of |state|.
+  switch (state) {
+    case Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED:
+      out << "GET_ACTIONS_FAILED";
+      break;
+    case Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR:
+      out << "GET_ACTIONS_PARSE_ERROR";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE:
+      out << "PROMPT_FAILED_NAVIGATE";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED:
+      out << "PROMPT_SUCCEEDED";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION:
+      out << "PROMPT_FAILED_CANCEL_SESSION";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER:
+      out << "PROMPT_FAILED_CANCEL_FOREVER";
+      break;
+    case Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT:
+      out << "TRIGGER_CONDITION_TIMEOUT";
+      break;
+    case Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR:
+      out << "NAVIGATION_ERROR";
+      break;
+    case Metrics::TriggerScriptFinishedState::
+        WEB_CONTENTS_DESTROYED_WHILE_VISIBLE:
+      out << "WEB_CONTENTS_DESTROYED_WHILE_VISIBLE";
+      break;
+    case Metrics::TriggerScriptFinishedState::
+        WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE:
+      out << "WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE";
+      break;
+    case Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE:
+      out << "NO_TRIGGER_SCRIPT_AVAILABLE";
+      break;
+    case Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW:
+      out << "FAILED_TO_SHOW";
+      break;
+    case Metrics::TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING:
+      out << "DISABLED_PROACTIVE_HELP_SETTING";
+      break;
+    case Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR:
+      out << "BASE64_DECODING_ERROR";
+      break;
+    case Metrics::TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED:
+      out << "BOTTOMSHEET_ONBOARDING_REJECTED";
+      break;
+    case Metrics::TriggerScriptFinishedState::UNKNOWN_FAILURE:
+      out << "UNKNOWN_FAILURE";
+      break;
+    case Metrics::TriggerScriptFinishedState::SERVICE_DELETED:
+      out << "SERVICE_DELETED";
+      break;
+    case Metrics::TriggerScriptFinishedState::PATH_MISMATCH:
+      out << "PATH_MISMATCH";
+      break;
+    case Metrics::TriggerScriptFinishedState::UNSAFE_ACTIONS:
+      out << "UNSAFE_ACTIONS";
+      break;
+    case Metrics::TriggerScriptFinishedState::INVALID_SCRIPT:
+      out << "INVALID_SCRIPT";
+      break;
+    case Metrics::TriggerScriptFinishedState::BROWSE_FAILED_NAVIGATE:
+      out << "BROWSE_FAILED_NAVIGATE";
+      break;
+    case Metrics::TriggerScriptFinishedState::BROWSE_FAILED_OTHER:
+      out << "BROWSE_FAILED_OTHER";
+      break;
+    case Metrics::TriggerScriptFinishedState::
+        PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
+      out << "PROMPT_FAILED_CONDITION_NO_LONGER_TRUE";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CLOSE:
+      out << "PROMPT_FAILED_CLOSE";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_OTHER:
+      out << "PROMPT_FAILED_OTHER";
+      break;
+    case Metrics::TriggerScriptFinishedState::PROMPT_SWIPE_DISMISSED:
+      out << "PROMPT_SWIPE_DISMISSED";
+      break;
+    case Metrics::TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED:
+      out << "CCT_TO_TAB_NOT_SUPPORTED";
+      break;
+    case Metrics::TriggerScriptFinishedState::CANCELED:
+      out << "CANCELED";
+      break;
+      // Do not add default case to force compilation error for new values.
+  }
+  return out;
+#endif  // NDEBUG
 }
 
 }  // namespace autofill_assistant

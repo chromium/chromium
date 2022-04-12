@@ -5,14 +5,24 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 
-#include <ostream>
-#include "base/time/time.h"
-#include "components/autofill_assistant/browser/script_parameters.h"
-#include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/startup_util.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
+#include <iosfwd>
+#include <string>
+
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace base {
+class TimeDelta;
+}
+
+namespace ukm {
+class UkmRecorder;
+}
 
 namespace autofill_assistant {
+
+enum class StartupMode;
+class ScriptParameters;
+enum TriggerScriptProto_TriggerUIType : int;
 
 // A class to generate Autofill Assistant metrics.
 class Metrics {
@@ -712,23 +722,23 @@ class Metrics {
                                          TriggerScriptStarted event);
   static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
                                          ukm::SourceId source_id,
-                                         StartupUtil::StartupMode startup_mode,
+                                         StartupMode startup_mode,
                                          bool feature_module_installed,
                                          bool is_first_time_user);
   static void RecordTriggerScriptFinished(
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
-      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptProto_TriggerUIType trigger_ui_type,
       TriggerScriptFinishedState event);
   static void RecordTriggerScriptShownToUser(
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
-      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptProto_TriggerUIType trigger_ui_type,
       TriggerScriptShownToUser event);
   static void RecordTriggerScriptOnboarding(
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
-      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptProto_TriggerUIType trigger_ui_type,
       TriggerScriptOnboarding event);
   static void RecordRegularScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
                                             ukm::SourceId source_id,
@@ -748,7 +758,7 @@ class Metrics {
   static void RecordStartRequest(ukm::UkmRecorder* ukm_recorder,
                                  ukm::SourceId source_id,
                                  const ScriptParameters& script_parameters,
-                                 StartupUtil::StartupMode event);
+                                 StartupMode event);
   static void RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
                                    ukm::SourceId source_id,
                                    int complete_count,
@@ -781,235 +791,13 @@ class Metrics {
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
   friend std::ostream& operator<<(std::ostream& out,
-                                  const DropOutReason& reason) {
-#ifdef NDEBUG
-    // Non-debugging builds write the enum number.
-    out << static_cast<int>(reason);
-    return out;
-#else
-    // Debugging builds write a string representation of |reason|.
-    switch (reason) {
-      case DropOutReason::AA_START:
-        out << "AA_START";
-        break;
-      case DropOutReason::AUTOSTART_TIMEOUT:
-        out << "AUTOSTART_TIMEOUT";
-        break;
-      case DropOutReason::NO_SCRIPTS:
-        out << "NO_SCRIPTS";
-        break;
-      case DropOutReason::CUSTOM_TAB_CLOSED:
-        out << "CUSTOM_TAB_CLOSED";
-        break;
-      case DropOutReason::DECLINED:
-        out << "DECLINED";
-        break;
-      case DropOutReason::SHEET_CLOSED:
-        out << "SHEET_CLOSED";
-        break;
-      case DropOutReason::SCRIPT_FAILED:
-        out << "SCRIPT_FAILED";
-        break;
-      case DropOutReason::NAVIGATION:
-        out << "NAVIGATION";
-        break;
-      case DropOutReason::OVERLAY_STOP:
-        out << "OVERLAY_STOP";
-        break;
-      case DropOutReason::PR_FAILED:
-        out << "PR_FAILED";
-        break;
-      case DropOutReason::CONTENT_DESTROYED:
-        out << "CONTENT_DESTROYED";
-        break;
-      case DropOutReason::RENDER_PROCESS_GONE:
-        out << "RENDER_PROCESS_GONE";
-        break;
-      case DropOutReason::INTERSTITIAL_PAGE:
-        out << "INTERSTITIAL_PAGE";
-        break;
-      case DropOutReason::SCRIPT_SHUTDOWN:
-        out << "SCRIPT_SHUTDOWN";
-        break;
-      case DropOutReason::SAFETY_NET_TERMINATE:
-        out << "SAFETY_NET_TERMINATE";
-        break;
-      case DropOutReason::TAB_DETACHED:
-        out << "TAB_DETACHED";
-        break;
-      case DropOutReason::TAB_CHANGED:
-        out << "TAB_CHANGED";
-        break;
-      case DropOutReason::GET_SCRIPTS_FAILED:
-        out << "GET_SCRIPTS_FAILED";
-        break;
-      case DropOutReason::GET_SCRIPTS_UNPARSABLE:
-        out << "GET_SCRIPTS_UNPARSEABLE";
-        break;
-      case DropOutReason::NO_INITIAL_SCRIPTS:
-        out << "NO_INITIAL_SCRIPTS";
-        break;
-      case DropOutReason::DFM_INSTALL_FAILED:
-        out << "DFM_INSTALL_FAILED";
-        break;
-      case DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE:
-        out << "DOMAIN_CHANGE_DURING_BROWSE_MODE";
-        break;
-      case DropOutReason::BACK_BUTTON_CLICKED:
-        out << "BACK_BUTTON_CLICKED";
-        break;
-      case DropOutReason::ONBOARDING_BACK_BUTTON_CLICKED:
-        out << "ONBOARDING_BACK_BUTTON_CLICKED";
-        break;
-      case DropOutReason::NAVIGATION_WHILE_RUNNING:
-        out << "NAVIGATION_WHILE_RUNNING";
-        break;
-      case DropOutReason::UI_CLOSED_UNEXPECTEDLY:
-        out << "UI_CLOSED_UNEXPECTEDLY";
-        break;
-      case DropOutReason::ONBOARDING_NAVIGATION:
-        out << "ONBOARDING_NAVIGATION";
-        break;
-      case DropOutReason::ONBOARDING_DIALOG_DISMISSED:
-        out << "ONBOARDING_DIALOG_DISMISSED";
-        break;
-      case DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS:
-        out << "MULTIPLE_AUTOSTARTABLE_SCRIPTS";
-        break;
-        // Do not add default case to force compilation error for new values.
-    }
-    return out;
-#endif  // NDEBUG
-  }
+                                  const DropOutReason& reason);
 
   // Intended for debugging: writes string representation of |metric| to |out|.
-  friend std::ostream& operator<<(std::ostream& out, const Onboarding& metric) {
-#ifdef NDEBUG
-    // Non-debugging builds write the enum number.
-    out << static_cast<int>(metric);
-    return out;
-#else
-    // Debugging builds write a string representation of |metric|.
-    switch (metric) {
-      case Onboarding::OB_SHOWN:
-        out << "OB_SHOWN";
-        break;
-      case Onboarding::OB_NOT_SHOWN:
-        out << "OB_NOT_SHOWN";
-        break;
-      case Onboarding::OB_ACCEPTED:
-        out << "OB_ACCEPTED";
-        break;
-      case Onboarding::OB_CANCELLED:
-        out << "OB_CANCELLED";
-        break;
-      case Onboarding::OB_NO_ANSWER:
-        out << "OB_NO_ANSWER";
-        break;
-        // Do not add default case to force compilation error for new values.
-    }
-    return out;
-#endif  // NDEBUG
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Onboarding& metric);
 
   friend std::ostream& operator<<(std::ostream& out,
-                                  const TriggerScriptFinishedState& state) {
-#ifdef NDEBUG
-    // Non-debugging builds write the enum number.
-    out << static_cast<int>(state);
-    return out;
-#else
-    // Debugging builds write a string representation of |state|.
-    switch (state) {
-      case TriggerScriptFinishedState::GET_ACTIONS_FAILED:
-        out << "GET_ACTIONS_FAILED";
-        break;
-      case TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR:
-        out << "GET_ACTIONS_PARSE_ERROR";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE:
-        out << "PROMPT_FAILED_NAVIGATE";
-        break;
-      case TriggerScriptFinishedState::PROMPT_SUCCEEDED:
-        out << "PROMPT_SUCCEEDED";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION:
-        out << "PROMPT_FAILED_CANCEL_SESSION";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER:
-        out << "PROMPT_FAILED_CANCEL_FOREVER";
-        break;
-      case TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT:
-        out << "TRIGGER_CONDITION_TIMEOUT";
-        break;
-      case TriggerScriptFinishedState::NAVIGATION_ERROR:
-        out << "NAVIGATION_ERROR";
-        break;
-      case TriggerScriptFinishedState::WEB_CONTENTS_DESTROYED_WHILE_VISIBLE:
-        out << "WEB_CONTENTS_DESTROYED_WHILE_VISIBLE";
-        break;
-      case TriggerScriptFinishedState::WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE:
-        out << "WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE";
-        break;
-      case TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE:
-        out << "NO_TRIGGER_SCRIPT_AVAILABLE";
-        break;
-      case TriggerScriptFinishedState::FAILED_TO_SHOW:
-        out << "FAILED_TO_SHOW";
-        break;
-      case TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING:
-        out << "DISABLED_PROACTIVE_HELP_SETTING";
-        break;
-      case TriggerScriptFinishedState::BASE64_DECODING_ERROR:
-        out << "BASE64_DECODING_ERROR";
-        break;
-      case TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED:
-        out << "BOTTOMSHEET_ONBOARDING_REJECTED";
-        break;
-      case TriggerScriptFinishedState::UNKNOWN_FAILURE:
-        out << "UNKNOWN_FAILURE";
-        break;
-      case TriggerScriptFinishedState::SERVICE_DELETED:
-        out << "SERVICE_DELETED";
-        break;
-      case TriggerScriptFinishedState::PATH_MISMATCH:
-        out << "PATH_MISMATCH";
-        break;
-      case TriggerScriptFinishedState::UNSAFE_ACTIONS:
-        out << "UNSAFE_ACTIONS";
-        break;
-      case TriggerScriptFinishedState::INVALID_SCRIPT:
-        out << "INVALID_SCRIPT";
-        break;
-      case TriggerScriptFinishedState::BROWSE_FAILED_NAVIGATE:
-        out << "BROWSE_FAILED_NAVIGATE";
-        break;
-      case TriggerScriptFinishedState::BROWSE_FAILED_OTHER:
-        out << "BROWSE_FAILED_OTHER";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
-        out << "PROMPT_FAILED_CONDITION_NO_LONGER_TRUE";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_CLOSE:
-        out << "PROMPT_FAILED_CLOSE";
-        break;
-      case TriggerScriptFinishedState::PROMPT_FAILED_OTHER:
-        out << "PROMPT_FAILED_OTHER";
-        break;
-      case TriggerScriptFinishedState::PROMPT_SWIPE_DISMISSED:
-        out << "PROMPT_SWIPE_DISMISSED";
-        break;
-      case TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED:
-        out << "CCT_TO_TAB_NOT_SUPPORTED";
-        break;
-      case TriggerScriptFinishedState::CANCELED:
-        out << "CANCELED";
-        break;
-        // Do not add default case to force compilation error for new values.
-    }
-    return out;
-#endif  // NDEBUG
-  }
+                                  const TriggerScriptFinishedState& state);
 };
 
 }  // namespace autofill_assistant
