@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -85,6 +86,8 @@ void AuthErrorObserver::HandleAuthError(
                  << auth_error.ToString();
     const AccountId& account_id = user->GetAccountId();
     DCHECK(account_id.is_valid());
+    if (SigninErrorNotifier::ShouldIgnoreSyncErrorsForTesting())
+      return;
 
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         account_id, user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);

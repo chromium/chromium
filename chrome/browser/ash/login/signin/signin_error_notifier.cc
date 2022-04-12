@@ -214,6 +214,11 @@ SigninErrorNotifier::IgnoreSyncErrorsForTesting() {
 }
 
 // static
+bool SigninErrorNotifier::ShouldIgnoreSyncErrorsForTesting() {
+  return g_ignore_sync_errors_for_test_;
+}
+
+// static
 void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEduCoexistenceArcMigrationCompleted,
                                 false);

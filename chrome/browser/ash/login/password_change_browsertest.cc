@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
                                      ReauthReason::INVALID_TOKEN_HANDLE, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, DISABLED_LoginScreenNoPasswordChange) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenNoPasswordChange) {
   TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
   // Focus triggers token check.
   LoginScreenTestApi::FocusUser(user_with_invalid_token_);

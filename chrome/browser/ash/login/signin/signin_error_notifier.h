@@ -41,7 +41,9 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
 
   ~SigninErrorNotifier() override;
 
+  // This also makes AuthErrorObserver do not report errors.
   static std::unique_ptr<base::AutoReset<bool>> IgnoreSyncErrorsForTesting();
+  static bool ShouldIgnoreSyncErrorsForTesting();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
