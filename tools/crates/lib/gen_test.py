@@ -86,8 +86,7 @@ class GenTestCase(unittest.TestCase):
         r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[1])
         expected = gen.CargoTreeDependency(cargo.CrateKey(
             "cxxbridge-macro", "1.0.56"),
-                                           full_version="1.0.56",
-                                           is_proc_macro=True)
+                                           full_version="1.0.56")
         self.assertEqual(r, expected)
 
         # │   ├── proc-macro2 v1.0.32 default,proc-macro,span-locations
@@ -192,7 +191,6 @@ allow-first-party-usage = false
         d = gen.CargoTreeDependency(
             cargo.CrateKey("cxxbridge-macro", "1.0.56"),
             full_version="1.0.56",
-            is_proc_macro=True,
             # Deps from third_party.toml are visible to first-party code by
             # default.
             is_for_first_party_code=True)
@@ -253,7 +251,6 @@ allow-first-party-usage = false
         d = gen.CargoTreeDependency(
             cargo.CrateKey("cxxbridge-macro", "1.0.56"),
             full_version="1.0.56",
-            is_proc_macro=True,
             # Deps from third_party.toml are visible to first-party code by
             # default.
             is_for_first_party_code=True)
@@ -377,12 +374,11 @@ all-platform-crate = "1"
 
     def make_fake_dep(self, dep_key: cargo.CrateKey,
                       parent_requested_features_of_dep: list[str],
-                      dep_is_proc_macro: bool, dep_for_first_party_code: bool,
+                      dep_for_first_party_code: bool,
                       dep_build_script_outputs: set[str]):
         return gen.CargoTreeDependency(
             dep_key,
             features=parent_requested_features_of_dep,
-            is_proc_macro=dep_is_proc_macro,
             is_for_first_party_code=dep_for_first_party_code,
             build_script_outputs=dep_build_script_outputs)
 
@@ -396,7 +392,6 @@ all-platform-crate = "1"
         dep_key = cargo.CrateKey(kwargs["dep_name"], "1.2.3")
         dep = self.make_fake_dep(dep_key,
                                  kwargs["parent_requested_features_of_dep"],
-                                 kwargs["dep_is_proc_macro"],
                                  kwargs["dep_for_first_party_code"],
                                  kwargs["dep_build_script_outputs"])
 
@@ -435,7 +430,6 @@ all-platform-crate = "1"
             parent_output=cargo.CrateBuildOutput.BUILDRS,
             dep_name="child-name",
             parent_requested_features_of_dep=["feature1", "feature2"],
-            dep_is_proc_macro=False,
             dep_for_first_party_code=for_first_party_code,
             dep_build_script_outputs=build_script_outputs)
 
@@ -515,7 +509,6 @@ all-platform-crate = "1"
             parent_output=cargo.CrateBuildOutput.BUILDRS,
             dep_name="grand-child-name",
             parent_requested_features_of_dep=["featureA", "featureB"],
-            dep_is_proc_macro=False,
             dep_for_first_party_code=False,
             dep_build_script_outputs=build_script_outputs)
         current_archset = compiler.ArchSet(initial={"x86_64-pc-windows-msvc"})
@@ -615,7 +608,6 @@ all-platform-crate = "1"
             parent_output=cargo.CrateBuildOutput.BUILDRS,
             dep_name="grand-child-name",
             parent_requested_features_of_dep=["featureB", "featureC"],
-            dep_is_proc_macro=False,
             dep_for_first_party_code=False,
             dep_build_script_outputs=build_script_outputs)
         current_archset = compiler.ArchSet(initial={"x86_64-fuchsia"})
