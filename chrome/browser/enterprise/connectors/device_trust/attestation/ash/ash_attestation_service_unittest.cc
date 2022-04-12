@@ -37,11 +37,9 @@ namespace enterprise_connectors {
 
 namespace {
 
-// A sample VerifiedAccess v2 challenge rerepsented as a JSON string.
-constexpr char kJsonChallenge[] =
-    "{"
-    "\"challenge\": "
-    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
+// A sample VerifiedAccess v2 challenge.
+constexpr char kEncodedChallenge[] =
+    "CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
     "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
     "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
     "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
@@ -49,13 +47,21 @@ constexpr char kJsonChallenge[] =
     "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
     "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
     "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
-    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
-    "}";
+    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=";
 
 constexpr char kFakeResponse[] = "fake_response";
 
 constexpr char kDeviceId[] = "device-id";
 constexpr char kObfuscatedCustomerId[] = "customer-id";
+
+std::string GetSerializedSignedChallenge() {
+  std::string serialized_signed_challenge;
+  if (!base::Base64Decode(kEncodedChallenge, &serialized_signed_challenge)) {
+    return std::string();
+  }
+
+  return serialized_signed_challenge;
+}
 
 absl::optional<std::string> ParseValueFromResponse(
     const std::string& response) {
@@ -130,7 +136,7 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
         run_loop.Quit();
       });
 
-  auto protoChallenge = JsonChallengeToProtobufChallenge(kJsonChallenge);
+  auto protoChallenge = GetSerializedSignedChallenge();
   EXPECT_CALL(
       *mock_challenge_key_,
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
@@ -144,7 +150,7 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
               kFakeResponse)));
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      kJsonChallenge, std::move(signals), std::move(callback));
+      protoChallenge, std::move(signals), std::move(callback));
   run_loop.Run();
 }
 

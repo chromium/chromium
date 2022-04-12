@@ -32,12 +32,16 @@ class DesktopAttestationService : public AttestationService {
 
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
-      const std::string& challenge,
+      const std::string& serialized_signed_challenge,
       std::unique_ptr<DeviceTrustSignals> signals,
       AttestationCallback callback) override;
 
  private:
-  void OnPublicKeyExported(const std::string& challenge,
+  void OnChallengeParsed(AttestationCallback callback,
+                         std::unique_ptr<DeviceTrustSignals> signals,
+                         const std::string& serialized_signed_challenge);
+
+  void OnPublicKeyExported(const std::string& serialized_signed_challenge,
                            std::unique_ptr<DeviceTrustSignals> signals,
                            AttestationCallback callback,
                            absl::optional<std::string> exported_key);

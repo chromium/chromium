@@ -45,7 +45,7 @@ AshAttestationService::AshAttestationService(Profile* profile)
 AshAttestationService::~AshAttestationService() = default;
 
 void AshAttestationService::BuildChallengeResponseForVAChallenge(
-    const std::string& challenge,
+    const std::string& serialized_signed_challenge,
     std::unique_ptr<attestation::DeviceTrustSignals> signals,
     AttestationCallback callback) {
   DCHECK(signals);
@@ -57,7 +57,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
-      JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,
+      serialized_signed_challenge, /*register_key=*/false,
       /*key_name_for_spkac=*/std::string(), /*signals=*/*signals);
 }
 

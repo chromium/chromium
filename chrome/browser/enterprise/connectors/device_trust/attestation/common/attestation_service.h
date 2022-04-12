@@ -21,11 +21,12 @@ class AttestationService {
 
   virtual ~AttestationService() = default;
 
-  // If the `challenge` comes from Verified Access, builds a proper response
-  // including the `signals` and returns it via the given `callback`. If
-  // the challenge does not come from VA, runs `callback` with an empty string.
+  // If the `serialized_signed_challenge` comes from Verified Access
+  // builds a proper response including the `signals` and returns it via
+  // the given `callback`. If the challenge does not come from VA, runs
+  // `callback` with an empty string.
   virtual void BuildChallengeResponseForVAChallenge(
-      const std::string& challenge,
+      const std::string& serialized_signed_challenge,
       std::unique_ptr<SignalsType> signals,
       AttestationCallback callback) = 0;
 };

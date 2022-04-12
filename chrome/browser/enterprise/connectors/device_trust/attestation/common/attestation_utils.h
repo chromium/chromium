@@ -9,14 +9,6 @@
 
 namespace enterprise_connectors {
 
-// Take the challenge that comes from the Idp in json format and generate a
-// SignedData proto.
-// The expected format of the challenge is the following:
-// {
-//    "challenge": base64 encoded SignedData
-// }
-std::string JsonChallengeToProtobufChallenge(const std::string& json_challenge);
-
 // Take a challenge_response proto and return the json version of it.
 // The format follows Vaapi v2 definition:
 // {

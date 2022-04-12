@@ -7,7 +7,10 @@
 #include <tuple>
 
 #include "base/barrier_closure.h"
+#include "base/base64.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +37,39 @@ const base::Value origins[]{base::Value("example1.example.com"),
 const base::Value more_origins[]{base::Value("example1.example.com"),
                                  base::Value("example2.example.com"),
                                  base::Value("example3.example.com")};
+
+// A sample VerifiedAccess v2 challenge rerepsented as a JSON string.
+constexpr char kJsonChallenge[] =
+    "{"
+    "\"challenge\": "
+    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
+    "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
+    "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
+    "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
+    "FUA5r3lxdoluxwAUMFqcP4VgnMvKzKTPYbnnB+xj5h5BZqjQToXJYoP4VC3/"
+    "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
+    "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
+    "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
+    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
+    "}";
+
+std::string GetSerializedSignedChallenge(const std::string& response) {
+  absl::optional<base::Value> data = base::JSONReader::Read(
+      response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+
+  // If json is malformed or it doesn't include the needed field return
+  // an empty string.
+  if (!data || !data.value().FindPath("challenge"))
+    return std::string();
+
+  std::string serialized_signed_challenge;
+  if (!base::Base64Decode(data.value().FindPath("challenge")->GetString(),
+                          &serialized_signed_challenge)) {
+    return std::string();
+  }
+
+  return serialized_signed_challenge;
+}
 
 }  // namespace
 
@@ -100,6 +137,7 @@ class DeviceTrustServiceTest
   std::unique_ptr<DeviceTrustConnectorService> connector_;
   raw_ptr<MockAttestationService> mock_attestation_service_;
   raw_ptr<MockSignalsService> mock_signals_service_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 };
 
 // Tests that IsEnabled returns true only when the feature flag is enabled and
@@ -124,18 +162,22 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
             std::move(signals_callback).Run(std::move(fake_signals));
           }));
 
-  std::string fake_challenge = "fake_challenge";
-  EXPECT_CALL(*mock_attestation_service_, BuildChallengeResponseForVAChallenge(
-                                              fake_challenge, NotNull(), _))
+  EXPECT_CALL(*mock_attestation_service_,
+              BuildChallengeResponseForVAChallenge(
+                  GetSerializedSignedChallenge(kJsonChallenge), NotNull(), _))
       .WillOnce(Invoke([&fake_device_id](const std::string& challenge,
                                          std::unique_ptr<SignalsType> signals,
                                          AttestationCallback callback) {
         EXPECT_EQ(signals->device_id(), fake_device_id);
+        std::move(callback).Run(challenge);
       }));
 
+  base::RunLoop run_loop;
   device_trust_service->BuildChallengeResponse(
-      fake_challenge,
-      /*callback=*/base::BindOnce([](const std::string& response) {}));
+      kJsonChallenge,
+      /*callback=*/base::BindLambdaForTesting(
+          [&run_loop](const std::string& response) { run_loop.Quit(); }));
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
