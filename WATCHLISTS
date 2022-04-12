@@ -2022,7 +2022,8 @@
                   '|chrome/browser/ui/web_applications',
     },
     'web_package': {
-      'filepath': 'content/browser/loader/prefetch_url_loader'\
+      'filepath': 'components/web_package/'\
+                  '|content/browser/loader/prefetch_url_loader'\
                   '|content/browser/web_package/'\
                   '|content/test/data/sxg/'
     },
@@ -2912,8 +2913,9 @@
                          'mgiuca+watch@chromium.org',
                          'phillis+watch@chromium.org',
                          'webappwatch@microsoft.com'],
-    'web_package': ['twifkak+watch@chromium.org',
-                    'hayato+watch@chromium.org'],
+    'web_package': ['cmfcmf+watch@chromium.org',
+                    'hayato+watch@chromium.org',
+                    'twifkak+watch@chromium.org'],
     'web_share': ['mgiuca+watch@chromium.org'],
     'webauthn': ['webauthn-reviews@chromium.org'],
     'webcodecs': ['feature-media-reviews@chromium.org'],
