@@ -1208,6 +1208,8 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
 TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   // Create a `DeskTemplate` using which has 3 apps more than
   // `DesksTemplatesIconContainer::kMaxIcons` and each app has 2 windows.
+  // With each app having 2 windows, only 2 app icon views and the overflow view
+  // will be able to fit in the container, the rest will overflow.
   const int kNumOverflowApps = 3;
   std::vector<int> window_info(
       kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 2);
@@ -1249,26 +1251,31 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   EXPECT_LT(0u, num_hidden);
 
   // The overflow counter should have no identifier and its count should be
-  // non-zero, accounting for the number of hidden app icons. It should also be
-  // visible and within the bounds of the host DesksTemplatesItemView.
+  // non-zero, accounting for the number of windows that are not represented by
+  // app icons. It should also be visible and within the bounds of the host
+  // DesksTemplatesItemView.
   DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
-  // We created (3 + 4) * 2 = 14 windows. The first 4 icon views are displayed,
-  // each with a "+1" count label, which leaves 14 - (4 * 2) = 6 windows.
-  EXPECT_EQ(u"+6", overflow_icon_view.count_label()->GetText());
+
+  // (3 + 4) * 2 = 14 windows were added to the desk template, from 7 apps with
+  // 2 windows each. The first 4 icon views are created, each with a "+1" count
+  // label. The last 2 of the 4 views did not fit, so they were made not visible
+  // and were added to the overflow count. With 2 of the 7 apps being displayed,
+  // having 2 windows each, the overflow count should be 14 - (2 * 2) = 10.
+  EXPECT_EQ(u"+10", overflow_icon_view.count_label()->GetText());
   EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(
       item_view->Contains(overflow_icon_view.desks_templates_icon_view()));
 }
 
 // Tests that apps with multiple window are counted correctly.
-//  _________________________________________________________________________
-//  |  ________   ________   ________________   ________________   ________ |
-//  | |       |  |       |  |       |       |  |       |       |  |       | |
-//  | |   I   |  |   I   |  |   I      + 1  |  |   I   |  + 1  |  |  + 3  | |
-//  | |_______|  |_______|  |_______|_______|  |_______|_______|  |_______| |
-//  |_______________________________________________________________________|
+//  ______________________________________________________
+//  |  ________   ________   ________________   ________ |
+//  | |       |  |       |  |       |       |  |       | |
+//  | |   I   |  |   I   |  |   I      + 1  |  |  + 5  | |
+//  | |_______|  |_______|  |_______|_______|  |_______| |
+//  |____________________________________________________|
 //
 TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   // Create a `DeskTemplate` that contains some apps with multiple windows and
@@ -1309,11 +1316,11 @@ TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   EXPECT_TRUE(icon_view_4.count_label());
   EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
 
-  // The overflow counter should display the number of excess apps.
+  // The overflow counter should display the number of excess windows.
   DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
-  EXPECT_EQ(u"+3", overflow_icon_view.count_label()->GetText());
+  EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
 }
 
 // Tests that when an app has more than 99 windows, its label is changed to

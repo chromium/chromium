@@ -225,19 +225,20 @@ void DesksTemplatesIconContainer::Layout() {
     int num_hidden_icons = 0;
     for (auto it = ++icon_views.rbegin(); it != icon_views.rend(); ++it) {
       if ((*it)->GetVisible()) {
-        used_horizontal_space -= (*it)->GetPreferredSize().width();
+        used_horizontal_space -=
+            ((*it)->GetPreferredSize().width() + kIconSpacingDp);
         (*it)->SetVisible(false);
-        ++num_hidden_icons;
+        num_hidden_icons +=
+            static_cast<DesksTemplatesIconView*>((*it))->count();
       }
 
       if (used_horizontal_space <= available_horizontal_space)
         break;
     }
     // Overflow icon count = the number of hidden icons + the number of
-    // unavailable windows + 1 to account for the overflow itself taking an
-    // icon.
+    // unavailable windows.
     overflow_icon_view->UpdateCount(overflow_icon_view->count() +
-                                    num_hidden_icons + 1);
+                                    num_hidden_icons);
   } else if (overflow_icon_view->count() == 0) {
     // There is no overflow so hide the overflow icon view.
     overflow_icon_view->SetVisible(false);
@@ -275,7 +276,7 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
       icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
                                            icon_info.count, /*show_plus=*/true);
     } else {
-      num_hidden_icons++;
+      num_hidden_icons += icon_info.count;
     }
   }
 

@@ -85,7 +85,8 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
             .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                 kCountLabelInsetSize, kCountLabelInsetSize,
                 kCountLabelInsetSize,
-                icon_view_ ? 2 * kCountLabelInsetSize : kCountLabelInsetSize)))
+                icon_identifier_.empty() ? kCountLabelInsetSize
+                                         : 2 * kCountLabelInsetSize)))
             .SetBackgroundColor(AshColorProvider::Get()->GetControlsLayerColor(
                 AshColorProvider::ControlsLayerType::
                     kControlBackgroundColorInactive))
@@ -153,10 +154,12 @@ void DesksTemplatesIconView::UpdateCount(int count) {
 }
 
 gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {
-  return gfx::Size(count_ > 1 && icon_view_ && count_label_
-                       ? count_label_->bounds().width() + kIconSize
-                       : kIconSize,
-                   kIconSize);
+  int width = (icon_view_ ? kIconSize : 0);
+  if (count_ > 1 && count_label_) {
+    width +=
+        std::max(kIconSize, count_label_->CalculatePreferredSize().width());
+  }
+  return gfx::Size(width, kIconSize);
 }
 
 void DesksTemplatesIconView::Layout() {
@@ -166,7 +169,7 @@ void DesksTemplatesIconView::Layout() {
   if (count_label_) {
     count_label_->SetBoundsRect(
         gfx::Rect(icon_view_ ? kIconSize : 0, 0,
-                  count_ > 9 ? 1.25 * kIconSize : kIconSize, kIconSize));
+                  width() - (icon_view_ ? kIconSize : 0), kIconSize));
   }
 }
 
