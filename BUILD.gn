@@ -1436,7 +1436,7 @@ if (!is_ios) {
     args += [
       "--webgpu-cts-expectations",
       "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
-      "--isolated-script-test-filter=wpt_internal/webgpu/*",
+      "--isolated-script-test-filter=wpt_internal/webgpu/web_platform/reftests",
     ]
 
     data_deps = [
