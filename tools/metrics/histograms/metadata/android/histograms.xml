@@ -3120,6 +3120,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabSwitcher.IncognitoClickedIsEmpty" enum="Boolean"
+    expires_after="2022-09-01">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Emitted every time a user uses Incognito button on Tab Switcher. Records
+    whether or not there is any Incognito tab when Incognito button is clicked.
+  </summary>
+</histogram>
+
 <histogram name="Android.TaskScheduling.BootstrapTaskRunnerType"
     enum="BootstrapTaskRunnerType" expires_after="2022-10-04">
   <owner>blundell@chromium.org</owner>

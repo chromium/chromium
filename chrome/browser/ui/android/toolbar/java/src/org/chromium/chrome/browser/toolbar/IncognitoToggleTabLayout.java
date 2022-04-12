@@ -14,6 +14,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -173,6 +174,11 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
 
         mTabModelSelector.commitAllTabClosures();
         mTabModelSelector.selectModel(incognitoSelected);
+
+        if (incognitoSelected) {
+            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.IncognitoClickedIsEmpty",
+                    mTabCountProvider.getTabCount() == 0);
+        }
 
         final int stackAnnouncementId = incognitoSelected
                 ? R.string.accessibility_tab_switcher_incognito_stack_selected
