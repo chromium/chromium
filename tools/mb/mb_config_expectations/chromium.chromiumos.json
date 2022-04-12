@@ -10,6 +10,18 @@
       "use_goma": true
     }
   },
+  "Linux ChromiumOS Full (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-amd64-generic-asan-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
@@ -18,6 +30,17 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true
+    }
+  },
+  "chromeos-amd64-generic-asan-rel (reclient shadow)": {
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_asan": true,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-cfi-thin-lto-rel": {
@@ -40,6 +63,17 @@
       "is_debug": true,
       "ozone_platform_headless": true,
       "use_goma": true
+    }
+  },
+  "chromeos-amd64-generic-dbg (reclient shadow)": {
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "is_debug": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-lacros-dbg": {
@@ -77,6 +111,17 @@
       "use_goma": true
     }
   },
+  "chromeos-arm-generic-dbg (reclient shadow)": {
+    "args_file": "//build/args/chromeos/arm-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "is_debug": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-arm-generic-rel": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
@@ -102,6 +147,16 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true
+    }
+  },
+  "chromeos-kevin-rel (reclient shadow)": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-binary-size-rel": {
