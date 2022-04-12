@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "net/third_party/quiche/src/quic/core/crypto/proof_source.h"
-#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 
 namespace quiche {
 

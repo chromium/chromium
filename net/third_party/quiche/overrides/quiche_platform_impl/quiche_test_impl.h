@@ -9,7 +9,7 @@
 
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"      // IWYU pragma: export
 #include "testing/gtest/include/gtest/gtest-spi.h"  // IWYU pragma: export
 #include "testing/gtest/include/gtest/gtest.h"      // IWYU pragma: export

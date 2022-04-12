@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
-#include "net/third_party/quiche/src/quic/core/quic_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
 namespace media_router {
 namespace {
@@ -87,6 +87,11 @@ void NetworkServiceQuicPacketWriter::SetWritable() {
 
   writable_ = true;
   UpdateIsWriteBlocked();
+}
+
+absl::optional<int> NetworkServiceQuicPacketWriter::MessageTooBigErrorCode()
+    const {
+  return net::ERR_MSG_TOO_BIG;
 }
 
 bool NetworkServiceQuicPacketWriter::SupportsReleaseTime() const {

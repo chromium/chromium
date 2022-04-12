@@ -15,7 +15,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using base::Time;

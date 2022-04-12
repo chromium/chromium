@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_system_event_loop.h"
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
-#include "net/third_party/quiche/src/quic/tools/quic_toy_server.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_system_event_loop.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_toy_server.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/tools/quic/quic_simple_server_backend_factory.h"
 

@@ -14,7 +14,7 @@
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
 #include "net/socket/udp_server_socket.h"
-#include "net/third_party/quiche/src/quic/core/quic_dispatcher.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_dispatcher.h"
 
 namespace net {
 
@@ -39,6 +39,11 @@ bool QuicSimpleServerPacketWriter::IsWriteBlocked() const {
 
 void QuicSimpleServerPacketWriter::SetWritable() {
   write_blocked_ = false;
+}
+
+absl::optional<int> QuicSimpleServerPacketWriter::MessageTooBigErrorCode()
+    const {
+  return ERR_MSG_TOO_BIG;
 }
 
 quic::WriteResult QuicSimpleServerPacketWriter::WritePacket(

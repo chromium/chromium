@@ -5,7 +5,7 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_LOOPBACK_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_LOOPBACK_IMPL_H_
 
-#include "net/third_party/quiche/src/quic/platform/api/quic_ip_address.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_ip_address.h"
 
 namespace quiche {
 

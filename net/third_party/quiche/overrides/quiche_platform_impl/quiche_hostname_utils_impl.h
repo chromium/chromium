@@ -5,7 +5,7 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_HOSTNAME_UTILS_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_HOSTNAME_UTILS_IMPL_H_
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace quiche {

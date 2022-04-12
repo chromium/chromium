@@ -11,7 +11,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
 #include "net/test/gtest_util.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

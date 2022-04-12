@@ -6,8 +6,8 @@
 #define NET_QUIC_PLATFORM_IMPL_QUIC_CHROMIUM_CLOCK_H_
 
 #include "base/time/time.h"
-#include "net/third_party/quiche/src/quic/core/quic_clock.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 
 namespace quic {
 

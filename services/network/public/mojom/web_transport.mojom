@@ -16,7 +16,7 @@ struct WebTransportError {
   int32 net_error = 0;
 
   // A QUIC error (see
-  // net/third_party/quiche/src/quic/core/quic_error_codes.h).
+  // net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h).
   // TODO(ricea): Rename this.
   int32 quic_error = 0;
 

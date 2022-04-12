@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/port_util.h"
-#include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
 
 namespace net {
 

@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "net/http/http_raw_request_headers.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
 
 namespace net {
 

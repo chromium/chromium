@@ -13,7 +13,7 @@
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace quiche {

@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
 namespace quic {
 class QuicDispatcher;
@@ -48,6 +48,7 @@ class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
   // quic::QuicPacketWriter implementation:
   bool IsWriteBlocked() const override;
   void SetWritable() override;
+  absl::optional<int> MessageTooBigErrorCode() const override;
   quic::QuicByteCount GetMaxPacketSize(
       const quic::QuicSocketAddress& peer_address) const override;
   bool SupportsReleaseTime() const override;

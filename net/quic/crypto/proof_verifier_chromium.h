@@ -18,7 +18,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 
 namespace net {
 

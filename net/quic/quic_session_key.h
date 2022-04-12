@@ -10,7 +10,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 
 namespace net {
 

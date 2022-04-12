@@ -4,8 +4,8 @@
 
 #include "net/quic/mock_encrypter.h"
 
-#include "net/third_party/quiche/src/quic/core/quic_data_writer.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_data_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 
 using quic::DiversificationNonce;
 using quic::Perspective;

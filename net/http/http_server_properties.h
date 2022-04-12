@@ -29,11 +29,11 @@
 #include "net/base/network_isolation_key.h"
 #include "net/http/alternative_service.h"
 #include "net/http/broken_alternative_services.h"
-#include "net/third_party/quiche/src/quic/core/quic_bandwidth.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_framer.h"  // TODO(willchan): Reconsider this.
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_bandwidth.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"  // TODO(willchan): Reconsider this.
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 

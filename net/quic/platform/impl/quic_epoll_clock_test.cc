@@ -4,9 +4,9 @@
 
 #include "net/quic/platform/impl/quic_epoll_clock.h"
 
-#include "net/third_party/quiche/src/epoll_server/fake_simple_epoll_server.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
+#include "net/third_party/quiche/src/quiche/epoll_server/fake_simple_epoll_server.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
 
 namespace quic {
 namespace test {

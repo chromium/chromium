@@ -6,8 +6,8 @@
 
 #include <limits>
 
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_bug_tracker.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_bug_tracker.h"
 
 using quic::DiversificationNonce;
 using quic::Perspective;

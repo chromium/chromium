@@ -20,7 +20,7 @@
 #include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_hostname_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_hostname_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"

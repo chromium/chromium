@@ -6,7 +6,7 @@
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_REFERENCE_COUNTED_IMPL_H_
 
 #include "base/memory/ref_counted.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 
 namespace quiche {
 

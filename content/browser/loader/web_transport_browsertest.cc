@@ -18,7 +18,7 @@
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This file is placed tentively in content/browser/loader.

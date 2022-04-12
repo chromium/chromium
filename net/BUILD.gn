@@ -2602,7 +2602,7 @@ source_set("quic_test_tools") {
     "quic/mock_quic_context.h",
     "quic/test_task_runner.cc",
     "quic/test_task_runner.h",
-    "third_party/quiche/src/quic/test_tools/test_ticket_crypter.cc",
+    "third_party/quiche/src/quiche/quic/test_tools/test_ticket_crypter.cc",
   ]
   deps = [
     ":net",

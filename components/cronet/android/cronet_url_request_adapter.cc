@@ -28,7 +28,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 

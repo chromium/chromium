@@ -29,7 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_backend.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "url/gurl.h"

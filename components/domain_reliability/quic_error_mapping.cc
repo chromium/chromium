@@ -471,7 +471,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 
 // Must be updated any time a quic::QuicErrorCode is deprecated in
-// net/third_party/quiche/src/quic/core/quic_error_codes.h.
+// net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h.
 const int kDeprecatedQuicErrorCount = 5;
 const int kActiveQuicErrorCount =
     quic::QUIC_LAST_ERROR - kDeprecatedQuicErrorCount;

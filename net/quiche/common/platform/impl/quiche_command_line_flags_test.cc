@@ -8,9 +8,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_test.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_test.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_logging.h"
 
 DEFINE_QUICHE_COMMAND_LINE_FLAG(bool, foo, false, "An old silent pond...");
 DEFINE_QUICHE_COMMAND_LINE_FLAG(int32_t,

@@ -8,7 +8,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_values.h"
 #include "net/quic/address_utils.h"
-#include "net/third_party/quiche/src/quic/core/quic_socket_address_coder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_socket_address_coder.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace net {

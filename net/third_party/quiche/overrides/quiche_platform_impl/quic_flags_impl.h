@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) \
   QUIC_EXPORT_PRIVATE extern type FLAGS_##flag;
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 
 // Sets the flag named |flag_name| to the value of |value| after converting

@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
+#include "net/third_party/quiche/src/quiche/common/quiche_linked_hash_map.h"
 
 template <class Key, class Value>
 class ScopedPtrExpiringCache {

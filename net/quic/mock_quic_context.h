@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/quic/quic_context.h"
-#include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 
 namespace net {
 

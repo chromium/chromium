@@ -16,7 +16,7 @@
 #include "net/quic/quic_stream_factory.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "url/scheme_host_port.h"
 
 using std::string;

@@ -10,9 +10,9 @@
 #include "net/base/net_export.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packet_creator.h"
-#include "net/third_party/quiche/src/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_creator.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 
 namespace net {
 

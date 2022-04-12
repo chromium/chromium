@@ -24,7 +24,7 @@
 #define QUIC_PROTOCOL_FLAG(...) \
   QUIC_PROTOCOL_FLAG_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
 
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 
 #undef QUIC_PROTOCOL_FLAG
 #undef QUIC_PROTOCOL_FLAG_MACRO_CHOOSER
@@ -72,7 +72,7 @@ void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
     SetQuicFlagByName_bool(&flag, value); \
     return;                               \
   }
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 
 #define QUIC_PROTOCOL_FLAG(type, flag, ...)         \
@@ -80,6 +80,6 @@ void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
     SetQuicFlagByName_##type(&FLAGS_##flag, value); \
     return;                                         \
   }
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 }

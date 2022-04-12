@@ -53,7 +53,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 

@@ -12,19 +12,19 @@
 
 QuicFlagSaverImpl::QuicFlagSaverImpl() {
 #define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) saved_##flag##_ = FLAGS_##flag;
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 }
 
 QuicFlagSaverImpl::~QuicFlagSaverImpl() {
 #define QUIC_FLAG(flag, value) flag = saved_##flag##_;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) FLAGS_##flag = saved_##flag##_;
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 }
 
@@ -34,7 +34,7 @@ QuicFlagChecker::QuicFlagChecker() {
       << "Flag set to an unexpected value.  A prior test is likely "      \
       << "setting a flag without using a QuicFlagSaver. Use QuicTest to " \
          "avoid this issue.";
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 
 #define QUIC_PROTOCOL_FLAG_CHECK(type, flag, value)                       \
@@ -54,7 +54,7 @@ QuicFlagChecker::QuicFlagChecker() {
               DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE)
 #define QUIC_PROTOCOL_FLAG(...) \
   QUIC_PROTOCOL_FLAG_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 #undef QUIC_PROTOCOL_FLAG_MACRO_CHOOSER
 #undef GET_6TH_ARG

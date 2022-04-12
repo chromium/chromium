@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "net/tools/quic/quic_simple_server_backend_factory.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/tools/quic/quic_http_proxy_backend_stream.h"
 
 DEFINE_QUICHE_COMMAND_LINE_FLAG(

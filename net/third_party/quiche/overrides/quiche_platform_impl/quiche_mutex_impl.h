@@ -7,7 +7,7 @@
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h"
 
 #define QUICHE_EXCLUSIVE_LOCKS_REQUIRED_IMPL EXCLUSIVE_LOCKS_REQUIRED
 #define QUICHE_GUARDED_BY_IMPL GUARDED_BY

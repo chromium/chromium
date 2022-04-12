@@ -5,5 +5,5 @@
 #include "net/quiche/common/platform/impl/quiche_flags_impl.h"
 
 #define QUIC_FLAG(flag, value) bool flag = value;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG

@@ -12,10 +12,10 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
-#include "net/third_party/quiche/src/common/simple_buffer_allocator.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/common/simple_buffer_allocator.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 
 namespace quic {
 class QuicClock;

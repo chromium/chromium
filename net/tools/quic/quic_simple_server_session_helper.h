@@ -5,8 +5,8 @@
 #ifndef NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_SESSION_HELPER_H_
 #define NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_SESSION_HELPER_H_
 
-#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_server_session_base.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_server_session_base.h"
 
 namespace net {
 

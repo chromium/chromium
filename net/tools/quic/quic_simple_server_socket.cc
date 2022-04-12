@@ -6,7 +6,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
-#include "net/third_party/quiche/src/quic/core/quic_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
 namespace net {
 

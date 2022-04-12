@@ -5,8 +5,8 @@
 #include "net/quic/quic_clock_skew_detector.h"
 
 #include "base/time/time.h"
-#include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
-#include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

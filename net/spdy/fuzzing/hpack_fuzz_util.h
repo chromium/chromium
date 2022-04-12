@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_decoder_adapter.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_decoder_adapter.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_encoder.h"
 
 namespace spdy {
 

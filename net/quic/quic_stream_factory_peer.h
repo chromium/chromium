@@ -15,9 +15,9 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "url/scheme_host_port.h"
 
 namespace quic {

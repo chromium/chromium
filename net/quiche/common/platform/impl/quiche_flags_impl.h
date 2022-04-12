@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h"
 
 #define QUIC_FLAG(flag, value) QUICHE_EXPORT_PRIVATE extern bool flag;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 
 inline bool GetQuicheFlagImpl(bool flag) {

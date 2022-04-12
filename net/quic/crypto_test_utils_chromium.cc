@@ -27,9 +27,9 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/test_ticket_crypter.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/test_ticket_crypter.h"
 
 using std::string;
 

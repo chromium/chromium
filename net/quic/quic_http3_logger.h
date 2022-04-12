@@ -9,7 +9,7 @@
 
 #include "base/timer/timer.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_spdy_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_session.h"
 
 namespace net {
 

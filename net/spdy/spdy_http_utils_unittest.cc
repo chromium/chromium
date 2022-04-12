@@ -9,8 +9,8 @@
 #include <limits>
 
 #include "net/http/http_request_info.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_test_utils.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

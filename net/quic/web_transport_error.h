@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
 
 namespace net {
 

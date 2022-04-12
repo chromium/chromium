@@ -18,8 +18,8 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "net/third_party/quiche/src/http2/adapter/http2_visitor_interface.h"
-#include "net/third_party/quiche/src/http2/adapter/oghttp2_adapter.h"
+#include "net/third_party/quiche/src/quiche/http2/adapter/http2_visitor_interface.h"
+#include "net/third_party/quiche/src/quiche/http2/adapter/oghttp2_adapter.h"
 
 namespace net {
 namespace test_server {

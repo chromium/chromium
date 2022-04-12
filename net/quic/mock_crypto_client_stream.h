@@ -7,12 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_spdy_client_session_base.h"
-#include "net/third_party/quiche/src/quic/core/quic_crypto_client_stream.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_handshake.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 
 namespace net {
 

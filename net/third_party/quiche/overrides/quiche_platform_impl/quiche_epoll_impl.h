@@ -10,7 +10,7 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_EPOLL_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_EPOLL_IMPL_H_
 
-#include "net/third_party/quiche/src/epoll_server/simple_epoll_server.h"
+#include "net/third_party/quiche/src/quiche/epoll_server/simple_epoll_server.h"
 
 namespace quiche {
 

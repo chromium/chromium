@@ -14,10 +14,10 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 namespace net {
 
@@ -94,6 +94,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
                                 quic::PerPacketOptions* options) override;
   bool IsWriteBlocked() const override;
   void SetWritable() override;
+  absl::optional<int> MessageTooBigErrorCode() const override;
   quic::QuicByteCount GetMaxPacketSize(
       const quic::QuicSocketAddress& peer_address) const override;
   bool SupportsReleaseTime() const override;

@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <memory>
 
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 #include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
@@ -67,6 +67,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       const quic::QuicSocketAddress& peer_address) override;
 
   void SetWritable() override;
+  absl::optional<int> MessageTooBigErrorCode() const override;
   bool SupportsReleaseTime() const override;
 
   quic::WriteResult WritePacket(const char* buffer,

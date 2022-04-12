@@ -19,9 +19,9 @@
 #include "net/log/net_log.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_packet_reader.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_spdy_stream.h"
-#include "net/third_party/quiche/src/quic/core/quic_config.h"
-#include "net/third_party/quiche/src/quic/tools/quic_spdy_client_base.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_spdy_client_base.h"
 #include "net/tools/quic/quic_client_message_loop_network_helper.h"
 
 namespace net {

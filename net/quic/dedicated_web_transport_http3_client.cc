@@ -19,9 +19,9 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quiche/src/quic/core/http/web_transport_http3.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
 

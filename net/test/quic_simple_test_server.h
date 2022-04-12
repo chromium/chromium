@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "net/base/host_port_pair.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
 #include "url/gurl.h"
 
 namespace net {

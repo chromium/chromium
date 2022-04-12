@@ -5,7 +5,7 @@
 #ifndef NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_BACKEND_FACTORY_H_
 #define NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_BACKEND_FACTORY_H_
 
-#include "net/third_party/quiche/src/quic/tools/quic_toy_server.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_toy_server.h"
 
 namespace net {
 

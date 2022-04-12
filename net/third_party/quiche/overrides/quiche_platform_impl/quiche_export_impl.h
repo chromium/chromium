@@ -8,7 +8,7 @@
 #include "net/base/net_export.h"
 
 // These macros are documented in:
-// net/third_party/quiche/src/common/platform/api/quiche_export.h
+// net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h
 
 #define QUICHE_EXPORT_IMPL NET_EXPORT
 #define QUICHE_EXPORT_PRIVATE_IMPL NET_EXPORT_PRIVATE

@@ -17,10 +17,10 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_event_logger.h"
 #include "net/socket/socket_performance_watcher.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake_message.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_spdy_session.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_handshake_message.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
 namespace base {
 class HistogramBase;

@@ -12,8 +12,8 @@
 #include "base/export_template.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_flags.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {

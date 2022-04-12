@@ -11,7 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_framer.h"
 
 using quic::Perspective;
 using std::cerr;
