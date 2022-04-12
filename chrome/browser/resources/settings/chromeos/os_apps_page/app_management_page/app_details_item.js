@@ -133,6 +133,7 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
       case InstallSource.kSystem:
         return this.i18n('appManagementAppDetailsTypeCrosSystem');
       case InstallSource.kPlayStore:
+      case InstallSource.kChromeWebStore:
         return this.i18nAdvanced(
             'appManagementAppDetailsTypeAndSourceCombined', {
               substitutions: [
@@ -141,7 +142,6 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
               ]
             });
       case InstallSource.kBrowser:
-      case InstallSource.kChromeWebStore:
       case InstallSource.kUnknown:
         return this.getTypeString_(app);
       default:

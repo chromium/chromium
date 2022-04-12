@@ -43,7 +43,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Web App');
@@ -71,7 +71,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Android App');
@@ -99,14 +99,13 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Chrome App');
   });
 
-  // Skipping as open store link not yet implemented for Web Store.
-  test.skip('Chrome App from web store', async function() {
+  test('Chrome App from web store', async function() {
     const options = {
       type: apps.mojom.AppType.kChromeApp,
       installSource: apps.mojom.InstallSource.kChromeWebStore,
@@ -128,10 +127,10 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
-        'Chrome App installed from Chrome Web Store');
+        'Chrome App installed from <a href="#">Chrome Web Store</a>');
   });
 
   test('Android App from play store', async function() {
@@ -156,7 +155,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Android App installed from <a href="#">Google Play Store</a>');
@@ -183,7 +182,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'System App');
@@ -210,7 +209,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
 
     assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
         'Chrome OS System App');
@@ -237,7 +236,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#version').textContent.trim(),
         'Version: 17.2');
   });
@@ -263,7 +262,7 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertEquals(
+    expectEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 13.1.52');
   });

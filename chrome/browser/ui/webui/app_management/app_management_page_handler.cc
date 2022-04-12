@@ -476,6 +476,13 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
           proxy->LaunchAppWithUrl(
               arc::kPlayStoreAppId, ui::EF_NONE, url,
               apps::mojom::LaunchSource::kFromChromeInternal);
+        } else if (update.InstallSource() ==
+                   apps::InstallSource::kChromeWebStore) {
+          GURL url("https://chrome.google.com/webstore/detail/" +
+                   update.AppId());
+          proxy->LaunchAppWithUrl(
+              extensions::kWebStoreAppId, ui::EF_NONE, url,
+              apps::mojom::LaunchSource::kFromChromeInternal);
         }
       });
 #endif
