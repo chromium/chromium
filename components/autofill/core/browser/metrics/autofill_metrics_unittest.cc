@@ -182,8 +182,8 @@ void VerifyUkm(const ukm::TestUkmRecorder* ukm_recorder,
 
   EXPECT_LE(entries.size(), expected_metrics.size());
   for (size_t i = 0; i < expected_metrics.size() && i < entries.size(); i++) {
-    ukm_recorder->ExpectEntrySourceHasUrl(
-        entries[i], GURL(form.main_frame_origin.GetURL()));
+    ukm_recorder->ExpectEntrySourceHasUrl(entries[i],
+                                          form.main_frame_origin.GetURL());
     EXPECT_THAT(
         entries[i]->metrics,
         UnorderedPointwise(CompareMetricsIgnoringMillisecondsSinceFormParsed(),
@@ -12758,7 +12758,13 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   };
 
   AutofillMetricsCrossFrameFormTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::ScopedFeatureList::FeatureAndParams(
+             features::kAutofillAcrossIframes, {}),
+         base::test::ScopedFeatureList::FeatureAndParams(
+             features::kAutofillSharedAutofill,
+             {{"relax_shared_autofill", "true"}})},
+        {});
   }
   ~AutofillMetricsCrossFrameFormTest() override = default;
 
@@ -12776,8 +12782,9 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                             .front(),
         .cvc = u"123"};
 
-    url::Origin main_origin = url::Origin::Create(GURL("https://main.com/"));
-    url::Origin other_origin = url::Origin::Create(GURL("https://other.com/"));
+    url::Origin main_origin =
+        url::Origin::Create(GURL("https://example.test/"));
+    url::Origin other_origin = url::Origin::Create(GURL("https://other.test/"));
     form_ = test::GetFormData(
         {.description_for_logging = "CrossFrameFillingMetrics",
          .fields =
@@ -12885,6 +12892,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
 // fills.
 TEST_F(AutofillMetricsCrossFrameFormTest,
        DoNotLogCreditCardSeamlessFillsMetricIfNotAutofilled) {
+  using UkmBuilder = ukm::builders::Autofill_CreditCardFill;
   base::HistogramTester histogram_tester;
   SeeForm();
 
@@ -12926,12 +12934,33 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
       "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy."
       "Bitmask",
       0);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmBuilder::kEntryName, {});
 }
 
 // Tests that Autofill.CreditCard.SeamlessFills.* are emitted.
 TEST_F(AutofillMetricsCrossFrameFormTest,
        LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc) {
   using Metric = AutofillMetrics::CreditCardSeamlessness::Metric;
+  using UkmBuilder = ukm::builders::Autofill_CreditCardFill;
+
+  // `Metric` as raw integer for UKM.
+  constexpr auto kFullFill = static_cast<uint64_t>(Metric::kFullFill);
+  constexpr auto kOptionalCvcMissing =
+      static_cast<uint64_t>(Metric::kOptionalCvcMissing);
+  constexpr auto kPartialFill = static_cast<uint64_t>(Metric::kPartialFill);
+  // Bits of the bitmask.
+  constexpr uint8_t kName = true << 3;
+  constexpr uint8_t kNumber = true << 2;
+  constexpr uint8_t kExp = true << 1;
+  constexpr uint8_t kCvc = true << 0;
+  // The shared-autofill metric.
+  enum SharedAutofillMetric : uint64_t {
+    kSharedAutofillIsIrrelevant = 0,
+    kSharedAutofillWouldHelp = 1,
+    kSharedAutofillDidHelp = 2,
+  };
+
   base::HistogramTester histogram_tester;
   SeeForm();
 
@@ -12969,17 +12998,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
       histogram_tester,
       "Autofill.CreditCard.SeamlessFillable.AtFillTimeBeforeSecurityPolicy."
       "Bitmask",
-      {{/*cardholder*/ 8 | /*number*/ 4 | /*exp*/ 2 | /*cvc*/ 1, 2}});
-
-  ExpectBuckets<Metric>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy",
-      {{Metric::kOptionalCvcMissing, 1}, {Metric::kPartialFill, 1}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy."
-      "Bitmask",
-      {{/*cardholder*/ 8 | /*number*/ 4 | /*exp*/ 2, 1}, {/*number*/ 4, 1}});
+      {{kName | kNumber | kExp | kCvc, 2}});
 
   ExpectBuckets<Metric>(
       histogram_tester,
@@ -12989,7 +13008,17 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
       histogram_tester,
       "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy."
       "Bitmask",
-      {{/*cardholder*/ 8 | /*exp*/ 2, 1}, {/*number*/ 4 | /*cvc*/ 1, 1}});
+      {{kName | kExp, 1}, {kNumber | kCvc, 1}});
+
+  ExpectBuckets<Metric>(
+      histogram_tester,
+      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy",
+      {{Metric::kOptionalCvcMissing, 1}, {Metric::kPartialFill, 1}});
+  ExpectBuckets<int>(
+      histogram_tester,
+      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy."
+      "Bitmask",
+      {{kName | kNumber | kExp, 1}, {kNumber, 1}});
 
   ExpectBuckets<Metric>(
       histogram_tester,
@@ -12998,7 +13027,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   ExpectBuckets<int>(
       histogram_tester,
       "Autofill.CreditCard.SeamlessFills.AtFillTimeAfterSecurityPolicy.Bitmask",
-      {{/*cardholder*/ 8 | /*exp*/ 2, 1}, {/*number*/ 4, 1}});
+      {{kName | kExp, 1}, {kNumber, 1}});
 
   ExpectBuckets<Metric>(histogram_tester,
                         "Autofill.CreditCard.SeamlessFills.AtSubmissionTime",
@@ -13006,7 +13035,46 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   ExpectBuckets<int>(
       histogram_tester,
       "Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask",
-      {{/*cardholder*/ 8 | /*number*/ 4 | /*exp*/ 2, 1}});
+      {{kName | kNumber | kExp, 1}});
+
+  VerifyUkm(
+      test_ukm_recorder_, form_, UkmBuilder::kEntryName,
+      {{
+           {UkmBuilder::kFillable_BeforeSecurity_QualitativeName, kFullFill},
+           {UkmBuilder::kFillable_AfterSecurity_QualitativeName, kPartialFill},
+           {UkmBuilder::kFilled_BeforeSecurity_QualitativeName,
+            kOptionalCvcMissing},
+           {UkmBuilder::kFilled_AfterSecurity_QualitativeName, kPartialFill},
+
+           {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
+            kName | kNumber | kExp | kCvc},
+           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kName | kExp},
+           {UkmBuilder::kFilled_BeforeSecurity_BitmaskName,
+            kName | kNumber | kExp},
+           {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kName | kExp},
+
+           {UkmBuilder::kSharedAutofillName, kSharedAutofillWouldHelp},
+
+           {UkmBuilder::kFormSignatureName,
+            *Collapse(CalculateFormSignature(form_))},
+       },
+       {
+           {UkmBuilder::kFillable_BeforeSecurity_QualitativeName, kFullFill},
+           {UkmBuilder::kFillable_AfterSecurity_QualitativeName, kPartialFill},
+           {UkmBuilder::kFilled_BeforeSecurity_QualitativeName, kPartialFill},
+           {UkmBuilder::kFilled_AfterSecurity_QualitativeName, kPartialFill},
+
+           {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
+            kName | kNumber | kExp | kCvc},
+           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber | kCvc},
+           {UkmBuilder::kFilled_BeforeSecurity_BitmaskName, kNumber},
+           {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kNumber},
+
+           {UkmBuilder::kSharedAutofillName, kSharedAutofillIsIrrelevant},
+
+           {UkmBuilder::kFormSignatureName,
+            *Collapse(CalculateFormSignature(form_))},
+       }});
 }
 
 }  // namespace autofill

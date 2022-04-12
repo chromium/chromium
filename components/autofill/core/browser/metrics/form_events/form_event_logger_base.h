@@ -76,10 +76,10 @@ class FormEventLoggerBase {
   void SetTimeFromInteractionToSubmission(
       base::TimeDelta time_from_interaction_to_submission);
 
+  void Log(FormEvent event, const FormStructure& form) const;
+
  protected:
   virtual ~FormEventLoggerBase();
-
-  void Log(FormEvent event, const FormStructure& form) const;
 
   virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;

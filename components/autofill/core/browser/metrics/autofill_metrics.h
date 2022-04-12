@@ -30,12 +30,14 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/security_state/core/security_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace autofill {
 
 class AutofillField;
 class CreditCard;
+class FormEventLoggerBase;
 struct AutofillOfferData;
 
 // A given maximum is enforced to minimize the number of buckets generated.
@@ -1197,14 +1199,19 @@ class AutofillMetrics {
     explicit operator bool() const { return is_valid(); }
     bool is_valid() const { return name_ || number_ || exp_ || cvc_; }
 
-    // Returns the metric for UMA logging or the corresponding FormEvent value
-    // for UKM logging.
-    Metric QualitativeUmaMetric() const;
+    Metric QualitativeMetric() const;
+
+    uint64_t QualitativeMetricAsInt() const {
+      return static_cast<uint64_t>(QualitativeMetric());
+    }
+
+    // TODO(crbug.com/1275953): Remove once the new UKM metric has gained
+    // traction.
     FormEvent QualitativeFillableFormEvent() const;
     FormEvent QualitativeFillFormEvent() const;
 
-    // Returns the bitmask for UMA logging.
-    uint8_t BitmaskUmaMetric() const;
+    // Returns a four-bit bitmask.
+    uint8_t BitmaskMetric() const;
 
     static uint8_t BitmaskExclusiveMax() { return true << 4; }
 
@@ -1232,6 +1239,9 @@ class AutofillMetrics {
 
     bool has_pinned_timestamp() const { return !pinned_timestamp_.is_null(); }
     void set_pinned_timestamp(base::TimeTicks t) { pinned_timestamp_ = t; }
+
+    ukm::builders::Autofill_CreditCardFill CreateCreditCardFillBuilder() const;
+    void Record(ukm::builders::Autofill_CreditCardFill&& builder);
 
     // Initializes this logger with a source_id. Unless forms is parsed no
     // autofill UKM is recorded. However due to autofill_manager resets,
@@ -1802,17 +1812,24 @@ class AutofillMetrics {
       size_t num_frames);
 
   struct LogCreditCardSeamlessnessParam {
+    const FormEventLoggerBase& event_logger;
     const FormStructure& form;
+    const AutofillField& field;
     const base::flat_set<FieldGlobalId>& newly_filled_fields;
     const base::flat_set<FieldGlobalId>& safe_fields;
-    bool only_newly_filled_fields = false;    // "Fillable" vs "Fills"
-    bool only_after_security_policy = false;  // "Before" vs "After"
+    ukm::builders::Autofill_CreditCardFill& builder;
   };
 
-  // Logs one variant of Autofill.CreditCard.Seamless{Fillable,Fills}.
-  // AtFillTime{Before,After}SecurityPolicy metrics, depending on the parameter
-  // `p`. Returns the emitted metric, if any.
-  static CreditCardSeamlessness LogCreditCardSeamlessnessAtFillTime(
+  // Logs several metrics about seamlessness. These are qualitative and bitmask
+  // UMA and UKM metrics as well as a UKM metric indicating whether
+  // "shared-autofill" did or would make a difference.
+  //
+  // The metrics are:
+  // - UMA metrics "Autofill.CreditCard.Seamless{Fillable,Fills}.AtFillTime
+  //   {Before,After}SecurityPolicy[.Bitmask]".
+  // - UKM event "Autofill.CreditCardSeamlessness".
+  // - UKM event "Autofill.FormEvent" for FORM_EVENT_CREDIT_CARD_*.
+  static void LogCreditCardSeamlessnessAtFillTime(
       const LogCreditCardSeamlessnessParam& p);
 
   // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime.

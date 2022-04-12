@@ -106,61 +106,21 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     AutofillSyncSigninState sync_state) {
   CreditCard::RecordType record_type = credit_card.record_type();
   sync_state_ = sync_state;
+  ukm::builders::Autofill_CreditCardFill builder =
+      form_interactions_ukm_logger_->CreateCreditCardFillBuilder();
+  builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
   form_interactions_ukm_logger_->LogDidFillSuggestion(
       record_type,
       /*is_for_credit_card=*/true, form, field);
 
-  // Logs the seamless-fill metrics for credit card fields.
-  //
-  // There are four variants of the UMA metric:
-  // - Fillable vs newly filled by BrowserAutofillManager.
-  // - Before vs after the cross-frame-filling security policy.
-  //
-  // For "fillable before" and "filled after" we also record UKM metrics.
-  {
-    AutofillMetrics::LogCreditCardSeamlessnessParam param{
-        .form = form,
-        .newly_filled_fields = newly_filled_fields,
-        .safe_fields = safe_fields};
-
-    param.only_newly_filled_fields = false;
-    param.only_after_security_policy = false;
-    if (auto s = AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param))
-      Log(s.QualitativeFillableFormEvent(), form);
-
-    param.only_newly_filled_fields = false;
-    param.only_after_security_policy = true;
-    AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
-
-    param.only_newly_filled_fields = true;
-    param.only_after_security_policy = false;
-    AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param);
-
-    param.only_newly_filled_fields = true;
-    param.only_after_security_policy = true;
-    if (auto s = AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(param))
-      Log(s.QualitativeFillFormEvent(), form);
-
-    // In a multi-frame form, a cross-origin field is only filled if
-    // shared-autofill is enabled in the field's frame. If Autofill was
-    // triggered on the main origin, shared-autofill is even sufficient for
-    // the fill. We therefore log how often enabling shared-autofill would
-    // suffice to fix Autofill.
-    //
-    // Shared-autofill is a policy-controlled feature. As such, a parent frame
-    // can enable it in a child frame with in the iframe's "allow" attribute:
-    // <iframe allow="shared-autofill">.
-    const url::Origin& triggered_origin = field.origin;
-    if (triggered_origin == form.main_frame_origin() &&
-        base::ranges::any_of(form, [&](const auto& f) {
-          FieldGlobalId id = f->global_id();
-          return f->origin != form.main_frame_origin() &&
-                 newly_filled_fields.contains(id) && !safe_fields.contains(id);
-        })) {
-      Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL, form);
-    }
-  }
+  AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
+      {.event_logger = *this,
+       .form = form,
+       .field = field,
+       .newly_filled_fields = newly_filled_fields,
+       .safe_fields = safe_fields,
+       .builder = builder});
 
   switch (record_type) {
     case CreditCard::LOCAL_CARD:
@@ -205,6 +165,8 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
 
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
+
+  form_interactions_ukm_logger_->Record(std::move(builder));
 }
 
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(

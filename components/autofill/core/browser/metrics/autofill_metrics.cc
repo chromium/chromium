@@ -25,13 +25,14 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill {
 
@@ -2477,7 +2478,7 @@ AutofillMetrics::CreditCardSeamlessness::CreditCardSeamlessness(
       cvc_(filled_types.contains(CREDIT_CARD_VERIFICATION_CODE)) {}
 
 AutofillMetrics::CreditCardSeamlessness::Metric
-AutofillMetrics::CreditCardSeamlessness::QualitativeUmaMetric() const {
+AutofillMetrics::CreditCardSeamlessness::QualitativeMetric() const {
   DCHECK(is_valid());
   if (name_ && number_ && exp_ && cvc_) {
     return Metric::kFullFill;
@@ -2497,7 +2498,7 @@ AutofillMetrics::CreditCardSeamlessness::QualitativeUmaMetric() const {
 FormEvent
 AutofillMetrics::CreditCardSeamlessness::QualitativeFillableFormEvent() const {
   DCHECK(is_valid());
-  switch (QualitativeUmaMetric()) {
+  switch (QualitativeMetric()) {
     case Metric::kFullFill:
       return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL;
     case Metric::kOptionalNameMissing:
@@ -2518,7 +2519,7 @@ AutofillMetrics::CreditCardSeamlessness::QualitativeFillableFormEvent() const {
 FormEvent AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent()
     const {
   DCHECK(is_valid());
-  switch (QualitativeUmaMetric()) {
+  switch (QualitativeMetric()) {
     case Metric::kFullFill:
       return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL;
     case Metric::kOptionalNameMissing:
@@ -2536,42 +2537,124 @@ FormEvent AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent()
   return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
 }
 
-uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskUmaMetric() const {
+uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskMetric() const {
   DCHECK(is_valid());
-  uint8_t bitmask = (name_ << 3) | (number_ << 2) | (exp_ << 1) | (cvc_ << 0);
-  DCHECK_GE(bitmask, 1);
+  uint32_t bitmask = (name_ << 3) | (number_ << 2) | (exp_ << 1) | (cvc_ << 0);
+  DCHECK_GE(bitmask, 1u);
   DCHECK_LE(bitmask, BitmaskExclusiveMax());
   return bitmask;
 }
 
 // static
-AutofillMetrics::CreditCardSeamlessness
-AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
+void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     const LogCreditCardSeamlessnessParam& p) {
-  std::string suffix =
-      base::StringPrintf("%s.AtFillTime%sSecurityPolicy",
-                         p.only_newly_filled_fields ? "Fills" : "Fillable",
-                         p.only_after_security_policy ? "After" : "Before");
+  auto GetSeamlessness = [&p](bool only_newly_filled_fields,
+                              bool only_after_security_policy) {
+    ServerFieldTypeSet autofilled_types;
+    for (const auto& field : p.form) {
+      FieldGlobalId id = field->global_id();
+      if (only_newly_filled_fields && !p.newly_filled_fields.contains(id))
+        continue;
+      if (only_after_security_policy && !p.safe_fields.contains(id))
+        continue;
+      autofilled_types.insert(field->Type().GetStorableType());
+    }
+    return CreditCardSeamlessness(autofilled_types);
+  };
 
-  ServerFieldTypeSet autofilled_types;
+  auto RecordUma = [](base::StringPiece infix, CreditCardSeamlessness s) {
+    std::string prefix = base::StrCat({"Autofill.CreditCard.Seamless", infix});
+    base::UmaHistogramEnumeration(prefix, s.QualitativeMetric());
+    base::UmaHistogramExactLinear(prefix + ".Bitmask", s.BitmaskMetric(),
+                                  s.BitmaskExclusiveMax());
+  };
+
+  if (auto s = GetSeamlessness(false, false)) {
+    RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy", s);
+    p.builder.SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    p.builder.SetFillable_BeforeSecurity_Qualitative(
+        s.QualitativeMetricAsInt());
+    p.event_logger.Log(s.QualitativeFillableFormEvent(), p.form);
+  }
+  if (auto s = GetSeamlessness(false, true)) {
+    RecordUma("Fillable.AtFillTimeAfterSecurityPolicy", s);
+    p.builder.SetFillable_AfterSecurity_Bitmask(s.BitmaskMetric());
+    p.builder.SetFillable_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
+  }
+  if (auto s = GetSeamlessness(true, false)) {
+    RecordUma("Fills.AtFillTimeBeforeSecurityPolicy", s);
+    p.builder.SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    p.builder.SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
+  }
+  if (auto s = GetSeamlessness(true, true)) {
+    RecordUma("Fills.AtFillTimeAfterSecurityPolicy", s);
+    p.builder.SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
+    p.builder.SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.event_logger.Log(s.QualitativeFillFormEvent(), p.form);
+  }
+
+  // In a multi-frame form, a cross-origin field is filled only if
+  // shared-autofill is enabled in the field's frame. Here, we log whether
+  // shared-autofill did or would improve the fill seamlessness.
+  //
+  // This is referring to the actual fill, not the hypothetical scenarios
+  // assuming that the card on file is complete or that there's no security
+  // policy.
+  //
+  // See FormForest::GetRendererFormsOfBrowserForm() for details when a field
+  // requires shared-autofill in order to be autofilled.
+  //
+  // Shared-autofill is a policy-controlled feature. As such, a parent frame
+  // can enable it in a child frame with in the iframe's "allow" attribute:
+  // <iframe allow="shared-autofill">. Whether it's enabled in the main frame is
+  // controller by an HTTP header; by default, it is.
+  auto RequiresSharedAutofill = [&](const AutofillField& field) {
+    auto IsSensitiveFieldType = [](ServerFieldType field_type) {
+      switch (field_type) {
+        case CREDIT_CARD_TYPE:
+        case CREDIT_CARD_NAME_FULL:
+        case CREDIT_CARD_NAME_FIRST:
+        case CREDIT_CARD_NAME_LAST:
+          return false;
+        default:
+          return true;
+      }
+    };
+    const url::Origin& main_origin = p.form.main_frame_origin();
+    const url::Origin& triggered_origin = p.field.origin;
+    return field.origin != triggered_origin &&
+           (field.origin != main_origin ||
+            IsSensitiveFieldType(field.Type().GetStorableType())) &&
+           (triggered_origin == main_origin ||
+            features::kAutofillSharedAutofillRelaxedParam.Get());
+  };
+
+  bool some_field_needs_shared_autofill = false;
+  bool some_field_has_shared_autofill = false;
   for (const auto& field : p.form) {
-    FieldGlobalId id = field->global_id();
-    if (p.only_newly_filled_fields && !p.newly_filled_fields.contains(id))
-      continue;
-    if (p.only_after_security_policy && !p.safe_fields.contains(id))
-      continue;
-    autofilled_types.insert(field->Type().GetStorableType());
+    if (RequiresSharedAutofill(*field) &&
+        p.newly_filled_fields.contains(field->global_id())) {
+      if (!p.safe_fields.contains(field->global_id())) {
+        some_field_needs_shared_autofill = true;
+      } else {
+        some_field_has_shared_autofill = true;
+      }
+    }
   }
 
-  CreditCardSeamlessness seamlessness(autofilled_types);
-  if (seamlessness.is_valid()) {
-    base::UmaHistogramExactLinear(
-        "Autofill.CreditCard.Seamless" + suffix + ".Bitmask",
-        seamlessness.BitmaskUmaMetric(), seamlessness.BitmaskExclusiveMax());
-    base::UmaHistogramEnumeration("Autofill.CreditCard.Seamless" + suffix,
-                                  seamlessness.QualitativeUmaMetric());
+  enum SharedAutofillMetric : uint64_t {
+    kSharedAutofillIsIrrelevant = 0,
+    kSharedAutofillWouldHelp = 1,
+    kSharedAutofillDidHelp = 2,
+  };
+  if (some_field_needs_shared_autofill) {
+    p.builder.SetSharedAutofill(kSharedAutofillWouldHelp);
+    p.event_logger.Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL, p.form);
+  } else if (some_field_has_shared_autofill) {
+    p.builder.SetSharedAutofill(kSharedAutofillDidHelp);
+  } else {
+    p.builder.SetSharedAutofill(kSharedAutofillIsIrrelevant);
   }
-  return seamlessness;
 }
 
 // static
@@ -2581,10 +2664,10 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
   if (seamlessness.is_valid()) {
     base::UmaHistogramExactLinear(
         "Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask",
-        seamlessness.BitmaskUmaMetric(), seamlessness.BitmaskExclusiveMax());
+        seamlessness.BitmaskMetric(), seamlessness.BitmaskExclusiveMax());
     base::UmaHistogramEnumeration(
         "Autofill.CreditCard.SeamlessFills.AtSubmissionTime",
-        seamlessness.QualitativeUmaMetric());
+        seamlessness.QualitativeMetric());
   }
 }
 
@@ -2748,6 +2831,18 @@ AutofillMetrics::FormInteractionsUkmLogger::FormInteractionsUkmLogger(
     ukm::UkmRecorder* ukm_recorder,
     const ukm::SourceId source_id)
     : ukm_recorder_(ukm_recorder), source_id_(source_id) {}
+
+ukm::builders::Autofill_CreditCardFill
+AutofillMetrics::FormInteractionsUkmLogger::CreateCreditCardFillBuilder()
+    const {
+  return ukm::builders::Autofill_CreditCardFill(source_id_);
+}
+
+void AutofillMetrics::FormInteractionsUkmLogger::Record(
+    ukm::builders::Autofill_CreditCardFill&& builder) {
+  if (CanLog())
+    builder.Record(ukm_recorder_);
+}
 
 void AutofillMetrics::FormInteractionsUkmLogger::OnFormsParsed(
     const ukm::SourceId source_id) {

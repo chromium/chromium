@@ -1574,6 +1574,80 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.CreditCardFill">
+  <owner>schwering@google.com</owner>
+  <summary>
+    Recorded when a credit card form is autofilled.
+  </summary>
+  <metric name="Fillable.AfterSecurity.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled if the credit card
+      on file was complete.
+    </summary>
+  </metric>
+  <metric name="Fillable.AfterSecurity.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled if the credit card on file was complete.
+    </summary>
+  </metric>
+  <metric name="Fillable.BeforeSecurity.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled if the credit card
+      on file was complete and there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Fillable.BeforeSecurity.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled if the credit card on file was complete and there was no security
+      policy.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill actually filled.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Qualitative" enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill actually
+      filled.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled if there was no
+      security policy.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled if there was no security policy.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      An approximately 10-bit hash of the form's actual signature.
+    </summary>
+  </metric>
+  <metric name="SharedAutofill" enum="Boolean">
+    <summary>
+      Missing shared-autofill feature prevented a cross-origin credit-card field
+      from being filled. Shared-autofill is a policy-controlled feature by which
+      a frame can allow a child-frame to be autofilled across origin.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.DeveloperEngagement">
   <owner>jiahuiguo@google.com</owner>
   <summary>
