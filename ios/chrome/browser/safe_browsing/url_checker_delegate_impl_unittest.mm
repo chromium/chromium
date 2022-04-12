@@ -11,12 +11,12 @@
 #import "base/test/ios/wait_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/prerender/fake_prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -52,7 +52,7 @@ void PopulateCallbackState(UnsafeResourceCallbackState* state,
 class UrlCheckerDelegateImplTest : public PlatformTest {
  public:
   UrlCheckerDelegateImplTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : browser_state_(std::make_unique<web::FakeBrowserState>()),
         delegate_(base::MakeRefCounted<UrlCheckerDelegateImpl>(nullptr)),
         item_(web::NavigationItem::Create()),
         web_state_(std::make_unique<web::FakeWebState>()) {
@@ -65,11 +65,11 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state_.get());
     SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
-    // Set up the test prerender service factory.
-    PrerenderServiceFactory::GetInstance()->SetTestingFactory(
+    // Set up the test safe browsing client factory.
+    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
         browser_state_.get(),
         base::BindRepeating(
-            &UrlCheckerDelegateImplTest::CreateFakePrerenderService,
+            &UrlCheckerDelegateImplTest::CreateFakeSafeBrowsingClient,
             base::Unretained(this)));
   }
   ~UrlCheckerDelegateImplTest() override = default;
@@ -107,25 +107,24 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
                       : nullptr;
   }
 
-  // Function used to supply a fake PrerenderService that regards |web_state_|
-  // as prerendered.
-  std::unique_ptr<KeyedService> CreateFakePrerenderService(
+  // Creates a fake SafeBrowsingClient and configures whether or not it should
+  // block an unsafe resource.
+  std::unique_ptr<KeyedService> CreateFakeSafeBrowsingClient(
       web::BrowserState* context) {
-    std::unique_ptr<FakePrerenderService> service =
-        std::make_unique<FakePrerenderService>();
-    if (is_web_state_for_prerender_)
-      service->set_prerender_web_state(web_state_.get());
+    std::unique_ptr<FakeSafeBrowsingClient> service =
+        std::make_unique<FakeSafeBrowsingClient>();
+    service->set_should_block_unsafe_resource(should_block_unsafe_resource_);
     return service;
   }
 
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeBrowserState> browser_state_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate_;
   std::unique_ptr<web::NavigationItem> item_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  bool is_web_state_for_prerender_ = false;
+  bool should_block_unsafe_resource_ = false;
 };
 
 // Tests that the delegate does not allow unsafe resources to proceed and does
@@ -151,14 +150,14 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedForDestroyedWebState) {
 }
 
 // Tests that the delegate does not allow unsafe resources to proceed and does
-// not show an interstitial for UnsafeResources for prerender WebStates.
-TEST_F(UrlCheckerDelegateImplTest, DontProceedForPrerenderWebState) {
+// not show an interstitial for UnsafeResources if it is blocked by the client.
+TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
   // Construct the UnsafeResource.
   UnsafeResourceCallbackState callback_state;
   UnsafeResource resource = CreateUnsafeResource(&callback_state);
 
-  // Register |web_state_| as prerendered.
-  is_web_state_for_prerender_ = true;
+  // Make client block unsafe resource.
+  should_block_unsafe_resource_ = true;
 
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",

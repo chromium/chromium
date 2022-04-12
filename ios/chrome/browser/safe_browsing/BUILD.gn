@@ -125,6 +125,8 @@ source_set("features") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_safe_browsing_client.h",
+    "fake_safe_browsing_client.mm",
     "fake_safe_browsing_service.h",
     "fake_safe_browsing_service.mm",
   ]
@@ -133,6 +135,7 @@ source_set("test_support") {
     ":safe_browsing",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",
     "//services/network:test_support",
     "//services/network/public/cpp",
