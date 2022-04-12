@@ -129,6 +129,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test needs the files-filters-in-recents flag.
     bool enable_filters_in_recents = false;
+
+    // Whether test needs the files-filters-in-recents-v2 flag.
+    bool enable_filters_in_recents_v2 = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

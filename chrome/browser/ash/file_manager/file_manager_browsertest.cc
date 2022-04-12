@@ -135,6 +135,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableFiltersInRecentsV2() {
+    options.enable_filters_in_recents_v2 = true;
+    return *this;
+  }
+
   TestCase& EnableTrash() {
     options.enable_trash = true;
     return *this;
@@ -190,6 +195,9 @@ struct TestCase {
 
     if (options.enable_filters_in_recents)
       full_name += "_FiltersInRecents";
+
+    if (options.enable_filters_in_recents_v2)
+      full_name += "_FiltersInRecentsV2";
 
     return full_name;
   }
@@ -1598,13 +1606,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentAudioDownloadsAndDrive")
             .EnableFiltersInRecents()
             .FilesSwa(),
-        TestCase("recentDocumentsDownloads").EnableFiltersInRecents(),
         TestCase("recentDocumentsDownloads")
             .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentDocumentsDownloads")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
             .FilesSwa(),
-        TestCase("recentDocumentsDownloadsAndDrive").EnableFiltersInRecents(),
         TestCase("recentDocumentsDownloadsAndDrive")
             .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentDocumentsDownloadsAndDrive")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
             .FilesSwa(),
         TestCase("recentImagesDownloads"),
         TestCase("recentImagesDownloads").FilesSwa(),

@@ -1300,6 +1300,14 @@ util.isRecentsFilterEnabled = () => {
 };
 
 /**
+ * Returns true if filters in Recents view V2 is enabled.
+ * @return {boolean}
+ */
+util.isRecentsFilterV2Enabled = () => {
+  return loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+};
+
+/**
  * Returns true if Files SWA feature flag is enabled.
  * @return {boolean}
  */

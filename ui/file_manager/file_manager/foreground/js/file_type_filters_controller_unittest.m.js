@@ -63,6 +63,7 @@ export function setUp() {
     RECENT_VIEW_FILTER_ON: 'on',
     RECENT_VIEW_FILTER_OFF: 'off',
     RECENT_VIEW_FILTER_RESET: 'reset',
+    FILTERS_IN_RECENTS_V2_ENABLED: true,
   });
 
   /**

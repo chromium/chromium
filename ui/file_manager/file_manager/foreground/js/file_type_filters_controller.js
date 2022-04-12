@@ -102,11 +102,13 @@ export class FileTypeFiltersController {
         chrome.fileManagerPrivate.RecentFileType.VIDEO);
 
     /**
-     * @private {!HTMLElement}
+     * @private {!HTMLElement|null}
      * @const
      */
-    this.documentFilterButton_ = this.createFilterButton_(
-        chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
+    this.documentFilterButton_ = util.isRecentsFilterV2Enabled() ?
+        this.createFilterButton_(
+            chrome.fileManagerPrivate.RecentFileType.DOCUMENT) :
+        null;
 
     this.directoryModel_.addEventListener(
         'directory-changed', this.onCurrentDirectoryChanged_.bind(this));
@@ -268,8 +270,10 @@ export class FileTypeFiltersController {
       this.audioFilterButton_,
       this.imageFilterButton_,
       this.videoFilterButton_,
-      this.documentFilterButton_,
     ];
+    if (this.documentFilterButton_) {
+      buttons.push(this.documentFilterButton_);
+    }
     buttons.forEach(button => {
       const fileTypeFilter =
           /** @type {!chrome.fileManagerPrivate.RecentFileType} */ (

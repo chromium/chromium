@@ -1888,6 +1888,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFiltersInRecents);
   }
 
+  if (options.enable_filters_in_recents_v2) {
+    enabled_features.push_back(chromeos::features::kFiltersInRecentsV2);
+  } else {
+    disabled_features.push_back(chromeos::features::kFiltersInRecentsV2);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
