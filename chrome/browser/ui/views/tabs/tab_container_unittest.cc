@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -210,6 +211,40 @@ class TabContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
+TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
+  AddTab(0, absl::nullopt, TabActive::kActive);
+
+  // Create just enough tabs so tabs are not full size.
+  const int standard_width = TabStyleViews::GetStandardWidth();
+  while (tab_container_->layout_helper()->active_tab_width() ==
+         standard_width) {
+    AddTab(0);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // The test closes two tabs, we need at least one left over after that.
+  ASSERT_GE(tab_container_->GetTabCount(), 3);
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  // Close the second-to-last tab; tab closing mode should remain active,
+  // constraining tab widths to below full size.
+  tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_LT(tab_container_->layout_helper()->active_tab_width(),
+            standard_width);
+
+  // Close the last tab; tab closing mode should allow tabs to resize to full
+  // size.
+  tab_container_->RemoveTab(tab_container_->GetTabCount() - 1, false);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_EQ(tab_container_->layout_helper()->active_tab_width(),
+            standard_width);
+}
+
 // Verifies child view order matches model order.
 TEST_F(TabContainerTest, TabViewOrder) {
   AddTab(0);
@@ -343,7 +378,7 @@ TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
   Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
   Tab* most_right_tab = AddTab(3);
-  tab_container_->Layout();
+  tab_container_->CompleteAnimationAndLayout();
 
   left_tab->SetBoundsRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(200, 20)));
   active_tab->SetBoundsRect(gfx::Rect(gfx::Point(150, 0), gfx::Size(200, 20)));
@@ -400,7 +435,7 @@ TEST_F(TabContainerTest, GetTooltipHandler) {
   Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
   Tab* most_right_tab = AddTab(3);
-  tab_container_->Layout();
+  tab_container_->CompleteAnimationAndLayout();
 
   // Verify that the active tab will be a tooltip handler for points that hit
   // it.

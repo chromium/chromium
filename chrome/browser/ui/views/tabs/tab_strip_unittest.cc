@@ -483,37 +483,6 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   }
 }
 
-TEST_P(TabStripTest, ExitsClosingModeAtStandardWidth) {
-  SetMaxTabStripWidth(600);
-
-  // Create enough tabs so tabs are not full size.
-  const int standard_width = TabStyleViews::GetStandardWidth();
-  while (GetActiveTabWidth() == standard_width) {
-    controller_->CreateNewTab();
-    CompleteAnimationAndLayout();
-  }
-
-  // The test closes two tabs, we need at least one left over after that.
-  ASSERT_GE(tab_strip_->GetTabCount(), 3);
-
-  // Close the second-to-last tab to enter tab closing mode.
-  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->GetTabCount() - 2),
-                       CLOSE_TAB_FROM_MOUSE);
-  CompleteAnimationAndLayout();
-  ASSERT_LT(GetActiveTabWidth(), standard_width);
-
-  // Close the last tab; tabs should reach standard width.
-  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1),
-                       CLOSE_TAB_FROM_MOUSE);
-  CompleteAnimationAndLayout();
-  EXPECT_EQ(GetActiveTabWidth(), standard_width);
-
-  // The tabstrip width should match the rightmost tab's right edge.
-  EXPECT_EQ(
-      tab_strip_->bounds().width(),
-      tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->bounds().right());
-}
-
 // When dragged tabs are moving back to their position, changes to ideal bounds
 // should be respected. http://crbug.com/848016
 TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
