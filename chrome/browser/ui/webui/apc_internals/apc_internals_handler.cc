@@ -7,10 +7,12 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -106,5 +108,29 @@ base::Value::Dict APCInternalsHandler::GetPasswordScriptFetcherInformation() {
 base::Value::Dict APCInternalsHandler::GetAutofillAssistantInformation() const {
   base::Value::Dict result;
   result.Set("Country code", GetCountryCode());
+
+  // TODO(crbug.com/1314010): Add default values once global instance of
+  // AutofillAssistant exists and exposes more methods.
+  static const char* const kAutofillAssistantSwitches[] = {
+#if BUILDFLAG(IS_ANDROID)
+    autofill_assistant::switches::kAutofillAssistantAnnotateDom,
+    autofill_assistant::switches::kAutofillAssistantAuth,
+    autofill_assistant::switches::kAutofillAssistantCupPublicKeyBase64,
+    autofill_assistant::switches::kAutofillAssistantCupKeyVersion,
+    autofill_assistant::switches::kAutofillAssistantForceFirstTimeUser,
+    autofill_assistant::switches::kAutofillAssistantForceOnboarding,
+    autofill_assistant::switches::
+        kAutofillAssistantImplicitTriggeringDebugParameters,
+    autofill_assistant::switches::kAutofillAssistantServerKey,
+    autofill_assistant::switches::kAutofillAssistantUrl
+#endif
+  };
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  for (const char* switch_name : kAutofillAssistantSwitches) {
+    if (command_line->HasSwitch(switch_name)) {
+      result.Set(switch_name, command_line->GetSwitchValueASCII(switch_name));
+    }
+  }
   return result;
 }

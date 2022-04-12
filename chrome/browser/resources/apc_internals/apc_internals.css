@@ -6,3 +6,12 @@
 html {
   scroll-behavior: smooth;
 }
+
+.info-div {
+  padding-bottom: 15px;
+  width: 100%;
+}
+
+.info-table {
+  width: 100%;
+}
