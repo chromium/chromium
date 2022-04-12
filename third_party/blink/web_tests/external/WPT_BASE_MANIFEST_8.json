@@ -295253,6 +295253,16 @@
       "497ed770bfb6fb367f2eeb1978225bc4d036055b",
       []
      ],
+     "resources": {
+      "sync-script.js": [
+       "10d582cb0ece3e4bab27a398e3e21a53d1432b88",
+       []
+      ]
+     },
+     "sync-script-reporting.html.headers": [
+      "cfe200c27b007ebb8f470c9b19a59589e68500e3",
+      []
+     ],
      "sync-xhr-report-only.html.headers": [
       "8de201c750893f0f615ccf7fcba1600d1cf5f43f",
       []
@@ -335445,12 +335455,16 @@
      []
     ],
     "partitioned-web-locks.tentative.https-expected.txt": [
-     "225cd82b6c9e8e79d0fbb5fb1f37450448058e22",
+     "4b245b18a859e2d38ed3e5bc8e14c0447a583cbe",
      []
     ],
     "resources": {
      "helpers.js": [
       "4b3311eee6290e62cfb5f504f0319ad7a64d28b9",
+      []
+     ],
+     "iframe-parent.html": [
+      "021fffab68f5ae9fe2f72a6c3c0bf60a14b333c8",
       []
      ],
      "iframe.html": [
@@ -404747,6 +404761,13 @@
      ],
      "oversized-images-reporting-tentative.html": [
       "bef7db27a7ad821a5aa57164d407558b669c494f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sync-script-reporting.html": [
+      "45e1b8fc3c80315b8910c7f882da0358e73002fa",
       [
        null,
        {}
@@ -533195,6 +533216,13 @@
     ]
    },
    "touch-events": {
+    "expose-legacy-touch-event-apis.html": [
+     "2dab74dccd60f3b737a7a57362e28aac85a6cbd3",
+     [
+      null,
+      {}
+     ]
+    ],
     "historical.html": [
      "16ddf519037ca52272280d1768eed33f349d82d4",
      [
@@ -533257,7 +533285,7 @@
      ]
     ],
     "touch-globaleventhandler-interface.html": [
-     "cb640444fa0b752c90d10fc73d32892facfb7dcf",
+     "1513cdaa21e8619dbf83d4d15227075ad275477e",
      [
       null,
       {}
@@ -543062,7 +543090,7 @@
      ]
     ],
     "partitioned-web-locks.tentative.https.html": [
-     "eb4e8d0c24c57a855cd426c83e837a2c1fb16421",
+     "a506a3ef4011cfe20f8aaece9b0923d6cfaf5aba",
      [
       null,
       {}
