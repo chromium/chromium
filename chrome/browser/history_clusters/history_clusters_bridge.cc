@@ -106,7 +106,9 @@ void HistoryClustersBridge::ClustersQueryDone(
       const ScopedJavaLocalRef<jobject>& j_cluster_visit =
           Java_HistoryClustersBridge_buildClusterVisit(
               env, visit.score,
-              url::GURLAndroid::FromNativeGURL(env, visit.normalized_url));
+              url::GURLAndroid::FromNativeGURL(env, visit.normalized_url),
+              base::android::ConvertUTF16ToJavaString(
+                  env, visit.annotated_visit.url_row.title()));
       cluster_visits.push_back(j_cluster_visit);
     }
     ScopedJavaLocalRef<jclass> cluster_visit_type = base::android::GetClass(

@@ -18,9 +18,9 @@ using base::android::ScopedJavaGlobalRef;
 
 namespace history_clusters {
 
-/// Native JNI bridge that provides access to HistoryClusters data. This bridge
-/// is instantiated lazily via GetForProfile and is owned by the associated
-/// HistoryClustersService via UserData.
+// Native JNI bridge that provides access to HistoryClusters data. This bridge
+// is instantiated lazily via GetForProfile and is owned by the associated
+// HistoryClustersService via UserData.
 class HistoryClustersBridge : public base::SupportsUserData::Data {
  public:
   HistoryClustersBridge(JNIEnv* env,

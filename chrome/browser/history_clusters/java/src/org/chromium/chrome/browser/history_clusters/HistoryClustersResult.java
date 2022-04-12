@@ -19,4 +19,8 @@ class HistoryClustersResult {
         mCanLoadMore = canLoadMore;
         mIsContinuation = isContinuation;
     }
+
+    public List<HistoryCluster> getClusters() {
+        return mClusters;
+    }
 }

@@ -8,10 +8,20 @@ import org.chromium.url.GURL;
 
 class ClusterVisit {
     private final float mScore;
+    private final String mTitle;
     private final GURL mNormalizedUrl;
 
-    public ClusterVisit(float score, GURL normalizedUrl) {
+    public ClusterVisit(float score, GURL normalizedUrl, String title) {
         mScore = score;
         mNormalizedUrl = normalizedUrl;
+        mTitle = title;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public GURL getGURL() {
+        return mNormalizedUrl;
     }
 }

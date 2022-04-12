@@ -14,4 +14,8 @@ class HistoryCluster {
         mKeywords = keywords;
         mVisits = visits;
     }
+
+    public List<ClusterVisit> getVisits() {
+        return mVisits;
+    }
 }

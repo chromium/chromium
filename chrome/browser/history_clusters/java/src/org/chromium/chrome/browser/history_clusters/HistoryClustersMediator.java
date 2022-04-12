@@ -6,13 +6,19 @@ package org.chromium.chrome.browser.history_clusters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Promise;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 class HistoryClustersMediator {
     private final HistoryClustersBridge mHistoryClustersBridge;
@@ -21,6 +27,8 @@ class HistoryClustersMediator {
     private final ModelList mModelList;
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
+    private final int mFaviconSize;
+    private Promise<HistoryClustersResult> mPromise;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -38,10 +46,41 @@ class HistoryClustersMediator {
         mModelList = modelList;
         mContext = context;
         mResources = resources;
+        mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
 
-    public void destroy() {
+    void destroy() {
         mLargeIconBridge.destroy();
+    }
+
+    void query(String query) {
+        mPromise = mHistoryClustersBridge.queryClusters(query);
+        mPromise.then(this::queryComplete);
+    }
+
+    private void queryComplete(HistoryClustersResult result) {
+        for (HistoryCluster cluster : result.getClusters()) {
+            for (ClusterVisit visit : cluster.getVisits()) {
+                PropertyModel visitModel =
+                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+                visitModel.set(HistoryClustersItemProperties.TITLE, visit.getTitle());
+                visitModel.set(HistoryClustersItemProperties.URL, visit.getGURL().getHost());
+                if (mLargeIconBridge != null) {
+                    mLargeIconBridge.getLargeIconForUrl(visit.getGURL(), mFaviconSize,
+                            (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
+                                    int iconType) -> {
+                                Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
+                                        visit.getGURL(), fallbackColor, mIconGenerator, mResources,
+                                        mFaviconSize);
+                                visitModel.set(
+                                        HistoryClustersItemProperties.ICON_DRAWABLE, drawable);
+                            });
+                }
+
+                ListItem visitItem = new ListItem(ItemType.VISIT, visitModel);
+                mModelList.add(visitItem);
+            }
+        }
     }
 }

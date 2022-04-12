@@ -7,7 +7,10 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/history_cluster_visit.xml" ]
+  sources = [
+    "java/res/layout/history_cluster_visit.xml",
+    "java/res/layout/history_clusters_content_view.xml",
+  ]
   deps = [ "//components/browser_ui/widget/android:java_resources" ]
 }
 
@@ -35,6 +38,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
     "//url:gurl_java",

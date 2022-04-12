@@ -34,8 +34,7 @@ class HistoryClustersBridge {
     }
 
     /* Continue the current query for clusters, fetching the next page of results. */
-    Promise<HistoryClustersResult> loadMoreClusters(
-            String query, Callback<HistoryClustersResult> callback) {
+    Promise<HistoryClustersResult> loadMoreClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
         HistoryClustersBridgeJni.get().loadMoreClusters(
                 mNativeBridge, this, query, returnedPromise::fulfill);
@@ -67,8 +66,8 @@ class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static ClusterVisit buildClusterVisit(float score, GURL url) {
-        return new ClusterVisit(score, url);
+    static ClusterVisit buildClusterVisit(float score, GURL url, String title) {
+        return new ClusterVisit(score, url, title);
     }
 
     @NativeMethods
