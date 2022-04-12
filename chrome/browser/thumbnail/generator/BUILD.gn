@@ -75,10 +75,10 @@ if (is_android) {
       "//chrome/browser/util:java",
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
-      "//third_party/android_deps:android_support_v4_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_core_core_java",
     ]
 
     sources = [
@@ -119,9 +119,9 @@ if (is_android) {
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
-      "//third_party/android_deps:android_support_v4_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",

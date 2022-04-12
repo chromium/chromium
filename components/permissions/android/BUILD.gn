@@ -124,9 +124,9 @@ android_library("java") {
     "//components/location/android:location_java",
     "//components/omnibox/browser:browser_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
@@ -144,7 +144,6 @@ android_library("core_java") {
     "//base:base_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

@@ -526,8 +526,9 @@ java_prebuilt("package_impl_native_java") {
     ":package_api_java",
     ":package_impl_common_java",
     ":repackage_native",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
   ]
   jar_excluded_patterns = [ "androidx/*/R*" ]
 }

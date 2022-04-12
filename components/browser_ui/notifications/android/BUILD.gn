@@ -23,9 +23,9 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//ui/android:ui_java",
   ]
 }

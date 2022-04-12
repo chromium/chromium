@@ -105,6 +105,7 @@ component("cast_browser") {
 group("internal_android_deps") {
   testonly = true
   public_deps = [
+    # TODO(crbug.com/1315379): Remove this dep when inlined in internal code.
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:com_android_support_design_java",
@@ -113,9 +114,16 @@ group("internal_android_deps") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_leanback_leanback_preference_java",
     "//third_party/androidx:androidx_legacy_legacy_support_v4_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

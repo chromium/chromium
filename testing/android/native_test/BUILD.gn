@@ -57,8 +57,8 @@ android_library("native_test_java") {
     "//base:base_java_test_support",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//testing/android/reporter:reporter_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   sources = [
     "java/src/org/chromium/native_test/NativeBrowserTest.java",

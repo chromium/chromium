@@ -27,8 +27,9 @@ android_library("java") {
     "//content/public/android:content_java",
     "//services/media_session/public/cpp/android:media_session_java",
     "//services/media_session/public/mojom:mojom_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
