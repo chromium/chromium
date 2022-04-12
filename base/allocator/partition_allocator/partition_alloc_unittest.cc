@@ -32,6 +32,7 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/callback.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
