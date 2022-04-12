@@ -257,8 +257,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     // Visibility for `separator_` will be managed by the `continue_container_`.
     separator_->SetVisible(false);
 
-    dialog_controller_ =
-        std::make_unique<SearchResultPageDialogController>(this);
+    dialog_controller_ = std::make_unique<SearchResultPageDialogController>(
+        contents_view_->GetSearchBoxView());
 
     continue_container_ =
         scrollable_container_->AddChildView(std::make_unique<ContinueContainer>(

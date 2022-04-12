@@ -256,7 +256,7 @@ void AppListBubbleView::InitContentsView(
   layout->SetFlexForView(pages_container, 1);
 
   search_page_dialog_controller_ =
-      std::make_unique<SearchResultPageDialogController>(this);
+      std::make_unique<SearchResultPageDialogController>(search_box_view_);
 
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in

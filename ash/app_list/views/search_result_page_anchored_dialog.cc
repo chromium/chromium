@@ -104,6 +104,13 @@ void SearchResultPageAnchoredDialog::OnWidgetClosing(views::Widget* widget) {
     std::move(callback_).Run();
 }
 
+void SearchResultPageAnchoredDialog::OnWidgetDestroying(views::Widget* widget) {
+  widget_ = nullptr;
+  widget_observations_.RemoveAllObservations();
+  if (callback_)
+    std::move(callback_).Run();
+}
+
 void SearchResultPageAnchoredDialog::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {

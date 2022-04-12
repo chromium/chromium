@@ -262,9 +262,12 @@ void SearchResultPageView::InitializeContainers(
     SearchBoxView* search_box_view) {
   DCHECK(view_delegate);
   view_delegate_ = view_delegate;
-  dialog_controller_ = std::make_unique<SearchResultPageDialogController>(this);
 
   if (features::IsProductivityLauncherEnabled()) {
+    // For productivity launcher, the dialog will be anchored to the search box
+    // to keep the position of dialogs consistent.
+    dialog_controller_ =
+        std::make_unique<SearchResultPageDialogController>(search_box_view);
     std::unique_ptr<ProductivityLauncherSearchView> search_view_ptr =
         std::make_unique<ProductivityLauncherSearchView>(
             view_delegate, dialog_controller_.get(), search_box_view);
@@ -272,6 +275,8 @@ void SearchResultPageView::InitializeContainers(
     contents_view_->AddChildView(
         std::make_unique<SearchCardView>(std::move(search_view_ptr)));
   } else {
+    dialog_controller_ =
+        std::make_unique<SearchResultPageDialogController>(this);
     privacy_container_view_ = AddSearchResultContainerView(
         std::make_unique<PrivacyContainerView>(view_delegate));
     search_result_tile_item_list_view_ = AddSearchResultContainerView(
