@@ -286,6 +286,9 @@ message WalletMaskedCreditCard {
 
   // The URL for the client to fetche the card art image.
   optional string card_art_url = 17;
+
+  // The product description for the card. Used to be shown in the UI.
+  optional string product_description = 18;
 }
 
 // Different than an AutofillProfile because this represents some known address
