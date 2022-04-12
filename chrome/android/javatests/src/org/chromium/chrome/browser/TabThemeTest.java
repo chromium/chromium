@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.graphics.Color;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -16,14 +17,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -160,5 +169,64 @@ public class TabThemeTest {
         themeColorHelper.waitForCallback(curCallCount, 1);
         assertColorsEqual(THEME_COLOR, colorObserver.getColor());
         assertColorsEqual(THEME_COLOR, getThemeColor());
+    }
+
+    @Test
+    @Feature({"Toolbar-Theme-Color"})
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testOverlayColorOnFrozenNativePages() throws ExecutionException, TimeoutException {
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final TopUiThemeColorProvider colorProvider = mActivityTestRule.getActivity()
+                                                              .getRootUiCoordinatorForTesting()
+                                                              .getTopUiThemeColorProvider();
+
+        ThemeColorObserver colorObserver = (color, animate) -> {
+            Assert.assertNotSame("Theme color should never be 0 or TRANSPARENT!", Color.TRANSPARENT,
+                    colorProvider.getSceneLayerBackground(tab));
+        };
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> colorProvider.addThemeColorObserver(colorObserver));
+
+        // Load the ntp.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.NTP_URL)));
+
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+
+        // Load a second tab so we can freeze the first.
+        mActivityTestRule.loadUrlInNewTab(testServer.getURL(THEMED_TEST_PAGE));
+
+        // Freeze the ntp on the first tab.
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.freezeNativePage());
+
+        CriteriaHelper.pollUiThread(() -> tab.getNativePage() instanceof FrozenNativePage);
+
+        // Switch back to the now frozen tab.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabModel model = mActivityTestRule.getActivity()
+                                     .getTabModelSelectorSupplier()
+                                     .get()
+                                     .getCurrentModel();
+            model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, true);
+        });
+
+        Assert.assertEquals("The tab should still be frozen!",
+                mActivityTestRule.getActivity()
+                        .getActivityTabProvider()
+                        .get()
+                        .getNativePage()
+                        .getClass(),
+                FrozenNativePage.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNotSame("Theme color should never be 0 or TRANSPARENT!", Color.TRANSPARENT,
+                    colorProvider.getSceneLayerBackground(tab));
+        });
     }
 }
