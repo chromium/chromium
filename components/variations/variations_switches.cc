@@ -70,5 +70,10 @@ const char kVariationsServerURL[] = "variations-server-url";
 // encrypted.
 const char kVariationsInsecureServerURL[] = "variations-insecure-server-url";
 
+// Enables delta-compression when fetching a new seed via the "first run" code
+// path on Android.
+const char kEnableFinchSeedDeltaCompression[] =
+    "enable-finch-seed-delta-compression";
+
 }  // namespace switches
 }  // namespace variations

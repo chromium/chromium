@@ -35,6 +35,8 @@ COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsServerURL[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsInsecureServerURL[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kEnableFinchSeedDeltaCompression[];
 
 }  // namespace switches
 }  // namespace variations

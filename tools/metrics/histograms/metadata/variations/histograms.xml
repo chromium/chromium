@@ -119,6 +119,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.FirstRun.DeltaCompression"
+    enum="VariationsDeltaCompression" expires_after="2023-04-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>swestphal@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The state of the delta-compression when attempting to fetch a variations
+    seed via the java-based fetcher on Android. Records both the requested and
+    received delta compression values in one enumeration.
+  </summary>
+</histogram>
+
 <histogram name="Variations.FirstRun.SeedConnectTime" units="ms"
     expires_after="2022-11-20">
   <owner>asvitkine@chromium.org</owner>

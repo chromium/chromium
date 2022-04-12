@@ -53588,6 +53588,7 @@ from previous Chrome versions.
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1072337227" label="FilesArchivemount2:disabled"/>
+  <int value="-1071471678" label="enable-finch-seed-delta-compression"/>
   <int value="-1071043945" label="VerticalSnap:enabled"/>
   <int value="-1069628248" label="OmniboxZeroSuggestionsOnSERP:enabled"/>
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
@@ -92725,6 +92726,20 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Load Key"/>
 </enum>
 
+<enum name="VariationsDeltaCompression">
+  <int value="0"
+      label="Delta compression flag set and received delta compressed data."/>
+  <int value="1"
+      label="Delta compression flag set but received not delta comressed
+             data."/>
+  <int value="2"
+      label="Delta compression flag not set but received delta compressed
+             data."/>
+  <int value="3"
+      label="Delta compression flag not set and received not delta compressed
+             data."/>
+</enum>
+
 <enum name="VariationSeedSignature">
   <int value="0" label="Signature Missing"/>
   <int value="1" label="Signature Decode Failed"/>
@@ -92869,6 +92884,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="VariationsSeedFetchResult">
+  <int value="-6"
+      label="Exception when applying delta patch when fetching seed"/>
+  <int value="-5" label="Invalid IM-Header when fetching seed"/>
   <int value="-4" label="Invalid Date header when fetching seed"/>
   <int value="-3" label="UnknownHostException fetching seed"/>
   <int value="-2" label="SocketTimeoutException fetching seed"/>

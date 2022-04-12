@@ -16,7 +16,7 @@ android_library("variations_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
-    "java/src/org/chromium/components/variations/VariationsUtils.java",
+    "java/src/org/chromium/components/variations/VariationsCompressionUtils.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedFetcher.java",
   ]
@@ -27,7 +27,7 @@ java_library("components_variations_junit_tests") {
   bypass_platform_checks = true
   testonly = true
   sources = [
-    "junit/src/org/chromium/components/variations/VariationsUtilsTest.java",
+    "junit/src/org/chromium/components/variations/VariationsCompressionUtilsTest.java",
     "junit/src/org/chromium/components/variations/firstrun/VariationsSeedFetcherTest.java",
   ]
   deps = [
