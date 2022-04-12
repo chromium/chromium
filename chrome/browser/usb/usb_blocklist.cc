@@ -96,6 +96,7 @@ const UsbBlocklist::Entry kStaticEntries[] = {
     {0x10c4, 0x8acf, kMaxVersion},  // U2F Zero
     {0x18d1, 0x5026, kMaxVersion},  // Titan
     {0x1a44, 0x00bb, kMaxVersion},  // VASCO
+    {0x1d50, 0x60fc, kMaxVersion},  // OnlyKey
     {0x1e0d, 0xf1ae, kMaxVersion},  // Keydo AES
     {0x1e0d, 0xf1d0, kMaxVersion},  // Neowave Keydo
     {0x1ea8, 0xf025, kMaxVersion},  // Thetis
