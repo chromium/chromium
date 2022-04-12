@@ -72,10 +72,14 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Same as `ShowExtensionSigninPrompt()` but with an additional parameters that
+// can be injected for unit testing.
+// `add_account_callback` encapsulates the logic to add a new account.
 void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
+    base::OnceClosure add_account_callback,
 #endif
     bool enable_sync,
     const std::string& email_hint);

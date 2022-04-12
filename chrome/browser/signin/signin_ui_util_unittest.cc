@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/mock_callback.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #endif
 
@@ -662,23 +663,40 @@ TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
       &mock_facade);
 }
 
-TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt) {
-  const std::string kEmail = "foo@example.com";
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Signin) {
   account_manager::MockAccountManagerFacade mock_facade;
+  base::MockCallback<base::OnceClosure> mock_callback;
+
+  EXPECT_CALL(mock_facade, ShowReauthAccountDialog(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_callback, Run());
+  internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      mock_callback.Get(),
+                                      /*enable_sync=*/true, std::string());
+  // No tabs should be opened.
+  EXPECT_EQ(0, browser()->tab_strip_model()->count());
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Reauth) {
+  const std::string kEmail = "foo@example.com";
+  account_manager::MockAccountManagerFacade mock_facade;
+  base::MockCallback<base::OnceClosure> mock_callback;
 
   EXPECT_CALL(
       mock_facade,
       ShowReauthAccountDialog(account_manager::AccountManagerFacade::
                                   AccountAdditionSource::kChromeExtensionReauth,
                               kEmail));
+  EXPECT_CALL(mock_callback, Run()).Times(0);
   internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      mock_callback.Get(),
                                       /*enable_sync=*/true, kEmail);
   // No tabs should be opened.
-  EXPECT_EQ(0, tab_strip->count());
+  EXPECT_EQ(0, browser()->tab_strip_model()->count());
 }
 
-TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+TEST_F(MirrorSigninUiUtilTest,
+       ShowExtensionSigninPrompt_Reauth_AsLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
   ProfileAttributesEntry* entry =
@@ -691,10 +709,13 @@ TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
   const std::string kEmail = "foo@example.com";
   TabStripModel* tab_strip = browser()->tab_strip_model();
   account_manager::MockAccountManagerFacade mock_facade;
+  base::MockCallback<base::OnceClosure> mock_callback;
 
   EXPECT_CALL(mock_facade, ShowReauthAccountDialog(testing::_, testing::_))
       .Times(0);
+  EXPECT_CALL(mock_callback, Run()).Times(0);
   internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      mock_callback.Get(),
                                       /*enable_sync=*/true, kEmail);
   // No dialogs and tabs should be opened.
   EXPECT_EQ(0, tab_strip->count());

@@ -53,8 +53,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -240,6 +243,15 @@ void ShowExtensionSigninPrompt(Profile* profile,
       profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       ::GetAccountManagerFacade(profile->GetPath().value()),
+      base::BindOnce(
+          &SigninManager::StartWebSigninFlow,
+          // base::Unretained() is fine because this callback is called
+          // synchronously
+          base::Unretained(SigninManagerFactory::GetForProfile(profile)),
+          profile->GetPath(),
+          g_browser_process->profile_manager()->GetAccountProfileMapper(),
+          AccountReconcilorFactory::GetForProfile(profile)
+              ->GetConsistencyCookieManager()),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       enable_sync, email_hint);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -270,6 +282,7 @@ void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
+    base::OnceClosure add_account_callback,
 #endif
     bool enable_sync,
     const std::string& email_hint) {
@@ -295,8 +308,9 @@ void ShowExtensionSigninPrompt(
 
   if (email_hint.empty()) {
     // Add a new account.
-    // TODO(https://crbug.com/1260291): add support for signed out profiles.
-    NOTREACHED() << "Lacros doesn't support signed-out profiles yet.";
+    // TODO(https://crbug.com/1260291): enable sync after account is added if
+    // `enable_sync` is true.
+    std::move(add_account_callback).Run();
     return;
   }
 
