@@ -2,6 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("lens_coordinator") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "lens_coordinator.h",
+    "lens_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/url_loading",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+  ]
+}
+
 source_set("lens_availability") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

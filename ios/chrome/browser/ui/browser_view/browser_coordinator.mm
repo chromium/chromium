@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
@@ -226,6 +227,9 @@
 
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
+
+// Coordinator that manages Lens features.
+@property(nonatomic, strong) LensCoordinator* lensCoordinator;
 
 // Coordinator for displaying the Reading List.
 @property(nonatomic, strong) ReadingListCoordinator* readingListCoordinator;
@@ -519,6 +523,11 @@
                          browser:self.browser];
   [self.qrScannerCoordinator start];
 
+  self.lensCoordinator =
+      [[LensCoordinator alloc] initWithBaseViewController:self.viewController
+                                                  browser:self.browser];
+  [self.lensCoordinator start];
+
   /* NetExportCoordinator is created and started by a delegate method */
 
   /* passwordBreachCoordinator is created and started by a BrowserCommand */
@@ -614,6 +623,9 @@
 
   [self.qrScannerCoordinator stop];
   self.qrScannerCoordinator = nil;
+
+  [self.lensCoordinator stop];
+  self.lensCoordinator = nil;
 
   [self.readingListCoordinator stop];
   self.readingListCoordinator = nil;

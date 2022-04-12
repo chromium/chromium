@@ -67,7 +67,6 @@
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -153,8 +152,6 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/lens/lens_api.h"
-#include "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
@@ -263,7 +260,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Note other delegates defined in the Delegates category header.
 @interface BrowserViewController () <CaptivePortalTabHelperDelegate,
                                      CRWWebStateObserver,
-                                     ChromeLensControllerDelegate,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      InfobarPositioner,
@@ -376,10 +372,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // one single drag gesture.  When NO, full screen disabler is reset when
   // the thumb strip animation ends.
   BOOL _deferEndFullscreenDisabler;
-
-  // A controller that can provide an entrypoint into Lens features.
-  // TODO(crbug.com/1272549): Move this into BrowserCoordinator.
-  id<ChromeLensController> _lensController;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -3901,38 +3893,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// TODO(crbug.com/1272549): Move this command implementation into
-// BrowserCoordinator, and potentially into a child coordinator from there.
-- (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  LensConfiguration* configuration = [[LensConfiguration alloc] init];
-  configuration.isIncognito = self.isOffTheRecord;
-  configuration.ssoService = GetApplicationContext()->GetSSOService();
-
-  if (!self.isOffTheRecord) {
-    ChromeBrowserState* browserState = _browser->GetBrowserState();
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
-    ChromeIdentity* chromeIdentity = authenticationService->GetPrimaryIdentity(
-        ::signin::ConsentLevel::kSignin);
-    configuration.identity = chromeIdentity;
-  }
-
-  _lensController = ios::provider::NewChromeLensController(configuration);
-  if (!_lensController) {
-    // Lens is not available.
-    return;
-  }
-  _lensController.delegate = self;
-
-  UIViewController* lensViewController =
-      [_lensController postCaptureViewControllerForImage:command.image];
-  [lensViewController setModalPresentationStyle:UIModalPresentationFullScreen];
-
-  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
-  // stack.
-  [self presentViewController:lensViewController animated:YES completion:nil];
-}
-
 #pragma mark - NewTabPageCommands
 
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
@@ -3950,33 +3910,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UrlLoadParams urlLoadParams =
       UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
   urlLoadingBrowserAgent->Load(urlLoadParams);
-}
-
-#pragma mark - ChromeLensControllerDelegate
-// TODO(crbug.com/1272549): Move this delegate implmentation into
-// BrowserCoordinator, or into the dedicated lens coordinator.
-
-- (void)lensControllerDidTapDismissButton {
-  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
-  // stack.
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)lensControllerDidSelectURL:(NSURL*)URL {
-  // Dismiss the Lens view controller.
-  if (self.presentedViewController != nil) {
-    [self dismissViewControllerAnimated:YES completion:nil];
-  }
-
-  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
-  // stack.
-  UrlLoadParams loadParams = UrlLoadParams::InNewTab(net::GURLWithNSURL(URL));
-  loadParams.SetInBackground(NO);
-  loadParams.in_incognito = self.isOffTheRecord;
-  loadParams.append_to = kCurrentTab;
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  loadingAgent->Load(loadParams);
 }
 
 #pragma mark - WebStateListObserving methods
