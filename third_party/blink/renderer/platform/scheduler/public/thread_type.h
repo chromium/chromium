@@ -31,8 +31,9 @@ enum class ThreadType {
   kOfflineAudioWorkletThread = 18,
   kRealtimeAudioWorkletThread = 19,
   kSemiRealtimeAudioWorkletThread = 20,
+  kFontThread = 21,
 
-  kMaxValue = kSemiRealtimeAudioWorkletThread,
+  kMaxValue = kFontThread,
 };
 
 BLINK_PLATFORM_EXPORT const char* GetNameForThreadType(ThreadType);
