@@ -318,6 +318,11 @@ public class ContextMenuCoordinatorTest {
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
 
+        ContextMenuListView listView = mCoordinator.getListViewForTest();
+        Assert.assertNotNull("List view should not be null.", listView);
+        Assert.assertFalse(
+                "Fading edge should not be enabled.", listView.isVerticalFadingEdgeEnabled());
+
         // Verify rect is calculated correctly. Note that the calculation done below assume the
         // density is 1.0.
         Rect rect = shadowDialog.mRect;
@@ -345,6 +350,14 @@ public class ContextMenuCoordinatorTest {
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
+
+        ContextMenuListView listView = mCoordinator.getListViewForTest();
+        Assert.assertNotNull("List view should not be null.", listView);
+        Assert.assertTrue("Fading edge should be enabled.", listView.isVerticalFadingEdgeEnabled());
+        Assert.assertEquals("Fading edge size is wrong.",
+                mActivity.getResources().getDimensionPixelSize(
+                        R.dimen.context_menu_fading_edge_size),
+                listView.getVerticalFadingEdgeLength());
 
         // Verify rect is calculated correctly.
         Rect rect = shadowDialog.mRect;

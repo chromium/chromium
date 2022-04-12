@@ -255,7 +255,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
             clickItem((int) id, activity, onItemClicked);
         });
-
+        // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
+        // ideally this could be enabled for all forms of context menu.
+        if (isDragDropEnabled) {
+            mListView.setVerticalFadingEdgeEnabled(true);
+            mListView.setFadingEdgeLength(activity.getResources().getDimensionPixelSize(
+                    R.dimen.context_menu_fading_edge_size));
+        }
         mWebContentsObserver = new WebContentsObserver(mWebContents) {
             @Override
             public void navigationEntryCommitted(LoadCommittedDetails details) {
@@ -468,5 +474,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     public ContextMenuDialog getDialogForTest() {
         return mDialog;
+    }
+
+    @VisibleForTesting
+    public ContextMenuListView getListViewForTest() {
+        return mListView;
     }
 }
