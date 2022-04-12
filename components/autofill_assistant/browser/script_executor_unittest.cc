@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
@@ -1677,7 +1678,14 @@ TEST_F(ScriptExecutorTest, KeepStatusMessageWhenNotInterrupted) {
   EXPECT_EQ("pre-interrupt status", ui_delegate_.GetStatusMessage());
 }
 
-TEST_F(ScriptExecutorTest, PauseWaitForDomWhileNavigating) {
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+// This test fails on Android ASAN: https://crbug.com/1315701
+#define MAYBE_PauseWaitForDomWhileNavigating \
+  DISABLED_PauseWaitForDomWhileNavigating
+#else
+#define MAYBE_PauseWaitForDomWhileNavigating PauseWaitForDomWhileNavigating
+#endif
+TEST_F(ScriptExecutorTest, MAYBE_PauseWaitForDomWhileNavigating) {
   ActionsResponseProto actions_response;
   auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
   wait_for_dom->set_timeout_ms(2000);
@@ -1857,7 +1865,14 @@ TEST_F(ScriptExecutorTest, ReportNavigationEnd) {
   EXPECT_TRUE(processed_actions_capture[0].navigation_info().ended());
 }
 
-TEST_F(ScriptExecutorTest, ReportUnexpectedNavigationStart) {
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+// This test fails on Android ASAN: https://crbug.com/1315701
+#define MAYBE_ReportUnexpectedNavigationStart \
+  DISABLED_ReportUnexpectedNavigationStart
+#else
+#define MAYBE_ReportUnexpectedNavigationStart ReportUnexpectedNavigationStart
+#endif
+TEST_F(ScriptExecutorTest, MAYBE_ReportUnexpectedNavigationStart) {
   ActionsResponseProto actions_response;
   auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
   *wait_for_dom->mutable_wait_condition()->mutable_match() =
@@ -1896,7 +1911,14 @@ TEST_F(ScriptExecutorTest, ReportUnexpectedNavigationStart) {
   EXPECT_TRUE(processed_actions_capture[0].navigation_info().unexpected());
 }
 
-TEST_F(ScriptExecutorTest, ReportExpectedNavigationStart) {
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+// This test fails on Android ASAN: https://crbug.com/1315701
+#define MAYBE_ReportExpectedNavigationStart \
+  DISABLED_ReportExpectedNavigationStart
+#else
+#define MAYBE_ReportExpectedNavigationStart ReportExpectedNavigationStart
+#endif
+TEST_F(ScriptExecutorTest, MAYBE_ReportExpectedNavigationStart) {
   ActionsResponseProto actions_response;
   actions_response.add_actions()->mutable_expect_navigation();
   auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
