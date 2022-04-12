@@ -141,16 +141,21 @@ public class ModalDialogManager {
      * which dialog will be shown or hidden if there's more than one dialog in the queue of dialogs
      * in {@link PendingDialogContainer}.
      */
-    @IntDef({ModalDialogPriority.LOW, ModalDialogPriority.HIGH})
+    @IntDef({ModalDialogPriority.LOW, ModalDialogPriority.HIGH, ModalDialogPriority.VERY_HIGH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModalDialogPriority {
         int LOW = 1;
         int HIGH = 2;
+        // This is intended to be used only by those dialogs which are meant to block any access to
+        // a subset of Chrome features when they are being shown. For example, incognito re-auth
+        // feature uses this to gate the user's access to Incognito feature unless they
+        // re-authenticate successfully. For most of the clients, using just HIGH should suffice.
+        int VERY_HIGH = 3;
 
         int RANGE_MIN = LOW;
         // Please note that the max value of {@link ModalDialogPriority} should never exceed 9
         // because of how {@link PendingDialogContainer} is built.
-        int RANGE_MAX = HIGH;
+        int RANGE_MAX = VERY_HIGH;
         int NUM_ENTRIES = RANGE_MAX - RANGE_MIN + 1;
     }
 
