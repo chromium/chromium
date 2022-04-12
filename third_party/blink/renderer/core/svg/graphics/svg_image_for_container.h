@@ -70,6 +70,17 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
         image, container_size_without_zoom, zoom, url, preferred_color_scheme));
   }
 
+  static scoped_refptr<SVGImageForContainer> Create(
+      SVGImage* image,
+      const gfx::SizeF& target_size,
+      float zoom,
+      const KURL& url) {
+    gfx::SizeF container_size_without_zoom =
+        gfx::ScaleSize(target_size, 1 / zoom);
+    return base::AdoptRef(new SVGImageForContainer(
+        image, container_size_without_zoom, zoom, url));
+  }
+
   gfx::Size SizeWithConfig(SizeConfig) const override;
   gfx::SizeF SizeWithConfigAsFloat(SizeConfig) const override;
 
@@ -107,6 +118,11 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
       float zoom,
       const KURL& url,
       mojom::blink::PreferredColorScheme preferred_color_scheme);
+
+  SVGImageForContainer(SVGImage* image,
+                       const gfx::SizeF& container_size,
+                       float zoom,
+                       const KURL& url);
 
   void DestroyDecodedData() override {}
 

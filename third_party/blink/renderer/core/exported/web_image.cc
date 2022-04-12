@@ -114,8 +114,7 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
   // TODO(chrishtr): perhaps the downloaded image should be decoded in dark
   // mode if the preferred color scheme is dark.
   scoped_refptr<Image> svg_container =
-      SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL(),
-                                   mojom::blink::PreferredColorScheme::kLight);
+      SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL());
   if (PaintImage image = svg_container->PaintImageForCurrentFrame()) {
     image.GetSwSkImage()->asLegacyBitmap(&bitmap,
                                          SkImage::kRO_LegacyBitmapMode);
