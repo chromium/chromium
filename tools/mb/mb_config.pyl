@@ -149,16 +149,21 @@
 
     'chromium.chromiumos': {
       'Linux ChromiumOS Full': 'chromeos_with_codecs_release_bot',
+      'Linux ChromiumOS Full (reclient shadow)': 'chromeos_with_codecs_release_bot_reclient',
 
       'chromeos-amd64-generic-asan-rel': 'chromeos_amd64-generic_asan',
+      'chromeos-amd64-generic-asan-rel (reclient shadow)': 'chromeos_amd64-generic_asan_reclient',
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
+      'chromeos-amd64-generic-dbg (reclient shadow)': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
+      'chromeos-arm-generic-dbg (reclient shadow)': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
+      'chromeos-kevin-rel (reclient shadow)': 'chromeos_kevin_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
@@ -249,6 +254,7 @@
       'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot_reclient',
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot',
+      'ChromiumOS ASAN Release (reclient shadow)': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting',
       'Libfuzzer Upload Linux32 ASan': 'libfuzzer_asan_release_bot_x86_reclient',
@@ -489,9 +495,11 @@
       # These all use the 'trybot' mixins to ensure that dcheck is on.
       'ANGLE GPU Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
+      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
+      'gpu-fyi-chromeos-octopus-exp (reclient shadow)': 'gpu_tests_chromeos_octopus_release_trybot_reclient',
       'gpu-fyi-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
@@ -1925,6 +1933,10 @@
       'chromeos_amd64-generic', 'asan',
     ],
 
+    'chromeos_amd64-generic_asan_reclient': [
+      'chromeos_amd64-generic_reclient', 'asan',
+    ],
+
     'chromeos_amd64-generic_cfi_thin_lto': [
       'chromeos_amd64-generic', 'cfi_full', 'thin_lto',
     ],
@@ -1961,6 +1973,10 @@
 
     'chromeos_amd64-generic_dbg': [
       'chromeos_amd64-generic', 'debug',
+    ],
+
+    'chromeos_amd64-generic_dbg_reclient': [
+      'chromeos_amd64-generic_reclient', 'debug',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients':[
@@ -2007,6 +2023,10 @@
       'chromeos_device', 'arm-generic', 'debug',
     ],
 
+    'chromeos_arm-generic_dbg_reclient': [
+      'chromeos_device_reclient', 'arm-generic', 'debug',
+    ],
+
     'chromeos_arm-generic_lacros_official': [
       'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
@@ -2025,6 +2045,10 @@
 
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot': [
       'chromeos', 'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot',
+    ],
+
+    'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
+      'chromeos', 'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
     ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
@@ -2056,6 +2080,10 @@
       'chromeos_kevin', 'dcheck_always_on',
     ],
 
+    'chromeos_kevin_dchecks_reclient': [
+      'chromeos_kevin_reclient', 'dcheck_always_on',
+    ],
+
     'chromeos_kevin_include_unwind_tables_official': [
       'chromeos_kevin', 'include_unwind_tables', 'official',
     ],
@@ -2085,6 +2113,10 @@
 
     'chromeos_with_codecs_release_bot': [
       'chromeos_with_codecs', 'release_bot',
+    ],
+
+    'chromeos_with_codecs_release_bot_reclient': [
+      'chromeos_with_codecs', 'release_bot_reclient',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot': [
@@ -2491,6 +2523,11 @@
       'no_symbols',
     ],
 
+    'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [
+      'gpu_tests', 'chromeos_amd64-generic-vm_reclient',
+      'release_trybot_dcheck_off_reclient', 'no_symbols',
+    ],
+
     'gpu_tests_chromeos_jacuzzi_release_trybot': [
       'gpu_tests', 'chromeos_device', 'jacuzzi', 'release_trybot',
     ],
@@ -2501,6 +2538,10 @@
 
     'gpu_tests_chromeos_octopus_release_trybot': [
       'gpu_tests', 'chromeos_device', 'octopus', 'release_trybot',
+    ],
+
+    'gpu_tests_chromeos_octopus_release_trybot_reclient': [
+      'gpu_tests', 'chromeos_device_reclient', 'octopus', 'release_trybot_reclient',
     ],
 
     'gpu_tests_chromeos_zork_release_trybot': [
@@ -3558,6 +3599,10 @@
       'mixins': ['chromeos_device', 'amd64-generic-vm',]
     },
 
+    'chromeos_amd64-generic-vm_reclient': {
+      'mixins': ['chromeos_device_reclient', 'amd64-generic-vm',]
+    },
+
     'chromeos_amd64-generic-crostoolchain': {
       'mixins': ['chromeos_device', 'amd64-generic-crostoolchain',]
     },
@@ -3568,6 +3613,10 @@
 
     'chromeos_kevin': {
       'mixins': ['chromeos_device', 'kevin',]
+    },
+
+    'chromeos_kevin_reclient': {
+      'mixins': ['chromeos_device_reclient', 'kevin',]
     },
 
     'chromeos_with_codecs': {
@@ -4159,12 +4208,20 @@
       'mixins': ['release_bot', 'no_symbols', 'dcheck_always_on'],
     },
 
+    'release_trybot_reclient': {
+      'mixins': ['release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
+    },
+
     'release_trybot_blink': {
       'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'release_trybot_dcheck_off': {
       'mixins': ['release_trybot', 'dcheck_off'],
+    },
+
+    'release_trybot_dcheck_off_reclient': {
+      'mixins': ['release_trybot_reclient', 'dcheck_off'],
     },
 
     'release_trybot_minimal_symbols': {

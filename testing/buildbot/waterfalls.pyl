@@ -1527,12 +1527,22 @@
           'chromiumos_preflight',
         ],
       },
+      'chromeos-amd64-generic-asan-rel (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
       'chromeos-amd64-generic-cfi-thin-lto-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
       },
       'chromeos-amd64-generic-dbg': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
+      'chromeos-amd64-generic-dbg (reclient shadow)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
@@ -1563,6 +1573,11 @@
           'chromiumos_preflight',
         ],
       },
+      'chromeos-arm-generic-dbg (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
       'chromeos-arm-generic-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -1574,6 +1589,20 @@
         ],
       },
       'chromeos-kevin-rel': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-kevin',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_device_gtests',
+          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'chromeos-kevin-rel (reclient shadow)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
@@ -2553,6 +2582,11 @@
         ],
       },
       'ChromiumOS ASAN Release': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
+      'ChromiumOS ASAN Release (reclient shadow)': {
         'additional_compile_targets': [
           'chromium_builder_asan',
         ],
@@ -4330,6 +4364,21 @@
           'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
         },
       },
+      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'mixins': [
+          'chromeos-amd64-generic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+        },
+      },
       'ChromeOS FYI Release (kevin)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -4941,6 +4990,22 @@
         },
       },
       'gpu-fyi-chromeos-octopus-exp': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'mixins': [
+          'chromeos-octopus',
+          'gpu-exp-swarming-pool',
+          'limited_capacity_bot',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
+      'gpu-fyi-chromeos-octopus-exp (reclient shadow)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
