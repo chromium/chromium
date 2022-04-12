@@ -378,7 +378,7 @@ bool OOPVideoDecoder::NeedsTranscryption() {
 void OOPVideoDecoder::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
-    const absl::optional<base::UnguessableToken>& release_token) {
+    const base::UnguessableToken& release_token) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

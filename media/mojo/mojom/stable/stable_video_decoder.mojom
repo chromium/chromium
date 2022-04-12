@@ -47,11 +47,11 @@ interface VideoDecoderClient {
   // frame, for example if output buffers are limited or configuration changes
   // require the return of all outstanding frames.
   //
-  // If |release_token| is provided, the client shall call
-  // VideoFrameHandleReleaser::Release() when it is finished using |frame|.
+  // The client shall call VideoFrameHandleReleaser::ReleaseVideoFrame() with
+  // |release_token| when it is finished using |frame|.
   OnVideoFrameDecoded@0(VideoFrame frame,
                       bool can_read_without_stalling,
-                      mojo_base.mojom.UnguessableToken? release_token);
+                      mojo_base.mojom.UnguessableToken release_token);
 
   // Called when the remote decoder is waiting because of |reason|, e.g. waiting
   // for decryption key.
