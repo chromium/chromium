@@ -378,14 +378,16 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   // potential country code changes.
   const base::flat_map<std::string, std::string> kCountryCodeToNameMap = {
       {"US", "United States"},  {"AU", "Australia"},
-      {"BE", "Belgium"},        {"CA", "Canada"},
+      {"AT", "Austria"},        {"BE", "Belgium"},
+      {"BR", "Brazil"},         {"CA", "Canada"},
       {"DK", "Denmark"},        {"FI", "Finland"},
       {"FR", "France"},         {"DE", "Germany"},
       {"IN", "India"},          {"IE", "Ireland"},
       {"IT", "Italy"},          {"JP", "Japan"},
       {"LU", "Luxembourg"},     {"MX", "Mexico"},
-      {"NL", "Netherlands"},    {"NO", "Norway"},
-      {"PL", "Poland"},         {"ZA", "South Africa"},
+      {"NL", "Netherlands"},    {"NZ", "New Zealand"},
+      {"NO", "Norway"},         {"PL", "Poland"},
+      {"PT", "Portugal"},       {"ZA", "South Africa"},
       {"ES", "Spain"},          {"SE", "Sweden"},
       {"GB", "United Kingdom"}, {"N/A", "Please select a country"}};
 
