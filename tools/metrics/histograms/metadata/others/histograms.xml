@@ -4210,6 +4210,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.UserClicksAndPresses" units="clicks"
+    expires_after="M109">
+  <owner>lbowen@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    Records how many times the user clicks mouse and presses screen in the demo
+    session. During one demo session, if a mouse click or screen press happens,
+    increment this metric by one.
+  </summary>
+</histogram>
+
 <histogram name="Dialog.Create" enum="BooleanCreated" expires_after="M85">
   <owner>pdyson@chromium.org</owner>
   <summary>

@@ -150,6 +150,7 @@ void UserMetricsRecorder::RecordUserClickOnShelfButton(
 void UserMetricsRecorder::StartDemoSessionMetricsRecording() {
   demo_session_metrics_recorder_ =
       std::make_unique<DemoSessionMetricsRecorder>();
+  Shell::Get()->AddPreTargetHandler(demo_session_metrics_recorder_.get());
 }
 
 void UserMetricsRecorder::OnShellInitialized() {
@@ -164,7 +165,12 @@ void UserMetricsRecorder::OnShellInitialized() {
 }
 
 void UserMetricsRecorder::OnShellShuttingDown() {
-  demo_session_metrics_recorder_.reset();
+  // Doing the nullptr check as the recorder is not initialized outside demo
+  // session. It was initialized during StartDemoSessionMetricsRecording().
+  if (demo_session_metrics_recorder_ != nullptr) {
+    Shell::Get()->RemovePreTargetHandler(demo_session_metrics_recorder_.get());
+    demo_session_metrics_recorder_.reset();
+  }
   desktop_task_switch_metric_recorder_.reset();
 
   // To clean up pointer_metrics_recorder_ and stylus_metrics_recorder_

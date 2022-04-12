@@ -349,6 +349,8 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
 
   ReportDwellTime();
 
+  ReportUserClickesAndPresses();
+
   // Unsubscribe from window activation events.
   activation_client_->RemoveObserver(this);
 
@@ -442,6 +444,20 @@ void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
   periods_since_activity_ = 0;
 }
 
+void DemoSessionMetricsRecorder::OnMouseEvent(ui::MouseEvent* event) {
+  // If event type is mouse/trackpad clicking, increase the metric by one.
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
+    user_clicks_and_presses_++;
+  }
+}
+
+void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
+  // If event type is screen pressing, increase the metric by one.
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
+    user_clicks_and_presses_++;
+  }
+}
+
 void DemoSessionMetricsRecorder::StartRecording() {
   unique_apps_launched_recording_enabled_ = true;
   timer_->Start(FROM_HERE, kSamplePeriod, this,
@@ -501,6 +517,12 @@ void DemoSessionMetricsRecorder::ReportDwellTime() {
   }
   first_user_activity_ = base::TimeTicks();
   last_user_activity_ = base::TimeTicks();
+}
+
+void DemoSessionMetricsRecorder::ReportUserClickesAndPresses() {
+  UMA_HISTOGRAM_COUNTS_1000(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric,
+      user_clicks_and_presses_);
 }
 
 }  // namespace ash
