@@ -328,6 +328,8 @@ void WorkletAnimation::play(ExceptionState& exception_state) {
       InvalidateCompositingState();
       return;
     }
+  } else {
+    DCHECK(!IsCurrentTimeInitialized());
   }
 
   String failure_message;
@@ -341,7 +343,6 @@ void WorkletAnimation::play(ExceptionState& exception_state) {
   // While animation is pending, it hold time at Zero, see:
   // https://drafts.csswg.org/web-animations-1/#playing-an-animation-section
   SetPlayState(Animation::kPending);
-  DCHECK(!IsCurrentTimeInitialized());
   SetCurrentTime(InitialCurrentTime());
   has_started_ = true;
 
@@ -390,10 +391,10 @@ void WorkletAnimation::pause(ExceptionState& exception_state) {
 
   // If animation is playing then we should hold the current time
   // otherwise hold zero.
+  SetPlayState(Animation::kPaused);
   absl::optional<base::TimeDelta> new_current_time =
       IsCurrentTimeInitialized() ? CurrentTime() : InitialCurrentTime();
-
-  SetPlayState(Animation::kPaused);
+  DCHECK(new_current_time);
   SetCurrentTime(new_current_time);
 }
 
@@ -522,6 +523,8 @@ bool WorkletAnimation::CheckCanStart(String* failure_message) {
 void WorkletAnimation::SetCurrentTime(
     absl::optional<base::TimeDelta> seek_time) {
   DCHECK(timeline_);
+  DCHECK(seek_time || play_state_ == Animation::kIdle ||
+         play_state_ == Animation::kUnset);
   // The procedure either:
   // 1) updates the hold time (for paused animations, non-existent or inactive
   //    timeline)
@@ -581,6 +584,7 @@ void WorkletAnimation::StartOnMain() {
   running_on_main_thread_ = true;
   absl::optional<base::TimeDelta> current_time =
       IsCurrentTimeInitialized() ? CurrentTime() : InitialCurrentTime();
+  DCHECK(current_time);
   SetPlayState(Animation::kRunning);
   SetCurrentTime(current_time);
 }
