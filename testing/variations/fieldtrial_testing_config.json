@@ -4929,27 +4929,49 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerender_20220125",
+                    "name": "EnabledPrerenderDUIAndDSE_20220412",
                     "enable_features": [
-                        "OmniboxTriggerForPrerender2"
+                        "OmniboxTriggerForPrerender2",
+                        "SupportSearchSuggestionForPrerender2"
                     ],
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch"
                     ]
                 },
                 {
-                    "name": "EnabledPrefetch_20220125",
+                    "name": "EnabledPrerenderDUI_20220412",
                     "enable_features": [
-                        "OmniboxTriggerForNoStatePrefetch"
-                    ],
-                    "disable_features": [
                         "OmniboxTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "Disabled_20220125",
+                    ],
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                },
+                {
+                    "name": "EnabledPrefetchDUIControl_20220412",
+                    "enable_features": [
+                        "OmniboxTriggerForNoStatePrefetch"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForPrerender2",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                },
+                {
+                    "name": "DisabledDUI_20220412",
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "OmniboxTriggerForPrerender2",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                },
+                {
+                    "name": "EnabledPrerenderDSE_20220412",
+                    "enable_features": [
+                        "SupportSearchSuggestionForPrerender2"
+                    ],
+                    "disable_features": [
                         "OmniboxTriggerForPrerender2"
                     ]
                 }
