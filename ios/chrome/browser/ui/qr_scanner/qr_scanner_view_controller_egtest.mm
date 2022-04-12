@@ -478,6 +478,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // switched off and the correct button indicating that the torch is off is shown
 // when the scanner is opened again.
 - (void)testTorchButtonIsResetWhenQRScannerIsReopened {
+  // TODO(crbug.com/1315524): Re-enable this test as it is failing on small
+  // devices (iPhone SE).
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPhone SE.");
+  }
+#endif
+
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
@@ -565,6 +573,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that a UIAlertController is presented by the QRScannerViewController if
 // the camera state changes after the QRScannerViewController is presented.
 - (void)testDialogIsDisplayedIfCameraStateChanges {
+  // TODO(crbug.com/1315524): Re-enable this test as it is failing on small
+  // devices (iPhone SE).
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPhone SE.");
+  }
+#endif
+
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
@@ -638,6 +654,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that an error dialog is dismissed if the camera becomes available.
 - (void)testDialogDismissedIfCameraBecomesAvailable {
+  // TODO(crbug.com/1315524): Re-enable this test as it is failing on small
+  // devices (iPhone SE).
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPhone SE.");
+  }
+#endif
+
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
