@@ -10,6 +10,8 @@ import android.content.Context;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
@@ -30,11 +32,12 @@ import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
 /**
  * Provides default implementations of {@link AssistantStaticDependencies} for WebLayer.
  */
+@JNINamespace("autofill_assistant")
 public class WebLayerAssistantStaticDependencies implements AssistantStaticDependencies {
     @Override
     public long createNative() {
-        // TODO(b/222671580): Implement
-        return 0;
+        return WebLayerAssistantStaticDependenciesJni.get().init(
+                new WebLayerAssistantStaticDependencies());
     }
 
     @Override
@@ -122,5 +125,10 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     public AssistantEditorFactory createEditorFactory() {
         // TODO(b/222671580): Implement
         return null;
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(AssistantStaticDependencies staticDependencies);
     }
 }

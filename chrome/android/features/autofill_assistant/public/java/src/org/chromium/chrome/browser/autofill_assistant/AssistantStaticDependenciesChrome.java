@@ -43,8 +43,6 @@ import org.chromium.ui.util.AccessibilityUtil;
  */
 @JNINamespace("autofill_assistant")
 public class AssistantStaticDependenciesChrome implements AssistantStaticDependencies {
-    private long mNativePointer;
-
     @Override
     public long createNative() {
         return AssistantStaticDependenciesChromeJni.get().init(
