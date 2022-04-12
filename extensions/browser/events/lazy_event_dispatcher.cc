@@ -85,16 +85,25 @@ bool LazyEventDispatcher::QueueEventDispatch(
   // to avoid lifetime issues. Use a separate copy of the event args, so they
   // last until the event is dispatched.
   if (!dispatched_event->will_dispatch_callback.is_null()) {
+    std::unique_ptr<base::Value::List> modified_event_args;
+    mojom::EventFilteringInfoPtr modified_event_filter_info;
     if (!dispatched_event->will_dispatch_callback.Run(
             dispatch_context.browser_context(),
             // The only lazy listeners belong to an extension's background
             // context (either an event page or a service worker), which are
             // always BLESSED_EXTENSION_CONTEXTs
             extensions::Feature::BLESSED_EXTENSION_CONTEXT, extension,
-            dispatched_event.get(), listener_filter)) {
+            listener_filter, &modified_event_args,
+            &modified_event_filter_info)) {
       // The event has been canceled.
       return true;
     }
+    if (modified_event_args) {
+      dispatched_event->event_args = base::ListValue::From(
+          std::make_unique<base::Value>(std::move(*modified_event_args)));
+    }
+    if (modified_event_filter_info)
+      dispatched_event->filter_info = std::move(modified_event_filter_info);
     // Ensure we don't call it again at dispatch time.
     dispatched_event->will_dispatch_callback.Reset();
   }

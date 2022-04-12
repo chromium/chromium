@@ -48,11 +48,13 @@ bool CanUseDeprecatedAudioApi(const Extension* extension) {
       .is_available();
 }
 
-bool CanReceiveDeprecatedAudioEvent(content::BrowserContext* browser_context,
-                                    Feature::Context target_context,
-                                    const Extension* extension,
-                                    Event* event,
-                                    const base::DictionaryValue* filter) {
+bool CanReceiveDeprecatedAudioEvent(
+    content::BrowserContext* browser_context,
+    Feature::Context target_context,
+    const Extension* extension,
+    const base::DictionaryValue* filter,
+    std::unique_ptr<base::Value::List>* event_args,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   return CanUseDeprecatedAudioApi(extension);
 }
 

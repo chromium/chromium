@@ -64,12 +64,14 @@ bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
 
 // Returns true if the given extension has permission to receive events
 // regarding this device.
-bool WillDispatchDeviceEvent(const device::mojom::UsbDeviceInfo& device_info,
-                             content::BrowserContext* browser_context,
-                             Feature::Context target_context,
-                             const Extension* extension,
-                             Event* event,
-                             const base::DictionaryValue* listener_filter) {
+bool WillDispatchDeviceEvent(
+    const device::mojom::UsbDeviceInfo& device_info,
+    content::BrowserContext* browser_context,
+    Feature::Context target_context,
+    const Extension* extension,
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::Value::List>* event_args_out,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   // Check install-time and optional permissions.
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
       UsbDevicePermission::CheckParam::ForUsbDevice(extension, device_info);
