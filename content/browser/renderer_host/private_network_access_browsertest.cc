@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,8 @@
 #include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_byte_range.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -222,6 +225,108 @@ class RequestObserver {
   std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
 };
 
+// Removes `prefix` from the start of `str`, if present.
+// Returns nullopt otherwise.
+absl::optional<base::StringPiece> StripPrefix(base::StringPiece str,
+                                              base::StringPiece prefix) {
+  if (!base::StartsWith(str, prefix)) {
+    return absl::nullopt;
+  }
+
+  return str.substr(prefix.size());
+}
+
+// Returns a pointer to the value of the `header` header in `request`, if any.
+// Returns nullptr otherwise.
+const std::string* FindRequestHeader(
+    const net::test_server::HttpRequest& request,
+    base::StringPiece header) {
+  const auto it = request.headers.find(header);
+  if (it == request.headers.end()) {
+    return nullptr;
+  }
+
+  return &it->second;
+}
+
+// Returns the `Content-Range` header value for a given `range` of bytes out of
+// the given `total_size` number of bytes.
+std::string GetContentRangeHeader(const net::HttpByteRange& range,
+                                  size_t total_size) {
+  std::string first = base::NumberToString(range.first_byte_position());
+  std::string last = base::NumberToString(range.last_byte_position());
+  std::string total = base::NumberToString(total_size);
+  return base::StrCat({"bytes ", first, "-", last, "/", total});
+}
+
+// An `EmbeddedTestServer` request handler function.
+//
+// Knows how to respond to CORS and PNA preflight requests, as well as regular
+// and range requests.
+//
+// Route: /echorange?<body>
+std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
+    const net::test_server::HttpRequest& request) {
+  absl::optional<base::StringPiece> query =
+      StripPrefix(request.relative_url, "/echorange?");
+  if (!query) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+  constexpr std::pair<base::StringPiece, base::StringPiece> kCopiedHeaders[] = {
+      {"Origin", "Access-Control-Allow-Origin"},
+      {"Access-Control-Request-Private-Network",
+       "Access-Control-Allow-Private-Network"},
+      {"Access-Control-Request-Headers", "Access-Control-Allow-Headers"},
+  };
+  for (const auto& pair : kCopiedHeaders) {
+    const std::string* value = FindRequestHeader(request, pair.first);
+    if (value) {
+      response->AddCustomHeader(pair.second, *value);
+    }
+  }
+
+  // No body for a preflight response.
+  if (request.method == net::test_server::METHOD_OPTIONS) {
+    response->AddCustomHeader("Access-Control-Max-Age", "60");
+    return response;
+  }
+
+  // Cache-Control: max-age=X does not work for range request caching. Use a
+  // strong ETag instead, along with a last modified date. Both are required.
+  response->AddCustomHeader("ETag", "foo");
+  response->AddCustomHeader("Last-Modified", "Fri, 1 Apr 2022 12:34:56 UTC");
+
+  const std::string* range_header = FindRequestHeader(request, "Range");
+  if (!range_header) {
+    // Not a range request. Respond with 200 and the whole query as the body.
+    response->set_content(*query);
+    return response;
+  }
+
+  std::vector<net::HttpByteRange> ranges;
+  if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
+      ranges.size() != 1) {
+    response->set_code(net::HTTP_BAD_REQUEST);
+    return response;
+  }
+
+  net::HttpByteRange& range = ranges[0];
+  if (!range.ComputeBounds(query->size())) {
+    response->set_code(net::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
+    return response;
+  }
+
+  response->set_code(net::HTTP_PARTIAL_CONTENT);
+  response->AddCustomHeader("Content-Range",
+                            GetContentRangeHeader(range, query->size()));
+  response->set_content(query->substr(range.first_byte_position(),
+                                      range.last_byte_position() + 1));
+  return response;
+}
+
 // A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
 //
 // NOTE(titouan): The IP address space overrides CLI switch is copied to utility
@@ -242,6 +347,7 @@ class FakeAddressSpaceServer {
 
     server_.SetConnectionListener(&connection_counter_);
     server_.RegisterRequestMonitor(request_observer_.BindCallback());
+    server_.RegisterRequestHandler(base::BindRepeating(&HandleRangeRequest));
     server_.AddDefaultHandlers(test_data_path);
     StartServer(server_);
 
@@ -3359,6 +3465,53 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, Redirect) {
       SecureLocalURL("/server-redirect?" + SecurePrivateURL(kCorsPath).spec());
 
   EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+}
+
+// This test verifies that if a request is made for a resource of which a
+// partial prefix range of bytes was cached, a preflight is correctly sent for
+// the non-cached portion, and the renderer does not crash.
+// Regression test for https://crbug.com/1279376.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, PrefixRangePreflight) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const GURL url = SecureLocalURL("/echorange?this-is-a-test");
+
+  constexpr base::StringPiece kFetchRangeScript = R"(
+    (async () => {
+      const url = $1;
+      const range = $2;
+
+      const headers = {};
+      if (range) {
+        headers["Range"] = range;
+      }
+
+      const response = await fetch(url, { headers });
+      const body = await response.text();
+      return body;
+    })()
+  )";
+
+  // Cache a portion of the target resource.
+  EXPECT_EQ("this", EvalJs(root_frame_host(),
+                           JsReplace(kFetchRangeScript, url, "bytes=0-3")));
+
+  // The server received a preflight request, followed by a GET request.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(net::test_server::METHOD_OPTIONS,
+                          net::test_server::METHOD_GET));
+
+  // Fetch the whole resource.
+  EXPECT_EQ(
+      "this-is-a-test",
+      EvalJs(root_frame_host(), JsReplace(kFetchRangeScript, url, "bytes=0-")));
+
+  // The server received a single GET request for the non-cached suffix. The
+  // preflight response was previously cached, so there is no second preflight.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+      ElementsAre(net::test_server::METHOD_OPTIONS,
+                  net::test_server::METHOD_GET, net::test_server::METHOD_GET));
 }
 
 // =========================

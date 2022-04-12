@@ -36,12 +36,15 @@ enum HttpMethod {
   METHOD_OPTIONS,
 };
 
-// Represents a HTTP request. Since it can be big, use scoped_ptr to pass it
-// instead of copying. However, the struct is copyable so tests can save and
+// Represents a HTTP request. Since it can be big, `use std::unique_ptr` to pass
+// it instead of copying. However, the struct is copyable so tests can save and
 // examine a HTTP request.
 struct HttpRequest {
   struct CaseInsensitiveStringComparator {
-    bool operator()(const std::string& left, const std::string& right) const {
+    // Allow using StringPiece instead of string for `find()`.
+    using is_transparent = void;
+
+    bool operator()(base::StringPiece left, base::StringPiece right) const {
       return base::CompareCaseInsensitiveASCII(left, right) < 0;
     }
   };
