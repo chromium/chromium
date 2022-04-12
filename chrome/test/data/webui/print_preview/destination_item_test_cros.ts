@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -63,8 +63,7 @@ suite(destination_item_test_cros.suiteName, function() {
         document.body.querySelector<PrintPreviewDestinationListItemElement>(
             '#listItem')!;
     listItem.destination = new Destination(
-        'One', DestinationOrigin.CROS, 'Destination One',
-        DestinationConnectionStatus.ONLINE, {description: 'ABC'});
+        'One', DestinationOrigin.CROS, 'Destination One', {description: 'ABC'});
     flush();
   });
 
@@ -88,7 +87,7 @@ suite(destination_item_test_cros.suiteName, function() {
 
         listItem.destination = new Destination(
             'Two', DestinationOrigin.CROS, 'Destination Two',
-            DestinationConnectionStatus.ONLINE, {description: 'ABC'});
+            {description: 'ABC'});
 
         return waitBeforeNextRender(listItem).then(() => {
           assertEquals('print-preview:printer-status-red', icon.icon);
@@ -111,7 +110,7 @@ suite(destination_item_test_cros.suiteName, function() {
         // after the request for the original destination was already sent out.
         listItem.destination = new Destination(
             'Two', DestinationOrigin.CROS, 'Destination Two',
-            DestinationConnectionStatus.ONLINE, {description: 'ABC'});
+            {description: 'ABC'});
 
         return firstDestinationStatusRequestPromise.then(() => {
           // PrinterState should stay the same because the destination in the

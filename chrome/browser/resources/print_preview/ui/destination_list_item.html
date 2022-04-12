@@ -69,10 +69,6 @@
     font-style: italic;
   }
 
-  :host([stale_]) :-webkit-any(iron-icon, .name, .connection-status) {
-    opacity: 0.4;
-  }
-
 <if expr="chromeos_ash or chromeos_lacros">
   :host([is-destination-cros-local_]) .connection-status {
     color: var(--google-red-600);
@@ -89,9 +85,11 @@
 <span class="search-hint searchable" hidden="[[!searchHint_]]">
   [[searchHint_]]
 </span>
+<if expr="chromeos_ash or chromeos_lacros">
 <span class="connection-status" hidden="[[!statusText_]]">
   [[statusText_]]
 </span>
+</if>
 <span class="extension-controlled-indicator"
     hidden$="[[!destination.isExtension]]">
   <span class="extension-name searchable">

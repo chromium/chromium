@@ -220,9 +220,6 @@
     <message name="IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL" desc="Aria label for the dropdown option to view more print destinations in a dialog. Expansion of SEE_MORE above to add context for screen readers." meaning="Label text">
       See more destinations
     </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE" desc="Shown when printer is currently offline.">
-      Currently offline
-    </message>
     <message name="IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP" desc="Tooltip for the icon shown in print destination list next to print destination provided by an extension.">
       Documents you send to print via <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph> can be read by <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph>.
     </message>

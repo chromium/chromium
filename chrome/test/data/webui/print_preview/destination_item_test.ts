@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -12,8 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 const destination_item_test = {
   suiteName: 'DestinationItemTest',
   TestNames: {
-    Online: 'online',
-    Offline: 'offline',
+    NoQuery: 'no query',
     QueryName: 'query name',
     QueryDescription: 'query description',
   },
@@ -35,58 +33,20 @@ suite(destination_item_test.suiteName, function() {
     // Create destination
     item.destination = new Destination(
         printerId, DestinationOrigin.EXTENSION, printerName,
-        DestinationConnectionStatus.ONLINE,
         {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     item.searchQuery = null;
     document.body.appendChild(item);
   });
 
-  // Test that the destination is displayed correctly for the basic case of an
-  // online destination with no search query.
-  test(assert(destination_item_test.TestNames.Online), function() {
+  // Test that the destination is displayed correctly for the basic case of a
+  // destination with no search query.
+  test(assert(destination_item_test.TestNames.NoQuery), function() {
     const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals('1', window.getComputedStyle(name).opacity);
     assertEquals(
         '',
         item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
-    assertEquals(
-        '',
-        item.shadowRoot!.querySelector(
-                            '.connection-status')!.textContent!.trim());
-    assertFalse(item.shadowRoot!
-                    .querySelector<HTMLElement>(
-                        '.extension-controlled-indicator')!.hidden);
-  });
-
-  // Test that the destination is opaque and the correct status shows up if
-  // the destination is stale.
-  test(assert(destination_item_test.TestNames.Offline), function() {
-    const now = new Date();
-    const twoMonthsAgo = new Date(now.getTime());
-    let month = twoMonthsAgo.getMonth() - 2;
-    if (month < 0) {
-      month = month + 12;
-      twoMonthsAgo.setFullYear(now.getFullYear() - 1);
-    }
-    twoMonthsAgo.setMonth(month);
-    item.destination = new Destination(
-        printerId, DestinationOrigin.EXTENSION, printerName,
-        DestinationConnectionStatus.OFFLINE, {
-          extensionId: 'aaa111',
-          extensionName: 'myPrinterExtension',
-        });
-
-    const name = item.shadowRoot!.querySelector('.name')!;
-    assertEquals(printerName, name.textContent);
-    assertEquals('0.4', window.getComputedStyle(name).opacity);
-    assertEquals(
-        '',
-        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
-    assertEquals(
-        loadTimeData.getString('offline'),
-        item.shadowRoot!.querySelector(
-                            '.connection-status')!.textContent!.trim());
     assertFalse(item.shadowRoot!
                     .querySelector<HTMLElement>(
                         '.extension-controlled-indicator')!.hidden);
@@ -121,8 +81,7 @@ suite(destination_item_test.suiteName, function() {
       extensionName: 'myPrinterExtension',
     };
     item.destination = new Destination(
-        printerId, DestinationOrigin.EXTENSION, printerName,
-        DestinationConnectionStatus.ONLINE, params);
+        printerId, DestinationOrigin.EXTENSION, printerName, params);
     item.searchQuery = /(ABC)/ig;
 
     // No highlighting on name.

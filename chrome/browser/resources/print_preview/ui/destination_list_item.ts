@@ -62,21 +62,15 @@ export class PrintPreviewDestinationListItemElement extends
             'destination.printerStatusReason)',
       },
 
-      stale_: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
-
       searchHint_: String,
 
+      // <if expr="chromeos_ash or chromeos_lacros">
       statusText_: {
         type: String,
         computed:
             'computeStatusText_(destination, destination.printerStatusReason,' +
             'configurationStatus_)',
       },
-
-      // <if expr="chromeos_ash or chromeos_lacros">
 
       // Holds status of iron-media-query (prefers-color-scheme: dark).
       isDarkModeActive_: Boolean,
@@ -106,8 +100,7 @@ export class PrintPreviewDestinationListItemElement extends
   static get observers() {
     return [
       'onDestinationPropertiesChange_(' +
-          'destination.displayName, destination.isOffline, ' +
-          'destination.isExtension)',
+          'destination.displayName, destination.isExtension)',
       'updateHighlightsAndHint_(destination, searchQuery)',
       // <if expr="chromeos_ash or chromeos_lacros">
       'requestPrinterStatus_(destination.key)',
@@ -118,11 +111,10 @@ export class PrintPreviewDestinationListItemElement extends
   destination: Destination;
   searchQuery: RegExp|null;
   destinationIcon_: string;
-  private stale_: boolean;
   private searchHint_: string;
-  private statusText_: string;
 
   // <if expr="chromeos_ash or chromeos_lacros">
+  private statusText_: string;
   private isDarkModeActive_: boolean;
   private isDestinationCrosLocal_: boolean;
   private configurationStatus_: DestinationConfigStatus;
@@ -132,7 +124,6 @@ export class PrintPreviewDestinationListItemElement extends
 
   private onDestinationPropertiesChange_() {
     this.title = this.destination.displayName;
-    this.stale_ = this.destination.isOffline;
     if (this.destination.isExtension) {
       const icon =
           this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
@@ -198,38 +189,33 @@ export class PrintPreviewDestinationListItemElement extends
         'extensionDestinationIconTooltip', this.destination.extensionName);
   }
 
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * @return If the destination is a local CrOS printer, this returns
-   *    the error text associated with the printer status. For all other
-   *    printers this returns the connection status text.
+   *    the error text associated with the printer status.
    */
   private computeStatusText_(): string {
-    if (!this.destination) {
+    if (!this.destination ||
+        this.destination.origin !== DestinationOrigin.CROS) {
       return '';
     }
 
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (this.destination.origin === DestinationOrigin.CROS) {
-      // Don't show status text when destination is configuring.
-      if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
-        return '';
-      }
-
-      const printerStatusReason = this.destination.printerStatusReason;
-      if (printerStatusReason === null ||
-          printerStatusReason === PrinterStatusReason.NO_ERROR ||
-          printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
-        return '';
-      }
-
-      const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
-      return errorStringKey ? this.i18n(errorStringKey) : '';
+    // Don't show status text when destination is configuring.
+    if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
+      return '';
     }
-    // </if>
 
-    return this.destination.isOffline ? this.destination.connectionStatusText :
-                                        '';
+    const printerStatusReason = this.destination.printerStatusReason;
+    if (printerStatusReason === null ||
+        printerStatusReason === PrinterStatusReason.NO_ERROR ||
+        printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
+      return '';
+    }
+
+    const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
+    return errorStringKey ? this.i18n(errorStringKey) : '';
   }
+  // </if>
 
   private computeDestinationIcon_(): string {
     if (!this.destination) {

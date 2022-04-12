@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
@@ -14,7 +13,6 @@ import {selectOption} from './print_preview_test_utils.js';
 const destination_select_test = {
   suiteName: 'DestinationSelectTest',
   TestNames: {
-    UpdateStatus: 'update status',
     ChangeIcon: 'change icon',
   },
 };
@@ -46,16 +44,9 @@ suite(destination_select_test.suiteName, function() {
   // |recentDestinationList|.
   function populateRecentDestinationList() {
     recentDestinationList = [
+      new Destination('ID1', DestinationOrigin.LOCAL, 'One'),
       new Destination(
-          'ID1', DestinationOrigin.LOCAL, 'One',
-          DestinationConnectionStatus.ONLINE),
-      new Destination(
-          'ID2', DestinationOrigin.EXTENSION, 'Two',
-          DestinationConnectionStatus.OFFLINE,
-          {extensionId: '222', extensionName: 'Extension2'}),
-      new Destination(
-          'ID4', DestinationOrigin.LOCAL, 'Four',
-          DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true}),
+          'ID4', DestinationOrigin.LOCAL, 'Four', {isEnterprisePrinter: true}),
     ];
   }
 
@@ -67,12 +58,10 @@ suite(destination_select_test.suiteName, function() {
     assertEquals(expected, icon);
   }
 
-  /**
-   * Test that changing different destinations results in the correct icon being
-   * shown.
-   * @return Promise that resolves when the test finishes.
-   */
-  function testChangeIcon(): Promise<void> {
+  test(assert(destination_select_test.TestNames.ChangeIcon), function() {
+    populateRecentDestinationList();
+    destinationSelect.recentDestinationList = recentDestinationList;
+
     const destination = recentDestinationList[0]!;
     destinationSelect.destination = destination;
     destinationSelect.updateDestination();
@@ -89,62 +78,8 @@ suite(destination_select_test.suiteName, function() {
       compareIcon(selectEl, enterpriseIcon);
 
       // Update destination.
-      destinationSelect.destination = recentDestinationList[2]!;
+      destinationSelect.destination = recentDestinationList[1]!;
       compareIcon(selectEl, enterpriseIcon);
     });
-  }
-
-  /**
-   * Test that changing different destinations results in the correct status
-   * being shown.
-   */
-  function testUpdateStatus() {
-    loadTimeData.overrideValues({
-      offline: 'offline',
-    });
-
-    assertFalse(destinationSelect.shadowRoot!
-                    .querySelector<HTMLElement>('.throbber-container')!.hidden);
-    assertTrue(destinationSelect.shadowRoot!
-                   .querySelector<HTMLSelectElement>('.md-select')!.hidden);
-
-    destinationSelect.loaded = true;
-    assertTrue(destinationSelect.shadowRoot!
-                   .querySelector<HTMLElement>('.throbber-container')!.hidden);
-    assertFalse(destinationSelect.shadowRoot!
-                    .querySelector<HTMLSelectElement>('.md-select')!.hidden);
-
-    const additionalInfoEl =
-        destinationSelect.shadowRoot!.querySelector<HTMLElement>(
-            '.destination-additional-info')!;
-    const statusEl = destinationSelect.shadowRoot!.querySelector<HTMLElement>(
-        '.destination-status')!;
-
-    destinationSelect.destination = recentDestinationList[0]!;
-    destinationSelect.updateDestination();
-    assertTrue(additionalInfoEl.hidden);
-    assertEquals('', statusEl.innerHTML);
-
-    destinationSelect.destination = recentDestinationList[1]!;
-    destinationSelect.updateDestination();
-    assertFalse(additionalInfoEl.hidden);
-    assertEquals('offline', statusEl.innerHTML);
-
-    destinationSelect.destination = recentDestinationList[2]!;
-    destinationSelect.updateDestination();
-    assertTrue(additionalInfoEl.hidden);
-    assertEquals('', statusEl.innerHTML);
-  }
-
-  test(assert(destination_select_test.TestNames.UpdateStatus), function() {
-    populateRecentDestinationList();
-    return testUpdateStatus();
-  });
-
-  test(assert(destination_select_test.TestNames.ChangeIcon), function() {
-    populateRecentDestinationList();
-    destinationSelect.recentDestinationList = recentDestinationList;
-
-    return testChangeIcon();
   });
 });

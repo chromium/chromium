@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, NativeLayerCrosImpl, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DestinationStore, DestinationStoreEventType, NativeLayerCrosImpl, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -86,9 +86,7 @@ suite(destination_search_test_chromeos.suiteName, function() {
    * @param destId The ID for the destination.
    */
   function requestSetup(destId: string) {
-    const dest = new Destination(
-        destId, DestinationOrigin.CROS, 'displayName',
-        DestinationConnectionStatus.ONLINE);
+    const dest = new Destination(destId, DestinationOrigin.CROS, 'displayName');
 
     // Add the destination to the list.
     simulateDestinationSelect(dest);

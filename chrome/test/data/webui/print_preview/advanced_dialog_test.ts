@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, PrintPreviewAdvancedSettingsDialogElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, PrintPreviewAdvancedSettingsDialogElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,9 +34,8 @@ suite(advanced_dialog_test.suiteName, function() {
 
   setup(function() {
     // Create destination
-    destination = new Destination(
-        printerId, DestinationOrigin.EXTENSION, printerName,
-        DestinationConnectionStatus.ONLINE);
+    destination =
+        new Destination(printerId, DestinationOrigin.EXTENSION, printerName);
     document.body.innerHTML = '';
     const model: PrintPreviewModelElement =
         document.createElement('print-preview-model');

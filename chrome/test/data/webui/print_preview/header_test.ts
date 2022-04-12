@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -42,7 +42,6 @@ suite(header_test.suiteName, function() {
 
     header.destination = new Destination(
         'FooDevice', DestinationOrigin.EXTENSION, 'FooName',
-        DestinationConnectionStatus.ONLINE,
         {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     header.state = State.READY;
     header.managed = false;
@@ -56,8 +55,7 @@ suite(header_test.suiteName, function() {
         'destination',
         new Destination(
             GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
-            loadTimeData.getString('printToPDF'),
-            DestinationConnectionStatus.ONLINE));
+            loadTimeData.getString('printToPDF')));
   }
 
   // Tests that the 4 different messages (non-virtual printer singular and

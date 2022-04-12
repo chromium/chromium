@@ -1013,12 +1013,8 @@ var PrintPreviewDestinationItemTest = class extends PrintPreviewTest {
   }
 };
 
-TEST_F('PrintPreviewDestinationItemTest', 'Online', function() {
-  this.runMochaTest(destination_item_test.TestNames.Online);
-});
-
-TEST_F('PrintPreviewDestinationItemTest', 'Offline', function() {
-  this.runMochaTest(destination_item_test.TestNames.Offline);
+TEST_F('PrintPreviewDestinationItemTest', 'NoQuery', function() {
+  this.runMochaTest(destination_item_test.TestNames.NoQuery);
 });
 
 TEST_F('PrintPreviewDestinationItemTest', 'QueryName', function() {
@@ -1321,10 +1317,6 @@ var PrintPreviewDestinationSelectTest = class extends PrintPreviewTest {
     return destination_select_test.suiteName;
   }
 };
-
-TEST_F('PrintPreviewDestinationSelectTest', 'UpdateStatus', function() {
-  this.runMochaTest(destination_select_test.TestNames.UpdateStatus);
-});
 
 TEST_F('PrintPreviewDestinationSelectTest', 'ChangeIcon', function() {
   this.runMochaTest(destination_select_test.TestNames.ChangeIcon);

@@ -6,7 +6,6 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 // <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
@@ -33,17 +32,6 @@ export enum DestinationOrigin {
   PRIVET = 'privet',
   EXTENSION = 'extension',
   CROS = 'chrome_os',
-}
-
-/**
- * Enumeration of the connection statuses of printer destinations.
- */
-export enum DestinationConnectionStatus {
-  DORMANT = 'DORMANT',
-  OFFLINE = 'OFFLINE',
-  ONLINE = 'ONLINE',
-  UNKNOWN = 'UNKNOWN',
-  UNREGISTERED = 'UNREGISTERED',
 }
 
 /**
@@ -164,11 +152,6 @@ export class Destination {
   private description_: string;
 
   /**
-   * Connection status of the destination.
-   */
-  private connectionStatus_: DestinationConnectionStatus;
-
-  /**
    * Extension ID for extension managed printers.
    */
   private extensionId_: string;
@@ -229,7 +212,6 @@ export class Destination {
 
   constructor(
       id: string, origin: DestinationOrigin, displayName: string,
-      connectionStatus: DestinationConnectionStatus,
       params?: DestinationOptionalParams) {
     this.id_ = id;
     this.origin_ = origin;
@@ -237,7 +219,6 @@ export class Destination {
     this.tags_ = (params && params.tags) || [];
     this.isEnterprisePrinter_ = (params && params.isEnterprisePrinter) || false;
     this.description_ = (params && params.description) || '';
-    this.connectionStatus_ = connectionStatus;
     this.extensionId_ = (params && params.extensionId) || '';
     this.extensionName_ = (params && params.extensionName) || '';
     this.provisionalType_ =
@@ -433,34 +414,12 @@ export class Destination {
 
   // </if>
 
-  get connectionStatus(): DestinationConnectionStatus {
-    return this.connectionStatus_;
-  }
-
-  set connectionStatus(status: DestinationConnectionStatus) {
-    this.connectionStatus_ = status;
-  }
-
-  /** @return Whether the destination is considered offline. */
-  get isOffline(): boolean {
-    return [
-      DestinationConnectionStatus.OFFLINE, DestinationConnectionStatus.DORMANT
-    ].includes(this.connectionStatus_);
-  }
-
   /** @return Whether the destination is ready to be selected. */
   get readyForSelection(): boolean {
     return (!(isChromeOS || isLacros) ||
             this.origin_ !== DestinationOrigin.CROS ||
             this.capabilities_ !== null) &&
         !this.isProvisional;
-  }
-
-  /**
-   * @return Human readable status for a destination that is offline.
-   */
-  get connectionStatusText(): string {
-    return this.isOffline ? loadTimeData.getString('offline') : '';
   }
 
   /** @return Path to the SVG for the destination's icon. */
@@ -470,9 +429,6 @@ export class Destination {
       return 'print-preview:save-to-drive';
     }
     // </if>
-    if (this.id_ === GooglePromotedDestinationId.DOCS) {
-      return 'print-preview:save-to-drive';
-    }
     if (this.id_ === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }
