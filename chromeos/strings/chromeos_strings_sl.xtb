@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> je bil izbran</translation>
 <translation id="2695514675076754339">Vnesite 8-mestno kodo za odklepanje</translation>
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
+<translation id="2717139507051041123">Omogoči način temne barve</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2751739896257479635">2. faza preverjanja pristnosti EAP</translation>
 <translation id="2783010256799387990">USPEŠNO</translation>
@@ -209,6 +210,7 @@
 <translation id="3488065109653206955">Delno aktivirano</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3557205324756024651">Lokalna identiteta (izbirno)</translation>
 <translation id="3565064564551103223">Dovoljeni IP-ji</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
@@ -375,6 +377,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5252456968953390977">Gostovanje</translation>
+<translation id="5257811368506016604">Omogoči način svetle barve</translation>
 <translation id="5264277876637023664">Zaženi preizkus CPE-ja</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Znova zaženi rutine</translation>
@@ -485,6 +488,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Šibka (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Odpri nastavitve računa</translation>
 <translation id="6456394469623773452">Dober</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
@@ -527,6 +531,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
 <translation id="6935486296377631201">Ohranjevalnik zaslona</translation>
+<translation id="6943893908656559156">Oddaljena identiteta (izbirno)</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -567,6 +572,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Spremeni ohranjevalnik zaslona</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +595,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="7656388927906093505">Naprava je miška.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7665800271478495366">Spremeni avatar</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -616,6 +623,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Omogoči način samodejne barve</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>

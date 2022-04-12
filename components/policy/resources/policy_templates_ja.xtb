@@ -1737,6 +1737,7 @@
 <translation id="2957506574938329824">すべてのサイトに対して Web Bluetooth API による Bluetooth デバイスへのアクセスを許可しない</translation>
 <translation id="2957513448235202597">「<ph name="HTTP_NEGOTIATE" />」認証用のアカウントの種類</translation>
 <translation id="2959469725686993410">タイムゾーンを解決する際、常に Wi-Fi アクセス ポイントをサーバーに送信する</translation>
+<translation id="2959527429632925933">このポリシーが存在しない場合（管理対象外ユーザーの場合など）、Terminal System App の SSH（Secure Shell）発信クライアント接続機能が有効になっています（デフォルトで True）。管理対象ユーザーで、ポリシーが未設定か無効になっている場合、Terminal でこの機能は無効になっています。ポリシーを有効に設定すると、管理対象ユーザーが Terminal の発信クライアント SSH 接続を作成できるようになります。</translation>
 <translation id="2959898425599642200">プロキシ バイパス ルール</translation>
 <translation id="2960013482187484833">一番最後に使用したプリンタを印刷プレビューのデフォルトの選択肢とする</translation>
 <translation id="2960128438010718932">新しいアップデートの段階的な適用スケジュール</translation>
@@ -3446,6 +3447,7 @@
 <translation id="4988291787868618635">アイドル時間に到達したときに行われる操作</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証に使用しない。</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> のサービス分析を許可する</translation>
+<translation id="4996161752665479028">Terminal System App の SSH を有効にする</translation>
 <translation id="4997074784107449343">「画像として印刷する」オプションが使用可能な場合、「画像として印刷する」オプションは PDF ドキュメントの印刷プレビューでデフォルトで設定されません。</translation>
 <translation id="500149597848135831">すべてのバリエーションを有効にします</translation>
 <translation id="5017369989680827157">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
@@ -4602,6 +4604,7 @@
 <translation id="6368403635025849609">これらのサイトの JavaScript を許可する</translation>
 <translation id="6371561334154580937">最後のウィンドウを閉じたときにログアウト ダイアログを表示する</translation>
 <translation id="6372105930898423193">AppCache 機能がデフォルトで無効になっている場合でも有効化を許可します。</translation>
+<translation id="6376540107659524656">Terminal System App の SSH を無効にする</translation>
 <translation id="6376659517206731212">必須に設定可能</translation>
 <translation id="6377031865393559909">デスク テンプレートの使用をユーザーに許可する</translation>
 <translation id="6378076389057087301">音声操作を電源管理に関連付けるかどうかを指定する</translation>
@@ -5642,6 +5645,7 @@
 <translation id="7529332889403151669">デバイスがスリープ画面（暗い画面）から復帰する際に全画面表示の警告を表示するかどうかを指定します。
 
       このポリシーを設定しないか True に設定した場合、パスワード入力の前に全画面表示を終了するようユーザーに警告が表示されます。このポリシーを False に設定した場合、警告は表示されません。</translation>
+<translation id="7531630046107845550">Terminal System App の SSH 発信クライアント接続を許可する</translation>
 <translation id="7534199150025803530">このポリシーは Android Google ドライブアプリには適用されません。モバイルデータ通信時に Google ドライブを使用できないようにするには、Android Google ドライブアプリのインストールを禁止する必要があります。</translation>
 <translation id="7538583957913002726">このポリシーはデフォルトでは有効に設定されています。このポリシーは、CPU のモデル名、アーキテクチャ、最大クロック速度（M96 以降では CPU の使用量と温度も）を報告するように登録済みのデバイスを制御します。
 

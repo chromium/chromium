@@ -143,7 +143,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> အုပ်စု၏ တစ်စိတ်တစ်ဒေသ</translation>
 <translation id="1130676589211693127">ညာဘက် ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
 <translation id="1133418583142946603">လက်ရှိတဘ်ကို ထည့်ရန်</translation>
-<translation id="1135971365523689618"><ph name="APP_TYPE" /> ကို <ph name="INSTALL_SOURCE" /> မှ ထည့်သွင်းထားသည်</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />။ <ph name="EMOJI_COUNT" /> မှ <ph name="EMOJI_INDEX" /> ။</translation>
 <translation id="1136712381129578788">ပင်နံပါတ်အမှားကို အကြိမ်များစွာထည့်သဖြင့် လုံခြုံရေးကီးကို လော့ခ်ချလိုက်ပါသည်။ ၎င်းကိုဖွင့်ရန် ဖယ်ရှားပြီး ပြန်ထည့်သွင်းပါ။</translation>
 <translation id="1137589305610962734">ယာယီဒေတာ</translation>
@@ -2269,7 +2268,6 @@
 <translation id="3151616662954589507">ဆယ်လ်ဖီ ကင်မရာ</translation>
 <translation id="3151786313568798007">အနေအထား</translation>
 <translation id="3152356229013609796">သင့်ဖုန်း၏ အကြောင်းကြားချက်များကို ကြည့်ရှုခြင်း၊ ပယ်ဖျက်ခြင်း၊ စာပြန်ခြင်းများ ပြုလုပ်နိုင်သည်</translation>
-<translation id="3154429428035006212">အော့ဖ်လိုင်း ဖြစ်နေသည်မှာ တစ်လ ကျော်သွားပြီ</translation>
 <translation id="3157387275655328056">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3158033540161634471">သင်၏ လက်ဗွေကို စနစ်ထည့်သွင်းခြင်း</translation>
@@ -2343,6 +2341,7 @@
 <translation id="3254516606912442756">စံတော်ချိန် အလိုအလျောက် ရှာဖွေခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="3254715652085014625">သင့် Android ဖုန်းတွင် Chrome ဖွင့်ပြီး "ဆက်တင်များ &gt; စကားဝှက်များ &gt; ဖုန်းကို လုံခြုံရေးကီးအဖြစ် အသုံးပြုရန်" သို့သွား၍ ထိုနေရာရှိ လမ်းညွှန်ချက်များကို လိုက်ကြည့်ပါ။</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> သိမ်းထားသော ဒေတာများနှင့် ၎င်းအောက်တွင်ရှိသော ဝဘ်ဆိုက်မှန်သမျှကို ဖျက်ပစ်ပါမည်။ ၎င်းတွင် ကွတ်ကီးများ ပါဝင်သည်။ ဖွင့်ထားသော တဘ်များအပါအဝင် အဆိုပါဝဘ်ဆိုက်များမှ သင် ထွက်သွားပါမည်။</translation>
+<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ကို ခွင့်ပြုမလား။</translation>
 <translation id="3259723213051400722">ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3261268979727295785">စနစ်ထည့်သွင်းပြီးသွားသည့်အခါ ကလေးကြီးများအတွက် မိဘ အထိန်းအချုပ်များကို ထည့်သွင်းနိုင်သည်။ မိဘ အထိန်းအချုပ်များအကြောင်း အချက်အလက်များကို Explore အက်ပ်တွင် ရှာတွေ့နိုင်သည်။</translation>
 <translation id="3262986719682892278">ကြီးလွန်းနေသည်</translation>
@@ -3033,7 +3032,6 @@
 <translation id="3898233949376129212">စက်၏ ဘာသာစကား</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> က အောက်ပါတို့ကို ပြုလုပ်လိုသည်- <ph name="FIRST_PERMISSION" /> နှင့် <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">ကီးဘုတ်ကို ရွေးပါ</translation>
-<translation id="3899879303189199559">အော့ဖ်လိုင်း ဖြစ်နေသည်မှာ တစ်နှစ် ကျော်သွားပြီ</translation>
 <translation id="3900966090527141178">စကားဝှက်များကို တင်ပို့ရန်</translation>
 <translation id="3903187154317825986">အသင့်ပါ ကီးဘုတ်</translation>
 <translation id="3904326018476041253">တည်နေရာဝန်ဆောင်မှုများ</translation>
@@ -3249,6 +3247,7 @@
 <translation id="4102906002417106771">Powerwash ပြုလုပ်ရန်အတွက် ပြန်စရန်</translation>
 <translation id="4104163789986725820">တင်&amp;ပို့ရန်...</translation>
 <translation id="4107048419833779140">သိုလှောင်မှုပစ္စည်းကို ရှာဖွေရွေးထုတ်ပြီး ဖြုတ်ပါ</translation>
+<translation id="4108314971463891922">လိုက်ကြည့်ရန်</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) သို့ဝင်းဒိုးအား ရွှေ့ရန်</translation>
 <translation id="4110485659976215879">သတိပေးချက် ပြန်ယူခြင်း</translation>
 <translation id="4110490973560452005">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ− <ph name="FILE_NAME" />။ ဒေါင်းလုဒ်များ ဘားဧရိယာသို့ သွားရန် Shift+F6 နှိပ်ပါ။</translation>
@@ -3344,6 +3343,7 @@
 <translation id="4211904048067111541">Android အက်ပ်များနှင့် သုံးခြင်းကို ရပ်ရန်</translation>
 <translation id="42126664696688958">တင်ပို့ရန်</translation>
 <translation id="42137655013211669">ဤရင်းမြစ်သို့ ဝင်ရောက်သုံးခြင်းအား ဆာဗာမှ တားမြစ်ထား၏</translation>
+<translation id="4217558091331485702">မဖွင့်မီ စကင်ဖတ်ပါ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
 <translation id="4218081191298393750">ဤတဘ်ကိုအသံပိတ်ရန် စပီကာသင်္ကေတကို နှိပ်နိုင်သည်</translation>
 <translation id="4219558185499589032">Box</translation>
@@ -4369,7 +4369,6 @@
 <translation id="5262784498883614021">ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
 <translation id="5264148714798105376">၎င်းသည် တစ်မိနစ်ခန့် ကြာနိုင်ပါသည်။</translation>
 <translation id="5264252276333215551">သင်၏ အက်ပ်ကို kiosk မုဒ်မှာ ဖွင့်တင်ရန် ကျေးဇူးပြုပြီး အင်တာနက်သို့ ချိတ်ဆက်ပါ။</translation>
-<translation id="5265562206369321422">အော့ဖ်လိုင်း ဖြစ်နေသည်မှာ တစ်ပတ် ကျော်သွားပြီ</translation>
 <translation id="5265797726250773323">ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="5266113311903163739">အသိမှတ်ပြုလက်မှတ် အာဏာတင်သွင်းမှု ပြဿနာ</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
@@ -4722,6 +4721,7 @@
 <translation id="5585912436068747822">ပုံစံချမှု မအောင်မြင်ခဲ့ပါ</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">အက်ပ်များကို တင်နေသည်...</translation>
+<translation id="5591644692203457362">တိုးချဲ့ထားသော သော့အသုံးပြုမှုတိုင်း</translation>
 <translation id="5592595402373377407">လုံလောက်သည့် ဒေတာမရနိုင်သေးပါ။</translation>
 <translation id="5593564924968945303">Chrome ဘရောင်ဇာ</translation>
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
@@ -7177,6 +7177,7 @@
 <translation id="8030169304546394654">ချိတ်ဆက်မှု ဖြုတ်ထား</translation>
 <translation id="8030852056903932865">အတည်ပြုရန်</translation>
 <translation id="8032244173881942855">တဘ်ကို ကာစ်တ်မလုပ်နိုင်ပါ။</translation>
+<translation id="8032569120109842252">လိုက်ကြည့်နေသည်</translation>
 <translation id="8033827949643255796">ရွေးထား</translation>
 <translation id="8033958968890501070">အချိန်ကုန်သွားသည်</translation>
 <translation id="8035059678007243127">ရှေ့/နောက် ကက်ရှ်သိမ်းထားသော ရုပ်ဖျက်စာမျက်နှာ- <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

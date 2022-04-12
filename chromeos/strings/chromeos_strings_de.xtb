@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> ausgewählt</translation>
 <translation id="2695514675076754339">Achtstelligen Code zum Entsperren eingeben</translation>
 <translation id="2712812801627182647">TLS-Authentifizierungsschlüssel</translation>
+<translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
@@ -376,6 +377,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Hellen Farbmodus aktivieren</translation>
 <translation id="5264277876637023664">CPU-Test ausführen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Abläufe wiederholen</translation>
@@ -486,6 +488,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
 <translation id="6456394469623773452">In Ordnung</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +572,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Bildschirmschoner ändern</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="7656388927906093505">Das Gerät ist eine Maus.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7665800271478495366">Avatar ändern</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Automatischen Farbmodus aktivieren</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>

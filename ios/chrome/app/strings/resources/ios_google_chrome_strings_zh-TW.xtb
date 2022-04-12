@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示你同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
-<translation id="3121002401028999199">為協助改善應用程式，Chrome 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">無法使用您的帳戶登入 Google Chrome，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 會將你的所有帳戶同步到網路上，為你節省時間。你可以在「設定」中新增或移除帳戶。</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理員建議你立即變更這組密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
-<translation id="7046845777663074840">開啟時：
-<ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
-
-注意事項：
-<ph name="BEGIN_INDENT" />  • 系統會將 Chrome 使用資訊傳送給 Google，但不會與你有所關聯。
-
-  • Chrome 當機時，有關當機的詳細資料可能會包含一些個人資訊。
-
-  • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
 <translation id="7124339256045485976">取得 Chrome 最新版本</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>

@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
 <translation id="2919738076569633423">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK_TOS" />سروس کی شرائط<ph name="END_LINK_TOS" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> منتخب کریں</translation>
-<translation id="2993413480261249761">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chrome کے ساتھ مزید کام کریں۔</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
-<translation id="3121002401028999199">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور کریش رپورٹس Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">‏آپ کا اکاؤنٹ Google Chrome پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
 <translation id="3173834708294760622">‏Google Chrome صفحہ</translation>
 <translation id="3196546062792660320">‏Chrome آپ کے اکاؤنٹس کو ویب پر لا کر آپ کا وقت بچاتا ہے۔ آپ ترتیبات میں اکاؤنٹس کو شامل کر سکتے یا ہٹا سکتے ہیں۔</translation>
@@ -83,13 +81,6 @@
 <translation id="6709398533399187136">‏ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ Google پاس ورڈ مینیجر اسے ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="6822673484890854830">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6964931465519938134">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں۔</translation>
-<translation id="7046845777663074840">‏آن ہونے پر:
-<ph name="BEGIN_INDENT" />  • Chrome کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کی طرح استعمال کرتے ہیں۔<ph name="END_INDENT" />
-
-غور کرنے کی چیزیں:
-<ph name="BEGIN_INDENT" />  • آپ کے Chrome کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے۔
-  • اگر Chrome کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں۔
-  • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">‏Chrome میں سائن ان کریں</translation>
 <translation id="7124339256045485976">‏Chrome کو اپ ٹو ڈیٹ رکھیں</translation>
 <translation id="7161390184744336561">‏Google Chrome پرانا ہے</translation>

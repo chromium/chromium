@@ -6,7 +6,6 @@
 <translation id="1091252999271033193">Dit beteken dat Chromium elke keer die mobiele werf sal versoek.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
 <translation id="1257458525759135959">Om prente te stoor, moet jy op Instellings tik om Chromium toe te laat om foto's by te voeg</translation>
-<translation id="1266817106503861676">Kry meer gedoen met 'n eenvoudige, veilige Chromium wat vinniger as ooit tevore is.</translation>
 <translation id="1289216811211435351">Skakel oor na Chromium</translation>
 <translation id="1361748954329991663">Chromium is verouderd. As geen opdatering in die <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> beskikbaar is nie, is dit moontlik dat jou toestel nie meer nuwe weergawes van Chromium steun nie.</translation>
 <translation id="1431818719585918472">Laat Chromium toe om jou Incognito-oortjies te sluit.</translation>
@@ -56,15 +55,6 @@
 <translation id="4828317641996116749">Chromium kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="4985291216379576555">Chromium kan nie vanlyn vir opdaterings kyk nie</translation>
 <translation id="4999538639245140991">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chromium-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
-<translation id="5039881550736388123">Wanneer dit aan is:
-<ph name="BEGIN_INDENT" />  • Help dit om Chromium beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
-
-Dinge om te oorweeg:
-<ph name="BEGIN_INDENT" />  • Inligting oor jou gebruik van Chromium word aan Google gestuur, maar dit word nie aan jou verbind nie.
-
-  • As Chromium omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
-
-  • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Meld by Chromium aan</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5308226104666789935">Chromium kan nie vir opdaterings kyk nie</translation>
@@ -106,7 +96,6 @@ Dinge om te oorweeg:
 <translation id="7400689562045506105">Gebruik Chromium oral</translation>
 <translation id="766897673682622022">Jou wagwoord is in 'n dataskending blootgestel. Chromium beveel aan dat jy die wagwoord nou verander.</translation>
 <translation id="7674213385180944843">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Chromium oop en skakel kamera aan.</translation>
-<translation id="7724877991918731397">Chromium stuur gebruik- en omvalverslae na Google toe om te help om die program beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium-wenk. Sekere knoppies soos Back, Forward en Search is nou aan die onderkant van jou skerm.</translation>
 <translation id="7763454117143368771">Gebruik Chromium as jou verstekblaaier om beskerm te word teen gevaarlike werwe en jou wagwoorde veilig te hou</translation>
 <translation id="786327964234957808">Jy verwissel tans van jou sinkroniseringrekening <ph name="USER_EMAIL1" /> af oor na <ph name="USER_EMAIL2" />. Jou bestaande Chromium-data word deur <ph name="DOMAIN" /> bestuur. Dit sal jou data van hierdie toestel af uitvee, maar jou data sal steeds in <ph name="USER_EMAIL1" /> bly.</translation>
@@ -120,6 +109,7 @@ Dinge om te oorweeg:
 <translation id="8240981428553046115">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="858114650497379505">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
+<translation id="865600487977764604">Hou jou veilig op Chromium en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="894437814105052438">Chromium sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>

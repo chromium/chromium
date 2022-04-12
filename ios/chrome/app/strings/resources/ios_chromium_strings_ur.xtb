@@ -6,7 +6,6 @@
 <translation id="1091252999271033193">‏اس کا مطلب ہے کہ Chromium ہر بار موبائل سائٹ کی درخواست کرے گا۔</translation>
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
 <translation id="1257458525759135959">‏تصاویر محفوظ کرنے کے لیے، Chromium کو آپ کی تصاویر میں شامل کرنے دینے کے لیے ترتیبات پر تھپتھپائیں</translation>
-<translation id="1266817106503861676">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chromium کے ساتھ مزید کام کریں۔</translation>
 <translation id="1289216811211435351">‏Chromium پر جائیں</translation>
 <translation id="1361748954329991663">‏Chromium پرانا ہے۔ اگر کوئی اپ ڈیٹ <ph name="BEGIN_LINK" />App اسٹور<ph name="END_LINK" /> میں دستیاب نہیں ہے تو یہ ممکن ہے کہ آپ کا آلہ مزید Chromium کے نئے ورژنز کو سپورٹ نہیں کرتا ہے۔</translation>
 <translation id="1431818719585918472">‏Chromium کو آپ کی پوشیدگی ٹیبز کو مقفل کرنے دیں۔</translation>
@@ -56,13 +55,6 @@
 <translation id="4828317641996116749">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4985291216379576555">‏آف لائن، Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="4999538639245140991">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chromium ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
-<translation id="5039881550736388123">‏آن ہونے پر:
-<ph name="BEGIN_INDENT" />  • Chromium کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کے طریقے سے استعمال کرتے ہیں۔<ph name="END_INDENT" />
-
-غور کرنے کی چیزیں:
-<ph name="BEGIN_INDENT" />  • آپ کے Chromium کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے۔
-  • اگر Chromium کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں۔
-  • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">‏Chromium میں سائن ان کریں</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5308226104666789935">‏Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
@@ -104,7 +96,6 @@
 <translation id="7400689562045506105">‏Chromium کو ہر جگہ استعمال کریں</translation>
 <translation id="766897673682622022">‏ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ Chromium کی تجویز ہے کہ آپ ابھی پاس ورڈ تبدیل کریں۔</translation>
 <translation id="7674213385180944843">‏ترتیبات &gt; رازداری &gt; کیمرا &gt; Chromium کو کھولیں اور کیمرا آن کریں۔</translation>
-<translation id="7724877991918731397">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chromium استعمال اور کریش رپورٹس Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">‏Chromium تجویز۔ واپس جائیں، فارورڈ کریں، اور تلاش کریں جیسے بعض بٹنز اب آپ کی اسکرین کے نیچے ہیں۔</translation>
 <translation id="7763454117143368771">‏خطرناک سائٹس سے محفوظ رہنے اور اپنے پاس ورڈز کو محفوظ رکھنے کیلئے، Chromium کا اپنے ڈیفالٹ براؤزر کے طور پر استعمال کریں</translation>
 <translation id="786327964234957808">‏آپ مطابقت پذیری اکاؤنٹس کو <ph name="USER_EMAIL1" /> سے <ph name="USER_EMAIL2" /> پر سوئچ کر رہے ہیں۔ آپ کا موجودہ Chromium ڈیٹا <ph name="DOMAIN" /> کے زیر انتظام ہے۔ اس سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن آپ کا ڈیٹا <ph name="USER_EMAIL1" /> میں باقی رہے گا۔</translation>

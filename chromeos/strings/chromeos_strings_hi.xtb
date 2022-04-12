@@ -154,6 +154,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चुना गया</translation>
 <translation id="2695514675076754339">आठ वर्णों वाला अनलॉक कोड डालें</translation>
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन कुंजी</translation>
+<translation id="2717139507051041123">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2751739896257479635">EAP चरण 2 प्रमाणीकरण</translation>
 <translation id="2783010256799387990">जांच में पास</translation>
@@ -209,6 +210,7 @@
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
+<translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
@@ -375,6 +377,7 @@
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
+<translation id="5257811368506016604">हल्के रंग वाला मोड चालू करें</translation>
 <translation id="5264277876637023664">सीपीयू टेस्ट चलाएं</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">रूटीन फिर से चलाएं</translation>
@@ -485,6 +488,7 @@
 <translation id="641081527798843608">विषय मिलान</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
 <translation id="6456394469623773452">अच्छा</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज को दोबारा स्कैन करना चाहते हैं?}=1{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}one{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}other{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}}</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
@@ -527,6 +531,7 @@
 <translation id="6910312834584889076">स्कैनर का कवर खुला हुआ है. कवर बंद करें और फिर से कोशिश करें.</translation>
 <translation id="6911383237894364323">मीडिया सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="6935486296377631201">स्क्रीन सेवर</translation>
+<translation id="6943893908656559156">रिमोट आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="6957231940976260713">सेवा का नाम</translation>
 <translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6965382102122355670">ठीक है</translation>
@@ -567,6 +572,7 @@
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">स्क्रीन सेवर बदलें</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +595,7 @@
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7665800271478495366">अवतार बदलें</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
@@ -616,6 +623,7 @@
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="8082366717211101304">Android ऐप्लिकेशन से डीएनएस की समस्या ठीक नहीं की जा सकती</translation>

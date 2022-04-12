@@ -143,7 +143,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> குழுவின் ஒரு பகுதி</translation>
 <translation id="1130676589211693127">வலதுபக்க பேட்டரி நிலை <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">இந்தப் பக்கத்தைச் சேர்</translation>
-<translation id="1135971365523689618"><ph name="INSTALL_SOURCE" /> இருந்து <ph name="APP_TYPE" /> நிறுவப்பட்டது</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">தவறான பின் பல முறை உள்ளிடப்பட்டதால் பாதுகாப்பு விசை பூட்டப்பட்டது. அன்லாக் செய்ய, அதை அகற்றி மீண்டும் செருகவும்.</translation>
 <translation id="1137589305610962734">தற்காலிகத் தரவு</translation>
@@ -790,6 +789,7 @@
 <translation id="1736419249208073774">அறிக</translation>
 <translation id="1737968601308870607">பிழையைப் பதிவுசெய்</translation>
 <translation id="1739684185846730053">தனியுரிமை சாண்ட்பாக்ஸ் சோதனைகள் இன்னும் உருவாக்கத்தில் இருப்பதுடன் குறிப்பிட்ட பிராந்தியங்களில் மட்டுமே கிடைக்கின்றன. மூன்றாம் தரப்புக் குக்கீகள் போன்ற தற்போதைய இணையத் தொழில்நுட்பங்களைத் தொடர்ந்து பயன்படுத்தினாலும் தளங்கள் இப்போது தனியுரிமை சாண்ட்பாக்ஸைப் பயன்படுத்தக்கூடும்.</translation>
+<translation id="1741190788710022490">சூழலுக்கேற்பச் சார்ஜ் செய்தல்</translation>
 <translation id="174123615272205933">பிரத்தியேக மார்ஜின்கள்</translation>
 <translation id="1741314857973421784">தொடர்க</translation>
 <translation id="1743970419083351269">பதிவிறக்கங்கள் பட்டியை மூடு</translation>
@@ -1633,6 +1633,7 @@
 <translation id="2530166226437958497">பிழையறிந்து திருத்துதல்</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />ஏதோ தவறாகிவிட்டதால் <ph name="DEVICE_OS" /> ஐ நிறுவ முடியவில்லை.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />மேலும் உதவிக்கு, g.co/flex/InstallErrors என்ற தளத்தைப் பார்க்கவும்.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532144599248877204">உங்கள் பேட்டரியைச் சுமார் 80% சார்ஜுடன் வைத்திருந்து அதன் ஆயுளை அதிகரிக்கும். சார்ஜரில் இருந்து வழக்கமாக எடுக்கும் நேரத்திற்கு முன்பு பேட்டரி முழுமையாகச் சார்ஜ் ஆகிவிடும்.</translation>
 <translation id="2532198298278778531">ChromeOS Flex அமைப்புகளில் பாதுகாப்பான DNSஸை நிர்வகித்தல்</translation>
 <translation id="2532589005999780174">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="2533649878691950253">இருப்பிடத் தகவலுக்கான அணுகலைப் பொதுவாகவே நீங்கள் அனுமதிப்பதில்லை என்பதால் உங்களின் துல்லியமான இருப்பிடத்தை இந்தத் தளம் பெறுவது தடுக்கப்பட்டுள்ளது</translation>
@@ -2266,7 +2267,6 @@
 <translation id="3151616662954589507">செல்ஃபி கேமரா</translation>
 <translation id="3151786313568798007">திசையமைப்பு</translation>
 <translation id="3152356229013609796">மொபைல் அறிவிப்புகளைப் பார்க்கலாம், நிராகரிக்கலாம், அவற்றுக்குப் பதிலளிக்கலாம்</translation>
-<translation id="3154429428035006212">ஒரு மாதத்திற்கும் மேலாக ஆஃப்லைனில் உள்ளது</translation>
 <translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="3157931365184549694">மீட்டமை</translation>
 <translation id="3158033540161634471">உங்கள் கைரேகையை அமைக்கவும்</translation>
@@ -3030,7 +3030,6 @@
 <translation id="3898233949376129212">சாதனத்தின் மொழி</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> இந்த அனுமதிகளைக் கோருகிறது: <ph name="FIRST_PERMISSION" /> &amp; <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">கீபோர்டைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="3899879303189199559">ஒரு வருடத்திற்கும் மேலாக ஆஃப்லைனில் உள்ளது</translation>
 <translation id="3900966090527141178">கடவுச்சொற்களை ஏற்று</translation>
 <translation id="3903187154317825986">உள்ளமைந்த கீபோர்டு</translation>
 <translation id="3904326018476041253">இருப்பிடச் சேவைகள்</translation>
@@ -3247,6 +3246,7 @@
 <translation id="4102906002417106771">பவர்வாஷில் மீண்டும் தொடங்கு</translation>
 <translation id="4104163789986725820">ஏற்று&amp;மதி...</translation>
 <translation id="4107048419833779140">சேமிப்பகச் சாதனங்களைக் கண்டறிந்து, வெளியேற்றுதல்</translation>
+<translation id="4108314971463891922">பின்தொடர்</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) க்குச் சாளரத்தை நகர்த்து</translation>
 <translation id="4110485659976215879">எச்சரிக்கையை மீட்டெடு</translation>
 <translation id="4110490973560452005">பதிவிறக்கம் முடிந்தது: <ph name="FILE_NAME" />. பதிவிறக்கங்கள் பட்டிப் பகுதிக்குச் சுழற்ற, Shift+F6 விசைகளை அழுத்தவும்.</translation>
@@ -4367,7 +4367,6 @@
 <translation id="5262784498883614021">நெட்வொர்க்குடன் தானாக இணை</translation>
 <translation id="5264148714798105376">இதற்கு ஒரு நிமிடம் அல்லது அதற்கும் மேல் ஆகலாம்.</translation>
 <translation id="5264252276333215551">உங்கள் ஆப்ஸை கியோஸ்க் பயன்முறையில் தொடங்க இணையத்துடன் இணைக்கவும்.</translation>
-<translation id="5265562206369321422">ஒரு வாரத்திற்கும் மேலாக ஆஃப்லைனில் உள்ளது</translation>
 <translation id="5265797726250773323">நிறுவும்போது பிழை நேர்ந்தது</translation>
 <translation id="5266113311903163739">சான்றளிக்கும் மைய இறக்குமதி பிழை</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> என்ற முகவரிக்கான கூடுதல் செயல்கள்</translation>
@@ -4381,6 +4380,7 @@
 <translation id="5278823018825269962">நிலை ஐடி</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />க்கான அனுமதிச் சான்றுகளைப் புதுப்பியுங்கள்</translation>
 <translation id="5280243692621919988">சாளரங்கள் அனைத்தையும் மூடும்போது குக்கீகளையும் வலைதளத் தரவையும் அழி</translation>
+<translation id="5280335021886535443">இந்தக் குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும்.</translation>
 <translation id="5280426389926346830">ஷார்ட்கட்டை உருவாக்கவா?</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" /> உலாவியில் திறக்கும்</translation>
 <translation id="528208740344463258">Android ஆப்ஸைப் பதிவிறக்கிப் பயன்படுத்துவதற்கு, தேவையான புதுப்பிப்பை முதலில் நீங்கள் நிறுவ வேண்டும். உங்கள் <ph name="DEVICE_TYPE" /> புதுப்பிக்கப்படும் போது, அதை நீங்கள் பயன்படுத்த முடியாது. நிறுவல் முடிந்ததும், உங்கள் <ph name="DEVICE_TYPE" /> தொடங்கும்.</translation>
@@ -5336,6 +5336,7 @@
 <translation id="622537739776246443">சுயவிவரம் நீக்கப்படும்</translation>
 <translation id="6225475702458870625"><ph name="PHONE_NAME" /> இலிருந்து டேட்டா இணைப்பு உள்ளது</translation>
 <translation id="6226777517901268232">தனிப்பட்ட குறியீட்டு ஃபைல்(விரும்பினால்)</translation>
+<translation id="6227002569366039565">இந்தக் குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும். குமிழ் சுட்டிக்காட்டுவதை ஃபோகஸ் செய்ய அதை மீண்டும் அழுத்தவும்.</translation>
 <translation id="6227280783235722609">நீட்டிப்பு</translation>
 <translation id="6229849828796482487">வைஃபை நெட்வொர்க்கைத் துண்டி</translation>
 <translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
@@ -5362,6 +5363,7 @@
 <translation id="6243774244933267674">சேவையகம் கிடைக்கவில்லை</translation>
 <translation id="6244245036423700521">ONC ஃபைலை இறக்கு</translation>
 <translation id="6246790815526961700">சாதனத்திலிருந்து பதிவேற்று</translation>
+<translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6247620186971210352">ஆப்ஸ் எதுவும் கண்டறியப்படவில்லை</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">சிஸ்டம்: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6358,6 +6360,8 @@
 <translation id="7251346854160851420">இயல்பு வால்பேப்பர்</translation>
 <translation id="7251635775446614726">நிர்வாகி இவ்வாறு கூறுகிறார்: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> உங்கள் பாதுகாப்பு விசையைப் பெற்றுள்ளது, மேலும் அதன் ஐடி எண்ணைத் தெரிந்துகொள்ள விரும்புகிறது. நீங்கள் எந்தப் பாதுகாப்பு விசையைப் பயன்படுத்துகிறீர்கள் என்பதைத் தளம் அறிந்துகொள்ளும்.</translation>
+<translation id="7252023374029588426">வழிமுறைகளைக் கொண்ட தொடர்ச்சியான பயிற்சிக் குமிழ்கள் காட்டப்படும்.
+          ஒரு குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும். குமிழ் சுட்டிக்காட்டுவதை ஃபோகஸ் செய்ய அதை மீண்டும் அழுத்தவும்.</translation>
 <translation id="7253521419891527137">&amp;மேலும் அறிக</translation>
 <translation id="7254951428499890870">சரிபார்ப்பு பயன்முறையில் "<ph name="APP_NAME" />" ஐத் துவக்க விருப்பமா?</translation>
 <translation id="725497546968438223">புக்மார்க் ஃபோல்டருக்கான பட்டன்</translation>
@@ -7167,6 +7171,7 @@
 <translation id="8030169304546394654">துண்டிக்கப்பட்டது</translation>
 <translation id="8030852056903932865">அனுமதி</translation>
 <translation id="8032244173881942855">தாவலை அலைபரப்ப முடியவில்லை.</translation>
+<translation id="8032569120109842252">பின்தொடர்கிறீர்கள்</translation>
 <translation id="8033827949643255796">தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="8033958968890501070">நேரம் முடிந்தது</translation>
 <translation id="8035059678007243127">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட மறைநிலைப் பக்கம்: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7477,6 +7482,7 @@
 <translation id="8330617762701840933">மாற்று உலாவிக்குத் திசைதிருப்பும் இணையதளங்களின் பட்டியல்.</translation>
 <translation id="8330689128072902965">அருகிலுள்ள தொடர்புகள் உங்களுடன் பகிர முடியும். மாற்ற, கிளிக் செய்யவும்.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ஆதரிக்கப்படும் ஃபைல் வகை: <ph name="FILE_TYPE1" />}=2{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ஆதரிக்கப்படும் ஃபைல் வகைகள்: ,<ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />மேலும் {OVERFLOW_COUNT} <ph name="END_LINK" />)}}</translation>
+<translation id="8331822764922665615">உங்கள் குழுவிற்குப் பெயரிட்டு, வண்ணத்தைத் தேர்வுசெய்த பின் Esc பட்டனை அழுத்தவும்</translation>
 <translation id="833256022891467078">Crostini பகிர்ந்த ஃபோல்டர்கள்</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" /> வரை மட்டுமே புதுப்பிப்புகளைப் பெற முடியும்</translation>
@@ -7551,6 +7557,7 @@
 <translation id="8412136526970428322"><ph name="PERMISSION" />, மேலும் <ph name="COUNT" /> அனுமதிகள் வழங்கப்பட்டுள்ளன</translation>
 <translation id="8413385045638830869">முதலில் கேள் (பரிந்துரைத்தது)</translation>
 <translation id="8414249071344507766">இரண்டு நாட்களுக்கு நினைவுகள் மறைக்கப்பட்டுள்ளன</translation>
+<translation id="8414685983518053656">குறிப்புகள்</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (கேஸ்)</translation>
 <translation id="8417548266957501132">பெற்றோர் கடவுச்சொல்</translation>
 <translation id="8418445294933751433">தாவலாக &amp;காண்பி</translation>

@@ -22,6 +22,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1081015718268701546">Linux tətbiqləri hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Günortanız xeyir, <ph name="GIVEN_NAME" /></translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın. Tətbiqləri axtarmaq üçün ox düymələrindən istifadə edin.</translation>
 <translation id="109942774857561566">Darıxıram</translation>
 <translation id="1104084341931202936">Əlçatımlılıq ayarlarını göstərin</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
@@ -86,6 +87,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1351937230027495976">Menyunu yığcamlaşdırın</translation>
 <translation id="1364382257761975320">Chromebook'u kiliddən çıxarmaq üçün barmaq izinizi istifadə edin</translation>
 <translation id="1364618750746929654">Transkripsiya yaratmaq mümkün deyil</translation>
+<translation id="1372545819342940910">Sonra baxmaq üçün masanı yadda saxlayın</translation>
 <translation id="1383597849754832576">Nitq fayllarını endirmək olmur. Sonra yenidən cəhd edin.</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1391102559483454063">Aktiv</translation>
@@ -179,6 +181,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1990046457226896323">Nitq faylları endirilib</translation>
 <translation id="1993072747612765854">Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin</translation>
 <translation id="1998100899771863792">Cari masa</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın.</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Gülməli əhvalat danış</translation>
 <translation id="2021864487439853900">Kiliddən çıxarmaq üçün toxunun</translation>
@@ -264,6 +267,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2595239820337756193">5000 mil</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
 <translation id="2607678425161541573">Onlayn giriş tələb olunur</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın...</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="263399434338050016">"Hamısını seçin"</translation>
@@ -621,6 +625,9 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Bir gün ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# gün ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
 <translation id="4642092649622328492">Natamam skrinşot çəkin</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Tətbiq tövsiyəsi</translation>
+<translation id="4657775630156561295">Aşağıdakı təklif hesabınızın təklif tarixçəsindən həmişəlik silinəcək:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox aktiv edildi</translation>
 <translation id="4665114317261903604">"Narahat etməyin" rejiminə keçin. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> endirilir</translation>
@@ -943,6 +950,7 @@ Yeni quraşdırma</translation>
 <translation id="6751052314767925245">Administratorunuz tərəfindən icbari icra olunur</translation>
 <translation id="6751826523481687655">Performansın izlənməsi aktiv edildi</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> silinərək Masa <ph name="RECEIVE_DESK" /> ilə birləşdirildi</translation>
+<translation id="6753390234084146956">tablar</translation>
 <translation id="6754441615189976839">Ş</translation>
 <translation id="6757237461819837179">Oxudulan media yoxdur</translation>
 <translation id="6777216307882431711">Qoşulmuş USB-C cihazları qidalandırılır</translation>
@@ -1048,6 +1056,7 @@ Yeni quraşdırma</translation>
 <translation id="743058460480092004">Kamera və mikrofon istifadə olunur.</translation>
 <translation id="7434543979546293336">Əsas ideya olaraq işarələnib</translation>
 <translation id="7452560014878697800">Tətbiq kameranızı işlədir</translation>
+<translation id="7453330308669753048">Axtarış tarixçəsinin nəticəsi silindi</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Ekran yazılması rejimi</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
@@ -1104,6 +1113,7 @@ Yeni quraşdırma</translation>
 <translation id="7749443890790263709">Maksimum masa sayına çatmısınız.</translation>
 <translation id="7749640678855296659">Mikrofonunuz hazırda sönülüdür</translation>
 <translation id="776344839111254542">Güncəlləmə detallarını görmək üçün klikləyin</translation>
+<translation id="7780094051999721182">qısayollar</translation>
 <translation id="7780159184141939021">Ekranı fırladın</translation>
 <translation id="7796353162336583443">Qeyd etmək, skrinşot çəkmək Google Assistentdən, lazer işarəsindən və ya lupadan istifadə etmək üçün fırça düyməsinə klikləyin.</translation>
 <translation id="7796735576426975947">Yeni bildiriş gizlədilib</translation>
@@ -1166,6 +1176,7 @@ Yeni quraşdırma</translation>
 <translation id="8120151603115102514">Telefonunuzun kilid ekranı yoxdur. Chromebook'u kiliddən çıxarmaq üçün parolu daxil edin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
+<translation id="8131994907636310308">Sıralama bildirişini bağlayın</translation>
 <translation id="8132487352815776550">Bağlanmış subtitrləri dayandırın</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> şəbəkəsinə qoşuldu</translation>
 <translation id="813913629614996137">Başladılır...</translation>

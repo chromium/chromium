@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
 <translation id="2919738076569633423">Ако го користите Chrome, се согласувате со <ph name="BEGIN_LINK_TOS" />Условите за користење<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Google Chrome.</translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
-<translation id="3121002401028999199">За да се подобри апликацијата, Chrome испраќа извештаи за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Сметката не работи на Google Chrome. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
 <translation id="3173834708294760622">Страница на Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ви заштедува време со тоа што ви ги носи сметките на Интернет. Може да додавате или отстранувате сметки во „Поставки“.</translation>
@@ -83,13 +81,6 @@
 <translation id="6709398533399187136">Вашата лозинка е откриена при упад во податоци. „Управникот со лозинки на Google“ препорачува веднаш да ја промените.</translation>
 <translation id="6822673484890854830">Chrome не може да ги провери сите лозинки. Обидете се повторно подоцна.</translation>
 <translation id="6964931465519938134">Сега може да го користите Chrome секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
-<translation id="7046845777663074840">Кога е вклучено:
-<ph name="BEGIN_INDENT" />  • Помага да се подобри Chrome за луѓето што го користат исто како и вие.<ph name="END_INDENT" />
-
-Земете предвид:
-<ph name="BEGIN_INDENT" />  • Се испраќаат податоци за вашето користење на Chrome до Google, но не се поврзани со вас.
-  • Ако Chrome падне, податоците за падот може да вклучуваат некои лични податоци.
-  • Ако вклучите синхронизација, метриката може да вклучува податоци и за URL-адресите што ги посетувате.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
 <translation id="7124339256045485976">Одржувајте го Chrome ажурен</translation>
 <translation id="7161390184744336561">Google Chrome е застарен</translation>

@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
+<translation id="2491955442992294626">Η δοκιμή των πλήκτρων δεν πραγματοποιείται όταν χρησιμοποιείτε άλλο παράθυρο</translation>
 <translation id="2493126929778606526">Οι καλύτερες αυτόματα επιλεγμένες φωτογραφίες σας</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Ανανέωση της τρέχουσας εικόνας ταπετσαρίας</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Εισαγάγετε τον κωδικό ξεκλειδώματος 8 χαρακτήρων</translation>
 <translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
+<translation id="2717139507051041123">Ενεργοποίηση λειτουργίας σκοτεινού χρώματος</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
 <translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
@@ -376,6 +378,7 @@
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5252456968953390977">Περιαγωγη</translation>
+<translation id="5257811368506016604">Ενεργοποίηση λειτουργίας ανοικτού χρώματος</translation>
 <translation id="5264277876637023664">Εκτέλεση δοκιμής CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Επανεκτέλεση ρουτινών</translation>
@@ -486,6 +489,7 @@
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6439505561246192797">Αδύναμο (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>
 <translation id="6456394469623773452">Καλό</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας;}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +573,7 @@
 <translation id="7343649194310845056">Συσκευές δικτύου</translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Αλλαγή προφύλαξης οθόνης</translation>
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +596,7 @@
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7665800271478495366">Αλλαγή avatar</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +624,7 @@
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Ενεργοποίηση λειτουργίας αυτόματης ρύθμισης χρώματος</translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
 <translation id="8082366717211101304">Δεν είναι δυνατή η επίλυση DNS από εφαρμογές Android.</translation>

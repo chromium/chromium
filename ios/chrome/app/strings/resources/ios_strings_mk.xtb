@@ -13,6 +13,7 @@
         
 Вашиот пребарувач е <ph name="DSE_NAME" />. Погледнете го неговото упатство за бришење на историјата на пребарување ако е применливо.</translation>
 <translation id="1054045277222934172">Може да го промените стандардниот приказ на сајтот на приказ за компјутер во „Поставки“, а потоа „Поставки за содржини“</translation>
+<translation id="1054745118061919935">Ако продолжите, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Употребете друга лозинка…</translation>
 <translation id="1066060668811609597">Управувајте со синхронизацијата</translation>
 <translation id="1076421457278169141">Кодот е скениран</translation>
@@ -44,7 +45,6 @@
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1281818060020671000">Управувајте со податоците</translation>
-<translation id="1282311502488501110">Не се најавувај</translation>
 <translation id="1283524564873030414">Изминатите 24 часа</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1291506870746876680">Дозволите за <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> ќе се исклучат кога ќе го напуштите сајтов.</translation>
@@ -327,6 +327,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
 <translation id="3810973564298564668">Управувај</translation>
+<translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861486700625780712">Не следи</translation>
@@ -494,6 +495,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
 <translation id="5360976571138293719">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Сајтовите што ги следите ќе ги најдете тука</translation>
 <translation id="5388358297987318779">Отвори слика</translation>
 <translation id="5407969256130905701">Отфрли ги промените</translation>
 <translation id="5416022985862681400">Минатите 7 дена</translation>
@@ -611,6 +613,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6344783595350022745">Исчисти текст</translation>
 <translation id="6346549652287021269">Дали да се започне ново преземање?</translation>
 <translation id="634878792104344809">Синхронизирајте ги вашите лозинки, историја и друго на сите ваши уреди</translation>
+<translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нема инкогнито картички</translation>
 <translation id="6363526231572697780">Нема корисничко име</translation>
 <translation id="6366190659675876144">Стандардна заштита</translation>
@@ -648,6 +651,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6524918542306337007">Режимот „Инкогнито“ е недостапен</translation>
 <translation id="6530992499366869131">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Посетете сајт и кликнете „Следи“ во менито на Chrome</translation>
 <translation id="6561262006871132942">Зумирај</translation>
 <translation id="6583087784430677195">За да го исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Автоматско пополнување лозинки“.</translation>
 <translation id="6585618849026997638">Може да се навратите на страница што ви е важна со додавање обележувач</translation>
@@ -775,6 +779,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЈ</translation>
 <translation id="7701040980221191251">Нема</translation>
+<translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7726702057919861819">Мени → Историја → Избришете ги податоците од прелистување</translation>
 <translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
 <translation id="7765158879357617694">Премести</translation>

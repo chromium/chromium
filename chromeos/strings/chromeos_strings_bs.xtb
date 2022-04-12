@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Unesite kôd za otključavanje od 8 znakova</translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
+<translation id="2717139507051041123">Omogućite način tamne boje</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2751739896257479635">EAP faza 2 autentifikacije</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
@@ -376,6 +377,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Omogućite način svijetle boje</translation>
 <translation id="5264277876637023664">Pokreni test CPU-a</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
@@ -486,6 +488,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Idi na postavke računa</translation>
 <translation id="6456394469623773452">Solidan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -528,7 +531,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim serverima nije uspjelo</translation>
 <translation id="6935486296377631201">Čuvar ekrana</translation>
-<translation id="6943893908656559156">Udaljeni identitet (nije obavezno)</translation>
+<translation id="6943893908656559156">Daljinski identitet (nije obavezno)</translation>
 <translation id="6957231940976260713">Ime usluge</translation>
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
@@ -569,6 +572,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Promjena čuvara zaslona</translation>
 <translation id="741244894080940828">pretvaranje</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
+<translation id="7665800271478495366">Promjena avatara</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Omogućite način automatske boje</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>

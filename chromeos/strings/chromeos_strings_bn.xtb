@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
+<translation id="2491955442992294626">অন্য উইন্ডো ব্যবহার করার সময় কী পরীক্ষা করা হয়না</translation>
 <translation id="2493126929778606526">আপনার সেরা ফটোগুলি অটোমেটিক বেছে নেওয়া হয়</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">বর্তমান ওয়ালপেপারের ছবি রিফ্রেশ করুন</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">বেছে নেওয়া অ্যালবাম: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">৮-অক্ষরের আনলক কোড লিখুন</translation>
 <translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
+<translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
 <translation id="2783010256799387990">পাস করেছে</translation>
@@ -375,6 +377,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5252456968953390977">রোমিং</translation>
+<translation id="5257811368506016604">'লাইট কালার' মোড চালু করুন</translation>
 <translation id="5264277876637023664">সিপিইউ টেস্ট করুন</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">রুটিন আবার রান করান</translation>
@@ -485,6 +488,7 @@
 <translation id="641081527798843608">বিষয়ের মিল</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">খারাপ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">অ্যাকাউন্ট সেটিংসে যান</translation>
 <translation id="6456394469623773452">ভাল</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি আবার স্ক্যান করতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}}</translation>
 <translation id="6472207088655375767">ওটিপি</translation>
@@ -568,6 +572,7 @@
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">স্ক্রিন সেভার পরিবর্তন করুন</translation>
 <translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -590,6 +595,7 @@
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
+<translation id="7665800271478495366">অবতার পরিবর্তন করুন</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -617,6 +623,7 @@
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>

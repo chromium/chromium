@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">В настоящий момент приложения Linux не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добрый день, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Ищите <ph name="CATEGORY" />, файлы, приложения и не только. Используйте клавиши со стрелками, чтобы переходить от одного приложения к другому.</translation>
 <translation id="109942774857561566">Мне скучно</translation>
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1993072747612765854">Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="1998100899771863792">Текущий рабочий стол</translation>
+<translation id="2001444736072756133">Ищите <ph name="CATEGORY" />, файлы, приложения и не только.</translation>
 <translation id="2016340657076538683">Введите сообщение</translation>
 <translation id="2018630726571919839">Расскажи анекдот</translation>
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
@@ -264,6 +266,7 @@
 <translation id="2595239820337756193">5 миль в км</translation>
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
+<translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="263399434338050016">"Выбрать все"</translation>
@@ -591,6 +594,7 @@
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
+<translation id="4516867700536986208">Все приложения: для доступа ко всем приложениям, используйте стрелку влево или вниз.</translation>
 <translation id="4518404433291145981">Чтобы разблокировать Chromebook, сначала разблокируйте телефон.</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
@@ -619,6 +623,9 @@
 <translation id="4633185660152240791">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 дня}one{Вернитесь к предыдущей версии ОС в течение # дня}few{Вернитесь к предыдущей версии ОС в течение # дней}many{Вернитесь к предыдущей версии ОС в течение # дней}other{Вернитесь к предыдущей версии ОС в течение # дня}}</translation>
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
+<translation id="4657775630156561295">Эта подсказка будет навсегда удалена из истории вашего аккаунта:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
 <translation id="4665114317261903604">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
@@ -941,6 +948,7 @@
 <translation id="6751052314767925245">Функция принудительно включена администратором</translation>
 <translation id="6751826523481687655">Отслеживание эффективности включено.</translation>
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
+<translation id="6753390234084146956">вкладки</translation>
 <translation id="6754441615189976839">С</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
@@ -1021,6 +1029,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Недавние приложения: для доступа ко всем недавним приложениям, используйте стрелку влево.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="731589979057211264">Режим включен.</translation>
 <translation id="7319740667687257810">Панель запуска, частичный список приложений</translation>
@@ -1045,6 +1054,7 @@
 <translation id="743058460480092004">Камера и микрофон используются.</translation>
 <translation id="7434543979546293336">Помечено как основная идея.</translation>
 <translation id="7452560014878697800">Приложение использует вашу камеру</translation>
+<translation id="7453330308669753048">Результат удален из истории поиска</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746232733191930409">Режим записи видео с экрана</translation>
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
@@ -1101,6 +1111,7 @@
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749640678855296659">Сейчас микрофон отключен.</translation>
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
+<translation id="7780094051999721182">ярлыки</translation>
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796353162336583443">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, запустить Ассистента либо использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="7796735576426975947">Новые уведомления скрыты</translation>
@@ -1162,6 +1173,7 @@
 <translation id="8120151603115102514">На телефоне нет блокировки экрана. Чтобы разблокировать Chromebook, введите пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
+<translation id="8131994907636310308">Закрыть всплывающее окно сортировки</translation>
 <translation id="8132487352815776550">Скрыть субтитры</translation>
 <translation id="8132793192354020517">Подключено к сети <ph name="NAME" /></translation>
 <translation id="813913629614996137">Инициализация...</translation>

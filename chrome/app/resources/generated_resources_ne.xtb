@@ -139,7 +139,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - समूहको अंश <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">दायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="1133418583142946603">हालको ट्याब थप्नुहोस्</translation>
-<translation id="1135971365523689618"><ph name="APP_TYPE" /> यहाँबाट इन्स्टल गरिएको हो: <ph name="INSTALL_SOURCE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> मध्ये <ph name="EMOJI_INDEX" />।</translation>
 <translation id="1136712381129578788">अत्यन्तै धेरै पटक गलत PIN प्रविष्टि गरिएका कारण सुरक्षा साँचो लक गरिएको छ। यसलाई अनलक गर्न उक्त PIN हटाई फेरि हाल्नुहोस्।</translation>
 <translation id="1137589305610962734">अस्थायी डेटा</translation>
@@ -2251,7 +2250,6 @@
 <translation id="3151616662954589507">सेल्फी क्यामेरा</translation>
 <translation id="3151786313568798007">अभिमुखीकरण</translation>
 <translation id="3152356229013609796">आफ्नो फोनमा प्राप्त भएका सूचनाहरू हेर्नुहोस् र हटाउनुहोस्। साथै, ती सूचनाको जवाफ दिनुहोस्</translation>
-<translation id="3154429428035006212">एक महिना भन्दा धेरै समयको लागि अफलाइन</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="3158033540161634471">आफ्नो फिंगरप्रिन्ट सेटअप गर्नुहोस्</translation>
@@ -3015,7 +3013,6 @@
 <translation id="3898233949376129212">यन्त्रको भाषा</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> निम्न कुराहरू गर्न चाहन्छ: <ph name="FIRST_PERMISSION" /> र <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">किबोर्ड चयन गर्नुहोस्</translation>
-<translation id="3899879303189199559">एक वर्ष भन्दा बढीको लागि अफलाइन</translation>
 <translation id="3900966090527141178">पासवर्डहरू निर्यात गर्नुहोस्</translation>
 <translation id="3903187154317825986">अन्तर्निर्मित किबोर्ड</translation>
 <translation id="3904326018476041253">लोकेसन सर्भिस</translation>
@@ -3231,6 +3228,7 @@
 <translation id="4102906002417106771">पावरवासको लागि रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4104163789986725820">नि&amp;र्यात...</translation>
 <translation id="4107048419833779140">भण्डारण यन्त्रहरू पहिचान गर्नुहोस् तथा निकाल्नुहोस्‌</translation>
+<translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="4109135793348361820">विण्डोलाई <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) मा सार्नुहोस्</translation>
 <translation id="4110485659976215879">चेतावनी रिस्टोर गर्नुहोस्</translation>
 <translation id="4110490973560452005">डाउनलोड सम्पन्न भयो: <ph name="FILE_NAME" />। डाउनलोडहरूको पट्टीमा जान Shift+F6 थिच्नुहोस्।</translation>
@@ -4350,7 +4348,6 @@
 <translation id="5262784498883614021">नेटवर्कमा स्वतः कनेक्ट गर्नुहोस्</translation>
 <translation id="5264148714798105376">लोड हुन एक मिनेट जति लाग्न सक्छ।</translation>
 <translation id="5264252276333215551">कृपया किओस्क मोडमा तपाईंको एप्लिकेसनलाई लन्च गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
-<translation id="5265562206369321422">एक हप्ता भन्दा बढीको लागि अफलाइन</translation>
 <translation id="5265797726250773323">स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="5266113311903163739">प्रमाणपत्र प्राधिकरण आयात त्रुटि</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
@@ -7152,6 +7149,7 @@
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>
 <translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
 <translation id="8032244173881942855">ट्याब लाई cast गर्न असमर्थ।</translation>
+<translation id="8032569120109842252">फलो गरिरहेको</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
 <translation id="8033958968890501070">समयावधि सकियो</translation>
 <translation id="8035059678007243127">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

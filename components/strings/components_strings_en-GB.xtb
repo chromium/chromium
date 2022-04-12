@@ -139,6 +139,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1323433172918577554">Show More</translation>
 <translation id="132390688737681464">Save and fill addresses</translation>
 <translation id="1330449323196174374">Left gate fold</translation>
+<translation id="1333745675627230582">Play Chrome Dino game</translation>
 <translation id="1333989956347591814">Your activity <ph name="BEGIN_EMPHASIS" />might still be visible<ph name="END_EMPHASIS" /> to:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Websites that you visit
@@ -745,6 +746,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Open incognito tab</translation>
 <translation id="2985306909656435243">If enabled, Chromium will store a copy of your card on this device for faster form filling.</translation>
 <translation id="2985398929374701810">Enter a valid address</translation>
 <translation id="2986368408720340940">This pickup method isn’t available. Try a different method.</translation>
@@ -1511,6 +1513,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Site is not secure</translation>
+<translation id="5109892411553231226">Manage payment methods</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Tray 18</translation>
 <translation id="5114987907971894280">virtual reality</translation>
@@ -1758,6 +1761,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Do you want to fill in your <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissions</translation>
+<translation id="5808435672482059465">View your Chrome history</translation>
 <translation id="5808542072418270309">Simulation games</translation>
 <translation id="5810442152076338065">Your connection to <ph name="DOMAIN" /> is encrypted using an obsolete cipher suite.</translation>
 <translation id="5812947184178430888">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages that you visit in Chrome, file names or metadata, and the username that you use to sign in to web-based applications, your device and Chrome.</translation>
@@ -1897,6 +1901,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6232271601416750929">Clean beauty</translation>
 <translation id="6233160458685643793">Grinning</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
+<translation id="6236290670123303279">Manage settings</translation>
 <translation id="6240447795304464094">Google Pay logo</translation>
 <translation id="6241121617266208201">Hide suggestions</translation>
 <translation id="624499991300733384">Print compositor service</translation>

@@ -22,6 +22,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1081015718268701546">Linux aplikacije trenutno nisu podržane. Druge aplikacije će biti sačuvane.</translation>
 <translation id="108486256082349153">Mobilni: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobar dan, <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Pretražujte kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo. Koristite tastere sa strelicama da biste se kretali kroz aplikacije.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Pregledajte podešavanja pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji zajedno funkcionišu još bolje</translation>
@@ -179,6 +180,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1990046457226896323">Preuzeti su fajlovi govora</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za: <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Aktuelna radna površina</translation>
+<translation id="2001444736072756133">Pretražujte kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo.</translation>
 <translation id="2016340657076538683">Unesite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic.</translation>
 <translation id="2021864487439853900">Kliknite da biste otključali</translation>
@@ -224,6 +226,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2302092602801625023">Ovim nalogom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključi/isključi pregled prozora</translation>
 <translation id="2318576281648121272">Danas <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, kategorija rezultata pretrage</translation>
 <translation id="2322173485024759474">Slovo unazad</translation>
 <translation id="2339073806695260576">Dodirnite dugme pisaljke na polici da biste napravili belešku i snimak ekrana i da biste koristili laserski pokazivač ili lupu.</translation>
 <translation id="2341729377289034582">Vertikalni prikaz je zaključan</translation>
@@ -263,6 +266,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2607678425161541573">Onlajn prijavljivanje je obavezno</translation>
+<translation id="2620016719323068571">Pretražujte kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo…</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="263399434338050016">„Izaberi sve“</translation>
@@ -620,6 +624,9 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog dana}one{Promenite verziju uređaja u prethodnu verziju u roku od # dana}few{Promenite verziju uređaja u prethodnu verziju u roku od # dana}other{Promenite verziju uređaja u prethodnu verziju u roku od # dana}}</translation>
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
+<translation id="4657775630156561295">Sledeći predlog će biti trajno uklonjen iz istorije predloga naloga:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox je omogućen</translation>
 <translation id="4665114317261903604">Uključite/isključite režim Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Preuzima se fajl <ph name="FILENAME" /></translation>
@@ -921,6 +928,7 @@ Novo instaliranje</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> želi da koristi mikrofon</translation>
 <translation id="6637729079642709226">Promenite vreme</translation>
 <translation id="6641720045729354415">Uključite ili isključite titl uživo. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Opozovite redosled sortiranja prema nazivu</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
 <translation id="6650933572246256093">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovu šifru na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -941,6 +949,7 @@ Novo instaliranje</translation>
 <translation id="6751052314767925245">Primenjuje administrator</translation>
 <translation id="6751826523481687655">Praćenje učinka je uključeno</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena sa radnom površinom <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">kartice</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Mediji se ne reprodukuju</translation>
 <translation id="6777216307882431711">Napaja povezane uređaje sa USB priključkom tipa C</translation>
@@ -1046,6 +1055,7 @@ Novo instaliranje</translation>
 <translation id="743058460480092004">Kamera i mikrofon se koriste.</translation>
 <translation id="7434543979546293336">Označeno kao ključna ideja</translation>
 <translation id="7452560014878697800">Aplikacija koristi kameru</translation>
+<translation id="7453330308669753048">Rezultat istorije pretrage je uklonjen</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746232733191930409">Režim snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
@@ -1102,6 +1112,7 @@ Novo instaliranje</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno isključen</translation>
 <translation id="776344839111254542">Kliknite za prikaz detalja ažuriranja</translation>
+<translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>
 <translation id="7796353162336583443">Dodirnite dugme pisaljke na polici da biste napravili belešku i snimak ekrana i da biste koristili Google pomoćnik, laserski pokazivač ili lupu.</translation>
 <translation id="7796735576426975947">Novo obaveštenje je skriveno</translation>
@@ -1164,6 +1175,7 @@ Novo instaliranje</translation>
 <translation id="8120151603115102514">Telefon nema zaključani ekran. Da biste otključali Chromebook, unesite lozinku.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8131994907636310308">Zatvorite povratnu poruku za sortiranje</translation>
 <translation id="8132487352815776550">Zaustavi titl</translation>
 <translation id="8132793192354020517">Uspostavljena je veza sa <ph name="NAME" /></translation>
 <translation id="813913629614996137">Pokreće se…</translation>
@@ -1227,6 +1239,8 @@ Novo instaliranje</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
+<translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
+<translation id="8546059259582788728">Opozvali ste sortiranje</translation>
 <translation id="8551588720239073785">Podešavanja datuma i vremena</translation>
 <translation id="8553395910833293175">Već je dodeljeno svim radnim površinama.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> preporučuje da ažurirate <ph name="DEVICE_TYPE" /></translation>

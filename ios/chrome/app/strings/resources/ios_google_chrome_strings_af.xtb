@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2919738076569633423">Deur Chrome te gebruik, stem jy in tot die <ph name="BEGIN_LINK_TOS" />diensbepalings<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Kies <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">Kry meer gedoen met 'n eenvoudige, veilige Google Chrome wat vinniger as ooit tevore is.</translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
-<translation id="3121002401028999199">Chrome stuur gebruik- en omvalverslae na Google toe om te help om die program beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Jou rekening werk nie in Google Chrome nie. Kontak asseblief jou domeinadministrateur of gebruik 'n gewone Google-rekening om aan te meld.</translation>
 <translation id="3173834708294760622">Google Chrome-bladsy</translation>
 <translation id="3196546062792660320">Chrome spaar jou tyd deur jou rekeninge na die web te bring. Jy kan rekeninge in instellings byvoeg of verwyder.</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">Jou wagwoord is in 'n dataskending blootgestel. Google Wagwoordbestuurder beveel aan dat jy dit nou verander.</translation>
 <translation id="6822673484890854830">Chrome kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="6964931465519938134">Jy kan Chrome nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
-<translation id="7046845777663074840">Wanneer dit aan is:
-<ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
-
-Dinge om te oorweeg:
-<ph name="BEGIN_INDENT" />  • Inligting oor jou gebruik van Chrome word aan Google gestuur, maar dit word nie aan jou verbind nie.
-
-  • As Chrome omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
-
-  • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Maak Chrome jou eie</translation>
 <translation id="7124339256045485976">Hou Chrome op datum</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>

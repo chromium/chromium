@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2919738076569633423">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">Få mer gjort med Google Chrome-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
-<translation id="3121002401028999199">For å bidra til å gjøre appen bedre sender Chrome bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
-<translation id="7046845777663074840">Når du gir samtykke
-<ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chrome bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />
-
-Dette bør du tenke over:
-<ph name="BEGIN_INDENT" />  • Google mottar informasjon om hvordan du bruker Chrome, men informasjonen er ikke knyttet til deg.
-
-  • Hvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
-
-  • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Gi Chrome et personlig preg</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>

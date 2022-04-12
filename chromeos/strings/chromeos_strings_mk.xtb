@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Моментално</translation>
+<translation id="2491955442992294626">Копчињата не се тестираат кога користите друг прозорец</translation>
 <translation id="2493126929778606526">Вашите најдобри фотографии, избрани автоматски</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Освежете ја тековната слика за тапет</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">Избран е албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Внесете го 8-цифрениот код за отклучување</translation>
 <translation id="2712812801627182647">Клуч за TLS-проверка</translation>
+<translation id="2717139507051041123">Овозможете режим во темна боја</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
@@ -376,6 +378,7 @@
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5252456968953390977">Роаминг</translation>
+<translation id="5257811368506016604">Овозможете режим во светла боја</translation>
 <translation id="5264277876637023664">Изврши CPU-тест</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Изврши ги рутините повторно</translation>
@@ -486,6 +489,7 @@
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Одете во поставките за сметката</translation>
 <translation id="6456394469623773452">Добар</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се скенира страницата пак?}=1{Да се скенира страницата {PAGE_NUMBER} пак?}one{Да се скенира страницата {PAGE_NUMBER} пак?}other{Да се скенира страницата {PAGE_NUMBER} пак?}}</translation>
 <translation id="6472207088655375767">ОТП</translation>
@@ -569,6 +573,7 @@
 <translation id="7343649194310845056">Мрежни уреди</translation>
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Променете го заштитникот на екранот</translation>
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +596,7 @@
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="7656388927906093505">Уредот е глувче.</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7665800271478495366">Променете го аватарот</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +624,7 @@
 <translation id="7994702968232966508">EAP-метод</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>

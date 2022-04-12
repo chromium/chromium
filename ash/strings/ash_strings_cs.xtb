@@ -22,6 +22,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1081015718268701546">Linuxové aplikace v současné době nejsou podporovány. Ostatní aplikace budou uloženy.</translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré odpoledne, <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />. Mezi aplikacemi se můžete pohybovat pomocí kláves.</translation>
 <translation id="109942774857561566">Nudím se</translation>
 <translation id="1104084341931202936">Zobrazit nastavení přístupnosti</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
@@ -179,6 +180,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1990046457226896323">Stažené řečové soubory</translation>
 <translation id="1993072747612765854">Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Aktuální plocha</translation>
+<translation id="2001444736072756133">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />.</translation>
 <translation id="2016340657076538683">Zadejte zprávu</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
 <translation id="2021864487439853900">Odemknete kliknutím</translation>
@@ -263,6 +265,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
+<translation id="2620016719323068571">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />…</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
 <translation id="263399434338050016">„Vybrat vše“</translation>
@@ -620,6 +623,9 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Do jednoho dne zařízení převeďte na předchozí verzi}few{Do # dnů zařízení převeďte na předchozí verzi}many{Do # dne zařízení převeďte na předchozí verzi}other{Do # dnů zařízení převeďte na předchozí verzi}}</translation>
 <translation id="4642092649622328492">Pořídit částečný snímek obrazovky</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, doporučení aplikace</translation>
+<translation id="4657775630156561295">Následující návrh bude trvale odstraněn z historie návrhů vašeho účtu:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Funkce ChromeVox je zapnutá</translation>
 <translation id="4665114317261903604">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
@@ -941,6 +947,7 @@ Nová instalace</translation>
 <translation id="6751052314767925245">Vynuceno administrátorem</translation>
 <translation id="6751826523481687655">Trasování výkonu je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">karty</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
@@ -1046,6 +1053,7 @@ Nová instalace</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
 <translation id="7434543979546293336">Označeno jako hlavní myšlenka</translation>
 <translation id="7452560014878697800">Váš fotoaparát používá nějaká aplikace</translation>
+<translation id="7453330308669753048">Výsledek historie vyhledávání byl odstraněn</translation>
 <translation id="7461924472993315131">Připnout</translation>
 <translation id="746232733191930409">Režim nahrávání obrazovky</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
@@ -1102,6 +1110,7 @@ Nová instalace</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749640678855296659">Mikrofon je momentálně vypnutý</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizaci</translation>
+<translation id="7780094051999721182">zkratky</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
 <translation id="7796353162336583443">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít Asistenta Google, laserové ukazovátko nebo lupu.</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
@@ -1164,6 +1173,7 @@ Nová instalace</translation>
 <translation id="8120151603115102514">Telefon nemá zámek obrazovky. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
+<translation id="8131994907636310308">Zavřít zprávu o třídění</translation>
 <translation id="8132487352815776550">Vypnout skryté titulky</translation>
 <translation id="8132793192354020517">Připojeno k síti <ph name="NAME" /></translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>

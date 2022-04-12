@@ -143,7 +143,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – частина групи "<ph name="GROUP_NAME" />"</translation>
 <translation id="1130676589211693127">Рівень заряду акумулятора правого навушника – <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">Додати поточну вкладку</translation>
-<translation id="1135971365523689618"><ph name="APP_TYPE" /> (джерело встановлення – <ph name="INSTALL_SOURCE" />)</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Щоб розблокувати його, вийміть і знову вставте ключ.</translation>
 <translation id="1137589305610962734">тимчасові дані</translation>
@@ -2271,7 +2270,6 @@
 <translation id="3151616662954589507">Камера для селфі</translation>
 <translation id="3151786313568798007">Орієнтація</translation>
 <translation id="3152356229013609796">Переглядайте й закривайте сповіщення з телефона, а також відповідайте на них</translation>
-<translation id="3154429428035006212">Офлайн понад місяць</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3158033540161634471">Налаштуйте відбиток</translation>
@@ -2291,7 +2289,7 @@
 <translation id="3177909033752230686">Мова сторінки:</translation>
 <translation id="3179982752812949580">Шрифт тексту</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
-<translation id="3182749001423093222">Перевірка правопису</translation>
+<translation id="3182749001423093222">Перевірка орфографії</translation>
 <translation id="3183139917765991655">Засіб імпортування профілів</translation>
 <translation id="3183143381919926261">Мережі мобільного Інтернету</translation>
 <translation id="3183944777708523606">Налаштування екранів</translation>
@@ -2345,6 +2343,7 @@
 <translation id="3254516606912442756">Автоматичне визначення часового поясу вимкнено</translation>
 <translation id="3254715652085014625">Відкрийте Chrome на телефоні Android, перейдіть у "Налаштування" &gt; "Паролі" &gt; "Використовувати телефон як ключ безпеки" та дотримуйтеся вказівок.</translation>
 <translation id="3255355328033513170">Усі дані, збережені сайтом <ph name="SITE_GROUP_NAME" /> і сайтами його групи, буде видалено. Це також стосується файлів cookie. Ви вийдете з облікового запису на цих сайтах, зокрема у відкритих вкладках.</translation>
+<translation id="3257733480216378006">Дозволити (<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="3259723213051400722">Повторіть спробу.</translation>
 <translation id="3261268979727295785">Ви зможете ввімкнути батьківський контроль для старших дітей, коли завершите налаштування. Інформація про цю функцію доступна в додатку Можливості.</translation>
 <translation id="3262986719682892278">Завеликий</translation>
@@ -3035,7 +3034,6 @@
 <translation id="3898233949376129212">Мова пристрою</translation>
 <translation id="3898327728850887246">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" /> та <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
-<translation id="3899879303189199559">Офлайн понад рік</translation>
 <translation id="3900966090527141178">Експортувати паролі</translation>
 <translation id="3903187154317825986">Вбудована клавіатура</translation>
 <translation id="3904326018476041253">Геолокація</translation>
@@ -3252,6 +3250,7 @@
 <translation id="4102906002417106771">Перезапустити, щоб виконати Powerwash</translation>
 <translation id="4104163789986725820">Е&amp;кспортувати...</translation>
 <translation id="4107048419833779140">Виявляти й вилучати пристрої пам’яті</translation>
+<translation id="4108314971463891922">Підписатися</translation>
 <translation id="4109135793348361820">Перемістити вікно на робочий стіл користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
@@ -3347,6 +3346,7 @@
 <translation id="4211904048067111541">Припинити використовувати в додатках для Android</translation>
 <translation id="42126664696688958">Експортувати</translation>
 <translation id="42137655013211669">Сервер заборонив доступ до цього ресурсу.</translation>
+<translation id="4217558091331485702">Cканувати файл, перш ніж відкрити</translation>
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4218081191298393750">Щоб вимкнути звук на цій вкладці, натисніть значок колонки</translation>
 <translation id="4219558185499589032">Box</translation>
@@ -4372,7 +4372,6 @@
 <translation id="5262784498883614021">Автоматично підключатися до мережі</translation>
 <translation id="5264148714798105376">Це може зайняти близько хвилини.</translation>
 <translation id="5264252276333215551">Щоб запустити програму в режимі термінала, під’єднайтеся до Інтернету.</translation>
-<translation id="5265562206369321422">Офлайн понад тиждень</translation>
 <translation id="5265797726250773323">Помилка під час встановлення</translation>
 <translation id="5266113311903163739">Помилка імпортування центру сертифікації</translation>
 <translation id="526622169288322445">Додаткові дії з адресою "<ph name="ADDRESS_SUMMARY" />"</translation>
@@ -4722,6 +4721,7 @@
 <translation id="5585912436068747822">Помилка форматування</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Завантаження додатків…</translation>
+<translation id="5591644692203457362">Використання будь-якого розширеного ключа</translation>
 <translation id="5592595402373377407">Ще недостатньо даних.</translation>
 <translation id="5593564924968945303">Веб-переглядач Chrome</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
@@ -7173,6 +7173,7 @@
 <translation id="8030169304546394654">Роз'єднано</translation>
 <translation id="8030852056903932865">Дозволити</translation>
 <translation id="8032244173881942855">Не вдається транслювати вкладку.</translation>
+<translation id="8032569120109842252">У підписках</translation>
 <translation id="8033827949643255796">виділено</translation>
 <translation id="8033958968890501070">Час очікування минув</translation>
 <translation id="8035059678007243127">Сторінка зворотного кешу в анонімному режимі: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

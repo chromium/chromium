@@ -143,7 +143,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> എന്ന ഗ്രൂപ്പിന്റെ ഭാഗം</translation>
 <translation id="1130676589211693127">വലത് ബാറ്ററി നില <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">നിലവിലെ ടാബ് ചേർക്കുക</translation>
-<translation id="1135971365523689618"><ph name="INSTALL_SOURCE" /> എന്നതിൽ നിന്ന് ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന <ph name="APP_TYPE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />-ൽ <ph name="EMOJI_COUNT" />-ാമത്തെ.</translation>
 <translation id="1136712381129578788">തെറ്റായ പിൻ നിരവധി തവണ നൽകിയതിനാൽ സുരക്ഷാ കീ ലോക്ക് ചെയ്‌തിരിക്കുന്നു. ഇത് അൺലോക്ക് ചെയ്യാൻ, നീക്കം ചെയ്‌ത് വീണ്ടും ബന്ധിപ്പിക്കുക.</translation>
 <translation id="1137589305610962734">താൽക്കാലിക ഡാറ്റ</translation>
@@ -2252,7 +2251,6 @@
 <translation id="3151616662954589507">സെൽഫി ക്യാമറ</translation>
 <translation id="3151786313568798007">ഓറിയന്റേഷൻ</translation>
 <translation id="3152356229013609796">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുക, ഡിസ്‌മിസ് ചെയ്യുക, മറുപടി നൽകുക</translation>
-<translation id="3154429428035006212">ഒരു മാസത്തിലേറെയായി ഓഫ്‌ലൈനിലാണ്</translation>
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3158033540161634471">നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് സജ്ജമാക്കുക</translation>
@@ -2326,6 +2324,7 @@
 <translation id="3254516606912442756">സ്വമേധയായുള്ള സമയ മേഖല കണ്ടെത്തൽ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="3254715652085014625">നിങ്ങളുടെ Android ഫോണിൽ Chrome തുറക്കുക, "ക്രമീകരണം &gt; പാസ്‌വേഡുകൾ &gt; ഫോൺ സുരക്ഷാ കീ ആയി ഉപയോഗിക്കുക" എന്നതിലേക്ക് പോയി അവിടെയുള്ള നിര്‍ദ്ദേശങ്ങള്‍ പാലിക്കുക.</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> സംഭരിച്ച മുഴുവൻ ഡാറ്റയും ഇതിന് കീഴിലുള്ള എല്ലാ സൈറ്റുകളും ഇല്ലാതാക്കപ്പെടും. ഇതിൽ കുക്കികൾ അടങ്ങിയിരിക്കുന്നു. തുറന്നിരിക്കുന്ന ടാബുകളിൽ അടക്കം, ഈ സൈറ്റുകളിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും.</translation>
+<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> എണ്ണത്തിനെ അനുവദിക്കണോ?</translation>
 <translation id="3259723213051400722">വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3261268979727295785">മുതിർന്ന കുട്ടികൾക്ക്, സജ്ജീകരണം പൂർത്തിയാക്കിക്കഴിഞ്ഞാൽ നിങ്ങൾക്ക് രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ ചേർക്കാൻ കഴിയും. Explore ആപ്പിൽ രക്ഷാകർതൃ നിയന്ത്രണങ്ങളെ കുറിച്ചുള്ള വിവരങ്ങൾ നിങ്ങൾക്ക് കാണാം.</translation>
 <translation id="3262986719682892278">വളരെ വലുതാണ്</translation>
@@ -3016,7 +3015,6 @@
 <translation id="3898233949376129212">ഉപകരണത്തിന്റെ ഭാഷ</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ഇവ ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">കീബോർഡ് തിരഞ്ഞെടുക്കുക</translation>
-<translation id="3899879303189199559">ഒരു വർഷത്തിലേറെയായി ഓഫ്‌ലൈനിലാണ്</translation>
 <translation id="3900966090527141178">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="3903187154317825986">ബിൽറ്റ് ഇൻ കീബോർഡ്</translation>
 <translation id="3904326018476041253">ലൊക്കേഷൻ സേവനങ്ങൾ</translation>
@@ -3232,6 +3230,7 @@
 <translation id="4102906002417106771">Powerwash ചെയ്യുന്നതിന് റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4104163789986725820">കയ&amp;റ്റുമതി ചെയ്യുക...</translation>
 <translation id="4107048419833779140">സ്‌റ്റോറേജ് ​​ഉപകരണം തിരിച്ചറിഞ്ഞ് ഒഴിവാക്കുക</translation>
+<translation id="4108314971463891922">പിന്തുടരുക</translation>
 <translation id="4109135793348361820">വിൻഡോ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നതിലേക്ക് നീക്കുക</translation>
 <translation id="4110485659976215879">മുന്നറിയിപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4110490973560452005">ഡൗൺലോഡ് പൂർത്തിയായി: <ph name="FILE_NAME" />. ഡൗണ്‍ലോഡ് വിവരങ്ങളുടെ ബാര്‍ ഏരിയയിലേക്ക് പോകാൻ, Shift+F6 അമർത്തുക.</translation>
@@ -3327,6 +3326,7 @@
 <translation id="4211904048067111541">Android ആപ്പുകളിൽ ഉപയോഗിക്കുന്നത് നിർത്തുക</translation>
 <translation id="42126664696688958">എക്‌സ്‌പോർട്ടുചെയ്യുക</translation>
 <translation id="42137655013211669">ഈ ഉറവിടത്തിലേക്കുള്ള ആക്‌സസ് സെർവർ തടഞ്ഞു.</translation>
+<translation id="4217558091331485702">തുറക്കുന്നതിന് മുമ്പ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="4217571870635786043">പറഞ്ഞ് കൊടുക്കൽ</translation>
 <translation id="4218081191298393750">ഈ ടാബ് മ്യൂട്ട് ചെയ്യാൻ സ്പീക്കർ ഐക്കൺ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="4219558185499589032">Box</translation>
@@ -4351,7 +4351,6 @@
 <translation id="5262784498883614021">നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="5264148714798105376">ഇതിന് ഒന്നോ രണ്ടോ മിനിറ്റ് എടുത്തേക്കാം.</translation>
 <translation id="5264252276333215551">കിയോസ്‌ക് മോഡിൽ നിങ്ങളുടെ ആപ്പ് ലോഞ്ച് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
-<translation id="5265562206369321422">ഒരു ആഴ്‌ചയിലേറെയായി ഓഫ്‌ലൈനിലാണ്</translation>
 <translation id="5265797726250773323">ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിനിടെ പിശക്</translation>
 <translation id="5266113311903163739">സര്‍ട്ടിഫിക്കേഷന്‍ അതോറിറ്റി ഇറക്കുമതി പിശക്</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
@@ -4701,6 +4700,7 @@
 <translation id="5585912436068747822">ഫോർമാറ്റുചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ആപ്പുകൾ ലോഡുചെയ്യുന്നു...</translation>
+<translation id="5591644692203457362">വിപുലീകരിച്ച കീ ഉപയോഗം എല്ലാം</translation>
 <translation id="5592595402373377407">ഇതുവരെയും മതിയായ ഡാറ്റ ലഭ്യമല്ല.</translation>
 <translation id="5593564924968945303">Chrome ബ്രൗസർ</translation>
 <translation id="5595485650161345191">വിലാസം എഡിറ്റ് ചെയ്യുക</translation>
@@ -7156,6 +7156,7 @@
 <translation id="8030169304546394654">വിച്ഛേദിച്ചു</translation>
 <translation id="8030852056903932865">അംഗീകരിക്കുക</translation>
 <translation id="8032244173881942855">ടാബ് കാസ്‌റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
+<translation id="8032569120109842252">പിന്തുടരുന്നു</translation>
 <translation id="8033827949643255796">തിരഞ്ഞെടുത്തു</translation>
 <translation id="8033958968890501070">കാലഹരണപ്പെട്ടു</translation>
 <translation id="8035059678007243127">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ പേജ്: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

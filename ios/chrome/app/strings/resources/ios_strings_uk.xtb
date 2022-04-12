@@ -44,7 +44,6 @@
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1275718070701477396">Вибрано</translation>
 <translation id="1281818060020671000">Керувати даними</translation>
-<translation id="1282311502488501110">Не входити</translation>
 <translation id="1283524564873030414">Останні 24 години</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
@@ -327,6 +326,7 @@
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
 <translation id="3810973564298564668">Керувати</translation>
+<translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Скасувати підписку</translation>
@@ -494,6 +494,7 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Тут показуватимуться сайти, на які ви підписалися</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>
 <translation id="5407969256130905701">Відхилити зміни</translation>
 <translation id="5416022985862681400">Останні 7 днів</translation>
@@ -611,6 +612,7 @@
 <translation id="6344783595350022745">Очистити текст</translation>
 <translation id="6346549652287021269">Почати нове завантаження?</translation>
 <translation id="634878792104344809">Синхронізуйте паролі, історію й інші дані між усіма своїми пристроями</translation>
+<translation id="6361848730467328243">Підписатися на сайт <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Немає анонімних вкладок</translation>
 <translation id="6363526231572697780">Немає імені користувача</translation>
 <translation id="6366190659675876144">Стандартний захист</translation>
@@ -648,6 +650,7 @@
 <translation id="6524918542306337007">Режим анонімного перегляду недоступний</translation>
 <translation id="6530992499366869131">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Перейдіть на сайт і в меню Chrome натисніть "Підписатися"</translation>
 <translation id="6561262006871132942">Наблизити</translation>
 <translation id="6583087784430677195">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Параметри<ph name="END_LINK" /> та перейдіть у розділ "Автозаповнення паролів".</translation>
 <translation id="6585618849026997638">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
@@ -775,6 +778,7 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7671141431838911305">INSTALL</translation>
 <translation id="7701040980221191251">Немає</translation>
+<translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7726702057919861819">Меню → Історія → Очистити історію</translation>
 <translation id="7741325291586284254">Сторінка нової анонімної вкладки</translation>
 <translation id="7765158879357617694">Перемістити</translation>

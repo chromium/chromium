@@ -141,7 +141,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – належыць да групы <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Зарад акумулятара правага навушніка: <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">Дадаць бягучую ўкладку</translation>
-<translation id="1135971365523689618"><ph name="APP_TYPE" /> (усталявана адсюль: <ph name="INSTALL_SOURCE" />)</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Ключ бяспекі заблакіраваны, бо занадта шмат разоў быў уведзены няправільны PIN-код. Каб разблакіраваць, выміце ключ і ўстаўце яго зноў.</translation>
 <translation id="1137589305610962734">часовыя даныя</translation>
@@ -782,6 +781,7 @@
 <translation id="1736419249208073774">Агляд</translation>
 <translation id="1737968601308870607">Зарэгістраваць памылку</translation>
 <translation id="1739684185846730053">Пробныя функцыі Privacy Sandbox яшчэ знаходзяцца на стадыі распрацоўкі і даступныя не ва ўсіх рэгіёнах. Сайты маюць магчымасць выкарыстоўваць некаторыя функцыі Privacy Sandbox, не адмаўляючыся пакуль што ад існуючых вэб-тэхналогій, такіх як староннія файлы cookie.</translation>
+<translation id="1741190788710022490">Адаптыўная зарадка</translation>
 <translation id="174123615272205933">Карыстальніцкія</translation>
 <translation id="1741314857973421784">Далей</translation>
 <translation id="1743970419083351269">Закрыць панэль спамповак</translation>
@@ -1621,6 +1621,7 @@
 <translation id="2530166226437958497">Пошук і выпраўленне непаладак</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на старонцы g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532144599248877204">Падаўжае тэрмін службы акумулятара, падтрымліваючы 80-працэнтны ўзровень зарадкі. К таму моманту, калі вы звычайна адключаеце тэлефон ад сілкавання, акумулятар будзе зараджаны поўнасцю.</translation>
 <translation id="2532198298278778531">Кіраванне абароненай DNS у наладах Chrome OS Flex</translation>
 <translation id="2532589005999780174">Рэжым высокай кантраснасці</translation>
 <translation id="2533649878691950253">Гэтаму сайту быў заблакіраваны доступ да даных пра ваша дакладнае месцазнаходжанне, бо звычайна вы не даяце дазволу на іх выкарыстанне</translation>
@@ -2253,7 +2254,6 @@
 <translation id="3151616662954589507">Франтальная камера</translation>
 <translation id="3151786313568798007">Арыентацыя</translation>
 <translation id="3152356229013609796">Праглядайце і закрывайце апавяшчэнні з тэлефона або адказвайце на іх</translation>
-<translation id="3154429428035006212">Па-за сеткай больш за месяц</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
 <translation id="3157931365184549694">Аднавіць</translation>
 <translation id="3158033540161634471">Наладжванне адбітка пальца</translation>
@@ -2498,7 +2498,7 @@
 <translation id="343115368966109153">Спампаваць файл "<ph name="FILE_NAME" />"? Усе, хто карыстаецца прыладай, змогуць яго бачыць.</translation>
 <translation id="3432227430032737297">Выдаліць усе паказаныя</translation>
 <translation id="3432762828853624962">Сумесныя рабочыя працэсы</translation>
-<translation id="3433507769937235446">Lock-on-leave</translation>
+<translation id="3433507769937235446">Блакіроўка пры аддаленні</translation>
 <translation id="3433621910545056227">Памылка.  Сістэме не ўдалося заблакіраваць атрыбуты часу ўсталявання на прыладзе.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Калі для вашага дзіцяці ўключана налада "Дадатковыя дзеянні ў інтэрнэце і праграмах", то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google. Даведацца больш пра гэтыя налады і іх рэгуліроўку можна на сайце families.google.com.</translation>
@@ -3017,7 +3017,6 @@
 <translation id="3898233949376129212">Мова прылады</translation>
 <translation id="3898327728850887246">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" /> і <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Выбар клавіятуры</translation>
-<translation id="3899879303189199559">Па-за сеткай больш за год</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3903187154317825986">Убудаваная клавіятура</translation>
 <translation id="3904326018476041253">Службы геалакацыі</translation>
@@ -3234,6 +3233,7 @@
 <translation id="4102906002417106771">Перазапусціце, каб скінуць налады функцыяй Powerwash</translation>
 <translation id="4104163789986725820">Ідзе э&amp;кспарт...</translation>
 <translation id="4107048419833779140">Вызначыць і выдаліць прылады сховішча</translation>
+<translation id="4108314971463891922">Падпісацца</translation>
 <translation id="4109135793348361820">Перамясціць акно карыстальніку <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Аднавіць адпраўку заўваг</translation>
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
@@ -4353,7 +4353,6 @@
 <translation id="5262784498883614021">Падключацца да сеткі аўтаматычна</translation>
 <translation id="5264148714798105376">Гэта можа заняць каля хвіліны.</translation>
 <translation id="5264252276333215551">Каб запусціць праграму ў рэжыме кіёска, падключыцеся да інтэрнэту.</translation>
-<translation id="5265562206369321422">Па-за сеткай больш за тыдзень</translation>
 <translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="5266113311903163739">Памылка імпарту файла цэнтра сертыфікацыі</translation>
 <translation id="526622169288322445">Іншыя дзеянні ў дачыненні да атрымальніка <ph name="ADDRESS_SUMMARY" /></translation>
@@ -4367,6 +4366,7 @@
 <translation id="5278823018825269962">Ідэнтыфікатар стану</translation>
 <translation id="5280064835262749532">Змяніце ўліковыя даныя для <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Выдаляць файлы cookie і даныя сайтаў пры закрыцці ўсіх вокнаў</translation>
+<translation id="5280335021886535443">Націсніце |<ph name="ACCELERATOR" />|, каб перайсці да гэтага ўсплывальнага апавяшчэння.</translation>
 <translation id="5280426389926346830">Стварыць ярлык?</translation>
 <translation id="5281013262333731149">Адкрываецца ў браўзеры "<ph name="OPEN_BROWSER" />"</translation>
 <translation id="528208740344463258">Каб спампоўваць і выкарыстоўваць праграмы Android, спачатку ўсталюйце патрэбнае абнаўленне. Пакуль прылада <ph name="DEVICE_TYPE" /> абнаўляецца, вы не можаце яе выкарыстоўваць. Пасля ўсталявання абнаўлення будзе выкананы перазапуск прылады <ph name="DEVICE_TYPE" />.</translation>
@@ -5321,6 +5321,7 @@
 <translation id="622537739776246443">Профіль будзе выдалены</translation>
 <translation id="6225475702458870625">Злучэнне для перадачы даных даступнае з вашай прылады <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Файл закрытага ключа (неабавязкова)</translation>
+<translation id="6227002569366039565">Націсніце |<ph name="ACCELERATOR" />|, каб перайсці да гэтага ўсплывальнага апавяшчэння, а затым яшчэ раз, каб перайсці да элемента, на які яно вядзе.</translation>
 <translation id="6227280783235722609">пашырэнне</translation>
 <translation id="6229849828796482487">Адключыцца ад сеткі Wi-Fi</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
@@ -5347,6 +5348,7 @@
 <translation id="6243774244933267674">Сервер недаступны</translation>
 <translation id="6244245036423700521">Імпартаваць файл ONC</translation>
 <translation id="6246790815526961700">Запампаваць з прылады</translation>
+<translation id="6247557882553405851">Менеджар пароляў Google</translation>
 <translation id="6247620186971210352">Праграмы не знойдзены</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Сістэма: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6123,6 +6125,7 @@
 <translation id="7003844668372540529">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайт можа выкарыстоўваць MIDI</translation>
 <translation id="7004499039102548441">Нядаўнія ўкладкі</translation>
+<translation id="7004562620237466965">Толькі расшыфроўка</translation>
 <translation id="7004969808832734860">Скідка да <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Дадатковыя дазволы</translation>
 <translation id="7005812687360380971">Памылка</translation>
@@ -6342,6 +6345,8 @@
 <translation id="7251346854160851420">Стандартныя шпалеры</translation>
 <translation id="7251635775446614726">Паведамленне ад адміністратара: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467">Сайт <ph name="WEBSITE" /> выдаў вам ключ бяспекі і хоча атрымаць яго ідэнтыфікацыйны нумар. Сайт будзе дакладна ведаць, які ключ бяспекі вы выкарыстоўваеце.</translation>
+<translation id="7252023374029588426">Вы пабачыце шэраг усплывальных апавяшчэнняў з інструкцыямі.
+          Націсніце |<ph name="ACCELERATOR" />|, каб перайсці да пэўнага апавяшчэння, а затым яшчэ раз, каб перайсці да элемента, на які яно вядзе.</translation>
 <translation id="7253521419891527137">&amp;Даведацца больш</translation>
 <translation id="7254951428499890870">Сапраўды запусціць у рэжыме дыягностыкі праграму "<ph name="APP_NAME" />"?</translation>
 <translation id="725497546968438223">Кнопка папкі з закладкамі</translation>
@@ -7149,6 +7154,7 @@
 <translation id="8030169304546394654">Адключана</translation>
 <translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8032244173881942855">Не ўдалося трансліраваць укладку.</translation>
+<translation id="8032569120109842252">Вы падпісаны</translation>
 <translation id="8033827949643255796">вылучана</translation>
 <translation id="8033958968890501070">Час скончыўся</translation>
 <translation id="8035059678007243127">Старонка ў рэжыме інкогніта, захаваная ў кэшы пераходу назад і наперад: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7459,6 +7465,7 @@
 <translation id="8330617762701840933">Спіс вэб-сайтаў, якія адкрываюцца ў альтэрнатыўным браўзеры.</translation>
 <translation id="8330689128072902965">Абагульваць з вамі сваё змесціва могуць кантакты, якія знаходзяцца паблізу. Націсніце, каб змяніць гэта.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Сумяшчальны тып файлаў: <ph name="FILE_TYPE1" />}=2{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331822764922665615">Дайце назву групе і выберыце колер, затым націсніце Esc</translation>
 <translation id="833256022891467078">Абагуленыя папкі Crostini</translation>
 <translation id="8335587457941836791">Адмацаваць з паліцы</translation>
 <translation id="8336407002559723354">Дата спынення абнаўленняў — <ph name="MONTH_AND_YEAR" /></translation>
@@ -7533,6 +7540,7 @@
 <translation id="8412136526970428322">Дазволена: <ph name="PERMISSION" /> і яшчэ <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Спачатку запытваць (рэкамендуецца)</translation>
 <translation id="8414249071344507766">Успаміны схаваны на два дні</translation>
+<translation id="8414685983518053656">Нататкі</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
 <translation id="8417548266957501132">Бацькоўскі пароль</translation>
 <translation id="8418445294933751433">&amp;Паказаць як укладку</translation>

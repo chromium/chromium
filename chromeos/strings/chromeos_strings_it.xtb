@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Attuale</translation>
+<translation id="2491955442992294626">I tasti non vengono testati quando utilizzi un'altra finestra</translation>
 <translation id="2493126929778606526">Le tue foto migliori selezionate automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Aggiorna l'immagine di sfondo corrente</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
 <translation id="2695514675076754339">Inserisci il codice di sblocco di 8 caratteri</translation>
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
+<translation id="2717139507051041123">Attiva la modalità Colore scuro</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticazione fase 2 di tipo EAP</translation>
 <translation id="2783010256799387990">SUPERATO</translation>
@@ -209,6 +211,7 @@
 <translation id="3488065109653206955">Attivato parzialmente</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
+<translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
@@ -375,6 +378,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Attiva la modalità Colore chiaro</translation>
 <translation id="5264277876637023664">Esegui test CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Riesegui le routine</translation>
@@ -485,6 +489,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
 <translation id="6456394469623773452">Accettabile</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -527,6 +532,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
 <translation id="6935486296377631201">Salvaschermo</translation>
+<translation id="6943893908656559156">Identità remota (facoltativa)</translation>
 <translation id="6957231940976260713">Nome servizio</translation>
 <translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -567,6 +573,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Cambia salvaschermo</translation>
 <translation id="741244894080940828">conversione</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +596,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7656388927906093505">Il dispositivo è un mouse.</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7665800271478495366">Cambia avatar</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -616,6 +624,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>

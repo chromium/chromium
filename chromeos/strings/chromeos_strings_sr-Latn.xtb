@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
+<translation id="2491955442992294626">Tasteri se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Najbolje automatski izabrane slike</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Osvežite aktuelnu sliku pozadine</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">Izabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Unesite kôd za otključavanje od 8 znakova</translation>
 <translation id="2712812801627182647">Ključ za TLS potvrdu identiteta</translation>
+<translation id="2717139507051041123">Omogućite režim tamne boje</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2751739896257479635">EAP potvrda identiteta 2. faze:</translation>
 <translation id="2783010256799387990">PROŠLO</translation>
@@ -376,6 +378,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5252456968953390977">Roming</translation>
+<translation id="5257811368506016604">Omogućite režim svetle boje</translation>
 <translation id="5264277876637023664">Pokreni test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
@@ -486,6 +489,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Otvorite podešavanja naloga</translation>
 <translation id="6456394469623773452">Dobar</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite da ponovo skenirate stranicu?}=1{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}one{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}few{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}other{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +573,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Promenite čuvar ekrana</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +596,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
+<translation id="7665800271478495366">Promenite avatar</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +624,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7994702968232966508">EAP metod</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>

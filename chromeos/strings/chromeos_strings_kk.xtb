@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">"<ph name="TITLE" />" (<ph name="DESC" />) альбомы таңдалды.</translation>
 <translation id="2695514675076754339">8 таңбалы құлыпты ашу кодын енгізіңіз.</translation>
 <translation id="2712812801627182647">TLS аутентификация кілті</translation>
+<translation id="2717139507051041123">Қараңғы түс режимін қосу</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2751739896257479635">EAP 2-фаза аутентификациясы</translation>
 <translation id="2783010256799387990">ӨТТІ</translation>
@@ -209,6 +210,7 @@
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
+<translation id="3557205324756024651">Жергілікті идентификация (қосымша)</translation>
 <translation id="3565064564551103223">Рұқсат етілген IP мекенжайлары</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
@@ -374,6 +376,7 @@
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5252456968953390977">Роуминг</translation>
+<translation id="5257811368506016604">Ашық түс режимін қосу</translation>
 <translation id="5264277876637023664">Орталық процессор тексерісін іске қосу</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Режимдерді қайта іске қосу</translation>
@@ -484,6 +487,7 @@
 <translation id="641081527798843608">Тақырып сәйкестігі</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Әлсіз (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Аккаунт параметрлеріне өту</translation>
 <translation id="6456394469623773452">Жақсы</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бетті қайта сканерлеу керек пе?}=1{{PAGE_NUMBER}-бетті қайта сканерлеу керек пе?}other{{PAGE_NUMBER}-бетті қайта сканерлеу керек пе?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -526,6 +530,7 @@
 <translation id="6910312834584889076">Сканердің жапқышы ашық. Оның жапқышын жауып, әрекетті қайталаңыз.</translation>
 <translation id="6911383237894364323">Медиасерверлерге қосылмады.</translation>
 <translation id="6935486296377631201">Скринсейвер</translation>
+<translation id="6943893908656559156">Қашықтағы идентификация (қосымша)</translation>
 <translation id="6957231940976260713">Қызмет атауы</translation>
 <translation id="6961170852793647506">Бастау үшін құжатты сканерге қойыңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
@@ -566,6 +571,7 @@
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
 <translation id="7359657277149375382">Файл түрі</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Скринсейверді өзгерту</translation>
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -588,6 +594,7 @@
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7656388927906093505">Бұл — тінтуір.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7665800271478495366">Аватарды өзгерту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -615,6 +622,7 @@
 <translation id="7994702968232966508">EAP әдісі</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Автобаланс режимін қосу</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="8082366717211101304">Android қолданбаларынан DNS-ті анықтау мүмкін емес.</translation>

@@ -44,7 +44,6 @@
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1281818060020671000">ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
-<translation id="1282311502488501110">സൈൻ ഇൻ ചെയ്യരുത്</translation>
 <translation id="1283524564873030414">അവസാന 24 മണിക്കൂർ</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1291506870746876680">നിങ്ങൾ സൈറ്റിൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ "<ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> അനുമതികൾ ഓഫാക്കി റീസെറ്റ് ചെയ്യും.</translation>
@@ -327,6 +326,7 @@
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
+<translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
@@ -494,6 +494,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5339316356165661760">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="5360976571138293719">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന്, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> കാണുക.</translation>
+<translation id="5386314158584363703">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
 <translation id="5388358297987318779">ചിത്രം തുറക്കുക</translation>
 <translation id="5407969256130905701">മാറ്റങ്ങൾ നിരസിക്കുക</translation>
 <translation id="5416022985862681400">കഴിഞ്ഞ 7 ദിവസം</translation>
@@ -611,6 +612,7 @@
 <translation id="6344783595350022745">വാചകം മായ്‌ക്കുക</translation>
 <translation id="6346549652287021269">പുതിയ ഡൗൺലോഡ് ആരംഭിക്കണോ?</translation>
 <translation id="634878792104344809">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
+<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> പിന്തുടരുക</translation>
 <translation id="6362362396625799311">ആൾമാറാട്ട ടാബുകളൊന്നുമില്ല</translation>
 <translation id="6363526231572697780">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="6366190659675876144">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ</translation>
@@ -648,6 +650,7 @@
 <translation id="6524918542306337007">അദൃശ്യ മോഡ് ലഭ്യമല്ല</translation>
 <translation id="6530992499366869131">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">ഒരു സൈറ്റ് സന്ദർശിച്ച ശേഷം Chrome മെനുവിലെ പിന്തുടരുക ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6561262006871132942">സൂം ഇൻ ചെയ്യുക</translation>
 <translation id="6583087784430677195">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> തുറന്ന് പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കൽ എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="6585618849026997638">ബുക്ക്‌മാർക്ക് ചേർക്കുന്നതിലൂടെ, നിങ്ങൾക്ക് പ്രധാനപ്പെട്ട പേജിലേക്ക് മടങ്ങാനാകും</translation>
@@ -775,6 +778,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7671141431838911305">ഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
+<translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7726702057919861819">മെനു → ചരിത്രം → ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="7741325291586284254">പുതിയ അദൃശ്യ ടാബ് പേജ്</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>

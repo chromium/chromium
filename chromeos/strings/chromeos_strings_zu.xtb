@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">I-Albhamu <ph name="TITLE" /> <ph name="DESC" /> ikhethiwe</translation>
 <translation id="2695514675076754339">Faka ikhodi yokuvula enezinhlamvu eziyi-8</translation>
 <translation id="2712812801627182647">Ukhiye wokufakazela ubuqiniso be-TLS</translation>
+<translation id="2717139507051041123">Nika amandla imodi yombala omnyama</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Ukufakazela ubuqiniso kabili kwesigaba se-EAP</translation>
 <translation id="2783010256799387990">KUPHUMELELE</translation>
@@ -376,6 +377,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5252456968953390977">Ukuzulazula</translation>
+<translation id="5257811368506016604">Nika amandla imodi yombala okhanyayo</translation>
 <translation id="5264277876637023664">Qalisa ukuhlolwa kwe-CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Sebenzisa kabusha Imijikelezo</translation>
@@ -486,6 +488,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="641081527798843608">Ukufana kwesihloko</translation>
 <translation id="6423239382391657905">I-OpenVPN</translation>
 <translation id="6439505561246192797">Buthakathaka (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Iya kumasethingi e-akhawunti</translation>
 <translation id="6456394469623773452">Kulungile</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skena kabusha ikhasi?}=1{Skena kabusha ikhasi {PAGE_NUMBER}?}one{Skena kabusha ikhasi {PAGE_NUMBER}?}other{Skena kabusha ikhasi {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">I-OTP</translation>
@@ -569,6 +572,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7343649194310845056">Amadivayisi Enethiwekhi</translation>
 <translation id="7359657277149375382">Uhlobo lwefayela</translation>
 <translation id="7375053625150546623">I-EAP</translation>
+<translation id="7378886533986123738">Shintsha isigcini sesikrini</translation>
 <translation id="741244894080940828">ukuguqulwa</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
@@ -591,6 +595,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7648838807254605802">Ukubambezeleka okuphezulu kwe-HTTPS</translation>
 <translation id="7656388927906093505">Idivayisi iyimawusi.</translation>
 <translation id="7658239707568436148">Khansela</translation>
+<translation id="7665800271478495366">Shintsha isithombe</translation>
 <translation id="7690294790491645610">Qinisekisa iphasiwedi entsha</translation>
 <translation id="7701040980221191251">Lutho</translation>
 <translation id="7705524343798198388">I-VPN</translation>
@@ -618,6 +623,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7994702968232966508">Indlela ye-EAP</translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
 <translation id="8031884997696620457">I-HSPAPlus</translation>
+<translation id="80398733265834479">Nika amandla imodi yombala ozenzakalelayo</translation>
 <translation id="8041089156583427627">Thumela impendulo</translation>
 <translation id="8075838845814659848">Inkokhelo esele</translation>
 <translation id="8082366717211101304">Ayikwazi ukuxazulula i-DNS kusukela kuma-app we-Android</translation>

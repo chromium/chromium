@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
+<translation id="2491955442992294626">మీరు మరొక విండోను ఉపయోగిస్తున్నప్పుడు కీలను టెస్ట్ చేయలేరు</translation>
 <translation id="2493126929778606526">ఆటోమేటిక్‌గా ఎంపిక చేసిన మీ ఉత్తమ ఫోటోలు</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">ప్రస్తుత వాల్‌పేపర్ ఇమేజ్‌ను రిఫ్రెష్ చేయండి</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్ ఎంచుకోబడింది</translation>
 <translation id="2695514675076754339">8-అక్షరాల అన్‌లాక్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="2712812801627182647">TLS ప్రామాణీకరణ కీ</translation>
+<translation id="2717139507051041123">ముదురు రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
@@ -375,6 +377,7 @@
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5234764350956374838">తొలగించు</translation>
 <translation id="5252456968953390977">రోమింగ్</translation>
+<translation id="5257811368506016604">లేత రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="5264277876637023664">CPU పరీక్షను రన్ చేయండి</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">రొటీన్‌లను మళ్లీ అమలు చేయి</translation>
@@ -485,6 +488,7 @@
 <translation id="641081527798843608">విషయ సరిపోలిక</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">బలహీనం (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">ఖాతా సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6456394469623773452">శ్రేష్టమైనది</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయాలా?}=1{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}other{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -568,6 +572,7 @@
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="741244894080940828">మార్పిడి</translation>
 <translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -590,6 +595,7 @@
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7656388927906093505">పరికరం రకం మౌస్.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
+<translation id="7665800271478495366">అవతార్‌ను మార్చండి</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -617,6 +623,7 @@
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>

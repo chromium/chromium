@@ -143,7 +143,6 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> 그룹에 속함</translation>
 <translation id="1130676589211693127">오른쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">현재 탭 추가</translation>
-<translation id="1135971365523689618"><ph name="INSTALL_SOURCE" />에서 설치된 <ph name="APP_TYPE" />입니다.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />개 중 <ph name="EMOJI_INDEX" />번째.</translation>
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>
 <translation id="1137589305610962734">임시 데이터</translation>
@@ -790,6 +789,7 @@
 <translation id="1736419249208073774">탐색</translation>
 <translation id="1737968601308870607">버그 신고</translation>
 <translation id="1739684185846730053">개인 정보 보호 샌드박스 무료 체험은 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 현재 사이트는 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인 정보 보호 샌드박스를 사용해 볼 수 있습니다.</translation>
+<translation id="1741190788710022490">자동 조절 충전</translation>
 <translation id="174123615272205933">맞춤</translation>
 <translation id="1741314857973421784">계속</translation>
 <translation id="1743970419083351269">다운로드바 닫기</translation>
@@ -1633,6 +1633,7 @@
 <translation id="2530166226437958497">문제 해결</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" /> 운영체제를 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />도움이 필요하면 다음 페이지를 참고하세요. g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532144599248877204">배터리 잔량을 80% 수준으로 유지하여 배터리 수명을 늘립니다. 평소에 전원을 분리하는 시점까지 배터리가 완전히 충전됩니다.</translation>
 <translation id="2532198298278778531">ChromeOS Flex 설정에서 보안 DNS 관리</translation>
 <translation id="2532589005999780174">고대비 모드</translation>
 <translation id="2533649878691950253">내가 일반적으로 이 옵션을 허용하지 않으므로 사이트에서 나의 정확한 위치를 확인하지 못하도록 차단했습니다.</translation>
@@ -2266,7 +2267,6 @@
 <translation id="3151616662954589507">셀카 카메라</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
-<translation id="3154429428035006212">1달 이상 오프라인 상태</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158033540161634471">지문 설정</translation>
@@ -3030,7 +3030,6 @@
 <translation id="3898233949376129212">기기 언어</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" /> 및 <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">키보드 선택</translation>
-<translation id="3899879303189199559">1년 이상 오프라인 상태</translation>
 <translation id="3900966090527141178">비밀번호 내보내기</translation>
 <translation id="3903187154317825986">내장 키보드</translation>
 <translation id="3904326018476041253">위치 서비스</translation>
@@ -3245,6 +3244,7 @@
 <translation id="4102906002417106771">다시 시작하여 파워워시</translation>
 <translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
+<translation id="4108314971463891922">팔로우</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
@@ -4365,7 +4365,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5262784498883614021">자동으로 네트워크에 연결</translation>
 <translation id="5264148714798105376">1분 정도 소요될 수 있습니다.</translation>
 <translation id="5264252276333215551">앱을 키오스크 모드로 실행하려면 인터넷에 연결하세요.</translation>
-<translation id="5265562206369321422">1주 이상 오프라인 상태</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
@@ -4379,6 +4378,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5278823018825269962">상태 ID</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> 사용자 인증 정보 업데이트</translation>
 <translation id="5280243692621919988">모든 창이 닫히면 쿠키 및 사이트 데이터 삭제</translation>
+<translation id="5280335021886535443">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정하세요.</translation>
 <translation id="5280426389926346830">바로가기를 만드시겠습니까?</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" />에서 열기</translation>
 <translation id="528208740344463258">Android 앱을 다운로드하고 사용하려면 우선 필수 업데이트를 설치해야 합니다. 업데이트 중에는 <ph name="DEVICE_TYPE" /> 기기를 사용할 수 없습니다. 설치가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
@@ -5334,6 +5334,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="622537739776246443">프로필이 삭제됩니다</translation>
 <translation id="6225475702458870625">데이터 연결을 <ph name="PHONE_NAME" />에서 사용할 수 있습니다.</translation>
 <translation id="6226777517901268232">비공개 키 파일(선택사항)</translation>
+<translation id="6227002569366039565">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="6227280783235722609">확장 프로그램</translation>
 <translation id="6229849828796482487">Wi-Fi 네트워크 연결 해제</translation>
 <translation id="6231782223312638214">추천</translation>
@@ -5360,6 +5361,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6243774244933267674">서버를 사용할 수 없음</translation>
 <translation id="6244245036423700521">ONC 파일 가져오기</translation>
 <translation id="6246790815526961700">기기에서 업로드</translation>
+<translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">시스템: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6356,6 +6358,8 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7251346854160851420">기본 배경화면</translation>
 <translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" />에서 보안 키를 발행했으며 보안 키의 ID 번호를 알고 싶어 합니다. 사이트에서 내가 사용하는 보안 키를 정확히 알 수 있습니다.</translation>
+<translation id="7252023374029588426">안내가 담긴 튜토리얼 풍선이 여러 개 표시됩니다.
+          |<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="7253521419891527137">자세히 알아보기(&amp;L)</translation>
 <translation id="7254951428499890870">'<ph name="APP_NAME" />'을(를) 진단 모드로 실행하시겠습니까?</translation>
 <translation id="725497546968438223">북마크 폴더 버튼</translation>
@@ -7166,6 +7170,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8030852056903932865">승인</translation>
 <translation id="8032244173881942855">탭을 전송할 수 없습니다.</translation>
+<translation id="8032569120109842252">팔로우 중</translation>
 <translation id="8033827949643255796">선택됨</translation>
 <translation id="8033958968890501070">시간 초과</translation>
 <translation id="8035059678007243127">시크릿 모드 뒤로-앞으로 캐시 페이지: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7476,6 +7481,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8330617762701840933">대체 브라우저로 리디렉션되는 웹사이트의 목록입니다.</translation>
 <translation id="8330689128072902965">주변 연락처가 나와 파일을 공유할 수 있습니다. 변경하려면 클릭하세요.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{지원되는 파일 형식: <ph name="FILE_TYPE1" />}=2{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{지원되는 파일 형식 <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />(<ph name="LINK" />이외의 {OVERFLOW_COUNT}개 더보기<ph name="END_LINK" />)}}</translation>
+<translation id="8331822764922665615">그룹 이름을 지정하고 색상을 선택한 후 Esc 키를 누르세요.</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
 <translation id="8335587457941836791">실행기에서 고정 해제</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" />에 업데이트 종료</translation>
@@ -7550,6 +7556,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413385045638830869">우선 확인(권장)</translation>
 <translation id="8414249071344507766">이틀 동안 추억 숨김</translation>
+<translation id="8414685983518053656">참고</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8417548266957501132">부모 비밀번호</translation>
 <translation id="8418445294933751433">탭으로 표시(&amp;S)</translation>

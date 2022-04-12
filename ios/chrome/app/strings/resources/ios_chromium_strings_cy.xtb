@@ -6,7 +6,6 @@
 <translation id="1091252999271033193">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan symudol bob tro.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1257458525759135959">I gadw lluniau, tapiwch ar Gosodiadau i ganiatáu i Chromium ychwanegu at eich lluniau</translation>
-<translation id="1266817106503861676">Gwneud rhagor â Chromium syml, diogel a chyflymach nag erioed.</translation>
 <translation id="1289216811211435351">Newid i Chromium</translation>
 <translation id="1361748954329991663">Mae Chromium yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chromium mwyach.</translation>
 <translation id="1431818719585918472">Caniatáu i Chromium gloi eich tabiau Anhysbys.</translation>
@@ -56,15 +55,6 @@
 <translation id="4828317641996116749">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4985291216379576555">All-lein, ni all Chromuim wirio am ddiweddariadau</translation>
 <translation id="4999538639245140991">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chromium yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
-<translation id="5039881550736388123">Pan fydd ymlaen:
-<ph name="BEGIN_INDENT" />  • Helpwch i wneud Chromium yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
-
-Pethau i'w hystyried:
-<ph name="BEGIN_INDENT" />  • Anfonir gwybodaeth at Google am eich defnydd Chromium, ond nid yw'n gysylltiedig â chi.
-
-  • Os bydd Chromium yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
-
-  • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Mewngofnodi i Chromium</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5308226104666789935">Ni all Chromium wirio am ddiweddariadau</translation>
@@ -106,7 +96,6 @@ Pethau i'w hystyried:
 <translation id="7400689562045506105">Defnyddiwch Chromium Ymhobman</translation>
 <translation id="766897673682622022">Datgelwyd eich cyfrinair mewn tor data. Mae Chromium yn argymell newid y cyfrinair ar unwaith.</translation>
 <translation id="7674213385180944843">Agorwch Gosodiadau &gt; Preifatrwydd &gt; Camera &gt; Chromium a throwch y camera ymlaen.</translation>
-<translation id="7724877991918731397">Er mwyn helpu i wella'r ap, mae Chromium yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Awgrym Chromium. Mae rhai botymau bellach ar waelod eich sgrîn, megis Back, Forward, a Search.</translation>
 <translation id="7763454117143368771">Defnyddiwch Chromium fel eich porwr diofyn i gadw yn ddiogel rhag gwefannau peryglus ac i gadw eich cyfrineiriau'n ddiogel</translation>
 <translation id="786327964234957808">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chromium presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>

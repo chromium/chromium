@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
+<translation id="2491955442992294626">Klávesy nie sú testované, keď používate iné okno</translation>
 <translation id="2493126929778606526">Vaše najlepšie fotky, vybrané automaticky</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Obnoviť aktuálny obrázok tapety</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> bol vybraný</translation>
 <translation id="2695514675076754339">Zadajte odomykací kód s ôsmimi znakmi</translation>
 <translation id="2712812801627182647">Overovací kľúč TLS</translation>
+<translation id="2717139507051041123">Povoliť tmavý farebný režim</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
 <translation id="2783010256799387990">ÚSPEŠNÉ</translation>
@@ -376,6 +378,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Povoliť svetlý farebný režim</translation>
 <translation id="5264277876637023664">Spustiť test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Znova spustiť postupy</translation>
@@ -486,6 +489,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabé (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Prejsť do nastavení účtu</translation>
 <translation id="6456394469623773452">Dobré</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Chcete stranu naskenovať znova?}=1{Chcete {PAGE_NUMBER} stranu naskenovať znova?}few{Chcete {PAGE_NUMBER} strany naskenovať znova?}many{Chcete {PAGE_NUMBER} strany naskenovať znova?}other{Chcete {PAGE_NUMBER} strán naskenovať znova?}}</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
@@ -569,6 +573,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Zmeniť šetrič obrazovky</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +596,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
 <translation id="7656388927906093505">Zariadenie je myš.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
+<translation id="7665800271478495366">Zmeniť avatar</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +624,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Povoliť automatický farebný režim</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
 <translation id="8082366717211101304">DNS sa nedá preložiť v aplikáciách pre Android</translation>

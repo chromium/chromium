@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
 <translation id="2919738076569633423">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK_TOS" />सेवा अटी<ph name="END_LINK_TOS" /> यांना सहमती दर्शवता.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> निवडा</translation>
-<translation id="2993413480261249761">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा.</translation>
 <translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
-<translation id="3121002401028999199">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश अहवाल पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="3173834708294760622">Google Chrome पेज</translation>
 <translation id="3196546062792660320">तुमची खाती वेबवर आणून Chrome तुमचा वेळ वाचविते. तुम्ही सेटिंग्जमध्ये खाती जोडू किंवा काढू शकता.</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. Google पासवर्ड व्यवस्थापक तो आता बदलण्याची शिफारस करतो.</translation>
 <translation id="6822673484890854830">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="6964931465519938134">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chrome वापरू शकता.</translation>
-<translation id="7046845777663074840">सुरू असेल तेव्हा:
-<ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chrome वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />
-
-विचार करण्याच्या गोष्टी:
-<ph name="BEGIN_INDENT" />  • Google ला तुमच्या Chrome वापराशी संबंधित माहिती पाठवली जाते, पण यामध्ये तुमच्याशी संबंधित माहितीचा समावेश नसतो.
-
-  • Chrome क्रॅश झाल्यास, क्रॅशशी संबंधित तपशिलांमध्ये कदाचित काही वैयक्तिक माहितीचा समावेश असू शकतो.
-
-  • तुम्ही सिंक सुरू केल्यास, मेट्रिकमध्ये कदाचित तुम्ही भेट दिलेल्या URL शी संबंधित माहितीचादेखील समावेश असू शकतो.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Chrome ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7124339256045485976">Chrome अप टू डेट ठेवा</translation>
 <translation id="7161390184744336561">Google Chrome कालबाह्य झाले आहे</translation>

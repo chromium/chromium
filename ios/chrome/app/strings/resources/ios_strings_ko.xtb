@@ -44,7 +44,6 @@
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1281818060020671000">데이터 관리</translation>
-<translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1283524564873030414">지난 24시간</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1291506870746876680">사이트를 나가면 <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> 권한이 사용 안함으로 재설정됩니다.</translation>
@@ -327,6 +326,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="380329542618494757">이름</translation>
 <translation id="3803696231112616155">이 사이트 번역 옵션 제공</translation>
 <translation id="3810973564298564668">관리</translation>
+<translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3861486700625780712">팔로우 해제</translation>
@@ -775,6 +775,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7658239707568436148">취소</translation>
 <translation id="7671141431838911305">설치</translation>
 <translation id="7701040980221191251">없음</translation>
+<translation id="7720410380936703141">다시 시도</translation>
 <translation id="7726702057919861819">메뉴 → 방문 기록 → 인터넷 사용 기록 삭제</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
 <translation id="7765158879357617694">이동</translation>

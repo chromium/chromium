@@ -224,6 +224,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2302092602801625023">Acest cont este gestionat de Family Link</translation>
 <translation id="2303600792989757991">Activați/Dezactivați prezentarea ferestrei</translation>
 <translation id="2318576281648121272">Astăzi, la <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, categoria de rezultate ale căutării</translation>
 <translation id="2322173485024759474">Înapoi cu o literă</translation>
 <translation id="2339073806695260576">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești indicatorul laser sau lupa.</translation>
 <translation id="2341729377289034582">Blocată pe verticală</translation>
@@ -591,6 +592,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4481530544597605423">Dispozitive neasociate</translation>
 <translation id="4505050298327493054">Desktop activ.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516867700536986208">Toate aplicațiile, navighează cu săgețile la stânga sau în jos pentru a le accesa</translation>
 <translation id="4518404433291145981">Pentru a te conecta la Chromebook, mai întâi deblochează telefonul</translation>
 <translation id="4527045527269911712">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> până la încărcare completă</translation>
@@ -920,6 +922,7 @@ Instalare nouă</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> solicită permisiunea de a folosi microfonul</translation>
 <translation id="6637729079642709226">Schimbă ora</translation>
 <translation id="6641720045729354415">Activează / dezactivează funcția Subtitrări live. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Anulează sortarea după nume</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="6650933572246256093">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți această parolă pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parolă</translation>
@@ -1020,6 +1023,7 @@ Instalare nouă</translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
 <translation id="7303365578352795231">Se răspunde pe alt dispozitiv.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Aplicațiile recente, navighează cu săgeata la stânga pentru a le accesa</translation>
 <translation id="7313193732017069507">Extinde camera</translation>
 <translation id="731589979057211264">Modul Shelf Party este activat.</translation>
 <translation id="7319740667687257810">Lansator, afișare parțială</translation>
@@ -1225,6 +1229,8 @@ Instalare nouă</translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
+<translation id="8535393432370007982">Anulează sortarea după culoare</translation>
+<translation id="8546059259582788728">Sortarea a fost anulată</translation>
 <translation id="8551588720239073785">Setări de dată și oră</translation>
 <translation id="8553395910833293175">A fost deja atribuită tuturor desktopurilor.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recomandă să actualizezi dispozitivul <ph name="DEVICE_TYPE" /></translation>

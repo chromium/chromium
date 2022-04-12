@@ -209,6 +209,7 @@
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
+<translation id="3557205324756024651">로컬 ID(선택사항)</translation>
 <translation id="3565064564551103223">허용된 IP</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
@@ -527,6 +528,7 @@
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
 <translation id="6935486296377631201">화면 보호기</translation>
+<translation id="6943893908656559156">원격 ID(선택사항)</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
 <translation id="6965382102122355670">확인</translation>

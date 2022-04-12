@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="2919738076569633423">Chromeનો ઉપયોગ કરીને, તમે તેની <ph name="BEGIN_LINK_TOS" />સેવાની શરતો<ph name="END_LINK_TOS" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome <ph name="END_BOLD" />પસંદ કરો</translation>
-<translation id="2993413480261249761">Google Chromeના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
 <translation id="3030414234702425231">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chrome ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
-<translation id="3121002401028999199">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ રિપોર્ટ Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">તમારું એકાઉન્ટ, Google Chrome પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="3173834708294760622">Google Chrome પેજ</translation>
 <translation id="3196546062792660320">વેબ પર તમારા એકાઉન્ટ લાવીને Chrome તમારો સમય બચાવે છે. તમે સેટિંગમાં એકાઉન્ટ ઉમેરી અથવા કાઢી નાખી શકો છો.</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. Google પાસવર્ડ મેનેજર હમણાં જ તેને ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="6822673484890854830">Chrome બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6964931465519938134">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો.</translation>
-<translation id="7046845777663074840">જ્યારે ચાલુ હોય:
-<ph name="BEGIN_INDENT" />  • તમે જે રીતે કરો છો, તે રીતે Chromeનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
-
-ધ્યાનમાં લેવા જેવી બાબતો:
-<ph name="BEGIN_INDENT" />  • Chromeના તમારા વપરાશની માહિતી Googleને મોકલવામાં આવે છે, પણ તેને તમારી સાથે સાંકળવામાં આવતી નથી.
-
-  • જો Chrome ક્રૅશ થાય, તો ક્રૅશની વિગતોમાં અમુક વ્યક્તિગત માહિતીનો સમાવેશ થઈ શકે છે.
-
-  • જો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="7124339256045485976">Chrome અપ ટૂ ડેટ રાખો</translation>
 <translation id="7161390184744336561">Google Chrome જૂનું થઈ ગયું છે</translation>

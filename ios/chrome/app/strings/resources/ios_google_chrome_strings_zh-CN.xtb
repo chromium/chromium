@@ -30,9 +30,7 @@
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
-<translation id="3121002401028999199">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
 <translation id="3173834708294760622">Google Chrome 网页</translation>
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
@@ -83,15 +81,6 @@
 <translation id="6709398533399187136">您的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
-<translation id="7046845777663074840">处于开启状态时：
-<ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能够获享更好的体验。<ph name="END_INDENT" />
-
-注意事项：
-<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chrome 使用情况相关的信息，但这些信息与您没有关联。
-
-  • 如果 Chrome 崩溃，崩溃事件的相关详情中可能会包含一些个人信息。
-
-  • 如果您开启同步功能，相关指标可能会包含与您访问的网址相关的信息。<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
 <translation id="7124339256045485976">让 Chrome 保持最新状态</translation>
 <translation id="7161390184744336561">Google Chrome 版本太旧</translation>
