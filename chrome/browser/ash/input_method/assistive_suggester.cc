@@ -135,15 +135,16 @@ void RecordTextInputStateMetric(AssistiveTextInputState state) {
                                 state);
 }
 
-void RecordMultiWordTextInputState(PrefService* pref_service,
-                                   AssistiveSuggesterSwitch* suggester_switch,
-                                   const std::string& engine_id) {
+void RecordMultiWordTextInputState(
+    PrefService* pref_service,
+    const std::string& engine_id,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (IsLacrosEnabled()) {
     RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedClient);
     return;
   }
 
-  if (!suggester_switch->IsMultiWordSuggestionAllowed()) {
+  if (!enabled_suggestions.multi_word_suggestions) {
     RecordTextInputStateMetric(
         AssistiveTextInputState::kFeatureBlockedByDenylist);
     return;
@@ -335,7 +336,9 @@ void AssistiveSuggester::OnFocus(int context_id) {
   personal_info_suggester_.OnFocus(context_id_);
   emoji_suggester_.OnFocus(context_id_);
   multi_word_suggester_.OnFocus(context_id_);
-  RecordTextInputStateMetrics();
+  suggester_switch_->FetchEnabledSuggestionsThen(
+      base::BindOnce(&AssistiveSuggester::RecordTextInputStateMetrics,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AssistiveSuggester::OnBlur() {
@@ -409,10 +412,11 @@ void AssistiveSuggester::ProcessExternalSuggestions(
   }
 }
 
-void AssistiveSuggester::RecordTextInputStateMetrics() {
+void AssistiveSuggester::RecordTextInputStateMetrics(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (features::IsAssistiveMultiWordEnabled()) {
-    RecordMultiWordTextInputState(profile_->GetPrefs(), suggester_switch_.get(),
-                                  active_engine_id_);
+    RecordMultiWordTextInputState(profile_->GetPrefs(), active_engine_id_,
+                                  enabled_suggestions);
   }
 }
 

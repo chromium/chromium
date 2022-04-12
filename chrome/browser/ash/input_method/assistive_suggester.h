@@ -159,7 +159,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // This records any text input state metrics for each relevant assistive
   // feature. It is called once when a text field gains focus.
-  void RecordTextInputStateMetrics();
+  void RecordTextInputStateMetrics(
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   Profile* profile_;
   PersonalInfoSuggester personal_info_suggester_;
