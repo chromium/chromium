@@ -470,7 +470,7 @@ public class FeedV2NewTabPageTest {
      */
     private void toggleHeader(boolean expanded) {
         onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
-                .perform(RecyclerViewActions.scrollToPosition(0));
+                .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         onView(withId(R.id.header_menu)).perform(click());
 
         onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
