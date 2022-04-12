@@ -13,7 +13,7 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
     await importModule(
         'BluetoothBrailleDisplayUI',
-        '/chromevox/braille/bluetooth_braille_display_ui.js');
+        '/chromevox/background/braille/bluetooth_braille_display_ui.js');
   }
 
   /** Label of the select. @type {string} */
