@@ -10,13 +10,14 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "action_strategy.proto";
-import "action_value.proto";
-import "cud_condition.proto";
-import "dom_action.proto";
-import "generic_ui.proto";
-import "model.proto";
-import "view_layout.proto";
+import "browser/action_strategy.proto";
+import "browser/action_value.proto";
+import "browser/cud_condition.proto";
+import "browser/dom_action.proto";
+import "browser/generic_ui.proto";
+import "browser/model.proto";
+import "browser/view_layout.proto";
+import "content/common/proto/semantic_feature_overrides.proto";
 
 // A field trial containing the name of the trial and the name of the
 // randomly selected trial group.
@@ -168,6 +169,9 @@ message SupportsScriptResponseProto {
 
   // The ScriptStoreConfig to use with the initial GetActions request.
   optional ScriptStoreConfig script_store_config = 6;
+
+  // Semantic selector related policy configuration.
+  optional SemanticSelectorPolicy semantic_selector_policy = 7;
 
   reserved 4, 5;
 }

@@ -10,7 +10,7 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "action_value.proto";
+import "browser/action_value.proto";
 
 message RequiredDataPiece {
   optional string error_message = 1;

@@ -10,7 +10,7 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "action_value.proto";
+import "browser/action_value.proto";
 
 // Identifier for elements on the client. This is used to store and retrieve
 // elements. To store an element and create a usable |ClientIdProto| use a

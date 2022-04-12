@@ -9,6 +9,7 @@ if (is_android) {
 }
 
 proto_library("proto") {
+  proto_in_dir = "//components/autofill_assistant/"
   sources = [
     "action_strategy.proto",
     "action_value.proto",
@@ -19,6 +20,7 @@ proto_library("proto") {
     "service.proto",
     "view_layout.proto",
   ]
+  link_deps = [ "//components/autofill_assistant/content/common/proto:proto" ]
 }
 
 proto_library("test_proto") {
@@ -576,17 +578,18 @@ source_set("unit_tests") {
 
 if (is_android) {
   proto_java_library("proto_java") {
-    proto_path = "//components/autofill_assistant/browser/"
+    proto_path = "//components/autofill_assistant/"
     sources = [
-      "$proto_path/action_strategy.proto",
-      "$proto_path/action_value.proto",
-      "$proto_path/cud_condition.proto",
-      "$proto_path/dom_action.proto",
-      "$proto_path/generic_ui.proto",
-      "$proto_path/model.proto",
-      "$proto_path/service.proto",
-      "$proto_path/view_layout.proto",
+      "action_strategy.proto",
+      "action_value.proto",
+      "cud_condition.proto",
+      "dom_action.proto",
+      "generic_ui.proto",
+      "model.proto",
+      "service.proto",
+      "view_layout.proto",
     ]
+    deps = [ "//components/autofill_assistant/content/common/proto:proto_java" ]
   }
 
   java_cpp_enum("autofill_assistant_enums_java") {
