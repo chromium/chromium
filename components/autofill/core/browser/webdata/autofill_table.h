@@ -276,6 +276,9 @@ struct PaymentsCustomerData;
 //                      cards. ENROLLED means the card has been enrolled and
 //                      has related virtual credit cards.
 //   card_art_url       URL to generate the card art image for this card.
+//   product_description
+//                      The product description for the card. Used to be shown
+//                      in the UI when card is presented. Added in version 102.
 //
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
@@ -716,6 +719,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion100RemoveProfileValidityBitfieldColumn();
   bool MigrateToVersion101RemoveCreditCardArtImageTable();
   bool MigrateToVersion102AddAutofillBirthdatesTable();
+  bool MigrateToVersion104AddProductDescriptionColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

@@ -604,6 +604,7 @@ void CreditCard::operator=(const CreditCard& credit_card) {
   instrument_id_ = credit_card.instrument_id_;
   virtual_card_enrollment_state_ = credit_card.virtual_card_enrollment_state_;
   card_art_url_ = GURL(credit_card.card_art_url_);
+  product_description_ = credit_card.product_description_;
 
   set_guid(credit_card.guid());
   set_origin(credit_card.origin());
@@ -677,6 +678,10 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
     return comparison;
 
   comparison = nickname_.compare(credit_card.nickname_);
+  if (comparison != 0)
+    return comparison;
+
+  comparison = product_description_.compare(credit_card.product_description_);
   if (comparison != 0)
     return comparison;
 
@@ -1141,7 +1146,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " " << credit_card.card_issuer() << " "
             << credit_card.instrument_id() << " "
             << credit_card.virtual_card_enrollment_state() << " "
-            << credit_card.card_art_url().spec();
+            << credit_card.card_art_url().spec() << " "
+            << base::UTF16ToUTF8(credit_card.product_description());
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

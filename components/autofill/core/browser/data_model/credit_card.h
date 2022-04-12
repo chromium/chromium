@@ -366,6 +366,11 @@ class CreditCard : public AutofillDataModel {
     card_art_url_ = card_art_url;
   }
 
+  std::u16string product_description() const { return product_description_; }
+  void set_product_description(const std::u16string& product_description) {
+    product_description_ = product_description;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -449,6 +454,10 @@ class CreditCard : public AutofillDataModel {
 
   // The url to fetch the rich card art image.
   GURL card_art_url_;
+
+  // The product description for the card to be used in the UI when card is
+  // presented.
+  std::u16string product_description_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

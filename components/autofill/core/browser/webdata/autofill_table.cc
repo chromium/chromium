@@ -841,6 +841,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 102:
       *update_compatible_version = false;
       return MigrateToVersion102AddAutofillBirthdatesTable();
+    case 104:
+      *update_compatible_version = false;
+      return MigrateToVersion104AddProductDescriptionColumn();
   }
   return true;
 }
@@ -1569,7 +1572,8 @@ bool AutofillTable::GetServerCreditCards(
       "card_issuer,"                     // 12
       "instrument_id, "                  // 13
       "virtual_card_enrollment_state, "  // 14
-      "card_art_url "                    // 15
+      "card_art_url, "                   // 15
+      "product_description "             // 16
       "FROM masked_credit_cards masked "
       "LEFT OUTER JOIN unmasked_credit_cards USING (id) "
       "LEFT OUTER JOIN server_card_metadata metadata USING (id)"));
@@ -1619,6 +1623,7 @@ bool AutofillTable::GetServerCreditCards(
         static_cast<CreditCard::VirtualCardEnrollmentState>(
             s.ColumnInt(index++)));
     card->set_card_art_url(GURL(s.ColumnString(index++)));
+    card->set_product_description(s.ColumnString16(index++));
     credit_cards->push_back(std::move(card));
   }
   return s.Succeeded();
@@ -1880,8 +1885,9 @@ void AutofillTable::SetServerCardsData(
                               "card_issuer,"                    // 8
                               "instrument_id,"                  // 9
                               "virtual_card_enrollment_state,"  // 10
-                              "card_art_url) "                  // 11
-                              "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"));
+                              "card_art_url,"                   // 11
+                              "product_description) "           // 12
+                              "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   int index;
   for (const CreditCard& card : credit_cards) {
     DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
@@ -1900,6 +1906,7 @@ void AutofillTable::SetServerCardsData(
     masked_insert.BindInt(
         index++, static_cast<int>(card.virtual_card_enrollment_state()));
     masked_insert.BindString(index++, card.card_art_url().spec());
+    masked_insert.BindString16(index++, card.product_description());
     masked_insert.Run();
     masked_insert.Reset(true);
   }
@@ -3627,6 +3634,24 @@ bool AutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin())
+    return false;
+
+  if (!db_->DoesTableExist("masked_credit_cards"))
+    InitMaskedCreditCardsTable();
+
+  // Add product_description to masked_credit_cards.
+  if (!db_->DoesColumnExist("masked_credit_cards", "product_description") &&
+      !db_->Execute("ALTER TABLE masked_credit_cards ADD COLUMN "
+                    "product_description VARCHAR")) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3783,8 +3808,9 @@ void AutofillTable::AddMaskedCreditCards(
                               "card_issuer,"                     // 8
                               "instrument_id,"                   // 9
                               "virtual_card_enrollment_state, "  // 10
-                              "card_art_url) "                   // 11
-                              "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"));
+                              "card_art_url, "                   // 11
+                              "product_description )"            // 12
+                              "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   int index;
   for (const CreditCard& card : credit_cards) {
     DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
@@ -3802,6 +3828,7 @@ void AutofillTable::AddMaskedCreditCards(
     masked_insert.BindInt64(index++, card.instrument_id());
     masked_insert.BindInt(index++, card.virtual_card_enrollment_state());
     masked_insert.BindString(index++, card.card_art_url().spec());
+    masked_insert.BindString16(index++, card.product_description());
     masked_insert.Run();
     masked_insert.Reset(true);
 
@@ -4038,7 +4065,8 @@ bool AutofillTable::InitMaskedCreditCardsTable() {
                       "card_issuer INTEGER DEFAULT 0, "
                       "instrument_id INTEGER DEFAULT 0, "
                       "virtual_card_enrollment_state INTEGER DEFAULT 0, "
-                      "card_art_url VARCHAR)")) {
+                      "card_art_url VARCHAR, "
+                      "product_description VARCHAR)")) {
       NOTREACHED();
       return false;
     }
