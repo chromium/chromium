@@ -123,12 +123,6 @@ float AveragePower(const media::AudioBus& buffer) {
 
 }  // namespace
 
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-// Interpret a size of "0" as disabling the FIFO.
-const base::FeatureParam<int> kProcessingFifoSize{
-    &media::kChromeWideEchoCancellation, "processing_fifo_size", 0};
-#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-
 // This class implements the AudioInputCallback interface in place of the
 // InputController (AIC), so that
 // - The AIC itself does not publicly inherit AudioInputCallback.
@@ -266,7 +260,7 @@ void InputController::MaybeSetUpAudioProcessing(
   if (!processing_config->settings.NeedPlayoutReference())
     return;
 
-  int fifo_size = kProcessingFifoSize.Get();
+  int fifo_size = media::kChromeWideEchoCancellationProcessingFifoSize.Get();
 
   // Only use the FIFO/new thread if its size is explicitly set.
   if (fifo_size) {

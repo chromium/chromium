@@ -139,9 +139,7 @@ bool ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (!media::IsChromeWideEchoCancellationEnabled())
     return true;
-  return GetFieldTrialParamByFeatureAsBool(media::kChromeWideEchoCancellation,
-                                           "minimize_resampling",
-                                           /*default_value=*/true);
+  return media::kChromeWideEchoCancellationMinimizeResampling.Get();
 #else
   return true;
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

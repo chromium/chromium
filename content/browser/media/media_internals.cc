@@ -510,7 +510,21 @@ void MediaInternals::SendGeneralAudioInformation() {
       features::kAudioServiceSandbox,
       GetContentClient()->browser()->ShouldSandboxAudioService());
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  set_feature_data(media::kChromeWideEchoCancellation);
+  std::string chrome_wide_echo_cancellation_value_string =
+      base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)
+          ? base::StrCat(
+                {"Enabled, processing_fifo_size = ",
+                 base::NumberToString(
+                     media::kChromeWideEchoCancellationProcessingFifoSize
+                         .Get()),
+                 ", minimize_resampling = ",
+                 media::kChromeWideEchoCancellationMinimizeResampling.Get()
+                     ? "true"
+                     : "false"})
+          : "Disabled";
+  audio_info_data.SetKey(
+      media::kChromeWideEchoCancellation.name,
+      base::Value(chrome_wide_echo_cancellation_value_string));
 #endif
   std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);

@@ -516,10 +516,22 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
        enabled_or_disabled_feature_string(
            features::kAudioServiceLaunchOnStartup),
        ", Sandbox=",
-       enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled()),
-       ", ChromeWideEchoCancellation=",
-       enabled_or_disabled_bool_string(
-           media::IsChromeWideEchoCancellationEnabled())}));
+       enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled())}));
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (media::IsChromeWideEchoCancellationEnabled()) {
+    LogToCircularBuffer(base::StrCat(
+        {"ChromeWideEchoCancellation : Enabled", ", processing_fifo_size = ",
+         NumberToString(
+             media::kChromeWideEchoCancellationProcessingFifoSize.Get()),
+         ", minimize_resampling = ",
+         media::kChromeWideEchoCancellationMinimizeResampling.Get()
+             ? "true"
+             : "false"}));
+  } else {
+    LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
+  }
+#endif
 
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure

@@ -125,7 +125,13 @@ MEDIA_EXPORT extern const base::Feature kBackgroundVideoPauseOptimization;
 MEDIA_EXPORT extern const base::Feature kBresenhamCadence;
 MEDIA_EXPORT extern const base::Feature kCdmHostVerification;
 MEDIA_EXPORT extern const base::Feature kCdmProcessSiteIsolation;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT extern const base::Feature kChromeWideEchoCancellation;
+MEDIA_EXPORT extern const base::FeatureParam<int>
+    kChromeWideEchoCancellationProcessingFifoSize;
+MEDIA_EXPORT extern const base::FeatureParam<bool>
+    kChromeWideEchoCancellationMinimizeResampling;
+#endif
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderUseSharedHandle;
 MEDIA_EXPORT extern const base::Feature kDisplayAudioUseLocalAudioSource;
 MEDIA_EXPORT extern const base::Feature kEnableTabMuting;
