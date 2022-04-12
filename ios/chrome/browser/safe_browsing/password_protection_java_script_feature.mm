@@ -16,7 +16,7 @@
 #endif
 
 namespace {
-const char kScriptFilename[] = "password_protection_js";
+const char kScriptFilename[] = "password_protection";
 
 const char kTextEnteredHandlerName[] = "PasswordProtectionTextEntered";
 

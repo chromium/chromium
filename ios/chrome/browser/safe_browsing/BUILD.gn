@@ -4,7 +4,7 @@
 
 import("//ios/build/config.gni")
 import("//ios/features.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("safe_browsing") {
   sources = [
@@ -101,10 +101,10 @@ source_set("safe_browsing") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("password_protection_js") {
+optimize_js("password_protection_js") {
   visibility = [ ":safe_browsing" ]
-  closure_entry_point = "__crWeb.passwordProtection"
 
+  primary_script = "resources/password_protection.js"
   sources = [ "resources/password_protection.js" ]
 }
 

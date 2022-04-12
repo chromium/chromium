@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('__crWeb.passwordProtection');
-
 /*
 * @fileoverview Adds listeners that forward keypress and paste events to the
 * browser. The browser uses this information to detect and warn the user about
 * situations where the user enters one of their saved passwords on a
 * possibly-unsafe site
 */
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Listens for keypress events and forwards the entered key to the browser.
@@ -41,4 +36,3 @@ function onPasteEvent(event) {
 // JavaScript event dispatch, so listen for them there.
 window.addEventListener('keypress', onKeypressEvent, true);
 window.addEventListener('paste', onPasteEvent, true);
-}());  // End of anonymous object
