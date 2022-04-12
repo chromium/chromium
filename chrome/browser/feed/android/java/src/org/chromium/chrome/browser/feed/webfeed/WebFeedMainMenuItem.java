@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -21,6 +23,8 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -72,6 +76,16 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mFollowingChipView = findViewById(R.id.following_chip_view);
         mFollowChipView = findViewById(R.id.follow_chip_view);
         mItemText = findViewById(R.id.menu_item_text);
+
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID)) {
+            final ColorStateList textColor = AppCompatResources.getColorStateList(
+                    mContext, R.color.default_text_color_accent1_tint_list);
+            mFollowingChipView.getPrimaryTextView().setTextColor(textColor);
+            mFollowChipView.getPrimaryTextView().setTextColor(textColor);
+            final ColorStateList backgroundColor = AppCompatResources.getColorStateList(
+                    mContext, R.color.menu_footer_chip_background);
+            mFollowChipView.setBackgroundTintList(backgroundColor);
+        }
     }
 
     /**

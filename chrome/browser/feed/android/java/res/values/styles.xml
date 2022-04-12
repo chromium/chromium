@@ -9,7 +9,7 @@
         <!-- TODO(crbug.com/1152592): Figure out why setting TextAppearance isn't working for
              ChipView. -->
         <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
-        <item name="chipColor">@color/menu_footer_chip_background</item>
+        <item name="chipColor">@color/menu_footer_chip_background_baseline</item>
         <item name="solidColorChip">true</item>
         <item name="textAlignStart">true</item>
         <item name="reduceEndPadding">true</item>
@@ -20,7 +20,7 @@
     </style>
 
     <style name="MenuFooterChipInverse" parent="MenuFooterChip">
-        <item name="chipColor">@color/menu_item_bg_color</item>
+        <item name="chipColor">@android:color/transparent</item>
         <item name="chipStrokeColor">@color/chip_hairline_color</item>
         <item name="solidColorChip">false</item>
     </style>

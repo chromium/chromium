@@ -5,5 +5,5 @@
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/menu_footer_chip_background_color_disabled" android:state_enabled="false" />
-    <item android:color="@macro/menu_footer_chip_background_color" android:alpha="@dimen/menu_footer_chip_background_alpha"/>
+    <item android:color="@color/menu_footer_chip_background_color_baseline"/>
 </selector>

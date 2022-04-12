@@ -203,7 +203,7 @@ public class RippleBackgroundHelper {
      * @param color The {@link ColorStateList} to be set as the background color on the background
      *              drawable.
      */
-    void setBackgroundColor(ColorStateList color) {
+    public void setBackgroundColor(ColorStateList color) {
         if (color == mBackgroundColorList) return;
 
         mBackgroundColorList = color;

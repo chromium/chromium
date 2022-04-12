@@ -376,6 +376,11 @@ public class ChipView extends LinearLayout {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
+    @Override
+    public void setBackgroundTintList(ColorStateList color) {
+        mRippleBackgroundHelper.setBackgroundColor(color);
+    }
+
     /**
      * @return The corner radius in pixels of this ChipView.
      */
