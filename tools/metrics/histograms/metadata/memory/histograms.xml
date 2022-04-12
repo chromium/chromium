@@ -2591,6 +2591,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.System.MemAvailableMB" units="MB"
+    expires_after="2023-01-10">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    System-wide estimate of memory available in ChromeOS, without swapping.
+    Calculated from MemFree, SReclaimable, the size of the file LRU lists, and
+    the low watermarks in each zone. The estimate takes into account that the
+    system needs some page cache to function well, and that not all reclaimable
+    slab will be reclaimable, due to items being in use.
+  </summary>
+</histogram>
+
+<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2023-01-10">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    System-wide estimate of memory used in ChromeOS, calculated as the
+    difference between the amount of total and available memory.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

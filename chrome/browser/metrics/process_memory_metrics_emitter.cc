@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_data_validation.h"
+#include "components/metrics/system_memory_stats_recorder.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -1244,6 +1246,17 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     // Renderer metrics-by-tab only make sense if we're visiting all render
     // processes.
     per_tab_metrics.RecordPmfs(GetUkmRecorder());
+
+#if BUILDFLAG(IS_CHROMEOS)
+    base::SystemMemoryInfoKB system_meminfo;
+    if (base::GetSystemMemoryInfo(&system_meminfo)) {
+      int mem_used_mb =
+          (system_meminfo.total - system_meminfo.available) / 1024;
+      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemAvailableMB",
+                                    system_meminfo.available / 1024);
+      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemUsedMB", mem_used_mb);
+    }
+#endif
   }
 
   global_dump_ = nullptr;
