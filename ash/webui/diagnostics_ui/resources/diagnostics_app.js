@@ -116,7 +116,8 @@ Polymer({
 
       if (this.isInputEnabled_) {
         pages.push(navPanel.createSelectorItem(
-            'Input', 'input-list', getDiagnosticsIcon('keyboard'), 'input'));
+            loadTimeData.getString('inputText'), 'input-list',
+            getDiagnosticsIcon('keyboard'), 'input'));
       }
       navPanel.addSelectors(pages);
     }
