@@ -60,7 +60,7 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
     }
 
-    if (pgo_data_path == "" && _pgo_target != "") {
+    if (_pgo_target != "" && pgo_data_path == "") {
       pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
                                   [
                                     "--target",
