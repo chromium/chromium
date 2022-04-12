@@ -906,7 +906,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
              (value_id == CSSValueID::kPreserveParentColor &&
-              RuntimeEnabledFeatures::ForcedColorsPreserveParentColorEnabled());
+              (RuntimeEnabledFeatures::
+                   ForcedColorsPreserveParentColorEnabled() ||
+               parser_mode == kUASheetMode));
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||

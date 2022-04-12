@@ -91,11 +91,6 @@ tspan, textPath {
 */
 @media ua-forced-colors {
   svg {
-      /*
-        TODO(sartang@microsoft.com): Remove forced-color-adjust: none once
-        forced-color-adjust: preserve-parent-color is enabled by default.
-      */
-      forced-color-adjust: none;
       forced-color-adjust: preserve-parent-color;
   }
 
