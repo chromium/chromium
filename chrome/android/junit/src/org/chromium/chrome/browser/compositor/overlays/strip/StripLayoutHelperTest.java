@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
@@ -69,7 +67,6 @@ public class StripLayoutHelperTest {
     private static final float TAB_WIDTH_2 = 160.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final long TIMESTAMP = 5000;
 
     /** Reset the environment before each test. */
     @Before
@@ -321,40 +318,6 @@ public class StripLayoutHelperTest {
         Mockito.verify(tabs[4]).setCanShowCloseButton(false);
     }
 
-    @Test
-    @Feature("Tab Strip Improvements")
-    public void testUndoTabClose_SelectedTab_ReselectsTab() {
-        // Arrange: Initialize tabs with third tab selected.
-        initializeTest(true, true, 3);
-
-        // Act: Close third tab (selected) and undo closed tab.
-        mStripLayoutHelper.willCloseTab(3);
-        // When the third tab is closed, the second one should be selected.
-        mModel.setIndex(2);
-        // Undo 3rd tab closure.
-        mStripLayoutHelper.tabClosureCancelled(TIMESTAMP, 3);
-
-        // Assert: Third tab is selected after undo.
-        assertEquals(mModel.index(), 3);
-    }
-
-    @Test
-    @Feature("Tab Strip Improvements")
-    public void testUndoTabClose_UnSelectedTab_DoesNotSelectTab() {
-        // Arrange: Initialize tabs with second tab selected.
-        initializeTest(true, true, 2);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f);
-        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
-
-        // Act: Close third tab (not selected) and undo closed tab.
-        mStripLayoutHelper.willCloseTab(3);
-        // Undo 3rd tab closure.
-        mStripLayoutHelper.tabClosureCancelled(TIMESTAMP, 3);
-
-        // Assert: Third tab is not selected after undo.
-        assertNotEquals(mModel.index(), 3);
-    }
-
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
@@ -480,11 +443,6 @@ public class StripLayoutHelperTest {
 
         public void setIndex(int index) {
             mIndex = index;
-        }
-
-        @Override
-        public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
-            mIndex = i;
         }
     }
 }
