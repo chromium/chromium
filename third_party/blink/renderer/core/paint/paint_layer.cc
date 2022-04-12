@@ -287,14 +287,14 @@ void PaintLayer::UpdateLayerPositionRecursive(
   UpdateLayerPosition();
 
   if (location_without_position_offset_ != old_location) {
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
   } else {
     // TODO(chrishtr): compute this invalidation in layout instead of here.
     auto offset_for_in_flow_rel_position =
         rare_data_ ? rare_data_->offset_for_in_flow_rel_position
                    : PhysicalOffset();
     if (offset_for_in_flow_rel_position != old_offset_for_in_flow_rel_position)
-      SetNeedsCompositingInputsUpdate();
+      MarkAncestorChainForFlagsUpdate();
   }
 
   const PaintLayer* previous_enclosing_scroller =
@@ -725,7 +725,7 @@ bool PaintLayer::UpdateSize() {
     size_ = box->Size();
   }
   if (old_size != size_)
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
 
   return old_size != size_;
 }
@@ -823,7 +823,7 @@ void PaintLayer::SetNeedsCompositingInputsUpdate() {
   // things which require compositing inputs update require a descendant-
   // dependent flags update. Reduce call sites after CAP launch allows
   /// removal of CompositingInputsUpdater.
-  MarkAncestorChainForFlagsUpdate(kNeedsDescendantDependentUpdate);
+  MarkAncestorChainForFlagsUpdate();
 }
 
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
@@ -883,8 +883,6 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
   // update and should not be set yet.
   CHECK(!child->AncestorScrollContainerLayer());
 
-  SetNeedsCompositingInputsUpdate();
-
   if (child->GetLayoutObject().IsStacked() || child->FirstChild()) {
     // Dirty the z-order list in which we are contained. The
     // ancestorStackingContextNode() can be null in the case where we're
@@ -931,7 +929,7 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   if (!GetLayoutObject().DocumentBeingDestroyed()) {
     // Dirty the z-order list in which we are contained.
     old_child->DirtyStackingContextZOrderLists();
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
   }
 
   if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)
@@ -2450,14 +2448,14 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
 
   // HasAlphaChanged can affect whether a composited layer is opaque.
   if (diff.NeedsLayout() || diff.HasAlphaChanged())
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
 
   // A scroller that changes background color might become opaque or not
   // opaque, which in turn affects whether it can be composited on low-DPI
   // screens.
   if (GetScrollableArea() && GetScrollableArea()->ScrollsOverflow() &&
       diff.HasDifference()) {
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
   }
 
   // See also |LayoutObject::SetStyle| which handles these invalidations if a
@@ -2467,7 +2465,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
       diff.BlendModeChanged() || diff.MaskChanged() ||
       diff.CompositingReasonsChanged()) {
     GetLayoutObject().SetNeedsPaintPropertyUpdate();
-    SetNeedsCompositingInputsUpdate();
+    MarkAncestorChainForFlagsUpdate();
   }
 
   const ComputedStyle& new_style = GetLayoutObject().StyleRef();
