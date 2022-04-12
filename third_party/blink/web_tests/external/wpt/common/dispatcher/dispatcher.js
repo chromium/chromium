@@ -1,4 +1,4 @@
-// Define an universal message passing API. It works cross-origin and across
+// Define a universal message passing API. It works cross-origin and across
 // browsing context groups.
 const dispatcher_path = "/common/dispatcher/dispatcher.py";
 const dispatcher_url = new URL(dispatcher_path, location.href).href;
