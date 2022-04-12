@@ -81,10 +81,7 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_android.cc",
       "profile_oauth2_token_service_delegate_android.h",
     ]
-    deps += [
-      "//components/signin/internal/base",
-      "//components/signin/public/android:jni_headers",
-    ]
+    deps += [ "//components/signin/public/android:jni_headers" ]
   } else {
     sources += [
       "account_capabilities_fetcher_factory_gaia.cc",
