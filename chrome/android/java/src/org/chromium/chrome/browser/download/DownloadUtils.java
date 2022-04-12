@@ -382,13 +382,10 @@ public class DownloadUtils {
             ContextUtils.getApplicationContext().startActivity(
                     new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } else if (LegacyHelpers.isLegacyOfflinePage(contentId)) {
+        } else {
             OpenParams openParams = new OpenParams(LaunchLocation.PROGRESS_BAR);
             openParams.openInIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
             OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
-        } else {
-            DownloadManagerService.getDownloadManagerService().openDownload(
-                    contentId, otrProfileID, source);
         }
     }
 
@@ -424,7 +421,7 @@ public class DownloadUtils {
             Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri /*displayUri*/,
                     contentUri /*contentUri*/, normalizedMimeType,
                     true /* allowExternalAppHandlers */, context);
-            IntentHandler.startActivityForTrustedIntent(intent);
+            IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
         }
@@ -490,8 +487,10 @@ public class DownloadUtils {
         }
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         boolean canOpen = DownloadUtils.openFile(filePath, newMimeType, downloadGuid, otrProfileID,
-                originalUrl, referer, source, ContextUtils.getApplicationContext());
+                originalUrl, referer, source,
+                activity == null ? ContextUtils.getApplicationContext() : activity);
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
         }

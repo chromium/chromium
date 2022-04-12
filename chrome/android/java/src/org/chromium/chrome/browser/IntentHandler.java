@@ -745,7 +745,18 @@ public class IntentHandler {
      * token.
      */
     public static void startActivityForTrustedIntent(Intent intent) {
-        startActivityForTrustedIntentInternal(intent, null);
+        startActivityForTrustedIntentInternal(null, intent, null);
+    }
+
+    /**
+     * Start activity for the given trusted Intent.
+     *
+     * To make sure the intent is not dropped by Chrome, we send along an authentication token to
+     * identify ourselves as a trusted sender. The method {@link #shouldIgnoreIntent} validates the
+     * token.
+     */
+    public static void startActivityForTrustedIntent(Context context, Intent intent) {
+        startActivityForTrustedIntentInternal(context, intent, null);
     }
 
     /**
@@ -761,12 +772,12 @@ public class IntentHandler {
     public static void startChromeLauncherActivityForTrustedIntent(Intent intent) {
         // Specify the exact component that will handle creating a new tab.  This allows specifying
         // URLs that are not exposed in the intent filters (i.e. chrome://).
-        startActivityForTrustedIntentInternal(intent, ChromeLauncherActivity.class.getName());
+        startActivityForTrustedIntentInternal(null, intent, ChromeLauncherActivity.class.getName());
     }
 
     private static void startActivityForTrustedIntentInternal(
-            Intent intent, String componentClassName) {
-        Context appContext = ContextUtils.getApplicationContext();
+            Context context, Intent intent, String componentClassName) {
+        Context appContext = context == null ? ContextUtils.getApplicationContext() : context;
         // The caller might want to re-use the Intent, so we'll use a copy.
         Intent copiedIntent = new Intent(intent);
 
