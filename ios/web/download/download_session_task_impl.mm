@@ -7,30 +7,30 @@
 #import <WebKit/WebKit.h>
 
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/sequenced_task_runner_handle.h"
 #import "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/download/download_result.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/download/download_result.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_task_observer.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_view/error_translation_util.h"
-#include "net/base/completion_once_callback.h"
-#include "net/base/data_url.h"
-#include "net/base/io_buffer.h"
+#import "net/base/completion_once_callback.h"
+#import "net/base/data_url.h"
+#import "net/base/io_buffer.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/cookies/cookie_store.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
+#import "net/cookies/cookie_store.h"
+#import "net/url_request/url_fetcher_response_writer.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_getter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using web::WebThread;
 
 namespace {
 
@@ -80,6 +80,16 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
   return 100.0 * task.countOfBytesReceived / task.countOfBytesExpectedToReceive;
 }
 
+// Asynchronously returns cookies for |context_getter|. Must
+// be called on IO thread. The callback will be invoked on the UI thread.
+void GetCookiesFromContextGetter(
+    scoped_refptr<net::URLRequestContextGetter> context_getter,
+    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
+  context_getter->GetURLRequestContext()->cookie_store()->GetAllCookiesAsync(
+      base::BindOnce(&net::SystemCookiesFromCanonicalCookieList)
+          .Then(std::move(callback)));
+}
+
 }  // namespace
 
 // NSURLSessionDataDelegate that forwards data and properties task updates to
@@ -87,21 +97,26 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 @interface CRWURLSessionDelegate : NSObject <NSURLSessionDataDelegate>
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithDataCallback:(DataCallback)dataCallback
-                        doneCallback:(DoneCallback)doneCallback
+- (instancetype)initWithTaskRunner:(scoped_refptr<base::TaskRunner>)taskRunner
+                      dataCallback:(DataCallback)dataCallback
+                      doneCallback:(DoneCallback)doneCallback
     NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation CRWURLSessionDelegate {
+  scoped_refptr<base::TaskRunner> _taskRunner;
   DataCallback _dataCallback;
   DoneCallback _doneCallback;
 }
 
-- (instancetype)initWithDataCallback:(DataCallback)dataCallback
-                        doneCallback:(DoneCallback)doneCallback {
+- (instancetype)initWithTaskRunner:(scoped_refptr<base::TaskRunner>)taskRunner
+                      dataCallback:(DataCallback)dataCallback
+                      doneCallback:(DoneCallback)doneCallback {
+  DCHECK(taskRunner);
   DCHECK(!dataCallback.is_null());
   DCHECK(!doneCallback.is_null());
   if ((self = [super init])) {
+    _taskRunner = std::move(taskRunner);
     _dataCallback = std::move(dataCallback);
     _doneCallback = std::move(doneCallback);
   }
@@ -111,8 +126,7 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 - (void)URLSession:(NSURLSession*)session
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(_doneCallback, task, error));
+  _taskRunner->PostTask(FROM_HERE, base::BindOnce(_doneCallback, task, error));
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -124,7 +138,7 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
   // thread (in net::URLFetcherFileWriter::Write()).
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-  web::GetUIThreadTaskRunner({})->PostTask(
+  _taskRunner->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](dispatch_semaphore_t semaphore, DataCallback innerDataCallback,
@@ -163,6 +177,7 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 @end
 
 namespace web {
+
 DownloadSessionTaskImpl::DownloadSessionTaskImpl(
     WebState* web_state,
     const GURL& original_url,
@@ -182,12 +197,13 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        delegate) {}
 
 DownloadSessionTaskImpl::~DownloadSessionTaskImpl() {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [session_task_ cancel];
   session_task_ = nil;
 }
 
 NSData* DownloadSessionTaskImpl::GetResponseData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(writer_);
   net::URLFetcherStringWriter* string_writer = writer_->AsStringWriter();
   if (string_writer) {
@@ -206,6 +222,7 @@ NSData* DownloadSessionTaskImpl::GetResponseData() const {
 }
 
 const base::FilePath& DownloadSessionTaskImpl::GetResponsePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(writer_);
   net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
   if (file_writer) {
@@ -219,6 +236,7 @@ const base::FilePath& DownloadSessionTaskImpl::GetResponsePath() const {
 
 void DownloadSessionTaskImpl::Start(const base::FilePath& path,
                                     Destination destination_hint) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DownloadTaskImpl::Start(path, destination_hint);
   if (destination_hint == Destination::kToMemory) {
     OnWriterInitialized(std::make_unique<net::URLFetcherStringWriter>(),
@@ -237,14 +255,14 @@ void DownloadSessionTaskImpl::Start(const base::FilePath& path,
 }
 
 void DownloadSessionTaskImpl::Cancel() {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [session_task_ cancel];
   session_task_ = nil;
   DownloadTaskImpl::Cancel();
 }
 
 void DownloadSessionTaskImpl::ShutDown() {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [session_task_ cancel];
   session_task_ = nil;
   DownloadTaskImpl::ShutDown();
@@ -265,6 +283,7 @@ void DownloadSessionTaskImpl::OnWriterDownloadFinished(int error_code) {
 void DownloadSessionTaskImpl::OnWriterInitialized(
     std::unique_ptr<net::URLFetcherResponseWriter> writer,
     int writer_initialization_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kInProgress);
   writer_ = std::move(writer);
   DCHECK(writer_);
@@ -282,7 +301,7 @@ void DownloadSessionTaskImpl::OnWriterInitialized(
 NSURLSession* DownloadSessionTaskImpl::CreateSession(
     NSString* identifier,
     NSArray<NSHTTPCookie*>* cookies) {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(identifier.length);
 
   base::WeakPtr<DownloadSessionTaskImpl> weak_this = weak_factory_.GetWeakPtr();
@@ -292,44 +311,30 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
       base::BindRepeating(&DownloadSessionTaskImpl::OnTaskDone, weak_this);
 
   id<NSURLSessionDataDelegate> session_delegate = [[CRWURLSessionDelegate alloc]
-      initWithDataCallback:std::move(data_callback)
-              doneCallback:std::move(done_callback)];
+      initWithTaskRunner:base::SequencedTaskRunnerHandle::Get()
+            dataCallback:std::move(data_callback)
+            doneCallback:std::move(done_callback)];
   return delegate_->CreateSession(identifier, cookies, session_delegate,
                                   /*queue=*/nil);
 }
 
 void DownloadSessionTaskImpl::GetCookies(
     base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<net::URLRequestContextGetter> context_getter(
       web_state_->GetBrowserState()->GetRequestContext());
 
   // net::URLRequestContextGetter must be used in the IO thread.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&DownloadSessionTaskImpl::GetCookiesFromContextGetter,
-                     context_getter, std::move(callback)));
-}
-
-void DownloadSessionTaskImpl::GetCookiesFromContextGetter(
-    scoped_refptr<net::URLRequestContextGetter> context_getter,
-    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
-  DCHECK_CURRENTLY_ON(WebThread::IO);
-  context_getter->GetURLRequestContext()->cookie_store()->GetAllCookiesAsync(
-      base::BindOnce(
-          [](base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback,
-             const net::CookieList& cookie_list) {
-            NSArray<NSHTTPCookie*>* cookies =
-                SystemCookiesFromCanonicalCookieList(cookie_list);
-            GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), cookies));
-          },
-          std::move(callback)));
+      base::BindOnce(&GetCookiesFromContextGetter, context_getter,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 void DownloadSessionTaskImpl::StartWithCookies(
     NSArray<NSHTTPCookie*>* cookies) {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(writer_);
 
   if (!session_) {
@@ -350,6 +355,7 @@ void DownloadSessionTaskImpl::StartWithCookies(
 }
 
 void DownloadSessionTaskImpl::StartDataUrlParsing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mime_type_.clear();
   std::string charset;
   std::string data;
@@ -368,6 +374,7 @@ void DownloadSessionTaskImpl::StartDataUrlParsing() {
 }
 
 void DownloadSessionTaskImpl::OnDataUrlWritten(int bytes_written) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   percent_complete_ = 100;
   total_bytes_ = bytes_written;
   received_bytes_ = total_bytes_;
@@ -381,6 +388,7 @@ void DownloadSessionTaskImpl::OnDataUrlWritten(int bytes_written) {
 
 void DownloadSessionTaskImpl::OnTaskDone(NSURLSessionTask* task,
                                          NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task != session_task_) {
     [task cancel];
     return;
@@ -408,6 +416,7 @@ void DownloadSessionTaskImpl::OnTaskDone(NSURLSessionTask* task,
 void DownloadSessionTaskImpl::OnTaskData(NSURLSessionTask* task,
                                          NSData* data,
                                          ProceduralBlock completion_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task != session_task_) {
     completion_handler();
     [task cancel];
@@ -444,6 +453,7 @@ void DownloadSessionTaskImpl::OnTaskData(NSURLSessionTask* task,
 
 void DownloadSessionTaskImpl::OnTaskTick(NSURLSessionTask* task,
                                          bool notify_download_updated) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task != session_task_) {
     [task cancel];
     return;

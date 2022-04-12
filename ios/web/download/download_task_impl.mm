@@ -6,12 +6,11 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "ios/web/download/download_result.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/web/download/download_result.h"
 #import "ios/web/public/download/download_task_observer.h"
-#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
-#include "net/base/filename_util.h"
+#import "net/base/filename_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,7 +35,6 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
       identifier_([identifier copy]),
       web_state_(web_state),
       delegate_(delegate) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(web_state_);
   DCHECK(delegate_);
   base::WeakPtr<DownloadTaskImpl> weak_Task = weak_factory_.GetWeakPtr();
@@ -55,7 +53,7 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
 }
 
 DownloadTaskImpl::~DownloadTaskImpl() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [NSNotificationCenter.defaultCenter removeObserver:observer_];
   for (auto& observer : observers_)
     observer.OnDownloadDestroyed(this);
@@ -67,20 +65,23 @@ DownloadTaskImpl::~DownloadTaskImpl() {
 }
 
 void DownloadTaskImpl::ShutDown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = nullptr;
 }
 
 WebState* DownloadTaskImpl::GetWebState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return web_state_;
 }
 
 DownloadTask::State DownloadTaskImpl::GetState() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_;
 }
 
 void DownloadTaskImpl::Start(const base::FilePath& path,
                              Destination destination_hint) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path != base::FilePath() ||
          destination_hint == DownloadTask::Destination::kToMemory);
   DCHECK_NE(state_, State::kInProgress);
@@ -90,27 +91,28 @@ void DownloadTaskImpl::Start(const base::FilePath& path,
 }
 
 void DownloadTaskImpl::Cancel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = State::kCancelled;
   OnDownloadUpdated();
 }
 
 NSString* DownloadTaskImpl::GetIndentifier() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return identifier_;
 }
 
 const GURL& DownloadTaskImpl::GetOriginalUrl() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return original_url_;
 }
 
 NSString* DownloadTaskImpl::GetHttpMethod() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return http_method_;
 }
 
 bool DownloadTaskImpl::IsDone() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_) {
     case State::kNotStarted:
     case State::kInProgress:
@@ -124,47 +126,47 @@ bool DownloadTaskImpl::IsDone() const {
 }
 
 int DownloadTaskImpl::GetErrorCode() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return download_result_.error_code();
 }
 
 int DownloadTaskImpl::GetHttpCode() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return http_code_;
 }
 
 int64_t DownloadTaskImpl::GetTotalBytes() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return total_bytes_;
 }
 
 int64_t DownloadTaskImpl::GetReceivedBytes() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return received_bytes_;
 }
 
 int DownloadTaskImpl::GetPercentComplete() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return percent_complete_;
 }
 
 std::string DownloadTaskImpl::GetContentDisposition() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content_disposition_;
 }
 
 std::string DownloadTaskImpl::GetOriginalMimeType() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return original_mime_type_;
 }
 
 std::string DownloadTaskImpl::GetMimeType() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return mime_type_;
 }
 
 std::u16string DownloadTaskImpl::GetSuggestedFilename() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return net::GetSuggestedFilename(GetOriginalUrl(), GetContentDisposition(),
                                    /*referrer_charset=*/std::string(),
                                    /*suggested_name=*/std::string(),
@@ -173,25 +175,28 @@ std::u16string DownloadTaskImpl::GetSuggestedFilename() const {
 }
 
 bool DownloadTaskImpl::HasPerformedBackgroundDownload() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return has_performed_background_download_;
 }
 
 void DownloadTaskImpl::AddObserver(DownloadTaskObserver* observer) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void DownloadTaskImpl::RemoveObserver(DownloadTaskObserver* observer) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
 void DownloadTaskImpl::OnDownloadUpdated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_)
     observer.OnDownloadUpdated(this);
 }
 
 void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   download_result_ = download_result;
   if (download_result_.error_code()) {
     state_ = download_result_.can_retry() ? State::kFailed

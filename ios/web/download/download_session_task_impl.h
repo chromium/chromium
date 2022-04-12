@@ -9,14 +9,13 @@
 #include "ios/web/download/download_task_impl.h"
 
 namespace net {
-class URLRequestContextGetter;
 class URLFetcherResponseWriter;
 }
 
 namespace web {
 
 // Implementation of DownloadTaskImpl that uses NSURLRequest to perform the
-// download
+// download.
 class DownloadSessionTaskImpl final : public DownloadTaskImpl {
  public:
   // Constructs a new DownloadSessionTaskImpl objects. |web_state|, |identifier|
@@ -63,12 +62,6 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   // Asynchronously returns cookies for WebState associated with this task.
   // Must be called on UI thread. The callback will be invoked on the UI thread.
   void GetCookies(base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
-
-  // Asynchronously returns cookies for |context_getter|. Must
-  // be called on IO thread. The callback will be invoked on the UI thread.
-  static void GetCookiesFromContextGetter(
-      scoped_refptr<net::URLRequestContextGetter> context_getter,
-      base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
 
   // Starts the download with given cookies.
   void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);

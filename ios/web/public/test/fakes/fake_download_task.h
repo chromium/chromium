@@ -9,7 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
-#import "ios/web/public/download/download_task.h"
+#include "base/sequence_checker.h"
+#include "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -66,6 +67,8 @@ class FakeDownloadTask : public DownloadTask {
  private:
   // Called when download task was updated.
   void OnDownloadUpdated();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
   WebState* web_state_ = nullptr;

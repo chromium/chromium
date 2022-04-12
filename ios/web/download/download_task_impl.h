@@ -11,8 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "ios/web/download/download_result.h"
-#import "ios/web/public/download/download_task.h"
+#include "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
 @class NSURLSession;
@@ -22,8 +23,8 @@ namespace web {
 class DownloadTaskObserver;
 class WebState;
 
-// Implements DownloadTask interface. Uses background NSURLSession as
-// implementation.
+// Partial implementation of the DownloadTask interface used to share common
+// behaviour between the different concrete sub-classes.
 class DownloadTaskImpl : public DownloadTask {
  public:
   class Delegate {
@@ -84,10 +85,13 @@ class DownloadTaskImpl : public DownloadTask {
 
  protected:
   // Called when download was completed and the data writing was finished.
-  virtual void OnDownloadFinished(DownloadResult download_result);
+  void OnDownloadFinished(DownloadResult download_result);
 
   // Called when download task was updated.
   void OnDownloadUpdated();
+
+  // Used to check that the methods are called on the correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // A list of observers. Weak references.
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;

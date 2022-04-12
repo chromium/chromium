@@ -51,7 +51,6 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
  private:
   DownloadNativeTaskBridge* download_bridge_ API_AVAILABLE(ios(15)) = nil;
   base::FilePath download_path_;
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DownloadNativeTaskImpl> weak_factory_{this};
 };

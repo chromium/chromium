@@ -4,16 +4,13 @@
 
 #import "ios/web/download/download_native_task_impl.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/download/download_native_task_bridge.h"
-#include "ios/web/public/thread/web_thread.h"
 #import "net/base/filename_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using web::WebThread;
 
 namespace web {
 
@@ -86,7 +83,7 @@ void DownloadNativeTaskImpl::Start(const base::FilePath& path,
 }
 
 void DownloadNativeTaskImpl::Cancel() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (@available(iOS 15, *)) {
     [download_bridge_ cancel];
     download_bridge_ = nil;
@@ -95,7 +92,7 @@ void DownloadNativeTaskImpl::Cancel() {
 }
 
 void DownloadNativeTaskImpl::ShutDown() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (@available(iOS 15, *)) {
     [download_bridge_ cancel];
     download_bridge_ = nil;
@@ -104,6 +101,7 @@ void DownloadNativeTaskImpl::ShutDown() {
 }
 
 NSData* DownloadNativeTaskImpl::GetResponseData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (@available(iOS 15, *)) {
     return [NSData dataWithContentsOfURL:[download_bridge_ urlForDownload]];
   }
