@@ -2376,7 +2376,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 #if BUILDFLAG(IS_MAC)
 // TODO(1038813): The /blink test pass is different on Windows and Mac, versus
-// Linux.
+// Linux. Also, see https://crbug.com/1314896.
 #define MAYBE_AccessibilityInputTime DISABLED_AccessibilityInputTime
 #else
 #define MAYBE_AccessibilityInputTime AccessibilityInputTime
@@ -3124,15 +3124,23 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("node-changed-crash-in-editable-text.html"));
 }
 
-// TODO(crbug.com/916003): Fix race condition.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityNoSourceVideo) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityNoSourceVideo) {
+#if BUILDFLAG(IS_MAC)
+  // The /blink test pass is different on macOS than on other platforms. See
+  // https://crbug.com/1314896.
+  if (GetParam() == ui::AXApiType::kBlink)
+    return;
+#endif
   RunHtmlTest(FILE_PATH_LITERAL("no-source-video.html"));
 }
 
-// TODO(crbug.com/916003): Fix race condition.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityVideoControls) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoControls) {
+#if BUILDFLAG(IS_MAC)
+  // The /blink test pass is different on macOS than on other platforms. See
+  // https://crbug.com/1314896.
+  if (GetParam() == ui::AXApiType::kBlink)
+    return;
+#endif
   RunHtmlTest(FILE_PATH_LITERAL("video-controls.html"));
 }
 

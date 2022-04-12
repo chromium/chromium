@@ -1,16 +1,19 @@
 [document web]
 ++[section]
-++++[video]
+++++[video] name='Unable to play media.'
 ++++++[section]
-++++++++[tool bar] name='video' description='video' horizontal
-++++++++[tool bar] name='video' description='video' horizontal
-++++++++++[tool bar] name='video' description='video' horizontal
-++++++++++++[tool bar] name='video' description='video' horizontal
-++++++++++++++[push button] name='play'
-++++++++++++++[static] name='0:00'
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[push button] name='play'
 ++++++++++++++[section]
-++++++++++++++++[section]
-++++++++++++++++[push button] name='mute'
-++++++++++++++[push button] name='enter full screen'
-++++++++++++++[push button] name='show more media controls' description='more options'
-++++++++++++[slider] description='movie time scrubber' horizontal
+++++++++++++[section] name='elapsed time: 0:00'
+++++++++++++++[static] name='0:00'
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++[push button] name='mute'
+++++++++++++[push button] name='enter full screen'
+++++++++++++++[section]
+++++++++++++[push button] name='show more media controls' description='more options' description-from:tooltip
+++++++++++++++[section]
+++++++++++[slider] name='video time scrubber 0:00 / 0:00' horizontal current=0.000000 minimum=0.000000 maximum=100.000000
