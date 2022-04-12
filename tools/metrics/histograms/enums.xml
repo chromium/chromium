@@ -29179,6 +29179,9 @@ Called by update_document_policy_enum.py.-->
   <int value="974" label="SystemTerminalSshAllowed"/>
   <int value="975" label="InsightsExtensionEnabled"/>
   <int value="976" label="EnterpriseAppLinkPolicy"/>
+  <int value="977" label="DefaultLocalFontsSetting"/>
+  <int value="978" label="LocalFontsllowedForUrls"/>
+  <int value="979" label="LocalFontslockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -37911,6 +37914,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="96" label="ClientHintPartitionedCookies"/>
   <int value="97" label="BrowsingTopics"/>
   <int value="98" label="BrowsingTopicsBackwardCompatible"/>
+  <int value="99" label="LocalFonts"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

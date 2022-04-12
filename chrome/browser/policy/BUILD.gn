@@ -222,6 +222,7 @@ source_set("policy_specific_browser_tests") {
       "test/developer_tools_policy_browsertest.cc",
       "test/download_directory_browsertest.cc",
       "test/hide_webstore_icon_policy_browsertest.cc",
+      "test/local_fonts_policy_browsertest.cc",
       "test/media_stream_policy_browsertest.cc",
       "test/set_timeout_without_1ms_clamp_policy_browsertest.cc",
       "test/signed_exchange_browsertest.cc",

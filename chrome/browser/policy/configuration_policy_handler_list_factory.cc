@@ -1643,6 +1643,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     webauthn::pref_names::kRemoteProxiedRequestsAllowed,
     base::Value::Type::BOOLEAN },
 #endif
+  { key::kDefaultLocalFontsSetting,
+    prefs::kManagedDefaultLocalFontsSetting,
+    base::Value::Type::INTEGER },
+  { key::kLocalFontsAllowedForUrls,
+    prefs::kManagedLocalFontsAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kLocalFontsBlockedForUrls,
+    prefs::kManagedLocalFontsBlockedForUrls,
+    base::Value::Type::LIST },
 #if BUILDFLAG(IS_MAC)
   { key::kWarnBeforeQuittingEnabled,
     prefs::kConfirmToQuitEnabled,

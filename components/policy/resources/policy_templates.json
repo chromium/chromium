@@ -548,6 +548,7 @@
         'DefaultInsecureContentSetting',
         'DefaultJavaScriptSetting',
         'DefaultJavaScriptJitSetting',
+        'DefaultLocalFontsSetting',
         'DefaultPluginsSetting',
         'DefaultPopupsSetting',
         'DefaultNotificationsSetting',
@@ -582,6 +583,8 @@
         'KeygenBlockedForUrls',
         'LegacySameSiteCookieBehaviorEnabled',
         'LegacySameSiteCookieBehaviorEnabledForDomainList',
+        'LocalFontsAllowedForUrls',
+        'LocalFontsBlockedForUrls',
         'PluginsAllowedForUrls',
         'PluginsBlockedForUrls',
         'PopupsAllowedForUrls',
@@ -30194,6 +30197,83 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If this policy is not set for a site then the policy from <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME">DefaultWindowPlacementSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.''',
     },
     {
+      'name': 'DefaultLocalFontsSetting',
+      'owners': ['dslee@chromium.org', 'storage-dev@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 2, 3 ],
+      },
+      'items': [
+        {
+          'name': 'BlockLocalFonts',
+          'value': 2,
+          'caption': '''Denies the Local Fonts permission on all sites by default''',
+        },
+        {
+          'name': 'AskLocalFonts',
+          'value': 3,
+          'caption': '''Ask every time a site wants obtain the Local Fonts permission''',
+        },
+
+      ],
+      'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 977,
+      'caption': '''Default Local Fonts permission setting''',
+      'tags': [],
+      'default': None,
+      'example_value': 2,
+      'desc': '''Setting the policy to <ph name="BLOCK_LOCAL_FONTS_POLICY_NAME">BlockLocalFonts</ph> (value 2) automatically denies the local fonts permission to sites by default. This will limit the ability of sites to see information about local fonts.
+
+      Setting the policy to <ph name="ASK_LOCAL_FONTS_POLICY_NAME">AskLocalFonts</ph> (value 3) will prompt the user when the local fonts permission is requested by default. If users allow the permission, it will extend the ability of sites to see information about local fonts.
+
+      Leaving the policy unset means the default behavior applies which is to prompt the user, but users can change this setting''',
+    },
+    {
+      'name': 'LocalFontsAllowedForUrls',
+      'owners': ['dslee@chromium.org', 'storage-dev@chromium.org'],
+      'type': 'list',
+      'schema': { 'type': 'array', 'items': { 'type': 'string' } },
+      'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 978,
+      'caption': '''Allow Local Fonts permission on these sites''',
+      'tags': [],
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'desc': '''Sets a list of site url patterns that specify sites which will automatically grant the local fonts permission. This will extend the ability of sites to see information about local fonts.
+
+      For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+      If this policy is not set for a site then the policy from <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME">DefaultLocalFontsSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.''',
+    },
+    {
+      'name': 'LocalFontsBlockedForUrls',
+      'owners': ['dslee@chromium.org', 'storage-dev@chromium.org'],
+      'type': 'list',
+      'schema': { 'type': 'array', 'items': { 'type': 'string' } },
+      'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 979,
+      'caption': '''Block Local Fonts permission on these sites''',
+      'tags': [],
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'desc': '''Sets a list of site url patterns that specify sites which will automatically deny the local fonts permission. This will limit the ability of sites to see information about local fonts.
+
+      For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+      If this policy is not set for a site then the policy from <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME">DefaultLocalFontsSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.''',
+    },
+    {
       'name': 'DeviceRunAutomaticCleanupOnLogin',
       'owners': ['vsavu@google.com'],
       'type': 'main',
@@ -31743,10 +31823,20 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'WindowPlacementBlockedForUrls',
       ],
     },
+    {
+      'id': 43,
+      'name': 'LocalFontsSettings',
+      'caption': '''Local Fonts settings''',
+      'policies': [
+        'DefaultLocalFontsSetting',
+        'LocalFontsAllowedForUrls',
+        'LocalFontsBlockedForUrls',
+      ],
+    },
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 976,
-  'highest_atomic_group_id_currently_used': 42
+  'highest_id_currently_used': 979,
+  'highest_atomic_group_id_currently_used': 43
 }

@@ -99,6 +99,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::WINDOW_PLACEMENT, CONTENT_SETTING_ALLOW},
         {prefs::kManagedWindowPlacementBlockedForUrls,
          ContentSettingsType::WINDOW_PLACEMENT, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLocalFontsAllowedForUrls,
+         ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLocalFontsBlockedForUrls,
+         ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -136,6 +140,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWebUsbBlockedForUrls,
     prefs::kManagedWindowPlacementAllowedForUrls,
     prefs::kManagedWindowPlacementBlockedForUrls,
+    prefs::kManagedLocalFontsAllowedForUrls,
+    prefs::kManagedLocalFontsBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -164,6 +170,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultJavaScriptJitSetting,
     prefs::kManagedDefaultWebHidGuardSetting,
     prefs::kManagedDefaultWindowPlacementSetting,
+    prefs::kManagedDefaultLocalFontsSetting,
 };
 
 }  // namespace
@@ -215,6 +222,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultWebHidGuardSetting},
         {ContentSettingsType::WINDOW_PLACEMENT,
          prefs::kManagedDefaultWindowPlacementSetting},
+        {ContentSettingsType::LOCAL_FONTS,
+         prefs::kManagedDefaultLocalFontsSetting},
 };
 
 // static

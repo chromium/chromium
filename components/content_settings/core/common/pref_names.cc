@@ -61,6 +61,8 @@ const char kManagedDefaultWebHidGuardSetting[] =
     "profile.managed_default_content_settings.web_hid_guard";
 const char kManagedDefaultWindowPlacementSetting[] =
     "profile.managed_default_content_settings.window_placement";
+const char kManagedDefaultLocalFontsSetting[] =
+    "profile.managed_default_content_settings.local_fonts";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
@@ -133,6 +135,10 @@ const char kManagedWindowPlacementAllowedForUrls[] =
     "profile.managed_window_placement_allowed_for_urls";
 const char kManagedWindowPlacementBlockedForUrls[] =
     "profile.managed_window_placement_blocked_for_urls";
+const char kManagedLocalFontsAllowedForUrls[] =
+    "profile.managed_local_fonts_allowed_for_urls";
+const char kManagedLocalFontsBlockedForUrls[] =
+    "profile.managed_local_fonts_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.
