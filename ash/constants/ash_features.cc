@@ -1246,6 +1246,10 @@ const base::Feature kShelfParty{"ShelfParty",
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables launching Shimless RMA as a standalone app.
+const base::Feature kShimlessRMAEnableStandalone{
+    "ShimlessRMAEnableStandalone", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables a toggle to enable Bluetooth debug logs.
 const base::Feature kShowBluetoothDebugLogToggle{
     "ShowBluetoothDebugLogToggle", base::FEATURE_ENABLED_BY_DEFAULT};

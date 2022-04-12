@@ -5310,6 +5310,11 @@
     "expiry_milestone": 84
   },
   {
+    "name": "shimless-rma-enable-standalone",
+    "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "shimless-rma-flow",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 103

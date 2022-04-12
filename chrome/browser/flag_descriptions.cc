@@ -5180,6 +5180,12 @@ const char kSharesheetCopyToClipboardDescription[] =
 const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
 const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
 
+const char kShimlessRMAEnableStandaloneName[] =
+    "Enable the Shimless RMA standalone app";
+const char kShimlessRMAEnableStandaloneDescription[] =
+    "Allows Shimless RMA to be launched as a standalone app while logged in. "
+    "Will only be used to assist with development";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

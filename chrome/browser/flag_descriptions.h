@@ -2978,6 +2978,9 @@ extern const char kSharesheetCopyToClipboardDescription[];
 extern const char kShimlessRMAFlowName[];
 extern const char kShimlessRMAFlowDescription[];
 
+extern const char kShimlessRMAEnableStandaloneName[];
+extern const char kShimlessRMAEnableStandaloneDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
