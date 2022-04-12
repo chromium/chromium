@@ -111,8 +111,12 @@ bool InProcessHandler::Initialize(
     prune_thread_->Start();
 
   if (!is_app_extension) {
-    system_data_.SetActiveApplicationCallback(
-        [this](bool active) { UpdatePruneAndUploadThreads(active); });
+    system_data_.SetActiveApplicationCallback([this](bool active) {
+      dispatch_async(
+          dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            UpdatePruneAndUploadThreads(active);
+          });
+    });
   }
 
   base::FilePath cached_writer_path = NewLockedFilePath();
