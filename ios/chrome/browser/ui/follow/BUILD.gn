@@ -22,6 +22,7 @@ source_set("first_follow") {
   ]
   deps = [
     ":first_follow_ui",
+    "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -39,7 +40,11 @@ source_set("first_follow_ui") {
     ":follow",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ui/base",
   ]
 }

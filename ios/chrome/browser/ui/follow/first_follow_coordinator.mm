@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
@@ -35,6 +36,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   // Ownership is passed to VC so this object is not retained after VC closes.
   self.followedWebChannel = nil;
   firstFollowViewController.delegate = self;
+  firstFollowViewController.faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =

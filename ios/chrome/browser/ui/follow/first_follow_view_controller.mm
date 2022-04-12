@@ -5,9 +5,15 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -37,6 +43,8 @@ constexpr CGFloat kButtonCornerRadius = 8;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  UIView* faviconView = [self faviconView];
 
   // TODO(crbug.com/1312124): Polish this UI and add favicon.
   UILabel* titleLabel = [self
@@ -68,10 +76,13 @@ constexpr CGFloat kButtonCornerRadius = 8;
   // Go To Feed button is only displayed if the web channel is available.
   NSArray* subviews = nil;
   if (self.followedWebChannel.available) {
-    subviews =
-        @[ titleLabel, subTitleLabel, bodyLabel, goToFeedButton, gotItButton ];
+    subviews = @[
+      faviconView, titleLabel, subTitleLabel, bodyLabel, goToFeedButton,
+      gotItButton
+    ];
   } else {
-    subviews = @[ titleLabel, subTitleLabel, bodyLabel, gotItButton ];
+    subviews =
+        @[ faviconView, titleLabel, subTitleLabel, bodyLabel, gotItButton ];
   }
   UIStackView* verticalStack =
       [[UIStackView alloc] initWithArrangedSubviews:subviews];
@@ -118,6 +129,41 @@ constexpr CGFloat kButtonCornerRadius = 8;
   label.textAlignment = NSTextAlignmentCenter;
   label.text = text;
   return label;
+}
+
+- (UIView*)faviconView {
+  FaviconContainerView* faviconContainerView =
+      [[FaviconContainerView alloc] init];
+  faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.faviconLoader->FaviconForPageUrl(
+      self.followedWebChannel.channelURL.gurl, kDesiredSmallFaviconSizePt,
+      kMinFaviconSizePt,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        [faviconContainerView.faviconView configureWithAttributes:attributes];
+      });
+
+  UIImageView* faviconBadgeView = [[UIImageView alloc] init];
+  faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconBadgeView.image = [UIImage imageNamed:@"table_view_cell_check_mark"];
+
+  UIView* view = [[UIView alloc] init];
+  [view addSubview:faviconContainerView];
+  [view addSubview:faviconBadgeView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [view.leadingAnchor
+        constraintEqualToAnchor:faviconContainerView.leadingAnchor],
+    [view.trailingAnchor
+        constraintEqualToAnchor:faviconBadgeView.trailingAnchor],
+    [view.topAnchor constraintEqualToAnchor:faviconBadgeView.topAnchor],
+    [view.bottomAnchor
+        constraintEqualToAnchor:faviconContainerView.bottomAnchor],
+    [faviconBadgeView.centerYAnchor
+        constraintEqualToAnchor:faviconContainerView.topAnchor],
+    [faviconBadgeView.centerXAnchor
+        constraintEqualToAnchor:faviconContainerView.trailingAnchor],
+  ]];
+  return view;
 }
 
 // Returns a filled button.

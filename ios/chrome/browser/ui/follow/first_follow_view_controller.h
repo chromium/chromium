@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+class FaviconLoader;
 @protocol FirstFollowViewDelegate;
 @class FollowedWebChannel;
 
@@ -19,6 +20,9 @@
 
 // Delegate to execute actions triggered in this UI.
 @property(nonatomic, weak) id<FirstFollowViewDelegate> delegate;
+
+// FaviconLoader retrieves favicons for a given page URL.
+@property(nonatomic, assign) FaviconLoader* faviconLoader;
 
 @end
 
