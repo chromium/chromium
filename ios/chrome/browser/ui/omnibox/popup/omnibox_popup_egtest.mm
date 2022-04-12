@@ -304,15 +304,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
-// TODO(crbug.com/1128463): Test is flaky on simulators.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory \
-  DISABLED_testDontCloseNTPWhenSwitchingWithForwardHistory
-#else
-#define MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory \
-  testDontCloseNTPWhenSwitchingWithForwardHistory
-#endif
-- (void)MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory {
+// TODO(crbug.com/1128463): Test is flaky on simulators and device.
+- (void)DISABLED_testDontCloseNTPWhenSwitchingWithForwardHistory {
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
