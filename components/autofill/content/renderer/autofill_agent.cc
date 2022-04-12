@@ -985,7 +985,7 @@ void AutofillAgent::TriggerReparse() {
 
 void AutofillAgent::ProcessForms() {
   FormCache::UpdateFormCacheResult cache =
-      form_cache_.UpdateFormCache(field_data_manager_.get());
+      form_cache_.ExtractNewForms(field_data_manager_.get());
 
   // Always communicate to browser process for topmost frame.
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty() ||

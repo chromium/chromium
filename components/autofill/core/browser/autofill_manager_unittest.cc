@@ -202,20 +202,32 @@ class AutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillManager> manager_;
 };
 
-// The test parameter sets the number of forms to be generated.
-class AutofillManagerTest_WithIntParam
+// The test parameters en-/disable kAutofillDisplaceRemovedForms and set the
+// number of forms, respectively.
+class AutofillManagerTest_WithOrWithoutCacheFix_WithIntParam
     : public AutofillManagerTest,
-      public ::testing::WithParamInterface<size_t> {
+      public ::testing::WithParamInterface<std::tuple<bool, size_t>> {
  public:
-  size_t num_forms() const { return GetParam(); }
+  AutofillManagerTest_WithOrWithoutCacheFix_WithIntParam() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAutofillDisplaceRemovedForms, displace_removed_forms());
+  }
+
+  bool displace_removed_forms() const { return std::get<0>(GetParam()); }
+  size_t num_forms() const { return std::get<1>(GetParam()); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
-                         AutofillManagerTest_WithIntParam,
-                         testing::Values(0, 1, 5, 10, 100, 110));
+INSTANTIATE_TEST_SUITE_P(
+    AutofillManagerTest,
+    AutofillManagerTest_WithOrWithoutCacheFix_WithIntParam,
+    testing::Combine(testing::Bool(), testing::Values(0, 1, 5, 10, 100, 110)));
 
 // Tests that the cache size is bounded by kAutofillManagerMaxFormCacheSize.
-TEST_P(AutofillManagerTest_WithIntParam, CacheBoundFormsSeen) {
+TEST_P(AutofillManagerTest_WithOrWithoutCacheFix_WithIntParam,
+       CacheBoundFormsSeen) {
   size_t num_exp_forms =
       std::min(num_forms(), kAutofillManagerMaxFormCacheSize);
   std::vector<FormData> forms = CreateTestForms(num_forms());
@@ -223,21 +235,33 @@ TEST_P(AutofillManagerTest_WithIntParam, CacheBoundFormsSeen) {
   OnFormsSeenWithExpectations(*manager_, forms, {}, exp_forms);
 }
 
+// Enables kAutofillDisplaceRemovedForms.
+class AutofillManagerTest_WithCacheFix : public AutofillManagerTest {
+ public:
+  AutofillManagerTest_WithCacheFix() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillDisplaceRemovedForms);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Tests that removing unseen forms has no effect.
-TEST_F(AutofillManagerTest, RemoveUnseenForms) {
+TEST_F(AutofillManagerTest_WithCacheFix, RemoveUnseenForms) {
   std::vector<FormData> forms = CreateTestForms(9);
   OnFormsSeenWithExpectations(*manager_, {}, GetFormIds(forms), {});
 }
 
 // Tests that all forms can be removed at once.
-TEST_F(AutofillManagerTest, RemoveAllForms) {
+TEST_F(AutofillManagerTest_WithCacheFix, RemoveAllForms) {
   std::vector<FormData> forms = CreateTestForms(9);
   OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
   OnFormsSeenWithExpectations(*manager_, {}, GetFormIds(forms), {});
 }
 
 // Tests that removing some forms leaves the other forms untouched.
-TEST_F(AutofillManagerTest, RemoveSomeForms) {
+TEST_F(AutofillManagerTest_WithCacheFix, RemoveSomeForms) {
   std::vector<FormData> forms = CreateTestForms(9);
   auto range = [&](size_t begin, size_t end) {
     return std::vector<FormData>(forms.begin() + begin, forms.begin() + end);
@@ -248,7 +272,7 @@ TEST_F(AutofillManagerTest, RemoveSomeForms) {
 }
 
 // Tests that adding and removing the same forms has no effect.
-TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
+TEST_F(AutofillManagerTest_WithCacheFix, UpdateAndRemoveSameForms) {
   std::vector<FormData> forms = CreateTestForms(9);
   OnFormsSeenWithExpectations(*manager_, forms, GetFormIds(forms), forms);
   OnFormsSeenWithExpectations(*manager_, forms, GetFormIds(forms), forms);

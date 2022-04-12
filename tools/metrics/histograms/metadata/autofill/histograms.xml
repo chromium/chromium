@@ -1100,10 +1100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality"
-    enum="FormDataEquality" expires_after="M102">
-  <obsolete>
-    The experiment has been launched in 04/2022.
-  </obsolete>
+    enum="FormDataEquality" expires_after="2022-09-30">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1263,10 +1260,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FormCacheSize" units="forms" expires_after="M102">
-  <obsolete>
-    The experiment has been launched in 04/2022.
-  </obsolete>
+<histogram name="Autofill.FormCacheSize" units="forms"
+    expires_after="2022-07-31">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
