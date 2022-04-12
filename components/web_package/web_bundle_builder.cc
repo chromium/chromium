@@ -41,19 +41,13 @@ uint64_t GetNumUintBytes(uint64_t value) {
 
 }  // namespace
 
-WebBundleBuilder::WebBundleBuilder(const std::string& fallback_url,
-                                   const std::string& manifest_url,
-                                   BundleVersion version,
+WebBundleBuilder::WebBundleBuilder(BundleVersion version,
                                    bool allow_invalid_utf8_strings_for_testing)
-    : fallback_url_(fallback_url), version_(version) {
+    : version_(version) {
+  // Currently the only supported bundle format is b2.
+  DCHECK_EQ(version_, BundleVersion::kB2);
   writer_config_.allow_invalid_utf8_for_testing =
       allow_invalid_utf8_strings_for_testing;
-  if (!manifest_url.empty() && version == BundleVersion::kB1) {
-    AddSection("manifest", GetCborValueOfURL(manifest_url));
-  }
-  if (version == BundleVersion::kB2 && !fallback_url_.empty()) {
-    AddSection("primary", GetCborValueOfURL(fallback_url_));
-  }
 }
 WebBundleBuilder::~WebBundleBuilder() = default;
 
@@ -67,7 +61,7 @@ cbor::Value WebBundleBuilder::GetCborValueOfURL(base::StringPiece url) {
 void WebBundleBuilder::AddExchange(base::StringPiece url,
                                    const Headers& response_headers,
                                    base::StringPiece payload) {
-  AddIndexEntry(url, "", {AddResponse(response_headers, payload)});
+  AddIndexEntry(url, AddResponse(response_headers, payload));
 }
 
 WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
@@ -86,15 +80,8 @@ WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
 
 void WebBundleBuilder::AddIndexEntry(
     base::StringPiece url,
-    base::StringPiece variants_value,
-    std::vector<ResponseLocation> response_locations) {
-  // 'b2' version does not include |variants_value| in the response array.
-  if (version_ != BundleVersion::kB1) {
-    DCHECK_LE(response_locations.size(), 1u);
-  }
-  delayed_index_.insert(
-      {std::string(url), std::make_pair(std::string(variants_value),
-                                        std::move(response_locations))});
+    const ResponseLocation& response_location) {
+  delayed_index_.insert({std::string{url}, response_location});
 }
 
 void WebBundleBuilder::AddSection(base::StringPiece name, cbor::Value section) {
@@ -111,6 +98,10 @@ void WebBundleBuilder::AddVouchedSubset(cbor::Value::MapValue vouched_subset) {
   vouched_subsets_.emplace_back(std::move(vouched_subset));
 }
 
+void WebBundleBuilder::AddPrimaryURL(base::StringPiece url) {
+  AddSection("primary", GetCborValueOfURL(url));
+}
+
 std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
   // Now that we know how many responses will be in the bundle,
   // we want to shift all the offsets by the bytes required
@@ -119,15 +110,10 @@ std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
   int64_t initial_offset = 1 + GetNumUintBytes(responses_.size());
   cbor::Value::MapValue index;
   for (auto& entry : delayed_index_) {
-    auto& index_entry = entry.second;
+    const ResponseLocation& location = entry.second;
     cbor::Value::ArrayValue index_value_array;
-    if (version_ == BundleVersion::kB1) {
-      index_value_array.emplace_back(CreateByteString(index_entry.first));
-    }
-    for (auto& location : index_entry.second) {
-      index_value_array.emplace_back(location.offset + initial_offset);
-      index_value_array.emplace_back(location.length);
-    }
+    index_value_array.emplace_back(location.offset + initial_offset);
+    index_value_array.emplace_back(location.length);
     index.insert(
         {GetCborValueOfURL(entry.first), cbor::Value(index_value_array)});
   }
@@ -171,14 +157,7 @@ std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   cbor::Value::ArrayValue toplevel_array;
   toplevel_array.emplace_back(
       CreateByteString(u8"\U0001F310\U0001F4E6"));  // "🌐📦"
-  if (version_ == BundleVersion::kB1) {
-    toplevel_array.emplace_back(
-        CreateByteString(base::StringPiece("b1\0\0", 4)));
-    toplevel_array.emplace_back(GetCborValueOfURL(fallback_url_));
-  } else {
-    toplevel_array.emplace_back(
-        CreateByteString(base::StringPiece("b2\0\0", 4)));
-  }
+  toplevel_array.emplace_back(CreateByteString(base::StringPiece("b2\0\0", 4)));
   toplevel_array.emplace_back(Encode(cbor::Value(section_lengths_)));
   toplevel_array.emplace_back(sections_);
   // Put a dummy 8-byte bytestring.

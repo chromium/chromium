@@ -42,7 +42,7 @@ class WebBundleBuilderTest : public testing::Test {
 };
 
 TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
-  WebBundleBuilder builder(kFallbackUrl, "");
+  WebBundleBuilder builder;
   builder.AddExchange("https://test.example.com/",
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
@@ -55,7 +55,7 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
 }
 
 TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
-  WebBundleBuilder builder("", "");
+  WebBundleBuilder builder;
   builder.AddExchange(
       "https://test.example.org/",
       {{":status", "200"}, {"content-type", "text/html; charset=UTF-8"}},
@@ -71,7 +71,7 @@ TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
 }
 
 TEST_F(WebBundleBuilderTest, MoreThan23ResponsesInABundle) {
-  WebBundleBuilder builder("", "");
+  WebBundleBuilder builder;
   for (int i = 0; i < 24; ++i) {
     builder.AddExchange("https://test.example.org/" + base::NumberToString(i),
                         {{":status", "200"}, {"content-type", "text/html;"}},

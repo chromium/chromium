@@ -145,9 +145,6 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.RegisterRequestHandler(base::BindRepeating(
-        &WebBundleElementBrowserTest::HandleHugeWebBundleRequest,
-        base::Unretained(this)));
-    https_server_.RegisterRequestHandler(base::BindRepeating(
         &WebBundleElementBrowserTest::HandleTestWebBundleRequest,
         base::Unretained(this)));
     https_server_.RegisterRequestMonitor(base::BindRepeating(
@@ -206,41 +203,13 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
     EXPECT_EQ("\"iframe.onload\"", message);
   }
 
-  std::unique_ptr<net::test_server::HttpResponse> HandleHugeWebBundleRequest(
-      const net::test_server::HttpRequest& request) {
-    // Handler should return huge bundles only for "/web_bundle/huge.wbn" and
-    // "/web_bundle/huge2.wbn".
-    if (!(request.relative_url == "/web_bundle/huge.wbn" ||
-          request.relative_url == "/web_bundle/huge2.wbn"))
-      return nullptr;
-    GURL primary_url(https_server_.GetURL("/web_bundle/huge.txt"));
-    web_package::WebBundleBuilder builder(primary_url.spec(),
-                                          "" /* manifest_url */);
-    builder.AddExchange(
-        primary_url.spec(),
-        {{":status", "200"}, {"content-type", "text/plain"}},
-        // The body size should be greater than kDefaultMaxMemoryPerProcess / 2.
-        std::string(web_package::kDefaultMaxMemoryPerProcess / 2 + 1000, 'X'));
-    auto bundle = builder.CreateBundle();
-    std::string body(reinterpret_cast<const char*>(bundle.data()),
-                     bundle.size());
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_OK);
-    http_response->set_content(body);
-    http_response->set_content_type("application/webbundle");
-    http_response->AddCustomHeader("X-Content-Type-Options", "nosniff");
-    return http_response;
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> HandleTestWebBundleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/web_bundle/test.wbn")
       return nullptr;
     GURL test1_url(https_server_.GetURL("/web_bundle/test1.txt"));
     GURL test2_url(https_server_.GetURL("/web_bundle/test2.txt"));
-    web_package::WebBundleBuilder builder("" /* fallback_url */,
-                                          "" /* manifest_url */);
+    web_package::WebBundleBuilder builder;
     builder.AddExchange(test1_url.spec(),
                         {{":status", "200"}, {"content-type", "text/plain"}},
                         "test1");

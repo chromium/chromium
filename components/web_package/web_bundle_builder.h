@@ -16,7 +16,6 @@
 namespace web_package {
 
 enum class BundleVersion {
-  kB1,
   kB2,
 };
 
@@ -30,10 +29,9 @@ class WebBundleBuilder {
     int64_t length;
   };
 
-  WebBundleBuilder(const std::string& fallback_url,
-                   const std::string& manifest_url,
-                   BundleVersion version = BundleVersion::kB2,
-                   bool allow_invalid_utf8_strings_for_testing = false);
+  explicit WebBundleBuilder(
+      BundleVersion version = BundleVersion::kB2,
+      bool allow_invalid_utf8_strings_for_testing = false);
 
   ~WebBundleBuilder();
 
@@ -45,11 +43,11 @@ class WebBundleBuilder {
                                base::StringPiece payload);
 
   void AddIndexEntry(base::StringPiece url,
-                     base::StringPiece variants_value,
-                     std::vector<ResponseLocation> response_locations);
+                     const ResponseLocation& response_location);
   void AddSection(base::StringPiece name, cbor::Value section);
   void AddAuthority(cbor::Value::MapValue authority);
   void AddVouchedSubset(cbor::Value::MapValue vouched_subset);
+  void AddPrimaryURL(base::StringPiece url);
 
   std::vector<uint8_t> CreateBundle();
 
@@ -71,11 +69,9 @@ class WebBundleBuilder {
   int64_t EncodedLength(const cbor::Value& value);
 
   cbor::Writer::Config writer_config_;
-  std::string fallback_url_;
   cbor::Value::ArrayValue section_lengths_;
   cbor::Value::ArrayValue sections_;
-  std::map<std::string, std::pair<std::string, std::vector<ResponseLocation>>>
-      delayed_index_;
+  std::map<std::string, ResponseLocation> delayed_index_;
   cbor::Value::ArrayValue responses_;
   cbor::Value::ArrayValue authorities_;
   cbor::Value::ArrayValue vouched_subsets_;

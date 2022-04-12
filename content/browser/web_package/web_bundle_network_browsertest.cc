@@ -135,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SimpleWithScript) {
   const GURL script_url =
       embedded_test_server()->GetURL("/web_bundle/script.js");
 
-  web_package::WebBundleBuilder builder(primary_url.spec(), "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
   builder.AddExchange(primary_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<script src=\"script.js\"></script>");
@@ -230,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   const GURL primary_url = embedded_test_server()->GetURL(primary_url_path);
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
-  web_package::WebBundleBuilder builder(primary_url.spec(), "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
   builder.AddExchange(inner_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
@@ -248,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
-  web_package::WebBundleBuilder builder("", "");
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(inner_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
@@ -715,8 +717,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OutScopeSubPage) {
       embedded_test_server(), "");
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL origin = embedded_test_server()->GetURL("/");
-  web_package::WebBundleBuilder builder(origin.Resolve(primary_url_path).spec(),
-                                        "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(origin.Resolve(primary_url_path).spec());
   web_bundle_browsertest_utils::AddHtmlFile(&builder, origin, primary_url_path,
                                             R"(
     <script>

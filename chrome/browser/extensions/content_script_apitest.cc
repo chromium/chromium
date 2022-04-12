@@ -2107,11 +2107,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
 
   const std::string uuid_html_url =
       "uuid-in-package:65c6f241-f6b5-4302-9f95-9a826c4dda1c";
-  web_package::WebBundleBuilder builder("", "");
-  auto html_location =
-      builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
-                          "<script>console.error('hoge');</script>");
-  builder.AddIndexEntry(uuid_html_url, "", {html_location});
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(uuid_html_url,
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<script>console.error('hoge');</script>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
   const std::string web_bundle = std::string(bundle.begin(), bundle.end());
 

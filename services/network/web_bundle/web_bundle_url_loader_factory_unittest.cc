@@ -45,7 +45,7 @@ using ::testing::Optional;
 using ::testing::Pointee;
 
 std::vector<uint8_t> CreateSmallBundle() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -53,7 +53,7 @@ std::vector<uint8_t> CreateSmallBundle() {
 }
 
 std::vector<uint8_t> CreateLargeBundle() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -67,8 +67,7 @@ std::vector<uint8_t> CreateLargeBundle() {
 }
 
 std::vector<uint8_t> CreateCrossOriginBundle() {
-  web_package::WebBundleBuilder builder(kCrossOriginJsonUrl,
-                                        "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(
       kCrossOriginJsonUrl,
       {{":status", "200"}, {"content-type", "application/json"}},
@@ -302,7 +301,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   // An invalid response.
   builder.AddExchange(kResourceUrl, {{":status", "0"}}, "body");
   WriteBundle(builder.CreateBundle());
@@ -354,7 +353,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResourceNotFoundInBundle) {
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, RedirectResponseIsNotAllowed) {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "301"}, {"location", kResourceUrl2}}, "");
   builder.AddExchange(kResourceUrl2,

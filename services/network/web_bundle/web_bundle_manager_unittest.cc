@@ -35,7 +35,7 @@ const int32_t process_id1 = 100;
 const int32_t process_id2 = 200;
 
 std::string CreateSmallBundleString() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -387,7 +387,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileReadingBody) {
 
   // Create a not small size bundle to trigger the quota error while reading the
   // body of the subresource.
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       std::string(10000, 'X'));
