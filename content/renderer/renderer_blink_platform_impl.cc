@@ -618,6 +618,11 @@ RendererBlinkPlatformImpl::EstablishGpuChannelSync() {
   return RenderThreadImpl::current()->EstablishGpuChannelSync();
 }
 
+void RendererBlinkPlatformImpl::EstablishGpuChannel(
+    EstablishGpuChannelCallback callback) {
+  RenderThreadImpl::current()->EstablishGpuChannel(std::move(callback));
+}
+
 bool RendererBlinkPlatformImpl::RTCSmoothnessAlgorithmEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableRTCSmoothnessAlgorithm);

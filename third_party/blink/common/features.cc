@@ -1413,5 +1413,8 @@ const base::FeatureParam<bool> kPrewarmFantasy = {&kPrewarmDefaultFontFamilies,
 const base::Feature kClientHintsSaveData{"ClientHintsSaveData",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEstablishGpuChannelAsync{
+    "EstablishGpuChannelAsync", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

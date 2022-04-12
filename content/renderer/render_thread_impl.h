@@ -228,6 +228,11 @@ class CONTENT_EXPORT RenderThreadImpl
   // time this routine returns.
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync();
 
+  // Same as above, but asynchronous.
+  using EstablishGpuChannelCallback =
+      base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
+  void EstablishGpuChannel(EstablishGpuChannelCallback callback);
+
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
 
   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry();

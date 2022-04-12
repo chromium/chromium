@@ -633,6 +633,11 @@ class BLINK_PLATFORM_EXPORT Platform {
   // time this routine returns.
   virtual scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync();
 
+  // Same as above, but asynchronous.
+  using EstablishGpuChannelCallback =
+      base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
+  virtual void EstablishGpuChannel(EstablishGpuChannelCallback callback);
+
   // The TaskGraphRunner. This must be non-null if compositing any widgets.
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() { return nullptr; }
 

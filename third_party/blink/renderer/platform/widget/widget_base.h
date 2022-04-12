@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_WIDGET_BASE_H_
 
 #include "base/time/time.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
+#include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -34,6 +36,10 @@ class AnimationHost;
 class LayerTreeHost;
 class LayerTreeSettings;
 }  // namespace cc
+
+namespace gpu {
+class GpuChannelHost;
+}
 
 namespace ui {
 class Cursor;
@@ -387,6 +393,27 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
+
+  // Finishes the call to RequestNewLayerTreeFrameSink() once the
+  // |gpu_channel_host| is available.
+  // TODO(crbug.com/1278147): Clean up these parameters using either a struct or
+  // saving on WidgetBase if kEstablishGpuChannelAsync launches.
+  void FinishRequestNewLayerTreeFrameSink(
+      const KURL& url,
+      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+          compositor_frame_sink_client,
+      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+          render_frame_metadata_observer_remote,
+      std::unique_ptr<RenderFrameMetadataObserverImpl>
+          render_frame_metadata_observer,
+      std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
+          params,
+      LayerTreeFrameSinkCallback callback,
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;

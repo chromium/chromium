@@ -373,6 +373,10 @@ scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }
 
+void Platform::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 gfx::ColorSpace Platform::GetRenderingColorSpace() const {
   return {};
 }

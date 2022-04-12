@@ -704,6 +704,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmFantasy;
 
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsSaveData;
 
+// Enables establishing the GPU channel asnchronously when requesting a new
+// layer tree frame sink.
+BLINK_COMMON_EXPORT extern const base::Feature kEstablishGpuChannelAsync;
+
 }  // namespace features
 }  // namespace blink
 

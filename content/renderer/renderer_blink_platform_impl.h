@@ -159,6 +159,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   scoped_refptr<viz::RasterContextProvider>
   SharedCompositorWorkerContextProvider() override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
+  void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
   bool RTCSmoothnessAlgorithmEnabled() override;
   absl::optional<double> GetWebRtcMaxCaptureFrameRate() override;
   scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(

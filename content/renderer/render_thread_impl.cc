@@ -118,6 +118,7 @@
 #include "media/renderers/default_decoder_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/net_errors.h"
@@ -1630,6 +1631,25 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync() {
   if (gpu_channel)
     GetContentClient()->SetGpuInfo(gpu_channel->gpu_info());
   return gpu_channel;
+}
+
+void RenderThreadImpl::EstablishGpuChannel(
+    EstablishGpuChannelCallback callback) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "gpu", "RenderThreadImpl::EstablishGpuChannel", this);
+  gpu_->EstablishGpuChannel(base::BindOnce(
+      [](EstablishGpuChannelCallback callback, RenderThreadImpl* thread,
+         scoped_refptr<gpu::GpuChannelHost> host) {
+        TRACE_EVENT_NESTABLE_ASYNC_END0(
+            "gpu", "RenderThreadImpl::EstablishGpuChannel", thread);
+        if (host)
+          GetContentClient()->SetGpuInfo(host->gpu_info());
+        std::move(callback).Run(std::move(host));
+      },
+      // The GPU process can crash; in that case, run the callback with no host
+      // to signal the compositor to wait and try again.
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr),
+      this));
 }
 
 blink::AssociatedInterfaceRegistry*
