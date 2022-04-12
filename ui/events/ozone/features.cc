@@ -15,9 +15,6 @@ const base::Feature kEnableNeuralPalmDetectionFilter{
 const base::Feature kEnableNeuralPalmAdaptiveHold{
     "EnableNeuralPalmAdaptiveHold", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableNeuralPalmRejectionBetaModel{
-    "EnableNeuralPalmRejectionBetaModel", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableNeuralPalmRejectionModelV2{
     "EnableNeuralPalmRejectionModelV2", base::FEATURE_DISABLED_BY_DEFAULT};
 
