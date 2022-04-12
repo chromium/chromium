@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 buildflag_header("block_universal_links_buildflags") {
   header = "block_universal_links_buildflags.h"
@@ -125,17 +125,17 @@ source_set("navigation_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("navigation_js") {
+optimize_js("navigation_js") {
   visibility = [ ":navigation_feature" ]
-  closure_entry_point = "__crWeb.navigation"
 
+  primary_script = "resources/navigation.js"
   sources = [ "resources/navigation.js" ]
 }
 
-js_compile_bundle("navigation_listeners_js") {
+optimize_js("navigation_listeners_js") {
   visibility = [ ":navigation_feature" ]
-  closure_entry_point = "__crWeb.navigationListeners"
 
+  primary_script = "resources/navigation_listeners.js"
   sources = [ "resources/navigation_listeners.js" ]
 }
 

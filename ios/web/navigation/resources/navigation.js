@@ -6,11 +6,6 @@
  * @fileoverview Navigation related APIs.
  */
 
-goog.provide('__crWeb.navigation');
-
-/** Beginning of anonymous object */
-(function() {
-
 /**
  * Keep the original pushState() and replaceState() methods. It's needed to
  * update the web view's URL and window.history.state property during history
@@ -128,4 +123,3 @@ window.addEventListener('__gCrWebWindowIdInjected', function() {
 if (__gCrWeb.message) {
   __gCrWeb.message.invokeQueues();
 }
-}());  // End of anonymous object

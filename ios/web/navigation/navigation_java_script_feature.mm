@@ -19,8 +19,8 @@ namespace web {
 
 namespace {
 
-const char kScriptName[] = "navigation_js";
-const char kListenersScriptName[] = "navigation_listeners_js";
+const char kScriptName[] = "navigation";
+const char kListenersScriptName[] = "navigation_listeners";
 const char kScriptHandlerName[] = "NavigationEventMessage";
 
 }  // namespace
