@@ -68,7 +68,10 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
   BreadcrumbPersistentStorageManagerTest() {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     persistent_storage_ = std::make_unique<BreadcrumbPersistentStorageManager>(
-        scoped_temp_dir_.GetPath());
+        scoped_temp_dir_.GetPath(),
+        /*is_metrics_enabled_callback=*/base::BindRepeating(
+            &BreadcrumbPersistentStorageManagerTest::is_metrics_enabled,
+            base::Unretained(this)));
     breadcrumb_manager_service_.StartPersisting(persistent_storage_.get());
   }
 
@@ -96,15 +99,24 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
     std::move(quit_closure).Run();
   }
 
+  bool is_metrics_enabled() { return is_metrics_enabled_; }
+
+  void EnableMetricsConsent() { is_metrics_enabled_ = true; }
+  void DisableMetricsConsent() { is_metrics_enabled_ = false; }
+
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir scoped_temp_dir_;
   BreadcrumbManagerKeyedService breadcrumb_manager_service_{
       /*is_off_the_record=*/false};
+
+ private:
   std::unique_ptr<BreadcrumbPersistentStorageManager> persistent_storage_;
 
   // Stores events returned by BreadcrumbPersistentStorageManager::GetEvents().
   std::vector<std::string> events_;
+
+  bool is_metrics_enabled_ = true;
 };
 
 // Ensures that logged events are persisted.
@@ -218,6 +230,40 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
   const auto events = GetPersistedEvents();
   EXPECT_GT(events.size(), 1ul);
   EXPECT_LT(events.size(), written_events);
+}
+
+// Ensures that the breadcrumbs file is deleted if metrics consent is not
+// provided, and recreated if it is re-enabled.
+TEST_F(BreadcrumbPersistentStorageManagerTest, ChangeMetricsConsent) {
+  const base::FilePath breadcrumbs_file_path =
+      GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath());
+
+  breadcrumb_manager_service_.AddEvent("event 1");
+  task_env_.FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(base::PathExists(breadcrumbs_file_path));
+  auto events = GetPersistedEvents();
+  ASSERT_EQ(1ul, events.size());
+  ASSERT_NE(std::string::npos, events.front().find("event 1"));
+
+  // Turn off metrics consent; the breadcrumbs file should be deleted when an
+  // event is logged.
+  DisableMetricsConsent();
+
+  breadcrumb_manager_service_.AddEvent("event 2");
+  task_env_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(base::PathExists(breadcrumbs_file_path));
+  EXPECT_TRUE(GetPersistedEvents().empty());
+
+  // Turn metrics consent back on; the breadcrumbs file should be recreated and
+  // include only events logged since metrics were re-enabled.
+  EnableMetricsConsent();
+
+  breadcrumb_manager_service_.AddEvent("event 3");
+  task_env_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(base::PathExists(breadcrumbs_file_path));
+  events = GetPersistedEvents();
+  EXPECT_EQ(1ul, events.size());
+  EXPECT_NE(std::string::npos, events.front().find("event 3"));
 }
 
 }  // namespace breadcrumbs

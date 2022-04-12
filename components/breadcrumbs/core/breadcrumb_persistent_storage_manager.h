@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,7 +35,9 @@ constexpr size_t kPersistedFilesizeInBytes = kMaxDataLength * 2;
 class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
  public:
   // Breadcrumbs will be stored in a file in |directory|.
-  explicit BreadcrumbPersistentStorageManager(const base::FilePath& directory);
+  explicit BreadcrumbPersistentStorageManager(
+      const base::FilePath& directory,
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback);
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;
@@ -59,6 +62,11 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
       BreadcrumbManagerKeyedService* service);
 
  private:
+  // Returns whether metrics consent has been provided and the persistent
+  // storage manager can therefore create its breadcrumbs files. Deletes any
+  // existing breadcrumbs files if consent has been revoked.
+  bool CheckForFileConsent();
+
   // Initializes |file_position_| to |file_size| and writes any events so far.
   void InitializeFilePosition(size_t file_size);
 
@@ -106,6 +114,10 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // NOTE: The optional will not have a value until the size of the existing
   // file, if any, is retrieved.
   absl::optional<size_t> file_position_;
+
+  // Used to check whether the user has consented to metrics reporting.
+  // Breadcrumbs should only be written to persistent storage if true.
+  base::RepeatingCallback<bool()> is_metrics_enabled_callback_;
 
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

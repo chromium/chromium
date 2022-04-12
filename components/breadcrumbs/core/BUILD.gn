@@ -21,12 +21,15 @@ source_set("core") {
     "breadcrumb_persistent_storage_util.h",
     "breadcrumb_util.cc",
     "breadcrumb_util.h",
+    "breadcrumbs_status.cc",
+    "breadcrumbs_status.h",
     "crash_reporter_breadcrumb_constants.h",
     "crash_reporter_breadcrumb_observer.cc",
     "crash_reporter_breadcrumb_observer.h",
   ]
 
   deps = [
+    ":feature_flags",
     ":generate_not_user_triggered_actions",
     "//base",
     "//components/crash/core/common:crash_key",

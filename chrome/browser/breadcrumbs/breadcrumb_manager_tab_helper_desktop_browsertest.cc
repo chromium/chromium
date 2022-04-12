@@ -58,8 +58,8 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 
 // Tests download navigation.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
-  ASSERT_EQ(0ul,
-            breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size());
+  const size_t num_startup_breadcrumbs =
+      breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size();
 
   const GURL url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
@@ -68,7 +68,9 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
 
   const std::list<std::string> events =
       breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
-  ASSERT_EQ(2ul, events.size());
+  // Breadcrumbs should have been logged for starting and finishing the
+  // navigation, and the navigation should be labeled as a download.
+  ASSERT_EQ(2ul, events.size() - num_startup_breadcrumbs);
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();

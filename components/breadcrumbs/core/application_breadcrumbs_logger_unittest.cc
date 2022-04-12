@@ -32,8 +32,10 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
     CHECK(temp_dir_.CreateUniqueTempDir());
-    logger_ =
-        std::make_unique<ApplicationBreadcrumbsLogger>(temp_dir_.GetPath());
+    logger_ = std::make_unique<ApplicationBreadcrumbsLogger>(
+        temp_dir_.GetPath(),
+        /*is_metrics_enabled_callback=*/base::BindRepeating(
+            [] { return true; }));
   }
 
   // This must be created before `task_environment_`, to ensure that any tasks

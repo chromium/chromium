@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "components/metrics/metrics_service_accessor.h"
 
+class ApplicationBreadcrumbsLogger;
 class OptimizationGuideService;
 
 namespace {
@@ -36,6 +37,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  private:
   friend class IOSChromeMetricsServicesManagerClient;
 
+  friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
   friend class OptimizationGuideService;
   friend class IOSChromeMainParts;

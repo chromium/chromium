@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_util.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 
 namespace base {
 class TimeTicks;
@@ -28,7 +30,9 @@ class BreadcrumbPersistentStorageManager;
 class ApplicationBreadcrumbsLogger {
  public:
   // Breadcrumbs will be stored in a file in |storage_dir|.
-  explicit ApplicationBreadcrumbsLogger(const base::FilePath& storage_dir);
+  explicit ApplicationBreadcrumbsLogger(
+      const base::FilePath& storage_dir,
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
   ~ApplicationBreadcrumbsLogger();
 

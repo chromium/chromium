@@ -121,13 +121,15 @@ size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
 }  // namespace
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
-    const base::FilePath& directory)
+    const base::FilePath& directory,
+    base::RepeatingCallback<bool()> is_metrics_enabled_callback)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
       breadcrumbs_file_path_(GetBreadcrumbPersistentStorageFilePath(directory)),
       breadcrumbs_temp_file_path_(
           GetBreadcrumbPersistentStorageTempFilePath(directory)),
+      is_metrics_enabled_callback_(std::move(is_metrics_enabled_callback)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -173,6 +175,9 @@ void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManagerService(
 void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
     const std::vector<std::string> pending_breadcrumbs,
     std::vector<std::string> existing_events) {
+  if (!CheckForFileConsent())
+    return;
+
   existing_events.insert(existing_events.end(), pending_breadcrumbs.begin(),
                          pending_breadcrumbs.end());
 
@@ -227,7 +232,7 @@ void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
 }
 
 void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
-  if (pending_breadcrumbs_.empty())
+  if (!CheckForFileConsent() || pending_breadcrumbs_.empty())
     return;
 
   // Make a copy of |pending_breadcrumbs_| to pass to the DoWriteEventsToFile()
@@ -248,6 +253,23 @@ void BreadcrumbPersistentStorageManager::EventAdded(BreadcrumbManager* manager,
                                                     const std::string& event) {
   pending_breadcrumbs_ += event + kEventSeparator;
   WriteEvents();
+}
+
+bool BreadcrumbPersistentStorageManager::CheckForFileConsent() {
+  static bool should_create_files = true;
+  const bool is_metrics_and_crash_reporting_enabled =
+      is_metrics_enabled_callback_.Run();
+
+  // If metrics consent has been revoked since this was last checked, delete any
+  // existing breadcrumbs files.
+  if (should_create_files && !is_metrics_and_crash_reporting_enabled) {
+    DeleteBreadcrumbFiles(breadcrumbs_file_path_.DirName());
+    file_position_ = 0;
+    pending_breadcrumbs_.clear();
+  }
+
+  should_create_files = is_metrics_and_crash_reporting_enabled;
+  return should_create_files;
 }
 
 void BreadcrumbPersistentStorageManager::InitializeFilePosition(
