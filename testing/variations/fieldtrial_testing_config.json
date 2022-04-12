@@ -7676,6 +7676,37 @@
             ]
         }
     ],
+    "V8MapSpaceCompaction": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NoMapSpace",
+                    "disable_features": [
+                        "V8UseMapSpace"
+                    ]
+                },
+                {
+                    "name": "CompactMaps",
+                    "enable_features": [
+                        "V8CompactMaps"
+                    ]
+                },
+                {
+                    "name": "Default"
+                }
+            ]
+        }
+    ],
     "V8ScriptAblation": [
         {
             "platforms": [
@@ -7742,7 +7773,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Default"
+                    "name": "DefaultX"
                 },
                 {
                     "name": "Disabled",
