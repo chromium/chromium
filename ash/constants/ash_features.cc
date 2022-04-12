@@ -1343,7 +1343,7 @@ const base::Feature kTrilinearFiltering{"TrilinearFiltering",
 // Unblock the UsbPeripheralNotificationController class in ash to display
 // USB related notifications from the type-c daemon in Chrome OS.
 const base::Feature kUsbNotificationController{
-    "UsbNotificationController", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UsbNotificationController", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Uses new  AuthSession-based API in cryptohome to authenticate users during
 // sign-in.
