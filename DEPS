@@ -527,6 +527,17 @@ deps = {
   'src/third_party/rust/serde_jsonrc/v0_1/crate':
     Var('chromium_git') + '/external/github.com/serde-rs/json' + '@' + 'ca5782632fc8dc3f9cf2f22055b87f910cad761f',
 
+  'src/third_party/apache-linux': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/httpd-php/${{platform}}',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.3',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "linux")',
+  },
+
   'src/android_webview/tools/cts_archive': {
       'packages': [
           {
