@@ -206,9 +206,13 @@ void LogBadMessage(bool is_kiosk_enabled,
 }
 
 bool IsKiosk(const extensions::Extension* extension) {
+  extensions::ExtensionsBrowserClient* const browser_client =
+      extensions::ExtensionsBrowserClient::Get();
+  if (!extension || !browser_client)
+    return false;
   extensions::KioskDelegate* const kiosk_delegate =
-      extensions::ExtensionsBrowserClient::Get()->GetKioskDelegate();
-  return kiosk_delegate && extension &&
+      browser_client->GetKioskDelegate();
+  return kiosk_delegate &&
          kiosk_delegate->IsAutoLaunchedKioskApp(extension->id());
 }
 
