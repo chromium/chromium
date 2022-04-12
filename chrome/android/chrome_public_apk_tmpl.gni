@@ -107,10 +107,9 @@ template("chrome_public_common_apk_or_module_tmpl") {
   }
 
   if (_add_unwind_tables) {
-    _unwind_asset_target = "${target_name}__unwind_assets"
-
     if (use_android_unwinder_v2) {
-      unwind_table_asset_v2(_unwind_asset_target) {
+      _unwind_asset_v2_target = "${target_name}__v2_unwind_assets"
+      unwind_table_asset_v2(_unwind_asset_v2_target) {
         if (defined(invoker.testonly)) {
           testonly = invoker.testonly
         }
@@ -129,25 +128,28 @@ template("chrome_public_common_apk_or_module_tmpl") {
           deps = [ "//chrome/android:lib${library_target}" ]
         }
       }
-    } else {
-      unwind_table_asset(_unwind_asset_target) {
-        if (defined(invoker.testonly)) {
-          testonly = invoker.testonly
-        }
+    }
 
-        if (defined(invoker.shared_library_for_unwind_asset)) {
-          library_target = invoker.shared_library_for_unwind_asset
-        } else if (_is_monochrome || _is_trichrome) {
-          library_target = "monochrome"
-        } else {
-          library_target = "chrome"
-        }
+    # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+    _unwind_asset_target = "${target_name}__unwind_assets"
+    unwind_table_asset(_unwind_asset_target) {
+      if (defined(invoker.testonly)) {
+        testonly = invoker.testonly
+      }
 
-        if (android_64bit_target_cpu) {
-          deps = [ "//chrome/android:lib${library_target}($android_secondary_abi_toolchain)" ]
-        } else {
-          deps = [ "//chrome/android:lib${library_target}" ]
-        }
+      if (defined(invoker.shared_library_for_unwind_asset)) {
+        library_target = invoker.shared_library_for_unwind_asset
+      } else if (_is_monochrome || _is_trichrome) {
+        library_target = "monochrome"
+      } else {
+        library_target = "chrome"
+      }
+
+      if (android_64bit_target_cpu) {
+        deps = [ "//chrome/android:lib${library_target}($android_secondary_abi_toolchain)" ]
+      } else {
+        deps = [ "//chrome/android:lib${library_target}" ]
       }
     }
   } else if (defined(invoker.shared_library_for_unwind_asset)) {

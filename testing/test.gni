@@ -269,17 +269,20 @@ template("test") {
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
       if (defined(invoker.add_unwind_tables_in_apk) &&
           invoker.add_unwind_tables_in_apk) {
-        _unwind_table_asset_name = "${target_name}_unwind_assets"
         if (use_android_unwinder_v2) {
-          unwind_table_asset_v2(_unwind_table_asset_name) {
+          _unwind_table_asset_v2_name = "${target_name}_v2_unwind_assets"
+          unwind_table_asset_v2(_unwind_table_asset_v2_name) {
             library_target = _library_target
             deps = [ ":$_library_target" ]
           }
-        } else {
-          unwind_table_asset(_unwind_table_asset_name) {
-            library_target = _library_target
-            deps = [ ":$_library_target" ]
-          }
+        }
+
+        # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+        # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+        _unwind_table_asset_name = "${target_name}_unwind_assets"
+        unwind_table_asset(_unwind_table_asset_name) {
+          library_target = _library_target
+          deps = [ ":$_library_target" ]
         }
       }
 
