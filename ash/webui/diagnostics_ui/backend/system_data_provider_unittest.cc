@@ -1033,5 +1033,68 @@ TEST_F(SystemDataProviderTest, ResetReceiverOnDisconnect) {
   ASSERT_TRUE(system_data_provider_->ReceiverIsBound());
 }
 
+TEST_F(SystemDataProviderTest, BatteryInfoPtrDataValidation) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetBatteryHealthTimerForTesting(std::move(timer));
+
+  const std::string vendor = "fake_vendor";
+  healthd_mojom::BatteryInfoPtr battery_info_all_zero =
+      CreateCrosHealthdBatteryInfoResponse(vendor, /*charge_full_design*/ 0);
+  SetProbeTelemetryInfoResponse(std::move(battery_info_all_zero),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+  // Registering as an observer should trigger one update.
+  FakeBatteryHealthObserver health_observer;
+  system_data_provider_->ObserveBatteryHealth(
+      health_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1ul, health_observer.updates.size());
+  auto* battery_health_one = health_observer.updates[0].get();
+  EXPECT_EQ(0, battery_health_one->battery_wear_percentage);
+  EXPECT_FALSE(isnan(battery_health_one->battery_wear_percentage));
+  EXPECT_FALSE(isnan(battery_health_one->charge_full_now_milliamp_hours));
+  EXPECT_FALSE(isnan(battery_health_one->charge_full_design_milliamp_hours));
+
+  healthd_mojom::BatteryInfoPtr battery_info_not_a_number =
+      CreateCrosHealthdBatteryInfoResponse(vendor, /*charge_full_design*/ NAN);
+  SetProbeTelemetryInfoResponse(std::move(battery_info_not_a_number),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2ul, health_observer.updates.size());
+  auto* battery_health_two = health_observer.updates[0].get();
+  EXPECT_EQ(0, battery_health_two->battery_wear_percentage);
+  EXPECT_FALSE(isnan(battery_health_two->battery_wear_percentage));
+  EXPECT_FALSE(isnan(battery_health_two->charge_full_now_milliamp_hours));
+  EXPECT_FALSE(isnan(battery_health_two->charge_full_design_milliamp_hours));
+
+  healthd_mojom::BatteryInfoPtr battery_info_charge_full_nan =
+      CreateCrosHealthdBatteryInfoResponse(vendor, /*charge_full_design*/ 1);
+  battery_info_charge_full_nan->charge_full = NAN;
+  SetProbeTelemetryInfoResponse(std::move(battery_info_charge_full_nan),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3ul, health_observer.updates.size());
+  auto* battery_health_three = health_observer.updates[2].get();
+  EXPECT_EQ(0, battery_health_three->battery_wear_percentage);
+  EXPECT_FALSE(isnan(battery_health_three->battery_wear_percentage));
+  EXPECT_FALSE(isnan(battery_health_three->charge_full_now_milliamp_hours));
+  EXPECT_FALSE(isnan(battery_health_three->charge_full_design_milliamp_hours));
+}
+
 }  // namespace diagnostics
 }  // namespace ash

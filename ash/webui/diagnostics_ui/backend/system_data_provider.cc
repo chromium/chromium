@@ -140,11 +140,25 @@ void PopulateBatteryChargeStatus(
 
 void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
                            mojom::BatteryHealth& out_battery_health) {
+  out_battery_health.cycle_count = battery_info.cycle_count;
+
+  // Handle values in battery_info which could cause a SIGFPE. See b/227485637.
+  if (isnan(battery_info.charge_full) ||
+      isnan(battery_info.charge_full_design) ||
+      battery_info.charge_full_design == 0) {
+    LOG(ERROR) << "battery_info values could cause SIGFPE crash: { "
+               << "charge_full_design: " << battery_info.charge_full_design
+               << ", charge_full: " << battery_info.charge_full << " }";
+    out_battery_health.charge_full_now_milliamp_hours = 0;
+    out_battery_health.charge_full_design_milliamp_hours = 0;
+    out_battery_health.battery_wear_percentage = 0;
+    return;
+  }
+
   out_battery_health.charge_full_now_milliamp_hours =
       battery_info.charge_full * kMilliampsInAnAmp;
   out_battery_health.charge_full_design_milliamp_hours =
       battery_info.charge_full_design * kMilliampsInAnAmp;
-  out_battery_health.cycle_count = battery_info.cycle_count;
   out_battery_health.battery_wear_percentage =
       100 * out_battery_health.charge_full_now_milliamp_hours /
       out_battery_health.charge_full_design_milliamp_hours;
