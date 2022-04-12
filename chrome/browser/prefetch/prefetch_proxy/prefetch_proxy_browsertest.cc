@@ -46,6 +46,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/certificate_reporting_test_utils.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -65,6 +66,7 @@
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
+#include "components/security_state/core/security_state.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/variations_params_manager.h"
 #include "components/version_info/version_info.h"
@@ -1244,6 +1246,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(
       absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
       tab_helper->after_srp_metrics()->prefetch_status_);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1281,6 +1288,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
       tab_helper->after_srp_metrics()->prefetch_status_);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1408,6 +1420,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
@@ -1478,6 +1495,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
           eligible_link_3.path(),
       },
       /*are_requests_anonymous_client_ip=*/true);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
@@ -2078,6 +2100,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
             content::GetCookies(
                 browser()->profile(), eligible_link,
                 net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
@@ -4202,6 +4229,11 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // Check that the JavaScript ran.
   EXPECT_EQ(u"JavaScript Executed", GetWebContents()->GetTitle());
 
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
+
   // Navigate one more time to destroy the SubresourceManager so that its UMA is
   // recorded and to trigger UKM recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -4261,6 +4293,11 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
@@ -4769,6 +4806,11 @@ IN_PROC_BROWSER_TEST_F(
   VerifyPrefetchRequestsSecPurposeHeader(
       {eligible_link.path()},
       /*are_requests_anonymous_client_ip=*/false);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4835,6 +4877,11 @@ IN_PROC_BROWSER_TEST_F(
   VerifyPrefetchRequestsSecPurposeHeader(
       {eligible_link.path()},
       /*are_requests_anonymous_client_ip=*/false);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeculationNonPrivatePrefetchesPrefetchProxyTest,
@@ -4897,4 +4944,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationNonPrivatePrefetchesPrefetchProxyTest,
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 0, 1);
+
+  SecurityStateTabHelper* security_state_tab_helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
+            security_state::NONE);
 }

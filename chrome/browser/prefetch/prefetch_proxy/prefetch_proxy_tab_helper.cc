@@ -885,6 +885,10 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
       loader.get(), prefetch_container->GetUrl()));
   loader->SetAllowHttpErrorResults(true);
   loader->SetTimeoutDuration(PrefetchProxyTimeoutDuration());
+  loader->SetURLLoaderFactoryOptions(
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+      network::mojom::kURLLoadOptionSniffMimeType |
+      network::mojom::kURLLoadOptionSendSSLInfoForCertificateError);
   loader->DownloadToString(
       GetURLLoaderFactory(prefetch_container->GetUrl()),
       base::BindOnce(&PrefetchProxyTabHelper::OnPrefetchComplete,
