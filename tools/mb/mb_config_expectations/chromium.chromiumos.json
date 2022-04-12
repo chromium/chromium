@@ -33,7 +33,7 @@
     }
   },
   "chromeos-amd64-generic-asan-rel (reclient shadow)": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,
       "is_asan": true,
@@ -66,7 +66,7 @@
     }
   },
   "chromeos-amd64-generic-dbg (reclient shadow)": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,
       "is_chromeos_device": true,

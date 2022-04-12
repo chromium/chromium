@@ -302,7 +302,7 @@
       },
       'Comparison Simple Chrome (reclient)': {
         'goma': 'chromeos_amd64-generic_use_fake_dbus_clients_goma',
-        'reclient': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+        'reclient': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       },
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
@@ -339,9 +339,9 @@
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm_reclient',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64_reclient',
-      'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+      'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       # TODO(crbug.com/1235218): remove after the migration.
-      'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+      'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -368,7 +368,7 @@
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_no_lld',
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
-      'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_lacros_rel_reclient',
+      'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
@@ -635,8 +635,8 @@
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
       'Win x64 Builder reclient staging': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder reclient test': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'Simple Chrome Builder reclient staging': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
-      'Simple Chrome Builder reclient test': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+      'Simple Chrome Builder reclient staging': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
+      'Simple Chrome Builder reclient test': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
     },
 
     'chromium.rust': {
@@ -1963,8 +1963,8 @@
       'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release', 'dcheck_always_on',
     ],
 
-    'chromeos_amd64-generic_lacros_rel_reclient': [
-      'chromeos_amd64-generic_reclient', 'amd64-lacros',
+    'chromeos_amd64-generic-vm_lacros_rel_reclient': [
+      'chromeos_amd64-generic-vm_reclient', 'amd64-lacros',
     ],
 
     'chromeos_amd64-generic_lacros_dbg': [
@@ -1995,8 +1995,8 @@
       'chromeos_amd64-generic_goma', 'use_fake_dbus_clients',
     ],
 
-    'chromeos_amd64-generic_use_fake_dbus_clients_reclient': [
-      'chromeos_amd64-generic_reclient', 'use_fake_dbus_clients',
+    'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient': [
+      'chromeos_amd64-generic-vm_reclient', 'use_fake_dbus_clients',
     ],
 
     'chromeos_arm-generic': [
@@ -3628,7 +3628,7 @@
     },
 
     'chromeos_amd64-generic_reclient': {
-      'mixins': ['chromeos_device_reclient', 'amd64-generic-vm',]
+      'mixins': ['chromeos_device_reclient', 'amd64-generic',]
     },
 
     'clang_tot': {
