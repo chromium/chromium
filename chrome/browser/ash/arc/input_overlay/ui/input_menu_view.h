@@ -51,6 +51,8 @@ class InputMenuView : public views::View {
   ~InputMenuView() override;
 
  private:
+  class FeedbackButton;
+
   void CloseMenu();
   void Init();
   std::unique_ptr<views::View> BuildSeparator();
@@ -58,6 +60,7 @@ class InputMenuView : public views::View {
   void OnToggleGameControlPressed();
   void OnToggleShowHintPressed();
   void OnButtonCustomizedPressed();
+  void OnButtonSendFeedbackPressed();
 
   raw_ptr<views::ToggleButton> game_control_toggle_ = nullptr;
   raw_ptr<views::ToggleButton> show_hint_toggle_ = nullptr;

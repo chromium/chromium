@@ -91,6 +91,7 @@ class TouchInjector : public ui::EventRewriter {
   void OnBindingCancel();
   // Set input binding back to original binding.
   void OnBindingRestore();
+  const std::string* GetPackageName() const;
 
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(

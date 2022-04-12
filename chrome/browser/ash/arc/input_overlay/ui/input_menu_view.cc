@@ -5,14 +5,18 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -46,12 +50,71 @@ constexpr int kRowMinHeight = 60;
 // Other misc sizes.
 constexpr int kCloseButtonSize = 48;
 constexpr int kCornerRadius = 16;
+constexpr int kSideInset = 20;
 
 // String styles/sizes.
 constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kTitleFontSize = 20;
 constexpr int kBodyFontSize = 13;
+
+constexpr char kFeedbackUrl[] =
+    "https://docs.google.com/forms/d/e/"
+    "1FAIpQLSfL3ttPmopJj65P4EKr--SA18Sc9bbQVMnd0oueMhJu_42TbA/"
+    "viewform?usp=pp_url";
+// Entry for the survey form from above link.
+constexpr char kGamePackageName[] = "entry.435412983";
+constexpr char kBoardName[] = "entry.1492517074";
+constexpr char kOsVersion[] = "entry.1961594320";
+
+GURL GetAssembleUrl(DisplayOverlayController& controller) {
+  GURL url(kFeedbackUrl);
+  const auto* package_name = controller.GetPackageName();
+  url = net::AppendQueryParameter(url, kGamePackageName, *package_name);
+  url = net::AppendQueryParameter(url, kBoardName,
+                                  base::SysInfo::HardwareModelName());
+  url = net::AppendQueryParameter(url, kOsVersion,
+                                  base::SysInfo::OperatingSystemVersion());
+  return url;
+}
+
 }  // namespace
+
+class InputMenuView::FeedbackButton : public views::LabelButton {
+ public:
+  explicit FeedbackButton(PressedCallback callback = PressedCallback(),
+                          const std::u16string& text = std::u16string())
+      : LabelButton(callback, text) {
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, kSideInset, 0, kSideInset)));
+    label()->SetFontList(
+        gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
+                      kBodyFontSize, gfx::Font::Weight::NORMAL));
+
+    auto* color_provider = ash::AshColorProvider::Get();
+    DCHECK(color_provider);
+    if (!color_provider)
+      return;
+
+    SetTextColor(
+        views::Button::STATE_NORMAL,
+        color_provider->GetContentLayerColor(
+            ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
+    SetTextColor(
+        views::Button::STATE_HOVERED,
+        color_provider->GetContentLayerColor(
+            ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
+    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                          /*highlight_on_hover=*/true,
+                                          /*highlight_on_focus=*/true);
+    SetMinSize(gfx::Size(0, kRowMinHeight));
+  }
+
+  FeedbackButton(const FeedbackButton&) = delete;
+  FeedbackButton& operator=(const FeedbackButton&) = delete;
+  ~FeedbackButton() override = default;
+};
 
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
@@ -94,6 +157,8 @@ void InputMenuView::Init() {
 
   // Add title, main control for the feature and close button.
   auto header_view = std::make_unique<views::View>();
+  // TODO(cuicuiruan|djacobo): revisit here to check the insets. The space looks
+  // bigger than expected.
   header_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
@@ -144,6 +209,8 @@ void InputMenuView::Init() {
 
   // Add button to customize key bindings.
   auto customize_view = std::make_unique<views::View>();
+  // TODO(cuicuiruan|djacobo): revisit here to check the insets. The space looks
+  // bigger than expected.
   customize_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
@@ -160,8 +227,8 @@ void InputMenuView::Init() {
       gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
                     kBodyFontSize, gfx::Font::Weight::NORMAL),
       /*line_height=*/kRowMinHeight);
-  key_mapping_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 20, 0, 20)));
+  key_mapping_label->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kSideInset, 0, kSideInset)));
   customize_view->AddChildView(std::move(key_mapping_label));
 
   customize_button_ =
@@ -192,8 +259,8 @@ void InputMenuView::Init() {
       gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
                     kBodyFontSize, gfx::Font::Weight::NORMAL),
       /*line_height=*/kRowMinHeight));
-  hint_view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 20, 0, 20)));
+  hint_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kSideInset, 0, kSideInset)));
   show_hint_toggle_ = hint_view->AddChildView(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
           &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));
@@ -204,27 +271,11 @@ void InputMenuView::Init() {
   AddChildView(std::move(hint_view));
   AddChildView(BuildSeparator());
 
-  // TODO(djacobo): Determine where the user is taken with this entry.
-  auto feedback_label = std::make_unique<views::View>();
-  feedback_label->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetCollapseMargins(false)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                 DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
-
-  feedback_label->AddChildView(ash::login_views_utils::CreateBubbleLabel(
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK),
-      /*view_defining_max_width=*/nullptr, color,
-      /*font_list=*/
-      gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
-                    kBodyFontSize, gfx::Font::Weight::NORMAL),
-      /*line_height=*/kRowMinHeight));
-  feedback_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 20, 0, 20)));
-  AddChildView(std::move(feedback_label));
+  auto feedback_button = std::make_unique<FeedbackButton>(
+      base::BindRepeating(&InputMenuView::OnButtonSendFeedbackPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
+  AddChildView(std::move(feedback_button));
 
   SetPosition(gfx::Point(entry_view_->x() - width() + entry_view_->width(),
                          entry_view_->y()));
@@ -261,6 +312,16 @@ void InputMenuView::OnButtonCustomizedPressed() {
     return;
   // Change display mode, load edit UI per action and overall edit buttons.
   display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+}
+
+void InputMenuView::OnButtonSendFeedbackPressed() {
+  DCHECK(display_overlay_controller_);
+  if (!display_overlay_controller_)
+    return;
+
+  GURL url = GetAssembleUrl(*display_overlay_controller_);
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 }  // namespace input_overlay

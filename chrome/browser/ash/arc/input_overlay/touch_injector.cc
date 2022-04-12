@@ -7,6 +7,7 @@
 #include <list>
 #include <utility>
 
+#include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
@@ -186,6 +187,10 @@ void TouchInjector::OnBindingRestore() {
   auto bounds = CalculateWindowContentBounds(target_window_);
   for (auto& action : actions_)
     action->RestoreToDefault(bounds);
+}
+
+const std::string* TouchInjector::GetPackageName() const {
+  return target_window_->GetProperty(ash::kArcPackageNameKey);
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {

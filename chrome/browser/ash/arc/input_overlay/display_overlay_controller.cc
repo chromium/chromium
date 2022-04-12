@@ -345,6 +345,10 @@ void DisplayOverlayController::OnCustomizeRestore() {
   touch_injector_->OnBindingRestore();
 }
 
+const std::string* DisplayOverlayController::GetPackageName() const {
+  return touch_injector_->GetPackageName();
+}
+
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED)
     ProcessPressedEvent(*event);

@@ -62,6 +62,7 @@ class DisplayOverlayController : public ui::EventHandler {
   // Restore back to original default binding when users press the restore
   // button after editing.
   void OnCustomizeRestore();
+  const std::string* GetPackageName() const;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -104,7 +105,7 @@ class DisplayOverlayController : public ui::EventHandler {
 
   TouchInjector* touch_injector() { return touch_injector_; }
 
-  raw_ptr<TouchInjector> touch_injector_;
+  const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
