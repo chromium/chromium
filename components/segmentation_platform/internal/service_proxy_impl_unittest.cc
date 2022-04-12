@@ -63,11 +63,11 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
 
 class FakeSegmentSelectorImpl : public SegmentSelectorImpl {
  public:
-  FakeSegmentSelectorImpl(SegmentationResultPrefs* result_prefs,
+  FakeSegmentSelectorImpl(TestingPrefServiceSimple* pref_service,
                           const Config* config)
       : SegmentSelectorImpl(nullptr,
                             nullptr,
-                            result_prefs,
+                            pref_service,
                             config,
                             nullptr,
                             PlatformOptions::CreateDefault(),
@@ -106,9 +106,8 @@ class ServiceProxyImplTest : public testing::Test,
     db_ = db.get();
     segment_db_ = std::make_unique<SegmentInfoDatabase>(std::move(db));
 
-    result_prefs_ = std::make_unique<SegmentationResultPrefs>(&pref_service_);
     segment_selectors_[kTestSegmentationKey] =
-        std::make_unique<FakeSegmentSelectorImpl>(result_prefs_.get(),
+        std::make_unique<FakeSegmentSelectorImpl>(&pref_service_,
                                                   configs_.at(0).get());
     service_proxy_impl_ = std::make_unique<ServiceProxyImpl>(
         segment_db_.get(), nullptr, &configs_, &segment_selectors_);
@@ -147,7 +146,6 @@ class ServiceProxyImplTest : public testing::Test,
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<SegmentationResultPrefs> result_prefs_;
 };
 
 TEST_F(ServiceProxyImplTest, GetServiceStatus) {

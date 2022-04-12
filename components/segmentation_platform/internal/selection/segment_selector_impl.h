@@ -14,6 +14,8 @@
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
+class PrefService;
+
 namespace base {
 class Clock;
 }  // namespace base
@@ -30,7 +32,15 @@ class SegmentSelectorImpl : public SegmentSelector {
  public:
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                       SignalStorageConfig* signal_storage_config,
-                      SegmentationResultPrefs* result_prefs,
+                      PrefService* pref_service,
+                      const Config* config,
+                      base::Clock* clock,
+                      const PlatformOptions& platform_options,
+                      DefaultModelManager* default_model_manager);
+
+  SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
+                      SignalStorageConfig* signal_storage_config,
+                      std::unique_ptr<SegmentationResultPrefs> prefs,
                       const Config* config,
                       base::Clock* clock,
                       const PlatformOptions& platform_options,
@@ -79,6 +89,9 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
+  // Helper class to read/write results to the prefs.
+  std::unique_ptr<SegmentationResultPrefs> result_prefs_;
+
   // The database storing metadata and results.
   const raw_ptr<SegmentInfoDatabase> segment_database_;
 
@@ -87,9 +100,6 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // The default model manager is used for the default model fallbacks.
   const raw_ptr<DefaultModelManager> default_model_manager_;
-
-  // Helper class to read/write results to the prefs.
-  const raw_ptr<SegmentationResultPrefs> result_prefs_;
 
   // The config for providing configuration params.
   const raw_ptr<const Config> config_;

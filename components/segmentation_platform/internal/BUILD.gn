@@ -40,6 +40,8 @@ static_library("internal") {
     "database/signal_key_internal.h",
     "database/signal_storage_config.cc",
     "database/signal_storage_config.h",
+    "database/storage_service.cc",
+    "database/storage_service.h",
     "database/ukm_database.cc",
     "database/ukm_database.h",
     "database/ukm_database_backend.cc",

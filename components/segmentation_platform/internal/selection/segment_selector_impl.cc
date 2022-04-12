@@ -63,15 +63,32 @@ using optimization_guide::proto::OptimizationTarget_Name;
 SegmentSelectorImpl::SegmentSelectorImpl(
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
-    SegmentationResultPrefs* result_prefs,
+    PrefService* pref_service,
     const Config* config,
     base::Clock* clock,
     const PlatformOptions& platform_options,
     DefaultModelManager* default_model_manager)
-    : segment_database_(segment_database),
+    : SegmentSelectorImpl(
+          segment_database,
+          signal_storage_config,
+          std::make_unique<SegmentationResultPrefs>(pref_service),
+          config,
+          clock,
+          platform_options,
+          default_model_manager) {}
+
+SegmentSelectorImpl::SegmentSelectorImpl(
+    SegmentInfoDatabase* segment_database,
+    SignalStorageConfig* signal_storage_config,
+    std::unique_ptr<SegmentationResultPrefs> prefs,
+    const Config* config,
+    base::Clock* clock,
+    const PlatformOptions& platform_options,
+    DefaultModelManager* default_model_manager)
+    : result_prefs_(std::move(prefs)),
+      segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
       default_model_manager_(default_model_manager),
-      result_prefs_(result_prefs),
       config_(config),
       clock_(clock),
       platform_options_(platform_options) {

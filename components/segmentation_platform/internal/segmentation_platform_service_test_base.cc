@@ -85,15 +85,26 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   segment_db_ = segment_db.get();
   signal_db_ = signal_db.get();
   segment_storage_config_db_ = segment_storage_config_db.get();
+  auto model_provider_factory =
+      std::make_unique<TestModelProviderFactory>(&model_provider_data_);
 
   SegmentationPlatformService::RegisterProfilePrefs(pref_service_.registry());
   SetUpPrefs();
 
   std::vector<std::unique_ptr<Config>> configs = CreateTestConfigs();
+  base::flat_set<OptimizationTarget> all_segment_ids;
+  for (const auto& config : configs) {
+    for (const auto& segment_id : config->segment_ids)
+      all_segment_ids.insert(segment_id);
+  }
+  auto storage_service = std::make_unique<StorageService>(
+      std::move(segment_db), std::move(signal_db),
+      std::move(segment_storage_config_db), &test_clock_, ukm_data_manager,
+      all_segment_ids, model_provider_factory.get());
+
   segmentation_platform_service_impl_ =
       std::make_unique<SegmentationPlatformServiceImpl>(
-          std::move(segment_db), std::move(signal_db),
-          std::move(segment_storage_config_db), ukm_data_manager,
+          std::move(storage_service),
           std::make_unique<TestModelProviderFactory>(&model_provider_data_),
           &pref_service_, history_service, task_runner_, &test_clock_,
           std::move(configs));

@@ -72,11 +72,12 @@ class SegmentSelectorTest : public testing::Test {
     default_manager_ = std::make_unique<DefaultModelManager>(
         &provider_factory_, config_.segment_ids);
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
-    prefs_ = std::make_unique<TestSegmentationResultPrefs>();
+    auto prefs_moved = std::make_unique<TestSegmentationResultPrefs>();
+    prefs_ = prefs_moved.get();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-        segment_database_.get(), &signal_storage_config_, prefs_.get(),
-        &config_, &clock_, PlatformOptions::CreateDefault(),
-        default_manager_.get());
+        segment_database_.get(), &signal_storage_config_,
+        std::move(prefs_moved), &config_, &clock_,
+        PlatformOptions::CreateDefault(), default_manager_.get());
     segment_selector_->OnPlatformInitialized(nullptr);
   }
 
@@ -123,7 +124,7 @@ class SegmentSelectorTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
   std::unique_ptr<DefaultModelManager> default_manager_;
-  std::unique_ptr<TestSegmentationResultPrefs> prefs_;
+  raw_ptr<TestSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
 };
 
@@ -303,12 +304,15 @@ TEST_F(SegmentSelectorTest,
 
   // Set up a selected segment in prefs.
   SelectedSegment from_history(segment_id0);
+  auto prefs_moved = std::make_unique<TestSegmentationResultPrefs>();
+  prefs_ = prefs_moved.get();
   prefs_->selection = from_history;
 
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-      segment_database_.get(), &signal_storage_config_, prefs_.get(), &config_,
-      &clock_, PlatformOptions::CreateDefault(), default_manager_.get());
+      segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
+      &config_, &clock_, PlatformOptions::CreateDefault(),
+      default_manager_.get());
   segment_selector_->OnPlatformInitialized(nullptr);
 
   SegmentSelectionResult result;
