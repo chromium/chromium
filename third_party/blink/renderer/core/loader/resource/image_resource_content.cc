@@ -486,11 +486,14 @@ ImageDecoder::CompressionFormat ImageResourceContent::GetCompressionFormat()
 }
 
 uint64_t ImageResourceContent::ContentSizeForEntropy() const {
-  uint64_t resource_length =
-      static_cast<double>(GetResponse().ExpectedContentLength());
-  if (resource_length <= 0 && image_ && image_->HasData()) {
-    // WPT and LayoutTests server returns -1 or 0 for the content length.
-    resource_length = image_->DataSize();
+  int64_t resource_length = GetResponse().ExpectedContentLength();
+  if (resource_length <= 0) {
+    if (image_ && image_->HasData()) {
+      // WPT and LayoutTests server returns -1 or 0 for the content length.
+      resource_length = image_->DataSize();
+    } else {
+      resource_length = 0;
+    }
   }
   return resource_length;
 }
