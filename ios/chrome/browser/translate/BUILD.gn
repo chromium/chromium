@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
     "//ios/web/public",
