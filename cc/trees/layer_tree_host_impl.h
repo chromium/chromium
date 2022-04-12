@@ -155,9 +155,6 @@ class LayerTreeHostImplClient {
       PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
       const viz::FrameTimingDetails& details) = 0;
 
-  // Returns whether the main-thread is expected to receive a BeginMainFrame.
-  virtual bool IsBeginMainFrameExpected() = 0;
-
   virtual void NotifyAnimationWorkletStateChange(
       AnimationWorkletMutationState state,
       ElementListType tree_type) = 0;

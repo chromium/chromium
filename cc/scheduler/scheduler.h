@@ -155,9 +155,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // can send a CompositorFrame to the display compositor with appropriate
   // timing.
   void SetNeedsBeginMainFrame();
-  bool needs_begin_main_frame() const {
-    return state_machine_.needs_begin_main_frame();
-  }
 
   // Requests a single impl frame (after the current frame if there is one
   // active).
@@ -270,8 +267,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   }
 
   void ClearHistory();
-
-  bool IsBeginMainFrameSent() const;
 
   size_t CommitDurationSampleCountForTesting() const;
 

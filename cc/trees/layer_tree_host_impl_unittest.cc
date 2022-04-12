@@ -226,7 +226,6 @@ class LayerTreeHostImplTest : public testing::Test,
   void SetNeedsCommitOnImplThread() override { did_request_commit_ = true; }
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
   bool IsInsideDraw() override { return false; }
-  bool IsBeginMainFrameExpected() override { return true; }
   void RenewTreePriority() override {}
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
                                             base::TimeDelta delay) override {

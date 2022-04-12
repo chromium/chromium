@@ -11,10 +11,6 @@ bool FakeLayerTreeHostImplClient::IsInsideDraw() {
   return false;
 }
 
-bool FakeLayerTreeHostImplClient::IsBeginMainFrameExpected() {
-  return true;
-}
-
 void FakeLayerTreeHostImplClient::NeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {
   did_request_impl_side_invalidation_ = true;

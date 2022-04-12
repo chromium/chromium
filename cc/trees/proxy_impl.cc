@@ -432,14 +432,6 @@ bool ProxyImpl::IsInsideDraw() {
   return inside_draw_;
 }
 
-bool ProxyImpl::IsBeginMainFrameExpected() {
-  // Check whether the main-thread has requested for updates. If main-thread has
-  // not responded to a previously dispatched BeginMainFrame, then assume that
-  // main-thread would want to produce an update for the current frame too.
-  return scheduler_->needs_begin_main_frame() ||
-         scheduler_->IsBeginMainFrameSent();
-}
-
 void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
 

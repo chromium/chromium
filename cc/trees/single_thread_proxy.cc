@@ -510,12 +510,6 @@ bool SingleThreadProxy::IsInsideDraw() {
   return inside_draw_;
 }
 
-bool SingleThreadProxy::IsBeginMainFrameExpected() {
-  DCHECK(!task_runner_provider_->HasImplThread() ||
-         task_runner_provider_->IsImplThread());
-  return true;
-}
-
 void SingleThreadProxy::RenewTreePriority() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());

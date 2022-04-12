@@ -987,11 +987,6 @@ void Scheduler::UpdateCompositorTimingHistoryRecordingEnabled() {
       state_machine_.visible());
 }
 
-bool Scheduler::IsBeginMainFrameSent() const {
-  return state_machine_.begin_main_frame_state() ==
-         SchedulerStateMachine::BeginMainFrameState::SENT;
-}
-
 size_t Scheduler::CommitDurationSampleCountForTesting() const {
   return compositor_timing_history_
       ->CommitDurationSampleCountForTesting();  // IN-TEST
