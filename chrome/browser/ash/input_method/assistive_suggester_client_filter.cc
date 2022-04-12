@@ -20,24 +20,30 @@ namespace ash {
 namespace input_method {
 namespace {
 
-const char* kAllowedDomainsForPersonalInfoSuggester[] = {
-    "discord.com",         "messenger.com",    "web.whatsapp.com",
-    "web.skype.com",       "duo.google.com",   "hangouts.google.com",
-    "messages.google.com", "web.telegram.org", "voice.google.com",
+const char* kAllowedDomainAndPathsForPersonalInfoSuggester[][2] = {
+    {"discord.com", ""},         {"messenger.com", ""},
+    {"web.whatsapp.com", ""},    {"web.skype.com", ""},
+    {"duo.google.com", ""},      {"hangouts.google.com", ""},
+    {"messages.google.com", ""}, {"web.telegram.org", ""},
+    {"voice.google.com", ""},    {"mail.google.com", "/chat"},
 };
 
-const char* kAllowedDomainsForEmojiSuggester[] = {
-    "discord.com",         "messenger.com",    "web.whatsapp.com",
-    "web.skype.com",       "duo.google.com",   "hangouts.google.com",
-    "messages.google.com", "web.telegram.org", "voice.google.com",
+const char* kAllowedDomainAndPathsForEmojiSuggester[][2] = {
+    {"discord.com", ""},         {"messenger.com", ""},
+    {"web.whatsapp.com", ""},    {"web.skype.com", ""},
+    {"duo.google.com", ""},      {"hangouts.google.com", ""},
+    {"messages.google.com", ""}, {"web.telegram.org", ""},
+    {"voice.google.com", ""},    {"mail.google.com", "/chat"},
 };
 
 // TODO(b/3339115): Add web.skype.com back to the list after compatibility
 //    issues are solved.
-const char* kAllowedDomainsForMultiWordSuggester[] = {
-    "discord.com",      "messenger.com",       "web.whatsapp.com",
-    "duo.google.com",   "hangouts.google.com", "messages.google.com",
-    "web.telegram.org", "voice.google.com",
+const char* kAllowedDomainAndPathsForMultiWordSuggester[][2] = {
+    {"discord.com", ""},          {"messenger.com", ""},
+    {"web.whatsapp.com", ""},     {"duo.google.com", ""},
+    {"hangouts.google.com", ""},  {"messages.google.com", ""},
+    {"web.telegram.org", ""},     {"voice.google.com", ""},
+    {"mail.google.com", "/chat"},
 };
 
 const char* kTestUrls[] = {
@@ -149,12 +155,22 @@ bool IsInternalWebsite(GURL url) {
   return false;
 }
 
+bool AtDomainWithPathPrefix(GURL url,
+                            const std::string& domain,
+                            const std::string& prefix) {
+  return url.DomainIs(domain) && url.has_path() &&
+         base::StartsWith(url.path(), prefix);
+}
+
 template <size_t N>
-bool IsAllowedUrl(const char* (&allowedDomains)[N], GURL url) {
+bool IsAllowedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
+                                GURL url) {
   if (IsTestUrl(url) || IsInternalWebsite(url))
     return true;
   for (size_t i = 0; i < N; i++) {
-    if (url.DomainIs(allowedDomains[i])) {
+    auto domain = allowedDomainAndPaths[i][0];
+    auto path_prefix = allowedDomainAndPaths[i][1];
+    if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
       return true;
     }
   }
@@ -162,7 +178,7 @@ bool IsAllowedUrl(const char* (&allowedDomains)[N], GURL url) {
 }
 
 template <size_t N>
-bool IsAllowedUrlLegacy(const char* (&allowedDomains)[N]) {
+bool IsAllowedUrlLegacy(const char* (&allowedDomainAndPaths)[N][2]) {
   Browser* browser = chrome::FindLastActive();
   if (browser && browser->window() && browser->window()->IsActive() &&
       browser->tab_strip_model() &&
@@ -173,7 +189,9 @@ bool IsAllowedUrlLegacy(const char* (&allowedDomains)[N]) {
     if (IsTestUrl(url) || IsInternalWebsite(url))
       return true;
     for (size_t i = 0; i < N; i++) {
-      if (url.DomainIs(allowedDomains[i])) {
+      auto domain = allowedDomainAndPaths[i][0];
+      auto path_prefix = allowedDomainAndPaths[i][1];
+      if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
         return true;
       }
     }
@@ -208,17 +226,17 @@ bool IsAllowedApp(const char* (&allowedApps)[N]) {
 }
 
 bool IsAllowedUrlOrAppForPersonalInfoSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainsForPersonalInfoSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForPersonalInfoSuggester) ||
          IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
 }
 
 bool IsAllowedUrlOrAppForEmojiSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainsForEmojiSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForEmojiSuggester) ||
          IsAllowedApp(kAllowedAppsForEmojiSuggester);
 }
 
 bool IsAllowedUrlOrAppForMultiWordSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainsForMultiWordSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForMultiWordSuggester) ||
          IsAllowedApp(kAllowedAppsForMultiWordSuggester);
 }
 
@@ -231,15 +249,18 @@ void ReturnEnabledSuggestions(
   }
 
   bool emoji_suggestions_allowed =
-      IsAllowedUrl(kAllowedDomainsForEmojiSuggester, *current_url) ||
+      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
+                                 *current_url) ||
       IsAllowedApp(kAllowedAppsForEmojiSuggester);
 
   bool multi_word_suggestions_allowed =
-      IsAllowedUrl(kAllowedDomainsForMultiWordSuggester, *current_url) ||
+      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
+                                 *current_url) ||
       IsAllowedApp(kAllowedAppsForMultiWordSuggester);
 
   bool personal_info_suggestions_allowed =
-      IsAllowedUrl(kAllowedDomainsForPersonalInfoSuggester, *current_url) ||
+      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
+                                 *current_url) ||
       IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
 
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
