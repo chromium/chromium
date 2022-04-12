@@ -254,9 +254,14 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
           kExtendedSafeModeTrial, 100, kDefaultGroup,
           base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
+#if BUILDFLAG(IS_ANDROID)
   int group_probability = channel == version_info::Channel::STABLE ? 1 : 50;
   trial->AppendGroup(kControlGroup, group_probability);
   trial->AppendGroup(kEnabledGroup, group_probability);
+#else
+  // The new behavior is launched on desktop and iOS.
+  trial->AppendGroup(kEnabledGroup, 100);
+#endif
   return trial->group_name();
 }
 
