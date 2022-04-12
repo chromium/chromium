@@ -53,6 +53,9 @@ constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 constexpr int kExpandedCalenarPadding = 8;
 
+// The offset for `month_label_` to make it align with `month_header`.
+constexpr int kMonthLabelPaddingOffset = -1;
+
 // The percentage of a normal row height, which (percentage * row_height) will
 // be used as the `CalendarView` height when the `CalendarEventListView` is
 // expanded.
@@ -208,7 +211,8 @@ class CalendarView::MonthHeaderLabelView : public views::View {
     month_label_->SetText(month_name_);
     SetupLabel(month_label_);
     month_label_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding,
+        gfx::Insets::TLBR(kLabelVerticalPadding,
+                          kContentHorizontalPadding + kMonthLabelPaddingOffset,
                           kLabelVerticalPadding, 0)));
   }
   MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
