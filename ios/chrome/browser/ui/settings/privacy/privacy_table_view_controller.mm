@@ -16,6 +16,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -85,8 +86,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
 
-  // Updatable Items
+  // Updatable Items.
   TableViewDetailIconItem* _handoffDetailItem;
+  // Safe Browsing item.
+  TableViewDetailIconItem* _safeBrowsingDetailItem;
 }
 
 // Browser.
@@ -127,6 +130,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosHandoffToOtherDevices, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kSafeBrowsingEnabled, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kSafeBrowsingEnhanced, &_prefChangeRegistrar);
 
     _incognitoReauthPref = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
@@ -166,7 +173,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self clearBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierPrivacyContent];
 
-  // Privacy Safe Browsing item
+  // Privacy Safe Browsing item.
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     [model addItem:[self safeBrowsingDetailItem]
         toSectionWithIdentifier:SectionIdentifierPrivacyContent];
@@ -248,10 +255,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 - (TableViewItem*)safeBrowsingDetailItem {
-  return [self detailItemWithType:ItemTypePrivacySafeBrowsing
+  NSString* detailText = [self safeBrowsingDetailText];
+  _safeBrowsingDetailItem =
+      [self detailItemWithType:ItemTypePrivacySafeBrowsing
                           titleId:IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE
-                       detailText:nil
+                       detailText:detailText
           accessibilityIdentifier:kSettingsPrivacySafeBrowsingCellId];
+  return _safeBrowsingDetailItem;
 }
 
 // Footer to the incognito reauth section that appears when the user has no
@@ -372,6 +382,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     [self reconfigureCellsForItems:@[ _handoffDetailItem ]];
     return;
   }
+
+  if (preferenceName == prefs::kSafeBrowsingEnabled ||
+      preferenceName == prefs::kSafeBrowsingEnhanced) {
+    _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
+    [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
+  }
 }
 
 #pragma mark - BooleanObserver
@@ -440,6 +456,21 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   LAContext* context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
                               error:nil];
+}
+
+// Returns the proper detail text for the safe browsing item depending on the
+// safe browsing and enhanced protection preference values.
+- (NSString*)safeBrowsingDetailText {
+  PrefService* prefService = _browserState->GetPrefs();
+  if (safe_browsing::IsEnhancedProtectionEnabled(*prefService)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
+  } else if (safe_browsing::IsSafeBrowsingEnabled(*prefService)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE);
+  }
+  return l10n_util::GetNSString(
+      IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE);
 }
 
 @end
