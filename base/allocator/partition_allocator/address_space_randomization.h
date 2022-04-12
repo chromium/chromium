@@ -121,6 +121,21 @@ AslrMask(uintptr_t bits) {
         return AslrAddress(0x20000000ULL);
       }
 
+      #elif BUILDFLAG(IS_LINUX)
+
+      // Linux on arm64 can use 39, 42, 48, or 52-bit user space, depending on
+      // page size and number of levels of translation pages used. We use
+      // 39-bit as base as all setups should support this, lowered to 38-bit
+      // as ASLROffset() could cause a carry.
+      PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+      ASLRMask() {
+        return AslrMask(38);
+      }
+      PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+      ASLROffset() {
+        return AslrAddress(0x1000000000ULL);
+      }
+
       #else
 
       // ARM64 on Linux has 39-bit user space. Use 38 bits since ASLROffset()

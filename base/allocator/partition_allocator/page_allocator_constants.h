@@ -24,6 +24,31 @@
 // elimination.
 #define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR __attribute__((const))
 
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+// This should work for all POSIX (if needed), but currently all other
+// supported OS/architecture combinations use either hard-coded values
+// (such as x86) or have means to determine these values without needing
+// atomics (such as macOS on arm64).
+
+// Page allocator constants are run-time constant
+#define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR __attribute__((const))
+
+#include <unistd.h>
+#include <atomic>
+
+namespace partition_alloc::internal {
+
+// Holds the current page size and shift, where size = 1 << shift
+// Use PageAllocationGranularity(), PageAllocationGranularityShift()
+// to initialize and retrieve these values safely.
+struct PageCharacteristics {
+  std::atomic<int> size;
+  std::atomic<int> shift;
+};
+extern PageCharacteristics page_characteristics;
+
+}  // namespace partition_alloc::internal
+
 #else
 
 // When defined, page size constants are fixed at compile time. When not
@@ -38,6 +63,10 @@
 
 namespace partition_alloc::internal {
 
+// Forward declaration, implementation below
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PageAllocationGranularity();
+
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularityShift() {
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_PPC64)
@@ -50,6 +79,15 @@ PageAllocationGranularityShift() {
   return 14;  // 16kB
 #elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   return vm_page_shift;
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+  // arm64 supports 4kb (shift = 12), 16kb (shift = 14), and 64kb (shift = 16)
+  // page sizes. Retrieve from or initialize cache.
+  int shift = page_characteristics.shift.load(std::memory_order_relaxed);
+  if (UNLIKELY(shift == 0)) {
+    shift = __builtin_ctz((int)PageAllocationGranularity());
+    page_characteristics.shift.store(shift, std::memory_order_relaxed);
+  }
+  return shift;
 #else
   return 12;  // 4kB
 #endif
@@ -59,8 +97,17 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularity() {
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << PageAllocationGranularityShift()|
-  // below, but was separated out for OS_APPLE to avoid << on a non-constexpr.
+  // below, but was separated out for IS_APPLE to avoid << on a non-constexpr.
   return vm_page_size;
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+  // arm64 supports 4kb, 16kb, and 64kb page sizes. Retrieve from or
+  // initialize cache.
+  int size = page_characteristics.size.load(std::memory_order_relaxed);
+  if (UNLIKELY(size == 0)) {
+    size = getpagesize();
+    page_characteristics.size.store(size, std::memory_order_relaxed);
+  }
+  return size;
 #else
   return 1 << PageAllocationGranularityShift();
 #endif
@@ -90,9 +137,11 @@ SystemPageShift() {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageSize() {
-#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if (BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)) || \
+    (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
   // This is literally equivalent to |1 << SystemPageShift()| below, but was
-  // separated out for 64-bit OS_APPLE to avoid << on a non-constexpr.
+  // separated out for 64-bit IS_APPLE and arm64 on Linux to avoid << on a
+  // non-constexpr.
   return PageAllocationGranularity();
 #else
   return 1 << SystemPageShift();

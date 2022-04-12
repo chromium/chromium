@@ -305,11 +305,12 @@ static size_t PartitionPurgeSlotSpan(
   constexpr size_t kMaxSlotCount =
       (PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) /
       SystemPageSize();
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_APPLE) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
   // It's better for slot_usage to be stack-allocated and fixed-size, which
-  // demands that its size be constexpr. On OS_APPLE, PartitionPageSize() is
-  // always SystemPageSize() << 2, so regardless of what the run time page size
-  // is, kMaxSlotCount can always be simplified to this expression.
+  // demands that its size be constexpr. On IS_APPLE and Linux on arm64,
+  // PartitionPageSize() is always SystemPageSize() << 2, so regardless of
+  // what the run time page size is, kMaxSlotCount can always be simplified
+  // to this expression.
   constexpr size_t kMaxSlotCount =
       4 * internal::kMaxPartitionPagesPerRegularSlotSpan;
   PA_CHECK(kMaxSlotCount == (PartitionPageSize() *
@@ -645,6 +646,14 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 #if BUILDFLAG(IS_APPLE)
     // Needed to statically bound page size, which is a runtime constant on
     // apple OSes.
+    PA_CHECK((internal::SystemPageSize() == (size_t{1} << 12)) ||
+             (internal::SystemPageSize() == (size_t{1} << 14)));
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+    // Check runtime pagesize. Though the code is currently the same, it is
+    // not merged with the IS_APPLE case above as a 1 << 16 case needs to be
+    // added here in the future, to allow 64 kiB pagesize. That is only
+    // supported on Linux on arm64, not on IS_APPLE, but not yet present here
+    // as the rest of the partition allocator does not currently support it.
     PA_CHECK((internal::SystemPageSize() == (size_t{1} << 12)) ||
              (internal::SystemPageSize() == (size_t{1} << 14)));
 #endif

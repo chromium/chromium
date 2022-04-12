@@ -135,6 +135,12 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // PartitionPageSize() is 4 times the OS page size.
   static constexpr size_t kMaxSlotsPerSlotSpan =
       4 * (1 << 14) / kSmallestBucket;
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+  // System page size can be 4, 16, or 64 kiB on Linux on arm64. 64 kiB is
+  // currently (kMaxSlotsPerSlotSpanBits == 13) not supported by the code,
+  // so we use the 16 kiB maximum (64 kiB will crash).
+  static constexpr size_t kMaxSlotsPerSlotSpan =
+      4 * (1 << 14) / kSmallestBucket;
 #else
   // A slot span can "span" multiple PartitionPages, but then its slot size is
   // larger, so it doesn't have as many slots.
