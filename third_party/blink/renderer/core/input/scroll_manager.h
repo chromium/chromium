@@ -154,9 +154,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   uint32_t GetNonCompositedMainThreadScrollingReasons() const;
   void RecordScrollRelatedMetrics(WebGestureDevice) const;
 
-  WebGestureEvent SynthesizeGestureScrollBegin(
-      const WebGestureEvent& update_event);
-
   bool SnapAtGestureScrollEnd(const WebGestureEvent& end_event,
                               base::ScopedClosureRunner callback);
 

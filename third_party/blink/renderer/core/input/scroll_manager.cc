@@ -593,25 +593,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (!node || !node->GetLayoutObject()) {
     TRACE_EVENT_INSTANT0("input", "Lost scroll_gesture_handling_node",
                          TRACE_EVENT_SCOPE_THREAD);
-    if (previous_gesture_scrolled_node_) {
-      // When the scroll_gesture_handling_node_ gets deleted in the middle of
-      // scrolling call HandleGestureScrollEvent to start scrolling a new node
-      // if possible.
-      ClearGestureScrollState();
-      WebGestureEvent scroll_begin =
-          SynthesizeGestureScrollBegin(gesture_event);
-      HandleGestureScrollEvent(scroll_begin);
-      node = scroll_gesture_handling_node_.Get();
-      if (!node || !node->GetLayoutObject()) {
-        TRACE_EVENT_INSTANT0("input", "Failed to find new node",
-                             TRACE_EVENT_SCOPE_THREAD);
-        return WebInputEventResult::kNotHandled;
-      }
-    } else {
-      TRACE_EVENT_INSTANT0("input", "No previously scrolled node",
-                           TRACE_EVENT_SCOPE_THREAD);
-      return WebInputEventResult::kNotHandled;
-    }
+    return WebInputEventResult::kNotHandled;
   }
   if (snap_fling_controller_) {
     if (snap_fling_controller_->HandleGestureScrollUpdate(
@@ -1283,21 +1265,6 @@ bool ScrollManager::CanHandleGestureEvent(
     }
   }
   return false;
-}
-
-WebGestureEvent ScrollManager::SynthesizeGestureScrollBegin(
-    const WebGestureEvent& update_event) {
-  DCHECK_EQ(update_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
-  WebGestureEvent scroll_begin(update_event);
-  scroll_begin.SetType(WebInputEvent::Type::kGestureScrollBegin);
-  scroll_begin.data.scroll_begin.delta_x_hint =
-      update_event.data.scroll_update.delta_x;
-  scroll_begin.data.scroll_begin.delta_y_hint =
-      update_event.data.scroll_update.delta_y;
-  scroll_begin.data.scroll_begin.delta_hint_units =
-      update_event.data.scroll_update.delta_units;
-  scroll_begin.data.scroll_begin.scrollable_area_element_id = 0;
-  return scroll_begin;
 }
 
 void ScrollManager::NotifyScrollPhaseBeginForCustomizedScroll(
