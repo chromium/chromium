@@ -9,10 +9,6 @@ static_library("common") {
     "cloud_device_description.h",
     "cloud_device_description_consts.cc",
     "cloud_device_description_consts.h",
-    "cloud_devices_switches.cc",
-    "cloud_devices_switches.h",
-    "cloud_devices_urls.cc",
-    "cloud_devices_urls.h",
     "description_items.h",
     "description_items_inl.h",
     "printer_description.cc",
@@ -29,10 +25,7 @@ static_library("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "cloud_devices_urls_unittest.cc",
-    "printer_description_unittest.cc",
-  ]
+  sources = [ "printer_description_unittest.cc" ]
 
   deps = [
     ":common",
