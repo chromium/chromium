@@ -17,7 +17,7 @@
   #breadcrumbContainer {
     align-items: center;
     box-sizing: border-box;
-    color: var(--cros-text-color-primary);
+    color: var(--cros-text-color-secondary);
     display: flex;
     flex-flow: row nowrap;
     font: var(--cros-headline-1-font);
@@ -34,6 +34,10 @@
   .breadcrumb {
     cursor: pointer;
     margin: 0 0 0 8px;
+  }
+
+  .breadcrumb:last-of-type {
+    color: var(--cros-text-color-primary);
   }
 </style>
 <div id="container">
