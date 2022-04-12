@@ -36,8 +36,8 @@ void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype) {
   base::UmaHistogramEnumeration("PrintPreview.PrintDocumentType", doctype);
 }
 
-void ReportPrintSettingsStats(const base::Value& print_settings,
-                              const base::Value& preview_settings,
+void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
+                              const base::Value::Dict& preview_settings,
                               bool is_pdf) {
   ReportPrintSettingHistogram(PrintSettingsBuckets::kTotal);
 
@@ -50,18 +50,16 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
   // print ticket. Similarly, settings applied at the printer should be pulled
   // from the print ticket, as they may have dummy values in the preview
   // request.
-  const base::Value* page_range_array =
-      preview_settings.FindKey(kSettingPageRange);
-  if (page_range_array && page_range_array->is_list() &&
-      !page_range_array->GetListDeprecated().empty()) {
+  const base::Value::List* page_range_array =
+      preview_settings.FindList(kSettingPageRange);
+  if (page_range_array && !page_range_array->empty()) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPageRange);
   }
 
-  const base::Value* media_size_value =
-      preview_settings.FindKey(kSettingMediaSize);
-  if (media_size_value && media_size_value->is_dict() &&
-      !media_size_value->DictEmpty()) {
-    if (media_size_value->FindBoolKey(kSettingMediaSizeIsDefault)
+  const base::Value::Dict* media_size_value =
+      preview_settings.FindDict(kSettingMediaSize);
+  if (media_size_value && !media_size_value->empty()) {
+    if (media_size_value->FindBool(kSettingMediaSizeIsDefault)
             .value_or(false)) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kDefaultMedia);
     } else {
@@ -70,29 +68,31 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
   }
 
   absl::optional<bool> landscape_opt =
-      preview_settings.FindBoolKey(kSettingLandscape);
-  if (landscape_opt)
+      preview_settings.FindBool(kSettingLandscape);
+  if (landscape_opt.has_value()) {
     ReportPrintSettingHistogram(landscape_opt.value()
                                     ? PrintSettingsBuckets::kLandscape
                                     : PrintSettingsBuckets::kPortrait);
+  }
 
-  if (print_settings.FindIntKey(kSettingCopies).value_or(1) > 1)
+  if (print_settings.FindInt(kSettingCopies).value_or(1) > 1)
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCopies);
 
-  if (preview_settings.FindIntKey(kSettingPagesPerSheet).value_or(1) != 1)
+  if (preview_settings.FindInt(kSettingPagesPerSheet).value_or(1) != 1)
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPagesPerSheet);
 
-  if (print_settings.FindBoolKey(kSettingCollate).value_or(false))
+  if (print_settings.FindBool(kSettingCollate).value_or(false))
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCollate);
 
   absl::optional<int> duplex_mode_opt =
-      print_settings.FindIntKey(kSettingDuplexMode);
-  if (duplex_mode_opt)
+      print_settings.FindInt(kSettingDuplexMode);
+  if (duplex_mode_opt.has_value()) {
     ReportPrintSettingHistogram(duplex_mode_opt.value()
                                     ? PrintSettingsBuckets::kDuplex
                                     : PrintSettingsBuckets::kSimplex);
+  }
 
-  absl::optional<int> color_mode_opt = print_settings.FindIntKey(kSettingColor);
+  absl::optional<int> color_mode_opt = print_settings.FindInt(kSettingColor);
   if (color_mode_opt.has_value()) {
     mojom::ColorModel color_model =
         ColorModeToColorModel(color_mode_opt.value());
@@ -109,7 +109,7 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
     // color capabilities. Do this only once per device.
     static base::NoDestructor<base::flat_set<std::string>> seen_devices;
     auto result =
-        seen_devices->insert(*print_settings.FindStringKey(kSettingDeviceName));
+        seen_devices->insert(*print_settings.FindString(kSettingDeviceName));
     bool is_new_device = result.second;
     if (is_new_device) {
       base::UmaHistogramBoolean("Printing.CUPS.UnknownPpdColorModel",
@@ -117,27 +117,27 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
     }
   }
 
-  if (preview_settings.FindIntKey(kSettingMarginsType).value_or(0) != 0)
+  if (preview_settings.FindInt(kSettingMarginsType).value_or(0) != 0)
     ReportPrintSettingHistogram(PrintSettingsBuckets::kNonDefaultMargins);
 
-  if (preview_settings.FindBoolKey(kSettingHeaderFooterEnabled).value_or(false))
+  if (preview_settings.FindBool(kSettingHeaderFooterEnabled).value_or(false))
     ReportPrintSettingHistogram(PrintSettingsBuckets::kHeadersAndFooters);
 
-  if (preview_settings.FindBoolKey(kSettingShouldPrintBackgrounds)
+  if (preview_settings.FindBool(kSettingShouldPrintBackgrounds)
           .value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCssBackground);
   }
 
-  if (preview_settings.FindBoolKey(kSettingShouldPrintSelectionOnly)
+  if (preview_settings.FindBool(kSettingShouldPrintSelectionOnly)
           .value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kSelectionOnly);
   }
 
-  if (preview_settings.FindBoolKey(kSettingRasterizePdf).value_or(false))
+  if (preview_settings.FindBool(kSettingRasterizePdf).value_or(false))
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPrintAsImage);
 
   ScalingType scaling_type =
-      static_cast<ScalingType>(preview_settings.FindIntKey(kSettingScalingType)
+      static_cast<ScalingType>(preview_settings.FindInt(kSettingScalingType)
                                    .value_or(ScalingType::DEFAULT));
   if (scaling_type == ScalingType::CUSTOM) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kScaling);
@@ -150,11 +150,11 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPaper);
   }
 
-  if (print_settings.FindIntKey(kSettingDpiHorizontal).value_or(0) > 0 &&
-      print_settings.FindIntKey(kSettingDpiVertical).value_or(0) > 0) {
+  if (print_settings.FindInt(kSettingDpiHorizontal).value_or(0) > 0 &&
+      print_settings.FindInt(kSettingDpiVertical).value_or(0) > 0) {
     absl::optional<bool> is_default_opt =
-        print_settings.FindBoolKey(kSettingDpiDefault);
-    if (is_default_opt) {
+        print_settings.FindBool(kSettingDpiDefault);
+    if (is_default_opt.has_value()) {
       ReportPrintSettingHistogram(is_default_opt.value()
                                       ? PrintSettingsBuckets::kDefaultDpi
                                       : PrintSettingsBuckets::kNonDefaultDpi);
@@ -162,7 +162,7 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (print_settings.FindStringKey(kSettingPinValue))
+  if (print_settings.FindString(kSettingPinValue))
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPin);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

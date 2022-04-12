@@ -7,9 +7,7 @@
 
 #include <cstddef>
 
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace printing {
 
@@ -79,8 +77,8 @@ void ReportNumberOfPrinters(size_t number);
 void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype);
 
 // Track the popularity of print settings and report the stats.
-void ReportPrintSettingsStats(const base::Value& print_settings,
-                              const base::Value& preview_settings,
+void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
+                              const base::Value::Dict& preview_settings,
                               bool is_pdf);
 
 // Record the number of times the user requests to regenerate preview data

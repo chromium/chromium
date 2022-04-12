@@ -191,36 +191,37 @@ const char kPrintPdfAsImageAvailability[] = "printPdfAsImageAvailability";
 const char kPrintPdfAsImage[] = "printPdfAsImage";
 
 // Get the print job settings dictionary from |json_str|.
-// Returns |base::Value()| on failure.
-base::Value GetSettingsDictionary(const std::string& json_str) {
+absl::optional<base::Value::Dict> GetSettingsDictionary(
+    const std::string& json_str) {
   absl::optional<base::Value> settings = base::JSONReader::Read(json_str);
   if (!settings || !settings->is_dict()) {
     NOTREACHED() << "Print job settings must be a dictionary.";
-    return base::Value();
+    return absl::nullopt;
   }
 
-  if (settings->DictEmpty()) {
+  base::Value::Dict dict = std::move(settings->GetDict());
+  if (dict.empty()) {
     NOTREACHED() << "Print job settings dictionary is empty";
-    return base::Value();
+    return absl::nullopt;
   }
 
-  return std::move(*settings);
+  return dict;
 }
 
-UserActionBuckets DetermineUserAction(const base::Value& settings) {
+UserActionBuckets DetermineUserAction(const base::Value::Dict& settings) {
 #if BUILDFLAG(IS_MAC)
-  if (settings.FindKey(kSettingOpenPDFInPreview))
+  if (settings.contains(kSettingOpenPDFInPreview))
     return UserActionBuckets::kOpenInMacPreview;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
+  if (settings.FindBool(kSettingPrintToGoogleDrive).value_or(false)) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
   }
 #endif
 
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
-      settings.FindIntKey(kSettingPrinterType).value());
+      settings.FindInt(kSettingPrinterType).value());
   switch (type) {
     case mojom::PrinterType::kExtension:
       return UserActionBuckets::kPrintWithExtension;
@@ -233,7 +234,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
       break;
   }
 
-  if (settings.FindBoolKey(kSettingShowSystemDialog).value_or(false))
+  if (settings.FindBool(kSettingShowSystemDialog).value_or(false))
     return UserActionBuckets::kFallbackToAdvancedSettingsDialog;
   return UserActionBuckets::kPrintToPrinter;
 }
@@ -671,12 +672,11 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   json_str = args[1].GetString();
-  base::Value settings = GetSettingsDictionary(json_str);
-  CHECK(settings.is_dict());
-  int request_id = settings.FindIntKey(kPreviewRequestID).value();
+  base::Value::Dict settings = GetSettingsDictionary(json_str).value();
+  int request_id = settings.FindInt(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
-      settings.FindIntKey(kSettingPrinterType).value());
+      settings.FindInt(kSettingPrinterType).value());
   CHECK_NE(printer_type, mojom::PrinterType::kCloudDeprecated);
 
   CHECK(!base::Contains(preview_callbacks_, request_id));
@@ -684,9 +684,8 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   print_preview_ui()->OnPrintPreviewRequest(request_id);
   // Add an additional key in order to identify |print_preview_ui| later on
   // when calling PrintPreviewUI::ShouldCancelRequest() on the IO thread.
-  settings.SetKey(
-      kPreviewUIID,
-      base::Value(print_preview_ui()->GetIDForPrintPreviewUI().value()));
+  settings.Set(kPreviewUIID,
+               print_preview_ui()->GetIDForPrintPreviewUI().value());
 
   // Increment request count.
   ++regenerate_preview_request_count_;
@@ -705,19 +704,18 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   // Retrieve the page title and url and send it to the renderer process if
   // headers and footers are to be displayed.
   absl::optional<bool> display_header_footer_opt =
-      settings.FindBoolKey(kSettingHeaderFooterEnabled);
+      settings.FindBool(kSettingHeaderFooterEnabled);
   DCHECK(display_header_footer_opt);
   if (display_header_footer_opt.value_or(false)) {
-    settings.SetKey(kSettingHeaderFooterTitle,
-                    base::Value(initiator->GetTitle()));
+    settings.Set(kSettingHeaderFooterTitle, initiator->GetTitle());
 
     GURL::Replacements url_sanitizer;
     url_sanitizer.ClearUsername();
     url_sanitizer.ClearPassword();
     const GURL& initiator_url = initiator->GetLastCommittedURL();
-    settings.SetKey(kSettingHeaderFooterURL,
-                    base::Value(url_formatter::FormatUrl(
-                        initiator_url.ReplaceComponents(url_sanitizer))));
+    settings.Set(kSettingHeaderFooterURL,
+                 url_formatter::FormatUrl(
+                     initiator_url.ReplaceComponents(url_sanitizer)));
   }
 
   VLOG(1) << "Print preview request start";
@@ -729,7 +727,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
     print_render_frame_->SetPrintPreviewUI(
         print_preview_ui()->BindPrintPreviewUI());
   }
-  print_render_frame_->PrintPreview(settings.Clone());
+  print_render_frame_->PrintPreview(base::Value(settings.Clone()));
   last_preview_settings_ = std::move(settings);
 }
 
@@ -742,15 +740,17 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   CHECK(args[1].is_string());
   std::string json_str = args[1].GetString();
 
-  base::Value settings = GetSettingsDictionary(json_str);
-  if (!settings.is_dict()) {
+  absl::optional<base::Value::Dict> maybe_settings =
+      GetSettingsDictionary(json_str);
+  if (!maybe_settings.has_value()) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value(-1));
     return;
   }
 
+  base::Value::Dict settings = std::move(maybe_settings.value());
   const UserActionBuckets user_action = DetermineUserAction(settings);
 
-  int page_count = settings.FindIntKey(kSettingPreviewPageCount).value_or(-1);
+  int page_count = settings.FindInt(kSettingPreviewPageCount).value_or(-1);
   if (page_count <= 0) {
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value("NO_PAGE_COUNT"));
@@ -770,8 +770,8 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
 
   // After validating |settings|, record metrics.
   bool is_pdf = !print_preview_ui()->source_is_modifiable();
-  if (last_preview_settings_.is_dict())
-    ReportPrintSettingsStats(settings, last_preview_settings_, is_pdf);
+  if (last_preview_settings_.has_value())
+    ReportPrintSettingsStats(settings, last_preview_settings_.value(), is_pdf);
   {
     PrintDocumentTypeBuckets doc_type =
         is_pdf ? PrintDocumentTypeBuckets::kPdfDocument
@@ -783,7 +783,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
   handler->StartPrint(print_preview_ui()->initiator_title(),
-                      std::move(settings), data,
+                      base::Value(std::move(settings)), data,
                       base::BindOnce(&PrintPreviewHandler::OnPrintResult,
                                      weak_factory_.GetWeakPtr(), callback_id));
 }
