@@ -108,8 +108,14 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   void Initialize() {
     // If the shelf does not have highlight border, it will be monochromatic, so
     // it can use a solid color layer.
-    SetLayer(std::make_unique<ui::Layer>(
-        draw_highlight_border_ ? ui::LAYER_TEXTURED : ui::LAYER_SOLID_COLOR));
+    auto layer = std::make_unique<ui::Layer>(
+        draw_highlight_border_ ? ui::LAYER_TEXTURED : ui::LAYER_SOLID_COLOR);
+    layer->SetName("shelf/Background");
+    if (draw_highlight_border_) {
+      layer->set_delegate(this);
+      layer->SetFillsBoundsOpaquely(false);
+    }
+    SetLayer(std::move(layer));
   }
 
   // Sets the shelf background color.
