@@ -149294,7 +149294,7 @@
       ]
      ],
      "target-text-008.html": [
-      "2f854f16b00c51f2adc3b8d2f422f5c1b062f55c",
+      "b1759124be5fbefa7e58fd72f15c31465eaefce0",
       [
        null,
        [
@@ -473042,7 +473042,16 @@
          {}
         ]
        ],
-       "show-picker.html": [
+       "show-picker-disabled-readonly.html": [
+        "77073b3f8100df9ed0ab28deaf63dc6acc86644b",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "show-picker-user-gesture.html": [
         "6b94b4f0f00ea71c4e5a0740e315fe4c2fbbf896",
         [
          null,
@@ -487775,6 +487784,13 @@
       {}
      ]
     ],
+    "longtask-sync-xhr.html": [
+     "da223cca2aef4c67760160ad9b82a61716747bb3",
+     [
+      null,
+      {}
+     ]
+    ],
     "longtask-tojson.html": [
      "b1f9b3c9b1cd60fa77eba4fc7ad7e940411cef53",
      [
@@ -487791,6 +487807,13 @@
       ]
      ]
     },
+    "spin-eventloop-not-longtask.html": [
+     "9c83b14e31f4286a16a87f47fc104bc665fc6cb8",
+     [
+      null,
+      {}
+     ]
+    ],
     "supported-longtask-types.window.js": [
      "efb393ad8443f4286ce860749a6d1142734f491a",
      [
