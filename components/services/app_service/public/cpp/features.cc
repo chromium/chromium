@@ -14,6 +14,6 @@ const base::Feature kAppServiceOnAppUpdateWithoutMojom{
     "AppServiceOnAppUpdateWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature AppServiceCrosApiOnAppsWithoutMojom{
-    "AppServiceCrosApiOnAppsWithoutMojom", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AppServiceCrosApiOnAppsWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace apps
