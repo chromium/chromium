@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 
 @class SafeBrowsingStandardProtectionViewController;
@@ -21,7 +22,8 @@
 
 // View controller used in the Safe Browsing Standard Protection view.
 @interface SafeBrowsingStandardProtectionViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol>
+    : SettingsRootTableViewController <SafeBrowsingStandardProtectionConsumer,
+                                       SettingsControllerProtocol>
 
 // Presentation delegate.
 @property(nonatomic, weak)

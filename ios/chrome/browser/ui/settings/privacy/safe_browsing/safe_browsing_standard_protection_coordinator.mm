@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_coordinator.h"
 
 #include "base/mac/foundation_util.h"
+#include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -19,6 +23,8 @@
 // View controller handled by coordinator.
 @property(nonatomic, strong)
     SafeBrowsingStandardProtectionViewController* viewController;
+// Mediator handled by coordinator.
+@property(nonatomic, strong) SafeBrowsingStandardProtectionMediator* mediator;
 
 @end
 
@@ -39,6 +45,10 @@
   self.viewController = [[SafeBrowsingStandardProtectionViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
+  self.mediator = [[SafeBrowsingStandardProtectionMediator alloc]
+      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+             localPrefService:GetApplicationContext()->GetLocalState()];
+  self.mediator.consumer = self.viewController;
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
