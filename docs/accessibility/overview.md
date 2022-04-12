@@ -212,7 +212,7 @@ then click again to refresh that tree.
 https://developer.chrome.com/extensions/automation).
 * Installing the [Automation Inspector Chrome extension](
 https://github.com/google/automation-inspector).
-* Building and using [ax_dump_tree or ax_dump_events](tools/accessibility/inspect/README.md).
+* Building and using [ax_dump_tree or ax_dump_events](../../tools/accessibility/inspect/README.md).
 These can be used to view accessibility trees and events from any application on
 Windows, Mac or Linux.
 * Or by using native tools:
