@@ -2363,18 +2363,23 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 // request is intercepted by a service worker.
 IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_SWSubResource) {
+  // Skip the test when the block type is kCertError. With the type, this test
+  // times out due to https://crbug.com/1311887.
+  // TODO(https://crbug.com/1311887): Enable the test with kCertError.
+  if (GetParam() == SSLPrerenderTestErrorBlockType::kCertError)
+    return;
+
   base::HistogramTester histogram_tester;
 
-  const GURL kInitialUrl = GetUrl("/title1.html");
+  // Load an initial page and register a service worker that intercepts
+  // resources requests.
+  const GURL kInitialUrl = GetUrl("/workers/service_worker_setup.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_EQ("ok", EvalJs(current_frame_host(), "setup();"));
 
-  // Prerender a page, then register a service worker that intercepts resource
-  // requests.
-  const GURL kPrerenderingUrl = GetUrl("/workers/service_worker_setup.html");
+  // Prerender a page.
+  const GURL kPrerenderingUrl = GetUrl("/workers/empty.html");
   int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ("ok",
-            EvalJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
-                   "setup();"));
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   RequireClientCertsOrSendExpiredCerts();
 

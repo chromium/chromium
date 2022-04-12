@@ -2864,17 +2864,32 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 
+// TODO(https://crbug.com/1268294): This test hits the issue. Re-enable after it
+// is fixed.
 IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
-                       WarningToCorrectRFH_Prerender) {
+                       DISABLED_WarningToCorrectRFH_Prerender) {
   ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());
 
-  const GURL url(https_server()->GetURL(GetTestURL()));
+  // Load an initial page.
+  const GURL initial_url(https_server()->GetURL(GetTestURL()));
+  prerender_helper_.NavigatePrimaryPage(initial_url);
+
+  // Register a service worker. This must be done in the primary page as the
+  // service worker registration in a prerendered page is deferred until
+  // prerender page activation.
+  std::string script_result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents()->GetMainFrame(), "registerServiceWorker()",
+      &script_result));
+  ASSERT_EQ("ok - service worker registered", script_result);
 
   // Start a prerender with the push messaging test URL.
-  int host_id = prerender_helper_.AddPrerender(url);
+  const GURL prerendering_url(
+      https_server()->GetURL(GetTestURL() + "?prerendering"));
+  int host_id = prerender_helper_.AddPrerender(prerendering_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
-  ASSERT_NE(prerender_helper_.GetHostForUrl(url),
+  ASSERT_NE(prerender_helper_.GetHostForUrl(prerendering_url),
             content::RenderFrameHost::kNoFrameTreeNodeId);
 
   content::WebContentsConsoleObserver console_observer(web_contents());
@@ -2888,12 +2903,6 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
         return message.source_frame == prerender_rfh;
       }));
 
-  std::string script_result;
-
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      prerender_rfh, "registerServiceWorker()", &script_result));
-  ASSERT_EQ("ok - service worker registered", script_result);
-
   // Use ExecuteScriptAsync because binding of blink::mojom::PushMessaging
   // is deferred for the prerendered page. Script execution will finish after
   // the activation.
@@ -2901,7 +2910,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
 
   // Activate the prerendered page and wait for a response of script execution.
   content::DOMMessageQueue message_queue;
-  prerender_helper_.NavigatePrimaryPage(url);
+  prerender_helper_.NavigatePrimaryPage(prerendering_url);
   // Make sure that the prerender was activated.
   ASSERT_TRUE(prerender_observer.was_activated());
   do {
