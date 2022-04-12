@@ -423,7 +423,7 @@ void ImageDocument::UpdateImageStyle() {
   else if (cursor_mode == kZoomOut)
     image_style.Append("cursor: zoom-out;");
 
-  if (GetFrame()->IsMainFrame()) {
+  if (GetFrame()->IsOutermostMainFrame()) {
     if (image_is_loaded_) {
       image_style.Append("background-color: hsl(0, 0%, 90%);");
       DCHECK(image_element_);
@@ -563,7 +563,7 @@ bool ImageDocument::ShouldShrinkToFit() const {
   // disallow images from shrinking to fit for WebViews.
   bool is_wrap_content_web_view =
       GetPage() ? GetPage()->GetSettings().GetForceZeroLayoutHeight() : false;
-  return GetFrame()->IsMainFrame() && !is_wrap_content_web_view;
+  return GetFrame()->IsOutermostMainFrame() && !is_wrap_content_web_view;
 }
 
 void ImageDocument::Trace(Visitor* visitor) const {
