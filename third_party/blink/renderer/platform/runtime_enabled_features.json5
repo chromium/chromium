@@ -1751,6 +1751,11 @@
       origin_trial_feature_name: "Parakeet",
     },
     {
+      name: "ParallelTextShaping",
+      depends_on: ["LayoutNG"],
+      // http://crbug.com/1264280
+    },
+    {
       name: "PartitionedCookies",
       origin_trial_feature_name: "PartitionedCookies",
       status: "experimental",
