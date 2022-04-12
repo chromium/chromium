@@ -67,8 +67,13 @@ function getPrefetchUrlList(n) {
   return urls;
 }
 
+function getRedirectUrl() {
+  let params = new URLSearchParams({uuid: token()});
+  return new URL(`redirect.py?${params}`, SR_PREFETCH_UTILS_URL);
+}
+
 async function isUrlPrefetched(url) {
-  let response = await fetch(url);
+  let response = await fetch(url, {redirect: 'follow'});
   assert_true(response.ok);
   return response.json();
 }
