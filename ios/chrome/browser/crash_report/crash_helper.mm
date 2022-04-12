@@ -201,7 +201,13 @@ void SetEnabled(bool enabled) {
   // here, because if Crashpad fails to init, do not unintentionally enable
   // breakpad.
   if (common::CanUseCrashpad()) {
-    crash_reporter::SetUploadConsent(enabled);
+    // Posts SetUploadConsent on blocking pool thread because it needs access to
+    // IO and cannot work from UI thread.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(^{
+          crash_reporter::SetUploadConsent(enabled);
+        }));
     return;
   }
 
