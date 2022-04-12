@@ -53,6 +53,18 @@ constexpr CGFloat kButtonCornerRadius = 8;
   UIButton* goToFeedButton = [self filledGoToFeedButton];
   UIButton* gotItButton = [self plainGotItButton];
 
+  // Set colors.
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  bodyLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
+  goToFeedButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+  gotItButton.backgroundColor = [UIColor clearColor];
+  [goToFeedButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+                       forState:UIControlStateNormal];
+  [gotItButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                    forState:UIControlStateNormal];
+
   // Go To Feed button is only displayed if the web channel is available.
   NSArray* subviews = nil;
   if (self.followedWebChannel.available) {
@@ -69,7 +81,6 @@ constexpr CGFloat kButtonCornerRadius = 8;
   verticalStack.spacing = kStackViewSubViewSpacing;
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:verticalStack];
-  self.view.backgroundColor = [UIColor whiteColor];
 
   [NSLayoutConstraint activateConstraints:@[
     [verticalStack.leadingAnchor
@@ -83,6 +94,13 @@ constexpr CGFloat kButtonCornerRadius = 8;
 }
 
 #pragma mark - Helper
+
+// Calls delegate to go to feed and dismisses the sheet.
+- (void)handleGoToFeedTapped {
+  [self.delegate handleGoToFeedTapped];
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
+}
 
 // Dismisses the sheet.
 - (void)handleGotItTapped {
@@ -105,7 +123,6 @@ constexpr CGFloat kButtonCornerRadius = 8;
 // Returns a filled button.
 - (UIButton*)filledGoToFeedButton {
   UIButton* button = [[UIButton alloc] init];
-  button.backgroundColor = [UIColor colorNamed:kBlueColor];
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
@@ -118,7 +135,7 @@ constexpr CGFloat kButtonCornerRadius = 8;
   [button setTitle:l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GO_TO_FEED)
           forState:UIControlStateNormal];
   [button setAccessibilityIdentifier:kFirstFollowGoToFeedButtonIdentifier];
-  [button addTarget:self.delegate
+  [button addTarget:self
                 action:@selector(handleGoToFeedTapped)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
@@ -128,8 +145,6 @@ constexpr CGFloat kButtonCornerRadius = 8;
 // TODO(crbug.com/1312124): Consolidate button creation code.
 - (UIButton*)plainGotItButton {
   UIButton* button = [[UIButton alloc] init];
-  [button setTitleColor:[UIColor colorNamed:kBlueColor]
-               forState:UIControlStateNormal];
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
