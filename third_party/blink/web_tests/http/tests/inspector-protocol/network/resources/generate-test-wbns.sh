@@ -11,7 +11,7 @@ if ! command -v gen-bundle > /dev/null 2>&1; then
 fi
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -har webbundle.har \
-  -primaryURL urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720 \
+  -primaryURL uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720 \
   -o webbundle.wbn

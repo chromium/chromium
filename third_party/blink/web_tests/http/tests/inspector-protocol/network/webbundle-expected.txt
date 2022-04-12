@@ -8,6 +8,7 @@ requestWillBeSent[
             type : other
         }
         loaderId : <string>
+        redirectHasExtraInfo : false
         request : {
             headers : {
                 Upgrade-Insecure-Requests : 1
@@ -33,12 +34,13 @@ requestWillBeSent[
         frameId : <string>
         hasUserGesture : false
         initiator : {
-            columnNumber : 68
-            lineNumber : 10
+            columnNumber : 11
+            lineNumber : 13
             type : parser
             url : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
         }
         loaderId : <string>
+        redirectHasExtraInfo : false
         request : {
             headers : {
                 Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
@@ -64,12 +66,13 @@ requestWillBeSent[
         frameId : <string>
         hasUserGesture : false
         initiator : {
-            columnNumber : 71
-            lineNumber : 12
+            columnNumber : 78
+            lineNumber : 14
             type : parser
             url : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
         }
         loaderId : <string>
+        redirectHasExtraInfo : false
         request : {
             headers : {
                 Referer : http://127.0.0.1:8000/
@@ -80,7 +83,7 @@ requestWillBeSent[
             method : GET
             mixedContentType : none
             referrerPolicy : strict-origin-when-cross-origin
-            url : urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
+            url : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
         }
         requestId : <string>
         timestamp : <number>
@@ -92,8 +95,8 @@ webBundleMetadataReceived[
     [0] : {
         requestId : <string>
         urls : [
-            [0] : urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
-            [1] : urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae
+            [0] : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+            [1] : uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
         ]
     }
 ]
@@ -101,11 +104,11 @@ webBundleInnerResponse[
     [0] : {
         bundleRequestId : <string>
         innerRequestId : <string>
-        innerRequestURL : urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
+        innerRequestURL : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
     }
 ]
-webBundleMetadataReceived[0].urls: urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720,urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae
-webBundleInnerResponse[0].innerRequestURL: urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
+webBundleMetadataReceived[0].urls: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720,uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
+webBundleInnerResponse[0].innerRequestURL: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
 bundle request ID from webBundleMetadataReceived matches ID from requestWillBeSent
 inner request ID from webBundleInnerResponse matches ID from requestWillBeSent
 inner request ID from webBundleInnerResponse matches ID from webBundleMetadataReceived
