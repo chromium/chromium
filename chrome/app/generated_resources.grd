@@ -8802,6 +8802,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY" desc="The acccessibility label spoken by screen readers when the label for a Third Party Sharing Target gets focus but not visually rendered.">
         Share link to <ph name="SHARE_TARGET">$1<ex>Facebook</ex></ph>
       </message>
+      <message name="IDS_SHARING_HUB_FOLLOW_LABEL" desc="The text label for the follow button in the Sharing Hub dialog and app menu.">
+        Follow
+      </message>
+      <message name="IDS_SHARING_HUB_FOLLOWING_LABEL" desc="The text label for the following button in the Sharing Hub dialog and app menu.">
+        Following
+      </message>
 
       <!-- Desktop Screenshots feature within the share hub; desktop-only. -->
       <if expr="not is_android">

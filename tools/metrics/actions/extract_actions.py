@@ -123,7 +123,7 @@ TAGS = {'description': 'Please enter the description of the metric.',
 SHARE_TARGETS = {
     'CopyURLSelected', 'QRCodeSelected', 'ScreenshotSelected',
     'SendTabToSelfSelected', 'CastSelected', 'SavePageSelected',
-    'ThirdPartyAppSelected'
+    'ThirdPartyAppSelected', 'FollowSelected', 'UnfollowSelected'
 }
 
 

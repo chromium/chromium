@@ -120,6 +120,8 @@
 #define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35030
 #define IDC_SHARING_HUB_SCREENSHOT      35031
 #define IDC_VIRTUAL_CARD_ENROLL         35032
+#define IDC_FOLLOW                      35033
+#define IDC_UNFOLLOW                    35034
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.

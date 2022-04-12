@@ -202,19 +202,7 @@ TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
   content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
   DCHECK(web_contents);
 
-  feed::WebFeedTabHelper* tab_helper =
-      feed::WebFeedTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return TabWebFeedFollowState::kUnknown;
-
-  // Make sure that the URL used to fetch the follow state matches the latest
-  // committed URL. There may be a chance that the contents have navigated to
-  // a different URL and the next asynchronous follow state fetch has not
-  // completed.
-  if (tab_helper->url() != web_contents->GetLastCommittedURL())
-    return TabWebFeedFollowState::kUnknown;
-
-  return tab_helper->follow_state();
+  return feed::WebFeedTabHelper::GetFollowState(web_contents);
 }
 
 TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(

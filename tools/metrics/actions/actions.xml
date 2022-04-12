@@ -26838,6 +26838,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubDesktop.FollowSelected">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The follow feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
 <action name="SharingHubDesktop.QRCodeSelected">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
@@ -26880,6 +26888,14 @@ should be able to be added at any place in this file.
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>
     A third party option was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.UnfollowSelected">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The unfollow feature was selected in the desktop sharing hub.
   </description>
 </action>
 
