@@ -5652,6 +5652,7 @@ test("unit_tests") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:unittests",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/net:probe_message_proto",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
     "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",

@@ -14,6 +14,7 @@ include_rules = [
 specific_include_rules = {
   # The PKI metadata component installer needs to inspect SCT auditing state.
   "pki_metadata_component_installer_unittest.cc": [
+    "+net/http/transport_security_state.h",
     "+services/network/sct_auditing/sct_auditing_cache.h",
   ],
 }
