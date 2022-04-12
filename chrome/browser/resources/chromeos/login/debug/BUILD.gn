@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 # TODO(crbug.com/1229130)
 # Uncomment once most screens are migrated.
-#js_type_check("closure_compile_module") {
+#js_type_check("closure_compile") {
 #  is_polymer3 = true
 #  deps = [
 #    ":debug.m",

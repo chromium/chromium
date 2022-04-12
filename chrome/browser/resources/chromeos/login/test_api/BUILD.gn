@@ -6,18 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
-  deps = [ ":test_api" ]
-}
-
-js_type_check("closure_compile_module") {
   deps = [ ":test_api.m" ]
-}
-
-js_library("test_api") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-  ]
 }
 
 js_library("test_api.m") {

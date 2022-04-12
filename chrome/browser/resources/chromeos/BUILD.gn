@@ -81,7 +81,6 @@ group("closure_compile") {
     "keyboard:closure_compile",
     "keyboard:closure_compile_module",
     "login:closure_compile",
-    "login:closure_compile_module",
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",
     "network_ui:closure_compile",

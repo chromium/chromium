@@ -16,38 +16,13 @@ group("polymer3_elements") {
 }
 
 js_type_check("closure_compile") {
-  deps = [
-      ":oobe_back_button",
-      ":oobe_next_button",
-      ":oobe_text_button",
-      ":oobe_icon_button",
-  ]
-}
-
-js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":oobe_back_button.m",
+    ":oobe_icon_button.m",
     ":oobe_next_button.m",
     ":oobe_text_button.m",
-    ":oobe_icon_button.m",
   ]
-}
-
-js_library("oobe_back_button") {
-  deps = [ "../behaviors:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_next_button") {
-  deps = [ "../behaviors:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_text_button") {
-  deps = [ "../behaviors:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_icon_button") {
-  deps = [ "../behaviors:oobe_i18n_behavior" ]
 }
 
 #### Polymer3 / JS Modules libraries
@@ -55,8 +30,8 @@ js_library("oobe_icon_button") {
 js_library("oobe_back_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_back_button_module" ]
 }
@@ -64,8 +39,8 @@ js_library("oobe_back_button.m") {
 js_library("oobe_next_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_next_button_module" ]
 }
@@ -73,8 +48,8 @@ js_library("oobe_next_button.m") {
 js_library("oobe_text_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_text_button_module" ]
 }
@@ -82,8 +57,8 @@ js_library("oobe_text_button.m") {
 js_library("oobe_icon_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_icon_button_module" ]
 }

@@ -498,28 +498,20 @@ group("polymer3_elements") {
 group("closure_compile") {
   deps = [
     "components:closure_compile",
+
+    # TODO(crbug.com/1229130)
+    # Uncomment once most screens are migrated.
+    #"debug:closure_compile",
+
+    ":closure_compile_local",
     "screens/common:closure_compile",
+    "screens/login:closure_compile",
+    "screens/oobe:closure_compile",
     "test_api:closure_compile",
   ]
 }
 
-group("closure_compile_module") {
-  deps = [
-    "components:closure_compile_module",
-
-    # TODO(crbug.com/1229130)
-    # Uncomment once most screens are migrated.
-    #"debug:closure_compile_module",
-
-    ":closure_compile_module_local",
-    "screens/common:closure_compile_module",
-    "screens/login:closure_compile_module",
-    "screens/oobe:closure_compile_module",
-    "test_api:closure_compile_module",
-  ]
-}
-
-js_type_check("closure_compile_module_local") {
+js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [

@@ -25,7 +25,7 @@ group("polymer3_elements") {
   ]
 }
 
-js_type_check("closure_compile_module") {
+js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [

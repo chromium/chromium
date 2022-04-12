@@ -10,7 +10,7 @@ group("polymer3_elements") {
   public_deps = [ ":progress_list_item_module" ]
 }
 
-js_type_check("closure_compile_module") {
+js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [ ":progress_list_item.m" ]

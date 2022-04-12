@@ -11,16 +11,8 @@ group("polymer3_elements") {
 }
 
 js_type_check("closure_compile") {
-  deps = [ ":oobe_carousel" ]
-}
-
-js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [ ":oobe_carousel.m" ]
-}
-
-js_library("oobe_carousel") {
-  deps = [ "//ui/webui/resources/js:load_time_data" ]
 }
 
 #### Polymer3 / JS Modules libraries

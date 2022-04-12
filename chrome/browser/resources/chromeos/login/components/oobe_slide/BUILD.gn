@@ -11,15 +11,8 @@ group("polymer3_elements") {
 }
 
 js_type_check("closure_compile") {
-  deps = [ ":oobe_slide" ]
-}
-
-js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [ ":oobe_slide.m" ]
-}
-
-js_library("oobe_slide") {
 }
 
 #### Polymer3 / JS Modules libraries

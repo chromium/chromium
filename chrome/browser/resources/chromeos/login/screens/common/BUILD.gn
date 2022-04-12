@@ -51,17 +51,13 @@ group("polymer3_elements") {
 }
 
 group("closure_compile") {
-  deps = [ "../../components:closure_compile" ]
-}
-
-group("closure_compile_module") {
   deps = [
-    ":closure_compile_module_local",
-    ":closure_compile_module_multidevice_setup",
+    ":closure_compile_local",
+    ":closure_compile_multidevice_setup",
   ]
 }
 
-js_type_check("closure_compile_module_local") {
+js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
@@ -105,7 +101,7 @@ js_type_check("closure_compile_module_local") {
 
 # TODO(crbug.com/1229130) - Figure out why multidevice_setup is requiring its
 # own js_type_check in order not to conflict with chrome externs.
-js_type_check("closure_compile_module_multidevice_setup") {
+js_type_check("closure_compile_multidevice_setup") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [ ":multidevice_setup.m" ]
