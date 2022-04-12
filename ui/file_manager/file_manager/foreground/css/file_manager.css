@@ -579,17 +579,14 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header cr-button.icon-button > .icon {
   background-position: center;
   background-repeat: no-repeat;
-  height: 100%;
+  height: 48px;
   left: 0;
+  margin-inline-end: -8px;
+  margin-inline-start: -8px;
+  margin-top: -8px;
   position: absolute;
   top: 0;
-  width: 32px;
-}
-
-.dialog-header.files-ng cr-button > .icon {
-  height: 20px;
-  padding: calc(8px - 1px);
-  width: 20px;
+  width: 48px;
 }
 
 .dialog-header.files-ng #tasks {
@@ -684,12 +681,6 @@ body.check-select #view-button.thumbnail {
 
 .dialog-header.files-ng #sort-button > .icon {
   -webkit-mask-image: url(../images/files/ui/sorting_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 
 body.check-select #sort-button {
@@ -698,12 +689,6 @@ body.check-select #sort-button {
 
 .dialog-header.files-ng #gear-button > .icon {
   -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 body.check-select #gear-button {
   display: none;
@@ -711,12 +696,6 @@ body.check-select #gear-button {
 
 .dialog-header.files-ng #selection-menu-button > .icon {
   -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 
 body:not(.check-select) #selection-menu-button {
