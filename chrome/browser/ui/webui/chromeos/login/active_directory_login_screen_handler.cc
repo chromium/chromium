@@ -33,19 +33,7 @@ void ActiveDirectoryLoginScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceTypeResourceId());
 }
 
-void ActiveDirectoryLoginScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
-}
-
 void ActiveDirectoryLoginScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   base::Value::Dict screen_data;
   screen_data.Set("realm", g_browser_process->platform_part()
                                ->browser_policy_connector_ash()

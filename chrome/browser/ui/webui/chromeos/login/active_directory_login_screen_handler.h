@@ -58,10 +58,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  // Whether the screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos
