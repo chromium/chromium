@@ -30746,7 +30746,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       This flow of launching the Idenity providers authenticator app would be used by the Identity providers to enable
       use cases like providing SSO across apps or provide better security by collecting zero trust device signals to understand device posture during authentication.
 
-      If there is no valid app installed to handle authentication url on the the device, navigation will continue in <ph name="WEBVIEW_PRODUCT_NAME">Android WebView</ph>.
+      If there is no valid app installed to handle authentication url on the device, navigation will continue in <ph name="WEBVIEW_PRODUCT_NAME">Android WebView</ph>.
 
       Valid authentication url should have the scheme <ph name="HTTP_PROTOCOL">http</ph>/<ph name="HTTPS_PROTOCOL">https</ph> and should not contain wildcards.
       '''
