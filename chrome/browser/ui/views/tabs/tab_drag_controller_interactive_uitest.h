@@ -37,8 +37,8 @@ class TabDragControllerTest : public InProcessBrowserTest {
   // Cover for TabStrip::StopAnimating(true).
   void StopAnimating(TabStrip* tab_strip);
 
-  // Adds a new tab to |browser| using provided |url| or blank. Stops animations
-  // and resets the ids of the tabs in |browser|.
+  // Adds |additional_tabs| new tabs to |browser| using the provided |url| or
+  // blank. Stops animations and resets the ids of the tabs in |browser|.
   void AddTabsAndResetBrowser(Browser* browser,
                               int additional_tabs,
                               const GURL& url = GURL(url::kAboutBlankURL));
