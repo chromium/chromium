@@ -526,7 +526,8 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
 
   base::ObserverList<AppListControllerObserver> observers_;
 
-  // Sub-controller to handle app item badges.
+  // Sub-controller to handle app item badges. Must be constructed after
+  // `model_provider_`.
   std::unique_ptr<AppListBadgeController> badge_controller_;
 
   // Whether the wallpaper is being previewed. The home screen should be hidden

@@ -353,14 +353,12 @@ void AppListControllerImpl::SetActiveModel(int profile_id,
                                            SearchModel* search_model) {
   profile_id_ = profile_id;
   model_provider_->SetActiveModel(model, search_model);
-  badge_controller_->SetActiveModel(model);
   UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::ClearActiveModel() {
   profile_id_ = kAppListInvalidProfileID;
   model_provider_->ClearActiveModel();
-  badge_controller_->ClearActiveModel();
   UpdateAssistantVisibility();
 }
 

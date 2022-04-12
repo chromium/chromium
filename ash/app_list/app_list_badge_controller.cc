@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -20,26 +21,25 @@ namespace ash {
 
 AppListBadgeController::AppListBadgeController() {
   Shell::Get()->session_controller()->AddObserver(this);
+
+  auto* model_provider = AppListModelProvider::Get();
+  DCHECK(model_provider);
+  model_provider->AddObserver(this);
+  SetActiveModel(model_provider->model());
 }
 
 AppListBadgeController::~AppListBadgeController() = default;
 
 void AppListBadgeController::Shutdown() {
+  AppListModelProvider::Get()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
   model_observation_.Reset();
 }
 
-void AppListBadgeController::SetActiveModel(AppListModel* model) {
-  model_ = model;
-  model_observation_.Reset();
-
-  if (model_)
-    model_observation_.Observe(model_);
-}
-
-void AppListBadgeController::ClearActiveModel() {
-  model_ = nullptr;
-  model_observation_.Reset();
+void AppListBadgeController::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  SetActiveModel(model);
 }
 
 void AppListBadgeController::OnAppListItemAdded(AppListItem* item) {
@@ -120,6 +120,14 @@ void AppListBadgeController::UpdateAppNotificationBadging() {
       UpdateItemNotificationBadge(update.AppId(), has_badge);
     });
   }
+}
+
+void AppListBadgeController::SetActiveModel(AppListModel* model) {
+  model_ = model;
+  model_observation_.Reset();
+
+  if (model_)
+    model_observation_.Observe(model_);
 }
 
 }  // namespace ash
