@@ -25,12 +25,10 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,9 +41,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
@@ -77,7 +72,6 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -95,41 +89,6 @@ import java.util.List;
  */
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {
     private static final Object ORIGIN_SPAN = new Object();
-
-    /**
-     * A simple {@link FrameLayout} that prevents its children from getting touch events. This is
-     * especially useful to prevent {@link UrlBar} from running custom touch logic since it is
-     * read-only in custom tabs.
-     */
-    public static class InterceptTouchLayout extends FrameLayout {
-        private GestureDetector mGestureDetector;
-
-        public InterceptTouchLayout(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            mGestureDetector = new GestureDetector(
-                    getContext(), new GestureDetector.SimpleOnGestureListener() {
-                        @Override
-                        public boolean onSingleTapConfirmed(MotionEvent e) {
-                            if (LibraryLoader.getInstance().isInitialized()) {
-                                RecordUserAction.record("CustomTabs.TapUrlBar");
-                            }
-                            return super.onSingleTapConfirmed(e);
-                        }
-                    }, ThreadUtils.getUiThreadHandler());
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(MotionEvent ev) {
-            return true;
-        }
-
-        @Override
-        @SuppressLint("ClickableViewAccessibility")
-        public boolean onTouchEvent(MotionEvent event) {
-            mGestureDetector.onTouchEvent(event);
-            return super.onTouchEvent(event);
-        }
-    }
 
     private ImageView mIncognitoImageView;
     private LinearLayout mCustomActionButtons;
@@ -588,32 +547,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (ViewGroup.MarginLayoutParams) mCustomActionButtons.getLayoutParams();
         p.setMarginEnd(0);
         mCustomActionButtons.setLayoutParams(p);
-    }
-
-    private static class NoOpkeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
-        @Override
-        public void showKeyboard(View view) {}
-
-        @Override
-        public boolean hideKeyboard(View view) {
-            return false;
-        }
-
-        @Override
-        public int calculateKeyboardHeight(View view) {
-            return 0;
-        }
-
-        @Override
-        public boolean isKeyboardShowing(Context context, View view) {
-            return false;
-        }
-
-        @Override
-        public void addKeyboardVisibilityListener(KeyboardVisibilityListener listener) {}
-
-        @Override
-        public void removeKeyboardVisibilityListener(KeyboardVisibilityListener listener) {}
     }
 
     /**
