@@ -25,26 +25,44 @@ struct PopupMatchRowView: View {
   @State var isPressed = false
   @State var childView = CGSize.zero
 
+  var button: some View {
+
+    let button =
+      Button(action: selectionHandler) {
+        Color.clear.contentShape(Rectangle())
+      }
+      .buttonStyle(PressedPreferenceKeyButtonStyle())
+      .onPreferenceChange(PressedPreferenceKey.self) { isPressed in
+        self.isPressed = isPressed
+      }
+      .accessibilityElement()
+      .accessibilityLabel(match.text.string)
+      .accessibilityValue(match.detailText?.string ?? "")
+      .accessibilityRemoveTraits(.isButton)
+
+    if match.isAppendable || match.isTabMatch {
+      let trailingActionAccessibilityTitle =
+        match.isTabMatch
+        ? L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB)
+        : L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_APPEND)
+
+      return
+        button
+        .accessibilityAction(
+          named: trailingActionAccessibilityTitle!, trailingButtonHandler
+        )
+    } else {
+      return button
+    }
+  }
+
   var body: some View {
     ZStack {
       // TODO(crbug.com/1311615): This next line should be `backgroundColor`,
       // but for some reason, that causes the tests to fail on the bots only.
       if self.isPressed || self.isHighlighted { Color.cr_tableRowViewHighlight }
 
-      Button(action: selectionHandler) { Color.clear.contentShape(Rectangle()) }
-        .buttonStyle(PressedPreferenceKeyButtonStyle())
-        .onPreferenceChange(PressedPreferenceKey.self) { isPressed in
-          self.isPressed = isPressed
-        }
-        .accessibilityElement()
-        .accessibilityLabel(match.text.string)
-        .accessibilityValue(match.detailText?.string ?? "")
-        .accessibilityAction(
-          named: match.isTabMatch
-            ? L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB)
-            : L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_APPEND), trailingButtonHandler
-        )
-        .accessibilityRemoveTraits(.isButton)
+      button
 
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
