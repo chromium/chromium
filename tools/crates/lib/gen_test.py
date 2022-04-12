@@ -352,6 +352,18 @@ all-platform-crate = "1"
         self.assertSetEqual({"x86_64-pc-windows-msvc"},
                             arch_specific.archs_to_test())
 
+        # Ensure we are OK with a [target] section with no dependencies
+        toml_content = toml.loads("""
+[dependencies]
+all-platform-crate = "1"
+
+[target."cfg(windows)"]
+        """)
+
+        arch_specific = gen._get_archs_of_interest(toml_content, usage_data,
+                                                   None)
+        self.assertTrue(arch_specific.is_single_arch())
+
     def make_fake_parent(self, child_name: str,
                          archset_where_parent_used: compiler.ArchSet,
                          parent_is_arch_specific: bool,
