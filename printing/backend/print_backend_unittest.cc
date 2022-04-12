@@ -4,8 +4,8 @@
 
 #include "printing/backend/print_backend.h"
 
-#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +81,7 @@ TEST_F(PrintBackendTest, ParseValueForXpsPrinterCapabilities) {
   // `GetXmlPrinterCapabilitiesForXpsDriver` API and processed by data_decoder
   // service.
   // This is the correct format of XPS "PageOutputQuality" capability.
-  absl::optional<base::Value> correct_capabilities = base::JSONReader::Read(R"({
+  base::Value correct_capabilities = base::test::ParseJson(R"({
   "type": "element",
   "tag": "psf:PrintCapabilities",
   "children": [
@@ -226,21 +226,20 @@ TEST_F(PrintBackendTest, ParseValueForXpsPrinterCapabilities) {
   ]
 }
 )");
-  ASSERT_TRUE(correct_capabilities);
   PrinterSemanticCapsAndDefaults printer_info;
 
   // Expect that parsing XPS Printer Capabilities is successful.
   // After parsing, `printer_info` will have 2 capabilities: "PageOutputQuality"
   // and "PageOutputColor".
   EXPECT_EQ(GetPrintBackend()->ParseValueForXpsPrinterCapabilities(
-                *correct_capabilities, &printer_info),
+                correct_capabilities, &printer_info),
             mojom::ResultCode::kSuccess);
 }
 
 TEST_F(PrintBackendTest,
        ParseCorrectPageOutputQualityForXpsPrinterCapabilities) {
   // This is the correct format of XPS "PageOutputQuality" capability.
-  absl::optional<base::Value> correct_capabilities = base::JSONReader::Read(R"({
+  base::Value correct_capabilities = base::test::ParseJson(R"({
   "type": "element",
   "tag": "psf:PrintCapabilities",
   "children": [
@@ -385,14 +384,13 @@ TEST_F(PrintBackendTest,
   ]
 }
 )");
-  ASSERT_TRUE(correct_capabilities);
   PrinterSemanticCapsAndDefaults printer_info;
 
   // Expect that parsing XPS Printer Capabilities is successful.
   // After parsing, `printer_info` will have 2 capabilities: "PageOutputQuality"
   // and "PageOutputColor".
   EXPECT_EQ(GetPrintBackend()->ParseValueForXpsPrinterCapabilities(
-                *correct_capabilities, &printer_info),
+                correct_capabilities, &printer_info),
             mojom::ResultCode::kSuccess);
 
   // After parsing, `PageOutputQuality` of `printer_info` is expected to have 3
@@ -408,8 +406,7 @@ TEST_F(PrintBackendTest,
        ParseIncorrectPageOutputQualityForXpsPrinterCapabilities) {
   // This string below is incorrect format of XPS `PageOutputQuality` capability
   // when the property inside option ns0000:Draft does not have any value.
-  absl::optional<base::Value> incorrect_capabilities =
-      base::JSONReader::Read(R"({
+  base::Value incorrect_capabilities = base::test::ParseJson(R"({
   "type": "element",
   "tag": "psf:PrintCapabilities",
   "children": [
@@ -493,13 +490,12 @@ TEST_F(PrintBackendTest,
   ]
 }
 )");
-  ASSERT_TRUE(incorrect_capabilities);
   PrinterSemanticCapsAndDefaults printer_info;
   EXPECT_EQ(GetPrintBackend()->ParseValueForXpsPrinterCapabilities(
-                *incorrect_capabilities, &printer_info),
+                incorrect_capabilities, &printer_info),
             mojom::ResultCode::kFailed);
 }
 
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

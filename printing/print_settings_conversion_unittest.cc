@@ -5,7 +5,7 @@
 #include "printing/print_settings_conversion.h"
 
 #include "base/containers/contains.h"
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "printing/print_settings.h"
@@ -51,17 +51,15 @@ const char kPrinterSettings[] = R"({
 }  // namespace
 
 TEST(PrintSettingsConversionTest, InvalidSettings) {
-  absl::optional<base::Value> value = base::JSONReader::Read("{}");
-  ASSERT_TRUE(value.has_value());
-  ASSERT_TRUE(value.value().is_dict());
-  EXPECT_FALSE(PrintSettingsFromJobSettings(value.value().GetDict()));
+  base::Value value = base::test::ParseJson("{}");
+  ASSERT_TRUE(value.is_dict());
+  EXPECT_FALSE(PrintSettingsFromJobSettings(value.GetDict()));
 }
 
 TEST(PrintSettingsConversionTest, ConversionTest) {
-  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
-  ASSERT_TRUE(value.has_value());
-  ASSERT_TRUE(value.value().is_dict());
-  auto& dict = value.value().GetDict();
+  base::Value value = base::test::ParseJson(kPrinterSettings);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -84,10 +82,9 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintSettingsConversionTest, DontSendUsername) {
-  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
-  ASSERT_TRUE(value.has_value());
-  ASSERT_TRUE(value.value().is_dict());
-  auto& dict = value.value().GetDict();
+  base::Value value = base::test::ParseJson(kPrinterSettings);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
   dict.Set(kSettingSendUserInfo, false);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -98,10 +95,9 @@ TEST(PrintSettingsConversionTest, DontSendUsername) {
 
 #if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
-  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
-  ASSERT_TRUE(value.has_value());
-  ASSERT_TRUE(value.value().is_dict());
-  auto& dict = value.value().GetDict();
+  base::Value value = base::test::ParseJson(kPrinterSettings);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
 
   {
     base::Value::Dict advanced_attributes;
