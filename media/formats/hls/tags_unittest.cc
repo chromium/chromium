@@ -13,25 +13,27 @@ namespace media::hls {
 namespace {
 
 template <typename T>
-void ErrorTest(base::StringPiece content,
+void ErrorTest(absl::optional<base::StringPiece> content,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.name = ToTagName(T::kName),
-                     .content = SourceString::CreateForTesting(content)};
+  auto tag = content ? TagItem::Create(ToTagName(T::kName),
+                                       SourceString::CreateForTesting(*content))
+                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag);
   ASSERT_TRUE(result.has_error()) << from.ToString();
   auto error = std::move(result).error();
-  EXPECT_EQ(error.code(), expected_status);
+  EXPECT_EQ(error.code(), expected_status) << from.ToString();
 }
 
 template <typename T>
-void ErrorTest(base::StringPiece content,
+void ErrorTest(absl::optional<base::StringPiece> content,
                const VariableDictionary& variable_dict,
                VariableDictionary::SubstitutionBuffer& sub_buffer,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.name = ToTagName(T::kName),
-                     .content = SourceString::CreateForTesting(content)};
+  auto tag = content ? TagItem::Create(ToTagName(T::kName),
+                                       SourceString::CreateForTesting(*content))
+                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   ASSERT_TRUE(result.has_error()) << from.ToString();
   auto error = std::move(result).error();
@@ -39,22 +41,24 @@ void ErrorTest(base::StringPiece content,
 }
 
 template <typename T>
-T OkTest(base::StringPiece content,
+T OkTest(absl::optional<base::StringPiece> content,
          const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.name = ToTagName(T::kName),
-                     .content = SourceString::CreateForTesting(content)};
+  auto tag = content ? TagItem::Create(ToTagName(T::kName),
+                                       SourceString::CreateForTesting(*content))
+                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag);
   EXPECT_TRUE(result.has_value()) << from.ToString();
   return std::move(result).value();
 }
 
 template <typename T>
-T OkTest(base::StringPiece content,
+T OkTest(absl::optional<base::StringPiece> content,
          const VariableDictionary& variable_dict,
          VariableDictionary::SubstitutionBuffer& sub_buffer,
          const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.name = ToTagName(T::kName),
-                     .content = SourceString::CreateForTesting(content)};
+  auto tag = content ? TagItem::Create(ToTagName(T::kName),
+                                       SourceString::CreateForTesting(*content))
+                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   EXPECT_TRUE(result.has_value()) << from.ToString();
   return std::move(result).value();
@@ -67,7 +71,7 @@ T OkTest(base::StringPiece content,
 template <typename T>
 void RunTagIdenficationTest(
     base::StringPiece line,
-    base::StringPiece expected_content,
+    absl::optional<base::StringPiece> expected_content,
     const base::Location& from = base::Location::Current()) {
   auto iter = SourceLineIterator(line);
   auto item_result = GetNextLineItem(&iter);
@@ -76,17 +80,22 @@ void RunTagIdenficationTest(
   auto item = std::move(item_result).value();
   auto* tag = absl::get_if<TagItem>(&item);
   ASSERT_NE(tag, nullptr) << from.ToString();
-  EXPECT_EQ(tag->name, ToTagName(T::kName));
-  ASSERT_EQ(tag->content.Str(), expected_content);
+  EXPECT_EQ(tag->GetName(), ToTagName(T::kName)) << from.ToString();
+  EXPECT_EQ(tag->GetContent().has_value(), expected_content.has_value())
+      << from.ToString();
+  if (tag->GetContent().has_value() && expected_content.has_value()) {
+    EXPECT_EQ(tag->GetContent()->Str(), *expected_content) << from.ToString();
+  }
 }
 
 // Test helper for tags which are expected to have no content
 template <typename T>
 void RunEmptyTagTest() {
   // Empty content is the only allowed content
-  OkTest<T>("");
+  OkTest<T>(absl::nullopt);
 
   // Test with non-empty content
+  ErrorTest<T>("", ParseStatusCode::kMalformedTag);
   ErrorTest<T>(" ", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("a", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("1234", ParseStatusCode::kMalformedTag);
@@ -109,8 +118,23 @@ VariableDictionary CreateBasicDictionary(
 
 }  // namespace
 
+TEST(HlsFormatParserTest, TagNameIdentifyTest) {
+  std::set<base::StringPiece> names;
+
+  for (TagName name = kMinTagName; name <= kMaxTagName; ++name) {
+    auto name_str = TagNameToString(name);
+
+    // Name must be unique
+    EXPECT_EQ(names.find(name_str), names.end());
+    names.insert(name_str);
+
+    // Name must parse to the original constant
+    EXPECT_EQ(ParseTagName(name_str), name);
+  }
+}
+
 TEST(HlsFormatParserTest, ParseM3uTagTest) {
-  RunTagIdenficationTest<M3uTag>("#EXTM3U\n", "");
+  RunTagIdenficationTest<M3uTag>("#EXTM3U\n", absl::nullopt);
   RunEmptyTagTest<M3uTag>();
 }
 
@@ -146,6 +170,7 @@ TEST(HlsFormatParserTest, ParseXVersionTagTest) {
   EXPECT_EQ(tag.version, 99999u);
 
   // Test invalid versions
+  ErrorTest<XVersionTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XVersionTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<XVersionTag>("0", ParseStatusCode::kInvalidPlaylistVersion);
   ErrorTest<XVersionTag>("-1", ParseStatusCode::kMalformedTag);
@@ -181,6 +206,7 @@ TEST(HlsFormatParserTest, ParseInfTagTest) {
   EXPECT_EQ(tag.title.Str(), "asdfsdf   ");
 
   // Test some invalid tags
+  ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>(",", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
@@ -190,27 +216,29 @@ TEST(HlsFormatParserTest, ParseInfTagTest) {
 
 TEST(HlsFormatParserTest, ParseXIndependentSegmentsTest) {
   RunTagIdenficationTest<XIndependentSegmentsTag>(
-      "#EXT-X-INDEPENDENT-SEGMENTS\n", "");
+      "#EXT-X-INDEPENDENT-SEGMENTS\n", absl::nullopt);
   RunEmptyTagTest<XIndependentSegmentsTag>();
 }
 
 TEST(HlsFormatParserTest, ParseXEndListTagTest) {
-  RunTagIdenficationTest<XEndListTag>("#EXT-X-END-LIST\n", "");
+  RunTagIdenficationTest<XEndListTag>("#EXT-X-END-LIST\n", absl::nullopt);
   RunEmptyTagTest<XEndListTag>();
 }
 
 TEST(HlsFormatParserTest, ParseXIFramesOnlyTagTest) {
-  RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n", "");
+  RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
+                                          absl::nullopt);
   RunEmptyTagTest<XIFramesOnlyTag>();
 }
 
 TEST(HlsFormatParserTest, ParseXDiscontinuityTagTest) {
-  RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n", "");
+  RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
+                                            absl::nullopt);
   RunEmptyTagTest<XDiscontinuityTag>();
 }
 
 TEST(HlsFormatParserTest, ParseXGapTagTest) {
-  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", "");
+  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", absl::nullopt);
   RunEmptyTagTest<XGapTag>();
 }
 
@@ -246,6 +274,7 @@ TEST(HlsFormatParserTest, ParseXDefineTagTest) {
   EXPECT_EQ(tag.value.value(), "");
 
   // Empty content is not allowed
+  ErrorTest<XDefineTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XDefineTag>("", ParseStatusCode::kMalformedTag);
 
   // NAME and IMPORT are NOT allowed
@@ -285,6 +314,7 @@ TEST(HlsFormatParserTest, ParseXPlaylistTypeTagTest) {
   ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPlaylistTypeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
 }
 
 TEST(HlsFormatParserTest, ParseXStreamInfTest) {
@@ -310,6 +340,10 @@ TEST(HlsFormatParserTest, ParseXStreamInfTest) {
   EXPECT_EQ(tag.score, absl::nullopt);
   EXPECT_EQ(tag.codecs, absl::nullopt);
 
+  ErrorTest<XStreamInfTag>(absl::nullopt, variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>("", variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
   ErrorTest<XStreamInfTag>(R"(CODECS="foo,bar")", variable_dict, sub_buffer,
                            ParseStatusCode::kMalformedTag);
 

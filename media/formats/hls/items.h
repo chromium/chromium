@@ -19,15 +19,54 @@ namespace media::hls {
 
 // An item which has been determined to be of a known or unknown tag type, but
 // not a comment.
-struct MEDIA_EXPORT TagItem {
-  TagName name;
+class MEDIA_EXPORT TagItem {
+ public:
+  // Helper for representing an unknown tag.
+  static TagItem CreateUnknown(SourceString name) {
+    return TagItem{absl::nullopt, name, name.Line()};
+  }
 
-  // The content of the tag, not including the tag type prefix.
-  SourceString content;
+  // Helper for representing a tag with no content.
+  static TagItem CreateEmpty(TagName name, size_t line_number) {
+    return TagItem{name, absl::nullopt, line_number};
+  }
+
+  // Helper for representing a tag with content.
+  static TagItem Create(TagName name, SourceString content) {
+    return TagItem{name, content, content.Line()};
+  }
+
+  // Returns the name constant of the tag, if this is a known tag.
+  // If this is an unknown tag, returns `absl::nullopt`.
+  absl::optional<TagName> GetName() const { return name_; }
+
+  // Returns the name of the tag as a string.
+  base::StringPiece GetNameStr();
+
+  // Returns the line number this tag appeared on.
+  size_t GetLineNumber() const { return line_number_; }
+
+  // Returns the content associated with this tag. If this tag is unknown or has
+  // no content, returns `absl::nullopt`.
+  absl::optional<SourceString> GetContent() const {
+    return name_ ? content_or_name_ : absl::nullopt;
+  }
+
+ private:
+  TagItem(absl::optional<TagName> name,
+          absl::optional<SourceString> content_or_name,
+          size_t line_number)
+      : name_(name),
+        content_or_name_(content_or_name),
+        line_number_(line_number) {}
+
+  absl::optional<TagName> name_;
+  absl::optional<SourceString> content_or_name_;
+  size_t line_number_;
 };
 
-// A URI. This may be a URI line or a URI appearing within a tag.
-struct MEDIA_EXPORT UriItem {
+// A URI. This only corresponds to line-level URIs.
+struct UriItem {
   SourceString content;
 };
 

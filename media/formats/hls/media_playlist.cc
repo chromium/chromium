@@ -60,10 +60,11 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
 
     // Handle tags
     if (auto* tag = absl::get_if<TagItem>(&item)) {
-      switch (GetTagKind(tag->name)) {
-        case TagKind::kUnknown:
-          HandleUnknownTag(*tag);
-          continue;
+      if (!tag->GetName().has_value()) {
+        HandleUnknownTag(*tag);
+        continue;
+      }
+      switch (GetTagKind(*tag->GetName())) {
         case TagKind::kCommonTag: {
           auto error = ParseCommonTag(*tag, &common_state);
           if (error.has_value()) {
@@ -78,7 +79,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
           break;
       }
 
-      switch (static_cast<MediaPlaylistTagName>(tag->name)) {
+      switch (static_cast<MediaPlaylistTagName>(*tag->GetName())) {
         case MediaPlaylistTagName::kInf: {
           auto error = ParseUniqueTag(*tag, inf_tag);
           if (error.has_value()) {

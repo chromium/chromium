@@ -27,13 +27,6 @@ struct MEDIA_EXPORT SourceString {
                                        size_t column,
                                        base::StringPiece str);
 
-  // TODO(crbug.com/1275317): These should be removed
-  ~SourceString();
-  SourceString(const SourceString&);
-  SourceString(SourceString&&);
-  SourceString& operator=(const SourceString&);
-  SourceString& operator=(SourceString&&);
-
   // Returns the 1-based line index of this SourceString within the manifest.
   size_t Line() const { return line_; }
 
@@ -67,13 +60,6 @@ struct MEDIA_EXPORT SourceString {
 // Exposes a line-based iteration API over the source text of an HLS manifest.
 struct MEDIA_EXPORT SourceLineIterator {
   explicit SourceLineIterator(base::StringPiece source);
-
-  // TODO(crbug.com/1275317): These should be removed
-  ~SourceLineIterator();
-  SourceLineIterator(const SourceLineIterator&);
-  SourceLineIterator(SourceLineIterator&&);
-  SourceLineIterator& operator=(const SourceLineIterator&);
-  SourceLineIterator& operator=(SourceLineIterator&&);
 
   // Moves this SourceLineIterator to the next line, and returns the contents of
   // the current line. Returns `ParseStatusCode::kInvalidEOL` if invalid line

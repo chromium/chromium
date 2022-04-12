@@ -48,7 +48,7 @@ absl::optional<ParseStatus> ParseCommonTag(TagItem, CommonParserState* state);
 template <typename T>
 absl::optional<ParseStatus> ParseUniqueTag(TagItem tag,
                                            absl::optional<T>& out) {
-  DCHECK(tag.name == ToTagName(T::kName));
+  DCHECK(tag.GetName() == ToTagName(T::kName));
 
   // Ensure this tag has not already appeared.
   if (out.has_value()) {

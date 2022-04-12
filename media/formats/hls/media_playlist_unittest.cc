@@ -165,9 +165,35 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_BadLineEndings) {
 }
 
 TEST(HlsFormatParserTest, ParseMediaPlaylist_MissingM3u) {
+  // #EXTM3U must be the very first line
   TestBuilder builder;
-  builder.AppendLine("#EXT-X-VERSION:5");
+  builder.AppendLine("");
+  builder.AppendLine("#EXTM3U");
   builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+
+  builder = TestBuilder();
+  builder.AppendLine("#EXT-X-VERSION:5");
+  builder.AppendLine("#EXTM3U");
+  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+
+  // Test with invalid line ending
+  builder = TestBuilder();
+  builder.Append("#EXTM3U");
+  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+
+  // Test with invalid format
+  builder = TestBuilder();
+  builder.AppendLine("#EXTM3U:");
+  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+  builder = TestBuilder();
+  builder.AppendLine("#EXTM3U:1");
+  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+
+  // Extra M3U tag is OK
+  builder = TestBuilder();
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXTM3U");
+  builder.ExpectOk();
 }
 
 TEST(HlsFormatParserTest, ParseMediaPlaylist_UnknownTag) {
@@ -175,7 +201,7 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_UnknownTag) {
   builder.AppendLine("#EXTM3U");
 
   // Unrecognized tags should not result in an error
-  builder.AppendLine("#UNKNOWN-TAG");
+  builder.AppendLine("#EXT-UNKNOWN-TAG");
   builder.ExpectOk();
 }
 
@@ -442,6 +468,11 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_PlaylistType) {
   {
     auto fork = builder;
     fork.AppendLine("#EXT-X-PLAYLIST-TYPE:");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE");
     fork.ExpectError(ParseStatusCode::kMalformedTag);
   }
 }

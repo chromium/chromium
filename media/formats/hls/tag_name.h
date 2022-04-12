@@ -6,27 +6,28 @@
 #define MEDIA_FORMATS_HLS_TAG_NAME_H_
 
 #include <cstdint>
+
+#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 
 enum class TagKind {
-  kUnknown,
-  kCommonTag,
+  kMinValue = 0,
+  kCommonTag = kMinValue,
   kMultivariantPlaylistTag,
   kMediaPlaylistTag,
   kMaxValue = kMediaPlaylistTag,
 };
 
 // Underlying type for all `k*TagName` constants. Each name constant must be
-// unique across all kinds.
+// unique across all kinds, and the full set of constants must be contiguous.
 using TagName = uint32_t;
-
-static constexpr TagName kUnknownTagName = 0;
 
 // Tags common to multivariant and media playlists.
 enum class CommonTagName : TagName {
-  kMinValue = kUnknownTagName + 1,
+  kMinValue = 0,
   kM3u = kMinValue,
   kXVersion,
   kXIndependentSegments,
@@ -88,6 +89,16 @@ TagKind MEDIA_EXPORT GetTagKind(TagName name);
 constexpr TagName ToTagName(TagName name) {
   return name;
 }
+
+// Parses the tag name, converting it to one of the `*TagName` enum values.
+// If the tag is not recognized, returns `absl::nullopt`.
+absl::optional<TagName> MEDIA_EXPORT ParseTagName(base::StringPiece name);
+
+// Prints the corresponding string representation of the given `TagName`.
+base::StringPiece MEDIA_EXPORT TagNameToString(TagName name);
+
+constexpr TagName kMinTagName = ToTagName(CommonTagName::kMinValue);
+constexpr TagName kMaxTagName = ToTagName(MediaPlaylistTagName::kMaxValue);
 
 }  // namespace media::hls
 

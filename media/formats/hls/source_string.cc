@@ -30,12 +30,6 @@ SourceString SourceString::CreateForTesting(size_t line,
 SourceString::SourceString(size_t line, size_t column, base::StringPiece str)
     : line_(line), column_(column), str_(str) {}
 
-SourceString::~SourceString() = default;
-SourceString::SourceString(const SourceString&) = default;
-SourceString::SourceString(SourceString&&) = default;
-SourceString& SourceString::operator=(const SourceString&) = default;
-SourceString& SourceString::operator=(SourceString&&) = default;
-
 SourceString SourceString::Substr(size_t pos, size_t count) const {
   const auto column = column_ + pos;
   return SourceString(line_, column, str_.substr(pos, count));
@@ -52,14 +46,6 @@ SourceString SourceString::Consume(size_t count) {
 
 SourceLineIterator::SourceLineIterator(base::StringPiece source)
     : current_line_(1), source_(source) {}
-
-SourceLineIterator::~SourceLineIterator() = default;
-SourceLineIterator::SourceLineIterator(const SourceLineIterator&) = default;
-SourceLineIterator::SourceLineIterator(SourceLineIterator&&) = default;
-SourceLineIterator& SourceLineIterator::operator=(const SourceLineIterator&) =
-    default;
-SourceLineIterator& SourceLineIterator::operator=(SourceLineIterator&&) =
-    default;
 
 ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   if (source_.empty()) {

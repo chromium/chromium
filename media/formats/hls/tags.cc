@@ -18,8 +18,8 @@ namespace {
 
 template <typename T>
 ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
-  DCHECK(tag.name == ToTagName(T::kName));
-  if (!tag.content.Str().empty()) {
+  DCHECK(tag.GetName() == ToTagName(T::kName));
+  if (tag.GetContent().has_value()) {
     return ParseStatusCode::kMalformedTag;
   }
 
@@ -146,9 +146,13 @@ ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
-  DCHECK(tag.name == ToTagName(XVersionTag::kName));
+  DCHECK(tag.GetName() == ToTagName(XVersionTag::kName));
 
-  auto value_result = types::ParseDecimalInteger(tag.content);
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto value_result = types::ParseDecimalInteger(*tag.GetContent());
   if (value_result.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(value_result).error());
@@ -165,17 +169,22 @@ ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
-  DCHECK(tag.name == ToTagName(InfTag::kName));
+  DCHECK(tag.GetName() == ToTagName(InfTag::kName));
+
+  if (!tag.GetContent()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+  auto content = *tag.GetContent();
 
   // Inf tags have the form #EXTINF:<duration>,[<title>]
   // Find the comma.
-  auto comma = tag.content.Str().find_first_of(',');
+  auto comma = content.Str().find_first_of(',');
   if (comma == base::StringPiece::npos) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  auto duration_str = tag.content.Substr(0, comma);
-  auto title_str = tag.content.Substr(comma + 1);
+  auto duration_str = content.Substr(0, comma);
+  auto title_str = content.Substr(comma + 1);
 
   // Extract duration
   // TODO(crbug.com/1284763): Below version 3 this should be rounded to an
@@ -220,14 +229,18 @@ XDefineTag XDefineTag::CreateImport(types::VariableName name) {
 }
 
 ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
-  DCHECK(tag.name == ToTagName(XDefineTag::kName));
+  DCHECK(tag.GetName() == ToTagName(XDefineTag::kName));
+
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
 
   // Parse the attribute-list.
   // Quoted strings in EXT-X-DEFINE tags are unique in that they aren't subject
   // to variable substitution. For that reason, we use the
   // `ParseQuotedStringWithoutSubstitution` function here.
   TypedAttributeMap<XDefineTagAttribute> map;
-  types::AttributeListIterator iter(tag.content);
+  types::AttributeListIterator iter(*tag.GetContent());
   auto result = map.FillUntilError(&iter);
 
   if (result.code() != ParseStatusCode::kReachedEOF) {
@@ -285,17 +298,17 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
-  DCHECK(tag.name == ToTagName(XPlaylistTypeTag::kName));
+  DCHECK(tag.GetName() == ToTagName(XPlaylistTypeTag::kName));
 
   // This tag requires content
-  if (tag.content.Empty()) {
+  if (!tag.GetContent().has_value() || tag.GetContent()->Empty()) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  if (tag.content.Str() == "EVENT") {
+  if (tag.GetContent()->Str() == "EVENT") {
     return XPlaylistTypeTag{.type = PlaylistType::kEvent};
   }
-  if (tag.content.Str() == "VOD") {
+  if (tag.GetContent()->Str() == "VOD") {
     return XPlaylistTypeTag{.type = PlaylistType::kVOD};
   }
 
@@ -318,12 +331,16 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     TagItem tag,
     const VariableDictionary& variable_dict,
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
-  DCHECK(tag.name == ToTagName(XStreamInfTag::kName));
+  DCHECK(tag.GetName() == ToTagName(XStreamInfTag::kName));
   XStreamInfTag out;
+
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
 
   // Parse the attribute-list
   TypedAttributeMap<XStreamInfTagAttribute> map;
-  types::AttributeListIterator iter(tag.content);
+  types::AttributeListIterator iter(*tag.GetContent());
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {

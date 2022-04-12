@@ -14,7 +14,7 @@
 
 namespace media::hls {
 
-struct TagItem;
+class TagItem;
 
 // Represents the contents of the #EXTM3U tag
 struct M3uTag {

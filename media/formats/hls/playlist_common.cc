@@ -25,8 +25,8 @@ ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
   auto item = std::move(item_result).value();
   if (auto* tag_item = absl::get_if<TagItem>(&item)) {
     // The #EXTM3U tag must be the first line in the playlist
-    if (tag_item->name != ToTagName(CommonTagName::kM3u) ||
-        tag_item->content.Line() != 1) {
+    if (tag_item->GetName() != ToTagName(CommonTagName::kM3u) ||
+        tag_item->GetLineNumber() != 1) {
       return ParseStatusCode::kPlaylistMissingM3uTag;
     }
 
@@ -51,14 +51,14 @@ void HandleUnknownTag(TagItem /*tag*/) {
 
 absl::optional<ParseStatus> ParseCommonTag(TagItem tag,
                                            CommonParserState* state) {
-  DCHECK(GetTagKind(tag.name) == TagKind::kCommonTag);
+  DCHECK(tag.GetName() && GetTagKind(*tag.GetName()) == TagKind::kCommonTag);
 
-  switch (static_cast<CommonTagName>(tag.name)) {
+  switch (static_cast<CommonTagName>(*tag.GetName())) {
     case CommonTagName::kM3u:
       // This tag is meant to occur on the first line (which we've already
       // checked), however the spec does not explicitly regard this as an
       // error if it appears elsewhere as well.
-      DCHECK(tag.content.Line() != 1);
+      DCHECK(tag.GetLineNumber() != 1);
       break;
     case CommonTagName::kXVersion: {
       auto error = ParseUniqueTag(tag, state->version_tag);
