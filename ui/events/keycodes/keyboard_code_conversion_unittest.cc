@@ -46,7 +46,11 @@ void CheckDomCodeToMeaning(const char* label,
         << "Expected '"
         << ui::KeycodeConverter::DomKeyToKeyString(result.dom_key)
         << "' Actual '"
-        << ui::KeycodeConverter::DomKeyToKeyString(result_dom_key) << "'";
+        << ui::KeycodeConverter::DomKeyToKeyString(result_dom_key) << "'"
+        << " when testing DomCode '"
+        << ui::KeycodeConverter::DomCodeToCodeString(dom_code) << "' ["
+        << static_cast<int>(dom_code) << "]";
+
     EXPECT_EQ(result.key_code, result_key_code);
   } else {
     // Should not have touched output parameters.
@@ -266,6 +270,12 @@ TEST(KeyboardCodeConversion, ControlCharacters) {
       {ui::DomCode::VOLUME_UP,
        {true, ui::DomKey::AUDIO_VOLUME_UP, ui::VKEY_VOLUME_UP},
        {true, ui::DomKey::AUDIO_VOLUME_UP, ui::VKEY_VOLUME_UP}},
+      {ui::DomCode::PRINT,
+       {true, ui::DomKey::PRINT, ui::VKEY_PRINT},
+       {true, ui::DomKey::PRINT, ui::VKEY_PRINT}},
+      {ui::DomCode::PRINT_SCREEN,
+       {true, ui::DomKey::PRINT_SCREEN, ui::VKEY_SNAPSHOT},
+       {true, ui::DomKey::PRINT_SCREEN, ui::VKEY_SNAPSHOT}},
   };
   for (const auto& it : kNonControlCharacters) {
     // Verify |DomCodeToControlCharacter()|.

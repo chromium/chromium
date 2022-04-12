@@ -841,6 +841,9 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       // Verify AltGr+V & AltGr+W on de(neo) layout.
       {{DomCode::US_W, EF_ALTGR_DOWN, XKB_KEY_BackSpace, 8}, VKEY_BACK},
       {{DomCode::US_V, EF_ALTGR_DOWN, XKB_KEY_Return, 13}, VKEY_RETURN},
+      // PRINT and PRINT_SCREEN map to VKEY_SNAPSHOT via XKB_KEY_Print
+      {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
+      {{DomCode::PRINT_SCREEN, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
   };
   for (const auto& e : kVkeyTestCase) {
     SCOPED_TRACE(static_cast<int>(e.test.dom_code));
