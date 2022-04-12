@@ -4850,8 +4850,8 @@ def CheckForIncludeGuards(input_api, output_api):
                     # We allow existing files to use include guards whose names
                     # don't match the chromium style guide, but new files should
                     # get it right.
-                    if not f.OldContents():
-                        if guard_name != expected_guard:
+                    if guard_name != expected_guard:
+                        if not f.OldContents():
                             errors.append(
                                 output_api.PresubmitPromptWarning(
                                     'Header using the wrong include guard name %s'
