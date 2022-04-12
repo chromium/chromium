@@ -750,6 +750,8 @@ class TemplateURL {
 
   TemplateURLData::ActiveStatus is_active() const { return data_.is_active; }
 
+  int starter_pack_id() const { return data_.starter_pack_id; }
+
   const std::vector<TemplateURLRef>& url_refs() const { return url_refs_; }
   const TemplateURLRef& url_ref() const {
     // Sanity check for https://crbug.com/781703.

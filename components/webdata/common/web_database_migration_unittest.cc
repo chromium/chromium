@@ -125,7 +125,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 102;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 103;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -2343,5 +2343,36 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion101ToCurrent) {
 
     // The birthdate table should exist.
     EXPECT_TRUE(connection.DoesTableExist("autofill_profile_birthdates"));
+  }
+}
+
+// Tests addition of starter_pack_id column in keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion102ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_102.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 102, 99));
+
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "starter_pack_id"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "starter_pack_id"));
   }
 }

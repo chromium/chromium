@@ -81,6 +81,7 @@ const char DefaultSearchManager::kCreatedFromPlayAPI[] =
 const char DefaultSearchManager::kPreconnectToSearchUrl[] =
     "preconnect_to_search_url";
 const char DefaultSearchManager::kIsActive[] = "is_active";
+const char DefaultSearchManager::kStarterPackId[] = "starter_pack_id";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,

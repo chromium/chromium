@@ -171,6 +171,10 @@ struct TemplateURLData {
   // activated.  A search engine is inactive if it's unspecified or false.
   ActiveStatus is_active{ActiveStatus::kUnspecified};
 
+  // This TemplateURL is part of the built-in "starter pack" if
+  // starter_pack_id > 0.
+  int starter_pack_id{0};
+
  private:
   // Private so we can enforce using the setters and thus enforce that these
   // fields are never empty.

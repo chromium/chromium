@@ -70,6 +70,8 @@ class Statement;
 //                          added in version 82.
 //   is_active              See TemplateURLData::is_active. This was added
 //                          in version 97.
+//   starter_pack_id        See TemplateURLData::starter_pack_id.  This was
+//                          added in version 103.
 //
 // This class also manages some fields in the |meta| table:
 //
@@ -144,6 +146,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion77IncreaseTimePrecision();
   bool MigrateToVersion82AddCreatedFromPlayApiColumn();
   bool MigrateToVersion97AddIsActiveColumn();
+  bool MigrateToVersion103AddStarterPackIdColumn();
 
  private:
   friend class KeywordTableTest;
