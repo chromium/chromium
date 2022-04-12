@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.PriceTrackableOffer;
 import org.chromium.chrome.test.util.browser.Features;
 
 /**
@@ -33,6 +34,8 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
 
     private static final String FAKE_OFFER_ID = "100";
     private static final String FAKE_PRODUCT_CLUSTER_ID = "300";
+    private static final String FAKE_CURRENT_PRICE = "1000";
+    private static final String FAKE_COUNTRY_CODE = "us";
 
     private static final String FAKE_SUBSCRIPTION_JSON_STRING = "{ \"type\": \"PRICE_TRACK\","
             + "\"managementType\": \"CHROME_MANAGED\", "
@@ -48,7 +51,9 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
             new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                     FAKE_PRODUCT_CLUSTER_ID,
                     CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
-                    CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID, 200L);
+                    CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID,
+                    new PriceTrackableOffer(FAKE_OFFER_ID, FAKE_CURRENT_PRICE, FAKE_COUNTRY_CODE));
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -79,6 +84,12 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
         assertThat(subscriptionJson.getString("identifierType"),
                 equalTo(CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID));
         assertThat(subscriptionJson.getString("identifier"), equalTo(FAKE_PRODUCT_CLUSTER_ID));
+        assertThat(subscriptionJson.getJSONObject("userSeenOffer").getString("offerId"),
+                equalTo(FAKE_OFFER_ID));
+        assertThat(subscriptionJson.getJSONObject("userSeenOffer").getString("seenPriceMicros"),
+                equalTo(FAKE_CURRENT_PRICE));
+        assertThat(subscriptionJson.getJSONObject("userSeenOffer").getString("countryCode"),
+                equalTo(FAKE_COUNTRY_CODE));
     }
 
     @Test

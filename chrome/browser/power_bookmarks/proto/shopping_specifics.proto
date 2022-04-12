@@ -31,6 +31,9 @@ message ShoppingSpecifics {
 
   // The offer id for the product.
   optional fixed64 offer_id = 6;
+
+  // The country code of the offer.
+  optional string country_code = 7;
 }
 
 message ProductPrice {

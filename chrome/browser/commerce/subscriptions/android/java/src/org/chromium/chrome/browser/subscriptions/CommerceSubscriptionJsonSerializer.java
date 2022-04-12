@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.PriceTrackableOffer;
 
 import java.util.Locale;
 
@@ -21,6 +22,10 @@ class CommerceSubscriptionJsonSerializer {
     private static final String SUBSCRIPTION_IDENTIFIER_TYPE_KEY = "identifierType";
     private static final String SUBSCRIPTION_MANAGEMENT_TYPE_KEY = "managementType";
     private static final String SUBSCRIPTION_TIMESTAMP_KEY = "eventTimestampMicros";
+    private static final String SUBSCRIPTION_SEEN_OFFER_KEY = "userSeenOffer";
+    private static final String SEEN_OFFER_ID_KEY = "offerId";
+    private static final String SEEN_OFFER_PRICE_KEY = "seenPriceMicros";
+    private static final String SEEN_OFFER_COUNTRY_KEY = "countryCode";
 
     /** Creates a {@link CommerceSubscription} from a {@link JSONObject}. */
     public static CommerceSubscription deserialize(JSONObject json) {
@@ -50,6 +55,15 @@ class CommerceSubscriptionJsonSerializer {
             subscriptionJson.put(
                     SUBSCRIPTION_IDENTIFIER_TYPE_KEY, subscription.getTrackingIdType());
             subscriptionJson.put(SUBSCRIPTION_IDENTIFIER_KEY, subscription.getTrackingId());
+
+            PriceTrackableOffer seenOffer = subscription.getSeenOffer();
+            if (seenOffer != null) {
+                JSONObject seenOfferJson = new JSONObject();
+                seenOfferJson.put(SEEN_OFFER_ID_KEY, seenOffer.offerId);
+                seenOfferJson.put(SEEN_OFFER_PRICE_KEY, seenOffer.currentPrice);
+                seenOfferJson.put(SEEN_OFFER_COUNTRY_KEY, seenOffer.countryCode);
+                subscriptionJson.put(SUBSCRIPTION_SEEN_OFFER_KEY, seenOfferJson);
+            }
 
             return subscriptionJson;
         } catch (JSONException e) {
