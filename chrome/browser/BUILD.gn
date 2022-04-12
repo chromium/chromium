@@ -5870,7 +5870,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/content",
-      "//components/enterprise/common/proto:device_trust_report_event_proto",
       "//components/policy/proto:proto",
       "//services/data_decoder/public/cpp",
     ]

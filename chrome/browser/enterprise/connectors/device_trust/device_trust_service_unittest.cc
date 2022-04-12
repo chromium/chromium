@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
-#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"

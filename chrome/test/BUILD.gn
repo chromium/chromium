@@ -5728,7 +5728,6 @@ test("unit_tests") {
     "//components/encrypted_messages",
     "//components/encrypted_messages:encrypted_message_proto",
     "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/common/proto:device_trust_report_event_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/favicon/core/test:test_support",
     "//components/feature_engagement/public",

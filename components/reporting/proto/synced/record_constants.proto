@@ -34,11 +34,6 @@ enum Destination {
   // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline
   REPORTING_RECORD = 7;
 
-  // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
-  // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
-  // Management (CBCM).
-  DEVICE_TRUST_REPORTS = 8;
-
   // |PRINT_JOBS| handler is for print jobs.
   PRINT_JOBS = 9;
 
@@ -79,6 +74,8 @@ enum Destination {
   // |SUSPICIOUS_EVENTS| is for events when a suspicious mount or process
   // is detected by the security daemon.
   SUSPICIOUS_EVENTS = 20;
+
+  reserved 8;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
