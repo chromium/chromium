@@ -111,7 +111,7 @@ void InternalsUIHandler::LogEntry(const base::Value& entry) {
   if (!registered_with_log_router_ || entry.is_none())
     return;
 
-  base::Value log_event("add-raw-log");
+  base::Value log_event("add-structured-log");
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
                                    {&log_event, &entry});
 }

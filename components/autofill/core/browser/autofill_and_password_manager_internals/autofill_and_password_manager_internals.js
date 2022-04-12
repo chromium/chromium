@@ -136,9 +136,7 @@ function nodeToDomNode(node) {
   return domNode;
 }
 
-// TODO(crbug.com/928595) Rename this to 'addStructuredLog'. Punting on this
-// to simplify an existing CL that shall be merged.
-function addRawLog(node) {
+function addStructuredLog(node) {
   const logDiv = $('log-entries');
   if (!logDiv) {
     return;
@@ -213,7 +211,7 @@ function setUpMarker() {
   markerFakeButton.addEventListener('click', () => {
     ++markerCounter;
     const scrollAfterInsert = needsScrollDown();
-    addRawLog({
+    addStructuredLog({
       type: 'element',
       value: 'div',
       attributes: {'class': 'marker', 'contenteditable': 'true'},
@@ -319,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   addWebUIListener('notify-about-incognito', notifyAboutIncognito);
   addWebUIListener('notify-about-variations', notifyAboutVariations);
   addWebUIListener('notify-reset-done', message => showModalDialog(message));
-  addWebUIListener('add-raw-log', addRawLog);
+  addWebUIListener('add-structured-log', addStructuredLog);
   addWebUIListener('setup-autofill-internals', setUpAutofillInternals);
   addWebUIListener(
       'setup-password-manager-internals', setUpPasswordManagerInternals);

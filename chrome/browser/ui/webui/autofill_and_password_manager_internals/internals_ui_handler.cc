@@ -159,7 +159,7 @@ void InternalsUIHandler::EndSubscription() {
 void InternalsUIHandler::LogEntry(const base::Value& entry) {
   if (!registered_with_log_router_ || entry.is_none())
     return;
-  FireWebUIListener("add-raw-log", entry);
+  FireWebUIListener("add-structured-log", entry);
 }
 
 }  // namespace autofill
