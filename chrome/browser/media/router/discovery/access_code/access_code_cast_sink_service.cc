@@ -61,17 +61,20 @@ AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
 AccessCodeCastSinkService::AccessCodeCastSinkService(
     Profile* profile,
     MediaRouter* media_router,
-    CastMediaSinkServiceImpl* cast_media_sink_service_impl)
+    CastMediaSinkServiceImpl* cast_media_sink_service_impl,
+    DiscoveryNetworkMonitor* network_monitor,
+    PrefService* prefs)
     : profile_(profile),
       media_router_(media_router),
       media_routes_observer_(
           std::make_unique<AccessCodeMediaRoutesObserver>(media_router, this)),
       cast_media_sink_service_impl_(cast_media_sink_service_impl),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      network_monitor_(DiscoveryNetworkMonitor::GetInstance()) {
-  DCHECK(profile_);
-  pref_updater_ =
-      std::make_unique<AccessCodeCastPrefUpdater>(profile_->GetPrefs());
+      network_monitor_(network_monitor) {
+  DCHECK(profile_) << "The profile does not exist.";
+  DCHECK(prefs)
+      << "Prefs could not be fetched from the profile for some reason.";
+  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs);
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
       // exponential backoff.
@@ -100,6 +103,11 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       // successful requests.
       false,
   };
+  // We don't need to post this task per the DiscoveryNetworkMonitor's promise:
+  // "All observers will be notified of network changes on the thread from which
+  // they registered."
+  network_monitor_->AddObserver(this);
+  InitStoredDeviceConnections();
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
@@ -107,7 +115,9 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
           profile,
           MediaRouterFactory::GetApiForBrowserContext(profile),
           media_router::DualMediaSinkService::GetInstance()
-              ->GetCastMediaSinkServiceImpl()) {}
+              ->GetCastMediaSinkServiceImpl(),
+          DiscoveryNetworkMonitor::GetInstance(),
+          profile->GetPrefs()) {}
 
 AccessCodeCastSinkService::~AccessCodeCastSinkService() = default;
 
@@ -136,7 +146,7 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
   // There should only be 1 element in the |removed_routes| set.
   DCHECK(removed_routes.size() < 2);
   auto first = removed_routes.begin();
-  MediaRoute::Id removed_route_id = *first;
+  removed_route_id_ = *first;
 
   base::PostTaskAndReplyWithResult(
       access_code_sink_service_->cast_media_sink_service_impl_->task_runner()
@@ -146,7 +156,7 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
           &CastMediaSinkServiceImpl::GetSinkById,
           base::Unretained(
               access_code_sink_service_->cast_media_sink_service_impl_),
-          MediaRoute::GetSinkIdFromMediaRouteId(removed_route_id)),
+          MediaRoute::GetSinkIdFromMediaRouteId(removed_route_id_)),
       base::BindOnce(
           &AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode,
           access_code_sink_service_->GetWeakPtr()));
@@ -402,6 +412,143 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
 
   pref_updater_->UpdateDevicesDict(*sink);
   pref_updater_->UpdateDeviceAdditionTimeDict(sink->id());
+}
+
+void AccessCodeCastSinkService::InitStoredDeviceConnections() {
+  // The AddStoredDevicesToMediaRouter() callback needs to be be
+  // bound with BindPostTask() to ensure that the callback is invoked on this
+  // specific task runner.
+  auto network_cb =
+      base::BindOnce(&AccessCodeCastSinkService::FetchAndAddStoredDevices,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  auto returned_network_cb =
+      base::BindPostTask(task_runner_, std::move(network_cb));
+
+  // We need to run this task on the IO thread since the DiscoveryNetworkMonitor
+  // runs on the IO thread.
+  cast_media_sink_service_impl_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DiscoveryNetworkMonitor::Refresh,
+                                base::Unretained(network_monitor_),
+                                std::move(returned_network_cb)));
+}
+
+void AccessCodeCastSinkService::FetchAndAddStoredDevices(
+    const std::string& network_id) {
+  // If the network id exists within the pref service, attempt to open any
+  // devices in that list.
+  auto* network_list = pref_updater_->GetSinkIdsByNetworkId(network_id);
+  if (!network_list) {
+    media_router_->GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "There are no saved Access Code Cast devices on the network_id: " +
+            network_id,
+        "", "", "");
+    return;
+  }
+  media_router_->GetLogger()->LogInfo(
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "Found Access Code Cast devices on the network_id: " + network_id +
+          " : " + network_list->DebugString() +
+          ". Attempting to add these cast devices to the media router.",
+      "", "", "");
+  AddStoredDevicesToMediaRouter(*network_list);
+}
+
+void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
+    const base::Value::List& sink_ids) {
+  // We can assume the network_list variable will never be empty since after
+  // removal of a device, a check is made to ensure that keys with empty lists
+  // are removed.
+  std::vector<MediaSinkInternal> cast_sinks;
+  for (const auto& sink_id : sink_ids) {
+    const std::string* sink_id_string = sink_id.GetIfString();
+    if (!sink_id_string) {
+      media_router_->GetLogger()->LogError(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          "The Media Sink id is not stored as a string in the network list: " +
+              sink_ids.DebugString() +
+              ". This means something went wrong when storing cast devices on "
+              "this network.",
+          "", "", "");
+      return;
+    }
+    auto validation_result = ValidateDeviceFromSinkId(*sink_id_string);
+
+    // Ensure that stored media sink_id corresponds to a properly stored
+    // MediaSinkInternal before adding the given sink_id to the media router.
+    if (!validation_result.has_value()) {
+      media_router_->GetLogger()->LogError(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          "The Media Sink id " + *sink_id_string +
+              " is missing from one or more of the pref "
+              "services. Attempting to remove all sink_id references right "
+              "now.",
+          "", "", "");
+      RemoveSinkIdFromAllEntries(*sink_id_string);
+      return;
+    }
+    cast_sinks.push_back(validation_result.value());
+  }
+
+  // Let the media router handle addition.
+  cast_media_sink_service_impl_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CastMediaSinkServiceImpl::OpenChannelsWithRandomizedDelay,
+                     base::Unretained(cast_media_sink_service_impl_),
+                     cast_sinks, SinkSource::kAccessCode));
+}
+
+void AccessCodeCastSinkService::RemoveSinkIdFromAllEntries(
+    const MediaSink::Id& sink_id) {
+  pref_updater_->RemoveSinkIdFromDevicesDict(sink_id);
+  pref_updater_->RemoveSinkIdFromDiscoveredNetworksDict(sink_id);
+  pref_updater_->RemoveSinkIdFromDeviceAdditionTimeDict(sink_id);
+}
+
+const absl::optional<MediaSinkInternal>
+AccessCodeCastSinkService::ValidateDeviceFromSinkId(
+    const MediaSink::Id& sink_id) {
+  const auto* sink_value =
+      pref_updater_->GetMediaSinkInternalValueBySinkId(sink_id);
+  if (!sink_value) {
+    media_router_->GetLogger()->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The Media Sink id: " + sink_id +
+            " is either stored improperly or doesn't exist within the pref "
+            "service.",
+        "", "", "");
+    return absl::nullopt;
+  }
+  const auto* dict_value = sink_value->GetIfDict();
+  if (!dict_value) {
+    media_router_->GetLogger()->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The Media Sink id: " + sink_id +
+            " was not stored as a dictionary value in the pref service. Its "
+            "storage type is: " +
+            base::Value::GetTypeName(sink_value->type()),
+        "", "", "");
+    return absl::nullopt;
+  }
+  const absl::optional<MediaSinkInternal> media_sink =
+      ParseValueDictIntoMediaSinkInternal(*dict_value);
+  if (!media_sink.has_value()) {
+    media_router_->GetLogger()->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The Media Sink " + dict_value->DebugString() +
+            " could not be parsed from the pref service.",
+        "", "", "");
+    return absl::nullopt;
+  }
+  // TODO(gbj): Include a validation check for the
+  // prefs::kAccessCodeCastDeviceAdditionTime pref once it is used.
+  return media_sink.value();
+}
+
+void AccessCodeCastSinkService::OnNetworksChanged(
+    const std::string& network_id) {
+  FetchAndAddStoredDevices(network_id);
 }
 
 void AccessCodeCastSinkService::Shutdown() {
