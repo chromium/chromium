@@ -17,7 +17,8 @@ namespace chromeos {
 class ActiveDirectoryLoginView
     : public base::SupportsWeakPtr<ActiveDirectoryLoginView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"offline-ad-login"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "offline-ad-login", "ActiveDirectoryLoginScreen"};
 
   virtual ~ActiveDirectoryLoginView() = default;
 

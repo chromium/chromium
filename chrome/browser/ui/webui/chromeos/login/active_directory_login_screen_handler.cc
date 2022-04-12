@@ -18,13 +18,8 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId ActiveDirectoryLoginView::kScreenId;
-
 ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.ActiveDirectoryLoginScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
 ActiveDirectoryLoginScreenHandler::~ActiveDirectoryLoginScreenHandler() =
     default;
@@ -66,14 +61,13 @@ void ActiveDirectoryLoginScreenHandler::Show() {
 }
 
 void ActiveDirectoryLoginScreenHandler::Reset() {
-  CallJS("login.ActiveDirectoryLoginScreen.reset");
+  CallExternalAPI("reset");
 }
 
 void ActiveDirectoryLoginScreenHandler::SetErrorState(
     const std::string& username,
     int errorState) {
-  CallJS("login.ActiveDirectoryLoginScreen.setErrorState", username,
-         errorState);
+  CallExternalAPI("setErrorState", username, errorState);
 }
 
 }  // namespace chromeos
