@@ -74560,7 +74560,7 @@ Called by update_net_trust_anchors.py.-->
      components/printing/renderer/print_render_frame_helper.h. -->
 
   <int value="0" label="No error"/>
-  <int value="1" label="Bad settings from print preview tab"/>
+  <int value="1" label="Bad settings from print preview tab (Deprecated)"/>
   <int value="2" label="Copy metadata failed"/>
   <int value="3" label="Metafile init failed (Deprecated)"/>
   <int value="4" label="0-page preview"/>

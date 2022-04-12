@@ -1407,11 +1407,7 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
   if (!UpdatePrintSettings(print_preview_context_.source_frame(),
                            print_preview_context_.source_node(),
                            base::Value::AsDictionaryValue(settings))) {
-    if (print_preview_context_.last_error() != PREVIEW_ERROR_BAD_SETTING) {
-      DidFinishPrinting(INVALID_SETTINGS);
-    } else {
-      DidFinishPrinting(FAIL_PREVIEW);
-    }
+    DidFinishPrinting(INVALID_SETTINGS);
     return;
   }
 
@@ -2298,13 +2294,7 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     const base::DictionaryValue& passed_job_settings) {
-  if (passed_job_settings.DictEmpty()) {
-    // TODO(thestig): Remove this block in the future, when we are certain this
-    // is not reachable.
-    NOTREACHED();
-    print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
-    return false;
-  }
+  CHECK(!passed_job_settings.DictEmpty());
 
   base::DictionaryValue modified_job_settings;
   const base::DictionaryValue* job_settings;
@@ -2340,26 +2330,14 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     return false;
   }
 
-  absl::optional<int> preview_ui_id = job_settings->FindIntKey(kPreviewUIID);
-  if (!preview_ui_id) {
-    NOTREACHED();
-    print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
-    return false;
-  }
-  settings->params->preview_ui_id = *preview_ui_id;
+  settings->params->preview_ui_id =
+      job_settings->FindIntKey(kPreviewUIID).value();
 
   // Validate expected print preview settings.
-  absl::optional<bool> is_first_request =
-      job_settings->FindBoolKey(kIsFirstRequest);
-  absl::optional<int> preview_request_id =
-      job_settings->FindIntKey(kPreviewRequestID);
-  if (!preview_request_id.has_value() || !is_first_request.has_value()) {
-    NOTREACHED();
-    print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
-    return false;
-  }
-  settings->params->is_first_request = is_first_request.value();
-  settings->params->preview_request_id = preview_request_id.value();
+  settings->params->is_first_request =
+      job_settings->FindBoolKey(kIsFirstRequest).value();
+  settings->params->preview_request_id =
+      job_settings->FindIntKey(kPreviewRequestID).value();
 
   settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);

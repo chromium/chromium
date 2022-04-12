@@ -204,7 +204,7 @@ class PrintRenderFrameHelper
   // enum PrintPreviewFailureType in tools/metrics/histograms/enums.xml.
   enum PrintPreviewErrorBuckets {
     PREVIEW_ERROR_NONE = 0,  // Always first.
-    PREVIEW_ERROR_BAD_SETTING = 1,
+    PREVIEW_ERROR_BAD_SETTING_DEPRECATED = 1,
     PREVIEW_ERROR_METAFILE_COPY_FAILED = 2,
     PREVIEW_ERROR_METAFILE_INIT_FAILED_DEPRECATED = 3,
     PREVIEW_ERROR_ZERO_PAGES = 4,
