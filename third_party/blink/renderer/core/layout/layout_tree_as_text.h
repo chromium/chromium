@@ -52,8 +52,6 @@ class LayoutPoint;
 
 enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextBehaviorNormal = 0,
-  // Dump all layers, not just those that would paint.
-  kLayoutAsTextShowAllLayers = 1 << 0,
   // Annotate the layer lists.
   kLayoutAsTextShowLayerNesting = 1 << 1,
   // Show layer and layoutObject addresses.

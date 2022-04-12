@@ -268,15 +268,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // FIXME: size() should DCHECK(!needs_position_update_) as well, but that
   // fails in some tests, for example, fast/repaint/clipped-relative.html.
   const LayoutSize& Size() const { return size_; }
-  // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
-  // Location() is not the correct paint offset. It's also incorrect in flipped
-  // blocks writing mode.
-  gfx::Size PixelSnappedSize() const {
-    LayoutPoint location = layout_object_->IsBox()
-                               ? To<LayoutBox>(layout_object_.Get())->Location()
-                               : LayoutPoint();
-    return ToPixelSnappedSize(Size(), location);
-  }
 
 #if DCHECK_IS_ON()
   bool NeedsPositionUpdate() const { return needs_position_update_; }

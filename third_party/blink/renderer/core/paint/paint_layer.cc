@@ -1206,7 +1206,7 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
                                       respect_overflow_clip);
   Clipper(GeometryMapperOption::kUseGeometryMapper)
       .CalculateRects(clip_rects_context, fragment.fragment_data,
-                      fragment.layer_bounds, fragment.background_rect,
+                      fragment.layer_offset, fragment.background_rect,
                       fragment.foreground_rect);
 
   fragments.push_back(fragment);
@@ -1309,7 +1309,7 @@ void PaintLayer::CollectFragments(
 
     Clipper(GeometryMapperOption::kUseGeometryMapper)
         .CalculateRects(clip_rects_context, fragment_data,
-                        fragment.layer_bounds, fragment.background_rect,
+                        fragment.layer_offset, fragment.background_rect,
                         fragment.foreground_rect);
 
     if (cant_find_fragment) {
@@ -1318,8 +1318,6 @@ void PaintLayer::CollectFragments(
       fragment.background_rect.Reset();
       fragment.foreground_rect.Reset();
     }
-
-    fragment.root_fragment_data = root_fragment_data;
 
     fragment.fragment_data = fragment_data;
 
@@ -1884,7 +1882,6 @@ bool PaintLayer::HitTestContentsForFragments(
       continue;
 
     inside_clip_rect = true;
-    PhysicalOffset fragment_offset = fragment.layer_bounds.offset;
     if (UNLIKELY(GetLayoutObject().IsLayoutInline() &&
                  GetLayoutObject().CanTraversePhysicalFragments())) {
       // When hit-testing an inline that has a layer, we'll search for it in
@@ -1896,11 +1893,12 @@ bool PaintLayer::HitTestContentsForFragments(
       DCHECK(fragment.fragment_idx != WTF::kNotFound);
       HitTestLocation location_for_fragment(hit_test_location,
                                             fragment.fragment_idx);
-      if (HitTestContents(result, fragment.physical_fragment, fragment_offset,
-                          location_for_fragment, hit_test_filter))
+      if (HitTestContents(result, fragment.physical_fragment,
+                          fragment.layer_offset, location_for_fragment,
+                          hit_test_filter))
         return true;
     } else if (HitTestContents(result, fragment.physical_fragment,
-                               fragment_offset, hit_test_location,
+                               fragment.layer_offset, hit_test_location,
                                hit_test_filter)) {
       return true;
     }
@@ -2847,8 +2845,7 @@ void ShowLayerTree(const blink::PaintLayer* layer) {
   if (blink::LocalFrame* frame = layer->GetLayoutObject().GetFrame()) {
     WTF::String output =
         ExternalRepresentation(frame,
-                               blink::kLayoutAsTextShowAllLayers |
-                                   blink::kLayoutAsTextShowLayerNesting |
+                               blink::kLayoutAsTextShowLayerNesting |
                                    blink::kLayoutAsTextShowAddresses |
                                    blink::kLayoutAsTextShowIDAndClass |
                                    blink::kLayoutAsTextDontUpdateLayout |

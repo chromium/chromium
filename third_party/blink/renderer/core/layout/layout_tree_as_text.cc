@@ -636,6 +636,8 @@ static void Write(WTF::TextStream& ts,
     if (!adjusted_clip_rect.Contains(adjusted_layout_bounds))
       ts << " clip " << adjusted_clip_rect;
   }
+  if (layer.Transform())
+    ts << " hasTransform";
   if (layer.IsTransparent())
     ts << " transparent";
 
@@ -692,38 +694,32 @@ static HeapVector<Member<PaintLayer>> ChildLayers(
 }
 
 void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
-                                   const PaintLayer* root_layer,
+                                   const PaintLayer* root_layer_arg,
                                    PaintLayer* layer,
                                    int indent,
                                    LayoutAsTextBehavior behavior,
                                    const PaintLayer* marked_layer) {
   // Calculate the clip rects we should use.
-  PhysicalRect layer_bounds;
-  ClipRect damage_rect, clip_rect_to_apply;
+  const PaintLayer* root_layer = layer->Transform() ? layer : root_layer_arg;
+  PhysicalOffset layer_offset;
+  ClipRect background_rect, foreground_rect;
   if (layer->GetLayoutObject().FirstFragment().HasLocalBorderBoxProperties()) {
     layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
         .CalculateRects(
             ClipRectsContext(root_layer,
                              &root_layer->GetLayoutObject().FirstFragment()),
-            &layer->GetLayoutObject().FirstFragment(), layer_bounds,
-            damage_rect, clip_rect_to_apply);
+            &layer->GetLayoutObject().FirstFragment(), layer_offset,
+            background_rect, foreground_rect);
   } else {
     layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
         .CalculateRects(ClipRectsContext(root_layer, nullptr), nullptr,
-                        layer_bounds, damage_rect, clip_rect_to_apply);
+                        layer_offset, background_rect, foreground_rect);
   }
 
-  PhysicalOffset offset_from_root;
-  layer->ConvertToLayerCoords(root_layer, offset_from_root);
-  bool should_paint =
-      (behavior & kLayoutAsTextShowAllLayers)
-          ? true
-          : layer->IntersectsDamageRect(layer_bounds, damage_rect.Rect(),
-                                        offset_from_root);
-
+  bool should_dump = true;
   auto* embedded = DynamicTo<LayoutEmbeddedContent>(layer->GetLayoutObject());
   if (embedded && embedded->IsThrottledFrameView())
-    should_paint = false;
+    should_dump = false;
 
 #if DCHECK_IS_ON()
   if (layer->NeedsPositionUpdate()) {
@@ -732,18 +728,19 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 #endif
 
-  bool should_paint_children =
+  bool should_dump_children =
       !layer->GetLayoutObject().ChildLayoutBlockedByDisplayLock();
 
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);
+  PhysicalRect layer_bounds(layer_offset, layer->Size());
   bool paints_background_separately = !neg_list.IsEmpty();
-  if (should_paint && paints_background_separately) {
-    Write(ts, *layer, layer_bounds, damage_rect.Rect(),
-          clip_rect_to_apply.Rect(), kLayerPaintPhaseBackground, indent,
-          behavior, marked_layer);
+  if (should_dump && paints_background_separately) {
+    Write(ts, *layer, layer_bounds, background_rect.Rect(),
+          foreground_rect.Rect(), kLayerPaintPhaseBackground, indent, behavior,
+          marked_layer);
   }
 
-  if (should_paint_children && !neg_list.IsEmpty()) {
+  if (should_dump_children && !neg_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -756,16 +753,16 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
     }
   }
 
-  if (should_paint) {
-    Write(ts, *layer, layer_bounds, damage_rect.Rect(),
-          clip_rect_to_apply.Rect(),
+  if (should_dump) {
+    Write(ts, *layer, layer_bounds, background_rect.Rect(),
+          foreground_rect.Rect(),
           paints_background_separately ? kLayerPaintPhaseForeground
                                        : kLayerPaintPhaseAll,
           indent, behavior, marked_layer);
   }
 
   const auto& normal_flow_list = ChildLayers(layer, kNormalFlowChildren);
-  if (should_paint_children && !normal_flow_list.IsEmpty()) {
+  if (should_dump_children && !normal_flow_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -779,7 +776,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   const auto& pos_list = ChildLayers(layer, kPositiveZOrderChildren);
-  if (should_paint_children && !pos_list.IsEmpty()) {
+  if (should_dump_children && !pos_list.IsEmpty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -910,8 +907,7 @@ String ExternalRepresentation(Element* element, LayoutAsTextBehavior behavior) {
   if (!layout_object || !layout_object->IsBox())
     return String();
 
-  return ExternalRepresentation(To<LayoutBox>(layout_object),
-                                behavior | kLayoutAsTextShowAllLayers);
+  return ExternalRepresentation(To<LayoutBox>(layout_object), behavior);
 }
 
 static void WriteCounterValuesFromChildren(WTF::TextStream& stream,

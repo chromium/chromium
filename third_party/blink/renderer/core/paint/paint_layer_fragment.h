@@ -37,27 +37,23 @@ namespace blink {
 class FragmentData;
 class NGPhysicalBoxFragment;
 
-// PaintLayerFragment is the representation of a fragment.
+// PaintLayerFragment is the representation of a fragment of a PaintLayer.
 // https://drafts.csswg.org/css-break/#fragment
 //
-// Fragments are a paint/hit-testing only concept in Blink.
-// Every box has at least one fragment, even if it is not paginated/fragmented.
-// If a box has more than one fragment (i.e. is paginated by an ancestor), the
-// fragments are called "paginated fragments". Note that this is a Blink
-// vocabulary extension and doesn't come from the specification.
-//
-// The fragments are collected by calling PaintLayer::CollectFragments
-// on every box once per paint/hit-testing operation.
+// The fragments are collected by calling PaintLayer::CollectFragments()
+// on every box once per hit-testing operation.
 struct PaintLayerFragment {
   DISALLOW_NEW();
 
  public:
-  // See |root_fragment_data| for the coordinate space of |layer_bounds|,
-  // |background_rect| and |foreground_rect|.
+  // The coordinate space of |layer_offset|, |background_rect| and
+  // |foreground_rect| is defined by the parameters of
+  // PaintLayer::CollectFragments():
+  // - |root_fragment| if it's not nullptr,
+  // - or the first fragment of |root_layer|.
 
-  // The PaintLayer's size in the space defined by |root_fragment_data|.
-  // See PaintLayer::size_ for the exact rectangle.
-  PhysicalRect layer_bounds;
+  // The PaintLayer's offset in the space defined above.
+  PhysicalOffset layer_offset;
 
   // The rectangle used to clip the background.
   //
@@ -82,12 +78,6 @@ struct PaintLayerFragment {
 
   // The fragment index of fragment_data / physical_fragment.
   wtf_size_t fragment_idx = WTF::kNotFound;
-
-  // Defines the coordinate space of the above rects:
-  // root_fragment_data->LocalBorderBoxProperties().Transform() +
-  // root_fragment_data.PaintOffset().
-  // It's for legacy cull rect calculation (pre-CompositeAfterPaint) only.
-  Member<const FragmentData> root_fragment_data = nullptr;
 
   // The corresponding FragmentData of this structure.
   Member<const FragmentData> fragment_data = nullptr;

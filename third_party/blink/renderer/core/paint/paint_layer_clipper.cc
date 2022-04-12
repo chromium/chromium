@@ -165,22 +165,20 @@ PhysicalRect PaintLayerClipper::LocalClipRect(
 void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     const ClipRectsContext& context,
     const FragmentData& fragment_data,
-    PhysicalRect& layer_bounds,
+    PhysicalOffset& layer_offset,
     ClipRect& background_rect,
     ClipRect& foreground_rect) const {
-  layer_bounds.size = PhysicalSize(layer_->PixelSnappedSize());
-  layer_bounds.offset = context.sub_pixel_accumulation;
+  layer_offset = context.sub_pixel_accumulation;
   if (layer_ == context.root_layer) {
     DCHECK_EQ(&fragment_data, context.root_fragment);
   } else {
-    layer_bounds.Move(fragment_data.PaintOffset());
-    gfx::RectF float_bounds(layer_bounds);
-    GeometryMapper::SourceToDestinationRect(
+    layer_offset += fragment_data.PaintOffset();
+    auto projection = GeometryMapper::SourceToDestinationProjection(
         fragment_data.PreTransform(),
-        context.root_fragment->LocalBorderBoxProperties().Transform(),
-        float_bounds);
-    layer_bounds = PhysicalRect::FastAndLossyFromRectF(float_bounds);
-    layer_bounds.offset -= context.root_fragment->PaintOffset();
+        context.root_fragment->LocalBorderBoxProperties().Transform());
+    layer_offset = PhysicalOffset::FromPointFRound(
+        projection.MapPoint(gfx::PointF(layer_offset)));
+    layer_offset -= context.root_fragment->PaintOffset();
   }
 
   CalculateBackgroundClipRectWithGeometryMapper(
@@ -192,7 +190,7 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     LayoutBoxModelObject& layout_object = layer_->GetLayoutObject();
     foreground_rect =
         To<LayoutBox>(layout_object)
-            .OverflowClipRect(layer_bounds.offset,
+            .OverflowClipRect(layer_offset,
                               context.overlay_scrollbar_clip_behavior);
     if (layout_object.StyleRef().HasBorderRadius())
       foreground_rect.SetHasRadius(true);
@@ -204,7 +202,7 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
 
 void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
                                        const FragmentData* fragment_data,
-                                       PhysicalRect& layer_bounds,
+                                       PhysicalOffset& layer_offset,
                                        ClipRect& background_rect,
                                        ClipRect& foreground_rect) const {
   if (use_geometry_mapper_) {
@@ -213,7 +211,7 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
     // TODO(chrishtr): find the root cause of not having a fragment and fix it.
     if (!fragment_data->HasLocalBorderBoxProperties())
       return;
-    CalculateRectsWithGeometryMapper(context, *fragment_data, layer_bounds,
+    CalculateRectsWithGeometryMapper(context, *fragment_data, layer_offset,
                                      background_rect, foreground_rect);
     return;
   }
@@ -229,15 +227,15 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
 
   foreground_rect = background_rect;
 
-  PhysicalOffset offset(context.sub_pixel_accumulation);
-  layer_->ConvertToLayerCoords(context.root_layer, offset);
-  layer_bounds = PhysicalRect(offset, PhysicalSize(layer_->PixelSnappedSize()));
+  layer_offset = context.sub_pixel_accumulation;
+  layer_->ConvertToLayerCoords(context.root_layer, layer_offset);
 
   // Update the clip rects that will be passed to child layers.
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     PhysicalRect overflow_and_clip_rect =
         To<LayoutBox>(layout_object)
-            .OverflowClipRect(offset, context.overlay_scrollbar_clip_behavior);
+            .OverflowClipRect(layer_offset,
+                              context.overlay_scrollbar_clip_behavior);
     foreground_rect.Intersect(overflow_and_clip_rect);
     if (layout_object.StyleRef().HasBorderRadius())
       foreground_rect.SetHasRadius(true);
@@ -246,7 +244,7 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
     // factor in the individual column boxes as overflow.
 
     PhysicalRect layer_bounds_with_visual_overflow = LocalVisualRect(context);
-    layer_bounds_with_visual_overflow.Move(offset);
+    layer_bounds_with_visual_overflow.Move(layer_offset);
     background_rect.Intersect(layer_bounds_with_visual_overflow);
   }
 
@@ -254,7 +252,8 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
   // even if it falls outside of the border box.
   if (layout_object.HasClip()) {
     // Clip applies to *us* as well, so go ahead and update the damageRect.
-    PhysicalRect new_pos_clip = To<LayoutBox>(layout_object).ClipRect(offset);
+    PhysicalRect new_pos_clip =
+        To<LayoutBox>(layout_object).ClipRect(layer_offset);
     background_rect.Intersect(new_pos_clip);
     foreground_rect.Intersect(new_pos_clip);
   }

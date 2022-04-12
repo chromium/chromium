@@ -2049,8 +2049,7 @@ bool PaintLayerScrollableArea::HitTestResizerInFragments(
     const PaintLayerFragment& fragment = layer_fragments.at(i);
     if (fragment.background_rect.Intersects(hit_test_location)) {
       gfx::Rect resizer_corner_rect = ResizerCornerRect(kResizerForPointer);
-      resizer_corner_rect.Offset(
-          ToRoundedVector2d(fragment.layer_bounds.offset));
+      resizer_corner_rect.Offset(ToRoundedVector2d(fragment.layer_offset));
       if (resizer_corner_rect.Contains(hit_test_location.RoundedPoint()))
         return true;
     }

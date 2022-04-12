@@ -49,7 +49,7 @@ WebString TestWebFrameContentDumper::DumpAsMarkup(WebLocalFrame* frame) {
 WebString TestWebFrameContentDumper::DumpLayoutTreeAsText(
     WebLocalFrame* frame,
     LayoutAsTextControls to_show) {
-  LayoutAsTextBehavior behavior = kLayoutAsTextShowAllLayers;
+  LayoutAsTextBehavior behavior = 0;
 
   if (to_show & kLayoutAsTextWithLineTrees)
     behavior |= kLayoutAsTextShowLineTrees;
