@@ -673,19 +673,16 @@
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "platformKeysInternal": [{
     "dependencies": ["permission:platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },{
     "dependencies": ["permission:enterprise.platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   }],
   "printing": {
     "dependencies": ["permission:printing"],

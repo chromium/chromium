@@ -55,6 +55,13 @@ const char kErrorInteractiveCallFromBackground[] =
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
 
+// Skip checking for interactive calls coming from a non-interactive
+// context.
+// TODO(crbug.com/1303197): We should move the interactive tests to a
+// separate test suite. This is a temporary workaround to allow these
+// tests to run from the test extension's background page.
+bool g_skip_interactive_check_for_test = false;
+
 const struct NameValuePair {
   const char* const name;
   const int value;
@@ -142,6 +149,11 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
 PlatformKeysInternalSelectClientCertificatesFunction::
     ~PlatformKeysInternalSelectClientCertificatesFunction() {}
 
+void PlatformKeysInternalSelectClientCertificatesFunction::
+    SetSkipInteractiveCheckForTest(bool skip_interactive_check) {
+  g_skip_interactive_check_for_test = skip_interactive_check;
+}
+
 ExtensionFunction::ResponseAction
 PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -201,9 +213,10 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 
     // Ensure that this function is called in a context that allows opening
     // dialogs.
-    if (!web_contents ||
-        !web_modal::WebContentsModalDialogManager::FromWebContents(
-            web_contents)) {
+    if ((!web_contents ||
+         !web_modal::WebContentsModalDialogManager::FromWebContents(
+             web_contents)) &&
+        !g_skip_interactive_check_for_test) {
       return RespondNow(Error(kErrorInteractiveCallFromBackground));
     }
   }

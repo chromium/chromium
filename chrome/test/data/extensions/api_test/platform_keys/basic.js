@@ -4,10 +4,7 @@
 
 'use strict';
 
-var systemTokenEnabled = (location.search.indexOf("systemTokenEnabled") != -1);
-var selectedTestSuite = location.hash.slice(1);
-console.log('[SELECTED TEST SUITE] ' + selectedTestSuite +
-            ', systemTokenEnable ' + systemTokenEnabled);
+var systemTokenEnabled;
 
 var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
@@ -90,20 +87,14 @@ var data = {
   signature_client2_sha1_pkcs: 'signature_client2_sha1_pkcs',
 };
 
-// Reads the binary file at |path| and passes it as a Uint8Array to |callback|.
 function readFile(path, callback) {
-  var oReq = new XMLHttpRequest();
-  oReq.responseType = "arraybuffer";
-  oReq.open("GET", path, true /* asynchronous */);
-  oReq.onload = function() {
-    var arrayBuffer = oReq.response;
-    if (arrayBuffer) {
-      callback(new Uint8Array(arrayBuffer));
-    } else {
-      callback(null);
-    }
-  };
-  oReq.send(null);
+  fetch(path).then((response) => {
+    return response.arrayBuffer();
+  }).then((arrayBuffer) => {
+    callback(new Uint8Array(arrayBuffer));
+  }).catch((e) => {
+    callback(null);
+  });
 }
 
 // For each key in dictionary, replaces the path dictionary[key] by the content
@@ -154,7 +145,7 @@ function sortCerts(certs) {
   return certs.sort(compareArrays);
 }
 
-function assertCertsSelected(details, expectedCerts, callback) {
+function assertCertsSelected(details, expectedCerts) {
   chrome.platformKeys.selectClientCertificates(
       details, callbackPass(function(actualMatches) {
         assertEq(expectedCerts.length, actualMatches.length,
@@ -170,8 +161,6 @@ function assertCertsSelected(details, expectedCerts, callback) {
                      'Certs at index ' + i + ' differ');
           }
         }
-        if (callback)
-          callback();
       }));
 }
 
@@ -665,33 +654,17 @@ function testSignClient2Fails() {
   testSignFails(data.client_2);
 }
 
-function testBackgroundNoninteractiveSelect() {
-  var details = {interactive: false, request: requestAll};
-
-  chrome.runtime.getBackgroundPage(callbackPass(function(bp) {
-    bp.chrome.platformKeys.selectClientCertificates(
-      details, callbackPass(function(actualMatches) {
-        assertTrue(!bp.chrome.runtime.lastError);
-        var expectedCount = systemTokenEnabled ? 3 : 2;
-        assertEq(expectedCount, actualMatches.length);
-      }));
-  }));
-}
-
 function testBackgroundInteractiveSelect() {
   var details = {interactive: true, request: requestAll};
 
-  chrome.runtime.getBackgroundPage(callbackPass(function(bp) {
-    bp.chrome.platformKeys.selectClientCertificates(
-        // callbackPass checks chrome.runtime.lastError and not the error of
-        // the background page.
-        details, callbackPass(function(actualMatches) {
-          assertEq(bp.chrome.runtime.lastError.message,
-                   'Interactive calls must happen in the context of a ' +
-                       'browser tab or a window.');
-          assertEq([], actualMatches);
-        }));
-  }));
+  chrome.platformKeys.selectClientCertificates(
+      details, function(actualMatches) {
+        assertEq(chrome.runtime.lastError.message,
+                 'Interactive calls must happen in the context of a ' +
+                 'browser tab or a window.');
+        assertEq([], actualMatches);
+        chrome.test.succeed();
+      });
 }
 
 function testVerifyTrusted() {
@@ -754,6 +727,8 @@ var testSuites = {
       testSignSha1Client2OnSystemTokenOnly,
       // Interactively select all clients to grant permissions for these
       // certificates.
+      // TODO(crbug.com/1303197): We should move all interactive tests to
+      // a separate test suite.
       testInteractiveSelectClient1,
       testInteractiveSelectClient2,
       testInteractiveSelectClient3,
@@ -761,8 +736,6 @@ var testSuites = {
       // In non-interactive calls all certs must be returned now.
       testSelectAllCerts,
 
-      testBackgroundNoninteractiveSelect,
-      testBackgroundInteractiveSelect,
       testSelectWithInputClientCerts,
       testSelectCA1Certs,
       testInteractiveSelectNoCerts,
@@ -872,6 +845,21 @@ var testSuites = {
     chrome.test.runTests(tests);
   },
 
+  backgroundInteractiveTest: function() {
+    var tests = [
+      // Tests that interactive calls are not allowed from the extension's
+      // background page.
+      testBackgroundInteractiveSelect,
+    ];
+    chrome.test.runTests(tests);
+  },
 };
 
-setUp(testSuites[selectedTestSuite]);
+chrome.test.getConfig(function(config) {
+  let customArg = JSON.parse(config.customArg);
+  let selectedTestSuite = customArg.testSuiteName;
+  systemTokenEnabled = customArg.systemTokenEnabled;
+  console.log('[SELECTED TEST SUITE] ' + selectedTestSuite +
+              ', systemTokenEnabled: ' + systemTokenEnabled);
+  setUp(testSuites[selectedTestSuite]);
+});
