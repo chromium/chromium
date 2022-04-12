@@ -22488,7 +22488,7 @@
       'owners':  ['zmin@chromium.org', 'file://components/enterprise/browser/reporting/OWNERS'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 3 , 'maximum': 168},
-      'future_on': ['chrome.*', 'chrome_os', 'android', 'ios'],
+      'supported_on': ['chrome.*:101-', 'chrome_os:101-', 'android:101-', 'ios:101-'],
       'tags': ['admin-sharing', 'google-sharing'],
       'features': {
         'dynamic_refresh': True,
