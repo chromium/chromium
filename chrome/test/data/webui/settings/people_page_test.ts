@@ -297,6 +297,23 @@ suite('SyncStatusTests', function() {
     assertFalse(deleteProfile);
   });
 
+  // <if expr="chromeos_lacros">
+  test('SignoutDialogLacrosMainProfile', function() {
+    loadTimeData.overrideValues({
+      isSecondaryUser: false,
+    });
+    // Navigate to chrome://settings/signOut
+    Router.getInstance().navigateTo(routes.SIGN_OUT);
+
+    await flushTasks();
+    const signoutDialog =
+        peoplePage.shadowRoot!.querySelector('settings-signout-dialog')!;
+    assertTrue(signoutDialog.$.dialog.open);
+    // Delete profile is not allowed for Lacros main profile.
+    assertFalse(!!signoutDialog.shadowRoot!.querySelector('#deleteProfile'));
+  });
+  // </if>
+
   test('SignOutDialogManagedProfile', async function() {
     let accountControl = null;
     await syncBrowserProxy.whenCalled('getSyncStatus');

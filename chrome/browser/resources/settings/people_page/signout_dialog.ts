@@ -71,14 +71,6 @@ export class SettingsSignoutDialogElement extends
        * stats is returned from the browser.
        */
       deleteProfileWarning_: String,
-
-      /**
-       * True if the footer for the profile deletion is visible.
-       */
-      isFooterVisible_: {
-        type: Boolean,
-        computed: 'computeIsFooterVisible_()',
-      },
     };
   }
 
@@ -86,7 +78,6 @@ export class SettingsSignoutDialogElement extends
   private deleteProfile_: boolean;
   private deleteProfileWarningVisible_: boolean;
   private deleteProfileWarning_: string;
-  private isFooterVisible_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -167,9 +158,10 @@ export class SettingsSignoutDialogElement extends
     // </if>
   }
 
-  private computeIsFooterVisible_(): boolean {
+  private isDeleteProfileFooterVisible_(): boolean {
     // <if expr="chromeos_lacros">
     if (!loadTimeData.getBoolean('isSecondaryUser')) {
+      // Profile deletion is not allowed for the main profile.
       return false;
     }
     // </if>
