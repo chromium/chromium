@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -116,6 +117,10 @@ PasswordFormData CreateTestPasswordFormData() {
                            true,
                            1};
   return data;
+}
+
+bool AnyUrl(const GURL& gurl) {
+  return true;
 }
 
 }  // anonymous namespace
@@ -701,6 +706,68 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
   histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
+}
+
+TEST_F(PasswordStoreBuiltInBackendTest, RemoveLoginsByURLAndTimeAsyncMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "RemoveLoginsByURLAndTimeAsync."
+      "Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "RemoveLoginsByURLAndTimeAsync."
+      "Success";
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackend* backend = Initialize();
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+  form.date_created = kStart + base::Milliseconds(500);
+  DCHECK(form.date_created < kEnd);
+  backend->AddLoginAsync(form, base::DoNothing());
+  RunUntilIdle();
+
+  backend->RemoveLoginsByURLAndTimeAsync(base::BindRepeating(&AnyUrl), kStart,
+                                         kEnd, base::DoNothing(),
+                                         base::DoNothing());
+
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+}
+
+TEST_F(PasswordStoreBuiltInBackendTest,
+       RemoveLoginsByURLAndTimeAsyncNothingToDeleteMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "RemoveLoginsByURLAndTimeAsync."
+      "Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "RemoveLoginsByURLAndTimeAsync."
+      "Success";
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackend* backend = Initialize();
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+  form.date_created = kStart - base::Milliseconds(500);
+  backend->AddLoginAsync(form, base::DoNothing());
+  RunUntilIdle();
+
+  backend->RemoveLoginsByURLAndTimeAsync(base::BindRepeating(&AnyUrl), kStart,
+                                         kEnd, base::DoNothing(),
+                                         base::DoNothing());
+
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
 }
 
 }  // namespace password_manager

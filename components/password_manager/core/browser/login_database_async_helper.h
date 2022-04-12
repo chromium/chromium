@@ -65,7 +65,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion);
+      base::OnceCallback<void(bool)> sync_completion,
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   PasswordStoreChangeList DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 

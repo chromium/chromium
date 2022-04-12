@@ -235,13 +235,15 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion) {
+    base::OnceCallback<void(bool)> sync_completion,
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PrimaryKeyToFormMap key_to_form_map;
   PasswordStoreChangeList changes;
-  if (login_db_ && login_db_->GetLoginsCreatedBetween(delete_begin, delete_end,
-                                                      &key_to_form_map)) {
+  bool success = login_db_ && login_db_->GetLoginsCreatedBetween(
+                                  delete_begin, delete_end, &key_to_form_map);
+  if (success) {
     for (const auto& pair : key_to_form_map) {
       PasswordForm* form = pair.second.get();
       PasswordStoreChangeList remove_changes;
@@ -275,6 +277,12 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
     if (!GetMetadataStore()->HasUnsyncedDeletions())
       NotifyDeletionsHaveSynced(/*success=*/true);
   }
+  metrics_recorder.RecordMetrics(
+      success,
+      /*error=*/success
+          ? absl::nullopt
+          : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+                PasswordStoreBackendError::kUnrecoverable));
   return changes;
 }
 
