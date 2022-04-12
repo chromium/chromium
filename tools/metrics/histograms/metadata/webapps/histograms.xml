@@ -691,6 +691,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.BackgroundTaskStartDelay" units="ms"
     expires_after="2022-04-24">
+  <obsolete>
+    Deprecated in 2022-04. Collected histogram shows the feature is working as
+    intended. Histogram is no longer needed.
+  </obsolete>
   <owner>dominicschulz@google.com</owner>
   <owner>qjw@chromium.org</owner>
   <summary>

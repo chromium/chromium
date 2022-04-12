@@ -78,11 +78,6 @@ class SystemAppBackgroundTask {
   // For up to an hour.
   static const int kIdlePollMaxTimeToWaitSeconds = 3600;
 
-  // The duration we polled for before becoming idle and starting the background
-  // task.
-  static constexpr char kBackgroundStartDelayHistogramName[] =
-      "Webapp.SystemApps.BackgroundTaskStartDelay";
-
   SystemAppBackgroundTask(Profile* profile,
                           const SystemAppBackgroundTaskInfo& info);
   ~SystemAppBackgroundTask();
