@@ -1743,6 +1743,8 @@ source_set("chromeos") {
     "../ash/input_method/diacritics_insensitive_string_comparator.h",
     "../ash/input_method/emoji_suggester.cc",
     "../ash/input_method/emoji_suggester.h",
+    "../ash/input_method/get_browser_url.cc",
+    "../ash/input_method/get_browser_url.h",
     "../ash/input_method/grammar_manager.cc",
     "../ash/input_method/grammar_manager.h",
     "../ash/input_method/grammar_service_client.cc",

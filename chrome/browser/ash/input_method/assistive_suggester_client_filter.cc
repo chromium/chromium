@@ -11,11 +11,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -224,55 +222,6 @@ bool IsAllowedUrlOrAppForMultiWordSuggestion() {
          IsAllowedApp(kAllowedAppsForMultiWordSuggester);
 }
 
-absl::optional<GURL> GetAshChromeUrl() {
-  Browser* browser = chrome::FindLastActive();
-  // Ash chrome will return true for browser->window()->IsActive() if the
-  // user is currently typing in an ash browser tab. IsActive() will return
-  // false if the user is currently typing a lacros browser tab.
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    return browser->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetLastCommittedURL();
-  }
-
-  return absl::nullopt;
-}
-
-using GetBrowserUrlCallback =
-    base::OnceCallback<void(const absl::optional<GURL>& url)>;
-
-void OnLacrosChromeUrlReturned(GetBrowserUrlCallback callback,
-                               const absl::optional<GURL>& url) {
-  std::move(callback).Run(std::move(url));
-}
-
-void GetLacrosChromeUrl(GetBrowserUrlCallback callback) {
-  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
-  // browser_manager will exist whenever there is a lacros browser running.
-  // GetActiveTabUrlSupported() will only return true if the current lacros
-  // browser is being used by the user.
-  if (browser_manager && browser_manager->IsRunning() &&
-      browser_manager->GetActiveTabUrlSupported()) {
-    browser_manager->GetActiveTabUrl(
-        base::BindOnce(&OnLacrosChromeUrlReturned, std::move(callback)));
-    return;
-  }
-
-  std::move(callback).Run(absl::nullopt);
-}
-
-void GetBrowserUrl(GetBrowserUrlCallback callback) {
-  absl::optional<GURL> ash_url = GetAshChromeUrl();
-  if (ash_url.has_value()) {
-    std::move(callback).Run(ash_url);
-    return;
-  }
-
-  GetLacrosChromeUrl(std::move(callback));
-}
-
 void ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     const absl::optional<GURL>& current_url) {
@@ -302,7 +251,10 @@ void ReturnEnabledSuggestions(
 
 }  // namespace
 
-AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter() = default;
+AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
+    GetUrlCallback get_url)
+    : get_url_(std::move(get_url)) {}
+
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
 bool AssistiveSuggesterClientFilter::IsEmojiSuggestionAllowed() {
@@ -319,7 +271,7 @@ bool AssistiveSuggesterClientFilter::IsPersonalInfoSuggestionAllowed() {
 
 void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
     FetchEnabledSuggestionsCallback callback) {
-  GetBrowserUrl(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));
+  get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));
 }
 
 }  // namespace input_method
