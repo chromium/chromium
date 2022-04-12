@@ -337,4 +337,12 @@ bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
   return false;
 }
 
+bool V4L2VideoDecoderDelegateVP9::NeedsCompressedHeaderParsed() const {
+  return supports_compressed_header_;
+}
+
+bool V4L2VideoDecoderDelegateVP9::SupportsContextProbabilityReadback() const {
+  return false;
+}
+
 }  // namespace media

@@ -41,7 +41,7 @@ class V4L2VideoDecoderDelegateVP9Chromium : public VP9Decoder::VP9Accelerator {
                        Vp9FrameContext* frame_ctx) override;
 
   bool NeedsCompressedHeaderParsed() const override;
-  bool SupportsContextProbabilityReadback() const override { return true; }
+  bool SupportsContextProbabilityReadback() const override;
 
  private:
   V4L2DecodeSurfaceHandler* const surface_handler_;

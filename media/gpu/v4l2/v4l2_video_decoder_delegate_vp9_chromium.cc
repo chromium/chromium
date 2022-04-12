@@ -369,4 +369,9 @@ bool V4L2VideoDecoderDelegateVP9Chromium::NeedsCompressedHeaderParsed() const {
   return device_needs_compressed_header_parsed_;
 }
 
+bool V4L2VideoDecoderDelegateVP9Chromium::SupportsContextProbabilityReadback()
+    const {
+  return true;
+}
+
 }  // namespace media

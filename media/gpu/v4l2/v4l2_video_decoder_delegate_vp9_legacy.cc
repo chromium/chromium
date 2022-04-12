@@ -414,6 +414,11 @@ bool V4L2VideoDecoderDelegateVP9Legacy::NeedsCompressedHeaderParsed() const {
   return device_needs_compressed_header_parsed_;
 }
 
+bool V4L2VideoDecoderDelegateVP9Legacy::SupportsContextProbabilityReadback()
+    const {
+  return true;
+}
+
 scoped_refptr<V4L2DecodeSurface>
 V4L2VideoDecoderDelegateVP9Legacy::VP9PictureToV4L2DecodeSurface(
     VP9Picture* pic) {
