@@ -661,7 +661,6 @@ external/wpt/html/dom/elements/name-content-attribute-and-property.html [ Pass ]
 external/wpt/html/dom/elements/elements-in-the-dom/unknown-element.html [ Pass ]
 external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-L.html [ Pass ]
 external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-005b.html [ Pass ]
-external/wpt/html/dom/render-blocking/parser-inserted-preload-link.tentative.html [ Pass ]
 external/wpt/html/editing/activation/click_checkbox.html [ Pass ]
 external/wpt/html/editing/dnd/crashers/dialog-001.html [ Pass ]
 external/wpt/html/editing/dnd/cross-document/003.html [ Pass ]
@@ -1860,3 +1859,6 @@ crbug.com/1315309 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
 
 crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass ]
+
+# Sheriff: This is flaky.
+crbug.com/1315616 external/wpt/html/dom/render-blocking/parser-inserted-preload-link.tentative.html [ Failure Pass ]
