@@ -6136,7 +6136,7 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
   if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile, url, &dialog_data,
+          profile, web_contents->GetLastCommittedURL(), &dialog_data,
           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
     dialog_data.text.push_back(data);
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(

@@ -340,7 +340,7 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile_, render_frame_host_->GetLastCommittedURL(), &data,
+          profile_, web_contents_->GetLastCommittedURL(), &data,
           enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
     data.paths.reserve(list.size());
     for (const auto& file : list) {
