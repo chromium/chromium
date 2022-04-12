@@ -18,6 +18,7 @@
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
+#include "ui/gfx/color_space.h"
 
 namespace blink {
 WebrtcDecodingInfoHandler* WebrtcDecodingInfoHandler::Instance() {

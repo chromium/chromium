@@ -40,6 +40,7 @@ class WebMouseEvent;
 
 namespace gfx {
 class Rect;
+class Size;
 }
 
 namespace content {
