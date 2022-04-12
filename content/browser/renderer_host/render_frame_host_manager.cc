@@ -3319,6 +3319,17 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstanceGroup(
 absl::optional<blink::FrameToken>
 RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
     SiteInstanceGroup* site_instance_group) {
+  // We want to ensure that we don't create proxies for the new speculative site
+  // instance after a browsing instance swap, and we want to ensure that this
+  // doesn't break anything, so we tie it to the GetBrowsingContextMode which
+  // needs it and is disabled-by-default)
+  if (features::GetBrowsingContextMode() ==
+          features::BrowsingContextStateImplementationType::
+              kSwapForCrossBrowsingInstanceNavigations &&
+      render_frame_host_->GetSiteInstance()->group()->browsing_instance_id() !=
+          site_instance_group->browsing_instance_id()) {
+    return absl::nullopt;
+  }
   if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetFrameToken();
 
