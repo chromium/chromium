@@ -34,7 +34,7 @@ import java.util.List;
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
 @CommandLineFlags.Add("enable-features=ImmediatelyHideBrowserControlsForTest")
-@DisabledTest(message = "https://crbug.com/1223953")
+@DisabledTest(message = "https://crbug.com/1315399")
 public class BrowserControlsOffsetCallbackTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
