@@ -1432,7 +1432,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
               : FencedFrameStatus::kNotNestedInFencedFrame) {
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl",
                     perfetto::Track::FromPointer(this),
-                    "render_frame_host_when_created", this);
+                    "render_frame_host_when_created", GetGlobalId());
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
