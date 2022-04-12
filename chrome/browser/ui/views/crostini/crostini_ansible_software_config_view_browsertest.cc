@@ -134,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   EXPECT_TRUE(HasView());
   EXPECT_TRUE(IsDefaultDialog());
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(true);
+  ActiveView()->OnAnsibleSoftwareConfigurationFinished(
+      crostini::ContainerId::GetDefault(), true);
 
   EXPECT_TRUE(HasNoView());
 }
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   EXPECT_TRUE(HasView());
   EXPECT_TRUE(IsDefaultDialog());
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(false);
+  ActiveView()->OnAnsibleSoftwareConfigurationFinished(
+      crostini::ContainerId::GetDefault(), false);
 
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_TRUE(IsErrorDialog());
@@ -161,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   EXPECT_TRUE(HasView());
   EXPECT_TRUE(IsDefaultDialog());
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(false);
+  ActiveView()->OnAnsibleSoftwareConfigurationFinished(
+      crostini::ContainerId::GetDefault(), false);
 
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_TRUE(IsErrorOfflineDialog());
@@ -176,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   EXPECT_TRUE(HasView());
   EXPECT_TRUE(IsDefaultDialog());
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(false);
+  ActiveView()->OnAnsibleSoftwareConfigurationFinished(
+      crostini::ContainerId::GetDefault(), false);
 
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_TRUE(IsErrorOfflineDialog());
@@ -197,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   EXPECT_TRUE(HasView());
   EXPECT_TRUE(IsDefaultDialog());
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(false);
+  ActiveView()->OnAnsibleSoftwareConfigurationFinished(
+      crostini::ContainerId::GetDefault(), false);
 
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_TRUE(IsErrorOfflineDialog());
@@ -223,9 +228,12 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   EXPECT_NE(nullptr, ActiveView());
 
-  ansible_management_service()->OnApplyAnsiblePlaybookProgress(
-      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::SUCCEEDED,
-      /*failure_details=*/"");
+  vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
+  signal.set_status(
+      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::SUCCEEDED);
+  signal.set_vm_name(crostini::ContainerId::GetDefault().vm_name);
+  signal.set_container_name(crostini::ContainerId::GetDefault().container_name);
+  ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(HasNoView());
@@ -263,9 +271,12 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   EXPECT_NE(nullptr, ActiveView());
 
-  ansible_management_service()->OnApplyAnsiblePlaybookProgress(
-      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::FAILED,
-      /*failure_details=*/"");
+  vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
+  signal.set_status(
+      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::FAILED);
+  signal.set_vm_name(crostini::ContainerId::GetDefault().vm_name);
+  signal.set_container_name(crostini::ContainerId::GetDefault().container_name);
+  ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(nullptr, ActiveView());

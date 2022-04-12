@@ -2175,6 +2175,8 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerTest {
   std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
 };
 
+// TODO(justinhuang): For these AnsibleInfraTests, add much nicer observer-based
+// calls instead of RunUntilIdle.
 TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerAnsibleInstallFailure) {
   ansible_management_test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
@@ -2198,7 +2200,7 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplyFailure) {
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED));
 
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ansible_management_test_helper_->SendSucceededInstallSignal();
 
@@ -2215,13 +2217,13 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
-  base::RunLoop().RunUntilIdle();
+
+  task_environment_.RunUntilIdle();
 
   ansible_management_test_helper_->SendSucceededInstallSignal();
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ansible_management_test_helper_->SendSucceededApplySignal();
-
   run_loop()->Run();
 }
 
