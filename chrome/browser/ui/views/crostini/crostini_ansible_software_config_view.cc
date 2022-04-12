@@ -75,11 +75,10 @@ std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
   }
 }
 
-void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationStarted(
-    const crostini::ContainerId& container_id) {}
+void CrostiniAnsibleSoftwareConfigView::
+    OnAnsibleSoftwareConfigurationStarted() {}
 
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
-    const crostini::ContainerId& container_id,
     bool success) {
   DCHECK_EQ(state_, State::CONFIGURING);
 

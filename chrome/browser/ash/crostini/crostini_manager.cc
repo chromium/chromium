@@ -2726,7 +2726,8 @@ void CrostiniManager::OnApplyAnsiblePlaybookProgress(
 
   // TODO(okalitova): Add an observer.
   AnsibleManagementService::GetForProfile(profile_)
-      ->OnApplyAnsiblePlaybookProgress(signal);
+      ->OnApplyAnsiblePlaybookProgress(signal.status(),
+                                       signal.failure_details());
 }
 
 void CrostiniManager::OnUpgradeContainerProgress(

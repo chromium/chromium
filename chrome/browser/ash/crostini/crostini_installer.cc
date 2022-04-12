@@ -401,20 +401,12 @@ void CrostiniInstaller::OnContainerSetup(bool success) {
   }
 }
 
-// TODO(justinhuang): Address the case where Default Container is being booted +
-// getting configured and a new VM is being created. Since Enterprise-based
-// configurations currently work as configure on every startup, we'll have a
-// potential overlap which will cause this to signal too many times.
-void CrostiniInstaller::OnAnsibleSoftwareConfigurationStarted(
-    const ContainerId& container_id) {
+void CrostiniInstaller::OnAnsibleSoftwareConfigurationStarted() {
   DCHECK_EQ(installing_state_, InstallerState::kStartContainer);
   UpdateInstallingState(InstallerState::kConfigureContainer);
 }
 
-// TODO(justinhuang): Similar to the above.
-void CrostiniInstaller::OnAnsibleSoftwareConfigurationFinished(
-    const ContainerId& container_id,
-    bool success) {
+void CrostiniInstaller::OnAnsibleSoftwareConfigurationFinished(bool success) {
   DCHECK_EQ(installing_state_, InstallerState::kConfigureContainer);
   DCHECK(ansible_management_service_observation_.IsObservingSource(
       AnsibleManagementService::GetForProfile(profile_)));

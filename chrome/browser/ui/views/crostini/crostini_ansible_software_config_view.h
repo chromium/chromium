@@ -32,11 +32,8 @@ class CrostiniAnsibleSoftwareConfigView
   bool Accept() override;
 
   // crostini::AnsibleManagementService::Observer:
-  void OnAnsibleSoftwareConfigurationStarted(
-      const crostini::ContainerId& container_id) override;
-  void OnAnsibleSoftwareConfigurationFinished(
-      const crostini::ContainerId& container_id,
-      bool success) override;
+  void OnAnsibleSoftwareConfigurationStarted() override;
+  void OnAnsibleSoftwareConfigurationFinished(bool success) override;
 
   std::u16string GetSubtextLabelStringForTesting();
 
