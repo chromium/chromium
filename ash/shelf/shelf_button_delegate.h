@@ -61,6 +61,9 @@ class ShelfButtonDelegate {
   // active.
   virtual std::unique_ptr<ScopedActiveInkDropCount>
   CreateScopedActiveInkDropCount(const ShelfButton* button);
+
+  // Notifies the host view that one button will be removed.
+  virtual void OnButtonWillBeRemoved() {}
 };
 
 }  // namespace ash
