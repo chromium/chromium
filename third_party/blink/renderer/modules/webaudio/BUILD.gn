@@ -87,6 +87,8 @@ blink_modules_sources("webaudio") {
     "constant_source_handler.h",
     "constant_source_node.cc",
     "constant_source_node.h",
+    "convolver_handler.cc",
+    "convolver_handler.h",
     "convolver_node.cc",
     "convolver_node.h",
     "cross_thread_audio_worklet_processor_info.h",
