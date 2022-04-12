@@ -20,4 +20,6 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.2.2"
   cargo_pkg_authors = "erick.tryzelaar <erick.tryzelaar@gmail.com>, kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
+  cargo_pkg_name = "unicode-xid"
+  cargo_pkg_description = "Determine whether characters have the XID_Startor XID_Continue properties according toUnicode Standard Annex #31."
 }

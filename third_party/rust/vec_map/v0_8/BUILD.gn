@@ -20,4 +20,7 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.8.2"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>, Jorge Aparicio <japaricious@gmail.com>, Alexis Beingessner <a.beingessner@gmail.com>, Brian Anderson <>, tbu- <>, Manish Goregaokar <>, Aaron Turon <aturon@mozilla.com>, Adolfo Ochagavía <>, Niko Matsakis <>, Steven Fackler <>, Chase Southwood <csouth3@illinois.edu>, Eduard Burtescu <>, Florian Wilkens <>, Félix Raimundo <>, Tibor Benke <>, Markus Siemens <markus@m-siemens.de>, Josh Branchaud <jbranchaud@gmail.com>, Huon Wilson <dbau.pp@gmail.com>, Corey Farwell <coref@rwell.org>, Aaron Liblong <>, Nick Cameron <nrc@ncameron.org>, Patrick Walton <pcwalton@mimiga.net>, Felix S Klock II <>, Andrew Paseltiner <apaseltiner@gmail.com>, Sean McArthur <sean.monstar@gmail.com>, Vadim Petrochenkov <>"
+  cargo_pkg_name = "vec_map"
+  cargo_pkg_description =
+      "A simple map based on a vector for small integer keys"
 }

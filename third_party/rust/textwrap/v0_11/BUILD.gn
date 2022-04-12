@@ -20,5 +20,7 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.11.0"
   cargo_pkg_authors = "Martin Geisler <martin@geisler.net>"
+  cargo_pkg_name = "textwrap"
+  cargo_pkg_description = "Textwrap is a small library for word wrapping, indenting, anddedenting strings.You can use it to format strings (such as help and error messages) fordisplay in commandline applications. It is designed to be efficientand handle Unicode characters correctly."
   deps = [ "//third_party/rust/unicode_width/v0_1:lib" ]
 }

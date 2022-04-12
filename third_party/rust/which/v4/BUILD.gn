@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "4.2.4"
   cargo_pkg_authors = "Harry Fei <tiziyuanfang@gmail.com>"
+  cargo_pkg_name = "which"
+  cargo_pkg_description = "A Rust equivalent of Unix command 'which'. Locate installed executable in cross platforms."
   deps = [
     "//third_party/rust/either/v1:lib",
     "//third_party/rust/libc/v0_2:lib",

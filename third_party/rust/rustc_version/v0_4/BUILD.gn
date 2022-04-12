@@ -18,5 +18,8 @@ cargo_crate("buildrs_support") {
   edition = "2018"
   cargo_pkg_version = "0.4.0"
   cargo_pkg_authors = "Dirkjan Ochtman <dirkjan@ochtman.nl>, Marvin Löbel <loebel.marvin@gmail.com>"
+  cargo_pkg_name = "rustc_version"
+  cargo_pkg_description =
+      "A library for querying the version of a installed rustc compiler"
   deps = [ "//third_party/rust/semver/v1:lib" ]
 }

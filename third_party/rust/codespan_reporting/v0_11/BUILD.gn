@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.11.1"
   cargo_pkg_authors = "Brendan Zabarauskas <bjzaba@yahoo.com.au>"
+  cargo_pkg_name = "codespan-reporting"
+  cargo_pkg_description =
+      "Beautiful diagnostic reporting for text-based programming languages"
   deps = [
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/unicode_width/v0_1:lib",

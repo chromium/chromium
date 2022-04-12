@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.1.11"
   cargo_pkg_authors = "Mike Lubinets <git@mkl.dev>"
+  cargo_pkg_name = "aquamarine"
+  cargo_pkg_description = "A mermaid.js integration for rustdoc"
   deps = [
     "//third_party/rust/itertools/v0_9:lib",
     "//third_party/rust/proc_macro2/v1:lib",

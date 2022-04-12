@@ -20,4 +20,6 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.8.0"
   cargo_pkg_authors = "Danny Guo <dannyguo91@gmail.com>"
+  cargo_pkg_name = "strsim"
+  cargo_pkg_description = "Implementations of string similarity metrics.Includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro, and Jaro-Winkler."
 }

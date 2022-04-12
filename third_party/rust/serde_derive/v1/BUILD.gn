@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "1.0.130"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "serde_derive"
+  cargo_pkg_description =
+      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

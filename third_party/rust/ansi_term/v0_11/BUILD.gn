@@ -21,5 +21,8 @@ if (!is_win) {
     edition = "2015"
     cargo_pkg_version = "0.11.0"
     cargo_pkg_authors = "ogham@bsago.me, Ryan Scheel (Havvy) <ryan.havvy@gmail.com>, Josh Triplett <josh@joshtriplett.org>"
+    cargo_pkg_name = "ansi_term"
+    cargo_pkg_description =
+        "Library for ANSI terminal colours and styles (bold, underline)"
   }
 }

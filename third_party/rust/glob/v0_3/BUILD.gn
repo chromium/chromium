@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.3.0"
   cargo_pkg_authors = "The Rust Project Developers"
+  cargo_pkg_name = "glob"
+  cargo_pkg_description =
+      "Support for matching file paths against Unix shell style patterns."
 }
 cargo_crate("buildrs_support") {
   crate_name = "glob"
@@ -35,4 +38,7 @@ cargo_crate("buildrs_support") {
   edition = "2015"
   cargo_pkg_version = "0.3.0"
   cargo_pkg_authors = "The Rust Project Developers"
+  cargo_pkg_name = "glob"
+  cargo_pkg_description =
+      "Support for matching file paths against Unix shell style patterns."
 }

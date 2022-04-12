@@ -11,6 +11,9 @@ cargo_crate("bindgen") {
   edition = "2018"
   cargo_pkg_version = "0.59.2"
   cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers"
+  cargo_pkg_name = "bindgen"
+  cargo_pkg_description =
+      "Automatically generates Rust FFI bindings to C and C++ libraries."
   deps = [
     # TODO(crbug/1314345): the executable needs to depend on the lib.
     ":lib",
@@ -57,6 +60,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.59.2"
   cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers"
+  cargo_pkg_name = "bindgen"
+  cargo_pkg_description =
+      "Automatically generates Rust FFI bindings to C and C++ libraries."
   deps = [
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/cexpr/v0_6:lib",

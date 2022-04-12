@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.7.18"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
+  cargo_pkg_name = "aho-corasick"
+  cargo_pkg_description = "Fast multiple substring searching."
   deps = [ "//third_party/rust/memchr/v2:lib" ]
   features = [ "std" ]
 }

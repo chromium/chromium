@@ -20,4 +20,7 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "1.4.0"
   cargo_pkg_authors = "Marvin Löbel <loebel.marvin@gmail.com>"
+  cargo_pkg_name = "lazy_static"
+  cargo_pkg_description =
+      "A macro for declaring lazily evaluated statics in Rust."
 }

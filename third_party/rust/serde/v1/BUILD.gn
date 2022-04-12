@@ -16,6 +16,8 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "1.0.130"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "serde"
+  cargo_pkg_description = "A generic serialization/deserialization framework"
   features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.6"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "rustversion"
+  cargo_pkg_description =
+      "Conditional compilation according to rustc compiler version"
   build_root = "crate/build/build.rs"
   build_sources = [ "crate/build/build.rs" ]
   build_script_outputs = [ "version.rs" ]

@@ -20,4 +20,7 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.3.2"
   cargo_pkg_authors = "The Rust Project Developers"
+  cargo_pkg_name = "bitflags"
+  cargo_pkg_description =
+      "A macro to generate structures which behave like bitflags."
 }

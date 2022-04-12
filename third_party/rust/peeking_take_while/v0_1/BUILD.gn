@@ -20,4 +20,6 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.1.2"
   cargo_pkg_authors = "Nick Fitzgerald <fitzgen@gmail.com>"
+  cargo_pkg_name = "peeking_take_while"
+  cargo_pkg_description = "Like `Iterator::take_while`, but calls the predicate on a peeked value. This allows you to use `Iterator::by_ref` and `Iterator::take_while` together, and still get the first value for which the `take_while` predicate returned false after dropping the `by_ref`."
 }

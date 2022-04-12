@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.9.0"
   cargo_pkg_authors = "bluss"
+  cargo_pkg_name = "itertools"
+  cargo_pkg_description =
+      "Extra iterator adaptors, iterator methods, free functions, and macros."
   deps = [ "//third_party/rust/either/v1:lib" ]
   features = [ "use_std" ]
 }

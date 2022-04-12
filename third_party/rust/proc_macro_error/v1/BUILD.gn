@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.4"
   cargo_pkg_authors = "CreepySkeleton <creepy-skeleton@yandex.ru>"
+  cargo_pkg_name = "proc-macro-error"
+  cargo_pkg_description = "Almost drop-in replacement to panics in proc-macros"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/proc_macro_error_attr/v1:lib",

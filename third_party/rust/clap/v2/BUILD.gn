@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "2.33.3"
   cargo_pkg_authors = "Kevin K. <kbknapp@gmail.com>"
+  cargo_pkg_name = "clap"
+  cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   deps = [
     "//third_party/rust/atty/v0_2:lib",
     "//third_party/rust/bitflags/v1:lib",

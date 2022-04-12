@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.4"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "semver"
+  cargo_pkg_description =
+      "Parser and evaluator for Cargo's flavor of Semantic Versioning"
   features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

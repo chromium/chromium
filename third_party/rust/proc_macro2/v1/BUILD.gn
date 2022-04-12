@@ -21,6 +21,8 @@ cargo_crate("lib") {
   cargo_pkg_version = "1.0.32"
   cargo_pkg_authors =
       "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
+  cargo_pkg_name = "proc-macro2"
+  cargo_pkg_description = "A substitute implementation of the compiler's `proc_macro` API to decoupletoken-based libraries from the procedural macro use case."
   deps = [ "//third_party/rust/unicode_xid/v0_2:lib" ]
   features = [
     "proc-macro",

@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.9.4"
   cargo_pkg_authors = "Sergio Benitez <sb@sergio.bz>"
+  cargo_pkg_name = "version_check"
+  cargo_pkg_description =
+      "Tiny crate to check the version of the installed/running rustc."
 }
 cargo_crate("buildrs_support") {
   crate_name = "version_check"
@@ -35,4 +38,7 @@ cargo_crate("buildrs_support") {
   edition = "2015"
   cargo_pkg_version = "0.9.4"
   cargo_pkg_authors = "Sergio Benitez <sb@sergio.bz>"
+  cargo_pkg_name = "version_check"
+  cargo_pkg_description =
+      "Tiny crate to check the version of the installed/running rustc."
 }

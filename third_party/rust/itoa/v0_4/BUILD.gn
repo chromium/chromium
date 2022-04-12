@@ -20,4 +20,7 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.4.8"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "itoa"
+  cargo_pkg_description =
+      "Fast functions for printing integer primitives to an io::Write"
 }

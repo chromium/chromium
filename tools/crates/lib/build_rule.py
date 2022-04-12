@@ -217,6 +217,15 @@ class BuildRule:
             self._write(
                 indent, "cargo_pkg_authors = \"{}\"".format(", ".join(
                     build_rule.cargo_pkg_authors)))
+        if build_rule.cargo_pkg_name:
+            self._write(
+                indent, "cargo_pkg_name = \"{}\"".format(
+                    build_rule.cargo_pkg_name.replace('\n', '')))
+        if build_rule.cargo_pkg_description:
+            self._write(
+                indent, "cargo_pkg_description = \"{}\"".format(
+                    build_rule.cargo_pkg_description.replace('\n', '').replace(
+                        '"', '\'')))
 
         # Add these if, in the future, we want to explicitly mark each
         # third-party crate instead of doing so from the GN template.

@@ -1032,6 +1032,8 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
     # environment variables in case the crates use 'crate_authors!' or similar.
     build_rule.cargo_pkg_authors = cargo_toml["package"].get("authors")
     build_rule.cargo_pkg_version = cargo_toml["package"].get("version")
+    build_rule.cargo_pkg_name = cargo_toml["package"].get("name")
+    build_rule.cargo_pkg_description = cargo_toml["package"].get("description")
 
     # Prefix from the BUILD.gn file to the crate's source files.
     path_prefix = ("/".join(consts.CRATE_INNER_DIR) +

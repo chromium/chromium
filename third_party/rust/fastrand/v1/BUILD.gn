@@ -20,4 +20,6 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.7.0"
   cargo_pkg_authors = "Stjepan Glavina <stjepang@gmail.com>"
+  cargo_pkg_name = "fastrand"
+  cargo_pkg_description = "A simple and fast random number generator"
 }

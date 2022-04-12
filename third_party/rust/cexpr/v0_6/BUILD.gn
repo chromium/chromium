@@ -20,5 +20,7 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "0.6.0"
   cargo_pkg_authors = "Jethro Beekman <jethro@jbeekman.nl>"
+  cargo_pkg_name = "cexpr"
+  cargo_pkg_description = "A C expression parser and evaluator"
   deps = [ "//third_party/rust/nom/v7:lib" ]
 }

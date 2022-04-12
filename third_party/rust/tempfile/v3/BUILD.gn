@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "3.3.0"
   cargo_pkg_authors = "Steven Allen <steven@stebalien.com>, The Rust Project Developers, Ashley Mannix <ashleymannix@live.com.au>, Jason White <jasonaw0@gmail.com>"
+  cargo_pkg_name = "tempfile"
+  cargo_pkg_description =
+      "A library for managing temporary files and directories."
   deps = [
     "//third_party/rust/cfg_if/v1:lib",
     "//third_party/rust/fastrand/v1:lib",

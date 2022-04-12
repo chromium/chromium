@@ -20,5 +20,7 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.3"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "indoc"
+  cargo_pkg_description = "Indented document literals"
   deps = [ "//third_party/rust/unindent/v0_1:lib" ]
 }

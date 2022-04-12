@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.4"
   cargo_pkg_authors = "CreepySkeleton <creepy-skeleton@yandex.ru>"
+  cargo_pkg_name = "proc-macro-error-attr"
+  cargo_pkg_description = "Attribute macro for proc-macro-error crate"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

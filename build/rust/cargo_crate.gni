@@ -67,10 +67,12 @@ import("//build/rust/rust_target.gni")
 #
 #  cargo_pkg_authors
 #  cargo_pkg_version
-#    Strings as found within 'version' and 'authors' within Cargo.toml.
+#  cargo_pkg_name
+#  cargo_pkg_description
+#    Strings as found within 'version' and similar fields within Cargo.toml.
 #    Converted to environment variables passed to rustc, in case the crate
-#    uses `crate_version!` or `crate_authors!` macros (fairly common in command
-#    line tool help)
+#    uses clap `crate_version!` or `crate_authors!` macros (fairly common in
+#    command line tool help)
 
 template("cargo_crate") {
   orig_target_name = target_name
@@ -107,6 +109,20 @@ template("cargo_crate") {
                               [
                                 "CARGO_PKG_VERSION",
                                 invoker.cargo_pkg_version,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_name)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_NAME",
+                                invoker.cargo_pkg_name,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_description)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_DESCRIPTION",
+                                invoker.cargo_pkg_description,
                               ]) ]
   }
 

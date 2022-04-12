@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.9.0"
   cargo_pkg_authors = "Aleksey Kladov <aleksey.kladov@gmail.com>"
+  cargo_pkg_name = "once_cell"
+  cargo_pkg_description = "Single assignment cells and lazy values."
   features = [
     "alloc",
     "race",

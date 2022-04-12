@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "7.1.0"
   cargo_pkg_authors = "contact@geoffroycouprie.com"
+  cargo_pkg_name = "nom"
+  cargo_pkg_description =
+      "A byte-oriented, zero-copy, parser combinators library"
   deps = [
     "//third_party/rust/memchr/v2:lib",
     "//third_party/rust/minimal_lexical/v0_2:lib",

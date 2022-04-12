@@ -20,4 +20,7 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "2.1.0"
   cargo_pkg_authors = "Paul Colomiets <paul@colomiets.name>"
+  cargo_pkg_name = "humantime"
+  cargo_pkg_description =
+      "    A parser and formatter for std::time::{Duration, SystemTime}"
 }

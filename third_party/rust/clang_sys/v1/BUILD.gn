@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "1.3.0"
   cargo_pkg_authors = "Kyle Mayes <kyle@mayeses.com>"
+  cargo_pkg_name = "clang-sys"
+  cargo_pkg_description = "Rust bindings for libclang."
   deps = [
     "//third_party/rust/glob/v0_3:lib",
     "//third_party/rust/libc/v0_2:lib",

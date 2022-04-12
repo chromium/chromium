@@ -20,6 +20,9 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.5.3"
   cargo_pkg_authors = "Aaronepower <theaaronepower@gmail.com>"
+  cargo_pkg_name = "remove_dir_all"
+  cargo_pkg_description =
+      "A safe, reliable implementation of remove_dir_all for Windows"
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/winapi/v0_3:lib" ]

@@ -11,6 +11,9 @@ cargo_crate("cxxbridge") {
   edition = "2018"
   cargo_pkg_version = "1.0.57"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "cxxbridge-cmd"
+  cargo_pkg_description =
+      "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   deps = [
     "//third_party/rust/clap/v2:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",
@@ -31,6 +34,9 @@ cargo_crate("lib") {
   edition = "2018"
   cargo_pkg_version = "1.0.57"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "cxxbridge-cmd"
+  cargo_pkg_description =
+      "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   deps = [
     "//third_party/rust/clap/v2:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",

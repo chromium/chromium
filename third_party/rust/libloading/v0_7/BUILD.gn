@@ -20,6 +20,8 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_version = "0.7.3"
   cargo_pkg_authors = "Simonas Kazlauskas <libloading@kazlauskas.me>"
+  cargo_pkg_name = "libloading"
+  cargo_pkg_description = "Bindings around the platform's dynamic library loading primitives with greatly improved memory safety."
   deps = []
   if (!is_win) {
     deps += [ "//third_party/rust/cfg_if/v1:lib" ]
