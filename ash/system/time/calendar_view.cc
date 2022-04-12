@@ -51,11 +51,12 @@ constexpr int kLabelVerticalPadding = 10;
 constexpr int kLabelTextInBetweenPadding = 10;
 constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
+constexpr int kExpandedCalenarPadding = 8;
 
 // The percentage of a normal row height, which (percentage * row_height) will
 // be used as the `CalendarView` height when the `CalendarEventListView` is
 // expanded.
-constexpr float kExpandedCalendarViewHeightScale = 1.2;
+constexpr float kExpandedCalendarViewHeightScale = 1.1;
 
 // After the user is finished navigating to a different month, this is how long
 // we wait before fetchiung more events.
@@ -531,7 +532,7 @@ int CalendarView::PositionOfSelectedDate() const {
   DCHECK(calendar_view_controller_->selected_date().has_value());
   const int row_height = calendar_view_controller_->selected_date_row_index() *
                              calendar_view_controller_->row_height() +
-                         calendar_utils::kDateVerticalPadding;
+                         kExpandedCalenarPadding;
   // The selected date should be either in the current month or the next month.
   if (calendar_view_controller_->IsSelectedDateInCurrentMonth())
     return PositionOfCurrentMonth() + row_height;
@@ -740,8 +741,7 @@ void CalendarView::ScrollToToday() {
     base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
     scroll_view_->ScrollToPosition(
         scroll_view_->vertical_scroll_bar(),
-        PositionOfToday() +
-            (event_list_view_ ? calendar_utils::kDateVerticalPadding : 0));
+        PositionOfToday() + (event_list_view_ ? kExpandedCalenarPadding : 0));
   }
 }
 
@@ -1268,9 +1268,9 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
         current_month_->last_row_index());
     const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
                            calendar_view_controller_->row_height();
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfCurrentMonth() + row_height +
-                                       calendar_utils::kDateVerticalPadding);
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        PositionOfCurrentMonth() + row_height + kExpandedCalenarPadding);
     scroll_view_->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     return;
@@ -1284,7 +1284,7 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
     calendar_view_controller_->set_expanded_row_index(0);
     scroll_view_->ScrollToPosition(
         scroll_view_->vertical_scroll_bar(),
-        PositionOfCurrentMonth() + calendar_utils::kDateVerticalPadding);
+        PositionOfCurrentMonth() + kExpandedCalenarPadding);
     scroll_view_->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     return;
@@ -1294,9 +1294,9 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
       calendar_view_controller_->GetExpandedRowIndex() + (scroll_up ? -1 : 1));
   const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
                          calendar_view_controller_->row_height();
-  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfCurrentMonth() + row_height +
-                                     calendar_utils::kDateVerticalPadding);
+  scroll_view_->ScrollToPosition(
+      scroll_view_->vertical_scroll_bar(),
+      PositionOfCurrentMonth() + row_height + kExpandedCalenarPadding);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   return;
