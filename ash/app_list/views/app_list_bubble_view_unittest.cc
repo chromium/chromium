@@ -36,6 +36,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/run_loop.h"
@@ -50,6 +51,9 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
@@ -557,6 +561,49 @@ TEST_F(AppListBubbleViewTest, ClosingBubbleClearsSearch) {
   EXPECT_TRUE(search_box_input->HasFocus());
   EXPECT_EQ(u"", search_box_input->GetText());
   EXPECT_EQ(u"", client->last_search_query());
+}
+
+// Regression test for https://crbug.com/1313140
+TEST_F(AppListBubbleViewTest, CanOpenMessageCenterWithKeyboardShortcut) {
+  // Add a notification so there's something to focus in the message center.
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"Title", u"Message",
+      ui::ImageModel(), /*display_source=*/std::u16string(), GURL(),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      /*delegate=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+
+  // Message center starts closed.
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  ASSERT_FALSE(system_tray->IsMessageCenterBubbleShown());
+
+  // Open the launcher and do a search.
+  AddAppItems(1);
+  ShowAppList();
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Search box has focus.
+  views::Textfield* search_box_input = GetSearchBoxView()->search_box();
+  ASSERT_TRUE(search_box_input->HasFocus());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Move focus to the message center notification area with Alt-Shift-N. The
+  // message center will open and the app list will dismiss.
+  PressAndReleaseKey(ui::VKEY_N, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  // Wait for the app list hide animation to finish.
+  AppListBubbleView* view = GetBubblePresenter()->bubble_view_for_test();
+  LayerAnimationStoppedWaiter().Wait(view->layer());
+
+  // Search box did not steal focus.
+  EXPECT_FALSE(search_box_input->HasFocus());
+
+  // Message center is still open.
+  EXPECT_TRUE(system_tray->IsMessageCenterBubbleShown());
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {

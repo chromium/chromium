@@ -84,6 +84,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   // Notify accessibility features that the status tray has opened.
   NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
 
+  // Explicitly close the app list in clamshell mode.
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
     Shell::Get()->app_list_controller()->DismissAppList();
 

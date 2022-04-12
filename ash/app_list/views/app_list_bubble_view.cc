@@ -347,6 +347,7 @@ void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
 void AppListBubbleView::StartHideAnimation(
     bool is_side_shelf,
     base::OnceClosure on_animation_ended) {
+  is_hiding_ = true;
   on_hide_animation_ended_ = std::move(on_animation_ended);
 
   // For performance, don't animate the shadow.
@@ -443,9 +444,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         apps_page_->SetVisible(true);
         search_page_->SetVisible(false);
       }
-      search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
-      // Explicitly request focus in case the search box was active before.
-      search_box_view_->search_box()->RequestFocus();
+      MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kSearch:
       if (previous_page == AppListBubblePage::kApps) {
@@ -455,9 +454,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         apps_page_->SetVisible(false);
         search_page_->SetVisible(true);
       }
-      search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
-      // Explicitly request focus in case the search box was active before.
-      search_box_view_->search_box()->RequestFocus();
+      MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kAssistant:
       if (previous_page == AppListBubblePage::kApps)
@@ -696,6 +693,8 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   // Restore the layer bounds. This isn't visible because opacity is 0.
   layer()->SetBounds(layer_bounds);
 
+  // NOTE: This may cause a query update and switch to the apps page if the
+  // if the search box was not empty.
   search_box_view_->ClearSearch();
 
   // Hide any open folder.
@@ -707,6 +706,7 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   search_page_->SetVisible(false);
   assistant_page_->SetVisible(false);
 
+  is_hiding_ = false;
   if (on_hide_animation_ended_)
     std::move(on_hide_animation_ended_).Run();
 }
@@ -730,6 +730,19 @@ void AppListBubbleView::HideFolderView(bool animate, bool hide_for_reparent) {
 void AppListBubbleView::OnAppListReorderAnimationDone() {
   // Re-enable the search box to handle a11y events.
   SetViewIgnoredForAccessibility(search_box_view_, false);
+}
+
+void AppListBubbleView::MaybeFocusAndActivateSearchBox() {
+  // Don't focus the search box while the view is hiding. The app list may be
+  // dismissed when focus moves to another view (e.g. the message center).
+  // Attempting to focus the search box could make that other view close.
+  // https://crbug.com/1313140
+  if (is_hiding_)
+    return;
+
+  search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+  // Explicitly request focus in case the search box was active before.
+  search_box_view_->search_box()->RequestFocus();
 }
 
 }  // namespace ash

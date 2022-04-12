@@ -150,6 +150,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Called when the reorder animation completes.
   void OnAppListReorderAnimationDone();
 
+  // Focuses the search box if the view is not hiding.
+  void MaybeFocusAndActivateSearchBox();
+
   AppListViewDelegate* const view_delegate_;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
@@ -182,6 +185,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // folder_view_->GetVisible() because the view is "visible" but hidden when
   // dragging an item out of a folder.
   bool showing_folder_ = false;
+
+  // Whether the view is animating hidden.
+  bool is_hiding_ = false;
 
   // Called after the hide animation ends or aborts.
   base::OnceClosure on_hide_animation_ended_;
