@@ -63,16 +63,16 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   void TearDown() override { manager_.reset(); }
 
-  std::tuple<FetchStatus, std::vector<std::string>>
+  std::tuple<FetchStatus, std::set<std::string>>
   SendManifestListRequestAndWaitForResponse(const char* test_data) {
     GURL manifest_list_url(kTestManifestListUrl);
     test_url_loader_factory().AddResponse(manifest_list_url.spec(), test_data);
 
     base::RunLoop run_loop;
     FetchStatus parsed_fetch_status;
-    std::vector<std::string> parsed_urls;
+    std::set<std::string> parsed_urls;
     auto callback = base::BindLambdaForTesting(
-        [&](FetchStatus fetch_status, const std::vector<std::string>& urls) {
+        [&](FetchStatus fetch_status, const std::set<std::string>& urls) {
           parsed_fetch_status = fetch_status;
           parsed_urls = urls;
           run_loop.Quit();
@@ -422,13 +422,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   FetchStatus fetch_status;
-  std::vector<std::string> urls;
+  std::set<std::string> urls;
 
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
   "provider_urls": ["https://idp.test/fedcm.json"]
   })");
   EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
-  EXPECT_EQ(std::vector<std::string>{kTestManifestUrl}, urls);
+  EXPECT_EQ(std::set<std::string>{kTestManifestUrl}, urls);
 
   // Value not a list
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({

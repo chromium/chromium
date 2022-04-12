@@ -40,8 +40,13 @@ enum class FedCmRequestIdTokenStatus {
   kThirdPartyCookiesBlocked,
   kDisabledInSettings,
   kDisabledInFlags,
+  kManifestListHttpNotFound,
+  kManifestListNoResponse,
+  kManifestListInvalidResponse,
+  kManifestNotInManifestList,
+  kManifestListTooBig,
 
-  kMaxValue = kDisabledInFlags
+  kMaxValue = kManifestListTooBig
 };
 
 // This enum describes the status of a revocation call to the FedCM API.
@@ -60,8 +65,13 @@ enum class FedCmRevokeStatus {
   kManifestInvalidResponse,
   kDisabledInSettings,
   kDisabledInFlags,
+  kManifestListHttpNotFound,
+  kManifestListNoResponse,
+  kManifestListInvalidResponse,
+  kManifestNotInManifestList,
+  kManifestListTooBig,
 
-  kMaxValue = kDisabledInFlags
+  kMaxValue = kManifestListTooBig
 };
 
 // Records the time from when a call to the API was made to when the accounts

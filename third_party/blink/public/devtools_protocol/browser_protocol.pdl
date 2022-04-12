@@ -786,6 +786,11 @@ experimental domain Audits
     enum
       ApprovalDeclined
       TooManyRequests
+      ManifestListHttpNotFound
+      ManifestListNoResponse
+      ManifestListInvalidResponse
+      ManifestNotInManifestList
+      ManifestListTooBig
       ManifestHttpNotFound
       ManifestNoResponse
       ManifestInvalidResponse

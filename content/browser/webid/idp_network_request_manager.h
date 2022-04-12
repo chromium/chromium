@@ -100,7 +100,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using FetchManifestListCallback =
-      base::OnceCallback<void(FetchStatus, const std::vector<std::string>&)>;
+      base::OnceCallback<void(FetchStatus, const std::set<std::string>&)>;
   using FetchManifestCallback = base::OnceCallback<
       void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
   using FetchClientMetadataCallback =
@@ -126,6 +126,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
+
+  GURL ManifestUrl() const;
 
   // Fetch the manifest list. This is the /.well-known/fedcm.json file on
   // the eTLD+1 calculated from the provider URL, used to check that the

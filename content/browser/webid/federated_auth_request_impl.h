@@ -85,10 +85,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // Checks validity of the passed-in endpoint URL origin.
   bool IsEndpointUrlValid(const GURL& endpoint_url);
 
-  void FetchManifest(IdpNetworkRequestManager::FetchManifestCallback callback);
+  enum FetchManifestType { kForToken, kForRevoke };
+  void FetchManifest(FetchManifestType type);
+  void OnManifestListFetched(IdpNetworkRequestManager::FetchStatus status,
+                             const std::set<std::string>& urls);
+  void OnManifestListFetchedForRevoke(
+      IdpNetworkRequestManager::FetchStatus status,
+      const std::set<std::string>& urls);
   void OnManifestFetched(IdpNetworkRequestManager::FetchStatus status,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata idp_metadata);
+  void OnManifestReady(IdentityProviderMetadata idp_metadata);
   void OnBrandIconDownloaded(int icon_minimum_size,
                              IdentityProviderMetadata idp_metadata,
                              int id,
@@ -122,6 +129,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void OnManifestFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
                                   IdpNetworkRequestManager::Endpoints,
                                   IdentityProviderMetadata idp_metadata);
+  void OnManifestReadyForRevoke(IdentityProviderMetadata idp_metadata);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
   // |should_call_callback| represents whether we should call the callback to
   // either resolve or reject the promise immediately when the renderer receives
@@ -187,7 +195,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
     GURL token;
     GURL accounts;
     GURL client_metadata;
+    GURL revoke;
   } endpoints_;
+
+  // Represents whether the manifest has been validated via checking the
+  // manifest list.
+  bool manifest_list_checked_ = false;
+  absl::optional<IdentityProviderMetadata> idp_metadata_;
 
   raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
       active_session_permission_delegate_ = nullptr;

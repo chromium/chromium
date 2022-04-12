@@ -171,7 +171,9 @@ class WebIdBrowserTest : public ContentBrowserTest {
     // from that used for other IdP transactions, to prevent data leakage.
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
-    scoped_feature_list_.InitWithFeatures(features, {});
+    // TODO(https://1314987): Test manifest validation.
+    scoped_feature_list_.InitWithFeatures(features,
+                                          {features::kFedCmManifestValidation});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }

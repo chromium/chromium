@@ -65,7 +65,7 @@ namespace content {
 namespace {
 
 constexpr char kIdpTestOrigin[] = "https://idp.example";
-constexpr char kProviderUrl[] = "https://idp.example";
+constexpr char kProviderUrl[] = "https://idp.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -76,6 +76,7 @@ constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
+constexpr bool kManifestInList = true;
 
 // Values will be added here as token introspection is implemented.
 constexpr char kToken[] = "[not a real token]";
@@ -103,13 +104,15 @@ enum FetchedEndpoint {
   ACCOUNTS = 1 << 2,
   TOKEN = 1 << 3,
   REVOCATION = 1 << 4,
+  MANIFEST_LIST = 1 << 5,
 };
 
 // All endpoints which are fetched in a successful
 // FederatedAuthRequestImpl::RequestIdToken() request.
 int FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN =
     FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
-    FetchedEndpoint::ACCOUNTS | FetchedEndpoint::TOKEN;
+    FetchedEndpoint::ACCOUNTS | FetchedEndpoint::TOKEN |
+    FetchedEndpoint::MANIFEST_LIST;
 
 // Expected return values from a call to RequestIdToken.
 struct RequestExpectations {
@@ -132,6 +135,7 @@ struct MockManifest {
   const char* token_endpoint;
   const char* client_metadata_endpoint;
   const char* revocation_endpoint;
+  bool manifest_in_list;
 };
 
 struct MockConfiguration {
@@ -149,7 +153,7 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
 
 static const RequestParameters kDefaultRequestParameters{
-    kIdpTestOrigin, kClientId, kNonce, /*prefer_auto_sign_in=*/false};
+    kProviderUrl, kClientId, kNonce, /*prefer_auto_sign_in=*/false};
 
 static const MockConfiguration kConfigurationValid{
     kToken,
@@ -159,6 +163,7 @@ static const MockConfiguration kConfigurationValid{
         kTokenEndpoint,
         kClientMetadataEndpoint,
         kRevocationEndpoint,
+        kManifestInList,
     },
     kDefaultClientMetadata,
     FetchStatus::kSuccess,
@@ -315,6 +320,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     DCHECK(delegate_);
   }
 
+  void FetchManifestList(FetchManifestListCallback callback) override {
+    delegate_->FetchManifestList(std::move(callback));
+  }
+
   void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
                      absl::optional<int> idp_brand_icon_minimum_size,
                      FetchManifestCallback callback) override {
@@ -363,6 +372,15 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
   void SetTestConfig(const MockConfiguration& configuration) {
     config_ = configuration;
+  }
+
+  void FetchManifestList(FetchManifestListCallback callback) override {
+    fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
+    std::set<std::string> urls;
+    if (config_.manifest.manifest_in_list) {
+      urls.insert(kProviderUrl);
+    }
+    std::move(callback).Run(FetchStatus::kSuccess, urls);
   }
 
   void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
@@ -576,6 +594,18 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             {FederatedAuthRequestResult::kSuccess, absl::nullopt},
             {FederatedAuthRequestResult::kApprovalDeclined,
              "User declined the sign-in attempt."},
+            {FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
+             "The provider's FedCM manifest list file cannot be found."},
+            {FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
+             "The provider's FedCM manifest list file fetch resulted in an "
+             "error response code."},
+            {FederatedAuthRequestResult::
+                 kErrorFetchingManifestListInvalidResponse,
+             "Provider's FedCM manifest list file is invalid."},
+            {FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+             "Provider's FedCM manifest not listed in its manifest list."},
+            {FederatedAuthRequestResult::kErrorManifestListTooBig,
+             "Provider's FedCM manifest list contains too many providers."},
             {FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
              "The provider's FedCM manifest configuration cannot be found."},
             {FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
@@ -815,6 +845,42 @@ TEST_F(BasicFederatedAuthRequestImplTest, SuccessfulRequest) {
               kConfigurationValid);
 }
 
+// Test successful manifest list fetching.
+TEST_F(BasicFederatedAuthRequestImplTest, ManifestListSuccess) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
+  // to IdpNetworkRequestManager methods.
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectations(kDefaultRequestParameters.client_id,
+                           kConfigurationValid.accounts[0].id,
+                           /* expected_revocation_hint=*/"");
+  SetNetworkRequestManager(std::move(checker));
+
+  RequestExpectations expect{kExpectationSuccess};
+  expect.fetched_endpoints |= FetchedEndpoint::MANIFEST_LIST;
+
+  RunAuthTest(kDefaultRequestParameters, expect, kConfigurationValid);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  MockConfiguration config_not_in_list{kConfigurationValid};
+  config_not_in_list.manifest.manifest_in_list = false;
+
+  RequestExpectations request_not_in_list = {
+      RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+      FetchedEndpoint::MANIFEST_LIST};
+
+  RunAuthTest(kDefaultRequestParameters, request_not_in_list,
+              config_not_in_list);
+}
+
 // Test that request fails if manifest is missing token endpoint.
 TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
@@ -822,7 +888,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      FetchedEndpoint::MANIFEST};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   std::vector<std::string> messages =
@@ -843,7 +909,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      FetchedEndpoint::MANIFEST};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   std::vector<std::string> messages =
@@ -864,7 +930,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      FetchedEndpoint::MANIFEST};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   std::vector<std::string> messages =
@@ -886,7 +952,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      FetchedEndpoint::MANIFEST};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -898,7 +964,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
-          FetchedEndpoint::ACCOUNTS};
+          FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -910,7 +976,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountsCannotBeParsed) {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
-          FetchedEndpoint::ACCOUNTS};
+          FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -922,7 +988,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNotFound) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
-      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -934,7 +1001,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataEmptyResponse) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -946,7 +1014,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataInvalidResponse) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
-      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -960,7 +1029,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoPrivacyUrl) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorClientMetadataMissingPrivacyPolicyUrl,
-      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -975,7 +1045,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      FetchedEndpoint::MANIFEST};
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
@@ -1248,7 +1318,8 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
 
   auto status = PerformRevokeRequest(kConfigurationValid, kHint);
   EXPECT_EQ(RevokeStatus::kSuccess, status);
-  EXPECT_EQ(FetchedEndpoint::MANIFEST | FetchedEndpoint::REVOCATION,
+  EXPECT_EQ(FetchedEndpoint::MANIFEST | FetchedEndpoint::REVOCATION |
+                FetchedEndpoint::MANIFEST_LIST,
             test_network_request_manager_->get_fetched_endpoints());
 
   ukm_loop.Run();

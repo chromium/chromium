@@ -25,4 +25,8 @@ bool IsFedCmIdpSignoutEnabled() {
       features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName, false);
 }
 
+bool IsFedCmManifestValidationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmManifestValidation);
+}
+
 }  // namespace content

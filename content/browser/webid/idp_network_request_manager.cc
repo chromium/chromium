@@ -589,7 +589,7 @@ void IdpNetworkRequestManager::OnManifestListLoaded(
 
   if (response_error != FetchStatus::kSuccess) {
     std::move(manifest_list_callback_)
-        .Run(response_error, std::vector<std::string>());
+        .Run(response_error, std::set<std::string>());
     return;
   }
 
@@ -622,7 +622,7 @@ void IdpNetworkRequestManager::OnManifestLoaded(
 
 void IdpNetworkRequestManager::OnManifestListParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  std::vector<std::string> urls;
+  std::set<std::string> urls;
 
   if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     std::move(manifest_list_callback_)
@@ -648,10 +648,10 @@ void IdpNetworkRequestManager::OnManifestListParsed(
     const std::string* url = value.GetIfString();
     if (!url) {
       std::move(manifest_list_callback_)
-          .Run(FetchStatus::kInvalidResponseError, std::vector<std::string>());
+          .Run(FetchStatus::kInvalidResponseError, std::set<std::string>());
       return;
     }
-    urls.push_back(*url);
+    urls.insert(*url);
   }
 
   std::move(manifest_list_callback_).Run(FetchStatus::kSuccess, urls);

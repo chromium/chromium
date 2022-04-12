@@ -177,6 +177,22 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }
+    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestListHttpNotFound;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestListNoResponse;
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingManifestListInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestListInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorManifestNotInManifestList: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestNotInManifestList;
+    }
+    case FederatedAuthRequestResult::kErrorManifestListTooBig: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestListTooBig;
+    }
     case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ManifestHttpNotFound;
     }

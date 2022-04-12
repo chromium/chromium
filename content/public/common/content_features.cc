@@ -351,6 +351,10 @@ const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 
+// Kill switch for FedCm manifest validation.
+const base::Feature kFedCmManifestValidation{"FedCmManifestValidation",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables usage of First Party Sets to determine cookie availability.
 constexpr base::Feature kFirstPartySets{"FirstPartySets",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
