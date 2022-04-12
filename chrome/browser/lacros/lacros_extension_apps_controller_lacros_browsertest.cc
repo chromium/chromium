@@ -131,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   ASSERT_TRUE(success);
 
   // Close all app windows.
-  for (extensions::AppWindow* app_window :
-       extensions::AppWindowRegistry::Get(profile())->app_windows()) {
+  extensions::AppWindowRegistry::AppWindowList app_windows =
+      extensions::AppWindowRegistry::Get(profile())->app_windows();
+  for (extensions::AppWindow* app_window : app_windows) {
     std::string window_id = browser_test_util::GetWindowId(
         app_window->GetNativeWindow()->GetRootWindow());
     app_window->GetBaseWindow()->Close();
