@@ -11,7 +11,8 @@
 
 namespace blink {
 
-// This class collects performance data for font-related operations.
+// This class collects performance data for font-related operations in main
+// thread.
 class PLATFORM_EXPORT FontPerformance {
  public:
   static void Reset() {
@@ -40,10 +41,16 @@ class PLATFORM_EXPORT FontPerformance {
   // The aggregated time spent in |FallbackFontForCharacter|.
   static base::TimeDelta SystemFallbackFontTime() { return system_fallback_; }
   static void AddSystemFallbackFontTime(base::TimeDelta time) {
+    if (UNLIKELY(!IsMainThread()))
+      return;
     system_fallback_ += time;
   }
 
-  static void AddShapingTime(base::TimeDelta time) { shaping_ += time; }
+  static void AddShapingTime(base::TimeDelta time) {
+    if (UNLIKELY(!IsMainThread()))
+      return;
+    shaping_ += time;
+  }
 
   static void MarkFirstContentfulPaint();
   static void MarkDomContentLoaded();
