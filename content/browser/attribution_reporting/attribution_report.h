@@ -114,6 +114,10 @@ class CONTENT_EXPORT AttributionReport {
 
   using Id = absl::variant<EventLevelData::Id, AggregatableAttributionData::Id>;
 
+  static ReportType GetReportType(Id report_id) {
+    return static_cast<ReportType>(report_id.index());
+  }
+
   AttributionReport(
       AttributionInfo attribution_info,
       base::Time report_time,
@@ -152,6 +156,10 @@ class CONTENT_EXPORT AttributionReport {
 
   absl::variant<EventLevelData, AggregatableAttributionData>& data() {
     return data_;
+  }
+
+  ReportType GetReportType() const {
+    return static_cast<ReportType>(data_.index());
   }
 
   void set_report_time(base::Time report_time);

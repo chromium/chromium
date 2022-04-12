@@ -126,10 +126,6 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
   }
 }
 
-AttributionReport::ReportType GetReportType(AttributionReport::Id report_id) {
-  return static_cast<AttributionReport::ReportType>(report_id.index());
-}
-
 void RecordAssembleAggregatableReportStatus(
     AssembleAggregatableReportStatus status) {
   base::UmaHistogramEnumeration(
@@ -139,50 +135,51 @@ void RecordAssembleAggregatableReportStatus(
 // Called when |report| is to be sent over network for event-level reports or
 // to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
-  if (absl::holds_alternative<AttributionReport::EventLevelData>(
-          report.data())) {
-    // Use a large time range to capture users that might not open the browser
-    // for a long time while a conversion report is pending. Revisit this
-    // range if it is non-ideal for real world data.
-    const AttributionInfo& attribution_info = report.attribution_info();
-    base::Time original_report_time = ComputeReportTime(
-        attribution_info.source.common_info(), attribution_info.time);
-    base::TimeDelta time_since_original_report_time =
-        now - original_report_time;
-    base::UmaHistogramCustomTimes(
-        "Conversions.ExtraReportDelay2", time_since_original_report_time,
-        base::Seconds(1), base::Days(24), /*buckets=*/100);
+  switch (report.GetReportType()) {
+    case AttributionReport::ReportType::kEventLevel: {
+      // Use a large time range to capture users that might not open the browser
+      // for a long time while a conversion report is pending. Revisit this
+      // range if it is non-ideal for real world data.
+      const AttributionInfo& attribution_info = report.attribution_info();
+      base::Time original_report_time = ComputeReportTime(
+          attribution_info.source.common_info(), attribution_info.time);
+      base::TimeDelta time_since_original_report_time =
+          now - original_report_time;
+      base::UmaHistogramCustomTimes(
+          "Conversions.ExtraReportDelay2", time_since_original_report_time,
+          base::Seconds(1), base::Days(24), /*buckets=*/100);
 
-    base::TimeDelta time_from_conversion_to_report_send =
-        report.report_time() - attribution_info.time;
-    UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
-                              time_from_conversion_to_report_send.InHours());
-  } else {
-    DCHECK(
-        absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
-            report.data()));
-    base::TimeDelta time_from_conversion_to_report_assembly =
-        report.report_time() - report.attribution_info().time;
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
-        time_from_conversion_to_report_assembly.InMinutes());
+      base::TimeDelta time_from_conversion_to_report_send =
+          report.report_time() - attribution_info.time;
+      UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
+                                time_from_conversion_to_report_send.InHours());
+      break;
+    }
+    case AttributionReport::ReportType::kAggregatableAttribution: {
+      base::TimeDelta time_from_conversion_to_report_assembly =
+          report.report_time() - report.attribution_info().time;
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
+          time_from_conversion_to_report_assembly.InMinutes());
+      break;
+    }
   }
 }
 
 // Called when |report| is sent, failed or dropped, for logging metrics.
 void LogMetricsOnReportCompleted(const AttributionReport& report,
                                  SendResult::Status status) {
-  if (absl::holds_alternative<AttributionReport::EventLevelData>(
-          report.data())) {
-    base::UmaHistogramEnumeration("Conversions.ReportSendOutcome2",
-                                  ConvertToConversionReportSendOutcome(status));
-  } else {
-    DCHECK(
-        absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
-            report.data()));
-    base::UmaHistogramEnumeration(
-        "Conversions.AggregatableReport.ReportSendOutcome",
-        ConvertToConversionReportSendOutcome(status));
+  switch (report.GetReportType()) {
+    case AttributionReport::ReportType::kEventLevel:
+      base::UmaHistogramEnumeration(
+          "Conversions.ReportSendOutcome2",
+          ConvertToConversionReportSendOutcome(status));
+      break;
+    case AttributionReport::ReportType::kAggregatableAttribution:
+      base::UmaHistogramEnumeration(
+          "Conversions.AggregatableReport.ReportSendOutcome",
+          ConvertToConversionReportSendOutcome(status));
+      break;
   }
 }
 
@@ -734,7 +731,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);
                 manager->scheduler_.ScheduleSend(new_report_time);
-                manager->NotifyReportsChanged(GetReportType(report_id));
+                manager->NotifyReportsChanged(
+                    AttributionReport::GetReportType(report_id));
               }
             },
             std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId(),
@@ -755,7 +753,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
             if (manager && success) {
               manager->MarkReportCompleted(report_id);
-              manager->NotifyReportsChanged(GetReportType(report_id));
+              manager->NotifyReportsChanged(
+                  AttributionReport::GetReportType(report_id));
             }
           },
           std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId()));
