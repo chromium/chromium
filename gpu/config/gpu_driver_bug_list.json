@@ -3969,6 +3969,17 @@
       "features": [
         "disable_canvas_oop_rasterization"
       ]
+    },
+    {
+      "id": 393,
+      "description": "GL Contexts heavy / exhaust resources",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "use_virtualized_gl_contexts"
+      ]
     }
   ]
 }
