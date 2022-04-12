@@ -24,6 +24,10 @@
 #include "util/misc/initialization_state.h"
 #include "util/misc/uuid.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "util/ios/scoped_background_task.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace crashpad {
 
 namespace internal {
@@ -153,7 +157,24 @@ class Settings {
     FileHandle handle_;
     base::FilePath lockfile_path_;
   };
-#else  // BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_IOS)
+  // iOS needs to use ScopedBackgroundTask anytime a file lock is used.
+  class ScopedLockedFileHandle
+      : public base::ScopedGeneric<FileHandle,
+                                   internal::ScopedLockedFileHandleTraits> {
+   public:
+    using base::ScopedGeneric<
+        FileHandle,
+        internal::ScopedLockedFileHandleTraits>::ScopedGeneric;
+
+    ScopedLockedFileHandle(const FileHandle& value);
+    ScopedLockedFileHandle(ScopedLockedFileHandle&& rvalue);
+    ScopedLockedFileHandle& operator=(ScopedLockedFileHandle&& rvalue);
+
+   private:
+    std::unique_ptr<internal::ScopedBackgroundTask> ios_background_task_;
+  };
+#else
   using ScopedLockedFileHandle =
       base::ScopedGeneric<FileHandle, internal::ScopedLockedFileHandleTraits>;
 #endif  // BUILDFLAG(IS_FUCHSIA)

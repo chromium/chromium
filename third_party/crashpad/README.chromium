@@ -46,3 +46,4 @@ Local Modifications:
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
  - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
+ - Cherry picked 646bba733b2339b0fa5f3ae0de659a11fb00bbf9
