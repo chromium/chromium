@@ -197,6 +197,11 @@ bool IsValidPasswordURL(const GURL& url);
 // origin |url|.
 std::string GetSignonRealm(const GURL& url);
 
+// Returns whether branded (Google Password Manager) name should be used
+// in the password manager UI. Branded name is always used in Chrome builds
+// and only when user |is_syncing| in Chromium builds.
+bool UsesPasswordManagerGoogleBranding(bool is_syncing);
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_

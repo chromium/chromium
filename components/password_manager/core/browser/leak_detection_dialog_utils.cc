@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -93,23 +94,43 @@ std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
 }
 
 std::u16string GetDescription(CredentialLeakType leak_type) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
+#if BUILDFLAG(IS_IOS)
+  const bool uses_password_manager_updated_naming =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+  const bool uses_password_manager_google_branding = true;
+#elif BUILDFLAG(IS_ANDROID)
+  const bool uses_password_manager_updated_naming =
+      password_manager::features::UsesUnifiedPasswordManagerUi();
+  const bool uses_password_manager_google_branding =
+      password_manager_util::UsesPasswordManagerGoogleBranding(
+          IsSyncingPasswordsNormally(leak_type));
+#else
+  // TODO(crbug.com/1309480): Update to support Desktop branding.
+  const bool uses_password_manager_updated_naming = false;
+  const bool uses_password_manager_google_branding = false;
+#endif
+  if (uses_password_manager_updated_naming) {
     if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
       return l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
+          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM);
     }
     if (!ShouldCheckPasswords(leak_type)) {
       return l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_BRANDED);
+          uses_password_manager_google_branding
+              ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
+              : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
     }
     if (password_manager::IsPasswordSaved(leak_type)) {
       return l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_BRANDED);
+          uses_password_manager_google_branding
+              ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+              : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
     }
     return l10n_util::GetStringUTF16(
-        IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_BRANDED);
+        uses_password_manager_google_branding
+            ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+            : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   } else {
     if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
       return l10n_util::GetStringUTF16(
@@ -133,13 +154,22 @@ std::u16string GetTitle(CredentialLeakType leak_type) {
     return l10n_util::GetStringUTF16(
         IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    return l10n_util::GetStringUTF16(
-        ShouldCheckPasswords(leak_type)
-            ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_BRANDED
-            : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
+
+#if BUILDFLAG(IS_IOS)
+  const bool uses_password_manager_updated_naming =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+#elif BUILDFLAG(IS_ANDROID)
+  const bool uses_password_manager_updated_naming =
+      password_manager::features::UsesUnifiedPasswordManagerUi();
+#else
+  // TODO(crbug.com/1309480): Update to support Desktop branding.
+  const bool uses_password_manager_updated_naming = false;
+#endif
+  if (uses_password_manager_updated_naming) {
+    return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
+                                         ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
+                                         : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
   } else {
     return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK

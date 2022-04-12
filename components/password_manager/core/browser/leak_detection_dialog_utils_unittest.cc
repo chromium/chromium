@@ -7,6 +7,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -44,8 +45,11 @@ const struct {
                     IsSyncing(false),
                     HasChangeScript(false)),
      IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_BRANDED,
+#if BUILDFLAG(IS_IOS) || \
+    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING))
+     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
+#elif BUILDFLAG(IS_ANDROID) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED,
 #else
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
 #endif
@@ -55,8 +59,8 @@ const struct {
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_BRANDED,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
 #else
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
 #endif
@@ -66,9 +70,9 @@ const struct {
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_BRANDED,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK_BRANDED,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+     IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM,
 #else
      IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE,
      IDS_CREDENTIAL_LEAK_TITLE_CHECK,
@@ -79,8 +83,8 @@ const struct {
                     IsSyncing(true),
                     HasChangeScript(true)),
      IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_BRANDED,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
 #else
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
 #endif
@@ -90,8 +94,8 @@ const struct {
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_BRANDED,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
 #else
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
 #endif
@@ -101,9 +105,9 @@ const struct {
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS)
-     IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_BRANDED,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK_BRANDED,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+     IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM,
 #else
      IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE,
      IDS_CREDENTIAL_LEAK_TITLE_CHECK,
@@ -148,6 +152,9 @@ class CredentialLeakDialogUtilsTest : public testing::Test {
 #if BUILDFLAG(IS_IOS)
     feature_list_.InitAndEnableFeature(
         features::kIOSEnablePasswordManagerBrandingUpdate);
+#elif BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndEnableFeature(
+        features::kUnifiedPasswordManagerAndroid);
 #endif
   }
 
@@ -214,6 +221,9 @@ class BulkCheckCredentialLeakDialogUtilsTest
 #if BUILDFLAG(IS_IOS)
     feature_list_.InitAndEnableFeature(
         features::kIOSEnablePasswordManagerBrandingUpdate);
+#elif BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndEnableFeature(
+        features::kUnifiedPasswordManagerAndroid);
 #endif
   }
 
@@ -242,8 +252,8 @@ TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Buttons) {
 TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Title) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   int leak_title_id;
-#if BUILDFLAG(IS_IOS)
-  leak_title_id = IDS_CREDENTIAL_LEAK_TITLE_CHECK_BRANDED;
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  leak_title_id = IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM;
 #else
   leak_title_id = IDS_CREDENTIAL_LEAK_TITLE_CHECK;
 #endif

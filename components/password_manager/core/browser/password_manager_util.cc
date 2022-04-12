@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -487,6 +488,14 @@ std::string GetSignonRealm(const GURL& url) {
   rep.ClearRef();
   rep.SetPathStr("");
   return url.ReplaceComponents(rep).spec();
+}
+
+bool UsesPasswordManagerGoogleBranding(bool is_syncing) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return is_syncing;
+#endif  // GOOGLE_CHROME_BRANDING
 }
 
 }  // namespace password_manager_util
