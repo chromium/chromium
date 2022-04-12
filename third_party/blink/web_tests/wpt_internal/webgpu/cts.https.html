@@ -1581,6 +1581,8 @@
 <meta name=variant content='?q=webgpu:api,operation,shader_module,compilation_info:compilationInfo_returns:*'>
 <meta name=variant content='?q=webgpu:api,operation,shader_module,compilation_info:line_number_and_position:*'>
 <meta name=variant content='?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:*'>
+<meta name=variant content='?q=webgpu:api,operation,texture_view,format_reinterpretation:texture_binding:*'>
+<meta name=variant content='?q=webgpu:api,operation,texture_view,format_reinterpretation:render_and_resolve_attachment:*'>
 <meta name=variant content='?q=webgpu:api,operation,texture_view,read:format:*'>
 <meta name=variant content='?q=webgpu:api,operation,texture_view,read:dimension:*'>
 <meta name=variant content='?q=webgpu:api,operation,texture_view,read:aspect:*'>
@@ -2047,6 +2049,7 @@
 <meta name=variant content='?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";*'>
 <meta name=variant content='?q=webgpu:api,validation,createTexture:texture_usage:dimension="2d";*'>
 <meta name=variant content='?q=webgpu:api,validation,createTexture:texture_usage:dimension="3d";*'>
+<meta name=variant content='?q=webgpu:api,validation,createTexture:viewFormats:*'>
 <meta name=variant content='?q=webgpu:api,validation,createView:format:*'>
 <meta name=variant content='?q=webgpu:api,validation,createView:dimension:*'>
 <meta name=variant content='?q=webgpu:api,validation,createView:aspect:*'>
@@ -2586,10 +2589,10 @@
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,same_draw_or_dispatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_draws_or_dispatches:*'>
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_passes:*'>
-<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_texture_as_color_attachments:*'>
-<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_texture_as_color_attachment_and_in_bind_group:*'>
-<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_texture_as_depth_stencil_attachment_and_in_bind_group:*'>
-<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_color_texture_in_bind_groups:*'>
+<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources,color_attachments:*'>
+<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources,color_attachment_and_bind_group:*'>
+<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources,depth_stencil_attachment_and_bind_group:*'>
+<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources,multiple_bind_groups:*'>
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_depth_stencil_texture_in_bind_groups:*'>
 <meta name=variant content='?q=webgpu:api,validation,state,device_lost,destroy:createBuffer:*'>
 <meta name=variant content='?q=webgpu:api,validation,state,device_lost,destroy:createTexture,2d,uncompressed_format:*'>
