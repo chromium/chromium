@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.NotShownReason;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -31,7 +32,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisabledTest(message = "https://crbug.com/825270")
 public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
@@ -48,20 +48,45 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
                 billingAddressId, "" /* serverId */));
     }
 
+    /**
+     * Runs a piece of JavaScript with a user gesture and waits for a given CallbackHelper to occur.
+     **/
+    private void runJavascriptAndWaitFor(String code, CallbackHelper helper)
+            throws TimeoutException {
+        int callCount = helper.getCallCount();
+        mPaymentRequestTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(code);
+        helper.waitForCallback(callCount);
+    }
+
+    /**
+     * Runs a piece of JavaScript with a user gesture and waits for the promise it returns to settle
+     * or reject; returning the result in either case.
+     *
+     * @param promiseCode a JavaScript snippet that will return a promise
+     */
+    private String runJavaScriptWithUserGestureAndWaitForPromise(String promiseCode)
+            throws TimeoutException {
+        String code = promiseCode + ".then(result => domAutomationController.send(result))"
+                + ".catch(error => domAutomationController.send(error));";
+        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                mPaymentRequestTestRule.getWebContents(), code);
+    }
+
     @Test
     @MediumTest
     @Feature({"Payments"})
     @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testSecondShowRequestCancelled() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.expectResultContains(new String[] {
-                "Second request: AbortError: Another PaymentRequest UI is already showing in a "
-                + "different tab or window"});
+        mPaymentRequestTestRule.openPage();
+        runJavascriptAndWaitFor("showFirst()", mPaymentRequestTestRule.getReadyToPay());
+        Assert.assertEquals(
+                "\"Second request: AbortError: Another PaymentRequest UI is already showing in a different tab or window.\"",
+                runJavaScriptWithUserGestureAndWaitForPromise("showSecond()"));
 
         // The web payments UI was not aborted.
         mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(-1 /* none */);
 
-        // The UI was never shown due to another web payments UI already showing.
+        // The second UI was never shown due to another web payments UI already showing.
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.CheckoutFunnel.NoShow",

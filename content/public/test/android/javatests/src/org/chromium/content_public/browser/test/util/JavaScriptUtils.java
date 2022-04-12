@@ -99,6 +99,19 @@ public class JavaScriptUtils {
     }
 
     /**
+     * Executes the given snippet of JavaScript code within the given WebContents, with a user
+     * gesture, and waits for a call to domAutomationController.send(). Returns the result from
+     * domAutomationController.send() in JSON format.
+     */
+    public static String runJavascriptWithUserGestureAndAsyncResult(
+            WebContents webContents, String code) throws TimeoutException {
+        DomAutomationController controller = new DomAutomationController();
+        controller.inject(webContents);
+        WebContentsUtils.evaluateJavaScriptWithUserGesture(webContents, code, null);
+        return controller.waitForResult("No result for `" + code + "`");
+    }
+
+    /**
      * Executes the given snippet of JavaScript code but does not wait for the result.
      */
     public static void executeJavaScript(final WebContents webContents, final String code) {
