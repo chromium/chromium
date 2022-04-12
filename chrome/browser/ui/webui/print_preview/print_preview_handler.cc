@@ -190,21 +190,12 @@ const char kPrintPdfAsImageAvailability[] = "printPdfAsImageAvailability";
 // a PDF job.
 const char kPrintPdfAsImage[] = "printPdfAsImage";
 
-// Get the print job settings dictionary from |json_str|.
-absl::optional<base::Value::Dict> GetSettingsDictionary(
-    const std::string& json_str) {
+// Gets the print job settings dictionary from |json_str|. Assumes the Print
+// Preview WebUI does not send over invalid data.
+base::Value::Dict GetSettingsDictionary(const std::string& json_str) {
   absl::optional<base::Value> settings = base::JSONReader::Read(json_str);
-  if (!settings || !settings->is_dict()) {
-    NOTREACHED() << "Print job settings must be a dictionary.";
-    return absl::nullopt;
-  }
-
   base::Value::Dict dict = std::move(settings->GetDict());
-  if (dict.empty()) {
-    NOTREACHED() << "Print job settings dictionary is empty";
-    return absl::nullopt;
-  }
-
+  CHECK(!dict.empty());
   return dict;
 }
 
@@ -672,7 +663,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   json_str = args[1].GetString();
-  base::Value::Dict settings = GetSettingsDictionary(json_str).value();
+  base::Value::Dict settings = GetSettingsDictionary(json_str);
   int request_id = settings.FindInt(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
@@ -740,14 +731,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   CHECK(args[1].is_string());
   std::string json_str = args[1].GetString();
 
-  absl::optional<base::Value::Dict> maybe_settings =
-      GetSettingsDictionary(json_str);
-  if (!maybe_settings.has_value()) {
-    RejectJavascriptCallback(base::Value(callback_id), base::Value(-1));
-    return;
-  }
-
-  base::Value::Dict settings = std::move(maybe_settings.value());
+  base::Value::Dict settings = GetSettingsDictionary(json_str);
   const UserActionBuckets user_action = DetermineUserAction(settings);
 
   int page_count = settings.FindInt(kSettingPreviewPageCount).value_or(-1);
