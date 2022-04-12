@@ -224,7 +224,7 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
 void EnrollmentScreen::CreateEnrollmentHelper() {
   if (!enrollment_helper_) {
     enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-        this, this, config_, enrolling_user_domain_);
+        this, this, config_, enrolling_user_domain_, license_type_to_use_);
   }
 }
 
@@ -265,8 +265,7 @@ void EnrollmentScreen::UpdateFlowType() {
   if (!view_)
     return;
   if (features::IsLicensePackagedOobeFlowEnabled() &&
-      config_.license_type ==
-          policy::EnrollmentConfig::LicenseType::kEnterprise) {
+      config_.license_type == policy::LicenseType::kEnterprise) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterpriseLicense);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
@@ -437,10 +436,12 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
 }
 
 void EnrollmentScreen::OnLoginDone(const std::string& user,
+                                   int license_type,
                                    const std::string& auth_code) {
   LOG_IF(ERROR, auth_code.empty()) << "Auth code is empty.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   enrolling_user_domain_ = gaia::ExtractDomainName(user);
+  license_type_to_use_ = static_cast<policy::LicenseType>(license_type);
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 

@@ -31,6 +31,7 @@ class EnrollmentScreenView {
     virtual ~Controller() {}
 
     virtual void OnLoginDone(const std::string& user,
+                             int license_type,
                              const std::string& auth_code) = 0;
     virtual void OnRetry() = 0;
     virtual void OnCancel() = 0;

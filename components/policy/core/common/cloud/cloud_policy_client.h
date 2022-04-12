@@ -146,8 +146,14 @@ class POLICY_EXPORT CloudPolicyClient {
     void SetPsmDeterminationTimestamp(
         absl::optional<int64_t> new_psm_timestamp);
 
+    void SetLicenseType(
+        enterprise_management::LicenseType_LicenseTypeEnum license_type);
+
     enterprise_management::DeviceRegisterRequest::Type registration_type;
     enterprise_management::DeviceRegisterRequest::Flavor flavor;
+
+    absl::optional<enterprise_management::LicenseType_LicenseTypeEnum>
+        license_type_;
 
     // Lifetime of registration. Used for easier clean up of ephemeral session
     // registrations.

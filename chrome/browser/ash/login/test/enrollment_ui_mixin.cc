@@ -21,6 +21,7 @@ const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
 const char kEnrollmentStepADJoin[] = "ad-join";
 const char kEnrollmentStepError[] = "error";
+const char kEnrollmentStepKioskEnrollment[] = "kiosk-enrollment";
 const char kEnrollmentStepDeviceAttributesError[] = "attribute-prompt-error";
 const char kEnrollmentStepADJoinError[] = "active-directory-join-error";
 
@@ -41,7 +42,7 @@ const char* const kAllSteps[] = {
     ui::kEnrollmentStepSignin,      ui::kEnrollmentStepWorking,
     ui::kEnrollmentStepTPMChecking, ui::kEnrollmentStepDeviceAttributes,
     ui::kEnrollmentStepSuccess,     ui::kEnrollmentStepADJoin,
-    ui::kEnrollmentStepError};
+    ui::kEnrollmentStepError,       ui::kEnrollmentStepKioskEnrollment};
 
 std::string StepElementID(const std::string& step) {
   return "step-" + step;
@@ -59,6 +60,8 @@ const UIPath kEnrollmentAttributeErrorButtonPath = {kEnrollmentUI,
 const UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
 const UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
 const UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI, "attributesSubmit"};
+const UIPath kConfirmKioskEnrollmentButton = {kEnrollmentUI,
+                                              "enrollKioskButton"};
 }  // namespace
 
 EnrollmentUIMixin::EnrollmentUIMixin(InProcessBrowserTestMixinHost* host)
@@ -115,6 +118,10 @@ void EnrollmentUIMixin::LeaveDeviceAttributeErrorScreen() {
 
 void EnrollmentUIMixin::LeaveSuccessScreen() {
   OobeJS().ClickOnPath(kEnrollmentSuccessButtonPath);
+}
+
+void EnrollmentUIMixin::ConfirmKioskEnrollment() {
+  OobeJS().ClickOnPath(kConfirmKioskEnrollmentButton);
 }
 
 void EnrollmentUIMixin::SubmitDeviceAttributes(const std::string& asset_id,

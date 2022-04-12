@@ -71,6 +71,16 @@ class PolicyStorage {
     robot_api_auth_code_ = robot_api_auth_code;
   }
 
+  bool has_kiosk_license() const { return has_kiosk_license_; }
+  void set_has_kiosk_license(bool has_kiosk_license) {
+    has_kiosk_license_ = has_kiosk_license;
+  }
+
+  bool has_enterprise_license() const { return has_enterprise_license_; }
+  void set_has_enterprise_license(bool has_enterprise_license) {
+    has_enterprise_license_ = has_enterprise_license;
+  }
+
   const std::string& service_account_identity() const {
     return service_account_identity_;
   }
@@ -172,6 +182,10 @@ class PolicyStorage {
   bool allow_set_device_attributes_ = true;
 
   DeviceState device_state_;
+
+  bool has_kiosk_license_ = true;
+
+  bool has_enterprise_license_ = true;
 
   // Maps brand serial ID to PsmEntry.
   base::flat_map<std::string, PsmEntry> psm_entries_;

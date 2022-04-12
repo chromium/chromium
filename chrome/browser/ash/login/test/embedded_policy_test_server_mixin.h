@@ -107,6 +107,9 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // enrollment flows.
   void SetFakeAttestationFlow();
 
+  // Sets which types of licenses are possible to use for enrollment.
+  void SetAvailableLicenses(bool has_enterpise_license, bool has_kiosk_license);
+
   // Configures server to expect these PSM (private set membership) execution
   // values (i.e. `psm_execution_result` and `psm_determination_timestamp`) as
   // part of DeviceRegisterRequest. Note: `device_brand_code` and

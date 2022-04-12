@@ -60,17 +60,18 @@ void EnrollmentHelperMixin::ResetMock() {
 }
 
 void EnrollmentHelperMixin::ExpectNoEnrollment() {
-  EXPECT_CALL(*mock_, Setup(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_, Setup(_, _, _, _)).Times(0);
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentMode(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(*mock_, Setup(_, ConfigModeMatches(mode), _));
+  EXPECT_CALL(*mock_, Setup(_, ConfigModeMatches(mode), _, _));
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentModeRepeated(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(*mock_, Setup(_, ConfigModeMatches(mode), _)).Times(AtLeast(1));
+  EXPECT_CALL(*mock_, Setup(_, ConfigModeMatches(mode), _, _))
+      .Times(AtLeast(1));
 }
 
 void EnrollmentHelperMixin::ExpectSuccessfulOAuthEnrollment() {

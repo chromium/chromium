@@ -86,6 +86,24 @@ std::unique_ptr<HttpResponse> ValidatePsmFields(
   return nullptr;
 }
 
+std::unique_ptr<HttpResponse> ValidateLicenses(
+    const em::DeviceRegisterRequest& register_request,
+    const PolicyStorage* policy_storage) {
+  bool is_enterprise_license = true;
+  if (register_request.has_license_type() &&
+      register_request.license_type().license_type() ==
+          em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK) {
+    is_enterprise_license = false;
+  }
+
+  if ((is_enterprise_license && policy_storage->has_enterprise_license()) ||
+      (!is_enterprise_license && policy_storage->has_kiosk_license())) {
+    return nullptr;
+  }
+
+  return CreateHttpResponse(net::HTTP_PAYMENT_REQUIRED, "No license.");
+}
+
 }  // namespace
 
 RequestHandlerForRegisterDeviceAndUser::RequestHandlerForRegisterDeviceAndUser(
@@ -131,6 +149,10 @@ RequestHandlerForRegisterDeviceAndUser::HandleRequest(
 
   std::unique_ptr<HttpResponse> error_response =
       ValidatePsmFields(register_request, policy_storage());
+  if (error_response)
+    return error_response;
+
+  error_response = ValidateLicenses(register_request, policy_storage());
   if (error_response)
     return error_response;
 

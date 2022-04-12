@@ -57,8 +57,7 @@ bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
   if (config.is_license_packaged_with_device && !config.should_enroll()) {
     // Skip to enroll since GAIA form has welcoming text for enterprise license.
     if (features::IsLicensePackagedOobeFlowEnabled() &&
-        config.license_type ==
-            policy::EnrollmentConfig::LicenseType::kEnterprise) {
+        config.license_type == policy::LicenseType::kEnterprise) {
       exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
       return true;
     }

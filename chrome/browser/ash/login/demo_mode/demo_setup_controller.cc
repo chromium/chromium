@@ -640,7 +640,8 @@ void DemoSetupController::OnDemoResourcesCrOSComponentLoaded() {
   config.management_domain = policy::kDemoModeDomain;
 
   enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-      this, nullptr, config, policy::kDemoModeDomain);
+      this, nullptr, config, policy::kDemoModeDomain,
+      policy::LicenseType::kEnterprise);
   enrollment_helper_->EnrollUsingAttestation();
 }
 
@@ -673,7 +674,8 @@ void DemoSetupController::EnrollOffline() {
   config.offline_policy_path =
       policy_dir.AppendASCII(kOfflineDevicePolicyFileName);
   enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-      this, nullptr /* ad_join_delegate */, config, policy::kDemoModeDomain);
+      this, nullptr /* ad_join_delegate */, config, policy::kDemoModeDomain,
+      policy::LicenseType::kEnterprise);
   enrollment_helper_->EnrollForOfflineDemo();
 }
 

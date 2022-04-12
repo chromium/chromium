@@ -174,6 +174,11 @@ void CloudPolicyClient::RegistrationParameters::SetPsmDeterminationTimestamp(
   psm_determination_timestamp = new_psm_timestamp;
 }
 
+void CloudPolicyClient::RegistrationParameters::SetLicenseType(
+    em::LicenseType_LicenseTypeEnum license_type) {
+  license_type_ = license_type;
+}
+
 CloudPolicyClient::Observer::~Observer() {}
 
 CloudPolicyClient::CloudPolicyClient(
@@ -1703,6 +1708,10 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
   if (params.psm_determination_timestamp.has_value()) {
     request->set_psm_determination_timestamp_ms(
         params.psm_determination_timestamp.value());
+  }
+  if (params.license_type_.has_value()) {
+    request->mutable_license_type()->set_license_type(
+        params.license_type_.value());
   }
 }
 

@@ -180,11 +180,15 @@ OobeTypes.GaiaDialogButtonsType = {
 
 /**
  * Type of license used for enrollment.
- * @enum {string}
+ * Numbers for supported licenses should be in sync with
+ * `LicenseType` from enrollment_config.h.
+ * @enum {number}
  */
 OobeTypes.LicenseType = {
-  KIOSK: 'kiosk',
-  ENTERPRISE: 'enterprise',
+  /* NONE: 0, not used in js */
+  ENTERPRISE: 1,
+  /* EDUCATION: 2, not used in js */
+  KIOSK: 3,
 };
 
 /**

@@ -906,7 +906,8 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   }
 }
 
-void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user) {
+void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
+                                                  int license_type) {
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "HandleCompleteLogin";
@@ -933,16 +934,17 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user) {
         cookie_manager, kOAUTHCodeCookie,
         base::BindRepeating(&EnrollmentScreenHandler::
                                 ContinueAuthenticationWhenCookiesAvailable,
-                            weak_ptr_factory_.GetWeakPtr(), user),
+                            weak_ptr_factory_.GetWeakPtr(), user, license_type),
         base::BindOnce(&EnrollmentScreenHandler::OnCookieWaitTimeout,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  ContinueAuthenticationWhenCookiesAvailable(user);
+  ContinueAuthenticationWhenCookiesAvailable(user, license_type);
 }
 
 void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
-    const std::string& user) {
+    const std::string& user,
+    int license_type) {
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
@@ -960,11 +962,12 @@ void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
       net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&EnrollmentScreenHandler::OnGetCookiesForCompleteLogin,
-                     weak_ptr_factory_.GetWeakPtr(), user));
+                     weak_ptr_factory_.GetWeakPtr(), user, license_type));
 }
 
 void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
     const std::string& user,
+    int license_type,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
   std::string auth_code;
@@ -987,7 +990,7 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
 
   oauth_code_waiter_.reset();
   DCHECK(controller_);
-  controller_->OnLoginDone(gaia::SanitizeEmail(user), auth_code);
+  controller_->OnLoginDone(gaia::SanitizeEmail(user), license_type, auth_code);
 }
 
 void EnrollmentScreenHandler::OnCookieWaitTimeout() {

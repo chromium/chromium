@@ -174,6 +174,15 @@ void EmbeddedPolicyTestServerMixin::SetFakeAttestationFlow() {
               std::move(valid_certificate)));
 }
 
+void EmbeddedPolicyTestServerMixin::SetAvailableLicenses(
+    bool has_enterpise_license,
+    bool has_kiosk_license) {
+  policy_test_server_->policy_storage()->set_has_enterprise_license(
+      has_enterpise_license);
+  policy_test_server_->policy_storage()->set_has_kiosk_license(
+      has_kiosk_license);
+}
+
 void EmbeddedPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
     const std::string& device_brand_code,
     const std::string& device_serial_number,

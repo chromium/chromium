@@ -173,13 +173,13 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   }
 
   if (license_type == kDeviceStateLicenseTypeEnterprise) {
-    config.license_type = EnrollmentConfig::LicenseType::kEnterprise;
+    config.license_type = LicenseType::kEnterprise;
   } else if (license_type == kDeviceStateLicenseTypeEducation) {
-    config.license_type = EnrollmentConfig::LicenseType::kEducation;
+    config.license_type = LicenseType::kEducation;
   } else if (license_type == kDeviceStateLicenseTypeTerminal) {
-    config.license_type = EnrollmentConfig::LicenseType::kTerminal;
+    config.license_type = LicenseType::kTerminal;
   } else {
-    config.license_type = EnrollmentConfig::LicenseType::kNone;
+    config.license_type = LicenseType::kNone;
   }
 
   const bool pref_enrollment_auto_start_present =

@@ -29,7 +29,8 @@ std::unique_ptr<EnterpriseEnrollmentHelper> EnterpriseEnrollmentHelper::Create(
     EnrollmentStatusConsumer* status_consumer,
     policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain) {
+    const std::string& enrolling_user_domain,
+    policy::LicenseType license_type) {
   std::unique_ptr<EnterpriseEnrollmentHelper> result;
 
   // Create a mock instance.
@@ -40,7 +41,8 @@ std::unique_ptr<EnterpriseEnrollmentHelper> EnterpriseEnrollmentHelper::Create(
     result = std::make_unique<EnterpriseEnrollmentHelperImpl>();
   }
   result->set_status_consumer(status_consumer);
-  result->Setup(ad_join_delegate, enrollment_config, enrolling_user_domain);
+  result->Setup(ad_join_delegate, enrollment_config, enrolling_user_domain,
+                license_type);
   return result;
 }
 

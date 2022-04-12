@@ -17,6 +17,7 @@ class GoogleServiceAuthError;
 namespace policy {
 class ActiveDirectoryJoinDelegate;
 struct EnrollmentConfig;
+enum class LicenseType;
 class EnrollmentStatus;
 }  // namespace policy
 
@@ -67,7 +68,8 @@ class EnterpriseEnrollmentHelper {
       EnrollmentStatusConsumer* status_consumer,
       policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const policy::EnrollmentConfig& enrollment_config,
-      const std::string& enrolling_user_domain);
+      const std::string& enrolling_user_domain,
+      policy::LicenseType license_type);
 
   // Sets up a mock object that would be returned by next Create call.
   // This call passes ownership of `mock`.
@@ -130,7 +132,8 @@ class EnterpriseEnrollmentHelper {
   // This method is called once from Create method.
   virtual void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
                      const policy::EnrollmentConfig& enrollment_config,
-                     const std::string& enrolling_user_domain) = 0;
+                     const std::string& enrolling_user_domain,
+                     policy::LicenseType license_type) = 0;
 
   // This method is used in Create method. `status_consumer` must outlive
   // `this`.

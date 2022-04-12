@@ -239,6 +239,7 @@ EnrollmentHandler::EnrollmentHandler(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
+    LicenseType license_type,
     DMAuth dm_auth,
     const std::string& client_id,
     const std::string& requisition,
@@ -280,6 +281,12 @@ EnrollmentHandler::EnrollmentHandler(
         GetPsmExecutionResult(*g_browser_process->local_state()));
     register_params_->SetPsmDeterminationTimestamp(
         GetPsmDeterminationTimestamp(*g_browser_process->local_state()));
+    // License type is set only if terminal license is used. Unset field is
+    // treated as enterprise license.
+    if (license_type == LicenseType::kTerminal) {
+      register_params_->SetLicenseType(
+          em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK);
+    }
 
     register_params_->requisition = requisition;
   }

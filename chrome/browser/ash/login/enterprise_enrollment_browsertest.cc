@@ -155,7 +155,8 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
   // Submits regular enrollment credentials.
   void SubmitEnrollmentCredentials() {
     enrollment_screen()->OnLoginDone(
-        "testuser@test.com", test::EnrollmentHelperMixin::kTestAuthCode);
+        "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
+        test::EnrollmentHelperMixin::kTestAuthCode);
     ExecutePendingJavaScript();
   }
 

@@ -111,16 +111,18 @@ class EnrollmentScreenHandler
   // Implements NetworkStateInformer::NetworkStateInformerObserver
   void UpdateState(NetworkError::ErrorReason reason) override;
 
-  void ContinueAuthenticationWhenCookiesAvailable(const std::string& user);
+  void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,
+                                                  int license_type);
   void OnCookieWaitTimeout();
 
  private:
   // Handlers for WebUI messages.
   void HandleToggleFakeEnrollment();
   void HandleClose(const std::string& reason);
-  void HandleCompleteLogin(const std::string& user);
+  void HandleCompleteLogin(const std::string& user, int license_type);
   void OnGetCookiesForCompleteLogin(
       const std::string& user,
+      int license_type,
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
   void HandleAdCompleteLogin(const std::string& machine_name,

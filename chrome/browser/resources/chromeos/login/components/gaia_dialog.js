@@ -437,7 +437,7 @@ class GaiaDialog extends GaiaDialogBase {
   }
 
   /**
-   * @param {string} licenseType - license to use.
+   * @param {number} licenseType - license to use.
    * @private
    */
   setLicenseType_(licenseType) {

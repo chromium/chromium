@@ -46,7 +46,8 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
                               const std::string& location) override;
   void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
              const policy::EnrollmentConfig& enrollment_config,
-             const std::string& enrolling_user_domain) override;
+             const std::string& enrolling_user_domain,
+             policy::LicenseType license_type) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EnterpriseEnrollmentTest,
@@ -83,6 +84,7 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
+  policy::LicenseType license_type_;
 
   enum {
     OAUTH_NOT_STARTED,

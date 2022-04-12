@@ -11,6 +11,15 @@
 
 namespace policy {
 
+// An enumeration of different enrollment licenses.
+// Constants that should be in sync with `OobeTypes.LicenseType`.
+enum class LicenseType {
+  kNone = 0,
+  kEnterprise = 1,
+  kEducation = 2,
+  kTerminal = 3
+};
+
 // A container keeping all parameters relevant to whether and how enterprise
 // enrollment of a device should occur. This configures the behavior of the
 // enrollment flow during OOBE, i.e. whether the enrollment screen starts
@@ -75,9 +84,6 @@ struct EnrollmentConfig {
     // that requires the least user interaction).
     AUTH_MECHANISM_BEST_AVAILABLE,
   };
-
-  // An enumeration of different enrollment licenses.
-  enum class LicenseType { kNone, kEnterprise, kEducation, kTerminal };
 
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);
