@@ -10,10 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace ash {
-class ActiveDirectoryLoginScreen;
-}
-
 namespace chromeos {
 
 // Interface for dependency injection between ActiveDirectoryLoginScreen and its
@@ -27,12 +23,6 @@ class ActiveDirectoryLoginView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::ActiveDirectoryLoginScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Clear the input fields on the screen.
   virtual void Reset() = 0;
@@ -61,8 +51,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
 
   // ActiveDirectoryLoginView:
   void Show() override;
-  void Bind(ash::ActiveDirectoryLoginScreen* screen) override;
-  void Unbind() override;
   void Reset() override;
   void SetErrorState(const std::string& username, int errorState) override;
 

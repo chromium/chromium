@@ -65,15 +65,6 @@ void ActiveDirectoryLoginScreenHandler::Show() {
   ShowInWebUI(std::move(screen_data));
 }
 
-void ActiveDirectoryLoginScreenHandler::Bind(
-    ActiveDirectoryLoginScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void ActiveDirectoryLoginScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void ActiveDirectoryLoginScreenHandler::Reset() {
   CallJS("login.ActiveDirectoryLoginScreen.reset");
 }

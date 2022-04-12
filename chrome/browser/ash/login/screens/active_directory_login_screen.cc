@@ -52,14 +52,9 @@ ActiveDirectoryLoginScreen::ActiveDirectoryLoginScreen(
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
-  if (view_)
-    view_->Bind(this);
 }
 
-ActiveDirectoryLoginScreen::~ActiveDirectoryLoginScreen() {
-  if (view_)
-    view_->Unbind();
-}
+ActiveDirectoryLoginScreen::~ActiveDirectoryLoginScreen() = default;
 
 void ActiveDirectoryLoginScreen::ShowImpl() {
   if (!view_)
