@@ -18,6 +18,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/cors/cors_url_loader_factory.h"
+#include "services/network/is_browser_initiated.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -285,8 +286,11 @@ void CorsURLLoaderTestBase::ResetFactory(absl::optional<url::Origin> initiator,
   factory_params->client_security_state = params.client_security_state.Clone();
   auto resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
-          process_id, ++last_issued_route_id, &resource_scheduler_,
+          last_issued_resource_scheduler_client_id_,
+          IsBrowserInitiated(process_id == mojom::kBrowserProcessId),
+          &resource_scheduler_,
           url_request_context_->network_quality_estimator());
+  last_issued_resource_scheduler_client_id_.Increment();
   cors_url_loader_factory_remote_.reset();
   cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
       network_context_.get(), std::move(factory_params),

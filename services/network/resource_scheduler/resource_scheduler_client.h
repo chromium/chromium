@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/request_priority.h"
+#include "services/network/is_browser_initiated.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 
 namespace net {
@@ -28,8 +29,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerClient final
     : public base::RefCounted<ResourceSchedulerClient> {
  public:
-  ResourceSchedulerClient(int child_id,
-                          int route_id,
+  ResourceSchedulerClient(ResourceScheduler::ClientId id,
+                          IsBrowserInitiated is_browser_initiated,
                           ResourceScheduler* resource_scheduler,
                           net::NetworkQualityEstimator* estimator);
 
@@ -47,8 +48,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerClient final
   friend class base::RefCounted<ResourceSchedulerClient>;
   ~ResourceSchedulerClient();
 
-  const int child_id_;
-  const int route_id_;
+  const ResourceScheduler::ClientId id_;
   const raw_ptr<ResourceScheduler> resource_scheduler_;
 };
 }  // namespace network

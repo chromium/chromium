@@ -56,6 +56,7 @@ component("network_service") {
     "http_server_properties_pref_delegate.h",
     "ignore_errors_cert_verifier.cc",
     "ignore_errors_cert_verifier.h",
+    "is_browser_initiated.h",
     "keepalive_statistics_recorder.cc",
     "keepalive_statistics_recorder.h",
     "mojo_host_resolver_impl.cc",

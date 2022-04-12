@@ -226,7 +226,7 @@ void ResourceScheduler::ScheduledResourceRequest::RunResumeCallback() {
 class ResourceScheduler::ScheduledResourceRequestImpl
     : public ScheduledResourceRequest {
  public:
-  ScheduledResourceRequestImpl(const ClientId& client_id,
+  ScheduledResourceRequestImpl(ClientId client_id,
                                net::URLRequest* request,
                                ResourceScheduler* scheduler,
                                const RequestPriorityParams& priority,
@@ -307,7 +307,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   const RequestPriorityParams& get_request_priority_params() const {
     return priority_;
   }
-  const ClientId& client_id() const { return client_id_; }
+  ClientId client_id() const { return client_id_; }
   net::URLRequest* url_request() { return request_; }
   const net::URLRequest* url_request() const { return request_; }
   bool is_async() const { return is_async_; }
@@ -397,11 +397,11 @@ class ResourceScheduler::Client
     : public net::EffectiveConnectionTypeObserver,
       public net::PeerToPeerConnectionsCountObserver {
  public:
-  Client(bool is_browser_client,
+  Client(IsBrowserInitiated is_browser_initiated,
          net::NetworkQualityEstimator* network_quality_estimator,
          ResourceScheduler* resource_scheduler,
          const base::TickClock* tick_clock)
-      : is_browser_client_(is_browser_client),
+      : is_browser_initiated_(is_browser_initiated),
         in_flight_delayable_count_(0),
         num_skipped_scans_due_to_scheduled_start_(0),
         network_quality_estimator_(network_quality_estimator),
@@ -954,7 +954,7 @@ class ResourceScheduler::Client
   // with active P2P connections.
   bool ShouldThrottleBrowserInitiatedRequestDueToP2PConnections(
       const ScheduledResourceRequestImpl& request) const {
-    DCHECK(is_browser_client_);
+    DCHECK(is_browser_initiated_);
 
     if (!base::FeatureList::IsEnabled(
             features::kPauseBrowserInitiatedHeavyTrafficForP2P)) {
@@ -1072,7 +1072,7 @@ class ResourceScheduler::Client
   ShouldStartReqResult ShouldStartRequest(
       ScheduledResourceRequestImpl* request) const {
     // Browser requests are treated differently since they are not user-facing.
-    if (is_browser_client_) {
+    if (is_browser_initiated_) {
       if (ShouldThrottleBrowserInitiatedRequestDueToP2PConnections(*request)) {
         return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
       }
@@ -1287,7 +1287,7 @@ class ResourceScheduler::Client
   RequestSet in_flight_requests_;
 
   // True if |this| client is created for browser initiated requests.
-  const bool is_browser_client_;
+  const IsBrowserInitiated is_browser_initiated_;
 
   // The number of delayable in-flight requests.
   size_t in_flight_delayable_count_;
@@ -1361,12 +1361,10 @@ ResourceScheduler::~ResourceScheduler() {
 }
 
 std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
-ResourceScheduler::ScheduleRequest(int child_id,
-                                   int route_id,
+ResourceScheduler::ScheduleRequest(ClientId client_id,
                                    bool is_async,
                                    net::URLRequest* url_request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClientId client_id = MakeClientId(child_id, route_id);
   std::unique_ptr<ScheduledResourceRequestImpl> request(
       new ScheduledResourceRequestImpl(
           client_id, url_request, this,
@@ -1413,25 +1411,22 @@ void ResourceScheduler::RemoveRequest(ScheduledResourceRequestImpl* request) {
 }
 
 void ResourceScheduler::OnClientCreated(
-    int child_id,
-    int route_id,
+    ClientId client_id,
+    IsBrowserInitiated is_browser_initiated,
     net::NetworkQualityEstimator* network_quality_estimator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClientId client_id = MakeClientId(child_id, route_id);
   DCHECK(!base::Contains(client_map_, client_id));
 
-  client_map_[client_id] =
-      std::make_unique<Client>(child_id == mojom::kBrowserProcessId,
-                               network_quality_estimator, this, tick_clock_);
+  client_map_[client_id] = std::make_unique<Client>(
+      is_browser_initiated, network_quality_estimator, this, tick_clock_);
 
   UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.ActiveSchedulerClientsCount",
                            ActiveSchedulerClientsCounter());
 }
 
-void ResourceScheduler::OnClientDeleted(int child_id, int route_id) {
+void ResourceScheduler::OnClientDeleted(ClientId client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ClientId client_id = MakeClientId(child_id, route_id);
   ClientMap::iterator it = client_map_.find(client_id);
   // TODO(crbug.com/873959): Turns this CHECK to DCHECK once the investigation
   // is done.
@@ -1488,9 +1483,7 @@ void ResourceScheduler::RecordGlobalRequestCountMetrics() const {
                            global_non_delayable_count);
 }
 
-ResourceScheduler::Client* ResourceScheduler::GetClient(int child_id,
-                                                        int route_id) {
-  ClientId client_id = MakeClientId(child_id, route_id);
+ResourceScheduler::Client* ResourceScheduler::GetClient(ClientId client_id) {
   ClientMap::iterator client_it = client_map_.find(client_id);
   if (client_it == client_map_.end())
     return nullptr;
@@ -1590,12 +1583,6 @@ void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
         existing_request->get_request_priority_params().intra_priority;
   }
   ReprioritizeRequest(request, new_priority, current_intra_priority);
-}
-
-ResourceScheduler::ClientId ResourceScheduler::MakeClientId(
-    int child_id,
-    int route_id) const {
-  return (static_cast<ResourceScheduler::ClientId>(child_id) << 32) | route_id;
 }
 
 bool ResourceScheduler::IsLongQueuedRequestsDispatchTimerRunning() const {

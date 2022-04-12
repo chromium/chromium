@@ -10,25 +10,22 @@
 namespace network {
 
 ResourceSchedulerClient::ResourceSchedulerClient(
-    int child_id,
-    int route_id,
+    ResourceScheduler::ClientId id,
+    IsBrowserInitiated is_browser_initiated,
     ResourceScheduler* resource_scheduler,
     net::NetworkQualityEstimator* estimator)
-    : child_id_(child_id),
-      route_id_(route_id),
-      resource_scheduler_(resource_scheduler) {
-  resource_scheduler_->OnClientCreated(child_id_, route_id_, estimator);
+    : id_(id), resource_scheduler_(resource_scheduler) {
+  resource_scheduler_->OnClientCreated(id_, is_browser_initiated, estimator);
 }
 
 ResourceSchedulerClient::~ResourceSchedulerClient() {
-  resource_scheduler_->OnClientDeleted(child_id_, route_id_);
+  resource_scheduler_->OnClientDeleted(id_);
 }
 
 std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
 ResourceSchedulerClient::ScheduleRequest(bool is_async,
                                          net::URLRequest* url_request) {
-  return resource_scheduler_->ScheduleRequest(child_id_, route_id_, is_async,
-                                              url_request);
+  return resource_scheduler_->ScheduleRequest(id_, is_async, url_request);
 }
 
 void ResourceSchedulerClient::ReprioritizeRequest(

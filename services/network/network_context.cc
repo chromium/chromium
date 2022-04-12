@@ -88,6 +88,7 @@
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
+#include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
 #include "services/network/network_service_network_delegate.h"
@@ -737,9 +738,11 @@ void NetworkContext::CreateURLLoaderFactory(
     mojom::URLLoaderFactoryParamsPtr params) {
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
-          params->process_id, ++current_resource_scheduler_client_id_,
+          current_resource_scheduler_client_id_,
+          IsBrowserInitiated(params->process_id == mojom::kBrowserProcessId),
           resource_scheduler_.get(),
           url_request_context_->network_quality_estimator());
+  current_resource_scheduler_client_id_.Increment();
   CreateURLLoaderFactory(std::move(receiver), std::move(params),
                          std::move(resource_scheduler_client));
 }

@@ -62,6 +62,7 @@
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
@@ -119,7 +120,6 @@ class NetworkServiceProxyDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
 class ProxyLookupRequest;
-class ResourceScheduler;
 class ResourceSchedulerClient;
 class SCTAuditingHandler;
 class SessionCleanupCookieStore;
@@ -792,7 +792,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   mojo::UniqueReceiverSet<mojom::RestrictedCookieManager>
       restricted_cookie_manager_receivers_;
 
-  int current_resource_scheduler_client_id_ = 0;
+  ResourceScheduler::ClientId current_resource_scheduler_client_id_{0};
 
   // Owned by the URLRequestContext
   raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;

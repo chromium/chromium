@@ -84,18 +84,15 @@ void ExpectSampleIsAtLeastSpecifiedValue(
 
 class TestRequestFactory;
 
-const int kChildId = 30;
-const int kRouteId = 75;
-const int kChildId2 = 43;
-const int kRouteId2 = 67;
-const int kChildId3 = 100;
-const int kRouteId3 = 100;
-const int kBackgroundChildId = 35;
-const int kBackgroundRouteId = 43;
-const int kBrowserChildId = mojom::kBrowserProcessId;
-const int kBrowserRouteId = 1;
-
 const size_t kNumResourceSchedulerClients = 20;
+
+using ClientId = ResourceScheduler::ClientId;
+constexpr ClientId kClientId1(30);
+constexpr ClientId kClientId2(60);
+constexpr ClientId kClientId3(90);
+constexpr ClientId kTrustedClientId(120);
+constexpr ClientId kBackgroundClientId(150);
+
 const size_t kMaxNumDelayableRequestsPerHostPerClient = 6;
 
 class TestRequest {
@@ -200,11 +197,11 @@ class ResourceSchedulerTest : public testing::Test {
     scheduler()->SetResourceSchedulerParamsManagerForTests(
         resource_scheduler_params_manager_);
 
-    scheduler_->OnClientCreated(kChildId, kRouteId,
+    scheduler_->OnClientCreated(kClientId1, IsBrowserInitiated(false),
                                 &network_quality_estimator_);
-    scheduler_->OnClientCreated(kBackgroundChildId, kBackgroundRouteId,
+    scheduler_->OnClientCreated(kBackgroundClientId, IsBrowserInitiated(false),
                                 &network_quality_estimator_);
-    scheduler_->OnClientCreated(kBrowserChildId, kBrowserRouteId,
+    scheduler_->OnClientCreated(kTrustedClientId, IsBrowserInitiated(true),
                                 &network_quality_estimator_);
   }
 
@@ -227,18 +224,16 @@ class ResourceSchedulerTest : public testing::Test {
 
   void CleanupScheduler() {
     if (scheduler_) {
-      scheduler_->OnClientDeleted(kChildId, kRouteId);
-      scheduler_->OnClientDeleted(kBackgroundChildId, kBackgroundRouteId);
-      scheduler_->OnClientDeleted(kBrowserChildId, kBrowserRouteId);
+      scheduler_->OnClientDeleted(kClientId1);
+      scheduler_->OnClientDeleted(kBackgroundClientId);
+      scheduler_->OnClientDeleted(kTrustedClientId);
     }
   }
 
-  std::unique_ptr<net::URLRequest> NewURLRequestWithChildAndRoute(
+  std::unique_ptr<net::URLRequest> NewURLRequest(
       const char* url,
       net::RequestPriority priority,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      int child_id,
-      int route_id) {
+      const net::NetworkTrafficAnnotationTag& traffic_annotation) {
     std::unique_ptr<net::URLRequest> url_request(context_->CreateRequest(
         GURL(url), priority, nullptr, traffic_annotation));
     return url_request;
@@ -247,72 +242,59 @@ class ResourceSchedulerTest : public testing::Test {
   std::unique_ptr<net::URLRequest> NewURLRequest(
       const char* url,
       net::RequestPriority priority) {
-    return NewURLRequestWithChildAndRoute(
-        url, priority, TRAFFIC_ANNOTATION_FOR_TESTS, kChildId, kRouteId);
+    return NewURLRequest(url, priority, TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
-  std::unique_ptr<TestRequest> NewRequestWithRoute(
+  std::unique_ptr<TestRequest> NewRequestWithClientId(
       const char* url,
       net::RequestPriority priority,
-      int route_id) {
-    return NewRequestWithChildAndRoute(url, priority, kChildId, route_id);
-  }
-
-  std::unique_ptr<TestRequest> NewRequestWithChildAndRoute(
-      const char* url,
-      net::RequestPriority priority,
-      int child_id,
-      int route_id) {
+      ClientId client_id) {
     return GetNewTestRequest(url, priority, TRAFFIC_ANNOTATION_FOR_TESTS,
-                             child_id, route_id, true, net::IsolationInfo());
+                             client_id, true, net::IsolationInfo());
   }
 
   std::unique_ptr<TestRequest> NewRequest(const char* url,
                                           net::RequestPriority priority) {
-    return NewRequestWithChildAndRoute(url, priority, kChildId, kRouteId);
+    return NewRequestWithClientId(url, priority, kClientId1);
   }
 
   std::unique_ptr<TestRequest> NewBackgroundRequest(
       const char* url,
       net::RequestPriority priority) {
-    return NewRequestWithChildAndRoute(url, priority, kBackgroundChildId,
-                                       kBackgroundRouteId);
+    return NewRequestWithClientId(url, priority, kBackgroundClientId);
   }
 
-  std::unique_ptr<TestRequest> NewBrowserRequest(
+  std::unique_ptr<TestRequest> NewTrustedRequest(
       const char* url,
       net::RequestPriority priority) {
-    return NewRequestWithChildAndRoute(url, priority, kBrowserChildId,
-                                       kBrowserRouteId);
+    return NewRequestWithClientId(url, priority, kTrustedClientId);
   }
 
-  std::unique_ptr<TestRequest> NewBrowserRequestWithAnnotationTag(
+  std::unique_ptr<TestRequest> NewTrustedRequest(
       const char* url,
       net::RequestPriority priority,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-    return GetNewTestRequest(url, priority, traffic_annotation, kBrowserChildId,
-                             kBrowserRouteId, true, net::IsolationInfo());
+    return GetNewTestRequest(url, priority, traffic_annotation,
+                             kTrustedClientId, true, net::IsolationInfo());
   }
 
   std::unique_ptr<TestRequest> NewSyncRequest(const char* url,
                                               net::RequestPriority priority) {
-    return NewSyncRequestWithChildAndRoute(url, priority, kChildId, kRouteId);
+    return NewSyncRequestWithClientId(url, priority, kClientId1);
   }
 
   std::unique_ptr<TestRequest> NewBackgroundSyncRequest(
       const char* url,
       net::RequestPriority priority) {
-    return NewSyncRequestWithChildAndRoute(url, priority, kBackgroundChildId,
-                                           kBackgroundRouteId);
+    return NewSyncRequestWithClientId(url, priority, kBackgroundClientId);
   }
 
-  std::unique_ptr<TestRequest> NewSyncRequestWithChildAndRoute(
+  std::unique_ptr<TestRequest> NewSyncRequestWithClientId(
       const char* url,
       net::RequestPriority priority,
-      int child_id,
-      int route_id) {
+      ClientId client_id) {
     return GetNewTestRequest(url, priority, TRAFFIC_ANNOTATION_FOR_TESTS,
-                             child_id, route_id, false, net::IsolationInfo());
+                             client_id, false, net::IsolationInfo());
   }
 
   std::unique_ptr<TestRequest> NewRequestWithIsolationInfo(
@@ -320,23 +302,22 @@ class ResourceSchedulerTest : public testing::Test {
       net::RequestPriority priority,
       const net::IsolationInfo& isolation_info) {
     return GetNewTestRequest(url, priority, TRAFFIC_ANNOTATION_FOR_TESTS,
-                             kChildId, kRouteId, true, isolation_info);
+                             kClientId1, true, isolation_info);
   }
 
   std::unique_ptr<TestRequest> GetNewTestRequest(
       const char* url,
       net::RequestPriority priority,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      int child_id,
-      int route_id,
+      ClientId client_id,
       bool is_async,
       const net::IsolationInfo& isolation_info) {
-    std::unique_ptr<net::URLRequest> url_request(NewURLRequestWithChildAndRoute(
-        url, priority, traffic_annotation, child_id, route_id));
+    std::unique_ptr<net::URLRequest> url_request(
+        NewURLRequest(url, priority, traffic_annotation));
     url_request->set_isolation_info(isolation_info);
 
-    auto scheduled_request = scheduler_->ScheduleRequest(
-        child_id, route_id, is_async, url_request.get());
+    auto scheduled_request =
+        scheduler_->ScheduleRequest(client_id, is_async, url_request.get());
     auto request = std::make_unique<TestRequest>(
         std::move(url_request), std::move(scheduled_request), scheduler());
     request->Start();
@@ -660,9 +641,8 @@ TEST_F(ResourceSchedulerTest,
 }
 
 TEST_F(ResourceSchedulerTest, BackgroundRequestStartsImmediately) {
-  const int route_id = 0;  // Indicates a background request.
   std::unique_ptr<TestRequest> request(
-      NewRequestWithRoute("http://host/1", net::LOWEST, route_id));
+      NewBackgroundRequest("http://host/1", net::LOWEST));
   EXPECT_TRUE(request->started());
 }
 
@@ -677,7 +657,7 @@ TEST_F(ResourceSchedulerTest, CancelOtherRequestsWhileResuming) {
   std::unique_ptr<net::URLRequest> url_request(
       NewURLRequest("http://host/low2", net::LOWEST));
   auto scheduled_request =
-      scheduler()->ScheduleRequest(kChildId, kRouteId, true, url_request.get());
+      scheduler()->ScheduleRequest(kClientId1, true, url_request.get());
   std::unique_ptr<CancelingTestRequest> low2(new CancelingTestRequest(
       std::move(url_request), std::move(scheduled_request), scheduler()));
   low2->Start();
@@ -840,14 +820,14 @@ TEST_F(ResourceSchedulerTest, LowerPriorityBrowserRequestsNotThrottled) {
   SetMaxDelayableRequests(1);
   // Dummies to enforce scheduling.
   std::unique_ptr<TestRequest> high(
-      NewBrowserRequest("http://host/high", net::HIGHEST));
+      NewTrustedRequest("http://host/high", net::HIGHEST));
   std::unique_ptr<TestRequest> low(
-      NewBrowserRequest("http://host/low", net::LOWEST));
+      NewTrustedRequest("http://host/low", net::LOWEST));
 
   std::unique_ptr<TestRequest> request(
-      NewBrowserRequest("http://host/req", net::LOWEST));
+      NewTrustedRequest("http://host/req", net::LOWEST));
   std::unique_ptr<TestRequest> idle(
-      NewBrowserRequest("http://host/idle", net::IDLE));
+      NewTrustedRequest("http://host/idle", net::IDLE));
   EXPECT_TRUE(request->started());
   EXPECT_TRUE(idle->started());
 
@@ -859,7 +839,7 @@ TEST_F(ResourceSchedulerTest, LowerPriorityBrowserRequestsNotThrottled) {
   std::vector<std::unique_ptr<TestRequest>> lows;
   for (int i = 0; i < kDefaultMaxNumDelayableRequestsPerClient + 1; ++i) {
     string url = "http://host" + base::NumberToString(i) + "/low";
-    lows.push_back(NewBrowserRequest(url.c_str(), net::LOWEST));
+    lows.push_back(NewTrustedRequest(url.c_str(), net::LOWEST));
     EXPECT_TRUE(lows.back()->started());
   }
 }
@@ -946,7 +926,7 @@ TEST_F(ResourceSchedulerTest,
         "metrics_report_uma",
         "Traffic annotation for unit, browser and other tests");
     // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
-    std::unique_ptr<TestRequest> lows = (NewBrowserRequestWithAnnotationTag(
+    std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
         url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
     EXPECT_EQ(test.expected_browser_initiated_traffic_started, lows->started())
         << " test_case=" << test.test_case;
@@ -991,7 +971,7 @@ TEST_F(ResourceSchedulerTest, P2PConnectionWentAway) {
         "metrics_report_uma",
         "Traffic annotation for unit, browser and other tests");
     // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
-    std::unique_ptr<TestRequest> lows = (NewBrowserRequestWithAnnotationTag(
+    std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
         url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
     EXPECT_FALSE(lows->started());
 
@@ -1036,7 +1016,7 @@ TEST_F(ResourceSchedulerTest,
       "metrics_report_uma",
       "Traffic annotation for unit, browser and other tests");
   // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
-  std::unique_ptr<TestRequest> lows = (NewBrowserRequestWithAnnotationTag(
+  std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
       url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
   EXPECT_FALSE(lows->started());
 
@@ -1240,17 +1220,17 @@ TEST_F(ResourceSchedulerTest,
 // async revalidations to the same URL from being issued.
 TEST_F(ResourceSchedulerTest, RequestStartedAfterClientDeleted) {
   SetMaxDelayableRequests(1);
-  scheduler_->OnClientCreated(kChildId2, kRouteId2,
+  scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
                               &network_quality_estimator_);
-  std::unique_ptr<TestRequest> high(NewRequestWithChildAndRoute(
-      "http://host/high", net::HIGHEST, kChildId2, kRouteId2));
-  std::unique_ptr<TestRequest> lowest1(NewRequestWithChildAndRoute(
-      "http://host/lowest", net::LOWEST, kChildId2, kRouteId2));
-  std::unique_ptr<TestRequest> lowest2(NewRequestWithChildAndRoute(
-      "http://host/lowest", net::LOWEST, kChildId2, kRouteId2));
+  std::unique_ptr<TestRequest> high(
+      NewRequestWithClientId("http://host/high", net::HIGHEST, kClientId2));
+  std::unique_ptr<TestRequest> lowest1(
+      NewRequestWithClientId("http://host/lowest", net::LOWEST, kClientId2));
+  std::unique_ptr<TestRequest> lowest2(
+      NewRequestWithClientId("http://host/lowest", net::LOWEST, kClientId2));
   EXPECT_FALSE(lowest2->started());
 
-  scheduler_->OnClientDeleted(kChildId2, kRouteId2);
+  scheduler_->OnClientDeleted(kClientId2);
   high.reset();
   lowest1.reset();
   base::RunLoop().RunUntilIdle();
@@ -1262,21 +1242,21 @@ TEST_F(ResourceSchedulerTest, RequestStartedAfterClientDeleted) {
 // This test is to verify that requests will be started at some point
 // even if they were not started by the destructor.
 TEST_F(ResourceSchedulerTest, RequestStartedAfterClientDeletedManyDelayable) {
-  scheduler_->OnClientCreated(kChildId2, kRouteId2,
+  scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
                               &network_quality_estimator_);
-  std::unique_ptr<TestRequest> high(NewRequestWithChildAndRoute(
-      "http://host/high", net::HIGHEST, kChildId2, kRouteId2));
+  std::unique_ptr<TestRequest> high(
+      NewRequestWithClientId("http://host/high", net::HIGHEST, kClientId2));
   const int kDefaultMaxNumDelayableRequestsPerClient = 10;
   std::vector<std::unique_ptr<TestRequest>> delayable_requests;
   for (int i = 0; i < kDefaultMaxNumDelayableRequestsPerClient + 1; ++i) {
-    delayable_requests.push_back(NewRequestWithChildAndRoute(
-        "http://host/lowest", net::LOWEST, kChildId2, kRouteId2));
+    delayable_requests.push_back(
+        NewRequestWithClientId("http://host/lowest", net::LOWEST, kClientId2));
   }
-  std::unique_ptr<TestRequest> lowest(NewRequestWithChildAndRoute(
-      "http://host/lowest", net::LOWEST, kChildId2, kRouteId2));
+  std::unique_ptr<TestRequest> lowest(
+      NewRequestWithClientId("http://host/lowest", net::LOWEST, kClientId2));
   EXPECT_FALSE(lowest->started());
 
-  scheduler_->OnClientDeleted(kChildId2, kRouteId2);
+  scheduler_->OnClientDeleted(kClientId2);
   high.reset();
   delayable_requests.clear();
   base::RunLoop().RunUntilIdle();
@@ -1585,7 +1565,7 @@ TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
       new base::HistogramTester);
   // Check that 0 is recorded when a new client is created and there are no
   // active scheduler clients in the background.
-  scheduler_->OnClientCreated(kChildId2, kRouteId2,
+  scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
                               &network_quality_estimator_);
   histogram_tester->ExpectTotalCount(
       "ResourceScheduler.ActiveSchedulerClientsCount", 1);
@@ -1603,24 +1583,25 @@ TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
   // Test that UMA data is recorded when a new client starts. Check that the
   // total number of samples is 2. Also, check that 1 active resource scheduler
   // client is recorded.
-  scheduler_->OnClientCreated(kChildId3, kRouteId3,
+  scheduler_->OnClientCreated(kClientId3, IsBrowserInitiated(false),
                               &network_quality_estimator_);
   histogram_tester->ExpectTotalCount(
       "ResourceScheduler.ActiveSchedulerClientsCount", 2);
   histogram_tester->ExpectBucketCount(
       "ResourceScheduler.ActiveSchedulerClientsCount", 1, 1);
-  scheduler_->OnClientDeleted(kChildId3, kRouteId3);
-  scheduler_->OnClientDeleted(kChildId2, kRouteId2);
+  scheduler_->OnClientDeleted(kClientId3);
+  scheduler_->OnClientDeleted(kClientId2);
   histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Test that UMA counts are recorded correctly when multiple scheduler clients
   // are created in sequence. There are at most 20 active clients.
   std::vector<std::unique_ptr<TestRequest>> requests;
   for (size_t i = 0; i < kNumResourceSchedulerClients; ++i) {
-    scheduler_->OnClientCreated(kChildId3 + i, kRouteId3 + i,
+    scheduler_->OnClientCreated(kClientId3.AddForTesting(i),
+                                IsBrowserInitiated(false),
                                 &network_quality_estimator_);
-    requests.push_back(NewRequestWithChildAndRoute(
-        "http://host/medium", net::LOWEST, kChildId3 + i, kRouteId3 + i));
+    requests.push_back(NewRequestWithClientId("http://host/medium", net::LOWEST,
+                                              kClientId3.AddForTesting(i)));
     EXPECT_TRUE(requests[i]->started());
     histogram_tester->ExpectTotalCount(
         "ResourceScheduler.ActiveSchedulerClientsCount", 1 + i);
@@ -1633,12 +1614,12 @@ TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
   // scheduler clients are deleted in sequence. Note: Create a new client
   // each time in order to update the UMA counts.
   for (size_t i = 0; i < kNumResourceSchedulerClients; ++i) {
-    scheduler_->OnClientDeleted(kChildId3 + 19 - i, kRouteId3 + 19 - i);
-    scheduler_->OnClientCreated(kChildId2, kRouteId2,
+    scheduler_->OnClientDeleted(kClientId3.AddForTesting(19 - i));
+    scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
                                 &network_quality_estimator_);
     histogram_tester->ExpectBucketCount(
         "ResourceScheduler.ActiveSchedulerClientsCount", 20 - i, 1);
-    scheduler_->OnClientDeleted(kChildId2, kRouteId2);
+    scheduler_->OnClientDeleted(kClientId2);
   }
 }
 
@@ -1725,26 +1706,25 @@ TEST_F(ResourceSchedulerTest, MultipleInstances_1) {
 TEST_F(ResourceSchedulerTest, MultipleInstances_2) {
   SetMaxDelayableRequests(1);
   ResourceScheduler another_scheduler(base::DefaultTickClock::GetInstance());
-  another_scheduler.OnClientCreated(kChildId, kRouteId,
+  another_scheduler.OnClientCreated(kClientId1, IsBrowserInitiated(false),
                                     &network_quality_estimator_);
 
   std::unique_ptr<TestRequest> high(
       NewRequest("http://host/high", net::HIGHEST));
   std::unique_ptr<TestRequest> low(NewRequest("http://host/req", net::LOWEST));
 
-  std::unique_ptr<TestRequest> request(NewRequestWithChildAndRoute(
-      "http://host/req", net::LOWEST, kChildId, kRouteId));
+  std::unique_ptr<TestRequest> request(
+      NewRequestWithClientId("http://host/req", net::LOWEST, kClientId1));
 
   EXPECT_FALSE(request->started());
 
   {
     another_scheduler.SetResourceSchedulerParamsManagerForTests(
         FixedParamsManager(1));
-    std::unique_ptr<net::URLRequest> url_request(NewURLRequestWithChildAndRoute(
-        "http://host/another", net::LOWEST, TRAFFIC_ANNOTATION_FOR_TESTS,
-        kChildId, kRouteId));
-    auto scheduled_request = another_scheduler.ScheduleRequest(
-        kChildId, kRouteId, true, url_request.get());
+    std::unique_ptr<net::URLRequest> url_request(NewURLRequest(
+        "http://host/another", net::LOWEST, TRAFFIC_ANNOTATION_FOR_TESTS));
+    auto scheduled_request =
+        another_scheduler.ScheduleRequest(kClientId1, true, url_request.get());
     auto another_request = std::make_unique<TestRequest>(
         std::move(url_request), std::move(scheduled_request),
         &another_scheduler);
@@ -1754,7 +1734,7 @@ TEST_F(ResourceSchedulerTest, MultipleInstances_2) {
     EXPECT_TRUE(another_request->started());
   }
 
-  another_scheduler.OnClientDeleted(kChildId, kRouteId);
+  another_scheduler.OnClientDeleted(kClientId1);
 }
 
 // Verify that when |delay_requests_on_multiplexed_connections| is true, spdy
