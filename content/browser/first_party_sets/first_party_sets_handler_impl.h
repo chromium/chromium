@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"

@@ -21,9 +21,12 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -92,7 +95,9 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(bool enabled)
       base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
                      // base::Unretained(this) is safe here because
                      // this is a static singleton.
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      IsEnabled() ? GetContentClient()->browser()->GetFirstPartySetsOverrides()
+                  : base::Value::Dict());
 }
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
@@ -132,9 +137,16 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
 void FirstPartySetsHandlerImpl::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
-  // base::Unretained(this) is safe here because this is a static singleton.
-  sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
-      &FirstPartySetsHandlerImpl::SetCompleteSets, base::Unretained(this)));
+
+  // Initializes the `sets_loader_` member with a callback to SetCompleteSets
+  // and the result of content::GetFirstPartySetsOverrides.
+  sets_loader_ = std::make_unique<FirstPartySetsLoader>(
+      base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
+                     // base::Unretained(this) is safe here because
+                     // this is a static singleton.
+                     base::Unretained(this)),
+      IsEnabled() ? GetContentClient()->browser()->GetFirstPartySetsOverrides()
+                  : base::Value::Dict());
   on_sets_ready_.Reset();
   persisted_sets_path_ = base::FilePath();
   sets_ = absl::nullopt;

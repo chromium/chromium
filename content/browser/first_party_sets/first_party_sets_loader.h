@@ -12,6 +12,8 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,7 +33,9 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   using SingleSet =
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
 
-  explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);
+  FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete,
+                       base::Value::Dict policy_overrides);
+
   ~FirstPartySetsLoader();
 
   FirstPartySetsLoader(const FirstPartySetsLoader&) = delete;
@@ -79,6 +83,15 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // optional), and may be empty if no command-line flag was provided (or one
   // was provided but invalid) (inner optional).
   absl::optional<absl::optional<SingleSet>> manually_specified_set_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Contains two (possibly empty) lists of SingleSets which are provided to
+  // override |sets_| either by replacement or addition. The type of override
+  // that a SingleSet should be used for is specified by the
+  // ParsedPolicySetLists field.
+  //
+  // This variable is not set by any methods other than the constructor.
+  FirstPartySetParser::ParsedPolicySetLists policy_overrides_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {

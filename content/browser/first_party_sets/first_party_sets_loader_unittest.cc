@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +32,8 @@ MATCHER_P(SerializesTo, want, "") {
 
 class FirstPartySetsLoaderTest : public ::testing::Test {
  public:
-  FirstPartySetsLoaderTest() : loader_(future_.GetCallback()) {}
+  FirstPartySetsLoaderTest()
+      : loader_(future_.GetCallback(), base::Value::Dict()) {}
 
   void SetComponentSets(FirstPartySetsLoader& sets, base::StringPiece content) {
     base::ScopedTempDir temp_dir;

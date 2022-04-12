@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,8 +69,15 @@ std::string ReadSetsFile(base::File sets_file) {
 }  // namespace
 
 FirstPartySetsLoader::FirstPartySetsLoader(
-    LoadCompleteOnceCallback on_load_complete)
-    : on_load_complete_(std::move(on_load_complete)) {}
+    LoadCompleteOnceCallback on_load_complete,
+    base::Value::Dict policy_overrides)
+    : on_load_complete_(std::move(on_load_complete)) {
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  auto error = FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+      policy_overrides, &out_sets);
+  if (!error.has_value())
+    policy_overrides_ = out_sets;
+}
 
 FirstPartySetsLoader::~FirstPartySetsLoader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
