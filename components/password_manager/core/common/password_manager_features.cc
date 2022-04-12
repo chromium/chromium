@@ -100,13 +100,17 @@ const base::Feature kSendPasswords{"SendPasswords",
 const base::Feature kLeakDetectionUnauthenticated = {
     "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables password change flow from leaked password dialog.
+// Enables automatic password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables password change flow from bulk leak check in settings.
 const base::Feature kPasswordChangeInSettings = {
     "PasswordChangeInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables .well-known based password change flow from leaked password dialog.
+const base::Feature kPasswordChangeWellKnown = {
+    "PasswordChangeWellKnown", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables fetching credentials capabilities from server for the
 // |PasswordChangeInSettings| and |PasswordChange| features.
