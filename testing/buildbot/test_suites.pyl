@@ -6290,6 +6290,10 @@
       'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
     ],
 
+    'gpu_dawn_telemetry_cts_regular': [
+      'gpu_dawn_telemetry_cts_tests',
+    ],
+
     'gpu_dawn_telemetry_cts_regular_and_partial_validation': [
       'gpu_dawn_telemetry_cts_tests',
       'gpu_dawn_telemetry_cts_tests_with_partial_validation',

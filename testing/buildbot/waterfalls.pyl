@@ -2231,7 +2231,7 @@
           'linux_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2255,7 +2255,7 @@
           'linux_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2371,7 +2371,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2395,7 +2395,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2421,7 +2421,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2445,7 +2445,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
