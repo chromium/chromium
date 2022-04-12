@@ -135,6 +135,12 @@ bool UpdateScreen::MaybeSkip(WizardContext* context) {
     exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
     return true;
   }
+
+  if (!context->is_branded_build) {
+    LOG(WARNING) << "Skip OOBE Update because of not branded build.";
+    exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
+    return true;
+  }
   return false;
 }
 

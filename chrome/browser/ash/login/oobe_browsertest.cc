@@ -8,6 +8,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -178,6 +180,7 @@ class PendingUpdateScreenTest
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetString(prefs::kOobeScreenPending, GetParam());
   }
+  base::AutoReset<bool> branded_build{&WizardContext::g_is_branded_build, true};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 

@@ -10,14 +10,15 @@
 
 namespace ash {
 
-WizardContext::WizardContext()
-    : screen_after_managed_tos(FamilyLinkNoticeView::kScreenId) {
+bool WizardContext::g_is_branded_build =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  is_branded_build = true;
+    true;
 #else
-  is_branded_build = false;
+    false;
 #endif
-}
+
+WizardContext::WizardContext()
+    : screen_after_managed_tos(FamilyLinkNoticeView::kScreenId) {}
 
 WizardContext::~WizardContext() = default;
 

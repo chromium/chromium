@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, CorruptedVPD) {
 
 class EnrollmentRecoveryTest : public EnrollmentEmbeddedPolicyServerBase {
  public:
-  EnrollmentRecoveryTest() : EnrollmentEmbeddedPolicyServerBase() {
+  EnrollmentRecoveryTest() {
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
   }
@@ -999,11 +999,18 @@ class EnrollmentRecoveryTest : public EnrollmentEmbeddedPolicyServerBase {
   ~EnrollmentRecoveryTest() override = default;
 
  protected:
+  // EnrollmentEmbeddedPolicyServerBase:
   void SetUpInProcessBrowserTestFixture() override {
     EnrollmentEmbeddedPolicyServerBase::SetUpInProcessBrowserTestFixture();
 
     // This triggers recovery enrollment.
     device_state_.RequestDevicePolicyUpdate()->policy_data()->Clear();
+  }
+  void SetUpOnMainThread() override {
+    EnrollmentEmbeddedPolicyServerBase::SetUpOnMainThread();
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->is_branded_build = true;
   }
 };
 

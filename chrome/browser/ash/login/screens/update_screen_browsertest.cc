@@ -103,7 +103,7 @@ chromeos::OobeUI* GetOobeUI() {
 // UpdateScreenTest.
 class UpdateScreenTest : public OobeBaseTest {
  public:
-  UpdateScreenTest() {}
+  UpdateScreenTest() = default;
 
   UpdateScreenTest(const UpdateScreenTest&) = delete;
   UpdateScreenTest& operator=(const UpdateScreenTest&) = delete;
@@ -130,6 +130,10 @@ class UpdateScreenTest : public OobeBaseTest {
     version_updater_ = update_screen_->GetVersionUpdaterForTesting();
     version_updater_->set_tick_clock_for_testing(&tick_clock_);
     update_screen_->set_tick_clock_for_testing(&tick_clock_);
+
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->is_branded_build = true;
   }
 
  protected:
@@ -177,7 +181,7 @@ class UpdateScreenTest : public OobeBaseTest {
 
 class BetterUpdateScreenTest : public UpdateScreenTest {
  public:
-  BetterUpdateScreenTest() {}
+  BetterUpdateScreenTest() = default;
   ~BetterUpdateScreenTest() override = default;
 
   void SetTickClockAndDefaultDelaysForTesting(
