@@ -43,15 +43,18 @@ class TabSwitcherModeTTCoordinator {
     private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
     private final boolean mIsGridTabSwitcherEnabled;
+    private final boolean mIsTabletGtsPolishEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
             MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
+            boolean isTabletGtsPolishEnabled, boolean isTabToGtsAnimationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
+        mIsTabletGtsPolishEnabled = isTabletGtsPolishEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
     }
@@ -156,8 +159,8 @@ class TabSwitcherModeTTCoordinator {
 
     private void initializeTabSwitcherToolbar() {
         mTabSwitcherModeToolbar = (TabSwitcherModeTopToolbar) mTabSwitcherToolbarStub.inflate();
-        mTabSwitcherModeToolbar.initialize(mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled,
-                mIsIncognitoModeEnabledSupplier);
+        mTabSwitcherModeToolbar.initialize(mIsGridTabSwitcherEnabled, mIsTabletGtsPolishEnabled,
+                mIsTabToGtsAnimationEnabled, mIsIncognitoModeEnabledSupplier);
         mMenuButtonCoordinator.setMenuButton(
                 mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
 

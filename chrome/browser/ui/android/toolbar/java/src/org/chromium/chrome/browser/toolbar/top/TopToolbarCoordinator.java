@@ -151,10 +151,11 @@ public class TopToolbarCoordinator implements Toolbar {
             Supplier<ResourceManager> resourceManagerSupplier,
             ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled, HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader,
-            boolean initializeWithIncognitoColors, ObservableSupplier<Profile> profileSupplier,
+            boolean isTabletGtsPolishEnabled, boolean isTabToGtsAnimationEnabled,
+            boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
+            HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
+            OfflineDownloader offlineDownloader, boolean initializeWithIncognitoColors,
+            ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> startSurfaceLogoClickedCallback) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
@@ -180,9 +181,10 @@ public class TopToolbarCoordinator implements Toolbar {
                     isIncognitoModeEnabledSupplier, profileSupplier,
                     startSurfaceLogoClickedCallback);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
-            mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
-                    overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
-                    isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
+            mTabSwitcherModeCoordinator =
+                    new TabSwitcherModeTTCoordinator(toolbarStub, overviewModeMenuButtonCoordinator,
+                            isGridTabSwitcherEnabled, isTabletGtsPolishEnabled,
+                            isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
         }
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         controlContainer.setToolbar(this, initializeWithIncognitoColors);
