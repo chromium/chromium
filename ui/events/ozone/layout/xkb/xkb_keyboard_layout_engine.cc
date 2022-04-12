@@ -781,6 +781,33 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
     return true;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // XbdLookup conflates KEY_PRINT and KEY_SYSRQ (printscreen) by
+  // mapping them both to XKB_KEY_Print rather than mapping KEY_SYSRQ to
+  // XKB_KEY_3270_PrintScreen. This has become expected behavior on Linux,
+  // but now ChromeOS can and wants to handle these keys separately.
+  //
+  // In the past in crbug/683097 both XKB keys were mapped to
+  // DomKey::PRINT_SCREEN in keyboard_code_conversion_xkb.cc which has also
+  // now been undone for ChromeOS only (not Linux)
+  //
+  // ChromeOS already correctly mapped the DomCode::PRINT_SCREEN and
+  // DomCode::PRINT keys, but the lookup via XKB caused the incorrect
+  // DomKey and subsequently incorrect VKEY to be used.
+  //
+  // This special cases this single key for ChromeOS platform, so that the
+  // two keys behave as intended as below.
+  //
+  // KEY_PRINT > DomCode::PRINT > XKB_KEY_Print >
+  //             DomKey::PRINT > VKEY_PRINT
+  //
+  // KEY_SYSRQ > DomCode::PRINT_SCREEN > XKB_KEY_3270_PrintScreen >
+  //             DomKey::PRINT_SCREEN > VKEY_SNAPSHOT
+  if (dom_code == DomCode::PRINT_SCREEN && xkb_keysym == XKB_KEY_Print) {
+    xkb_keysym = XKB_KEY_3270_PrintScreen;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Classify the keysym and convert to DOM and VKEY representations.
   if (xkb_keysym != XKB_KEY_at || (flags & EF_CONTROL_DOWN) == 0) {
     // Non-character key. (We only support NUL as ^@.)
