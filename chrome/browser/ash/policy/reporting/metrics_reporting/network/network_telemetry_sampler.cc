@@ -152,10 +152,18 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
   bool should_report = false;
   bool should_collect_latency = false;
   for (const auto* network : network_state_list) {
-    bool item_reported = full_telemetry_reporting_enabled;
-    NetworkTelemetry* network_telemetry = nullptr;
     ::ash::NetworkTypePattern type =
         ::ash::NetworkTypePattern::Primitive(network->type());
+    // Only collect and report networks of any types that are connected, or wifi
+    // networks that have signal strength regardless of their connection states.
+    if (!network->IsConnectedState() &&
+        (!type.Equals(::ash::NetworkTypePattern::WiFi()) ||
+         network->signal_strength() == 0)) {
+      continue;
+    }
+
+    bool item_reported = full_telemetry_reporting_enabled;
+    NetworkTelemetry* network_telemetry = nullptr;
     if (full_telemetry_reporting_enabled) {
       if (network->IsOnline()) {
         should_collect_latency = true;

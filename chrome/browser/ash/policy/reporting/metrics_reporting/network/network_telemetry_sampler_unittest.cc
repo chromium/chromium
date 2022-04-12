@@ -192,9 +192,9 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(NetworkTelemetrySamplerTest, CellularConnecting) {
+TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateConfiguration, shill::kTypeCellular,
+      {"guid1", shill::kStateReady, shill::kTypeCellular,
        0 /* signal_strength */, "cellular0", "192.168.86.25" /* ip_address */,
        "192.168.86.1" /* gateway */, false /* is_portal */,
        true /* is_visible */, true /* is_configured */}};
@@ -214,7 +214,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnecting) {
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).guid(),
             networks_data[0].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
-            NetworkConnectionState::CONNECTING);
+            NetworkConnectionState::CONNECTED);
   EXPECT_FALSE(
       result.networks_telemetry().network_telemetry(0).has_signal_strength());
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
@@ -241,54 +241,39 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnecting) {
                    .has_power_management_enabled());
 }
 
-TEST_F(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
+TEST_F(NetworkTelemetrySamplerTest, CellularNotConnected) {
+  // Signal strength should be ignored for non wifi networks even if it is set.
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateIdle, shill::kTypeVPN, 0 /* signal_strength */,
-       "vpn0", "192.168.86.25" /* ip_address */, "192.168.86.1" /* gateway */,
-       false /* is_portal */, false /* is_visible */,
-       true /* is_configured */}};
+      {"guid1", shill::kStateIdle, shill::kTypeCellular, kSignalStrength,
+       "cellular0", "" /* ip_address */, "" /* gateway */, true /* is_portal */,
+       true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler(
       https_latency_sampler_.get());
-  test::TestEvent<MetricData> metric_collect_event;
-  network_telemetry_sampler.Collect(metric_collect_event.cb());
-  TelemetryData result = metric_collect_event.result().telemetry_data();
+  bool is_collected = false;
+  network_telemetry_sampler.Collect(
+      base::BindLambdaForTesting([&](MetricData) { is_collected = true; }));
+  base::RunLoop().RunUntilIdle();
 
-  // No online networks, no latency data should be collected.
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
+  ASSERT_FALSE(is_collected);
+}
 
-  ASSERT_THAT(result.networks_telemetry().network_telemetry(),
-              ::testing::SizeIs(networks_data.size()));
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).guid(),
-            networks_data[0].guid);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
-            NetworkConnectionState::NOT_CONNECTED);
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_signal_strength());
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
-            DevicePath(networks_data[0].device_name));
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).ip_address(),
-            networks_data[0].ip_address);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).gateway(),
-            networks_data[0].gateway);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
-            NetworkType::VPN);
+TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected_NoSignalStrength) {
+  const std::vector<FakeNetworkData> networks_data = {
+      {"guid1", shill::kStateIdle, shill::kTypeWifi, 0 /* signal_strength */,
+       kInterfaceName, "" /* ip_address */, "" /* gateway */,
+       true /* is_portal */, false /* is_visible */, true /* is_configured */}};
 
-  // Make sure wireless interface info wasn't added.
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_tx_bit_rate_mbps());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_rx_bit_rate_mbps());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_tx_power_dbm());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_encryption_on());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_link_quality());
-  EXPECT_FALSE(result.networks_telemetry()
-                   .network_telemetry(0)
-                   .has_power_management_enabled());
+  SetNetworkData(networks_data);
+  NetworkTelemetrySampler network_telemetry_sampler(
+      https_latency_sampler_.get());
+  bool is_collected = false;
+  network_telemetry_sampler.Collect(
+      base::BindLambdaForTesting([&](MetricData) { is_collected = true; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(is_collected);
 }
 
 TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
