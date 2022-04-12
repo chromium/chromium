@@ -2813,74 +2813,32 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCK" desc="Label explaining that insecure content is blocked by default in secure sites. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
     Insecure content is blocked by default on secure sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_ALLOW" desc="The allow label for payment handler installation in site settings.">
-    Allow sites to install payment handlers
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_ALLOW_RECOMMENDED" desc="The allow label for payment handler installation in site settings (with the 'recommended' suffix).">
     Allow sites to install payment handlers (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_BLOCK" desc="The block label for payment handler installation access in site settings.">
-    Do not allow any site to install payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDF_DOWNLOAD_PDFS" desc="Label for downloading PDF documents instead of automatically opening them in Chrome.">
     Download PDF files instead of automatically opening them in Chrome
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK" desc="The ask label for the VR feature in site settings.">
-    Ask when a site wants to use your virtual reality devices and data
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK_RECOMMENDED" desc="The ask label for the VR feature in site settings (with the 'recommended' suffix).">
     Ask when a site wants to use your virtual reality devices and data (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCK" desc="The block label for the VR feature in site settings.">
-    Do not allow sites to use your virtual reality devices and data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_RECENT_ACTIVITY" desc="Label for the section which contains the user's recent permissions changes">
     Recent activity
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_ASK" desc="The ask label for MIDI devices in site settings.">
-    Ask when a site wants to use system exclusive messages to access MIDI devices
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_ASK_RECOMMENDED" desc="The ask label for MIDI devices in site settings (with the 'recommended' suffix).">
     Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_BLOCK" desc="The block label for MIDI devices in site settings.">
-    Do not allow any sites to use system exclusive messages to access MIDI devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK" desc="The ask label for Bluetooth devices in site settings.">
-    Ask when a site wants to access Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK_RECOMMENDED" desc="The ask label for Bluetooth devices in site settings (with the 'recommended' suffix).">
     Ask when a site wants to access Bluetooth devices (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCK" desc="The block label for Bluetooth devices in site settings.">
-    Do not allow any sites to access Bluetooth devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_ASK" desc="The ask label for USB devices in site settings.">
-    Ask when a site wants to access USB devices
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_ASK_RECOMMENDED" desc="The ask label for USB devices in site settings (with the 'recommended' suffix).">
     Ask when a site wants to access USB devices (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_BLOCK" desc="The block label for USB devices in site settings.">
-    Do not allow any sites to access USB devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK" desc="The ask label for serial ports in site settings.">
-    Ask when a site wants to access serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK_RECOMMENDED" desc="The ask label for serial ports in site settings (with the 'recommended' suffix).">
     Ask when a site wants to access serial ports (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCK" desc="The block label for serial ports in site settings.">
-    Do not allow any sites to access serial ports
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK" desc="The ask label for File System Access write permission in site settings.">
-    Ask when a site wants to edit files or folders on your device
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK_RECOMMENDED" desc="The ask label for File System Access write permission in site settings (with the 'recommended' suffix).">
     Ask when a site wants to edit files or folders on your device (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_BLOCK" desc="The block label for File System Access write permission in site settings.">
-    Do not allow any sites to edit files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_ZOOM_LEVEL" desc="Title tooltip and accessibility text for the button to remove zoom levels in site settings">
     Remove zoom level
@@ -2893,9 +2851,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_FIRST_RECOMMENDED" desc="The 'ask first' label in site settings -- a recommended setting for some categories, such as when sites want to use Geolocation.">
     Ask first (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_ACCESSING" desc="The 'ask before accessing' label in site settings.">
-    Ask before accessing
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_ACCESSING_RECOMMENDED" desc="The 'ask before accessing' label in site settings -- a recommended setting for some categories, such as when sites want to access geolocation information.">
     Ask before accessing (recommended)
@@ -2924,12 +2879,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ASK" desc="Label text shown in the Settings page when the default setting for Web Notifications is that new sites can prompt the user to ask if they want to receive notifications.">
     Sites can ask to send notifications
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DONT_SHOW_IMAGES" desc="Label for the global 'Do not show any images' toggle (category default) in site settings.">
-    Do not show any images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_ALL" desc="Label for the global 'Show all' toggle (category default) in site settings.">
-    Show all
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_ALL_RECOMMENDED" desc="Label for the global 'Show all' toggle (category default) in site settings -- a recommended setting for some categories, such as when sites want to show images.">
     Show all (recommended)
   </message>
@@ -2957,17 +2906,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW_SITES_RECOMMENDED" desc="The 'allow cookies' label in site settings -- the recommended setting for when sites want to read/write cookie information.">
     Allow sites to save and read cookie data (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOW_RECENTLY_CLOSED_SITES" desc="The allow label for background sync in site settings.">
-    Allow recently closed sites to finish sending and receiving data
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOW_RECENTLY_CLOSED_SITES_RECOMMENDED" desc="The allow label for background sync in site settings (with the 'recommended' suffix).">
     Allow recently closed sites to finish sending and receiving data (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCK" desc="The block label for background sync in site settings.">
     Do not allow recently closed sites to finish sending and receiving data
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_ASK" desc="The allow label for protocol handlers in site settings.">
-    Allow sites to ask to become default handlers for protocols
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_ASK_RECOMMENDED" desc="The allow label for protocol handlers in site settings (with the 'recommended' suffix).">
     Allow sites to ask to become default handlers for protocols (recommended)
@@ -2975,41 +2918,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_BLOCKED" desc="The block label for protocol handlers in site settings.">
     Do not allow any site to handle protocols
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK" desc="A subtitle for the ‘Ads’ setting. ‘Blocked’ refers to ads being blocked.">
-    Blocked on sites that show intrusive or misleading ads
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_RECOMMENDED" desc="A label for the ‘Ads’ setting toggle. ‘Blocked’ refers to ads being blocked.">
     Blocked on sites that show intrusive or misleading ads (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOW" desc="The allow label for sound in site settings.">
-    Allow sites to play sound
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOW_RECOMMENDED" desc="The allow label for sound in site settings (with the 'recommended' suffix).">
     Allow sites to play sound (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCK" desc="The block label for sound in site settings.">
-    Mute sites that play sound
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS_ALLOW" desc="The allow label for sensors feature in site settings.">
-    Allow sites to use motion and light sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOW" desc="The allow label for motion sensors (accelerometer, gyroscope, magnetometer) feature in site settings.">
-    Allow sites to use motion sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS_BLOCK" desc="The block label for sensors feature in site settings.">
-    Block sites from using motion and light sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCK" desc="The block label for motion sensors (accelerometer, gyroscope, magnetometer) feature in site settings.">
-    Block sites from using motion sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_ASK" desc="The allow label for automatic download in site settings.">
-    Ask when a site tries to download files automatically after the first file
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_ASK_RECOMMENDED" desc="The allow label for automatic download in site settings (with the 'recommended' suffix).">
     Ask when a site tries to download files automatically after the first file (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_BLOCK" desc="The block label for automatic download in site settings.">
-    Do not allow any site to download multiple files automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_DESCRIPTION" desc="Description of the window placement site setting.">
     Sites usually open and place windows to show additional documents or fullscreen content on your screens
@@ -3026,20 +2942,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the window placement site setting.">
     Not allowed to use info about your screens to open and place windows
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_ASK" desc="The ask label for the local font access site settings.">
-    Ask when a site wants to use fonts installed on your device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_BLOCK" desc="The block label for the local font access site settings.">
-    Block sites from using fonts installed on your device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_ASK" desc="The ask label for the idle detection site settings.">
-    Ask when a site wants to know when you're actively using this device
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
     Block sites from knowing when you're actively using this device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED" desc="A generic Allowed label to show in Site Settings when Allow is NOT the recommended option.">
-    Allowed
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED_RECOMMENDED" desc="A generic Allowed label to show in Site Settings when Allow is the recommended option.">
     Allowed (recommended)
