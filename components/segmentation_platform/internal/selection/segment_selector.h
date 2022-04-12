@@ -15,6 +15,7 @@ using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 struct SegmentSelectionResult;
+class ModelExecutionManager;
 
 // Central class for segment selection that can be used by clients to find the
 // best selected segment. Listens for model execution events, on which it
@@ -27,6 +28,10 @@ class SegmentSelector : public ModelExecutionScheduler::Observer {
 
   using SegmentSelectionCallback =
       base::OnceCallback<void(const SegmentSelectionResult&)>;
+
+  // Called when segmentation platform is initialized.
+  virtual void OnPlatformInitialized(
+      ModelExecutionManager* execution_manager) = 0;
 
   // Client API. Returns the selected segment from the last session
   // asynchronously. If none, returns empty result.

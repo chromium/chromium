@@ -165,6 +165,9 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
     SegmentResultProvider::ResultState existing_state) {
   if (!request_state->default_provider ||
       !request_state->default_provider->ModelAvailable()) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " default provider not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(existing_state));
     return;
@@ -182,6 +185,9 @@ void SegmentResultProviderImpl::OnDefaultModelFetched(
     std::unique_ptr<DefaultModelManager::SegmentInfoList> metadata_list) {
   if (!metadata_list || metadata_list->size() != 1 ||
       metadata_list->back().first != request_state->segment_id) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " default segment info not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
                            ResultState::kDefaultModelMetadataMissing));
@@ -193,6 +199,9 @@ void SegmentResultProviderImpl::OnDefaultModelFetched(
             metadata_utils::ValidateMetadata(segment_info.model_metadata()));
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
           segment_info.model_metadata())) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " signal collection not met";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
                            ResultState::kDefaultModelSignalNotCollected));

@@ -34,12 +34,12 @@ class SegmentSelectorImpl : public SegmentSelector {
                       const Config* config,
                       base::Clock* clock,
                       const PlatformOptions& platform_options,
-                      DefaultModelManager* default_model_manager,
-                      ModelExecutionManager* execution_manager);
+                      DefaultModelManager* default_model_manager);
 
   ~SegmentSelectorImpl() override;
 
   // SegmentSelector overrides.
+  void OnPlatformInitialized(ModelExecutionManager* execution_manager) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
 
@@ -80,19 +80,22 @@ class SegmentSelectorImpl : public SegmentSelector {
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
   // The database storing metadata and results.
-  raw_ptr<SegmentInfoDatabase> segment_database_;
+  const raw_ptr<SegmentInfoDatabase> segment_database_;
 
   // The database to determine whether the signal storage requirements are met.
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  const raw_ptr<SignalStorageConfig> signal_storage_config_;
+
+  // The default model manager is used for the default model fallbacks.
+  const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // Helper class to read/write results to the prefs.
-  raw_ptr<SegmentationResultPrefs> result_prefs_;
+  const raw_ptr<SegmentationResultPrefs> result_prefs_;
 
   // The config for providing configuration params.
-  raw_ptr<const Config> config_;
+  const raw_ptr<const Config> config_;
 
   // The time provider.
-  raw_ptr<base::Clock> clock_;
+  const raw_ptr<base::Clock> clock_;
 
   const PlatformOptions platform_options_;
 

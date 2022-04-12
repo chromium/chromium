@@ -66,17 +66,10 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     const Config* config,
     base::Clock* clock,
     const PlatformOptions& platform_options,
-    DefaultModelManager* default_model_manager,
-    ModelExecutionManager* execution_manager)
-    : segment_result_provider_(SegmentResultProvider::Create(
-          segment_database,
-          signal_storage_config,
-          default_model_manager,
-          execution_manager,
-          clock,
-          platform_options.force_refresh_results)),
-      segment_database_(segment_database),
+    DefaultModelManager* default_model_manager)
+    : segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
+      default_model_manager_(default_model_manager),
       result_prefs_(result_prefs),
       config_(config),
       clock_(clock),
@@ -99,6 +92,16 @@ SegmentSelectorImpl::SegmentSelectorImpl(
 
 SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
+void SegmentSelectorImpl::OnPlatformInitialized(
+    ModelExecutionManager* execution_manager) {
+  segment_result_provider_ = SegmentResultProvider::Create(
+      segment_database_, signal_storage_config_, default_model_manager_,
+      execution_manager, clock_, platform_options_.force_refresh_results);
+  if (CanComputeSegmentSelection()) {
+    GetRankForNextSegment(std::make_unique<SegmentRanks>());
+  }
+}
+
 void SegmentSelectorImpl::GetSelectedSegment(
     SegmentSelectionCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -112,6 +115,8 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
+  DCHECK(segment_result_provider_);
+
   // If the |segment_id| is not in config, then skip any updates early.
   if (!base::Contains(config_->segment_ids, segment_id))
     return;
