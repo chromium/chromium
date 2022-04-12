@@ -64,6 +64,7 @@ class CameraPreviewView
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;
+  std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
 
   base::OneShotTimer* resize_button_hide_timer_for_test() {
     return &resize_button_hide_timer_;

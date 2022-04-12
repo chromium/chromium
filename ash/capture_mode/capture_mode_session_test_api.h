@@ -44,6 +44,9 @@ class CaptureModeSessionTestApi {
 
   size_t GetCurrentFocusIndex();
 
+  CaptureModeSessionFocusCycler::HighlightableWindow* GetHighlightableWindow(
+      aura::Window* window);
+
   CaptureModeSessionFocusCycler::HighlightableView* GetCurrentFocusedView();
 
   // Returns false if `current_focus_group_` equals to `kNone` which means

@@ -21,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
@@ -184,6 +185,12 @@ void CameraPreviewView::Layout() {
 
 views::View* CameraPreviewView::GetView() {
   return this;
+}
+
+std::unique_ptr<views::HighlightPathGenerator>
+CameraPreviewView::CreatePathGenerator() {
+  return std::make_unique<views::CircleHighlightPathGenerator>(
+      gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2));
 }
 
 void CameraPreviewView::OnResizeButtonPressed() {

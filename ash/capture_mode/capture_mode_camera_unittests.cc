@@ -1527,28 +1527,41 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   AddDefaultCamera();
-  GetCameraController()->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
 
   auto* event_generator = GetEventGenerator();
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
 
   // Tests that the camera preview is focusable in fullscreen capture.
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
 
-  // When the camera preview is focused, press tab should advance to focus on
-  // the settings button.
+  // When the resize button inside the camera preview is focused, press tab
+  // should advance to focus on the settings button.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 
   // Shift tab should advance the focus from the settings button back to the
-  // camera preview.
+  // resize button inside the camera preview.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  // Continue shift tab should move the focus from the resize button to the
+  // camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
 
   // Shift tab again should advance the focus from the camera preview back to
   // the window capture source button.
@@ -1564,19 +1577,26 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
 
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   AddDefaultCamera();
-  GetCameraController()->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
 
   auto* event_generator = GetEventGenerator();
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
 
   // Tests that the camera preview is focusable in region capture.
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/15);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
 
-  // When the camera preview is focused, press tab should advance to focus on
-  // the capture button.
+  // When the resize button inside camera preview is focused, press tab should
+  // advance to focus on the capture button.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
@@ -1593,10 +1613,16 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 
   // Shift tab again should advance the focus from the capture button back to
-  // the camera preview.
+  // the resize button inside the camera preview.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  // Continue shift tab should move the focus from the resize button to the
+  // camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
 
   // Shift tab to advance the focus back to the window capture source button.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true, /*count=*/10);
@@ -1605,6 +1631,9 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
 }
 
 TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
+  // Create one more window besides `window_`.
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindow(gfx::Rect(150, 150, 420, 450)));
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   AddDefaultCamera();
@@ -1616,18 +1645,18 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   auto* capture_mode_session = controller->capture_mode_session();
   CaptureModeSessionTestApi test_api(capture_mode_session);
 
-  // Create one more window besides `window_`.
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(150, 150, 420, 450)));
   const auto* preview_window =
       camera_controller->camera_preview_widget()->GetNativeWindow();
 
   // Tab to focus on `window2`, which is the most recently used window. It
   // should be set to the current selected window, and the camera preview should
   // be shown inside it.
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(test_api.GetHighlightableWindow(window2.get())->has_focus());
   EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
   EXPECT_EQ(window2.get(), preview_window->parent());
 
@@ -1637,14 +1666,20 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
-  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  // Press tab should focus on the resize button inside the camera preview.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_FALSE(camera_controller->camera_preview_view()->has_focus());
 
   // Press tab again should advance focus and set another window `window_` to be
   // the current selected window. The camera preview should be shown inside it
   // now.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(test_api.GetHighlightableWindow(window())->has_focus());
   EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
   EXPECT_EQ(window(), preview_window->parent());
 
@@ -1652,51 +1687,100 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   // `window_` now.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
-  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  // Press tab to advance the focus on the resize button inside the camera
+  // preview.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(5u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
 
   // Press tab again should advance to focus on the settings button.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
 
   // Shift tab when the settings button is focused should advance back to focus
-  // on the camera preview inside `window_`. And `window_` should be the current
-  // selected window.
+  // on the resize button inside the camera preview. And the camera preview
+  // should now be shown inside `window_`, which is the current selected window.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
-  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(5u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
   EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
   EXPECT_EQ(window(), preview_window->parent());
+  // Shift tab again should move the focus from the resize button to the camera
+  // preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(camera_preview_view->has_focus());
 
   // Shift tab again should focus on the `window_`
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
-  EXPECT_FALSE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(test_api.GetHighlightableWindow(window())->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
   EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
 
-  // Continue shift tab should advance back to focus on the camera preview
-  // inside `window2` now. And `window2` should be the current selected window.
+  // Continue shift tab should advance back to focus on the resize button inside
+  // the camera preview. And the camera preview should now inside `window2`,
+  // which is the current selected window.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
-  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
   EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
   EXPECT_EQ(window2.get(), preview_window->parent());
+  // Continue shift tab should move the focus from the resize button to the
+  // camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(camera_preview_view->has_focus());
 
   // Continue shift tab should focus on the `window2`.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
-  EXPECT_FALSE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_TRUE(test_api.GetHighlightableWindow(window2.get())->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(camera_preview_view->has_focus());
   EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
 
   // Continue shift tab should advance back to the window capture source button.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
   EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+
+  // Destroy a window and test that the destroyed window will not be included in
+  // the keyboard focus navigation.
+  window2.reset();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(test_api.GetHighlightableWindow(window())->has_focus());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_TRUE(resize_button->has_focus());
+  // Continue tab after focusing on the resize button should advance the focus
+  // to settings close button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 }
 
 TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
@@ -1747,9 +1831,9 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
 
-  // Tab two times to focus on the settings button, verify capture bar is
+  // Tab three times to focus on the settings button, verify capture bar is
   // updated to fully opaque again.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/2);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/3);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), 1.0f);
@@ -1804,9 +1888,9 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   LOG(ERROR) << test_api.GetCurrentFocusIndex();
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
 
-  // Tab ten times to focus on cpature label, verify capture label is updated
+  // Tab eleven times to focus on cpature label, verify capture label is updated
   // to fully opaque.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/10);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/11);
   LOG(ERROR) << test_api.GetCurrentFocusIndex();
   EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), 1.0f);

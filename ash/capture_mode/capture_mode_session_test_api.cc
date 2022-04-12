@@ -53,6 +53,11 @@ size_t CaptureModeSessionTestApi::GetCurrentFocusIndex() {
   return session_->focus_cycler_->focus_index_;
 }
 
+CaptureModeSessionFocusCycler::HighlightableWindow*
+CaptureModeSessionTestApi::GetHighlightableWindow(aura::Window* window) {
+  return session_->focus_cycler_->highlightable_windows_[window].get();
+}
+
 CaptureModeSessionFocusCycler::HighlightableView*
 CaptureModeSessionTestApi::GetCurrentFocusedView() {
   return session_->focus_cycler_->GetGroupItems(
