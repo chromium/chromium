@@ -5,10 +5,12 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -44,6 +46,7 @@ gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
 std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     absl::optional<int> activation_index,
+    bool for_saved_desks,
     const std::vector<aura::Window*>& mru_windows) {
   auto window_info = std::make_unique<app_restore::WindowInfo>();
   int window_activation_index = -1;
@@ -98,8 +101,23 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
         window->GetProperty(aura::client::kPreMinimizedShowStateKey);
   }
 
+  if (window_state->IsSnapped())
+    window_info->snap_percentage = window_state->snap_ratio().value_or(0);
+
   window_info->display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+
+  // For saved desks, store the readable app name so that we can have a nice
+  // error message if the user tries to used the saved desk on a device that
+  // doesn't have the app.
+  if (for_saved_desks) {
+    std::string* app_id = window->GetProperty(kAppIDKey);
+    window_info->app_title =
+        app_id ? base::ASCIIToUTF16(
+                     Shell::Get()->desks_templates_delegate()->GetAppShortName(
+                         *app_id))
+               : window->GetTitle();
+  }
 
   // Save window size restriction of ARC app window.
   if (IsArcWindow(window)) {
@@ -108,10 +126,10 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
       auto extra = app_restore::WindowInfo::ArcExtraInfo();
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
-      extra.title = window->GetTitle();
       extra.bounds_in_root =
           GetBoundsIgnoringTransforms(window, /*use_screen=*/false);
       window_info->arc_extra_info = extra;
+      window_info->app_title = window->GetTitle();
     }
   }
 

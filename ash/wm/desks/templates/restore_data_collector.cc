@@ -70,8 +70,9 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
     }
 
     const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
-    std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
-        window, /*activation_index=*/absl::nullopt, mru_windows);
+    std::unique_ptr<app_restore::WindowInfo> window_info =
+        BuildWindowInfo(window, /*activation_index=*/absl::nullopt,
+                        /*for_saved_desks=*/true, mru_windows);
     // Clear the desk ID in the WindowInfo that is to be stored in the template.
     // It will be set to the ID of a newly created desk when launching.
     window_info->desk_id.reset();

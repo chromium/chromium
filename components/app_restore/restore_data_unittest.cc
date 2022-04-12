@@ -68,7 +68,7 @@ constexpr chromeos::WindowStateType kWindowStateType1 =
 constexpr chromeos::WindowStateType kWindowStateType2 =
     chromeos::WindowStateType::kMinimized;
 constexpr chromeos::WindowStateType kWindowStateType3 =
-    chromeos::WindowStateType::kFullscreen;
+    chromeos::WindowStateType::kPrimarySnapped;
 
 constexpr ui::WindowShowState kPreMinimizedWindowStateType1 =
     ui::SHOW_STATE_DEFAULT;
@@ -76,6 +76,8 @@ constexpr ui::WindowShowState kPreMinimizedWindowStateType2 =
     ui::SHOW_STATE_MAXIMIZED;
 constexpr ui::WindowShowState kPreMinimizedWindowStateType3 =
     ui::SHOW_STATE_DEFAULT;
+
+constexpr int32_t kSnapPercentage = 75;
 
 constexpr gfx::Size kMaxSize1(600, 800);
 constexpr gfx::Size kMinSize1(100, 50);
@@ -99,10 +101,9 @@ constexpr gfx::Rect kBoundsInRoot2(31, 41, 131, 141);
 class RestoreDataTest : public testing::Test {
  public:
   RestoreDataTest() = default;
-  ~RestoreDataTest() override = default;
-
   RestoreDataTest(const RestoreDataTest&) = delete;
   RestoreDataTest& operator=(const RestoreDataTest&) = delete;
+  ~RestoreDataTest() override = default;
 
   apps::mojom::IntentPtr CreateIntent(const std::string& action,
                                       const std::string& mime_type,
@@ -153,10 +154,10 @@ class RestoreDataTest : public testing::Test {
     window_info1.current_bounds = kCurrentBounds1;
     window_info1.window_state_type = kWindowStateType1;
     window_info1.display_id = kDisplayId2;
+    window_info1.app_title = kTitle1;
     window_info1.arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info1.arc_extra_info->maximum_size = kMaxSize1;
     window_info1.arc_extra_info->minimum_size = kMinSize1;
-    window_info1.arc_extra_info->title = kTitle1;
     window_info1.arc_extra_info->bounds_in_root = kBoundsInRoot1;
 
     WindowInfo window_info2;
@@ -166,9 +167,9 @@ class RestoreDataTest : public testing::Test {
     window_info2.window_state_type = kWindowStateType2;
     window_info2.pre_minimized_show_state_type = kPreMinimizedWindowStateType2;
     window_info2.display_id = kDisplayId1;
+    window_info2.app_title = kTitle2;
     window_info2.arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info2.arc_extra_info->minimum_size = kMinSize2;
-    window_info2.arc_extra_info->title = kTitle2;
     window_info2.arc_extra_info->bounds_in_root = kBoundsInRoot2;
 
     WindowInfo window_info3;
@@ -176,6 +177,7 @@ class RestoreDataTest : public testing::Test {
     window_info3.desk_id = kDeskId3;
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
+    window_info3.snap_percentage = kSnapPercentage;
     window_info3.display_id = kDisplayId1;
 
     restore_data().ModifyWindowInfo(kAppId1, kWindowId1, window_info1);
@@ -202,6 +204,7 @@ class RestoreDataTest : public testing::Test {
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type,
                             ui::WindowShowState pre_minimized_show_state_type,
+                            uint32_t snap_percentage,
                             absl::optional<gfx::Size> max_size,
                             absl::optional<gfx::Size> min_size,
                             absl::optional<std::u16string> title,
@@ -253,6 +256,15 @@ class RestoreDataTest : public testing::Test {
       EXPECT_TRUE(data->pre_minimized_show_state_type.has_value());
       EXPECT_EQ(pre_minimized_show_state_type,
                 data->pre_minimized_show_state_type.value());
+    }
+
+    // This field should only be written if we are snapped.
+    if (data->window_state_type.value() ==
+            chromeos::WindowStateType::kPrimarySnapped ||
+        data->window_state_type.value() ==
+            chromeos::WindowStateType::kSecondarySnapped) {
+      EXPECT_TRUE(data->snap_percentage.has_value());
+      EXPECT_EQ(snap_percentage, data->snap_percentage.value());
     }
 
     if (max_size.has_value()) {
@@ -318,9 +330,9 @@ class RestoreDataTest : public testing::Test {
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
         kAppTypeBrower1, kActivationIndex1, kDeskId1, kCurrentBounds1,
-        kWindowStateType1, kPreMinimizedWindowStateType1, kMaxSize1, kMinSize1,
-        std::u16string(kTitle1), kBoundsInRoot1, kPrimaryColor1,
-        kStatusBarColor1);
+        kWindowStateType1, kPreMinimizedWindowStateType1, /*snap_percentage=*/0,
+        kMaxSize1, kMinSize1, std::u16string(kTitle1), kBoundsInRoot1,
+        kPrimaryColor1, kStatusBarColor1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -331,9 +343,9 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kAppTypeBrower2, kActivationIndex2, kDeskId2, kCurrentBounds2,
-        kWindowStateType2, kPreMinimizedWindowStateType2, absl::nullopt,
-        kMinSize2, std::u16string(kTitle2), kBoundsInRoot2, kPrimaryColor2,
-        kStatusBarColor2);
+        kWindowStateType2, kPreMinimizedWindowStateType2, /*snap_percentage=*/0,
+        absl::nullopt, kMinSize2, std::u16string(kTitle2), kBoundsInRoot2,
+        kPrimaryColor2, kStatusBarColor2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -349,8 +361,8 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kAppTypeBrower3, kActivationIndex3, kDeskId3, kCurrentBounds3,
-        kWindowStateType3, kPreMinimizedWindowStateType3, absl::nullopt,
-        absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
+        kWindowStateType3, kPreMinimizedWindowStateType3, kSnapPercentage,
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -405,15 +417,16 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
   // Verify the restore data for |kWindowId2| is migrated to |kWindowId4|.
   const auto app_restore_data_it4 = launch_list_it1->second.find(kWindowId4);
   EXPECT_TRUE(app_restore_data_it4 != launch_list_it1->second.end());
-  VerifyAppRestoreData(
-      app_restore_data_it4->second,
-      apps::mojom::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
-      std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-      CreateIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
-      kActivationIndex2, kDeskId2, kCurrentBounds2, kWindowStateType2,
-      kPreMinimizedWindowStateType2, absl::nullopt, kMinSize2, kTitle2,
-      kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2);
+  VerifyAppRestoreData(app_restore_data_it4->second,
+                       apps::mojom::LaunchContainer::kLaunchContainerTab,
+                       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
+                       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
+                       CreateIntent(kIntentActionView, kMimeType, kShareText2),
+                       kAppTypeBrower2, kActivationIndex2, kDeskId2,
+                       kCurrentBounds2, kWindowStateType2,
+                       kPreMinimizedWindowStateType2, /*snap_percentage=*/0,
+                       absl::nullopt, kMinSize2, std::u16string(kTitle2),
+                       kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2);
 
   // Verify the restore data for |kAppId2| still exists.
   const auto launch_list_it2 =

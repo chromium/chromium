@@ -32,6 +32,7 @@ constexpr char kDeskIdKey[] = "desk_id";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
+constexpr char kSnapPercentageKey[] = "snap_percent";
 constexpr char kMinimumSizeKey[] = "min_size";
 constexpr char kMaximumSizeKey[] = "max_size";
 constexpr char kTitleKey[] = "title";
@@ -243,6 +244,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
   pre_minimized_show_state_type =
       GetPreMinimizedShowStateTypeFromDict(*data_dict);
+  snap_percentage = GetUIntValueFromDict(*data_dict, kSnapPercentageKey);
   maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
   minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
   title = GetU16StringValueFromDict(*data_dict, kTitleKey);
@@ -311,6 +313,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (app_name.has_value())
     data->app_name = app_name.value();
 
+  if (title.has_value())
+    data->title = title.value();
+
   if (activation_index.has_value())
     data->activation_index = activation_index.value();
 
@@ -326,14 +331,14 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (pre_minimized_show_state_type.has_value())
     data->pre_minimized_show_state_type = pre_minimized_show_state_type.value();
 
+  if (snap_percentage.has_value())
+    data->snap_percentage = snap_percentage.value();
+
   if (maximum_size.has_value())
     data->maximum_size = maximum_size.value();
 
   if (minimum_size.has_value())
     data->minimum_size = minimum_size.value();
-
-  if (title.has_value())
-    data->title = title.value();
 
   if (bounds_in_root.has_value())
     data->bounds_in_root = bounds_in_root.value();
@@ -395,6 +400,9 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (app_name.has_value())
     launch_info_dict.SetStringKey(kAppNameKey, app_name.value());
 
+  if (title.has_value())
+    launch_info_dict.SetStringKey(kTitleKey, base::UTF16ToUTF8(title.value()));
+
   if (activation_index.has_value())
     launch_info_dict.SetIntKey(kActivationIndexKey, activation_index.value());
 
@@ -417,6 +425,11 @@ base::Value AppRestoreData::ConvertToValue() const {
         static_cast<int>(pre_minimized_show_state_type.value()));
   }
 
+  if (snap_percentage.has_value()) {
+    launch_info_dict.SetKey(kSnapPercentageKey,
+                            ConvertUintToValue(snap_percentage.value()));
+  }
+
   if (maximum_size.has_value()) {
     launch_info_dict.SetKey(kMaximumSizeKey,
                             ConvertSizeToValue(maximum_size.value()));
@@ -426,9 +439,6 @@ base::Value AppRestoreData::ConvertToValue() const {
     launch_info_dict.SetKey(kMinimumSizeKey,
                             ConvertSizeToValue(minimum_size.value()));
   }
-
-  if (title.has_value())
-    launch_info_dict.SetStringKey(kTitleKey, base::UTF16ToUTF8(title.value()));
 
   if (bounds_in_root.has_value()) {
     launch_info_dict.SetKey(kBoundsInRoot,
@@ -466,13 +476,18 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
         window_info.pre_minimized_show_state_type.value();
   }
 
+  if (window_info.snap_percentage.has_value())
+    snap_percentage = window_info.snap_percentage.value();
+
   if (window_info.display_id.has_value())
     display_id = window_info.display_id.value();
+
+  if (window_info.app_title.has_value())
+    title = window_info.app_title;
 
   if (window_info.arc_extra_info.has_value()) {
     minimum_size = window_info.arc_extra_info->minimum_size;
     maximum_size = window_info.arc_extra_info->maximum_size;
-    title = window_info.arc_extra_info->title;
     bounds_in_root = window_info.arc_extra_info->bounds_in_root;
   }
 }
@@ -489,6 +504,7 @@ void AppRestoreData::ClearWindowInfo() {
   current_bounds.reset();
   window_state_type.reset();
   pre_minimized_show_state_type.reset();
+  snap_percentage.reset();
   minimum_size.reset();
   maximum_size.reset();
   title.reset();
@@ -536,12 +552,17 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
         pre_minimized_show_state_type.value();
   }
 
+  if (snap_percentage.has_value())
+    window_info->snap_percentage = snap_percentage;
+
+  if (title.has_value())
+    window_info->app_title = title;
+
   if (maximum_size.has_value() || minimum_size.has_value() ||
       title.has_value() || bounds_in_root.has_value()) {
     window_info->arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info->arc_extra_info->maximum_size = maximum_size;
     window_info->arc_extra_info->minimum_size = minimum_size;
-    window_info->arc_extra_info->title = title;
     window_info->arc_extra_info->bounds_in_root = bounds_in_root;
   }
 

@@ -387,6 +387,12 @@ void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
         FromUiWindowState(window_info->pre_minimized_show_state_type.value()));
   }
 
+  if (window_info->snap_percentage.has_value())
+    out_app->set_snap_percentage(window_info->snap_percentage.value());
+
+  if (window_info->app_title.has_value())
+    out_app->set_title(base::UTF16ToASCII(window_info->app_title.value()));
+
   // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
   // WindowInfo. Therefore, we are not filling |display_id| here.
 }
@@ -421,12 +427,18 @@ void FillAppWithWindowOpenDisposition(
   }
 }
 
-// fill `out_app` with `app_name` from `app_restore_data`.
-void FillAppWithAppName(const app_restore::AppRestoreData* app_restore_data,
-                        WorkspaceDeskSpecifics_App* out_app) {
+// Fills `out_app` with `app_name` and `title` from `app_restore_data`.
+void FillAppWithAppNameAndTitle(
+    const app_restore::AppRestoreData* app_restore_data,
+    WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->app_name.has_value() &&
       !app_restore_data->app_name.value().empty()) {
     out_app->set_app_name(app_restore_data->app_name.value());
+  }
+
+  if (app_restore_data->title.has_value() &&
+      !app_restore_data->title.value().empty()) {
+    out_app->set_title(base::UTF16ToUTF8(app_restore_data->title.value()));
   }
 }
 
@@ -452,8 +464,6 @@ void FillArcApp(ArcApp* out_app,
     FillArcAppSize(out_app->mutable_maximum_size(),
                    app_restore_data->maximum_size.value());
   }
-  if (app_restore_data->title.has_value())
-    out_app->set_title(base::UTF16ToUTF8(app_restore_data->title.value()));
   if (app_restore_data->bounds_in_root.has_value()) {
     FillArcBoundsInRoot(out_app->mutable_bounds_in_root(),
                         app_restore_data->bounds_in_root.value());
@@ -485,9 +495,10 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
   // WindowInfo. We need to fill the |display_id| from AppRestoreData.
   FillAppWithDisplayId(out_app, app_restore_data);
 
-  // If present, fills the proto's `app_name` field with the information stored
-  // in the `app_restore_data`'s `app_name` field.
-  FillAppWithAppName(app_restore_data, out_app);
+  // If present, fills the proto's `app_name` and `title` fields with the
+  // information stored in the `app_restore_data`'s `app_name` and `title`
+  // fields.
+  FillAppWithAppNameAndTitle(app_restore_data, out_app);
 
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
@@ -504,10 +515,6 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
         ProgressiveWebApp* pwa_window =
             out_app->mutable_app()->mutable_progress_web_app();
         pwa_window->set_app_id(app_id);
-        if (app_restore_data->title.has_value()) {
-          pwa_window->set_title(
-              base::UTF16ToUTF8(app_restore_data->title.value()));
-        }
         FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
       }
       break;
@@ -517,10 +524,6 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       ChromeApp* chrome_app_window =
           out_app->mutable_app()->mutable_chrome_app();
       chrome_app_window->set_app_id(app_id);
-      if (app_restore_data->title.has_value()) {
-        chrome_app_window->set_title(
-            base::UTF16ToUTF8(app_restore_data->title.value()));
-      }
       FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
       break;
     }
@@ -550,8 +553,7 @@ void FillArcExtraInfoFromProto(app_restore::WindowInfo* out_window_info,
     arc_info.maximum_size.emplace(app.maximum_size().width(),
                                   app.maximum_size().height());
   }
-  if (app.has_title())
-    arc_info.title.emplace(base::UTF8ToUTF16(app.title()));
+
   if (app.has_bounds_in_root()) {
     arc_info.bounds_in_root.emplace(
         app.bounds_in_root().left(), app.bounds_in_root().top(),
@@ -581,10 +583,22 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
     out_window_info->display_id.emplace(app.display_id());
 
   if (app.has_pre_minimized_window_state() &&
-      sync_pb::WorkspaceDeskSpecifics_WindowState_IsValid(app.window_state())) {
+      app.window_state() ==
+          sync_pb::WorkspaceDeskSpecifics_WindowState_MINIMIZED) {
     out_window_info->pre_minimized_show_state_type.emplace(
         ToUiWindowState(app.pre_minimized_window_state()));
   }
+
+  if (app.has_snap_percentage() &&
+      (app.window_state() ==
+           sync_pb::WorkspaceDeskSpecifics_WindowState_PRIMARY_SNAPPED ||
+       app.window_state() ==
+           sync_pb::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED)) {
+    out_window_info->snap_percentage.emplace(app.snap_percentage());
+  }
+
+  if (app.has_title())
+    out_window_info->app_title.emplace(base::ASCIIToUTF16(app.title()));
 
   if (app.app().app_case() ==
       sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp) {

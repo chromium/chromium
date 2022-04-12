@@ -57,6 +57,7 @@ constexpr char kName[] = "name";
 constexpr char kPreMinimizedWindowState[] = "pre_minimized_window_state";
 constexpr char kSizeHeight[] = "height";
 constexpr char kSizeWidth[] = "width";
+constexpr char kSnapPercentage[] = "snap_percent";
 constexpr char kTabs[] = "tabs";
 constexpr char kTabUrl[] = "url";
 constexpr char kTitle[] = "title";
@@ -385,12 +386,9 @@ void FillArcExtraWindowInfoFromJson(
   int min_width;
   int min_height;
   if (minimum_size && GetInt(minimum_size, kSizeWidth, &min_width) &&
-      GetInt(minimum_size, kSizeHeight, &min_height))
+      GetInt(minimum_size, kSizeHeight, &min_height)) {
     out_window_info->minimum_size.emplace(min_width, min_height);
-
-  std::string title;
-  if (GetString(app, kTitle, &title))
-    out_window_info->title.emplace(base::UTF8ToUTF16(title));
+  }
 }
 
 // Fill |out_window_info| with information from JSON |app|.
@@ -438,6 +436,14 @@ void FillWindowInfoFromJson(const base::Value& app,
     out_window_info->pre_minimized_show_state_type.emplace(
         ToUiWindowState(pre_minimized_window_state));
   }
+
+  int snap_percentage;
+  if (GetInt(app, kSnapPercentage, &snap_percentage))
+    out_window_info->snap_percentage.emplace(snap_percentage);
+
+  std::string title;
+  if (GetString(app, kTitle, &title))
+    out_window_info->app_title.emplace(base::UTF8ToUTF16(title));
 }
 
 // Convert a desk template to |app_restore::RestoreData|.
@@ -684,6 +690,12 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.SetKey(kPreMinimizedWindowState,
                     base::Value(UiWindowStateToString(
                         app->pre_minimized_show_state_type.value())));
+  }
+
+  if (app->snap_percentage.has_value()) {
+    app_data.SetKey(
+        kSnapPercentage,
+        base::Value(static_cast<int>(app->snap_percentage.value())));
   }
 
   if (app->app_name.has_value())

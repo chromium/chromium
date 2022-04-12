@@ -284,6 +284,13 @@ std::string RestoreData::ToString() const {
     result += base::StringPrintf(
         "(App ID: %s, Count: %s)", entry.first.c_str(),
         base::UTF16ToUTF8(base::FormatNumber(entry.second.size())).c_str());
+    for (const auto& windows : entry.second) {
+      result +=
+          base::StringPrintf(
+              "(Window ID: %s)",
+              base::UTF16ToUTF8(base::FormatNumber(windows.first)).c_str()) +
+          windows.second->GetWindowInfo()->ToString();
+    }
   }
   return result + " )";
 }

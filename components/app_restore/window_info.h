@@ -26,7 +26,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
 
     absl::optional<gfx::Size> maximum_size;
     absl::optional<gfx::Size> minimum_size;
-    absl::optional<std::u16string> title;
     absl::optional<gfx::Rect> bounds_in_root;
   };
 
@@ -57,8 +56,19 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
   // windows.
   absl::optional<ui::WindowShowState> pre_minimized_show_state_type;
 
+  // The snap percentage of a window, if it is snapped. For instance a snap
+  // percentage of 75 means the window takes up three quarters of the work area.
+  // The primary axis is determined when restoring; if it is portrait, it will
+  // be three quarters of the height.
+  absl::optional<uint32_t> snap_percentage;
+
   // Display id to launch an app.
   absl::optional<int64_t> display_id;
+
+  // The title of the app window. Used for saved desks in case one of the
+  // windows in the template is uninstalled, we can show a nice error message.
+  // Also used for the ARC ghost window.
+  absl::optional<std::u16string> app_title;
 
   // Extra window info of ARC app window.
   absl::optional<ArcExtraInfo> arc_extra_info;

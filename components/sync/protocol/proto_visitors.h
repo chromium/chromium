@@ -1253,9 +1253,11 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {
   VISIT(window_id);
   VISIT(display_id);
   VISIT_ENUM(pre_minimized_window_state);
+  VISIT(snap_percentage);
   VISIT_ENUM(container);
   VISIT_ENUM(disposition);
   VISIT(app_name);
+  VISIT(title);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
@@ -1303,7 +1305,6 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::ArcApp& proto) {
   VISIT(app_id);
   VISIT(minimum_size);
   VISIT(maximum_size);
-  VISIT(title);
   VISIT(bounds_in_root);
 }
 

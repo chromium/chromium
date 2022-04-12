@@ -56,10 +56,11 @@ const std::string kValidTemplateChromeAndProgressive =
     "\"window_"
     "bound\":{"
     "\"left\":200,\"top\":200,\"height\":1000,\"width\":1000},\"window_state\":"
-    "\"NORMAL\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":\"" +
+    "\"PRIMARY_SNAPPED\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":"
+    "\"" +
     kChromeAppId +
     "\",\"window_id\":0,\"display_id\":\"100\",\"event_flag\":0,\"pre_"
-    "minimized_window_state\":\"NORMAL\"},{\"window_"
+    "minimized_window_state\":\"NORMAL\", \"snap_percent\":75},{\"window_"
     "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"PWA\",\"app_id\":\"" +
     kProgressiveAppid +
@@ -259,7 +260,7 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(wi_chrome != nullptr);
   EXPECT_TRUE(wi_chrome->window_state_type.has_value());
   EXPECT_EQ(wi_chrome->window_state_type.value(),
-            chromeos::WindowStateType::kNormal);
+            chromeos::WindowStateType::kPrimarySnapped);
   EXPECT_TRUE(wi_chrome->pre_minimized_show_state_type.has_value());
   EXPECT_EQ(wi_chrome->pre_minimized_show_state_type.value(),
             ui::WindowShowState::SHOW_STATE_NORMAL);

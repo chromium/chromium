@@ -498,8 +498,8 @@ void WindowRestoreController::SaveWindowImpl(
     mru_windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   }
-  std::unique_ptr<app_restore::WindowInfo> window_info =
-      BuildWindowInfo(window, activation_index, mru_windows);
+  std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
+      window, activation_index, /*for_saved_desks=*/false, mru_windows);
   full_restore::SaveWindowInfo(*window_info);
 
   if (g_save_window_callback_for_testing)

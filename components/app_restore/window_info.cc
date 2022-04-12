@@ -5,6 +5,7 @@
 #include "components/app_restore/window_info.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace app_restore {
 
@@ -34,6 +35,11 @@ std::string ToPrefixedString(absl::optional<ui::WindowShowState> val,
   return ToPrefixedString(new_val, prefix);
 }
 
+std::string ToPrefixedString(absl::optional<std::u16string> val,
+                             const std::string& prefix) {
+  return prefix + ": " + base::UTF16ToASCII(val.value_or(u""));
+}
+
 }  // namespace
 
 WindowInfo::ArcExtraInfo::ArcExtraInfo() = default;
@@ -56,7 +62,9 @@ WindowInfo* WindowInfo::Clone() {
   new_window_info->window_state_type = window_state_type;
   new_window_info->pre_minimized_show_state_type =
       pre_minimized_show_state_type;
+  new_window_info->snap_percentage = snap_percentage;
   new_window_info->display_id = display_id;
+  new_window_info->app_title = app_title;
   new_window_info->arc_extra_info = arc_extra_info;
   return new_window_info;
 }
@@ -68,7 +76,9 @@ std::string WindowInfo::ToString() const {
          ToPrefixedString(window_state_type, "Window state") +
          ToPrefixedString(pre_minimized_show_state_type,
                           "Pre minimized show state") +
-         ToPrefixedString(display_id, "Display id");
+         ToPrefixedString(snap_percentage, "Snap percentage") +
+         ToPrefixedString(display_id, "Display id") +
+         ToPrefixedString(app_title, "App Title");
 }
 
 }  // namespace app_restore

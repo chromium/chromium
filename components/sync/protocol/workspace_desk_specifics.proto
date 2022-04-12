@@ -77,6 +77,14 @@ message WorkspaceDeskSpecifics {
     // launch an app as an app or a tab. Does not contain a human readable name
     // but contains the app ID and a prefix.
     optional string app_name = 10;
+
+    // Human readable title of the app.
+    optional string title = 11;
+
+    // This is used to determine the size of a snapped window is in clamshell
+    // mode. Empty/unset for non-snapped windows. This should be a value between
+    // 0 and 100.
+    optional int32 snap_percentage = 12;
   }
 
   message AppOneOf {
@@ -111,16 +119,16 @@ message WorkspaceDeskSpecifics {
   message ChromeApp {
     // The Chrome App's App ID.
     optional string app_id = 1;
-    // App window title.
-    optional string title = 2;
+
+    reserved 2;
   }
 
   // A PWA window.
   message ProgressiveWebApp {
     // The PWA's App ID.
     optional string app_id = 1;
-    // App window title.
-    optional string title = 2;
+
+    reserved 2;
   }
 
   // An Arc App window.
@@ -132,7 +140,9 @@ message WorkspaceDeskSpecifics {
     // to ArcExtraInfo in a WindowInfo struct.
     optional WindowSize minimum_size = 2;
     optional WindowSize maximum_size = 3;
-    optional string title = 4;
+
+    reserved 4;
+
     optional WindowBound bounds_in_root = 5;
 
     // maps to gfx::Size.  Width of the window, including the frame,

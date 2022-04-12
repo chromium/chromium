@@ -150,10 +150,12 @@ void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
   window_bound->set_top(120);
   window_bound->set_width(1330);
   window_bound->set_height(1440);
-  app->set_window_state(WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL);
+  app->set_window_state(
+      WindowState::WorkspaceDeskSpecifics_WindowState_PRIMARY_SNAPPED);
   app->set_display_id(99887766l);
   app->set_z_index(133);
   app->set_window_id(1555);
+  app->set_snap_percentage(75);
 }
 
 void FillExampleProgressiveWebAppWindow(WorkspaceDeskSpecifics_App* app) {
@@ -231,8 +233,7 @@ void FillExampleArcAppWindow(WorkspaceDeskSpecifics_App* app) {
   app->set_display_id(99887766l);
   app->set_z_index(233);
   app->set_window_id(2555);
-
-  app_window->set_title(kTestArcAppTitle);
+  app->set_title(kTestArcAppTitle);
 }
 
 WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
