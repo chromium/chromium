@@ -10,7 +10,6 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

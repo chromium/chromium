@@ -31,7 +31,6 @@
 #include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

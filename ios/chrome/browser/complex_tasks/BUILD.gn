@@ -20,7 +20,6 @@ source_set("unit_tests") {
   deps = [
     ":complex_tasks",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
     "//ios/web/public:public",
     "//ios/web/public/test:test",
     "//ios/web/public/test:util",

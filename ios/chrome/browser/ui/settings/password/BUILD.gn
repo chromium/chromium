@@ -173,7 +173,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",

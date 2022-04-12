@@ -26,7 +26,6 @@ source_set("unit_tests") {
     "//base",
     "//components/strings",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//testing/gtest",

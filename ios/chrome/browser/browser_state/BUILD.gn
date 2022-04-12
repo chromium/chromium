@@ -181,7 +181,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//components/variations/net",
-    "//ios/chrome/browser/web:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

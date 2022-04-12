@@ -228,7 +228,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/prerender:test_support",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test:test_support",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",

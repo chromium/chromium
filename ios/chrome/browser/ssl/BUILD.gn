@@ -56,7 +56,6 @@ source_set("unit_tests") {
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
     "//ios/components/security_interstitials",
     "//ios/web",
     "//ios/web/public/security",

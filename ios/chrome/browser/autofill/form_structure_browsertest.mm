@@ -40,7 +40,6 @@
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"

@@ -41,7 +41,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",
     "//testing/gtest",

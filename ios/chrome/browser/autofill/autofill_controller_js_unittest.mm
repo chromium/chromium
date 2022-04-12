@@ -11,7 +11,6 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
-#include "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"

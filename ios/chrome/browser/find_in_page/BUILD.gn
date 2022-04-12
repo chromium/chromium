@@ -37,7 +37,6 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/web/public/test:test",
     "//testing/gtest",

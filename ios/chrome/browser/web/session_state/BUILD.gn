@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",

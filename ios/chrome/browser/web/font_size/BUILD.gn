@@ -58,7 +58,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test/fakes",
     "//ios/public/provider/chrome/browser",
     "//ios/web/public/js_messaging",

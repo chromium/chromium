@@ -95,7 +95,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon:favicon",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common/app_group",
     "//ios/web",

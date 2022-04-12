@@ -214,7 +214,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:page_placeholder",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web/session_state",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
