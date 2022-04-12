@@ -119,8 +119,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _browser = browser;
     _reauthModule = reauthModule;
     _browserState = browser->GetBrowserState();
-    self.title =
-        l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+      self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
+    } else {
+      self.title =
+          l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
+    }
 
     PrefService* prefService = _browserState->GetPrefs();
 

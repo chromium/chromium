@@ -112,6 +112,7 @@ source_set("settings") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/resources",
+    "//components/safe_browsing/core/common",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",

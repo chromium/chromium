@@ -19,6 +19,7 @@ specific_include_rules = {
 
   "chrome_matchers_app_interface\.mm":[
     "+components/password_manager/core/common/password_manager_features.h",
+    "+components/safe_browsing/core/common/features.h",
   ],
 
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.

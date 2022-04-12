@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -655,6 +656,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuPrivacyButton {
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    return [ChromeMatchersAppInterface
+        buttonWithAccessibilityLabelID:(IDS_IOS_SETTINGS_PRIVACY_TITLE)];
+  }
+
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:
           (IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY)];

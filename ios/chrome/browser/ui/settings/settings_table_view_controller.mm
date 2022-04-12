@@ -20,6 +20,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -882,13 +883,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)privacyDetailItem {
-  return [self
-           detailItemWithType:SettingsItemTypePrivacy
-                         text:l10n_util::GetNSString(
-                                  IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY)
-                   detailText:nil
-                iconImageName:kSettingsPrivacyImageName
-      accessibilityIdentifier:kSettingsPrivacyCellId];
+  NSString* title = nil;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
+  } else {
+    title = l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
+  }
+  return [self detailItemWithType:SettingsItemTypePrivacy
+                             text:title
+                       detailText:nil
+                    iconImageName:kSettingsPrivacyImageName
+          accessibilityIdentifier:kSettingsPrivacyCellId];
 }
 
 - (TableViewItem*)languageSettingsDetailItem {

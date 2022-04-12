@@ -70,6 +70,7 @@ source_set("eg_app_support+eg2") {
     "//components/metrics/demographics",
     "//components/password_manager/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common",
     "//components/strings",
     "//components/sync/base",
     "//components/translate/core/browser",
