@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_
-#define CHROMEOS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // OsInstallClient is used to communicate with the
 // org.chromium.OsInstallService system service. The browser uses this
@@ -77,11 +77,11 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
   virtual ~OsInstallClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::OsInstallClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::OsInstallClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_

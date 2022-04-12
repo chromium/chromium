@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/os_install/fake_os_install_client.h"
+#include "chromeos/ash/components/dbus/os_install/fake_os_install_client.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeOsInstallClient::FakeOsInstallClient() = default;
 FakeOsInstallClient::~FakeOsInstallClient() = default;
@@ -40,4 +40,4 @@ void FakeOsInstallClient::NotifyObservers(Status status,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

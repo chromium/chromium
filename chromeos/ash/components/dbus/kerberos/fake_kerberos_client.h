@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_
-#define CHROMEOS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_
 
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
-#include "chromeos/dbus/kerberos/kerberos_client.h"
-#include "chromeos/dbus/kerberos/kerberos_service.pb.h"
+#include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
+#include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
     : public KerberosClient,
@@ -124,6 +124,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_FAKE_KERBEROS_CLIENT_H_

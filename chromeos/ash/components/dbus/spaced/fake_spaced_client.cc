@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeSpacedClient::FakeSpacedClient() = default;
 
@@ -24,4 +24,4 @@ void FakeSpacedClient::GetRootDeviceSize(GetSizeCallback callback) {
   std::move(callback).Run(absl::nullopt);
 }
 
-}  // namespace chromeos
+}  // namespace ash

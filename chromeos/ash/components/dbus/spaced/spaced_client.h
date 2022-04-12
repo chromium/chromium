@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SPACED_SPACED_CLIENT_H_
-#define CHROMEOS_DBUS_SPACED_SPACED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_SPACED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_SPACED_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A class to make DBus calls for the org.chromium.Spaced service.
 class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
@@ -54,6 +54,11 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
   virtual ~SpacedClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SPACED_SPACED_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SpacedClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_SPACED_CLIENT_H_

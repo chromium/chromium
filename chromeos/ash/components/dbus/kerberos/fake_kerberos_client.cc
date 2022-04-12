@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/kerberos/fake_kerberos_client.h"
+#include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "third_party/cros_system_api/dbus/kerberos/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Fake validity lifetime for TGTs.
@@ -425,4 +425,4 @@ FakeKerberosClient::WhatToRemove FakeKerberosClient::DetermineWhatToRemove(
   return WhatToRemove::kNothing;
 }
 
-}  // namespace chromeos
+}  // namespace ash

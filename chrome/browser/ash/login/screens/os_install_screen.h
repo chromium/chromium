@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
-#include "chromeos/dbus/os_install/os_install_client.h"
+#include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 
 namespace ash {
 

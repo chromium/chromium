@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"

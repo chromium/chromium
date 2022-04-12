@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
 #include "base/logging.h"
-#include "chromeos/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/spaced/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -135,4 +135,4 @@ SpacedClient* SpacedClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

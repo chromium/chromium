@@ -19,7 +19,7 @@ the pattern described below. DBusThreadManager will eventually be deprecated.
 ## D-Bus Client Best Practices
 
 An example of a relatively simple client using existing patterns can be found
-in [src/chromeos/dbus/kerberos].
+in [src/chromeos/ash/components/dbus/kerberos].
 
 *   Create a subdirectory under `src/chromeos/dbus` for new clients or use an
     existing directory. Do not add new clients to this directory.
@@ -35,7 +35,7 @@ in [src/chromeos/dbus/kerberos].
 *   For new clients, if test methods are required, create a `TestInterface` in
     the base class with a virtual `GetTestInterface()` method and implement it
     only in the fake (return null in the real implementation). See
-    [src/chromeos/dbus/kerberos] for an example.
+    [src/chromeos/ash/components/dbus/kerberos] for an example.
 
     (Many existing clients provide additional test functionality in the fake
     implementation, however this complicates tests and the fake implementation).
@@ -63,7 +63,7 @@ New code should prefer Shill*Client::Get() over the DBusThreadManager accessors.
 *   Wi-Fi AP manager (`ap_manager_client.cc`)
 
 [Chrome OS D-Bus Usage in Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/main/dbus_in_chrome.md
-[src/chromeos/dbus/kerberos]: https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/dbus/kerberos
+[src/chromeos/ash/components/dbus/kerberos]: https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/ash/components/dbus/kerberos
 [ash_dbus_helper.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/ash/dbus/ash_dbus_helper.cc
 [lacros_dbus_helper.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/lacros/lacros_dbus_helper.cc
 [ash_service.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/ash_service.cc

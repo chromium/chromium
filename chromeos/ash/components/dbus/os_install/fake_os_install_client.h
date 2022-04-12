@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_
-#define CHROMEOS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/os_install/os_install_client.h"
+#include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(OS_INSTALL) FakeOsInstallClient
     : public OsInstallClient,
@@ -37,6 +37,6 @@ class COMPONENT_EXPORT(OS_INSTALL) FakeOsInstallClient
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_OS_INSTALL_FAKE_OS_INSTALL_CLIENT_H_

@@ -14,7 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
-#include "chromeos/dbus/kerberos/kerberos_service.pb.h"
+#include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chromeos/components/onc/variable_expander.h"

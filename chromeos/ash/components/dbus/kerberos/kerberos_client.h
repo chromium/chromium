@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
-#define CHROMEOS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/kerberos/kerberos_service.pb.h"
+#include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // KerberosClient is used to communicate with the org.chromium.Kerberos
 // service. All method should be called from the origin thread (UI thread) which
@@ -130,11 +130,6 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
   virtual ~KerberosClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::KerberosClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_

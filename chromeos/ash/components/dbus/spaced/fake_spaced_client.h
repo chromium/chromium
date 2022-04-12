@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
-#define CHROMEOS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of SpacedClient.
 class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
@@ -34,6 +34,6 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
   base::WeakPtrFactory<FakeSpacedClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
