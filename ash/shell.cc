@@ -816,6 +816,9 @@ Shell::~Shell() {
   ScreenAsh::CreateScreenForShutdown();
   display_configuration_controller_.reset();
 
+  // Needs to be destructed before `ime_controler_`.
+  rgb_keyboard_manager_.reset();
+
   // These members access Shell in their destructors.
   wallpaper_controller_.reset();
   accessibility_controller_.reset();
@@ -929,8 +932,6 @@ Shell::~Shell() {
 
   usb_peripheral_notification_controller_.reset();
 
-  rgb_keyboard_manager_.reset();
-
   message_center_ash_impl_.reset();
 
   // Destroys the MessageCenter singleton, so must happen late.
@@ -1009,7 +1010,8 @@ void Shell::Init(
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 
   if (::features::IsRgbKeyboardEnabled()) {
-    rgb_keyboard_manager_ = std::make_unique<RgbKeyboardManager>();
+    rgb_keyboard_manager_ =
+        std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   }
 
   // Observes the tablet mode controller if any hps feature is enabled.

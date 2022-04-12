@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ime/ime_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -19,7 +20,9 @@ class RgbKeyboardManagerTest : public testing::Test {
   RgbKeyboardManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(::features::kRgbKeyboard);
 
-    manager_ = std::make_unique<RgbKeyboardManager>();
+    // ImeControllerImpl must be initializezd before RgbKeyboardManager.
+    ime_controller_ = std::make_unique<ImeControllerImpl>();
+    manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   }
 
   RgbKeyboardManagerTest(const RgbKeyboardManagerTest&) = delete;
@@ -27,6 +30,8 @@ class RgbKeyboardManagerTest : public testing::Test {
   ~RgbKeyboardManagerTest() override = default;
 
  protected:
+  // ImeControllerImpl must be destroyed after RgbKeyboardManager.
+  std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
 
  private:
@@ -108,4 +113,23 @@ TEST_F(RgbKeyboardManagerTest, SetCapsLockState) {
   manager_->SetCapsLockState(/*is_caps_lock_set=*/false);
   EXPECT_FALSE(manager_->is_caps_lock_set());
 }
+
+TEST_F(RgbKeyboardManagerTest, OnCapsLockChanged) {
+  EXPECT_FALSE(manager_->is_caps_lock_set());
+  ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
+  EXPECT_TRUE(manager_->is_caps_lock_set());
+  ime_controller_->UpdateCapsLockState(/*caps_enabled=*/false);
+  EXPECT_FALSE(manager_->is_caps_lock_set());
+}
+
+TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
+  // Simulate CapsLock enabled upon login.
+  ime_controller_->SetCapsLockEnabled(/*caps_enabled=*/true);
+
+  // Simulate RgbKeyboardManager starting up on login.
+  manager_.reset();
+  manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
+  EXPECT_TRUE(manager_->is_caps_lock_set());
+}
+
 }  // namespace ash

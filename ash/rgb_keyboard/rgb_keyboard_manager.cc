@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "ash/ime/ime_controller_impl.h"
 #include "base/check.h"
 #include "base/check_op.h"
 
@@ -20,13 +21,21 @@ const int kRGBLength = 3;
 
 }  // namespace
 
-RgbKeyboardManager::RgbKeyboardManager()
-    : recently_sent_rgb_for_testing_(kRGBLength) {
+RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
+    : recently_sent_rgb_for_testing_(kRGBLength),
+      ime_controller_raw_ptr_(ime_controller) {
+  DCHECK(ime_controller_raw_ptr_);
   DCHECK(!g_instance);
   g_instance = this;
+
+  ime_controller_raw_ptr_->AddObserver(this);
+  // Upon login, CapsLock may already be enabled.
+  SetCapsLockState(ime_controller_raw_ptr_->IsCapsLockEnabled());
 }
 
 RgbKeyboardManager::~RgbKeyboardManager() {
+  ime_controller_raw_ptr_->RemoveObserver(this);
+
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -60,6 +69,10 @@ void RgbKeyboardManager::SetRainbowMode() {
 
 void RgbKeyboardManager::SetCapsLockState(bool is_caps_lock_set) {
   is_caps_lock_set_ = is_caps_lock_set;
+}
+
+void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
+  SetCapsLockState(enabled);
 }
 
 // static

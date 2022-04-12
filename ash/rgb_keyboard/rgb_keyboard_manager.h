@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/ime/ime_controller_impl.h"
 
 namespace ash {
 
@@ -24,12 +25,12 @@ enum class RgbKeyboardCapabilities {
 // of the rgbkbd DBus client.
 // This class is owned by ash/shell and should NOT be created by any other
 // means.
-class ASH_EXPORT RgbKeyboardManager {
+class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
  public:
-  RgbKeyboardManager();
+  explicit RgbKeyboardManager(ImeControllerImpl* ime_controller);
   RgbKeyboardManager(const RgbKeyboardManager&) = delete;
   RgbKeyboardManager& operator=(const RgbKeyboardManager&) = delete;
-  ~RgbKeyboardManager();
+  virtual ~RgbKeyboardManager();
 
   RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
@@ -48,11 +49,17 @@ class ASH_EXPORT RgbKeyboardManager {
   bool is_caps_lock_set() const { return is_caps_lock_set_; }
 
  private:
+  // ImeControllerImpl::Observer:
+  void OnCapsLockChanged(bool enabled) override;
+  void OnKeyboardLayoutNameChanged(const std::string&) override {}
+
   // TODO(jimmyxgong): Remove the following members after DBus client is
   // available.
   std::vector<uint8_t> recently_sent_rgb_for_testing_;
   bool is_rainbow_mode_set_for_testing_ = false;
   bool is_caps_lock_set_ = false;
+
+  ImeControllerImpl* ime_controller_raw_ptr_;
 };
 
 }  // namespace ash
