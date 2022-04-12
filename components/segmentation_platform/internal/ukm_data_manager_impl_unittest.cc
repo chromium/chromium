@@ -110,13 +110,11 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
   }
 
   void AddModel(const proto::SegmentationModelMetadata& metadata) {
-    ModelExecutionManagerImpl* mem_impl =
-        static_cast<ModelExecutionManagerImpl*>(
-            segmentation_platform_service_impl_->execution_service_
-                .deprecated_model_execution_manager());
-    mem_impl->OnSegmentationModelUpdated(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
-        0);
+    auto& callback =
+        model_provider_data_.model_providers_callbacks
+            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE];
+    callback.Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+                 metadata, 0);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
     segment_db_->LoadCallback(true);

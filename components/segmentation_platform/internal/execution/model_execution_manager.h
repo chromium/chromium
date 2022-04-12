@@ -5,11 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/callback_forward.h"
-#include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/optimization_guide/proto/models.pb.h"
 
 namespace segmentation_platform {
 namespace proto {
@@ -18,10 +15,9 @@ class SegmentInfo;
 
 class ModelProvider;
 
-// The ModelExecutionManager is the core class for interacting with the ML
-// framework. The only requirement is to pass in the segment ID to execute the
-// model for, and a callback will be posted with the result, once the
-// calculation has finished.
+// The ModelExecutionManager is used to own ModelProvider(s) that interact with
+// optimization_guide, and not used for default model. All model updates are
+// saved to database.
 class ModelExecutionManager {
  public:
   virtual ~ModelExecutionManager() = default;
@@ -30,22 +26,13 @@ class ModelExecutionManager {
   ModelExecutionManager(const ModelExecutionManager&) = delete;
   ModelExecutionManager& operator=(const ModelExecutionManager&) = delete;
 
-  // The float value is only valid when ModelExecutionStatus == kSuccess.
-  using ModelExecutionCallback =
-      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
-
   // Invoked whenever there are changes to the state of a segmentation model.
   // Will not be invoked unless the proto::SegmentInfo is valid.
   using SegmentationModelUpdatedCallback =
       base::RepeatingCallback<void(proto::SegmentInfo)>;
 
-  // Called to execute a given model. This assumes that data has been collected
-  // for long enough for each of the individual ML features.
-  // If `explicit_provider` is set, then the execution will use it instead of
-  // the original provider.
-  virtual void ExecuteModel(const proto::SegmentInfo& segment_info,
-                            ModelProvider* explicit_provider,
-                            ModelExecutionCallback callback) = 0;
+  virtual ModelProvider* GetProvider(
+      optimization_guide::proto::OptimizationTarget segment_id) = 0;
 
  protected:
   ModelExecutionManager() = default;

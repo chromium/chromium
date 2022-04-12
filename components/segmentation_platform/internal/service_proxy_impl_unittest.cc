@@ -14,7 +14,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -199,15 +202,19 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
       base::DoNothing());
   db_->UpdateCallback(true);
 
-  MockModelExecutionScheduler scheduler;
+  auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
+  MockModelExecutionScheduler* scheduler = scheduler_moved.get();
+  ExecutionService execution;
+  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved));
+
   // Scheduler is not set, ExecuteModel() will do nothing.
-  EXPECT_CALL(scheduler, RequestModelExecution(_)).Times(0);
+  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
-  service_proxy_impl_->SetModelExecutionScheduler(&scheduler);
+  service_proxy_impl_->SetExecutionService(&execution);
   base::RunLoop wait_for_execution;
-  EXPECT_CALL(scheduler, RequestModelExecution(_))
+  EXPECT_CALL(*scheduler, RequestModelExecution(_))
       .WillOnce(Invoke(
           [&info, &wait_for_execution](const proto::SegmentInfo actual_info) {
             EXPECT_EQ(info.segment_id(), actual_info.segment_id());
@@ -218,7 +225,7 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   db_->GetCallback(true);
   wait_for_execution.Run();
 
-  EXPECT_CALL(scheduler, RequestModelExecution(_)).Times(0);
+  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 }
@@ -232,30 +239,33 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   db_->LoadCallback(true);
 
-  MockModelExecutionScheduler scheduler;
+  auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
+  MockModelExecutionScheduler* scheduler = scheduler_moved.get();
+  ExecutionService execution;
+  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved));
 
   // Scheduler is not set, OverwriteValue() will do nothing.
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 
   // Test with invalid values.
-  service_proxy_impl_->SetModelExecutionScheduler(&scheduler);
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  service_proxy_impl_->SetExecutionService(&execution);
+  EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 1.1);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, -0.1);
 
   EXPECT_CALL(
-      scheduler,
+      *scheduler,
       OnModelExecutionCompleted(
           OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, _))
       .Times(1);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN, 0.7);
 }

@@ -9,6 +9,7 @@ HistoryDelegateImplTest.*
 MetadataUtilsTest.*
 ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
+ModelExecutorTest.*
 OptimizationGuideSegmentationModelProviderTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*

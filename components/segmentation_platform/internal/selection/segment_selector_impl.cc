@@ -94,10 +94,10 @@ SegmentSelectorImpl::SegmentSelectorImpl(
 SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
 void SegmentSelectorImpl::OnPlatformInitialized(
-    ModelExecutionManager* execution_manager) {
+    ExecutionService* execution_service) {
   segment_result_provider_ = SegmentResultProvider::Create(
       segment_database_, signal_storage_config_, default_model_manager_,
-      execution_manager, clock_, platform_options_.force_refresh_results);
+      execution_service, clock_, platform_options_.force_refresh_results);
   if (CanComputeSegmentSelection()) {
     GetRankForNextSegment(std::make_unique<SegmentRanks>());
   }

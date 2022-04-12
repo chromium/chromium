@@ -78,21 +78,6 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               (override));
 };
 
-// TODO(ssid): Use mock_feature_list_query_processor.h.
-class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
- public:
-  MockFeatureListQueryProcessor()
-      : FeatureListQueryProcessor(nullptr, nullptr) {}
-  ~MockFeatureListQueryProcessor() override = default;
-  MOCK_METHOD(void,
-              ProcessFeatureList,
-              (const proto::SegmentationModelMetadata&,
-               OptimizationTarget,
-               base::Time,
-               FeatureProcessorCallback),
-              (override));
-};
-
 }  // namespace
 
 class ModelExecutionManagerTest : public testing::Test {
@@ -117,43 +102,16 @@ class ModelExecutionManagerTest : public testing::Test {
   void CreateModelExecutionManager(
       std::vector<OptimizationTarget> segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
-    feature_list_query_processor_ =
-        std::make_unique<MockFeatureListQueryProcessor>();
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
-        signal_database_.get(), feature_list_query_processor_.get(), callback);
+        callback);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void ExecuteModel(const std::pair<float, ModelExecutionStatus>& expected,
-                    ModelProvider* explicit_provider = nullptr) {
-    proto::SegmentInfo* info = segment_database_->FindOrCreateSegment(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-    base::RunLoop loop;
-    model_execution_manager_->ExecuteModel(
-        *info, std::move(explicit_provider),
-        base::BindOnce(&ModelExecutionManagerTest::OnExecutionCallback,
-                       base::Unretained(this), loop.QuitClosure(), expected));
-    loop.Run();
-  }
-
-  void OnExecutionCallback(
-      base::RepeatingClosure closure,
-      const std::pair<float, ModelExecutionStatus>& expected,
-      const std::pair<float, ModelExecutionStatus>& actual) {
-    EXPECT_EQ(expected.second, actual.second);
-    EXPECT_NEAR(expected.first, actual.first, 1e-5);
-    std::move(closure).Run();
-  }
-
   MockModelProvider& FindHandler(
       optimization_guide::proto::OptimizationTarget segment_id) {
     return *(*model_provider_data_.model_providers.find(segment_id)).second;
-  }
-
-  base::Time StartTime(base::TimeDelta bucket_duration, int64_t bucket_count) {
-    return clock_.Now() - bucket_duration * bucket_count;
   }
 
  protected:
@@ -166,44 +124,8 @@ class ModelExecutionManagerTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
 
-  std::unique_ptr<MockFeatureListQueryProcessor> feature_list_query_processor_;
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };
-
-TEST_F(ModelExecutionManagerTest, HandlerNotRegistered) {
-  CreateModelExecutionManager({}, base::DoNothing());
-  EXPECT_DCHECK_DEATH(
-      ExecuteModel(std::make_pair(0, ModelExecutionStatus::kExecutionError)));
-}
-
-TEST_F(ModelExecutionManagerTest, MetadataTests) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
-      .WillRepeatedly(Return(true));
-  ExecuteModel(
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
-
-  segment_database_->SetBucketDuration(segment_id, 14,
-                                       proto::TimeUnit::UNKNOWN_TIME_UNIT);
-  ExecuteModel(
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
-}
-
-TEST_F(ModelExecutionManagerTest, ModelNotReady) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-
-  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-
-  // When the model is unavailable, the execution should fail.
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
-      .WillRepeatedly(Return(false));
-
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kSkippedModelNotReady));
-}
 
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // Use a MockSegmentInfoDatabase for this test in particular, to verify that
@@ -369,96 +291,6 @@ TEST_F(ModelExecutionManagerTest,
             segment_info_from_db_2->model_metadata().features(0).aggregation());
   // We shuold have kept the prediction result.
   EXPECT_EQ(2, segment_info_from_db_2->prediction_result().result());
-}
-
-TEST_F(ModelExecutionManagerTest, FailedFeatureProcessing) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-
-  // Initialize with required metadata.
-  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  std::string user_action_name = "some_user_action";
-  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
-                                          proto::Aggregation::BUCKETED_COUNT);
-
-  EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(
-          RunOnceCallback<3>(/*error=*/true, std::vector<float>{1, 2, 3}));
-
-  // The input tensor should contain all values flattened to a single vector.
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(FindHandler(segment_id), ExecuteModelWithInput(_, _)).Times(0);
-
-  ExecuteModel(
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
-
-  EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(RunOnceCallback<3>(/*error=*/true, std::vector<float>{}));
-  ExecuteModel(
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
-}
-
-TEST_F(ModelExecutionManagerTest, ExecuteModelWithMultipleFeatures) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-
-  // Initialize with required metadata.
-  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  std::string user_action_name = "some_user_action";
-  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
-                                          proto::Aggregation::BUCKETED_COUNT);
-
-  EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(RunOnceCallback<3>(/*error=*/false,
-                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7}));
-
-  // The input tensor should contain all values flattened to a single vector.
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(FindHandler(segment_id),
-              ExecuteModelWithInput(std::vector<float>{1, 2, 3, 4, 5, 6, 7}, _))
-      .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
-
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
-}
-
-TEST_F(ModelExecutionManagerTest, ExecuteWithExplicitProvider) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-
-  // Initialize with required metadata.
-  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-  std::string user_action_name = "some_user_action";
-  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
-                                          proto::Aggregation::BUCKETED_COUNT);
-
-  EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(RunOnceCallback<3>(/*error=*/false,
-                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7}));
-
-  // This provider should not be used since `explicit_provider` is set, and
-  // explicit prvider should be used for execution.
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable()).Times(0);
-  EXPECT_CALL(FindHandler(segment_id), ExecuteModelWithInput(_, _)).Times(0);
-
-  auto explicit_provider =
-      std::make_unique<MockModelProvider>(segment_id, base::DoNothing());
-  EXPECT_CALL(*explicit_provider, ModelAvailable())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*explicit_provider,
-              ExecuteModelWithInput(std::vector<float>{1, 2, 3, 4, 5, 6, 7}, _))
-      .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
-
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess),
-               explicit_provider.get());
 }
 
 }  // namespace segmentation_platform

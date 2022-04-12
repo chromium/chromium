@@ -21,7 +21,7 @@ class Clock;
 namespace segmentation_platform {
 
 struct Config;
-class ModelExecutionManager;
+class ExecutionService;
 class DefaultModelManager;
 class SegmentationResultPrefs;
 class SignalStorageConfig;
@@ -39,7 +39,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   ~SegmentSelectorImpl() override;
 
   // SegmentSelector overrides.
-  void OnPlatformInitialized(ModelExecutionManager* execution_manager) override;
+  void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
 

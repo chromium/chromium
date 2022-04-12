@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
-#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/public/config.h"
@@ -95,9 +95,9 @@ void ServiceProxyImpl::UpdateObservers(bool update_service_status) {
   }
 }
 
-void ServiceProxyImpl::SetModelExecutionScheduler(
-    ModelExecutionScheduler* model_execution_scheduler) {
-  model_execution_scheduler_ = model_execution_scheduler;
+void ServiceProxyImpl::SetExecutionService(
+    ExecutionService* model_execution_scheduler) {
+  execution_service = model_execution_scheduler;
 }
 
 void ServiceProxyImpl::GetServiceStatus() {
@@ -105,7 +105,7 @@ void ServiceProxyImpl::GetServiceStatus() {
 }
 
 void ServiceProxyImpl::ExecuteModel(OptimizationTarget segment_id) {
-  if (!model_execution_scheduler_ ||
+  if (!execution_service ||
       segment_id == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
     return;
   }
@@ -117,20 +117,25 @@ void ServiceProxyImpl::ExecuteModel(OptimizationTarget segment_id) {
 
 void ServiceProxyImpl::OnSegmentInfoFetchedForExecution(
     absl::optional<proto::SegmentInfo> segment_info) {
-  if (segment_info)
-    model_execution_scheduler_->RequestModelExecution(*segment_info);
+  if (!segment_info)
+    return;
+  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  request->record_metrics_for_default = false;
+  request->save_result_to_db = true;
+  request->segment_info = &segment_info.value();
+  execution_service->RequestModelExecution(std::move(request));
 }
 
 void ServiceProxyImpl::OverwriteResult(OptimizationTarget segment_id,
                                        float result) {
-  if (!model_execution_scheduler_)
+  if (!execution_service)
     return;
 
   if (result < 0 || result > 1)
     return;
 
   if (segment_id != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
-    model_execution_scheduler_->OnModelExecutionCompleted(
+    execution_service->OverwriteModelExecutionResult(
         segment_id, std::make_pair(result, ModelExecutionStatus::kSuccess));
   }
 }

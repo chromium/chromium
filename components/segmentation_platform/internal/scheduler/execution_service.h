@@ -12,15 +12,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 namespace segmentation_platform {
 
 struct PlatformOptions;
 class FeatureListQueryProcessor;
+class ModelExecutor;
 class ModelProviderFactory;
-class ModelExecutionSchedulerImpl;
 class SegmentInfoDatabase;
 class SignalDatabase;
 class SignalHandler;
@@ -35,6 +35,11 @@ class ExecutionService {
 
   ExecutionService(ExecutionService&) = delete;
   ExecutionService& operator=(ExecutionService&) = delete;
+
+  void InitForTesting(
+      std::unique_ptr<FeatureListQueryProcessor> feature_processor,
+      std::unique_ptr<ModelExecutor> executor,
+      std::unique_ptr<ModelExecutionScheduler> scheduler);
 
   void Initialize(
       SignalDatabase* signal_database,
@@ -53,15 +58,32 @@ class ExecutionService {
   // SegmentInfo with valid metadata and features.
   void OnNewModelInfoReady(const proto::SegmentInfo& segment_info);
 
-  // TODO(ssid): Remove this method and pass in ExecutionService to proxy
-  // service.
-  ModelExecutionSchedulerImpl* deprecated_model_execution_scheduler() {
-    return model_execution_scheduler_.get();
-  }
-  // TODO(ssid): Remove this method and pass in ExecutionService to selector.
-  ModelExecutionManager* deprecated_model_execution_manager() {
-    return model_execution_manager_.get();
-  }
+  using ModelExecutionCallback =
+      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
+  struct ExecutionRequest {
+    ExecutionRequest();
+    ~ExecutionRequest();
+
+    // Required: The segment info to use for model execution.
+    const proto::SegmentInfo* segment_info = nullptr;
+    // Required: The model provider used to execute the model.
+    ModelProvider* model_provider = nullptr;
+
+    // Save result of execution to the database.
+    bool save_result_to_db = false;
+    // Record metrics for default model instead of optimization_guide based
+    // models.
+    bool record_metrics_for_default = false;
+    // returns result as by callback, to be used when `save_result_to_db` is
+    // false.
+    ModelExecutionCallback callback;
+  };
+
+  void RequestModelExecution(std::unique_ptr<ExecutionRequest> request);
+
+  void OverwriteModelExecutionResult(
+      optimization_guide::proto::OptimizationTarget segment_id,
+      const std::pair<float, ModelExecutionStatus>& result);
 
  private:
   // Training/inference input data generation.
@@ -70,11 +92,13 @@ class ExecutionService {
   // Traing data collection logic.
   std::unique_ptr<TrainingDataCollector> training_data_collector_;
 
-  // Model execution scheduling logic.
-  std::unique_ptr<ModelExecutionSchedulerImpl> model_execution_scheduler_;
+  std::unique_ptr<ModelExecutor> model_executor_;
 
   // Model execution.
-  std::unique_ptr<ModelExecutionManager> model_execution_manager_;
+  std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
+
+  // Model execution scheduling logic.
+  std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;
 };
 
 }  // namespace segmentation_platform

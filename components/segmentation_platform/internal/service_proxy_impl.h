@@ -21,7 +21,7 @@ using optimization_guide::proto::OptimizationTarget;
 namespace segmentation_platform {
 struct Config;
 class SignalStorageConfig;
-class ModelExecutionScheduler;
+class ExecutionService;
 class SegmentSelectorImpl;
 
 // A helper class to expose internals of the segmentationss service to a logging
@@ -42,8 +42,7 @@ class ServiceProxyImpl : public ServiceProxy {
   ServiceProxyImpl(const ServiceProxyImpl& other) = delete;
   ServiceProxyImpl& operator=(const ServiceProxyImpl& other) = delete;
 
-  void SetModelExecutionScheduler(
-      ModelExecutionScheduler* model_execution_scheduler);
+  void SetExecutionService(ExecutionService* model_execution_scheduler);
 
   // ServiceProxy impl.
   void GetServiceStatus() override;
@@ -74,7 +73,7 @@ class ServiceProxyImpl : public ServiceProxy {
   raw_ptr<SignalStorageConfig> signal_storage_config_;
   raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
   base::ObserverList<ServiceProxy::Observer> observers_;
-  raw_ptr<ModelExecutionScheduler> model_execution_scheduler_{nullptr};
+  raw_ptr<ExecutionService> execution_service{nullptr};
   raw_ptr<base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>>
       segment_selectors_;
 

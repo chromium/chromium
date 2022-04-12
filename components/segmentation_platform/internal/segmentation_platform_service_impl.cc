@@ -260,12 +260,10 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
           weak_ptr_factory_.GetWeakPtr()),
       kDatabaseMaintenanceDelay);
 
-  proxy_->SetModelExecutionScheduler(
-      execution_service_.deprecated_model_execution_scheduler());
+  proxy_->SetExecutionService(&execution_service_);
 
   for (auto& selector : segment_selectors_) {
-    selector.second->OnPlatformInitialized(
-        execution_service_.deprecated_model_execution_manager());
+    selector.second->OnPlatformInitialized(&execution_service_);
   }
 }
 

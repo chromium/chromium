@@ -13,9 +13,9 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -39,13 +39,13 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   SegmentResultProviderImpl(SegmentInfoDatabase* segment_database,
                             SignalStorageConfig* signal_storage_config,
                             DefaultModelManager* default_model_manager,
-                            ModelExecutionManager* execution_manager,
+                            ExecutionService* execution_service,
                             base::Clock* clock,
                             bool force_refresh_results)
       : segment_database_(segment_database),
         signal_storage_config_(signal_storage_config),
         default_model_manager_(default_model_manager),
-        execution_manager_(execution_manager),
+        execution_service_(execution_service),
         clock_(clock),
         force_refresh_results_(force_refresh_results),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
@@ -84,7 +84,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   const raw_ptr<SegmentInfoDatabase> segment_database_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
   const raw_ptr<DefaultModelManager> default_model_manager_;
-  const raw_ptr<ModelExecutionManager> execution_manager_;
+  const raw_ptr<ExecutionService> execution_service_;
   const raw_ptr<base::Clock> clock_;
   const bool force_refresh_results_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -220,13 +220,16 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
 
   ModelProvider* default_provider = request_state->default_provider;
   DCHECK(default_provider);
-  // The reference is kept alive by the unique_ptr in the callback.
-  const proto::SegmentInfo& info_ref = *default_segment_info;
-  execution_manager_->ExecuteModel(
-      info_ref, default_provider,
+  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  // The pointer is kept alive by the unique_ptr in the callback.
+  request->segment_info = default_segment_info.get();
+  request->record_metrics_for_default = true;
+  request->callback =
       base::BindOnce(&SegmentResultProviderImpl::OnDefaultModelExecuted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
-                     std::move(default_segment_info)));
+                     std::move(default_segment_info));
+  request->model_provider = default_provider;
+  execution_service_->RequestModelExecution(std::move(request));
 }
 
 void SegmentResultProviderImpl::OnDefaultModelExecuted(
@@ -268,12 +271,12 @@ std::unique_ptr<SegmentResultProvider> SegmentResultProvider::Create(
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     DefaultModelManager* default_model_manager,
-    ModelExecutionManager* execution_manager,
+    ExecutionService* execution_service,
     base::Clock* clock,
     bool force_refresh_results) {
   return std::make_unique<SegmentResultProviderImpl>(
       segment_database, signal_storage_config, default_model_manager,
-      execution_manager, clock, force_refresh_results);
+      execution_service, clock, force_refresh_results);
 }
 
 }  // namespace segmentation_platform

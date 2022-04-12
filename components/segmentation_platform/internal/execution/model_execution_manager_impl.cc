@@ -13,27 +13,17 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
-#include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
-#include "components/segmentation_platform/internal/execution/model_execution_status.h"
-#include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/internal/proto/types.pb.h"
-#include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -41,76 +31,16 @@ using proto::OptimizationTarget;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
-struct ModelExecutionManagerImpl::ModelExecutionTraceEvent {
-  ModelExecutionTraceEvent(
-      const char* event_name,
-      const ModelExecutionManagerImpl::ExecutionState& state);
-  ~ModelExecutionTraceEvent();
-
-  const ModelExecutionManagerImpl::ExecutionState& state;
-};
-
-struct ModelExecutionManagerImpl::ExecutionState {
-  ExecutionState()
-      : trace_event(std::make_unique<ModelExecutionTraceEvent>(
-            "ModelExecutionManagerImpl::ExecutionState",
-            *this)) {}
-  ~ExecutionState() {
-    trace_event.reset();
-    // Emit another event to ensure that the event emitted by resetting
-    // trace_event can be scraped by the tracing service (crbug.com/1021571).
-    TRACE_EVENT_INSTANT("segmentation_platform",
-                        "ModelExecutionManagerImpl::~ExecutionState()");
-  }
-
-  // Disallow copy/assign.
-  ExecutionState(const ExecutionState&) = delete;
-  ExecutionState& operator=(const ExecutionState&) = delete;
-
-  // The top level event for all ExecuteModel calls is the ExecutionState
-  // trace event. This is std::unique_ptr to be able to easily reset it right
-  // before we emit an instant event at destruction time. If this is the last
-  // trace event for a thread, it will not be emitted. See
-  // https://crbug.com/1021571.
-  std::unique_ptr<ModelExecutionTraceEvent> trace_event;
-
-  OptimizationTarget segment_id;
-  int64_t model_version = 0;
-  raw_ptr<ModelProvider> model_provider = nullptr;
-  bool is_explicit_provider = false;
-  ModelExecutionCallback callback;
-  std::vector<float> input_tensor;
-  base::Time total_execution_start_time;
-  base::Time model_execution_start_time;
-};
-
-ModelExecutionManagerImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
-    const char* event_name,
-    const ModelExecutionManagerImpl::ExecutionState& state)
-    : state(state) {
-  TRACE_EVENT_BEGIN("segmentation_platform", perfetto::StaticString(event_name),
-                    perfetto::Track::FromPointer(&state));
-}
-
-ModelExecutionManagerImpl::ModelExecutionTraceEvent::
-    ~ModelExecutionTraceEvent() {
-  TRACE_EVENT_END("segmentation_platform",
-                  perfetto::Track::FromPointer(&state));
-}
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     const base::flat_set<OptimizationTarget>& segment_ids,
     ModelProviderFactory* model_provider_factory,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
-    SignalDatabase* signal_database,
-    FeatureListQueryProcessor* feature_list_query_processor,
     const SegmentationModelUpdatedCallback& model_updated_callback)
     : clock_(clock),
       segment_database_(segment_database),
-      signal_database_(signal_database),
       model_updated_callback_(model_updated_callback) {
-  feature_list_query_processor_ = feature_list_query_processor;
   for (OptimizationTarget segment_id : segment_ids) {
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory->CreateProvider(segment_id);
@@ -123,135 +53,11 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
 
 ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;
 
-void ModelExecutionManagerImpl::ExecuteModel(
-    const proto::SegmentInfo& segment_info,
-    ModelProvider* explicit_provider,
-    ModelExecutionCallback callback) {
-  OptimizationTarget segment_id = segment_info.segment_id();
-
-  // Create an ExecutionState that will stay with this request until it has been
-  // fully processed.
-  auto state = std::make_unique<ExecutionState>();
-  state->segment_id = segment_id;
-
-  if (explicit_provider) {
-    state->model_provider = explicit_provider;
-    state->is_explicit_provider = true;
-  } else {
-    auto model_provider_it = model_providers_.find(segment_id);
-    DCHECK(model_provider_it != model_providers_.end());
-    state->model_provider = model_provider_it->second.get();
-    state->is_explicit_provider = false;
-  }
-  DCHECK(state->model_provider);
-
-  state->callback = std::move(callback);
-  state->total_execution_start_time = clock_->Now();
-
-  ModelExecutionTraceEvent trace_event(
-      "ModelExecutionManagerImpl::ExecuteModel", *state);
-
-  if (!state->model_provider->ModelAvailable()) {
-    RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kSkippedModelNotReady);
-    return;
-  }
-
-  // It is required to have a valid and well formed segment info.
-  if (metadata_utils::ValidateSegmentInfo(segment_info) !=
-      metadata_utils::ValidationResult::kValidationSuccess) {
-    RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kSkippedInvalidMetadata);
-    return;
-  }
-
-  state->model_version = segment_info.model_version();
-  feature_list_query_processor_->ProcessFeatureList(
-      segment_info.model_metadata(), segment_id, clock_->Now(),
-      base::BindOnce(
-          &ModelExecutionManagerImpl::OnProcessingFeatureListComplete,
-          weak_ptr_factory_.GetWeakPtr(), std::move(state)));
-}
-
-void ModelExecutionManagerImpl::OnProcessingFeatureListComplete(
-    std::unique_ptr<ExecutionState> state,
-    bool error,
-    const std::vector<float>& input_tensor) {
-  if (error) {
-    // Validation error occurred on model's metadata.
-    RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kSkippedInvalidMetadata);
-    return;
-  }
-  state->input_tensor.insert(state->input_tensor.end(), input_tensor.begin(),
-                             input_tensor.end());
-
-  ExecuteModel(std::move(state));
-}
-
-void ModelExecutionManagerImpl::ExecuteModel(
-    std::unique_ptr<ExecutionState> state) {
-  ModelExecutionTraceEvent trace_event(
-      "ModelExecutionManagerImpl::ExecuteModel", *state);
-  if (VLOG_IS_ON(1)) {
-    std::stringstream log_input;
-    for (unsigned i = 0; i < state->input_tensor.size(); ++i)
-      log_input << " feature " << i << ": " << state->input_tensor[i];
-    VLOG(1) << "Segmentation model input: " << log_input.str()
-            << " for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
-  }
-  const std::vector<float>& const_input_tensor = std::move(state->input_tensor);
-  stats::RecordModelExecutionZeroValuePercent(state->segment_id,
-                                              const_input_tensor);
-  state->model_execution_start_time = clock_->Now();
-  ModelProvider* model = state->model_provider;
-  model->ExecuteModelWithInput(
-      const_input_tensor,
-      base::BindOnce(&ModelExecutionManagerImpl::OnModelExecutionComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
-}
-
-void ModelExecutionManagerImpl::OnModelExecutionComplete(
-    std::unique_ptr<ExecutionState> state,
-    const absl::optional<float>& result) {
-  ModelExecutionTraceEvent trace_event(
-      "ModelExecutionManagerImpl::OnModelExecutionComplete", *state);
-  stats::RecordModelExecutionDurationModel(
-      state->segment_id, result.has_value(),
-      clock_->Now() - state->model_execution_start_time);
-  if (result.has_value()) {
-    VLOG(1) << "Segmentation model result: " << *result << " for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
-    stats::RecordModelExecutionResult(state->segment_id, result.value());
-    if (state->model_version) {
-      SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-          state->segment_id, state->model_version, state->input_tensor,
-          result.value());
-    }
-    RunModelExecutionCallback(std::move(state), *result,
-                              ModelExecutionStatus::kSuccess);
-  } else {
-    VLOG(1) << "Segmentation model returned no result for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
-    RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kExecutionError);
-  }
-}
-
-void ModelExecutionManagerImpl::RunModelExecutionCallback(
-    std::unique_ptr<ExecutionState> state,
-    float result,
-    ModelExecutionStatus status) {
-  stats::RecordModelExecutionDurationTotal(
-      state->segment_id, status,
-      clock_->Now() - state->total_execution_start_time);
-  stats::RecordModelExecutionStatus(state->segment_id,
-                                    state->is_explicit_provider, status);
-  std::move(state->callback).Run(std::make_pair(result, status));
+ModelProvider* ModelExecutionManagerImpl::GetProvider(
+    optimization_guide::proto::OptimizationTarget segment_id) {
+  auto it = model_providers_.find(segment_id);
+  DCHECK(it != model_providers_.end());
+  return it->second.get();
 }
 
 void ModelExecutionManagerImpl::OnSegmentationModelUpdated(

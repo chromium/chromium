@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 
 namespace base {
@@ -27,6 +27,7 @@ namespace proto {
 class SegmentInfo;
 }  // namespace proto
 
+class ModelExecutionManager;
 class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
@@ -36,6 +37,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
       SegmentInfoDatabase* segment_database,
       SignalStorageConfig* signal_storage_config,
       ModelExecutionManager* model_execution_manager,
+      ModelExecutor* model_executor,
       base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
       base::Clock* clock,
       const PlatformOptions& platform_options);
@@ -69,13 +71,14 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   std::vector<Observer*> observers_;
 
   // The database storing metadata and results.
-  raw_ptr<SegmentInfoDatabase> segment_database_;
+  const raw_ptr<SegmentInfoDatabase> segment_database_;
 
   // Used for confirming if the signals have been collected long enough.
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  const raw_ptr<SignalStorageConfig> signal_storage_config_;
 
   // The class that executes the models.
-  raw_ptr<ModelExecutionManager> model_execution_manager_;
+  const raw_ptr<ModelExecutionManager> model_execution_manager_;
+  const raw_ptr<ModelExecutor> model_executor_;
 
   // The set of all known segments.
   base::flat_set<optimization_guide::proto::OptimizationTarget>
@@ -90,7 +93,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   // update.
   std::map<OptimizationTarget,
            base::CancelableOnceCallback<
-               ModelExecutionManager::ModelExecutionCallback::RunType>>
+               ModelExecutor::ModelExecutionCallback::RunType>>
       outstanding_requests_;
 
   base::WeakPtrFactory<ModelExecutionSchedulerImpl> weak_ptr_factory_{this};

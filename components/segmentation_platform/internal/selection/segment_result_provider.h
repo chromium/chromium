@@ -16,7 +16,7 @@ class Clock;
 namespace segmentation_platform {
 
 class DefaultModelManager;
-class ModelExecutionManager;
+class ExecutionService;
 class SignalStorageConfig;
 
 // Used for retrieving the result of a particular model.
@@ -54,7 +54,7 @@ class SegmentResultProvider {
       SegmentInfoDatabase* segment_info_database,
       SignalStorageConfig* signal_storage_config,
       DefaultModelManager* default_model_manager,
-      ModelExecutionManager* execution_manager,
+      ExecutionService* execution_service,
       base::Clock* clock,
       bool force_refresh_results);
 
