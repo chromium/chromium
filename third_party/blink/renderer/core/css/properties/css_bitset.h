@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstring>
 #include <initializer_list>
+#include "base/bits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 
@@ -78,24 +79,30 @@ class CORE_EXPORT CSSBitsetBase {
   // Yields the CSSPropertyIDs which are set.
   class Iterator {
    public:
-    Iterator(const uint64_t* chunks, size_t index)
-        : chunks_(chunks), index_(index), chunk_(ChunkAt(index)) {}
+    // Only meant for internal use (from begin() or end()).
+    Iterator(const uint64_t* chunks, size_t chunk_index, size_t index)
+        : chunks_(chunks),
+          index_(index),
+          chunk_index_(chunk_index),
+          chunk_(chunks_[0]) {
+      DCHECK(index == 0 || index == kBits);
+      if (index < kBits) {
+        ++*this;  // Go to the first set bit.
+      }
+    }
 
     inline void operator++() {
-      do {
-        ++index_;
-        chunk_ = chunk_ >> 1ull;
-        DCHECK_LE(index_, kBits);
-
-        if (index_ >= kBits)
+      // If there are no more bits set in this chunk,
+      // skip to the next nonzero chunk (if any exists).
+      while (!chunk_) {
+        if (++chunk_index_ >= kChunks) {
+          index_ = kBits;
           return;
-        if (!chunk_) {
-          // If the chunk is empty, we can fast-forward to the next chunk.
-          size_t next_chunk_index = (index_ - 1) / 64 + 1;
-          index_ = std::min(next_chunk_index * 64, kBits);
-          chunk_ = ChunkAt(index_);
         }
-      } while (!(chunk_ & 1));
+        chunk_ = chunks_[chunk_index_];
+      }
+      index_ = chunk_index_ * 64 + base::bits::CountTrailingZeroBits(chunk_);
+      chunk_ &= chunk_ - 1;  // Clear the lowest bit.
     }
 
     inline CSSPropertyID operator*() const {
@@ -111,20 +118,6 @@ class CORE_EXPORT CSSBitsetBase {
     }
 
    private:
-    // For a given index, return the corresponding chunk, down-shifted
-    // such that the given index is the LSB of the chunk.
-    //
-    // In other words, (ChunkAt(index) & 1) is a valid way of checking whether
-    // the bit at 'index' is set.
-    //
-    // If the given index is out of bounds, we don't really have a chunk to
-    // return. This function returns 1, solely to automatically fail the
-    // do-while condition in operator++. (It avoids having special handling of
-    // index > kBits there).
-    uint64_t ChunkAt(size_t index) const {
-      return index < kBits ? chunks_[index / 64] >> (index % 64) : 1ull;
-    }
-
     const uint64_t* chunks_;
     // The current bit index this Iterator is pointing to. Note that this is
     // the "global" index, i.e. it has the range [0, kBits]. (It is not a local
@@ -132,30 +125,19 @@ class CORE_EXPORT CSSBitsetBase {
     //
     // Never exceeds kBits.
     size_t index_ = 0;
+    // The current chunk index this Iterator is pointing to.
+    // Points to kChunks if we are done.
+    size_t chunk_index_ = 0;
     // The iterator works by "pre-fetching" the current chunk (corresponding
-    // (to the current index), and down-shifting by one for every iteration.
-    // This allows the iterator to skip the remainder of the chunk when we
-    // shift away the last bit.
+    // (to the current index), and removing its bits one by one.
+    // This is not used (contains junk) for the end() iterator.
     uint64_t chunk_ = 0;
   };
 
-  Iterator begin() const { return Iterator(chunks_, FirstIndex()); }
-  Iterator end() const { return Iterator(chunks_, kBits); }
+  Iterator begin() const { return Iterator(chunks_, 0, 0); }
+  Iterator end() const { return Iterator(chunks_, kChunks, kBits); }
 
  private:
-  // Find the first index (i.e. first set bit). If no bits are set, returns
-  // kBits.
-  size_t FirstIndex() const {
-    size_t index = 0;
-    // Skip all empty chunks.
-    while (index < kBits && !chunks_[index / 64])
-      index += 64;
-    // Within the non-empty chunk, iterate until we find the set bit.
-    while (index < kBits && !(chunks_[index / 64] & (1ull << (index % 64))))
-      ++index;
-    return std::min(index, kBits);
-  }
-
   uint64_t chunks_[kChunks];
 };
 
