@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.components.autofill_assistant.AssistantAddressEditorGms;
+import org.chromium.components.autofill_assistant.AssistantContactEditorAccount;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
+import org.chromium.components.autofill_assistant.AssistantPaymentInstrumentEditorGms;
 import org.chromium.components.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.components.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
@@ -629,11 +632,10 @@ class AssistantCollectUserDataBinder
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             view.mContactDetailsSection.setRequestReloadOnChange(true);
-            view.mContactDetailsSection.setEditor(
-                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
-                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                            /* requestPhone= */ false));
+            view.mContactDetailsSection.setEditor(new AssistantContactEditorAccount(view.mActivity,
+                    view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
+                    /* requestPhone= */ false));
         } else {
             view.mContactDetailsSection.setRequestReloadOnChange(false);
             view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
@@ -648,10 +650,9 @@ class AssistantCollectUserDataBinder
     private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view) {
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             view.mPhoneNumberSection.setRequestReloadOnChange(true);
-            view.mPhoneNumberSection.setEditor(
-                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
-                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                            /* requestEmail= */ false, /* requestPhone= */ true));
+            view.mPhoneNumberSection.setEditor(new AssistantContactEditorAccount(view.mActivity,
+                    view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                    /* requestEmail= */ false, /* requestPhone= */ true));
         } else {
             view.mPhoneNumberSection.setRequestReloadOnChange(false);
             // Separate phone number section is only supposed to be used with backend data, we
@@ -669,8 +670,8 @@ class AssistantCollectUserDataBinder
                     model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
             if (initializeAddressCollectionParams != null
                     && initializeAddressCollectionParams.length > 0) {
-                editor = view.mEditorFactory.createGmsAddressEditor(view.mActivity,
-                        view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                editor = new AssistantAddressEditorGms(view.mActivity, view.mWindowAndroid,
+                        model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
                         initializeAddressCollectionParams);
             }
         } else {
@@ -690,7 +691,7 @@ class AssistantCollectUserDataBinder
             byte[] addInstrumentActionToken =
                     model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
             if (addInstrumentActionToken != null && addInstrumentActionToken.length > 0) {
-                editor = view.mEditorFactory.createGmsPaymentInstrumentEditor(view.mActivity,
+                editor = new AssistantPaymentInstrumentEditorGms(view.mActivity,
                         view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
                         addInstrumentActionToken);
             }

@@ -6,11 +6,12 @@ package org.chromium.components.autofill_assistant;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -19,22 +20,16 @@ import java.util.List;
  * Assistant is running (e.g. WebLayer, Chrome).
  */
 public interface AssistantEditorFactory {
+    @Nullable
     AssistantContactEditor createContactEditor(WebContents webContents, Activity activity,
             boolean requestName, boolean requestPhone, boolean requestEmail,
             boolean shouldStoreChanges);
 
-    AssistantContactEditor createAccountEditor(Activity activity, WindowAndroid windowAndroid,
-            String accountEmail, boolean requestEmail, boolean requestPhone);
-
+    @Nullable
     AssistantAddressEditor createAddressEditor(
             WebContents webContents, Activity activity, boolean shouldStoreChanges);
 
-    AssistantAddressEditor createGmsAddressEditor(Activity activity, WindowAndroid windowAndroid,
-            String accountEmail, byte[] initializeAddressCollectionParams);
-
+    @Nullable
     AssistantPaymentInstrumentEditor createPaymentInstrumentEditor(WebContents webContents,
             Activity activity, List<String> supportedCardNetworks, boolean shouldStoreChanges);
-
-    AssistantPaymentInstrumentEditor createGmsPaymentInstrumentEditor(Activity activity,
-            WindowAndroid windowAndroid, String accountEmail, byte[] addInstrumentactionToken);
 }
