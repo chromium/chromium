@@ -6,7 +6,7 @@
 <translation id="IDS_UI_FONT_SIZE_SCALER_XP">145</translation>
 <translation id="IDS_UI_FONT_SIZE_SCALER">130</translation>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Telugu UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Telugu UI, sans-serif</translation>
 </if>

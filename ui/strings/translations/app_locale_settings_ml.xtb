@@ -9,10 +9,10 @@
   <translation id="IDS_WEB_FONT_FAMILY">'Segoe UI',Arial,AnjaliOldLipi,Rachana,Kartika</translation>
   <translation id="IDS_WEB_FONT_FAMILY_XP">Arial,AnjaliOldLipi,Rachana,Kartika</translation>
 </if>
-<if expr="desktop_linux and not chromeos">
+<if expr="desktop_linux and not chromeos_ash">
   <translation id="IDS_WEB_FONT_FAMILY">Arial,AnjaliOldLipi,Rachana,Kartika,sans-serif</translation>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Malayalam UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Malayalam UI, sans-serif</translation>
 </if>
