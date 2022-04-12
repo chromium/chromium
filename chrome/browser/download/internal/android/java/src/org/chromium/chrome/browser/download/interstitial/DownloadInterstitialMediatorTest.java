@@ -244,9 +244,14 @@ public class DownloadInterstitialMediatorTest {
         return item;
     }
 
+    /**
+     * Extends {@link StubbedOfflineContentProvider} to add some logic to some of the no-op methods
+     * for testing.
+     */
     private static class TestOfflineContentProvider extends StubbedOfflineContentProvider {
         private ContentId mLastOpenedDownload;
 
+        /** Called to increment the progress of an offline item and notify observers. */
         public void incrementProgress(ContentId id) {
             OfflineItem item = findItem(id);
             item.progress = new OfflineItem.Progress(
@@ -257,6 +262,10 @@ public class DownloadInterstitialMediatorTest {
             notifyObservers(id);
         }
 
+        /**
+         * Called to complete the progress of an offline item, update its state and notify
+         * observers.
+         */
         public void completeDownload(ContentId id) {
             OfflineItem item = findItem(id);
             item.progress = new OfflineItem.Progress(

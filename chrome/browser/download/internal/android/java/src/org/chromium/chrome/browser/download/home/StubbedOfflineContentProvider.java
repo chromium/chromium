@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.home;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -53,7 +54,7 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
 
     @Override
     public void addObserver(OfflineContentProvider.Observer addedObserver) {
-        assertEquals(mObserver, null);
+        assertNull(mObserver);
         mObserver = addedObserver;
     }
 
@@ -92,12 +93,9 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
             }
         }
 
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mObserver != null) mObserver.onItemRemoved(id);
-                mDeleteItemCallback.notifyCalled();
-            }
+        mHandler.post(() -> {
+            if (mObserver != null) mObserver.onItemRemoved(id);
+            mDeleteItemCallback.notifyCalled();
         });
     }
 
@@ -121,10 +119,12 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
         mHandler.post(callback.bind(RenameResult.SUCCESS));
     }
 
+    /** Triggers the onItemUpdated method of any observer. */
     protected void notifyObservers(ContentId id) {
         if (mObserver != null) mObserver.onItemUpdated(findItem(id), null);
     }
 
+    /** @return an offline item with matching {@link ContentId} if it exists and null otherwise. */
     protected OfflineItem findItem(ContentId id) {
         for (OfflineItem item : mItems) {
             if (item.id.equals(id)) {
