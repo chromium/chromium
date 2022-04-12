@@ -38,6 +38,11 @@ class IntentChipButtonBrowserTest
         /*disabled_features=*/{});
   }
 
+  void TearDownOnMainThread() override {
+    web_app::test::UninstallWebApp(profile(), test_web_app_id());
+    web_app::WebAppNavigationBrowserTest::TearDownOnMainThread();
+  }
+
   void OpenNewTab(const GURL& url) {
     chrome::NewTab(browser());
     content::WebContents* web_contents =
