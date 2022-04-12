@@ -121,27 +121,27 @@ PrinterInfo GetEmptyPrinterInfo() {
   return empty_printer;
 }
 
-base::Value GetPrintPreviewTicket() {
-  base::Value print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
+base::Value::Dict GetPrintPreviewTicket() {
+  base::Value::Dict print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
 
   // Make some modifications to match a preview print ticket.
-  print_ticket.SetKey(kSettingPageRange, base::Value());
-  print_ticket.SetBoolKey(kIsFirstRequest, true);
-  print_ticket.SetIntKey(kPreviewRequestID, 0);
-  print_ticket.SetBoolKey(kSettingPreviewModifiable, false);
-  print_ticket.RemoveKey(kSettingPageWidth);
-  print_ticket.RemoveKey(kSettingPageHeight);
-  print_ticket.RemoveKey(kSettingShowSystemDialog);
+  print_ticket.Set(kSettingPageRange, base::Value());
+  print_ticket.Set(kIsFirstRequest, true);
+  print_ticket.Set(kPreviewRequestID, 0);
+  print_ticket.Set(kSettingPreviewModifiable, false);
+  print_ticket.Remove(kSettingPageWidth);
+  print_ticket.Remove(kSettingPageHeight);
+  print_ticket.Remove(kSettingShowSystemDialog);
 
   return print_ticket;
 }
 
-base::Value ConstructPreviewArgs(base::StringPiece callback_id,
-                                 const base::Value& print_ticket) {
-  base::Value args(base::Value::Type::LIST);
+base::Value::List ConstructPreviewArgs(base::StringPiece callback_id,
+                                       const base::Value::Dict& print_ticket) {
+  base::Value::List args;
   args.Append(callback_id);
   std::string json;
-  base::JSONWriter::Write(print_ticket, &json);
+  base::JSONWriter::Write(base::Value(print_ticket.Clone()), &json);
   args.Append(json);
   return args;
 }
@@ -1231,13 +1231,13 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     handler()->reset_calls();
 
     // Send print preview request.
-    base::Value preview_ticket = GetPrintPreviewTicket();
-    preview_ticket.SetIntKey(kPreviewRequestID, i);
+    base::Value::Dict preview_ticket = GetPrintPreviewTicket();
+    preview_ticket.Set(kPreviewRequestID, static_cast<int>(i));
     std::string preview_callback_id =
         "test-callback-id-" + base::NumberToString(2 * i + 1);
-    base::Value preview_list_args =
+    base::Value::List preview_list_args =
         ConstructPreviewArgs(preview_callback_id, preview_ticket);
-    handler()->HandleGetPreview(preview_list_args.GetList());
+    handler()->HandleGetPreview(preview_list_args);
 
     // Send printing request.
     mojom::PrinterType type = kAllTypes[i];
@@ -1245,7 +1245,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string print_callback_id =
         "test-callback-id-" + base::NumberToString(2 * (i + 1));
     print_args.Append(print_callback_id);
-    base::Value print_ticket = GetPrintTicket(type);
+    base::Value print_ticket(GetPrintTicket(type));
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
@@ -1270,10 +1270,10 @@ TEST_F(PrintPreviewHandlerTest, GetPreview) {
       GetInitiatorAssociatedInterfaceProvider());
   print_render_frame.SetCompletionClosure(run_loop.QuitClosure());
 
-  base::Value print_ticket = GetPrintPreviewTicket();
-  base::Value list_args =
+  base::Value::Dict print_ticket = GetPrintPreviewTicket();
+  base::Value::List list_args =
       ConstructPreviewArgs("test-callback-id-1", print_ticket);
-  handler()->HandleGetPreview(list_args.GetList());
+  handler()->HandleGetPreview(list_args);
   run_loop.Run();
 
   // Verify that the preview was requested from the renderer with the
@@ -1285,7 +1285,7 @@ TEST_F(PrintPreviewHandlerTest, GetPreview) {
       preview_id_found = true;
       continue;
     }
-    const base::Value* value_in = print_ticket.FindKey(it.first);
+    const base::Value* value_in = print_ticket.Find(it.first);
     ASSERT_TRUE(value_in);
     EXPECT_EQ(*value_in, it.second);
   }
@@ -1301,9 +1301,10 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   print_render_frame.SetCompletionClosure(run_loop.QuitClosure());
 
   const char callback_id_in[] = "test-callback-id-1";
-  base::Value print_ticket = GetPrintPreviewTicket();
-  base::Value list_args = ConstructPreviewArgs(callback_id_in, print_ticket);
-  handler()->HandleGetPreview(list_args.GetList());
+  base::Value::Dict print_ticket = GetPrintPreviewTicket();
+  base::Value::List list_args =
+      ConstructPreviewArgs(callback_id_in, print_ticket);
+  handler()->HandleGetPreview(list_args);
   run_loop.Run();
   const base::Value& preview_params = print_render_frame.GetSettings();
 
@@ -1415,13 +1416,13 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
   for (size_t i = 0; i < std::size(kAllSupportedTypes); i++) {
     mojom::PrinterType type = kAllSupportedTypes[i];
     handler()->reset_calls();
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
     args.Append(callback_id_in);
     args.Append(kDummyPrinterName);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinterCapabilities(args.GetList());
+    handler()->HandleGetPrinterCapabilities(args);
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings, then add 1 more for each loop
