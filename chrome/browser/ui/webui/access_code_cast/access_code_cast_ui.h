@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,7 +40,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   static void Show(const media_router::CastModeSet& cast_mode_set,
                    content::WebContents* web_contents,
                    std::unique_ptr<media_router::StartPresentationContext>
-                       start_presentation_context);
+                       start_presentation_context,
+                   AccessCodeCastDialogOpenLocation open_location);
   // Show the access code dialog box for desktop mirroring.
   static void ShowForDesktopMirroring();
 
@@ -74,7 +76,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
                    const media_router::CastModeSet& cast_mode_set,
                    content::WebContents* web_contents,
                    std::unique_ptr<media_router::StartPresentationContext>
-                       start_presentation_context);
+                       start_presentation_context,
+                   AccessCodeCastDialogOpenLocation open_location);
 
   // ObserveWidget must be called during dialog initialization so that we can
   // observe the dialog for activation state changes and close the dialog when

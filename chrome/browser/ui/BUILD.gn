@@ -432,6 +432,7 @@ static_library("ui") {
     "//chrome/services/qrcode_generator/public/cpp",
     "//chrome/services/qrcode_generator/public/mojom",
     "//components/about_ui",
+    "//components/access_code_cast/common",
     "//components/account_id",
     "//components/accuracy_tips",
     "//components/autofill/content/browser:risk_proto",

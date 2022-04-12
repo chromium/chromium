@@ -43,6 +43,7 @@ include_rules = [
   "+components/federated_learning",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",
+  "+components/access_code_cast",
   "+components/accuracy_tips",
   "+components/account_manager_core",
   "+components/assist_ranker",

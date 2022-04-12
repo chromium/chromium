@@ -82,7 +82,8 @@ void AccessCodeCastDialog::Show(
     const media_router::CastModeSet& cast_mode_set,
     content::WebContents* web_contents,
     std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context) {
+        start_presentation_context,
+    AccessCodeCastDialogOpenLocation open_location) {
   gfx::NativeView parent = nullptr;
   if (web_contents) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
@@ -95,11 +96,17 @@ void AccessCodeCastDialog::Show(
       parent,
       web_contents ? web_contents->GetBrowserContext()
                    : ProfileManager::GetActiveUserProfile(),
-      cast_mode_set, web_contents, std::move(start_presentation_context));
+      cast_mode_set, web_contents, std::move(start_presentation_context),
+      open_location);
 }
 
 void AccessCodeCastDialog::ShowForDesktopMirroring() {
-  Show({media_router::MediaCastMode::DESKTOP_MIRROR}, nullptr, nullptr);
+  // Temporarily use kSystemTrayCastMenu until we can pipe true location
+  // through SystemTrayClient.
+  AccessCodeCastDialogOpenLocation open_location =
+      AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu;
+  Show({media_router::MediaCastMode::DESKTOP_MIRROR}, nullptr, nullptr,
+      open_location);
 }
 
 // views::WidgetObserver:
@@ -118,7 +125,8 @@ void AccessCodeCastDialog::Show(
     const media_router::CastModeSet& cast_mode_set,
     content::WebContents* web_contents,
     std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context) {
+        start_presentation_context,
+    AccessCodeCastDialogOpenLocation open_location) {
   views::Widget::InitParams extra_params = CreateParams();
   auto* dialog = new AccessCodeCastDialog(context, cast_mode_set, web_contents,
       std::move(start_presentation_context));
@@ -129,6 +137,7 @@ void AccessCodeCastDialog::Show(
   views::Widget* dialog_widget = views::Widget::GetWidgetForNativeWindow(
     dialog_window);
   dialog->ObserveWidget(dialog_widget);
+  AccessCodeCastMetrics::RecordDialogOpenLocation(open_location);
   if (web_contents) {
     constrained_window::UpdateWidgetModalDialogPosition(dialog_widget,
       CreateChromeConstrainedWindowViewsClient()->GetModalDialogHost(
