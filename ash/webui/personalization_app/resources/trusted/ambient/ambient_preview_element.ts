@@ -112,6 +112,10 @@ export class AmbientPreview extends WithPersonalizationStore {
     return null;
   }
 
+  private getPreviewContainerClass_(): string {
+    return this.ambientModeEnabled_ ? 'ambient-enabled' : '';
+  }
+
   private getContainerClass_(): string {
     return `collage-${this.getCollageItems_().length}`;
   }

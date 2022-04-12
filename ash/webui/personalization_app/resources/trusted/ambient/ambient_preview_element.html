@@ -1,5 +1,7 @@
 <style include="common-style cros-button-style">
   :host([main-page]) #container {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 16px;
     display: grid;
     grid-template-areas:
       '. slot           slot    slot    .'
@@ -9,7 +11,11 @@
       '. mainpage-desc  .       collage .'
       '. .              .       .       .';
     grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px auto auto 24px;
+    grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+  }
+
+  :host([main-page]) #container.ambient-enabled {
+    grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
   #messageContainer {
@@ -17,7 +23,6 @@
     display: flex;
     flex-direction: column;
     grid-area: message;
-    height: 106px;
   }
 
   #messageContainer .text {
@@ -81,7 +86,6 @@
   :host([main-page]) .album-info-mainpage {
     display: flex;
     grid-area: mainpage-desc;
-    height: 106px;
     justify-content: center;
   }
 
@@ -150,7 +154,7 @@
     width: 100%;
   }
 </style>
-<div class="preview-container" id="container">
+<div class$="[[getPreviewContainerClass_(ambientModeEnabled_)]]" id="container">
   <slot></slot>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
