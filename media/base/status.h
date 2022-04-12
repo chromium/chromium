@@ -50,6 +50,14 @@ using UKMPackedType = uint64_t;
 
 namespace internal {
 
+template <typename T>
+struct SecondArgType {};
+
+template <typename R, typename A1, typename A2>
+struct SecondArgType<R(A1, A2)> {
+  using Type = A2;
+};
+
 union UKMPackHelper {
   struct bits {
     uint16_t group;
@@ -224,20 +232,70 @@ class MEDIA_EXPORT TypedStatus {
   using Traits = T;
   using Codes = typename T::Codes;
 
-  // default constructor to please the Mojo Gods.
-  TypedStatus() = default;
+  // See media/base/status.md for the ways that an instantiation of TypedStatus
+  // can be constructed, since there are a few.
 
-  // For TypedStatus(OkStatus())
+  // Default constructor to please the Mojo Gods.
+  TypedStatus() : data_(nullptr) {}
+
+  // Copy constructor (also as a sacrifice to Lord Mojo)
+  TypedStatus(const TypedStatus<T>& copy) { *this = copy; }
+
+  // Special constructor use by OkStatus() to implicitly be cast to any required
+  // status type.
   TypedStatus(const internal::OkStatusImplicitConstructionHelper&)
       : TypedStatus(Codes::kOk) {}
+
+  // Used to implicitly create a TypedStatus from a TypedStatus::Codes value.
+  TypedStatus(Codes code,
+              const base::Location& location = base::Location::Current())
+      : TypedStatus(code, "", location) {}
+
+  TypedStatus(std::tuple<Codes, base::StringPiece> pack,
+              const base::Location& location = base::Location::Current())
+      : TypedStatus(std::get<0>(pack), std::get<1>(pack), location) {}
+
+  // Used to allow returning {TypedStatus::Codes::kValue, CastFrom} implicitly
+  // iff TypedStatus::Traits::OnCreateFrom is implemented.
+  template <
+      typename _T = Traits,
+      typename = std::enable_if<std::is_pointer_v<decltype(&_T::OnCreateFrom)>>>
+  TypedStatus(
+      Codes code,
+      const typename internal::SecondArgType<decltype(_T::OnCreateFrom)>::Type&
+          data,
+      const base::Location& location = base::Location::Current())
+      : TypedStatus(code, "", location) {
+    // TODO(tmathmeyer) I think we can make this dcheck a static assert.
+    DCHECK(data_);
+    Traits::OnCreateFrom(this, data);
+  }
+
+  // Used to allow returning {TypedStatus::Codes::kValue, "message", CastFrom}
+  // implicitly iff TypedStatus::Traits::OnCreateFrom is implemented.
+  template <
+      typename _T = Traits,
+      typename = std::enable_if<std::is_pointer_v<decltype(&_T::OnCreateFrom)>>>
+  TypedStatus(
+      Codes code,
+      base::StringPiece message,
+      const typename internal::SecondArgType<decltype(_T::OnCreateFrom)>::Type&
+          data,
+      const base::Location& location = base::Location::Current())
+      : TypedStatus(code, message, location) {
+    DCHECK(data_);
+    Traits::OnCreateFrom(this, data);
+  }
 
   // Constructor to create a new TypedStatus from a numeric code & message.
   // These are immutable; if you'd like to change them, then you likely should
   // create a new TypedStatus.
   // NOTE: This should never be given a location parameter when called - It is
   // defaulted in order to grab the caller location.
+  // Also used to allow returning {TypedStatus::Codes::kValue, "message"}
+  // implicitly as a typed status.
   TypedStatus(Codes code,
-              base::StringPiece message = "",
+              base::StringPiece message,
               const base::Location& location = base::Location::Current()) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
@@ -250,8 +308,6 @@ class MEDIA_EXPORT TypedStatus {
         std::string(message), 0);
     data_->AddLocation(location);
   }
-
-  TypedStatus(const TypedStatus<T>& copy) { *this = copy; }
 
   TypedStatus<T>& operator=(const TypedStatus<T>& copy) {
     if (!copy.data_) {
@@ -384,21 +440,35 @@ class MEDIA_EXPORT TypedStatus {
 
     ~Or() = default;
 
-    // Implicit constructors allow returning |OtherType| or |TypedStatus|
-    // directly.
+    // Create an Or type implicitly from a TypedStatus
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
       // `error_` must not be `kOk`, if there is such a value.
       DCHECK(!error_->is_ok());
     }
+
     Or(const TypedStatus<T>& error) : error_(error) {
       DCHECK(!error_->is_ok());
     }
 
+    // Create an Or type implicitly from the alternate OtherType.
     Or(OtherType&& value) : value_(std::move(value)) {}
     Or(const OtherType& value) : value_(value) {}
+
+    // Create an Or type explicitly from a code
     Or(typename T::Codes code,
        const base::Location& location = base::Location::Current())
         : error_(TypedStatus<T>(code, "", location)) {
+      DCHECK(!error_->is_ok());
+    }
+
+    // Create an Or type implicitly from any brace-initializer list that could
+    // have been used to create the typed status
+    template <typename First, typename... Rest>
+    Or(typename T::Codes code,
+       const First& first,
+       const Rest&... rest,
+       const base::Location& location = base::Location::Current())
+        : error_(TypedStatus<T>(code, first, rest..., location)) {
       DCHECK(!error_->is_ok());
     }
 

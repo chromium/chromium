@@ -68,6 +68,22 @@ struct TraitsWithCustomUKMSerializer {
   }
 };
 
+struct TraitsWithDataPacking {
+  enum class Codes { kOk, kFail };
+  struct PackThis {
+    int a;
+    int b;
+    std::string c;
+  };
+  static constexpr StatusGroupType Group() { return "GroupWithDataPacking"; }
+  static void OnCreateFrom(TypedStatus<TraitsWithDataPacking>* status,
+                           const PackThis& data) {
+    status->WithData("DataA", data.a);
+    status->WithData("DataB", data.b);
+    status->WithData("DataC", data.c);
+  }
+};
+
 class StatusTest : public testing::Test {
  public:
   using NormalStatus = TypedStatus<ZeroValueOkTypeTraits>;
@@ -148,6 +164,57 @@ class StatusTest : public testing::Test {
     return floor;
   }
 };
+
+TEST_F(StatusTest, DifferentModesOfConstruction) {
+  // Can construct any type with OkStatus
+  NormalStatus ok = OkStatus();
+  ASSERT_TRUE(ok.is_ok());
+
+  // Can construct implicitly from a code
+  NormalStatus ok2 = NormalStatus::Codes::kOk;
+  ASSERT_TRUE(ok.is_ok());
+
+  // Can construct implicitly from a {code, message} braced initializer.
+  NormalStatus foo = {NormalStatus::Codes::kFoo, "msg"};
+  ASSERT_EQ(foo.code(), NormalStatus::Codes::kFoo);
+  ASSERT_EQ(foo.message(), "msg");
+
+  // Can construct explicitly from a code and message
+  NormalStatus foo2 = NormalStatus(NormalStatus::Codes::kFoo, "msg2");
+  ASSERT_EQ(foo2.code(), NormalStatus::Codes::kFoo);
+  ASSERT_EQ(foo2.message(), "msg2");
+
+  using PackingStatus = TypedStatus<TraitsWithDataPacking>;
+  TraitsWithDataPacking::PackThis data = {7, 3, "apple pie"};
+
+  // Can construct implicitly from a {code, data} for a type with OnCreateFrom
+  // in it's traits
+  PackingStatus packed = {PackingStatus::Codes::kFail, data};
+  ASSERT_EQ(packed.code(), PackingStatus::Codes::kFail);
+  ASSERT_EQ(packed.message(), "");
+  // Keep serialized around, accessing |data| from it inline causes it
+  // to be destructed and |unpacked| to be used after being freed.
+  auto serialized = MediaSerialize(packed);
+  auto* unpacked = serialized.FindDictPath("data");
+  ASSERT_NE(unpacked, nullptr);
+  ASSERT_EQ(unpacked->DictSize(), 3ul);
+  ASSERT_EQ(unpacked->FindIntPath("DataA"), 7);
+  ASSERT_EQ(unpacked->FindIntPath("DataB"), 3);
+  ASSERT_EQ(*unpacked->FindStringPath("DataC"), "apple pie");
+
+  // Can construct implicitly from a {code, "message", data} for a type with
+  // OnCreateFrom in it's traits
+  PackingStatus packed2 = {PackingStatus::Codes::kFail, "*explosion*", data};
+  ASSERT_EQ(packed2.code(), PackingStatus::Codes::kFail);
+  ASSERT_EQ(packed2.message(), "*explosion*");
+  serialized = MediaSerialize(packed);
+  unpacked = serialized.FindDictPath("data");
+  ASSERT_NE(unpacked, nullptr);
+  ASSERT_EQ(unpacked->DictSize(), 3ul);
+  ASSERT_EQ(unpacked->FindIntPath("DataA"), 7);
+  ASSERT_EQ(unpacked->FindIntPath("DataB"), 3);
+  ASSERT_EQ(*unpacked->FindStringPath("DataC"), "apple pie");
+}
 
 TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
   NormalStatus ok = DontFail();
