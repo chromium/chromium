@@ -1200,9 +1200,11 @@ class TrustTokenExtensionBrowserTest : public CorbAndCorsExtensionBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1315215): Have trust tokens handle the existence, or not, of
+// PrivacySandboxSettings3.
 IN_PROC_BROWSER_TEST_F(
     TrustTokenExtensionBrowserTest,
-    FromProgrammaticContentScript_TrustTokenRedemptionAllowed) {
+    DISABLED_FromProgrammaticContentScript_TrustTokenRedemptionAllowed) {
   // Trust Tokens operations only work on secure origins - set up a https test
   // server to help with this. One alternative would be using a localhost URL
   // from |embedded_test_server|, but this would require modifying the extension

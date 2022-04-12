@@ -139,6 +139,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testPrivacySandboxView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();

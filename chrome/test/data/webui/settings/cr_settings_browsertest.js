@@ -12,6 +12,7 @@ GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -577,6 +578,38 @@ TEST_F(
       runMochaSuite('CrSettingsCookiesPageTest_consolidatedControlsEnabled');
     });
 
+var CrSettingsCookiesPageConsolidatedDisabledTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/cookies_page_test.js&host=webui-test';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      disabled: [
+        'features::kConsolidatedSiteStorageControls',
+        // TODO(crbug.com/1238757)- Remove this when consolidated storage
+        // launches.
+        'privacy_sandbox::kPrivacySandboxSettings3',
+      ]
+    };
+  }
+};
+
+// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
+GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+GEN('#define MAYBE_ConsolidatedControlsDisabled DISABLED_ConsolidatedControlsDisabled');
+GEN('#else');
+GEN('#define MAYBE_ConsolidatedControlsDisabled ConsolidatedControlsDisaled');
+GEN('#endif');
+TEST_F(
+    'CrSettingsCookiesPageConsolidatedDisabledTest',
+    'MAYBE_ConsolidatedControlsDisabled', function() {
+      runMochaSuite('CrSettingsCookiesPageTest_consolidatedControlsDisabled');
+    });
+
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -633,7 +666,14 @@ var CrSettingsSiteDataTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureList() {
-    return {disabled: ['features::kConsolidatedSiteStorageControls']};
+    return {
+      disabled: [
+        'features::kConsolidatedSiteStorageControls',
+        // TODO(crbug.com/1238757)- Remove this when consolidated storage
+        // launches.
+        'privacy_sandbox::kPrivacySandboxSettings3',
+      ]
+    };
   }
 };
 
@@ -649,7 +689,14 @@ var CrSettingsSiteDataDetailsSubpageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureList() {
-    return {disabled: ['features::kConsolidatedSiteStorageControls']};
+    return {
+      disabled: [
+        'features::kConsolidatedSiteStorageControls',
+        // TODO(crbug.com/1238757)- Remove this when consolidated storage
+        // launches.
+        'privacy_sandbox::kPrivacySandboxSettings3',
+      ]
+    };
   }
 };
 

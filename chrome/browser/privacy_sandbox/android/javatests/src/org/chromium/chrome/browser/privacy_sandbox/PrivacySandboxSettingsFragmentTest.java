@@ -17,8 +17,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests {@link PrivacySandboxSettingsFragment}. */
@@ -43,6 +45,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testCreateActivityFromPrivacySettings() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
@@ -58,6 +61,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testCreateActivityFromCookiesSnackbar() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
