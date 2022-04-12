@@ -95,7 +95,7 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
     return nullptr;
   }
 
-  RecordAppLaunchMetrics(IconLoadingMethod::kViaNonMojomCall);
+  RecordIconLoadMethodMetrics(IconLoadingMethod::kViaNonMojomCall);
   publisher->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
                       allow_placeholder_icon, std::move(callback));
   return nullptr;
@@ -123,7 +123,7 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
     // for the app and app requested new icon. But new icon is not delivered
     // yet and you resolve old one instead. Now new icon arrives asynchronously
     // but you no longer notify the app or do?"
-    RecordAppLaunchMetrics(IconLoadingMethod::kViaMojomCall);
+    RecordIconLoadMethodMetrics(IconLoadingMethod::kViaMojomCall);
     host_->app_service_->LoadIcon(app_type, app_id, std::move(icon_key),
                                   icon_type, size_hint_in_dip,
                                   allow_placeholder_icon, std::move(callback));

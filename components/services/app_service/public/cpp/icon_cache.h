@@ -33,7 +33,7 @@ enum class IconLoadingMethod {
 };
 
 // Records metrics when loading icons.
-void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method);
+void RecordIconLoadMethodMetrics(IconLoadingMethod icon_loading_method);
 
 // An IconLoader that caches the apps::mojom::IconType::kUncompressed
 // results of another (wrapped) IconLoader.
