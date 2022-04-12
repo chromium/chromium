@@ -48,12 +48,15 @@
     background-color: var(--md-background-color);
     border-radius: 50%;
     bottom: var(--edit-avatar-border);
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     box-sizing: border-box;
     margin: auto;
     position: absolute;
     right: var(--edit-avatar-border);
     z-index: 3;
+  }
+
+  #customizeAvatarIcon:not(:focus-visible:focus) {
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
   }
 
   :host-context([dir='rtl']) #customizeAvatarEllipse {
