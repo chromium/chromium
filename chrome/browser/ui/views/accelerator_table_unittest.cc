@@ -46,6 +46,23 @@ TEST(AcceleratorTableTest, CheckDuplicatedAccelerators) {
   }
 }
 
+TEST(AcceleratorTableTest, PrintKeySupport) {
+  int command_id = -1;
+  for (const auto& entry : GetAcceleratorList()) {
+    if (entry.keycode == ui::VKEY_PRINT) {
+      command_id = entry.command_id;
+    }
+  }
+// KEY_PRINT->DomCode::PRINT->VKEY_PRINT are only mapped to IDC_PRINT on
+// Chrome OS. On Linux KEY_PRINT is treated as print screen which isn't
+// handled by the browser.
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(IDC_PRINT, command_id);
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(-1, command_id);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
   base::flat_set<AcceleratorMapping, Cmp> accelerators(GetAcceleratorList());

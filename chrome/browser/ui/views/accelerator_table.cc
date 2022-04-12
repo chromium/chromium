@@ -153,6 +153,13 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_NEW, ui::EF_NONE, IDC_NEW_TAB},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // Chrome OS supports the print key, however XKB conflates the print
+    // and printscreen keys together so it is not supported on Linux.
+    // See crbug.com/683097
+    {ui::VKEY_PRINT, ui::EF_NONE, IDC_PRINT},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Chrome OS keyboard does not have delete key, so assign it to backspace.
     {ui::VKEY_BACK, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
