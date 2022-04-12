@@ -90,3 +90,31 @@ class EnumTest(MojomParserTestCase):
     self.assertEqual('F', b.enums[0].mojom_name)
     self.assertEqual('kFoo', b.enums[0].fields[0].mojom_name)
     self.assertEqual(37, b.enums[0].fields[0].numeric_value)
+
+  def testEnumAttributesAreEnums(self):
+    """Verifies that enum values in attributes are really enum types."""
+    a_mojom = 'a.mojom'
+    self.WriteFile(a_mojom, 'module a; enum E { kFoo, kBar };')
+    b_mojom = 'b.mojom'
+    self.WriteFile(
+        b_mojom, 'module b;'
+        'import "a.mojom";'
+        '[MooCow=a.E.kFoo]'
+        'interface Foo { Foo(); };')
+    self.ParseMojoms([a_mojom, b_mojom])
+    b = self.LoadModule(b_mojom)
+    self.assertEqual(b.interfaces[0].attributes['MooCow'].mojom_name, 'kFoo')
+
+  def testConstantAttributes(self):
+    """Verifies that constants as attributes are translated to the constant."""
+    a_mojom = 'a.mojom'
+    self.WriteFile(
+        a_mojom, 'module a;'
+        'enum E { kFoo, kBar };'
+        'const E kB = E.kFoo;'
+        '[Attr=kB] interface Hello { Foo(); };')
+    self.ParseMojoms([a_mojom])
+    a = self.LoadModule(a_mojom)
+    self.assertEqual(a.interfaces[0].attributes['Attr'].mojom_name, 'kB')
+    self.assertEquals(a.interfaces[0].attributes['Attr'].value.mojom_name,
+                      'kFoo')

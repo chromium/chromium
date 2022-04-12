@@ -24,7 +24,7 @@ class {{export_attribute}} {{interface.name}}
                                       {{interface.uuid[1]}}ULL };
 {%-  endif %}
 {%- if interface.service_sandbox %}
-{%- set sandbox_enum = "%s"|format(interface.service_sandbox|replace(".","::")) %}
+{%- set sandbox_enum = "%s"|format(interface.service_sandbox.GetSpec()|replace(".","::")) %}
   static constexpr auto kServiceSandbox = {{ sandbox_enum }};
 {%- endif %}
   static constexpr uint32_t Version_ = {{interface.version}};

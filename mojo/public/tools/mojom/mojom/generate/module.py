@@ -1211,7 +1211,16 @@ class Interface(ReferenceKind):
   def service_sandbox(self):
     if not self.attributes:
       return None
-    return self.attributes.get(ATTRIBUTE_SERVICE_SANDBOX, None)
+    service_sandbox = self.attributes.get(ATTRIBUTE_SERVICE_SANDBOX, None)
+    if service_sandbox is None:
+      return None
+    # Constants are only allowed to refer to an enum here, so replace.
+    if isinstance(service_sandbox, Constant):
+      service_sandbox = service_sandbox.value
+    if not isinstance(service_sandbox, EnumValue):
+      raise Exception("ServiceSandbox attribute on %s must be an enum value." %
+                      self.module.name)
+    return service_sandbox
 
   @property
   def stable(self):
