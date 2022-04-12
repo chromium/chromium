@@ -29,7 +29,7 @@ suite('AboutPageTest', function() {
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     aboutBrowserProxy = new TestAboutPageBrowserProxyChromeOS();
-    AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;
+    AboutPageBrowserProxyImpl.setInstance(aboutBrowserProxy);
     return initNewPage();
   });
 
@@ -670,8 +670,8 @@ suite('DetailedBuildInfoTest', function() {
   setup(function() {
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    AboutPageBrowserProxyImpl.instance_ = browserProxy;
-    DeviceNameBrowserProxyImpl.instance_ = deviceNameBrowserProxy;
+    AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    DeviceNameBrowserProxyImpl.setInstance(deviceNameBrowserProxy);
     PolymerTest.clearBody();
   });
 
@@ -958,7 +958,7 @@ suite('EditHostnameDialogTest', function() {
 
   setup(function() {
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    DeviceNameBrowserProxyImpl.instance_ = deviceNameBrowserProxy;
+    DeviceNameBrowserProxyImpl.setInstance(deviceNameBrowserProxy);
     PolymerTest.clearBody();
   });
 
@@ -1159,7 +1159,7 @@ suite('ChannelSwitcherDialogTest', function() {
     currentChannel = BrowserChannel.BETA;
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     browserProxy.setChannels(currentChannel, currentChannel);
-    AboutPageBrowserProxyImpl.instance_ = browserProxy;
+    AboutPageBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-channel-switcher-dialog');
     document.body.appendChild(dialog);
@@ -1247,7 +1247,7 @@ suite('AboutPageTest_OfficialBuild', function() {
 
   setup(function() {
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
-    AboutPageBrowserProxyImpl.instance_ = browserProxy;
+    AboutPageBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('os-settings-about-page');
     document.body.appendChild(page);
