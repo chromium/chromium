@@ -99,7 +99,7 @@ public class HomepagePolicyIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Homepage"})
-    @FlakyTest(message = "crbug.com/1075804")
+    @FlakyTest(message = "crbug.com/1133544")
     public void testStartUpPage() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

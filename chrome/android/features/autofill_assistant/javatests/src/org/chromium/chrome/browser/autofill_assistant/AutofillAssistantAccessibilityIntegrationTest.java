@@ -178,7 +178,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1254159")
+    @FlakyTest(message = "https://crbug.com/1254423")
     public void testBottomSheetListensToAccessibilityChanges() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 

@@ -58,7 +58,7 @@ public class MediaSessionTest {
 
     @Test
     @SmallTest
-    @FlakyTest
+    @FlakyTest(message = "https://crbug.com/1315419")
     public void testPauseOnHeadsetUnplug() throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
