@@ -50,8 +50,9 @@ message CriticalPersistedTabDataProto {
     FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14;
     FROM_APP_WIDGET = 15;
     FROM_LONGPRESS_INCOGNITO = 16;
-    SIZE = 17;
-    UNKNOWN = 18;
+    FROM_RECENT_TABS = 17;
+    SIZE = 18;
+    UNKNOWN = 19;
   }
   optional LaunchTypeAtCreation launch_type_at_creation = 8;
 

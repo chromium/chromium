@@ -207,6 +207,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 boolean incognito = tab.isIncognito();
                 boolean willBeSelected = launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
                                 && launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                && launchType != TabLaunchType.FROM_RECENT_TABS
                         || (!getTabModelSelector().isIncognitoSelected() && incognito);
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;

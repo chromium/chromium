@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/RecentlyClosedBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -398,7 +399,31 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
   return !restored_tabs.empty();
 }
 
-jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
+jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jtab_model,
+    jint entry_session_id) {
+  // This should only be called when in bulk restore mode otherwise per-tab
+  // restore should always be used.
+  DCHECK(base::FeatureList::IsEnabled(chrome::android::kBulkTabRestore));
+  if (!tab_restore_service_)
+    return false;
+
+  auto* model = TabModelList::FindNativeTabModelForJavaObject(
+      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+  if (model == nullptr) {
+    return false;
+  }
+
+  AndroidLiveTabContextRestoreWrapper restore_context(model);
+  std::vector<sessions::LiveTab*> restored_tabs =
+      tab_restore_service_->RestoreEntryById(
+          &restore_context, SessionID::FromSerializedValue(entry_session_id),
+          WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  return !restored_tabs.empty();
+}
+
+jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_model) {
   EnsureTabRestoreService();
@@ -413,8 +438,23 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
   }
 
   AndroidLiveTabContextRestoreWrapper restore_context(model);
-  std::vector<sessions::LiveTab*> restored_tabs =
-      tab_restore_service_->RestoreMostRecentEntry(&restore_context);
+  std::vector<sessions::LiveTab*> restored_tabs;
+  if (base::FeatureList::IsEnabled(chrome::android::kBulkTabRestore)) {
+    restored_tabs =
+        tab_restore_service_->RestoreMostRecentEntry(&restore_context);
+  } else {
+    auto it = TabIterator::begin(tab_restore_service_->entries());
+    if (it == TabIterator::end(tab_restore_service_->entries())) {
+      return false;
+    }
+    // Storage of bulk entries may persist across flag flips. Fall back to
+    // restoring the most recent tab rather than the most recent entry even if a
+    // bulk entry is stored. TabRestoreService is well tested so it is "safe" to
+    // restore from a single Tab within a bulk entry even when the bulk storage
+    // is disabled.
+    restored_tabs = tab_restore_service_->RestoreEntryById(
+        &restore_context, it->id, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  }
   return !restored_tabs.empty();
 }
 

@@ -343,6 +343,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
             case LaunchTypeAtCreation.FROM_APP_WIDGET:
                 return TabLaunchType.FROM_APP_WIDGET;
+            case LaunchTypeAtCreation.FROM_RECENT_TABS:
+                return TabLaunchType.FROM_RECENT_TABS;
             case LaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case LaunchTypeAtCreation.UNKNOWN:
@@ -395,6 +397,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
             case TabLaunchType.FROM_APP_WIDGET:
                 return LaunchTypeAtCreation.FROM_APP_WIDGET;
+            case LaunchTypeAtCreation.FROM_RECENT_TABS:
+                return TabLaunchType.FROM_RECENT_TABS;
             case TabLaunchType.SIZE:
                 return LaunchTypeAtCreation.SIZE;
             default:

@@ -118,6 +118,9 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
     std::vector<int> tab_ids;
   };
 
+  void SetVisualDataForGroup(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data) override;
   sessions::LiveTab* AddRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
       int tab_index,

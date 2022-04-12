@@ -15,10 +15,10 @@ import java.util.List;
  */
 public interface RecentlyClosedTabManager {
     /**
-     * Sets the {@link Runnable} to be called whenever the list of recently closed tabs changes.
+     * Sets the {@link Runnable} to be called whenever the list of recently closed entries changes.
      * @param runnable The {@link Runnable} to be called, or null.
      */
-    void setTabsUpdatedRunnable(@Nullable Runnable runnable);
+    void setEntriesUpdatedRunnable(@Nullable Runnable runnable);
 
     /**
      * @param maxTabCount The maximum number of recently closed tabs to return.
@@ -47,11 +47,20 @@ public interface RecentlyClosedTabManager {
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition);
 
     /**
-     * Opens the most recently closed tab in a new tab.
+     * Opens a recently closed entry in new tab(s).
      *
      * @param tabModel The {@link TabModel} to open the tab into.
+     * @param recentEntry The RecentlyClosedEntry to open.
+     * @return Whether the tab was successfully opened.
      */
-    void openMostRecentlyClosedTab(TabModel tabModel);
+    boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry);
+
+    /**
+     * Opens the most recently closed entry in new tab(s).
+     *
+     * @param tabModel The {@link TabModel} to open the tab(s) into.
+     */
+    void openMostRecentlyClosedEntry(TabModel tabModel);
 
     /**
      * Clears all recently closed tabs.
