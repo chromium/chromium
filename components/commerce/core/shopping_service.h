@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_H_
 
+#include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace commerce {
 
-class ShoppingService : public KeyedService {
+class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
   ShoppingService() = default;
   ~ShoppingService() override = default;

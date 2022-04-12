@@ -6,13 +6,20 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
+  ]
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/commerce/core/android:core_java",
     "//components/payments/content/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("javatests") {
@@ -31,4 +38,12 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
+}
+
+generate_jni("shopping_service_jni") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
+  ]
+
+  deps = [ "//components/commerce/core:shopping_service" ]
 }

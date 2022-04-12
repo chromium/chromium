@@ -133,4 +133,19 @@ static_library("shopping_service") {
     "//base",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/shopping_service_android.cc",
+      "android/shopping_service_android.h",
+    ]
+
+    deps += [ ":shopping_service_jni_headers" ]
+  }
+}
+
+if (is_android) {
+  generate_jni("shopping_service_jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/commerce/core/ShoppingService.java" ]
+  }
 }
