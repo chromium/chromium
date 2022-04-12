@@ -18,6 +18,7 @@
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 #include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/query_tiles/switches.h"
@@ -39,6 +40,7 @@ constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
 constexpr int kChromeStartDefaultSelectionTTLDays = 30;
 constexpr int kChromeStartDefaultUnknownTTLDays = 7;
+constexpr char kChromeStartDefaultModelEnabledParam[] = "enable_default_model";
 
 constexpr int kChromeLowUserEngagementSelectionTTLDays = 30;
 
@@ -90,6 +92,15 @@ std::unique_ptr<Config> GetConfigForDummyFeature() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          chrome::android::kStartSurfaceAndroid,
+          kChromeStartDefaultModelEnabledParam, false)) {
+    return nullptr;
+  }
+  return std::make_unique<ChromeStartModel>();
+}
+
 std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
@@ -188,6 +199,10 @@ std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
   if (target ==
       optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
     return GetQueryTilesDefaultModel();
+  }
+  if (target == optimization_guide::proto::
+                    OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID) {
+    return GetChromeStartAndroidModel();
   }
 #endif
   return nullptr;
