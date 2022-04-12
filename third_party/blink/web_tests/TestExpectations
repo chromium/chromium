@@ -1318,6 +1318,7 @@ crbug.com/1284270 [ Win ] external/wpt/css/css-ui/compute-kind-widget-no-fallbac
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 crbug.com/1251689 external/wpt/css/css-flexbox/table-as-item-specified-width-vertical.html [ Failure ]
+crbug.com/1311206 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-038.html [ Failure ]
 
 # Needs "new" flex container intrinsic size algorithm.
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]

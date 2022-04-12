@@ -593,42 +593,17 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc);
     }
 
-    const NGLayoutResult* layout_result = nullptr;
-    auto IntrinsicBlockSizeFunc =
-        [&](MinMaxSizesType type = MinMaxSizesType::kIntrinsic) -> LayoutUnit {
-      if (type == MinMaxSizesType::kContent && child.HasAspectRatio() &&
-          !child.IsReplaced()) {
-        // We don't enter here for replaced children because (a) this block
-        // doesn't account for natural sizes so wouldn't work for replaced
-        // elements, and (b) IntrinsicBlockSize() below already returns the
-        // kContent block size for replaced elements.
-        DCHECK(!AspectRatioProvidesMainSize(child))
-            << "We only ever call IntrinsicBlockSizeFunc with kContent for "
-               "determing flex base size in case E. If "
-               "AspectRatioProvidesMainSize==true, we would have fallen into "
-               "case B, not case E.";
-        DCHECK(!MainAxisIsInlineAxis(child))
-            << "We assume that the main axis is block axis in the call to "
-               "BlockSum() below.";
-        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-            child, border_padding_in_child_writing_mode.BlockSum(),
-            min_max_sizes_in_cross_axis_direction,
-            border_padding_in_child_writing_mode);
-      }
-      if (!layout_result) {
-        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
-        layout_result = child.Layout(child_space, /* break_token */ nullptr);
-        DCHECK(layout_result);
-      }
-      return layout_result->IntrinsicBlockSize();
-    };
-
     auto ComputeTransferredMainSize = [&]() -> LayoutUnit {
-      DCHECK_NE(IsItemCrossAxisLengthDefinite(child, cross_axis_length),
-                WillChildCrossSizeBeContainerCrossSize(child));
+      DCHECK(!IsItemCrossAxisLengthDefinite(child, cross_axis_length) ||
+             !WillChildCrossSizeBeContainerCrossSize(child))
+          << "IsItemCrossAxisLengthDefinite and "
+             "WillChildCrossSizeBeContainerCrossSize should be mutually "
+             "exclusive.";
       LayoutUnit cross_size;
-      Length cross_axis_length_to_resolve = cross_axis_length;
-      if (WillChildCrossSizeBeContainerCrossSize(child))
+      Length cross_axis_length_to_resolve = Length::FitContent();
+      if (IsItemCrossAxisLengthDefinite(child, cross_axis_length))
+        cross_axis_length_to_resolve = cross_axis_length;
+      else if (WillChildCrossSizeBeContainerCrossSize(child))
         cross_axis_length_to_resolve = Length::FillAvailable();
       if (MainAxisIsInlineAxis(child)) {
         cross_size = ResolveMainBlockLength(
@@ -650,6 +625,36 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return BlockSizeFromAspectRatio(
           border_padding_in_child_writing_mode, child.GetAspectRatio(),
           child_style.BoxSizingForAspectRatio(), cross_size);
+    };
+
+    const NGLayoutResult* layout_result = nullptr;
+    auto IntrinsicBlockSizeFunc =
+        [&](MinMaxSizesType type = MinMaxSizesType::kIntrinsic) -> LayoutUnit {
+      if (type == MinMaxSizesType::kContent && child.HasAspectRatio() &&
+          !child.IsReplaced()) {
+        // We don't enter here for replaced children because (a) this block
+        // doesn't account for natural sizes so wouldn't work for replaced
+        // elements, and (b) IntrinsicBlockSize() below already returns the
+        // kContent block size for replaced elements.
+        DCHECK(!AspectRatioProvidesMainSize(child))
+            << "We only ever call IntrinsicBlockSizeFunc with kContent for "
+               "determing flex base size in case E. If "
+               "AspectRatioProvidesMainSize==true, we would have fallen into "
+               "case B, not case E.";
+        DCHECK(!MainAxisIsInlineAxis(child))
+            << "We assume that the main axis is block axis in the call to "
+               "BlockSum() below.";
+        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
+            child, ComputeTransferredMainSize(),
+            min_max_sizes_in_cross_axis_direction,
+            border_padding_in_child_writing_mode);
+      }
+      if (!layout_result) {
+        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
+        layout_result = child.Layout(child_space, /* break_token */ nullptr);
+        DCHECK(layout_result);
+      }
+      return layout_result->IntrinsicBlockSize();
     };
 
     Length flex_basis_length;
