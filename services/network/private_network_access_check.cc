@@ -19,12 +19,18 @@ using Result = PrivateNetworkAccessCheckResult;
 Result PrivateNetworkAccessCheckInternal(
     const mojom::ClientSecurityState* client_security_state,
     mojom::IPAddressSpace target_address_space,
+    absl::optional<mojom::IPAddressSpace> previous_response_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
   if (url_load_options & mojom::kURLLoadOptionBlockLocalRequest &&
       IsLessPublicAddressSpace(resource_address_space,
                                mojom::IPAddressSpace::kPublic)) {
     return Result::kBlockedByLoadOption;
+  }
+
+  if (previous_response_address_space.has_value() &&
+      resource_address_space != *previous_response_address_space) {
+    return Result::kBlockedByInconsistentIpAddressSpace;
   }
 
   if (target_address_space != mojom::IPAddressSpace::kUnknown) {
@@ -71,10 +77,12 @@ Result PrivateNetworkAccessCheckInternal(
 Result PrivateNetworkAccessCheck(
     const mojom::ClientSecurityState* client_security_state,
     mojom::IPAddressSpace target_address_space,
+    absl::optional<mojom::IPAddressSpace> previous_response_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
   Result result = PrivateNetworkAccessCheckInternal(
-      client_security_state, target_address_space, url_load_options,
+      client_security_state, target_address_space,
+      previous_response_address_space, url_load_options,
       resource_address_space);
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
                                 result);

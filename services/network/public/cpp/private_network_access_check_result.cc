@@ -37,6 +37,8 @@ base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "blocked-by-policy-preflight-block";
     case Result::kAllowedByPolicyPreflightWarn:
       return "allowed-by-policy-preflight-warn";
+    case Result::kBlockedByInconsistentIpAddressSpace:
+      return "blocked-by-inconsistent-ip-address-space";
   }
 }
 
@@ -56,6 +58,7 @@ absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kBlockedByPolicyBlock:
       return CorsError::kInsecurePrivateNetwork;
     case Result::kBlockedByTargetIpAddressSpace:
+    case Result::kBlockedByInconsistentIpAddressSpace:
       return CorsError::kInvalidPrivateNetworkAccess;
     case Result::kBlockedByPolicyPreflightWarn:
     case Result::kBlockedByPolicyPreflightBlock:

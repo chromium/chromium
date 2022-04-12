@@ -1014,6 +1014,67 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitReturnError) {
   }
 }
 
+// This test verifies that when the callback passed to SetConnectedCallback()
+// returns `ERR_INCONSISTENT_IP_ADDRESS_SPACE`, the cache entry is invalidated.
+TEST_F(HttpCacheTest,
+       SimpleGET_ConnectedCallbackOnCacheHitReturnInconsistentIpError) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
+  mock_transaction.transport_info = TestTransportInfo();
+
+  // Populate the cache.
+  RunTransactionTest(cache.http_cache(), mock_transaction);
+
+  MockHttpRequest request(kSimpleGET_Transaction);
+
+  {
+    // Attempt to read from cache entry, but abort transaction due to a
+    // connected callback error.
+    ConnectedHandler connected_handler;
+    connected_handler.set_result(ERR_INCONSISTENT_IP_ADDRESS_SPACE);
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(),
+                IsError(ERR_INCONSISTENT_IP_ADDRESS_SPACE));
+
+    // Used the cache entry only.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(CachedTestTransportInfo()));
+  }
+
+  {
+    // Request the same resource once more, observe that it is not read from
+    // cache.
+    ConnectedHandler connected_handler;
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+    // Used the network only.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfo()));
+  }
+}
+
 class HttpCacheTest_SplitCacheFeature
     : public HttpCacheTest,
       public ::testing::WithParamInterface<bool> {
@@ -2170,6 +2231,184 @@ TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackCalledForEachRange) {
     EXPECT_THAT(connected_handler.transports(),
                 ElementsAre(TestTransportInfo(), CachedTestTransportInfo(),
                             TestTransportInfoWithPort(123)));
+  }
+}
+
+// This test verifies that when the ConnectedCallback passed to a cache range
+// transaction returns an `ERR_INCONSISTENT_IP_ADDRESS_SPACE` error during a
+// partial read from cache, then the cache entry is invalidated.
+TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackReturnInconsistentIpError) {
+  MockHttpCache cache;
+
+  // Request an infix range and populate the cache with it.
+  {
+    ScopedMockTransaction mock_transaction(kRangeGET_TransactionOK);
+    mock_transaction.request_headers = "Range: bytes = 20-29\r\n" EXTRA_HEADER;
+    mock_transaction.data = "rg: 20-29 ";
+    mock_transaction.transport_info = TestTransportInfo();
+
+    RunTransactionTest(cache.http_cache(), mock_transaction);
+  }
+
+  ScopedMockTransaction mock_transaction(kRangeGET_TransactionOK);
+  mock_transaction.request_headers = "Range: bytes = 10-39\r\n" EXTRA_HEADER;
+  mock_transaction.data = "rg: 10-19 rg: 20-29 rg: 30-39 ";
+  mock_transaction.transport_info = TestTransportInfo();
+  MockHttpRequest request(mock_transaction);
+
+  // Request a surrounding range. This *should* be read in three parts:
+  //
+  // 1. for the prefix: from the network
+  // 2. for the cached infix: from the cache
+  // 3. for the suffix: from the network
+  //
+  // The connected callback returns OK for 1), but fails during 2). As a result,
+  // the transaction fails partway and 3) is never created. The cache entry is
+  // invalidated as a result of the specific error code.
+  {
+    ConnectedHandler connected_handler;
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+    // 1 call for the first range's network transaction.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfo()));
+
+    // Set the callback to return an error the next time it is called.
+    connected_handler.set_result(ERR_INCONSISTENT_IP_ADDRESS_SPACE);
+
+    std::string content;
+    EXPECT_THAT(ReadTransaction(transaction.get(), &content),
+                IsError(ERR_INCONSISTENT_IP_ADDRESS_SPACE));
+
+    // A second call that failed.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfo(), CachedTestTransportInfo()));
+  }
+
+  // Request the same range again, observe that nothing is read from cache.
+  {
+    ConnectedHandler connected_handler;
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+    std::string content;
+    EXPECT_THAT(ReadTransaction(transaction.get(), &content), IsOk());
+    EXPECT_EQ(content, mock_transaction.data);
+
+    // 1 call for the network transaction from which the whole response was
+    // read. The first 20 bytes were cached by the previous two requests, but
+    // the cache entry was doomed during the last transaction so they are not
+    // used here.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfo()));
+  }
+}
+
+// This test verifies that when the ConnectedCallback passed to a cache range
+// transaction returns an `ERR_INCONSISTENT_IP_ADDRESS_SPACE` error during a
+// network transaction, then the cache entry is invalidated.
+TEST_F(HttpCacheTest,
+       RangeGET_ConnectedCallbackReturnInconsistentIpErrorForNetwork) {
+  MockHttpCache cache;
+
+  // Request a prefix range and populate the cache with it.
+  {
+    ScopedMockTransaction mock_transaction(kRangeGET_TransactionOK);
+    mock_transaction.request_headers = "Range: bytes = 10-19\r\n" EXTRA_HEADER;
+    mock_transaction.data = "rg: 10-19 ";
+    mock_transaction.transport_info = TestTransportInfo();
+
+    RunTransactionTest(cache.http_cache(), mock_transaction);
+  }
+
+  ScopedMockTransaction mock_transaction(kRangeGET_TransactionOK);
+  mock_transaction.request_headers = "Range: bytes = 10-29\r\n" EXTRA_HEADER;
+  mock_transaction.data = "rg: 10-19 rg: 20-29 ";
+  mock_transaction.transport_info = TestTransportInfo();
+  MockHttpRequest request(mock_transaction);
+
+  // Request a longer range. This *should* be read in two parts:
+  //
+  // 1. for the prefix: from the cache
+  // 2. for the suffix: from the network
+  {
+    ConnectedHandler connected_handler;
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+    // 1 call for the first range's network transaction.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(CachedTestTransportInfo()));
+
+    // Set the callback to return an error the next time it is called.
+    connected_handler.set_result(ERR_INCONSISTENT_IP_ADDRESS_SPACE);
+
+    std::string content;
+    EXPECT_THAT(ReadTransaction(transaction.get(), &content),
+                IsError(ERR_INCONSISTENT_IP_ADDRESS_SPACE));
+
+    // A second call that failed.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(CachedTestTransportInfo(), TestTransportInfo()));
+  }
+
+  // Request the same range again, observe that nothing is read from cache.
+  {
+    ConnectedHandler connected_handler;
+
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+    ASSERT_THAT(transaction, NotNull());
+
+    transaction->SetConnectedCallback(connected_handler.Callback());
+
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        transaction->Start(&request, callback.callback(), NetLogWithSource()),
+        IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+    std::string content;
+    EXPECT_THAT(ReadTransaction(transaction.get(), &content), IsOk());
+    EXPECT_EQ(content, mock_transaction.data);
+
+    // 1 call for the network transaction from which the whole response was
+    // read. The first 20 bytes were cached by the previous two requests, but
+    // the cache entry was doomed during the last transaction so they are not
+    // used here.
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfo()));
   }
 }
 

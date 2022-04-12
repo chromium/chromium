@@ -421,11 +421,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Applies Private Network Access checks to the current request.
   //
-  // Sets `response_ip_address_space_` to a value derived from `info`.
+  // Sets `response_ip_address_space_` to a value derived from `transport_info`.
   //
   // Helper for `OnConnected()`.
   PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
-      const net::TransportInfo& info);
+      const net::TransportInfo& transport_info);
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
@@ -570,8 +570,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // argument to the |OnConnected()| callback. This info is only available then,
   // so the computation result is stored for later use in this member.
   //
-  // Nullopt until |OnConnected()| is called for the first time, then never
-  // nullopt again.
+  // Set in |OnConnected()|, reset in |FollowRedirect()|.
   //
   // https://wicg.github.io/private-network-access/#response-ip-address-space
   absl::optional<mojom::IPAddressSpace> response_ip_address_space_;

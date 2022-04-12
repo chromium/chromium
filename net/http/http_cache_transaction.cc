@@ -1790,8 +1790,10 @@ int HttpCache::Transaction::DoSendRequestComplete(int result) {
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(response);
     response_.cert_request_info = response->cert_request_info;
+  } else if (result == ERR_INCONSISTENT_IP_ADDRESS_SPACE) {
+    DoomInconsistentEntry();
   } else if (response_.was_cached) {
-    DoneWithEntry(true);
+    DoneWithEntry(/*entry_is_complete=*/true);
   }
 
   TransitionToState(STATE_FINISH_HEADERS);
@@ -3121,8 +3123,12 @@ int HttpCache::Transaction::DoConnectedCallback() {
 
 int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {
   if (result != OK) {
-    // Release the entry for further use - we are done using it.
-    DoneWithEntry(/*did_finish=*/true);
+    if (result == ERR_INCONSISTENT_IP_ADDRESS_SPACE) {
+      DoomInconsistentEntry();
+    } else {
+      // Release the entry for further use - we are done using it.
+      DoneWithEntry(/*entry_is_complete=*/true);
+    }
 
     TransitionToState(STATE_NONE);
     return result;
@@ -3138,6 +3144,24 @@ int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {
     TransitionToState(STATE_SETUP_ENTRY_FOR_READ);
   }
   return OK;
+}
+
+void HttpCache::Transaction::DoomInconsistentEntry() {
+  // Explicitly call `DoomActiveEntry()` ourselves before calling
+  // `DoneWithEntry()` because we cannot rely on the latter doing it for us.
+  // Indeed, `DoneWithEntry(false)` does not call `DoomActiveEntry()` if either
+  // of the following conditions hold:
+  //
+  //  - the transaction uses the cache in read-only mode
+  //  - the transaction has passed the headers phase and is reading
+  //
+  // Inconsistent cache entries can cause deterministic failures even in
+  // read-only mode, so they should be doomed anyway. They can also be detected
+  // during the reading phase in the case of split range requests, since those
+  // requests can result in multiple connections being obtained to different
+  // remote endpoints.
+  cache_->DoomActiveEntry(cache_key_);
+  DoneWithEntry(/*entry_is_complete=*/false);
 }
 
 void HttpCache::Transaction::FixHeadersForHead() {

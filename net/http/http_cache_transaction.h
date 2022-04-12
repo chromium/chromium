@@ -490,7 +490,16 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // to/from the entry. If |entry_is_complete| is false the result may be either
   // a truncated or a doomed entry based on whether the stored response can be
   // resumed or not.
-  void DoneWithEntry(bool did_finish);
+  void DoneWithEntry(bool entry_is_complete);
+
+  // Dooms the given entry so that it will not be re-used for other requests,
+  // then calls `DoneWithEntry()`.
+  //
+  // This happens when network conditions have changed since the entry was
+  // cached, which results in deterministic failures when trying to use the
+  // cache entry. In order to let future requests succeed, the cache entry
+  // should be doomed.
+  void DoomInconsistentEntry();
 
   // Returns an error to signal the caller that the current read failed. The
   // current operation |result| is also logged. If |restart| is true, the

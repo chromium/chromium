@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -18,9 +19,10 @@ class ClientSecurityState;
 }  // namespace mojom
 
 // Returns whether a request client with the given `client_security_state`,
-// expecting a resource in `target_address_space`, should be allowed to make
-// requests to an endpoint in `resource_address_space` with a `URLLoader`
-// configured with the given `url_load_options`.
+// expecting a resource in `target_address_space`, having observed a previous
+// part of the response coming from `previous_response_address_space`, should be
+// allowed to make requests to an endpoint in `resource_address_space` with a
+// `URLLoader` configured with the given `url_load_options`.
 //
 // `target_address_space` is ignored if set to `kUnknown`.
 //
@@ -30,6 +32,7 @@ PrivateNetworkAccessCheckResult COMPONENT_EXPORT(NETWORK_SERVICE)
     PrivateNetworkAccessCheck(
         const mojom::ClientSecurityState* client_security_state,
         mojom::IPAddressSpace target_address_space,
+        absl::optional<mojom::IPAddressSpace> previous_response_address_space,
         int32_t url_load_options,
         mojom::IPAddressSpace resource_address_space);
 
