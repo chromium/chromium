@@ -357,7 +357,7 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
       std::move(prediction_model_download_manager);
 }
 
-void PredictionManager::FetchModels() {
+void PredictionManager::FetchModels(bool is_first_model_fetch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The histogram that gets recorded here is used for integration tests that
@@ -381,6 +381,13 @@ void PredictionManager::FetchModels() {
 
   if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
+
+  if (is_first_model_fetch) {
+    DCHECK(!init_time_.is_null());
+    base::UmaHistogramMediumTimes(
+        "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
+        base::TimeTicks::Now() - init_time_);
+  }
 
   // Models should not be fetched if there are no optimization targets
   // registered.
@@ -845,15 +852,11 @@ void PredictionManager::MaybeScheduleFirstModelFetch() {
   if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
 
-  DCHECK(!init_time_.is_null());
-  base::UmaHistogramMediumTimes(
-      "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
-      base::TimeTicks::Now() - init_time_);
-
   // Add a slight delay to allow the rest of the browser startup process to
   // finish up.
   fetch_timer_.Start(FROM_HERE, features::PredictionModelFetchStartupDelay(),
-                     this, &PredictionManager::FetchModels);
+                     base::BindOnce(&PredictionManager::FetchModels,
+                                    base::Unretained(this), true));
 }
 
 base::Time PredictionManager::GetLastFetchAttemptTime() const {
@@ -880,8 +883,9 @@ void PredictionManager::ScheduleModelsFetch() {
   base::TimeDelta fetcher_delay =
       std::max(time_until_update_time, time_until_retry);
   if (fetcher_delay <= base::TimeDelta()) {
-    fetch_timer_.Start(FROM_HERE, RandomFetchDelay(), this,
-                       &PredictionManager::FetchModels);
+    fetch_timer_.Start(FROM_HERE, RandomFetchDelay(),
+                       base::BindOnce(&PredictionManager::FetchModels,
+                                      base::Unretained(this), false));
     return;
   }
   fetch_timer_.Start(FROM_HERE, fetcher_delay, this,

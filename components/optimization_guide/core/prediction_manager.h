@@ -150,7 +150,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Called to make a request to fetch models from the remote Optimization Guide
   // Service. Used to fetch models for the registered optimization targets.
-  void FetchModels();
+  // |is_first_model_fetch| indicates whether this is the first model fetch
+  // happening at startup, and is used to record metrics.
+  void FetchModels(bool is_first_model_fetch);
 
   // Callback when the models have been fetched from the remote Optimization
   // Guide Service and are ready for parsing. Processes the prediction models in
