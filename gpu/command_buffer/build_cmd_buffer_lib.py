@@ -682,7 +682,7 @@ def _Namespace():
 def Grouper(n, iterable, fillvalue=None):
   """Collect data into fixed-length chunks or blocks"""
   args = [iter(iterable)] * n
-  return itertools.izip_longest(fillvalue=fillvalue, *args)
+  return itertools.zip_longest(fillvalue=fillvalue, *args)
 
 
 def SplitWords(input_string):
@@ -831,7 +831,7 @@ class CWriter(object):
     except OSError as e:
       if e.errno == errno.EEXIST:
         pass
-    self._file = open(filename, 'wb')
+    self._file = open(filename, 'w')
 
   def __enter__(self):
     self._file.write(self._ENTER_MSG)
@@ -1477,7 +1477,7 @@ TEST_F(%(prefix)sImplementationTest,
 """
         for invalid_arg in constants:
           gl_arg_strings = []
-          invalid = invalid_arg.GetInvalidArg(func)
+          invalid = invalid_arg.GetInvalidArg(0)
           for arg in func.GetOriginalArgs():
             if arg is invalid_arg:
               gl_arg_strings.append(invalid[0])
@@ -5923,7 +5923,7 @@ class Function(object):
     """Writes the cmd cmd_flags constant."""
     # By default trace only at the highest level 3.
     trace_level = int(self.GetInfo('trace_level', default = 3))
-    if trace_level not in xrange(0, 4):
+    if trace_level not in range(0, 4):
       raise KeyError("Unhandled trace_level: %d" % trace_level)
 
     cmd_flags = ('CMD_FLAG_SET_TRACE_LEVEL(%d)' % trace_level)
@@ -6351,11 +6351,11 @@ class GLGenerator(object):
   def Log(self, msg):
     """Prints something if verbose is true."""
     if self.verbose:
-      print msg
+      print(msg)
 
   def Error(self, msg):
     """Prints an error."""
-    print "Error: %s" % msg
+    print("Error: %s" % msg)
     self.errors += 1
 
   def ParseGLH(self, filename):
@@ -6703,7 +6703,7 @@ void ContextState::InitState(const ContextState *prev_state) const {
             continue
           if state['type'] == 'FrontBack':
             num_states = len(state['states'])
-            for ndx, group in enumerate(Grouper(num_states / 2,
+            for ndx, group in enumerate(Grouper(num_states // 2,
                                         state['states'])):
               if test_prev:
                 f.write("  if (")
@@ -6992,7 +6992,7 @@ void ContextStateTestHelpers::SetupInitStateExpectations(
         state = _STATE_INFO[state_name]
         if state['type'] == 'FrontBack':
           num_states = len(state['states'])
-          for ndx, group in enumerate(Grouper(num_states / 2,
+          for ndx, group in enumerate(Grouper(num_states // 2,
                                               state['states'])):
             args = []
             for item in group:
@@ -7424,13 +7424,13 @@ const size_t %(p)sUtil::enum_to_string_table_len_ =
         f.write("#include \"ppapi/c/ppb_opengles2.h\"\n\n")
       else:
         f.write("\n#ifndef __gl2_h_\n")
-        for (k, v) in _GL_TYPES.iteritems():
+        for (k, v) in _GL_TYPES.items():
           f.write("typedef %s %s;\n" % (v, k))
         f.write("#ifdef _WIN64\n")
-        for (k, v) in _GL_TYPES_64.iteritems():
+        for (k, v) in _GL_TYPES_64.items():
           f.write("typedef %s %s;\n" % (v, k))
         f.write("#else\n")
-        for (k, v) in _GL_TYPES_32.iteritems():
+        for (k, v) in _GL_TYPES_32.items():
           f.write("typedef %s %s;\n" % (v, k))
         f.write("#endif  // _WIN64\n")
         f.write("#endif  // __gl2_h_\n\n")

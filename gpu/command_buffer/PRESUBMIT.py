@@ -65,7 +65,7 @@ def CommonChecks(input_api, output_api):
           input_api.Command(
               name='build_gles2_cmd_buffer',
               cmd=[
-                  input_api.python_executable, 'build_gles2_cmd_buffer.py',
+                  input_api.python3_executable, 'build_gles2_cmd_buffer.py',
                   '--check', '--output-dir=' + temp_dir
               ],
               kwargs={},
@@ -75,7 +75,7 @@ def CommonChecks(input_api, output_api):
           input_api.Command(
               name='build_raster_cmd_buffer',
               cmd=[
-                  input_api.python_executable, 'build_raster_cmd_buffer.py',
+                  input_api.python3_executable, 'build_raster_cmd_buffer.py',
                   '--check', '--output-dir=' + temp_dir
               ],
               kwargs={},
@@ -85,7 +85,7 @@ def CommonChecks(input_api, output_api):
           input_api.Command(
               name='build_webgpu_cmd_buffer',
               cmd=[
-                  input_api.python_executable, 'build_webgpu_cmd_buffer.py',
+                  input_api.python3_executable, 'build_webgpu_cmd_buffer.py',
                   '--check', '--output-dir=' + temp_dir
               ],
               kwargs={},

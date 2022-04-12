@@ -52,19 +52,19 @@ describe {
 #include "ppapi/c/pp_resource.h"
 
 #ifndef __gl2_h_
-typedef void GLvoid;
-typedef int GLsizei;
-typedef unsigned short GLushort;
-typedef short GLshort;
-typedef unsigned char GLubyte;
 typedef unsigned int GLenum;
-typedef int GLint;
 typedef unsigned char GLboolean;
 typedef unsigned int GLbitfield;
+typedef signed char GLbyte;
+typedef short GLshort;
+typedef int GLint;
+typedef int GLsizei;
+typedef unsigned char GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int GLuint;
 typedef float GLfloat;
 typedef float GLclampf;
-typedef signed char GLbyte;
-typedef unsigned int GLuint;
+typedef void GLvoid;
 typedef int GLfixed;
 typedef int GLclampx;
 #ifdef _WIN64
