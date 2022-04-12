@@ -75,10 +75,12 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
   auto url_loader_factory = profile->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
 
+  uint32_t options = network::mojom::kURLLoadOptionNone;
+  options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(
-      network_url_loader_.BindNewPipeAndPassReceiver(), 0,
-      network::mojom::kURLLoadOptionNone, *resource_request,
+      network_url_loader_.BindNewPipeAndPassReceiver(), 0, options,
+      *resource_request,
       url_loader_receiver_.BindNewPipeAndPassRemote(
           base::ThreadTaskRunnerHandle::Get()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
@@ -511,11 +513,12 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
 
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
-
+  uint32_t options = network::mojom::kURLLoadOptionNone;
+  options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(
-      network_url_loader_.BindNewPipeAndPassReceiver(), 0,
-      network::mojom::kURLLoadOptionNone, *resource_request_,
+      network_url_loader_.BindNewPipeAndPassReceiver(), 0, options,
+      *resource_request_,
       url_loader_receiver_.BindNewPipeAndPassRemote(
           base::ThreadTaskRunnerHandle::Get()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));

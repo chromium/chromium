@@ -22,6 +22,7 @@
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -1901,6 +1902,83 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
       SearchPrefetchEligibilityReason::kErrorBackoff, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchSecureSecurityState) {
+  if (!GetParam()) {
+    return;
+  }
+  set_delayed_response(true);
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+
+  content::WaitForLoadStop(GetWebContents());
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  // Check we are on the prefetched page, and the security level is correct.
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchFallbackSecureSecurityState) {
+  if (!GetParam()) {
+    return;
+  }
+
+  set_delayed_response(true);
+  std::string search_terms = kOmniboxErrorQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(GetWebContents());
+  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+
+  content::WaitForLoadStop(GetWebContents());
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  // Check we fell back to the regular page, and the security level is correct.
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
