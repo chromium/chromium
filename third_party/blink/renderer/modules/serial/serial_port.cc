@@ -609,36 +609,32 @@ void SerialPort::OnConnectionError() {
   port_.reset();
   client_receiver_.reset();
 
-  // Move fields since rejecting a Promise can execute script.
-  ScriptPromiseResolver* open_resolver = open_resolver_;
-  open_resolver_ = nullptr;
-  HeapHashSet<Member<ScriptPromiseResolver>> signal_resolvers;
-  signal_resolvers_.swap(signal_resolvers);
-  SerialPortUnderlyingSource* underlying_source = underlying_source_;
-  underlying_source_ = nullptr;
-  SerialPortUnderlyingSink* underlying_sink = underlying_sink_;
-  underlying_sink_ = nullptr;
-  ScriptPromiseResolver* close_resolver = close_resolver_;
-  close_resolver_ = nullptr;
-
-  if (open_resolver) {
-    open_resolver->Reject(MakeGarbageCollected<DOMException>(
+  if (open_resolver_) {
+    open_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, kOpenError));
+    open_resolver_ = nullptr;
   }
-  for (ScriptPromiseResolver* resolver : signal_resolvers) {
+
+  for (ScriptPromiseResolver* resolver : signal_resolvers_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, kDeviceLostError));
   }
-  if (underlying_source) {
-    underlying_source->SignalErrorOnClose(
+  signal_resolvers_.clear();
+
+  if (close_resolver_) {
+    close_resolver_->Resolve();
+    close_resolver_ = nullptr;
+  }
+
+  if (underlying_source_) {
+    underlying_source_->SignalErrorOnClose(
         DOMExceptionFromReceiveError(SerialReceiveError::DISCONNECTED));
   }
-  if (underlying_sink) {
-    underlying_sink->SignalErrorOnClose(
+
+  if (underlying_sink_) {
+    underlying_sink_->SignalErrorOnClose(
         DOMExceptionFromSendError(SerialSendError::DISCONNECTED));
   }
-  if (close_resolver)
-    close_resolver->Resolve();
 }
 
 void SerialPort::OnOpen(
@@ -650,10 +646,9 @@ void SerialPort::OnOpen(
     return;
 
   if (!port) {
-    ScriptPromiseResolver* resolver = open_resolver_;
-    open_resolver_ = nullptr;
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    open_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, kOpenError));
+    open_resolver_ = nullptr;
     return;
   }
 
@@ -710,9 +705,8 @@ void SerialPort::OnClose() {
   port_.reset();
   client_receiver_.reset();
 
-  ScriptPromiseResolver* close_resolver = close_resolver_;
+  close_resolver_->Resolve();
   close_resolver_ = nullptr;
-  close_resolver->Resolve();
 }
 
 }  // namespace blink

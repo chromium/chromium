@@ -67,12 +67,11 @@ ScriptPromise SerialPortUnderlyingSink::write(
   DCHECK(!pending_operation_);
 
   if (pending_exception_) {
-    DOMException* exception = pending_exception_;
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, pending_exception_)
+            .ToLocalChecked());
     pending_exception_ = nullptr;
     serial_port_->UnderlyingSinkClosed();
-    exception_state.RethrowV8Exception(
-        ToV8Traits<DOMException>::ToV8(script_state, exception)
-            .ToLocalChecked());
     return ScriptPromise();
   }
 
@@ -99,11 +98,10 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
   data_pipe_.reset();
 
   if (pending_exception_) {
-    DOMException* exception = pending_exception_;
-    pending_exception_ = nullptr;
     exception_state.RethrowV8Exception(
-        ToV8Traits<DOMException>::ToV8(script_state, exception)
+        ToV8Traits<DOMException>::ToV8(script_state, pending_exception_)
             .ToLocalChecked());
+    pending_exception_ = nullptr;
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
@@ -126,11 +124,10 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   data_pipe_.reset();
 
   if (pending_exception_) {
-    DOMException* exception = pending_exception_;
-    pending_exception_ = nullptr;
     exception_state.RethrowV8Exception(
-        ToV8Traits<DOMException>::ToV8(script_state, exception)
+        ToV8Traits<DOMException>::ToV8(script_state, pending_exception_)
             .ToLocalChecked());
+    pending_exception_ = nullptr;
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
@@ -194,19 +191,17 @@ void SerialPortUnderlyingSink::OnHandleReady(MojoResult result,
 }
 
 void SerialPortUnderlyingSink::OnFlushOrDrain() {
-  ScriptPromiseResolver* resolver = pending_operation_;
+  DCHECK(pending_operation_);
+
+  if (pending_exception_) {
+    pending_operation_->Reject(pending_exception_);
+    pending_exception_ = nullptr;
+  } else {
+    pending_operation_->Resolve();
+  }
   pending_operation_ = nullptr;
 
-  DOMException* exception = pending_exception_;
-  pending_exception_ = nullptr;
-
   serial_port_->UnderlyingSinkClosed();
-
-  if (exception) {
-    resolver->Reject(exception);
-  } else {
-    resolver->Resolve();
-  }
 }
 
 void SerialPortUnderlyingSink::WriteData() {
@@ -264,11 +259,11 @@ void SerialPortUnderlyingSink::PipeClosed() {
   data_pipe_.reset();
 
   if (pending_exception_) {
-    DOMException* exception = pending_exception_;
-    pending_exception_ = nullptr;
-    serial_port_->UnderlyingSinkClosed();
-    pending_operation_->Reject(exception);
+    pending_operation_->Reject(pending_exception_);
     pending_operation_ = nullptr;
+    pending_exception_ = nullptr;
+
+    serial_port_->UnderlyingSinkClosed();
   }
 }
 
