@@ -298,6 +298,12 @@ struct CrossThreadCopier<CrossThreadOnceFunction<Signature>> {
 };
 
 template <>
+struct CrossThreadCopier<AtomicString>
+    : public CrossThreadCopierPassThrough<AtomicString> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<String> {
   STATIC_ONLY(CrossThreadCopier);
   typedef String Type;
