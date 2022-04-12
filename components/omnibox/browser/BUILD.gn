@@ -92,6 +92,7 @@ static_library("browser") {
     "actions/history_clusters_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
+    "actions/omnibox_action_concepts.h",
     "actions/omnibox_pedal.cc",
     "actions/omnibox_pedal.h",
     "actions/omnibox_pedal_concepts.h",
@@ -439,6 +440,7 @@ if (is_android) {
 
   java_cpp_enum("browser_java_enums_srcjar") {
     sources = [
+      "actions/omnibox_action_concepts.h",
       "actions/omnibox_pedal_concepts.h",
       "autocomplete_match.h",
       "autocomplete_match_type.h",

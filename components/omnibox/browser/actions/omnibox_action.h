@@ -151,7 +151,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;
 
-  // Returns an ID used to identify some actions. Not defined for all Actions.
+  // Returns an ID used to identify the action.
   virtual int32_t GetID() const;
 
 #if BUILDFLAG(IS_ANDROID)

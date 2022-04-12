@@ -15,6 +15,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -48,6 +49,10 @@ class HistoryClustersAction : public OmniboxAction {
     base::UmaHistogramExactLinear(
         "Omnibox.SuggestionUsed.ResumeJourney", position,
         AutocompleteResult::kMaxAutocompletePositionValue);
+  }
+
+  int32_t GetID() const override {
+    return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
   }
 
  private:
