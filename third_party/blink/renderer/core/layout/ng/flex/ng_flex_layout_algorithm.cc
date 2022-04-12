@@ -1702,8 +1702,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
               .ClampNegativeToZero();
     }
 
-    // TODO(almaher): What to do in the case where the line extends past
-    // the last item? Should that be included when fragmenting?
     intrinsic_block_size_ +=
         (offset.block_offset + fragment.BlockSize() - intrinsic_block_size_)
             .ClampNegativeToZero();
