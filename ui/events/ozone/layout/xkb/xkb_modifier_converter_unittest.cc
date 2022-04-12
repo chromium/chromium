@@ -48,6 +48,16 @@ TEST(XkbModifierConverterTest, Basic) {
     EXPECT_EQ(0, converter.UiFlagsFromMask(8));
     EXPECT_EQ(ui::EF_SHIFT_DOWN, converter.UiFlagsFromMask(9));
   }
+
+  // Look up by names.
+  EXPECT_EQ(0u, converter.MaskFromNames({}));
+  EXPECT_EQ(1u, converter.MaskFromNames({XKB_MOD_NAME_SHIFT}));
+  EXPECT_EQ(2u, converter.MaskFromNames({XKB_MOD_NAME_CAPS}));
+  EXPECT_EQ(3u,
+            converter.MaskFromNames({XKB_MOD_NAME_SHIFT, XKB_MOD_NAME_CAPS}));
+
+  // Unknown is ignored.
+  EXPECT_EQ(0u, converter.MaskFromNames({XKB_MOD_NAME_NUM}));
 }
 
 TEST(XkbModifierConverterTest, FromKeymap) {

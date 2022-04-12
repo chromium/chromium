@@ -77,6 +77,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;
   void OnInputPanelState(uint32_t state) override;
+  void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 
  private:
   void UpdatePreeditText(const std::u16string& preedit_text);
@@ -114,6 +115,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Caches VirtualKeyboard visibility.
   bool virtual_keyboard_visible_ = false;
+
+  // Keeps modifiers_map sent from the wayland compositor.
+  std::vector<std::string> modifiers_map_;
 };
 
 }  // namespace ui

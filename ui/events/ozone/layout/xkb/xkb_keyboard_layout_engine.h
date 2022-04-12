@@ -18,8 +18,10 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/xkb/xkb_key_code_converter.h"
@@ -60,18 +62,39 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                       uint32_t locked,
                       uint32_t group);
 
-  DomCode GetDomCodeByKeysym(uint32_t keysym) const;
+  // modifiers is optional for backward compatibility purpose.
+  // This should be removed when we no longer need to support older platform,
+  // specifically M101 or earlier of ash-chrome.
+  DomCode GetDomCodeByKeysym(
+      uint32_t keysym,
+      const absl::optional<std::vector<base::StringPiece>>& modifiers) const;
 
   static void ParseLayoutName(const std::string& layout_name,
                               std::string* layout_id,
                               std::string* layout_variant);
 
  protected:
-  // Table from xkb_keysym to xkb_keycode on the current keymap.
-  // Note that there could be multiple keycodes mapped to the same
-  // keysym. In the case, the first one (smallest keycode) will be
-  // kept.
-  base::flat_map<uint32_t, uint32_t> xkb_keysym_map_;
+  // Table for EventFlagsToXkbFlags().
+  struct XkbFlagMapEntry {
+    int ui_flag;
+    xkb_mod_mask_t xkb_flag;
+    xkb_mod_index_t xkb_index;
+  };
+  std::vector<XkbFlagMapEntry> xkb_flag_map_;
+
+  // The data to reverse look up xkb_keycode/xkb_layout from xkb_keysym.
+  // The data is sorted in the (xkb_keysym, xkb_keycode, xkb_layout) dictionary
+  // order. Note that there can be multiple keycode/layout for a keysym, so
+  // this is a multi map.
+  // We can binary search on this vector by keysym as the key, and iterate from
+  // the begin to the end of the range linearly. Then, on tie break, smaller
+  // keycode wins.
+  struct XkbKeysymMapEntry {
+    xkb_keysym_t xkb_keysym;
+    xkb_keycode_t xkb_keycode;
+    xkb_layout_index_t xkb_layout;
+  };
+  std::vector<XkbKeysymMapEntry> xkb_keysym_map_;
 
   // Maps between ui::EventFlags and xkb_mod_mask_t.
   XkbModifierConverter xkb_modifier_converter_{{}};

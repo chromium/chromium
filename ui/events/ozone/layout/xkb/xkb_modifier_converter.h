@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbModifierConverter {
   // Instantiates the converter from |xkb_keymap|.
   static XkbModifierConverter CreateFromKeymap(xkb_keymap* keymap);
 
+  // Returns a bit-mask of the modifiers represented by the given |names|.
+  xkb_mod_mask_t MaskFromNames(
+      const std::vector<base::StringPiece>& names) const;
+
   // Returns the converted xkb_mod_mask_t corresponding to the given flags.
   // flags should be the bit-or of ui::EventFlags key modifiers.
   // All unrecognized bits set in flags will be ignored.

@@ -7,12 +7,29 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
+namespace {
+
+// Parses the content of |array|, and creates a map of modifiers.
+// The content of array is just a concat of modifier names in c-style string
+// (i.e., '\0' terminated string), thus this splits the whole byte array by
+// '\0' character.
+std::vector<std::string> ParseModifiersMap(wl_array* array) {
+  return base::SplitString(
+      base::StringPiece(static_cast<char*>(array->data),
+                        array->size - 1),  // exclude trailing '\0'.
+      base::StringPiece("\0", 1),          // '\0' as a delimiter.
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
+}  // namespace
 
 ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
     WaylandConnection* connection,
@@ -126,7 +143,8 @@ void ZWPTextInputWrapperV1::OnLeave(void* data,
 void ZWPTextInputWrapperV1::OnModifiersMap(void* data,
                                            struct zwp_text_input_v1* text_input,
                                            struct wl_array* map) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnModifiersMap(ParseModifiersMap(map));
 }
 
 // static

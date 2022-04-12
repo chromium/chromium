@@ -6,9 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <xkbcommon/xkbcommon-names.h>
 
 #include <tuple>
 
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -940,20 +942,62 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
                                                std::strlen(layout.get()));
   }
 
+  constexpr int32_t kNullopt = -1;
+  constexpr int32_t kShiftMask = 1;
+  constexpr int32_t kCapsLockMask = 2;
+  constexpr int32_t kNumLockMask = 4;
   constexpr struct {
     uint32_t keysym;
-    DomCode dom_code;
+    int32_t modifiers;
+    DomCode expected_dom_code;
   } kTestCases[] = {
-      {65307, ui::DomCode::ESCAPE}, {65288, ui::DomCode::BACKSPACE},
-      {65293, ui::DomCode::ENTER},  {65289, ui::DomCode::TAB},
-      {65056, ui::DomCode::TAB},  // SHIFT+TAB.
-      {65289, ui::DomCode::TAB},  // CTRL+TAB.
+    {65307, 0, ui::DomCode::ESCAPE},
+    {65288, 0, ui::DomCode::BACKSPACE},
+    {65293, 0, ui::DomCode::ENTER},
+    {65289, 0, ui::DomCode::TAB},
+    {65056, kShiftMask, ui::DomCode::TAB},
+
+    // Test conflict keysym case. We use '<' as a testing example.
+    // On pc101 layout, intl_backslash is expected without SHIFT modifier.
+    {60, 0, ui::DomCode::INTL_BACKSLASH},
+    // And, if SHIFT is pressed, comma key is expected.
+    {60, kShiftMask, ui::DomCode::COMMA},
+
+    // Test for space key. The keysym mapping has only one keycode entry.
+    // It expects all modifiers are ignored. Used SHIFT as testing example.
+    {32, 0, ui::DomCode::SPACE},
+    {32, kShiftMask, ui::DomCode::SPACE},
+
+    // For checking regression case we hit in past.
+    // CapsLock + A.
+    {65, kNullopt, ui::DomCode::US_A},
+    {65, kCapsLockMask, ui::DomCode::US_A},
+
+    // NumLock + Numpad1. NumLock
+    {65457, kNullopt, ui::DomCode::NUMPAD1},
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // On ChromeOS, NumLock should be interpreted as it is always set.
+    {65457, 0, ui::DomCode::NUMPAD1},
+#endif
+    {65457, kNumLockMask, ui::DomCode::NUMPAD1},
   };
 
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.keysym);
-    EXPECT_EQ(test_case.dom_code,
-              layout_engine_->GetDomCodeByKeysym(test_case.keysym));
+    absl::optional<std::vector<base::StringPiece>> modifiers;
+    if (test_case.modifiers != kNullopt) {
+      std::vector<base::StringPiece> modifiers_content;
+      if (test_case.modifiers & kShiftMask)
+        modifiers_content.push_back(XKB_MOD_NAME_SHIFT);
+      if (test_case.modifiers & kCapsLockMask)
+        modifiers_content.push_back(XKB_MOD_NAME_CAPS);
+      if (test_case.modifiers & kNumLockMask)
+        modifiers_content.push_back(XKB_MOD_NAME_NUM);
+      modifiers = std::move(modifiers_content);
+    }
+
+    EXPECT_EQ(test_case.expected_dom_code,
+              layout_engine_->GetDomCodeByKeysym(test_case.keysym, modifiers))
+        << "input: " << test_case.keysym << ", " << test_case.modifiers;
   }
 }
 

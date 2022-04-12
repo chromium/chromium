@@ -58,6 +58,14 @@ XkbModifierConverter XkbModifierConverter::CreateFromKeymap(
   return XkbModifierConverter(names);
 }
 
+xkb_mod_mask_t XkbModifierConverter::MaskFromNames(
+    const std::vector<base::StringPiece>& names) const {
+  xkb_mod_mask_t xkb_modifier_mask = 0;
+  for (const auto& name : names)
+    xkb_modifier_mask |= MaskFromName(name);
+  return xkb_modifier_mask;
+}
+
 xkb_mod_mask_t XkbModifierConverter::MaskFromUiFlags(int flags) const {
   xkb_mod_mask_t xkb_modifier_mask = 0;
   for (const auto& mapping : kFlags) {
