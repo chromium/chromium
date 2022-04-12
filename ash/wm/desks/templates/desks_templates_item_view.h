@@ -27,6 +27,7 @@ class CloseButton;
 class DesksTemplatesIconContainer;
 class DesksTemplatesNameView;
 class PillButton;
+class ViewShadow;
 
 // A view that represents each individual template item in the desks templates
 // grid. The view has different shown contents depending on whether the mouse is
@@ -167,6 +168,8 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
+
+  std::unique_ptr<ViewShadow> shadow_;
 
   // When the `name_view_` is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.

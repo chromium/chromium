@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -15,6 +16,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
@@ -233,6 +235,13 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   name_view_->SetBorder(views::CreateEmptyBorder(kTemplateNameInsets));
   name_view_->parent()->SetProperty(views::kMarginsKey, -kTemplateNameInsets);
   name_view_observation_.Observe(name_view_);
+
+  // Add a shadow with system UI shadow type.
+  shadow_ = std::make_unique<ViewShadow>(
+      this,
+      SystemShadow::GetElevationFromType(SystemShadow::Type::kElevation12));
+  shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
 
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
