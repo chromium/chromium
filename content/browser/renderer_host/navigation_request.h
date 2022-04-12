@@ -898,6 +898,10 @@ class CONTENT_EXPORT NavigationRequest
     return pending_ad_components_map_;
   }
 
+  const absl::optional<AdAuctionData>& ad_auction_data() const {
+    return ad_auction_data_;
+  }
+
   void RenderFallbackContentForObjectTag();
 
   // Returns the vector of web features used during the navigation, whose
@@ -2014,6 +2018,11 @@ class CONTENT_EXPORT NavigationRequest
   // flag. Note that this flag is only relevant for fenced frames based on
   // MPArch.
   const bool is_fenced_frame_opaque_url_ = false;
+
+  // If this navigation is a load in a fenced frame of a URN URL that resulted
+  // from an interest group auction, this contains some information about the
+  // auction that should be attached to the renderer as AdAuctionDocumentData.
+  absl::optional<AdAuctionData> ad_auction_data_;
 
   // If this navigation is a load in a fenced frame of a URN URL that resulted
   // from an interest group auction, this contains the ad component URLs

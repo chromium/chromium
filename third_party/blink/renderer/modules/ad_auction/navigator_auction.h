@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -52,6 +53,11 @@ class MODULES_EXPORT NavigatorAuction final
                                    Navigator&,
                                    const AuctionAdInterestGroup*,
                                    ExceptionState&);
+  // implicit leaveAdInterestGroup - only supported when called from within
+  // a fenced frame showing FLEDGE ads.
+  void leaveAdInterestGroupForDocument(ScriptState*, ExceptionState&);
+  static void leaveAdInterestGroup(ScriptState*, Navigator&, ExceptionState&);
+
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
   ScriptPromise runAdAuction(ScriptState*,

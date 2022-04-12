@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/ad_auction_document_data.h"
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -239,7 +240,8 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    mojo::ReportBadMessage("Unexpected request");
+    mojo::ReportBadMessage(
+        "Unexpected request: JoinAdInterestGroup feature disabled");
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
@@ -248,13 +250,67 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
     return;
   }
 
-  if (origin().scheme() != url::kHttpsScheme)
+  if (origin().scheme() != url::kHttpsScheme) {
+    mojo::ReportBadMessage(
+        "Unexpected request: JoinAdInterestGroup only supported for secure "
+        "origins");
     return;
+  }
 
   if (owner != origin())
     return;
 
   GetInterestGroupManager().LeaveInterestGroup(owner, name);
+}
+
+void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
+  // Based on the spec, permission policy is bypassed for leaving implicit
+  // interest groups.
+
+  // If the interest group API is not allowed for this origin do nothing.
+  if (!IsInterestGroupAPIAllowed(
+          ContentBrowserClient::InterestGroupApiOperation::kLeave, origin())) {
+    return;
+  }
+
+  if (origin().scheme() != url::kHttpsScheme) {
+    mojo::ReportBadMessage(
+        "Unexpected request: JoinAdInterestGroupForDocument only supported for "
+        "secure origins");
+    return;
+  }
+
+  if (!render_frame_host()->IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage(
+        "Unexpected request: JoinAdInterestGroupForDocument only supported "
+        "within fenced frames");
+    return;
+  }
+
+  // Get interest group owner and name. AdAuctionDocumentData is created as
+  // part of navigation to a mapped URN URL. We need to find the top-level
+  // fenced frame, since only the top-level frame has the document data.
+  RenderFrameHost* rfh = render_frame_host();
+  while (!rfh->IsFencedFrameRoot()) {
+    rfh = rfh->GetParentOrOuterDocument();
+    if (!rfh) {
+      return;
+    }
+  }
+  AdAuctionDocumentData* auction_data =
+      AdAuctionDocumentData::GetForCurrentDocument(rfh);
+  if (!auction_data) {
+    return;
+  }
+
+  if (auction_data->interest_group_owner() != origin()) {
+    // The ad page calling LeaveAdInterestGroup is not the owner of the group.
+    return;
+  }
+
+  GetInterestGroupManager().LeaveInterestGroup(
+      auction_data->interest_group_owner(),
+      auction_data->interest_group_name());
 }
 
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {

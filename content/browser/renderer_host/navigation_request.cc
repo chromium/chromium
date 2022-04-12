@@ -1970,6 +1970,7 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   if (mapped_url) {
     common_params_->url = mapped_url.value();
     commit_params_->original_url = mapped_url.value();
+    ad_auction_data_ = std::move(ad_auction_data);
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components
     // directly.
     pending_ad_components_map_ = std::move(pending_ad_components_map);

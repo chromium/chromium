@@ -49,6 +49,12 @@ interface AdAuctionService {
   // (`origin`, `name`) tuple. `origin` must use https.
   LeaveInterestGroup(url.mojom.Origin owner, string name);
 
+  // Deletes the interest group stored in the browser that created the ad in
+  // in the current document. It is an error to call this function outside of a
+  // document whose fenced frame root's src attribute was the result of a
+  // FLEDGE auction.
+  LeaveInterestGroupForDocument();
+
   // Requests the browser update stored interest groups owned by the current
   // frame's origin *only* (interest groups not owned by the frame origin aren't
   // modified) using the last `update_url` registered for each owned interest

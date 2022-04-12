@@ -1527,8 +1527,8 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
     return nullptr;
   }
 
-  std::vector<GURL> ad_components;
   // Validate `ad_component` URLs, if present.
+  std::vector<GURL> ad_components;
   if (mojo_bid->ad_components) {
     // Only InterestGroups with ad components should return bids with ad
     // components.

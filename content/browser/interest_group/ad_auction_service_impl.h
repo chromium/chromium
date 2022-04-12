@@ -46,6 +46,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void JoinInterestGroup(const blink::InterestGroup& group) override;
   void LeaveInterestGroup(const url::Origin& owner,
                           const std::string& name) override;
+  void LeaveInterestGroupForDocument() override;
   void UpdateAdInterestGroups() override;
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                     RunAdAuctionCallback callback) override;

@@ -73,6 +73,7 @@
 #include "content/browser/geolocation/geolocation_service_impl.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
+#include "content/browser/interest_group/ad_auction_document_data.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
@@ -11133,6 +11134,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (navigation_request->pending_ad_components_map()) {
       navigation_request->pending_ad_components_map()->ExportToMapping(
           GetPage().fenced_frame_urls_map());
+    }
+
+    if (navigation_request->ad_auction_data()) {
+      AdAuctionDocumentData::CreateForCurrentDocument(
+          this, navigation_request->ad_auction_data()->interest_group_owner,
+          navigation_request->ad_auction_data()->interest_group_name);
     }
 
     // Continue observing the events for the committed navigation.
