@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -297,12 +298,9 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
           GetLacrosFirstRunManagedAccountInfo(entry, domain_name_);
       [[fallthrough]];
     case EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome:
-      // TODO(crbug.com/1300109): Replace `email` with the first name. Pass this
-      // info only once the first name is available.
-      title = l10n_util::GetStringFUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
-                                        email_);
-      subtitle =
-          l10n_util::GetStringUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE);
+      title = GetLacrosWelcomeTitle();
+      subtitle = l10n_util::GetStringFUTF8(
+          IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE, email_);
       dict.SetStringKey("proceedLabel",
                         l10n_util::GetStringUTF8(
                             IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL));
@@ -350,6 +348,22 @@ std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
           true, avatar_icon_size, avatar_icon_size)
           .AsBitmap());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string EnterpriseProfileWelcomeHandler::GetLacrosWelcomeTitle() {
+  AccountInfo account_info =
+      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+          ->FindExtendedAccountInfoByAccountId(account_id_);
+  bool has_given_name = !account_info.given_name.empty();
+  base::UmaHistogramBoolean("Profile.LacrosFre.WelcomeHasGivenName",
+                            has_given_name);
+  return has_given_name ? l10n_util::GetStringFUTF8(
+                              IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
+                              base::UTF8ToUTF16(account_info.given_name))
+                        : l10n_util::GetStringUTF8(
+                              IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 EnterpriseProfileWelcomeUI::ScreenType
 EnterpriseProfileWelcomeHandler::GetTypeForTesting() {
