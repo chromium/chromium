@@ -8,6 +8,7 @@
 
 #include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/meta_table.h"
@@ -125,8 +126,7 @@ bool TypedURLSyncMetadataDatabase::InitSyncTable() {
 bool TypedURLSyncMetadataDatabase::
     CleanTypedURLOrphanedMetadataForMigrationToVersion40(
         const std::vector<URLID>& sorted_valid_rowids) {
-  DCHECK(
-      std::is_sorted(sorted_valid_rowids.begin(), sorted_valid_rowids.end()));
+  DCHECK(base::ranges::is_sorted(sorted_valid_rowids));
   std::vector<URLID> invalid_metadata_rowids;
   auto valid_rowids_iter = sorted_valid_rowids.begin();
 

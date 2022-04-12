@@ -69,7 +69,7 @@ std::string GetStorageKeyFromURLRow(const URLRow& row) {
 
 bool HasTypedUrl(const std::vector<VisitRow>& visits) {
   auto typed_url_visit =
-      std::find_if(visits.begin(), visits.end(), [](const VisitRow& visit) {
+      base::ranges::find_if(visits, [](const VisitRow& visit) {
         return ui::PageTransitionCoreTypeIs(visit.transition,
                                             ui::PAGE_TRANSITION_TYPED);
       });
@@ -1160,7 +1160,7 @@ bool TypedURLSyncBridge::FixupURLAndGetVisits(URLRow* url,
 
   // GetMostRecentVisitsForURL() returns the data in the opposite order that
   // we need it, so reverse it.
-  std::reverse(visits->begin(), visits->end());
+  base::ranges::reverse(*visits);
 
   // Sometimes, the last_visit field in the URL doesn't match the timestamp of
   // the last visit in our visit array (they come from different tables, so

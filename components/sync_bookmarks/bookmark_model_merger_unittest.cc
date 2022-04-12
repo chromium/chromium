@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -209,11 +210,9 @@ bool PositionsInTrackerMatchModel(const bookmarks::BookmarkNode* node,
     }
     last_pos = pos;
   }
-  return std::all_of(node->children().cbegin(), node->children().cend(),
-                     [&tracker](const auto& child) {
-                       return PositionsInTrackerMatchModel(child.get(),
-                                                           tracker);
-                     });
+  return base::ranges::all_of(node->children(), [&tracker](const auto& child) {
+    return PositionsInTrackerMatchModel(child.get(), tracker);
+  });
 }
 
 std::unique_ptr<SyncedBookmarkTracker> Merge(

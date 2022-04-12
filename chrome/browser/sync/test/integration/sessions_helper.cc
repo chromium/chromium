@@ -264,8 +264,7 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
       std::unique_ptr<sessions::SessionTab> new_tab =
           std::make_unique<sessions::SessionTab>();
       new_tab->navigations.resize(tab.navigations.size());
-      std::copy(tab.navigations.begin(), tab.navigations.end(),
-                new_tab->navigations.begin());
+      base::ranges::copy(tab.navigations, new_tab->navigations.begin());
       new_window->wrapped_window.tabs.push_back(std::move(new_tab));
     }
     SessionID id = new_window->wrapped_window.window_id;

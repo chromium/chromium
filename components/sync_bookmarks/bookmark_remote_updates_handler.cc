@@ -4,7 +4,6 @@
 
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -121,8 +121,8 @@ size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
   const syncer::UniquePosition position =
       syncer::UniquePosition::FromProto(unique_position);
 
-  auto iter = std::partition_point(
-      parent->children().begin(), parent->children().end(),
+  auto iter = base::ranges::partition_point(
+      parent->children(),
       [bookmark_tracker,
        &position](const std::unique_ptr<bookmarks::BookmarkNode>& child) {
         // Return true for all |parent|'s children whose position is less than

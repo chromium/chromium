@@ -17,6 +17,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -351,8 +352,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
       };
 
   data_.mutable_user()->erase(
-      std::remove_if(data_.mutable_user()->begin(), data_.mutable_user()->end(),
-                     should_remove_user_data),
+      base::ranges::remove_if(*data_.mutable_user(), should_remove_user_data),
       data_.mutable_user()->end());
   WriteToDisk(data_, file_path_);
 }
@@ -698,8 +698,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       // key rotation wasn't complete).
       std::vector<std::vector<uint8_t>> vault_keys =
           GetAllVaultKeys(*per_user_vault);
-      std::copy(new_vault_keys.begin(), new_vault_keys.end(),
-                std::back_inserter(vault_keys));
+      base::ranges::copy(new_vault_keys, std::back_inserter(vault_keys));
       StoreKeys(primary_account_->gaia, vault_keys, last_vault_key_version);
       break;
     }
@@ -808,8 +807,7 @@ void StandaloneTrustedVaultBackend::
       };
 
   data_.mutable_user()->erase(
-      std::remove_if(data_.mutable_user()->begin(), data_.mutable_user()->end(),
-                     should_remove_user_data),
+      base::ranges::remove_if(*data_.mutable_user(), should_remove_user_data),
       data_.mutable_user()->end());
   WriteToDisk(data_, file_path_);
 }
