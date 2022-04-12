@@ -94,6 +94,10 @@ class MessagePort {
   virtual void IncrementLazyKeepaliveCount(bool is_for_native_message_connect);
   virtual void DecrementLazyKeepaliveCount();
 
+  // Notifies the message port that one of the receivers intents to respond
+  // later.
+  virtual void NotifyResponsePending();
+
  protected:
   MessagePort();
 };

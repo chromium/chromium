@@ -65,6 +65,8 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
                           bool force_close);
   void OnPostMessage(const extensions::PortId& port_id,
                      const extensions::Message& message);
+  void OnResponsePending(const PortContext& port_context,
+                         const PortId& port_id);
 
   const int render_process_id_;
 

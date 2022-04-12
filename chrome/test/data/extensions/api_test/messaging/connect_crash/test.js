@@ -22,7 +22,8 @@ chrome.runtime.onConnect.addListener(function(port) {
   chrome.tabs.sendMessage(port.sender.tab.id, 'Rob says hi', function() {
     chrome.test.log('tab.sendMessage\'s response callback was invoked');
     chrome.test.assertLastError(
-        'The message port closed before a response was received.');
+        'A listener indicated an asynchronous response by returning true, ' +
+        'but the message channel closed before a response was received');
     succeed2();
   });
 });

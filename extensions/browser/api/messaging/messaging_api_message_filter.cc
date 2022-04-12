@@ -237,6 +237,7 @@ void MessagingAPIMessageFilter::OverrideThreadForMessage(
     case ExtensionHostMsg_OpenMessagePort::ID:
     case ExtensionHostMsg_CloseMessagePort::ID:
     case ExtensionHostMsg_PostMessage::ID:
+    case ExtensionHostMsg_ResponsePending::ID:
       *thread = BrowserThread::UI;
       break;
     default:
@@ -259,6 +260,7 @@ bool MessagingAPIMessageFilter::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_OpenMessagePort, OnOpenMessagePort)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_CloseMessagePort, OnCloseMessagePort)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_PostMessage, OnPostMessage)
+    IPC_MESSAGE_HANDLER(ExtensionHostMsg_ResponsePending, OnResponsePending)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -364,6 +366,17 @@ void MessagingAPIMessageFilter::OnPostMessage(const PortId& port_id,
     return;
 
   MessageService::Get(browser_context_)->PostMessage(port_id, message);
+}
+
+void MessagingAPIMessageFilter::OnResponsePending(
+    const PortContext& port_context,
+    const PortId& port_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context_)
+    return;
+
+  MessageService::Get(browser_context_)
+      ->NotifyResponsePending(port_id, render_process_id_, port_context);
 }
 
 }  // namespace extensions

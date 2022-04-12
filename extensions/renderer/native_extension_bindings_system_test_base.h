@@ -93,6 +93,8 @@ class TestIPCMessageSender : public IPCMessageSender {
                void(int routing_id, const PortId& port_id, bool close_channel));
   MOCK_METHOD2(SendPostMessageToPort,
                void(const PortId& port_id, const Message& message));
+  MOCK_METHOD2(SendMessageResponsePending,
+               void(int routing_id, const PortId& port_id));
   MOCK_METHOD3(SendActivityLogIPC,
                void(const ExtensionId& extension_id,
                     IPCMessageSender::ActivityLogCallType call_type,

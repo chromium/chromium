@@ -557,6 +557,8 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
       crx_file::id_util::GenerateId("different");
   open_port(on_message_external_port_id, other_extension);
 
+  EXPECT_CALL(*ipc_message_sender(),
+              SendMessageResponsePending(MSG_ROUTING_NONE, on_message_port_id));
   messaging_service()->DeliverMessage(
       script_context_set(), on_message_port_id,
       Message("\"onMessage\"", SerializationFormat::kJson, false), nullptr);

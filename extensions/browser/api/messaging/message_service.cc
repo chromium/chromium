@@ -870,6 +870,20 @@ void MessageService::DispatchMessage(const PortId& source_port_id,
   dest_port->DispatchOnMessage(message);
 }
 
+void MessageService::NotifyResponsePending(const PortId& port_id,
+                                           int process_id,
+                                           const PortContext& port_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!port_id.is_opener);
+
+  ChannelId channel_id = port_id.GetChannelId();
+  auto it = channels_.find(channel_id);
+  if (it == channels_.end())
+    return;
+
+  it->second->receiver->NotifyResponsePending();
+}
+
 bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     BrowserContext* context,
     const Extension* extension,

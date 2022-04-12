@@ -42,4 +42,6 @@ void MessagePort::IncrementLazyKeepaliveCount(
 
 void MessagePort::DecrementLazyKeepaliveCount() {}
 
+void MessagePort::NotifyResponsePending() {}
+
 }  // namespace extensions

@@ -199,6 +199,12 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     render_thread_->Send(new ExtensionHostMsg_PostMessage(port_id, message));
   }
 
+  void SendMessageResponsePending(int routing_id,
+                                  const PortId& port_id) override {
+    render_thread_->Send(new ExtensionHostMsg_ResponsePending(
+        PortContext::ForFrame(routing_id), port_id));
+  }
+
   void SendActivityLogIPC(
       const ExtensionId& extension_id,
       ActivityLogCallType call_type,
@@ -419,6 +425,13 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   void SendPostMessageToPort(const PortId& port_id,
                              const Message& message) override {
     dispatcher_->Send(new ExtensionHostMsg_PostMessage(port_id, message));
+  }
+
+  void SendMessageResponsePending(int routing_id,
+                                  const PortId& port_id) override {
+    DCHECK_EQ(MSG_ROUTING_NONE, routing_id);
+    dispatcher_->Send(new ExtensionHostMsg_ResponsePending(
+        PortContextForCurrentWorker(), port_id));
   }
 
   void SendActivityLogIPC(

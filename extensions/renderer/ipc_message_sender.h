@@ -88,6 +88,11 @@ class IPCMessageSender {
   virtual void SendPostMessageToPort(const PortId& port_id,
                                      const Message& message) = 0;
 
+  // Sends a message indicating that a receiver of a message indicated that it
+  // plans to send a response later.
+  virtual void SendMessageResponsePending(int routing_id,
+                                          const PortId& port_id) = 0;
+
   // Sends activityLog IPC to the browser process.
   virtual void SendActivityLogIPC(
       const ExtensionId& extension_id,

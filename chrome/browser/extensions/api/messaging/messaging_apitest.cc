@@ -189,6 +189,75 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
+// Tests sendMessage cases where the listener gets disconnected before it is
+// able to reply with a message it said it would send. This is achieved by
+// closing the page the listener is registered on.
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, SendMessageDisconnect) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "sendMessageDisconnect",
+        "version": "1.0",
+        "manifest_version": 3,
+        "background": {
+          "service_worker": "test.js",
+          "type": "module"
+        }
+      })";
+
+  static constexpr char kListenerPage[] = R"(
+    <script src="listener.js"></script>
+  )";
+  static constexpr char kListenerJS[] = R"(
+    var sendResponseCallback;
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      // Store the callback and return true to indicate we intend to respond
+      // with it later. We store the callback because the port would be closed
+      // automatically if it is garbage collected.
+      sendResponseCallback = sendResponse;
+
+      // Have the page close itself after a short delay to trigger the
+      // disconnect.
+      setTimeout(window.close, 0);
+      return true;
+    });
+  )";
+  static constexpr char kTestJS[] = R"(
+    import {openTab} from '/_test_resources/test_util/tabs_util.js';
+    let expectedError = 'A listener indicated an asynchronous response by ' +
+        'returning true, but the message channel closed before a response ' +
+        'was received';
+    chrome.test.runTests([
+      async function sendMessageWithCallbackExpectingUnsentAsyncResponse() {
+        // Open the page which has the listener.
+        let tab = await openTab(chrome.runtime.getURL('listener.html'));
+        chrome.tabs.sendMessage(tab.id, 'async_true', (response) => {
+          chrome.test.assertLastError(expectedError);
+          chrome.test.succeed();
+        });
+      },
+
+      async function sendMessageWithPromiseExpectingUnsentAsyncResponse() {
+        // Open the page which has the listener.
+        let tab = await openTab(chrome.runtime.getURL('listener.html'));
+        chrome.runtime.sendMessage('async_true').then(() => {
+          chrome.test.fail('Message unexpectedly succeeded');
+        }).catch((error) => {
+          chrome.test.assertEq(expectedError, error.message);
+          chrome.test.succeed();
+        });
+      },
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("listener.html"), kListenerPage);
+  dir.WriteFile(FILE_PATH_LITERAL("listener.js"), kListenerJS);
+  dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
+}
+
 // Tests that message passing from one extension to another works.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(

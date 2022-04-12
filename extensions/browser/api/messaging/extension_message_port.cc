@@ -43,6 +43,9 @@ using PassKey = base::PassKey<ExtensionMessagePort>;
 const char kReceivingEndDoesntExistError[] =
     // TODO(lazyboy): Test these in service worker implementation.
     "Could not establish connection. Receiving end does not exist.";
+const char kClosedWhileResponsePendingError[] =
+    "A listener indicated an asynchronous response by returning true, but the "
+    "message channel closed before a response was received";
 
 }  // namespace
 
@@ -310,6 +313,9 @@ void ExtensionMessagePort::DispatchOnDisconnect(
 }
 
 void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
+  // Since we are now receicing a message, we can mark any asynchronous reply
+  // that may have been pending for this port as no longer pending.
+  asynchronous_reply_pending_ = false;
   SendToPort(base::BindRepeating(&ExtensionMessagePort::BuildDeliverMessageIPC,
                                  // Called synchronously.
                                  base::Unretained(this), message));
@@ -360,6 +366,10 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount() {
   }
 }
 
+void ExtensionMessagePort::NotifyResponsePending() {
+  asynchronous_reply_pending_ = true;
+}
+
 void ExtensionMessagePort::OpenPort(int process_id,
                                     const PortContext& port_context) {
   DCHECK((port_context.is_for_render_frame() &&
@@ -368,7 +378,7 @@ void ExtensionMessagePort::OpenPort(int process_id,
           port_context.worker->thread_id != kMainThreadId) ||
          for_all_extension_contexts_);
 
-  did_create_port_ = true;
+  port_was_created_ = true;
 }
 
 void ExtensionMessagePort::ClosePort(int process_id,
@@ -386,8 +396,12 @@ void ExtensionMessagePort::ClosePort(int process_id,
 }
 
 void ExtensionMessagePort::CloseChannel() {
-  std::string error_message = did_create_port_ ? std::string() :
-      kReceivingEndDoesntExistError;
+  std::string error_message;
+  if (!port_was_created_)
+    error_message = kReceivingEndDoesntExistError;
+  else if (asynchronous_reply_pending_)
+    error_message = kClosedWhileResponsePendingError;
+
   if (weak_channel_delegate_)
     weak_channel_delegate_->CloseChannel(port_id_, error_message);
 }

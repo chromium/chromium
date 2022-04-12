@@ -49,6 +49,7 @@ namespace {
 struct OneTimeOpener {
   int request_id = -1;
   int routing_id = MSG_ROUTING_NONE;
+  binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 };
 
 // A receiver port in the context; i.e., a listener to runtime.onMessage.
@@ -204,6 +205,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     OneTimeOpener& port = data->openers[new_port_id];
     port.request_id = details.request_id;
     port.routing_id = routing_id;
+    port.async_type = async_type;
     promise = details.promise;
     DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
               !promise.IsEmpty());
@@ -432,21 +434,34 @@ bool OneTimeMessageHandler::DisconnectOpener(ScriptContext* script_context,
   handled = true;
 
   // Note: make a copy of port, since we're about to free it.
-  const OneTimeOpener port = iter->second;
-  DCHECK_NE(-1, port.request_id);
+  const OneTimeOpener opener = iter->second;
+  DCHECK_NE(-1, opener.request_id);
 
   // We erase the opener now, since delivering the reply can cause JS to run,
   // which could either invalidate the context or modify the |openers|
   // collection (e.g., by sending another message).
   data->openers.erase(iter);
 
+  std::string error;
+  // Set the error for the message port. If the browser supplies an error, we
+  // always use that. Otherwise, the behavior is different for promise-based vs
+  // callback-based channels.
+  // For a promise-based channel, not receiving a response is fine (assuming the
+  // listener didn't indicate it would send one) - the extension may simply be
+  // waiting for confirmation that the message sent.
+  // In the callback-based scenario, we use the presence of the callback as an
+  // indication that the extension expected a specific response. This is an
+  // unfortunate behavior difference that we keep for backwards-compatibility in
+  // callback-based API calls.
+  if (!error_message.empty()) {
+    // If the browser supplied us with an error message, use that.
+    error = error_message;
+  } else if (opener.async_type == binding::AsyncResponseType::kCallback) {
+    error = "The message port closed before a response was received.";
+  }
+
   bindings_system_->api_system()->request_handler()->CompleteRequest(
-      port.request_id, std::vector<v8::Local<v8::Value>>(),
-      // If the browser doesn't supply an error message, we supply a generic
-      // one.
-      error_message.empty()
-          ? "The message port closed before a response was received."
-          : error_message);
+      opener.request_id, std::vector<v8::Local<v8::Value>>(), error);
 
   // Note: The context could be invalidated at this point!
 
@@ -540,21 +555,26 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   if (!data)
     return;
 
-  if (WillListenerReplyAsync(context, result))
-    return;  // The listener will reply later; leave the channel open.
-
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if the listener replied).
   if (iter == data->receivers.end())
     return;
 
   int routing_id = iter->second.routing_id;
+  IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
+
+  if (WillListenerReplyAsync(context, result)) {
+    // Inform the browser that one of the listeners said they would be replying
+    // later and leave the channel open.
+    ipc_sender->SendMessageResponsePending(routing_id, port_id);
+    return;
+  }
+
   data->receivers.erase(iter);
 
   // The listener did not reply and did not return `true` from any of its
   // listeners. Close the message port. Don't close the channel because another
   // listener (in a separate context) may reply.
-  IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
   bool close_channel = false;
   ipc_sender->SendCloseMessagePort(routing_id, port_id, close_channel);
 }

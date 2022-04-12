@@ -364,6 +364,13 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_PostMessage,
                      extensions::PortId /* port_id */,
                      extensions::Message)
 
+// Send a message to tell the browser that one of the listeners for a message
+// indicated they are intending to reply later. The handle is the value returned
+// by ExtensionHostMsg_OpenChannelTo*.
+IPC_MESSAGE_CONTROL2(ExtensionHostMsg_ResponsePending,
+                     extensions::PortContext /* port_context */,
+                     extensions::PortId /*port_id */)
+
 // Used to get the extension message bundle.
 IPC_SYNC_MESSAGE_CONTROL1_1(
     ExtensionHostMsg_GetMessageBundle,
