@@ -124,12 +124,16 @@ class Scorer {
   // [0.0,1.0].
   static double LogOdds2Prob(double log_odds);
 
-  // Apply the tflite model to the bitmap, and return scores.
-  static std::vector<double> ApplyVisualTfLiteModelHelper(
+  // Apply the tflite model to the bitmap. The scores are returned by running
+  // `callback` on the provided `callback_task_runner`. This is expected to be
+  // run on a helper thread.
+  static void ApplyVisualTfLiteModelHelper(
       const SkBitmap& bitmap,
       int input_width,
       int input_height,
-      const std::string& model_data);
+      const std::string& model_data,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(std::vector<double>)> callback);
 
   base::MemoryMappedFile visual_tflite_model_;
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};

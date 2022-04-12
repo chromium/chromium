@@ -182,15 +182,16 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_.IsValid()) {
     base::Time start_post_task_time = base::Time::Now();
-    base::ThreadPool::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
-                       flatbuffer_model_->tflite_metadata()->input_width(),
-                       flatbuffer_model_->tflite_metadata()->input_height(),
-                       std::string(reinterpret_cast<const char*>(
-                                       visual_tflite_model_.data()),
-                                   visual_tflite_model_.length())),
-        std::move(callback));
+        base::BindOnce(
+            &ApplyVisualTfLiteModelHelper, bitmap,
+            flatbuffer_model_->tflite_metadata()->input_width(),
+            flatbuffer_model_->tflite_metadata()->input_height(),
+            std::string(
+                reinterpret_cast<const char*>(visual_tflite_model_.data()),
+                visual_tflite_model_.length()),
+            base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
     base::UmaHistogramTimes(
         "SBClientPhishing.TfLiteModelLoadTime.FlatbufferScorer",
         base::Time::Now() - start_post_task_time);

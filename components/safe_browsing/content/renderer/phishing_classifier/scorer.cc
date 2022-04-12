@@ -119,37 +119,15 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
 
   return data;
 }
-#endif
 
-}  // namespace
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
-    const SkBitmap& bitmap,
+void OnModelInputCreated(
+    const std::string& model_input,
     int input_width,
     int input_height,
-    const std::string& model_data) {
-  TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
+    std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(std::vector<double>)> callback) {
   base::Time before_operation = base::Time::Now();
-  std::string model_data_copy = model_data;
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.ModelCopy",
-                          base::Time::Now() - before_operation);
-  before_operation = base::Time::Now();
-  std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
-      CreateClassifier(std::move(model_data_copy));
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.CreateClassifier",
-                          base::Time::Now() - before_operation);
-  if (!classifier)
-    return std::vector<double>();
-
-  before_operation = base::Time::Now();
-  std::string model_input = GetModelInput(bitmap, input_width, input_height);
-  if (model_input.empty())
-    return std::vector<double>();
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.GetModelInput",
-                          base::Time::Now() - before_operation);
-
-  before_operation = base::Time::Now();
   tflite::task::vision::FrameBuffer::Plane plane{
       reinterpret_cast<const tflite::uint8*>(model_input.data()),
       {3 * input_width, 3}};
@@ -162,7 +140,9 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
                           base::Time::Now() - before_operation);
   if (!statusor_result.ok()) {
     VLOG(1) << statusor_result.status().ToString();
-    return std::vector<double>();
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
+    return;
   }
 
   std::vector<double> scores(
@@ -171,7 +151,69 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
        statusor_result->classifications(0).classes()) {
     scores[clas.index()] = clas.score();
   }
-  return scores;
+
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(scores)));
+}
+
+void OnClassifierCreated(
+    const SkBitmap& bitmap,
+    int input_width,
+    int input_height,
+    std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(std::vector<double>)> callback) {
+  base::Time before_operation = base::Time::Now();
+  std::string model_input = GetModelInput(bitmap, input_width, input_height);
+  if (model_input.empty()) {
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
+    return;
+  }
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.GetModelInput",
+                          base::Time::Now() - before_operation);
+
+  // Break up the task to avoid blocking too long.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&OnModelInputCreated, std::move(model_input), input_width,
+                     input_height, std::move(classifier),
+                     std::move(callback_task_runner), std::move(callback)));
+}
+#endif
+
+}  // namespace
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void Scorer::ApplyVisualTfLiteModelHelper(
+    const SkBitmap& bitmap,
+    int input_width,
+    int input_height,
+    const std::string& model_data,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(std::vector<double>)> callback) {
+  TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
+  base::Time before_operation = base::Time::Now();
+  std::string model_data_copy = model_data;
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.ModelCopy",
+                          base::Time::Now() - before_operation);
+  before_operation = base::Time::Now();
+  std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
+      CreateClassifier(std::move(model_data_copy));
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.CreateClassifier",
+                          base::Time::Now() - before_operation);
+  if (!classifier) {
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
+    return;
+  }
+
+  // Break up the task to avoid blocking too long.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&OnClassifierCreated, bitmap, input_width, input_height,
+                     std::move(classifier), std::move(callback_task_runner),
+                     std::move(callback)));
 }
 #endif
 
