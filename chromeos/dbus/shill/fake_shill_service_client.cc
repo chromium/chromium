@@ -136,8 +136,7 @@ constexpr const char* kIntrinsicServiceProperties[] = {
     shill::kSecurityClassProperty,
     shill::kNetworkTechnologyProperty,
     shill::kNameProperty,
-    shill::kProviderProperty,
-    shill::kTetheringProperty};
+    shill::kProviderProperty};
 
 }  // namespace
 
