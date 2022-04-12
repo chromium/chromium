@@ -1,8 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 
 #include <utility>
 
@@ -10,14 +9,14 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/ash/components/dbus/cdm_factory_daemon/fake_cdm_factory_daemon_client.h"
+#include "chromeos/dbus/cdm_factory_daemon/fake_cdm_factory_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 namespace {
 
 CdmFactoryDaemonClient* g_instance = nullptr;
@@ -107,4 +106,4 @@ CdmFactoryDaemonClient* CdmFactoryDaemonClient::Get() {
   return g_instance;
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -104,7 +104,7 @@
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
 // Delay for repeatedly checking if the TPM is owned or not.

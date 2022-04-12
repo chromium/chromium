@@ -14,7 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -214,7 +214,7 @@ void CdmFactoryDaemonProxyAsh::ProxyGetHwConfigData(
 
 void CdmFactoryDaemonProxyAsh::SendDBusRequest(base::ScopedFD fd,
                                                base::OnceClosure callback) {
-  ash::CdmFactoryDaemonClient::Get()->BootstrapMojoConnection(
+  chromeos::CdmFactoryDaemonClient::Get()->BootstrapMojoConnection(
       std::move(fd),
       base::BindOnce(&CdmFactoryDaemonProxyAsh::OnBootstrapMojoConnection,
                      base::Unretained(this), std::move(callback)));
