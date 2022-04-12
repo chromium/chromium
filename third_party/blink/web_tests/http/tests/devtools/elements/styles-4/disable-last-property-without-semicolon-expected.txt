@@ -7,17 +7,22 @@ Running: testFormattedDisableLast
 raw cssText:
 {
           color: red;
-          /* margin: 0; */}
+          /* margin: 0; */
+      }
 
 Running: testFormattedInsertEnd
 raw cssText:
 {
           color: red;
-          /* margin: 0; */endProperty: endValue;}
+          /* margin: 0; */
+          endProperty: endValue;
+      }
 
 Running: testFormattedEnable
 raw cssText:
 {
           color: red;
-          margin: 0;endProperty: endValue;}
+          margin: 0;
+          endProperty: endValue;
+      }
 

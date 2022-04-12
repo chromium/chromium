@@ -19,7 +19,7 @@ element.style { ()
     color: red;
 
 [expanded] 
-div#other { (inspector-stylesheet:3 -> inspector-stylesheet:3:12)
+div#other { (inspector-stylesheet:5 -> inspector-stylesheet:5:12)
 
 [expanded] 
 div { (user agent stylesheet)
