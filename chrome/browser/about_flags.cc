@@ -8486,16 +8486,11 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
     return !ash::features::IsWallpaperWebUIEnabled();
 
-  // Only show Google Photos wallpaper integration flag if:
-  // * channel is one of Beta/Dev/Canary/Unknown, and
-  // * wallpaper Web UI flag is enabled.
+  // Only show Google Photos wallpaper integration flag if wallpaper flag is
+  // enabled.
   if (!strcmp(kWallpaperGooglePhotosIntegrationInternalName,
               entry.internal_name)) {
-    return (channel != version_info::Channel::BETA &&
-            channel != version_info::Channel::DEV &&
-            channel != version_info::Channel::CANARY &&
-            channel != version_info::Channel::UNKNOWN) ||
-           !ash::features::IsWallpaperWebUIEnabled();
+    return !ash::features::IsWallpaperWebUIEnabled();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
