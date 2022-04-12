@@ -20,7 +20,7 @@ document.wsUrl = "ws://127.0.0.1:8880/close-on-unload?p=close-on-unload-referenc
 var ws = new WebSocket(document.wsUrl);
 ws.onopen = function()
 {
-    debug("PASS ws on master document is ready.");
+    debug("PASS ws on main document is ready.");
     frameDiv = document.createElement("iframe");
     frameDiv.src = "resources/close-on-unload-iframe-reference-in-parent.html";
     document.body.appendChild(frameDiv);
