@@ -59,15 +59,15 @@ class ASH_EXPORT CalendarViewController {
   void MaybeUpdateTimeDifference(base::Time date);
 
   // Gets the first day of the `currently_shown_date_`'s month, in local time.
-  base::Time GetOnScreenMonthFirstDayLocal() const;
+  base::Time GetOnScreenMonthFirstDayLocal();
 
   // Gets the first day of the nth-previous month based on the
   // `currently_shown_date_`'s month, in local time.
-  base::Time GetPreviousMonthFirstDayLocal(unsigned int num_months) const;
+  base::Time GetPreviousMonthFirstDayLocal(unsigned int num_months);
 
   // Gets the first day of the nth-next month based on the
   // `currently_shown_date_`'s month, in local time.
-  base::Time GetNextMonthFirstDayLocal(unsigned int num_months) const;
+  base::Time GetNextMonthFirstDayLocal(unsigned int num_months);
 
   // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
   base::Time GetOnScreenMonthFirstDayUTC() const;
@@ -85,11 +85,11 @@ class ASH_EXPORT CalendarViewController {
 
   // Gets the month name of the next `num_months` month based on the
   // `currently_shown_date_`'s month.
-  std::u16string GetNextMonthName(int num_months = 1) const;
+  std::u16string GetNextMonthName(int num_months = 1);
 
   // Gets the month name of the previous month based `currently_shown_date_`'s
   // month.
-  std::u16string GetPreviousMonthName() const;
+  std::u16string GetPreviousMonthName();
 
   // Get the current date, which can be today or the first day of the current
   // month if current month is not today's month.
@@ -155,6 +155,9 @@ class ASH_EXPORT CalendarViewController {
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
+
+  // Adds the `time_difference_minutes_` and returns the adjusted time.
+  base::Time ApplyTimeDifference(base::Time date);
 
   // The currently shown date, which can be today or the first day of the
   // current month if current month is not today's month.
