@@ -30,6 +30,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -468,10 +469,10 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   if (ShouldBlockSyncScriptForDocumentPolicy(element_.Get(), GetScriptType(),
                                              parser_inserted_)) {
-    element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kError,
-        "Synchronous script execution is disabled by Document Policy"));
+    context_window->ReportDocumentPolicyViolation(
+        mojom::blink::DocumentPolicyFeature::kSyncScript,
+        mojom::blink::PolicyDisposition::kEnforce,
+        "Synchronous script execution is disabled by Document Policy");
     return false;
   }
 
