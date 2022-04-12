@@ -1880,6 +1880,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool anonymous() const { return anonymous_; }
 
+  bool is_fenced_frame_opaque_url() const {
+    return is_fenced_frame_opaque_url_;
+  }
+
   PolicyContainerHost* policy_container_host() {
     return policy_container_host_.get();
   }
@@ -4121,6 +4125,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Whether the current document is loaded inside an anonymous iframe. Updated
   // on every cross-document navigation.
   bool anonymous_ = false;
+
+  // Indicates whether the fenced frame is navigated to an opaque url. This flag
+  // can only change when the embedder navigates the fenced frame. Any
+  // subsequent navigation from within the fenced frame tree will keep the same
+  // flag. Note that this flag is only relevant for fenced frames based on
+  // MPArch.
+  bool is_fenced_frame_opaque_url_ = false;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

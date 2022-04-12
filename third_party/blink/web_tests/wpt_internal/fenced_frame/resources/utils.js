@@ -14,6 +14,10 @@ function generateURL(href, keylist) {
   return ret_url;
 }
 
+function getRemoteContextURL(origin) {
+  return new URL(REMOTE_EXECUTOR_URL, origin);
+}
+
 // Similar to generateURL, but creates a urn:uuid that a fenced frame can
 // navigate to. This relies on a mock Shared Storage auction, since it is the
 // simplest WP-exposed way to turn a url into a urn:uuid.
@@ -75,7 +79,7 @@ function attachContext(object_constructor, html, headers, origin) {
 
   // Use the absolute path of the remote context executor source file, so that
   // nested contexts will work.
-  const url = new URL(REMOTE_EXECUTOR_URL, origin ? origin : location.origin);
+  const url = getRemoteContextURL(origin ? origin : location.origin);
   url.searchParams.append('uuid', uuid);
 
   // Add the header to allow loading in a fenced frame.

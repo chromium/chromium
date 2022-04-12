@@ -161,7 +161,8 @@ class CONTENT_EXPORT Navigator {
       network::mojom::SourceLocationPtr source_location,
       bool has_user_gesture,
       const absl::optional<blink::Impression>& impression,
-      base::TimeTicks navigation_start_time);
+      base::TimeTicks navigation_start_time,
+      absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
   // If |frame_tree_node| has a NavigationRequest waiting for the renderer

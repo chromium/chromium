@@ -218,7 +218,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       const absl::optional<blink::Impression>& impression,
-      base::TimeTicks navigation_start_time);
+      base::TimeTicks navigation_start_time,
+      absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt);
 
   // Navigates to the history entry associated with the given navigation API
   // |key|. Searches |entries_| for a FrameNavigationEntry associated with
@@ -564,7 +565,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       ReloadType reload_type,
       NavigationEntryImpl* entry,
       FrameNavigationEntry* frame_entry,
-      base::TimeTicks navigation_start_time);
+      base::TimeTicks navigation_start_time,
+      absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot

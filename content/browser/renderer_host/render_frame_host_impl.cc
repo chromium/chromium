@@ -11299,6 +11299,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   required_csp_ = navigation_request->TakeRequiredCSP();
   anonymous_ = navigation_request->anonymous();
 
+  is_fenced_frame_opaque_url_ =
+      navigation_request->is_fenced_frame_opaque_url();
+
   // TODO(https://crbug.com/888079): Once we are able to compute the origin to
   // commit in the browser, `navigation_request->commit_params().storage_key`
   // will contain the correct origin and it won't be necessary to override it

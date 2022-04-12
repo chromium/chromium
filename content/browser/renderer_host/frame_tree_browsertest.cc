@@ -40,6 +40,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -955,6 +956,7 @@ class FencedFrameTreeBrowserTest
                             base::Unretained(this)));
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&https_server_);
     ASSERT_TRUE(https_server_.Start());
   }
 
@@ -1878,6 +1880,131 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   NavigateIframeInFencedFrame(fenced_frame_root_node->child_at(0), iframe_url);
   EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "fencedframe"));
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckOpaqueUrlFlag) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Create a fenced frame.
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  // Navigate the fenced frame from the initial empty document toward a URL
+  // with a client side redirect.
+  //
+  // With MPArch, since this was a navigation toward an opaque URL, in the
+  // 'opaque-ads' mode, initiated from the embedder, the navigation must use
+  // and commit a document with `is_fenced_frame_opaque_url` to true.
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/redirect.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(fenced_frame_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, fenced_frame_url, navigate_script);
+
+  EXPECT_EQ(
+      fenced_frame_root_node->current_frame_host()
+          ->is_fenced_frame_opaque_url(),
+      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
+
+  // Navigate the fenced frame again, but toward a non-opaque URL. Since this
+  // is initiated from the embedder, the new document must commit with
+  // `is_fenced_frame_opaque_url` to false.
+  GURL second_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
+  std::string second_navigate_script =
+      JsReplace("f.src = $1;", second_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, fenced_frame_url, second_navigate_script);
+  EXPECT_FALSE(fenced_frame_root_node->current_frame_host()
+                   ->is_fenced_frame_opaque_url());
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       CancelledNavigationCheckOpaqueUrlFlag) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Create a fenced frame.
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  // Navigate the fenced frame from the initial empty document toward an opaque
+  // URL. With MPArch, since this was in the 'opaque-ads' mode, initiated from
+  // the embedder, the navigation must use and commit a document with
+  // `is_fenced_frame_opaque_url` to true.
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(fenced_frame_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, fenced_frame_url, navigate_script);
+
+  EXPECT_EQ(
+      fenced_frame_root_node->current_frame_host()
+          ->is_fenced_frame_opaque_url(),
+      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
+
+  // Navigate the fenced frame again, but toward a non-opaque URL and the
+  // navigation is cancelled. The navigation is not committed and therefore
+  // `is_fenced_frame_opaque_url` of the document doesn't change.
+  GURL second_url(https_server()->GetURL("a.test", "/nocontent"));
+  std::string second_navigate_script =
+      JsReplace("f.src = $1;", second_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, fenced_frame_url, second_navigate_script,
+      net::ERR_ABORTED);
+
+  EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
+            fenced_frame_url);
+
+  // The fenced frame's document initiates a navigation. The previous cancelled
+  // navigation from the embedder shouldn't have made any side effects. The next
+  // committed document must continue to have `is_fenced_frame_opaque_url` true.
+  GURL redirect_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node->current_frame_host(),
+                     JsReplace("location.href = $1;", redirect_url.spec())));
+  EXPECT_TRUE(content::WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
+            redirect_url);
+
+  EXPECT_EQ(
+      fenced_frame_root_node->current_frame_host()
+          ->is_fenced_frame_opaque_url(),
+      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
 }
 
 namespace {

@@ -885,6 +885,25 @@ bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
   return parent_anonymous || frame->anonymous();
 }
 
+// This returns the navigation request's `is_fenced_frame_opaque_url` attribute.
+// It reflects whether the last, or current, navigation initiated by the fenced
+// frame embedder was opaque or not.
+//
+// `is_fenced_frame_opaque_url` is set only for navigation initiated by the
+// fenced frame embedder. It is true if the navigation's request URL is opaque.
+bool IsDocumentToCommitFencedFrameOpaqueUrl(
+    FrameTreeNode* frame,
+    absl::optional<bool> is_fenced_frame_opaque_url) {
+  // Navigation initiated from the fenced frame's embedder.
+  if (is_fenced_frame_opaque_url)
+    return *is_fenced_frame_opaque_url;
+
+  // Otherwise, returns the flag of the current document so that subsequent
+  // navigations initiated from inside the fenced frame continue to commit
+  // documents with the same flag.
+  return frame->current_frame_host()->is_fenced_frame_opaque_url();
+}
+
 // Returns the "loading" URL in the renderer. This tries to replicate
 // RenderFrameImpl::GetLoadingUrl(). This might return a different URL from
 // what we get when calling GetLastCommittedURL() on `rfh`, in case the
@@ -988,7 +1007,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const absl::optional<blink::Impression>& impression,
-    bool is_pdf) {
+    bool is_pdf,
+    absl::optional<bool> is_fenced_frame_opaque_url) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
   // TODO(arthursonzogni): Form submission with the "GET" method is possible.
   // This is not currently handled here.
@@ -1083,7 +1103,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       nullptr /* prefetched_signed_exchange_cache */,
       nullptr /* web_bundle_handle_tracker */,
       rfh_restored_from_back_forward_cache, initiator_process_id,
-      was_opener_suppressed, is_pdf));
+      was_opener_suppressed, is_pdf, is_fenced_frame_opaque_url));
 
   return navigation_request;
 }
@@ -1365,7 +1385,8 @@ NavigationRequest::NavigationRequest(
     base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed,
-    bool is_pdf)
+    bool is_pdf,
+    absl::optional<bool> is_fenced_frame_opaque_url)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
@@ -1403,7 +1424,10 @@ NavigationRequest::NavigationRequest(
                                              is_synchronous_renderer_commit)),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()),
-      is_pdf_(is_pdf) {
+      is_pdf_(is_pdf),
+      is_fenced_frame_opaque_url_(
+          IsDocumentToCommitFencedFrameOpaqueUrl(frame_tree_node,
+                                                 is_fenced_frame_opaque_url)) {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -5051,8 +5075,11 @@ net::Error NavigationRequest::CheckCSPDirectives(
 
   // [frame-src] or [fenced-frame-src]
   if (parent_policies) {
-    bool is_opaque_fenced_frame = frame_tree_node_->GetFencedFrameMode() ==
-                                  blink::mojom::FencedFrameMode::kOpaqueAds;
+    bool is_opaque_fenced_frame =
+        blink::features::IsFencedFramesShadowDOMBased()
+            ? (frame_tree_node_->GetFencedFrameMode() ==
+               blink::mojom::FencedFrameMode::kOpaqueAds)
+            : is_fenced_frame_opaque_url_;
     if (!IsAllowedByCSPDirective(
             parent_policies->content_security_policies, &parent_context,
             frame_tree_node_->IsFencedFrameRoot()

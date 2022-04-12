@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -119,7 +120,8 @@ void FencedFrame::Navigate(const GURL& url,
       /*post_body=*/nullptr, /*extra_headers=*/"",
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
-      /*impression=*/absl::nullopt, navigation_start_time);
+      /*impression=*/absl::nullopt, navigation_start_time,
+      FencedFrameURLMapping::IsValidUrnUuidURL(url));
 }
 
 bool FencedFrame::IsHidden() {

@@ -2604,7 +2604,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     network::mojom::SourceLocationPtr source_location,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     const absl::optional<blink::Impression>& impression,
-    base::TimeTicks navigation_start_time) {
+    base::TimeTicks navigation_start_time,
+    absl::optional<bool> is_fenced_frame_opaque_url) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2733,7 +2734,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           node, params, override_user_agent, should_replace_current_entry,
           false /* has_user_gesture */, std::move(source_location),
           ReloadType::NONE, entry.get(), frame_entry.get(),
-          navigation_start_time);
+          navigation_start_time, is_fenced_frame_opaque_url);
 
   if (!request)
     return;
@@ -3588,7 +3589,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     ReloadType reload_type,
     NavigationEntryImpl* entry,
     FrameNavigationEntry* frame_entry,
-    base::TimeTicks navigation_start_time) {
+    base::TimeTicks navigation_start_time,
+    absl::optional<bool> is_fenced_frame_opaque_url) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
   DCHECK(frame_entry);
   // All renderer-initiated navigations must have an initiator_origin.
@@ -3761,7 +3763,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
       request_body,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
-      params.impression, params.is_pdf);
+      params.impression, params.is_pdf, is_fenced_frame_opaque_url);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(
