@@ -18,7 +18,7 @@ import {createDestinationKey, createRecentDestinationKey, Destination, Destinati
 import {DestinationProvisionalType} from './destination.js';
 // </if>
 import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
-import {LocalDestinationInfo, parseDestination, ProvisionalDestinationInfo} from './local_parsers.js';
+import {ExtensionDestinationInfo, LocalDestinationInfo, parseDestination} from './local_parsers.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {parseExtensionDestination} from './local_parsers.js';
 // </if>
@@ -250,7 +250,7 @@ export class DestinationStore extends EventTarget {
            listener:
                (t: PrinterType,
                 p: LocalDestinationInfo[]|
-                ProvisionalDestinationInfo[]) => void) => void) {
+                ExtensionDestinationInfo[]) => void) => void) {
     super();
 
     this.destinationSearchStatus_ = new Map([
@@ -271,7 +271,7 @@ export class DestinationStore extends EventTarget {
     addListenerCallback(
         'printers-added',
         (type: PrinterType,
-         printers: LocalDestinationInfo[]|ProvisionalDestinationInfo[]) =>
+         printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
             this.onPrintersAdded_(type, printers));
   }
 
@@ -597,8 +597,10 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
+    // <if expr="chromeos_ash or chromeos_lacros">
     assert(
         !destination.isProvisional, 'Unable to select provisonal destinations');
+    // </if>
 
     // Update and persist selected destination.
     this.selectedDestination_ = destination;
@@ -954,9 +956,9 @@ export class DestinationStore extends EventTarget {
    */
   private onPrintersAdded_(
       type: PrinterType,
-      printers: LocalDestinationInfo[]|ProvisionalDestinationInfo[]) {
+      printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) {
     this.insertDestinations_(printers.map(
-        (printer: LocalDestinationInfo|ProvisionalDestinationInfo) =>
+        (printer: LocalDestinationInfo|ExtensionDestinationInfo) =>
             parseDestination(type, printer)));
   }
 }

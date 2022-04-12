@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType, ProvisionalDestinationInfo} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getCddTemplate, getPdfPrinter} from './print_preview_test_utils.js';
@@ -29,7 +28,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   /**
    * Extension destination list to be used for the response to |getPrinters|.
    */
-  private extensionDestinationInfos_: ProvisionalDestinationInfo[] = [];
+  private extensionDestinationInfos_: ExtensionDestinationInfo[] = [];
 
   /**
    *     A map from destination IDs to the responses to be sent when
@@ -203,8 +202,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
    * @param extensionDestinations The extension destinations to return as a
    *     response to |getPrinters|.
    */
-  setExtensionDestinations(extensionDestinations:
-                               ProvisionalDestinationInfo[]) {
+  setExtensionDestinations(extensionDestinations: ExtensionDestinationInfo[]) {
     this.extensionDestinationInfos_ = extensionDestinations;
   }
 

@@ -56,15 +56,15 @@ export class PrintPreviewDestinationListItemElement extends
 
       searchQuery: Object,
 
+      searchHint_: String,
+
+      // <if expr="chromeos_ash or chromeos_lacros">
       destinationIcon_: {
         type: String,
         computed: 'computeDestinationIcon_(destination, ' +
             'destination.printerStatusReason)',
       },
 
-      searchHint_: String,
-
-      // <if expr="chromeos_ash or chromeos_lacros">
       statusText_: {
         type: String,
         computed:
@@ -135,6 +135,30 @@ export class PrintPreviewDestinationListItemElement extends
     }
   }
 
+  private updateHighlightsAndHint_() {
+    this.updateSearchHint_();
+    removeHighlights(this.highlights_);
+    this.highlights_ = updateHighlights(this, this.searchQuery, new Map());
+  }
+
+  private updateSearchHint_() {
+    const matches = !this.searchQuery ?
+        [] :
+        this.destination.extraPropertiesToMatch.filter(
+            p => p.match(this.searchQuery!));
+    this.searchHint_ = matches.length === 0 ?
+        (this.destination.extraPropertiesToMatch.find(p => !!p) || '') :
+        matches.join(' ');
+  }
+
+  private getExtensionPrinterTooltip_(): string {
+    if (!this.destination.isExtension) {
+      return '';
+    }
+    return loadTimeData.getStringF(
+        'extensionDestinationIconTooltip', this.destination.extensionName);
+  }
+
   // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Called if the printer configuration request is accepted. Show the waiting
@@ -163,33 +187,7 @@ export class PrintPreviewDestinationListItemElement extends
   private checkConfigurationStatus_(status: DestinationConfigStatus): boolean {
     return this.configurationStatus_ === status;
   }
-  // </if>
 
-  private updateHighlightsAndHint_() {
-    this.updateSearchHint_();
-    removeHighlights(this.highlights_);
-    this.highlights_ = updateHighlights(this, this.searchQuery, new Map());
-  }
-
-  private updateSearchHint_() {
-    const matches = !this.searchQuery ?
-        [] :
-        this.destination.extraPropertiesToMatch.filter(
-            p => p.match(this.searchQuery!));
-    this.searchHint_ = matches.length === 0 ?
-        (this.destination.extraPropertiesToMatch.find(p => !!p) || '') :
-        matches.join(' ');
-  }
-
-  private getExtensionPrinterTooltip_(): string {
-    if (!this.destination.isExtension) {
-      return '';
-    }
-    return loadTimeData.getStringF(
-        'extensionDestinationIconTooltip', this.destination.extensionName);
-  }
-
-  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * @return If the destination is a local CrOS printer, this returns
    *    the error text associated with the printer status.
@@ -215,25 +213,21 @@ export class PrintPreviewDestinationListItemElement extends
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
     return errorStringKey ? this.i18n(errorStringKey) : '';
   }
-  // </if>
 
   private computeDestinationIcon_(): string {
     if (!this.destination) {
       return '';
     }
 
-    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
           this.destination.printerStatusReason,
           this.destination.isEnterprisePrinter, this.isDarkModeActive_);
     }
-    // </if>
 
     return this.destination.icon;
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * True when the destination is a CrOS local printer.
    */

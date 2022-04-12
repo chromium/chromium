@@ -32,13 +32,13 @@ suite(destination_list_test.suiteName, function() {
           'id2', DestinationOrigin.LOCAL, 'Two', {description: 'XYZ'}),
       new Destination(
           'id3', DestinationOrigin.LOCAL, 'Three',
-          {description: 'ABC', tags: ['__cp__location=123']}),
+          {description: 'ABC', location: '123'}),
       new Destination(
           'id4', DestinationOrigin.LOCAL, 'Four',
-          {description: 'XYZ', tags: ['__cp__location=123']}),
+          {description: 'XYZ', location: '123'}),
       new Destination(
           'id5', DestinationOrigin.LOCAL, 'Five',
-          {description: 'XYZ', tags: ['__cp__location=123']})
+          {description: 'XYZ', location: '123'}),
     ];
 
     // Set up list

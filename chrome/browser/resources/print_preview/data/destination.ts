@@ -5,7 +5,6 @@
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
 // <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
@@ -34,6 +33,7 @@ export enum DestinationOrigin {
   CROS = 'chrome_os',
 }
 
+// <if expr="chromeos_ash or chromeos_lacros">
 /**
  * Enumeration specifying whether a destination is provisional and the reason
  * the destination is provisional.
@@ -45,6 +45,7 @@ export enum DestinationProvisionalType {
   // Used for destinations with extension origin.
   NEEDS_USB_PERMISSION = 'NEEDS_USB_PERMISSION',
 }
+// </if>
 
 /**
  * Enumeration of color modes used by Chromium.
@@ -99,12 +100,14 @@ export function createRecentDestinationKey(
 }
 
 export type DestinationOptionalParams = {
-  tags?: string[],
   isEnterprisePrinter?: boolean,
+  // <if expr="chromeos_ash or chromeos_lacros">
   provisionalType?: DestinationProvisionalType,
+  // </if>
   extensionId?: string,
   extensionName?: string,
   description?: string,
+  location?: string,
 };
 
 /**
@@ -127,11 +130,6 @@ export class Destination {
   private displayName_: string;
 
   /**
-   * Tags associated with the destination.
-   */
-  private tags_: string[];
-
-  /**
    * Print capabilities of the destination.
    */
   private capabilities_: Cdd|null = null;
@@ -142,9 +140,9 @@ export class Destination {
   private isEnterprisePrinter_: boolean;
 
   /**
-   * Cache of destination location fetched from tags.
+   * Destination location.
    */
-  private location_: string|null = null;
+  private location_: string = '';
 
   /**
    * Printer description.
@@ -161,6 +159,7 @@ export class Destination {
    */
   private extensionName_: string;
 
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Different from  DestinationProvisionalType.NONE if
    * the destination is provisional. Provisional destinations cannot be
@@ -172,7 +171,6 @@ export class Destination {
    */
   private provisionalType_: DestinationProvisionalType;
 
-  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * EULA url for printer's PPD. Empty string indicates no provided EULA.
    */
@@ -216,11 +214,12 @@ export class Destination {
     this.id_ = id;
     this.origin_ = origin;
     this.displayName_ = displayName || '';
-    this.tags_ = (params && params.tags) || [];
     this.isEnterprisePrinter_ = (params && params.isEnterprisePrinter) || false;
     this.description_ = (params && params.description) || '';
     this.extensionId_ = (params && params.extensionId) || '';
     this.extensionName_ = (params && params.extensionName) || '';
+    this.location_ = (params && params.location) || '';
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.provisionalType_ =
         (params && params.provisionalType) || DestinationProvisionalType.NONE;
 
@@ -229,6 +228,7 @@ export class Destination {
                 DestinationProvisionalType.NEEDS_USB_PERMISSION ||
             this.isExtension,
         'Provisional USB destination only supprted with extension origin.');
+    // </if>
   }
 
   get id(): string {
@@ -251,44 +251,11 @@ export class Destination {
   }
 
   /**
-   * @return The location of the destination, or an empty string if
-   *     the location is unknown.
-   */
-  get location(): string {
-    if (this.location_ === null) {
-      this.location_ = '';
-      this.tags_.some(tag => {
-        return LOCATION_TAG_PREFIXES.some(prefix => {
-          if (tag.startsWith(prefix)) {
-            this.location_ = tag.substring(prefix.length) || '';
-            return true;
-          } else {
-            return false;
-          }
-        });
-      });
-    }
-    return this.location_;
-  }
-
-  /**
-   * @return The description of the destination, or an empty string,
-   *     if it was not provided.
-   */
-  get description(): string {
-    return this.description_;
-  }
-
-  /**
    * @return Most relevant string to help user to identify this
    *     destination.
    */
   get hint(): string {
-    return this.location || this.extensionName || this.description;
-  }
-
-  get tags(): string[] {
-    return this.tags_.slice(0);
+    return this.location_ || this.extensionName || this.description_;
   }
 
   /**
@@ -412,15 +379,21 @@ export class Destination {
         });
   }
 
-  // </if>
-
   /** @return Whether the destination is ready to be selected. */
   get readyForSelection(): boolean {
-    return (!(isChromeOS || isLacros) ||
-            this.origin_ !== DestinationOrigin.CROS ||
+    return (this.origin_ !== DestinationOrigin.CROS ||
             this.capabilities_ !== null) &&
         !this.isProvisional;
   }
+
+  get provisionalType(): DestinationProvisionalType {
+    return this.provisionalType_;
+  }
+
+  get isProvisional(): boolean {
+    return this.provisionalType_ !== DestinationProvisionalType.NONE;
+  }
+  // </if>
 
   /** @return Path to the SVG for the destination's icon. */
   get icon(): string {
@@ -442,7 +415,7 @@ export class Destination {
    * @return Properties (besides display name) to match search queries against.
    */
   get extraPropertiesToMatch(): string[] {
-    return [this.location, this.description];
+    return [this.location_, this.description_];
   }
 
   /**
@@ -452,16 +425,8 @@ export class Destination {
    */
   matches(query: RegExp): boolean {
     return !!this.displayName_.match(query) ||
-        !!this.extensionName_.match(query) ||
-        this.extraPropertiesToMatch.some(p => p.match(query));
-  }
-
-  get provisionalType(): DestinationProvisionalType {
-    return this.provisionalType_;
-  }
-
-  get isProvisional(): boolean {
-    return this.provisionalType_ !== DestinationProvisionalType.NONE;
+        !!this.extensionName_.match(query) || !!this.location_.match(query) ||
+        !!this.description_.match(query);
   }
 
   /**
@@ -572,12 +537,6 @@ export class Destination {
     return `${this.id_}/${this.origin_}/`;
   }
 }
-
-/**
- * Prefix of the location destination tag.
- */
-const LOCATION_TAG_PREFIXES: string[] =
-    ['__cp__location=', '__cp__printer-location='];
 
 /**
  * Enumeration of Google-promoted destination IDs.

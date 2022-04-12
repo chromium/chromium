@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
-import {ProvisionalDestinationInfo} from './data/local_parsers.js';
+import {ExtensionDestinationInfo} from './data/local_parsers.js';
 import {PrinterStatus, PrinterStatusReason} from './data/printer_status_cros.js';
 
 export type PrinterSetupResponse = {
@@ -42,7 +42,7 @@ export interface NativeLayerCros {
    * @param provisionalDestinationId
    */
   grantExtensionPrinterAccess(provisionalDestinationId: string):
-      Promise<ProvisionalDestinationInfo>;
+      Promise<ExtensionDestinationInfo>;
 
   /**
    * Requests that Chrome perform printer setup for the given printer.

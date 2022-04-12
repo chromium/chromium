@@ -161,10 +161,6 @@ export class PrintPreviewDestinationDialogElement extends
       e: CustomEvent<PrintPreviewDestinationListItemElement>) {
     const listItem = e.detail;
     const destination = listItem.destination;
-
-    // No provisional or local CrOS destinations on desktop, so all destinations
-    // should be ready for selection.
-    assert(destination.readyForSelection);
     this.selectDestination_(destination);
   }
 

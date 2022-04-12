@@ -15,7 +15,7 @@ export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 export {PrinterType} from './data/destination_match.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
 export {PageLayoutInfo} from './data/document_info.js';
-export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
+export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, whenReady} from './data/model.js';

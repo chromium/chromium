@@ -64,12 +64,12 @@
     width: 24px;
   }
 
+<if expr="chromeos_ash or chromeos_lacros">
   .configuring-failed-text {
     color: var(--google-red-600);
     font-style: italic;
   }
 
-<if expr="chromeos_ash or chromeos_lacros">
   :host([is-destination-cros-local_]) .connection-status {
     color: var(--google-red-600);
   }
@@ -79,8 +79,11 @@
   <iron-media-query query="(prefers-color-scheme: dark)"
       query-matches="{{isDarkModeActive_}}">
   </iron-media-query>
-</if>
 <iron-icon icon="[[destinationIcon_]]"></iron-icon>
+</if>
+<if expr="not chromeos_ash and not chromeos_lacros">
+<iron-icon icon="[[destination.icon]]"></iron-icon>
+</if>
 <span class="name searchable">[[destination.displayName]]</span>
 <span class="search-hint searchable" hidden="[[!searchHint_]]">
   [[searchHint_]]
