@@ -24,9 +24,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
-#include "url/android/gurl_android.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
 #endif
 
 OmniboxPedal::TokenSequence::TokenSequence(size_t reserve_size) {
@@ -337,14 +335,8 @@ base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
 }
 
 void OmniboxPedal::CreateOrUpdateJavaObject() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  j_omnibox_action_.Reset(Java_OmniboxPedal_build(
-      env, GetID(), base::android::ConvertUTF16ToJavaString(env, strings_.hint),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              strings_.suggestion_contents),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              strings_.accessibility_suffix),
-      base::android::ConvertUTF16ToJavaString(env, strings_.accessibility_hint),
-      url::GURLAndroid::FromNativeGURL(env, url_)));
+  j_omnibox_action_.Reset(BuildOmniboxPedal(
+      GetID(), strings_.hint, strings_.suggestion_contents,
+      strings_.accessibility_suffix, strings_.accessibility_hint, url_));
 }
 #endif

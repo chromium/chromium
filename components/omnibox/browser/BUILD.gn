@@ -309,6 +309,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "actions/omnibox_pedal_jni_wrapper.cc",
+      "actions/omnibox_pedal_jni_wrapper.h",
       "autocomplete_match_android.cc",
       "autocomplete_result_android.cc",
     ]

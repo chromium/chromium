@@ -21,6 +21,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
+#include "url/android/gurl_android.h"
+#endif
+
 namespace history_clusters {
 
 namespace {
@@ -37,7 +44,11 @@ class HistoryClustersAction : public OmniboxAction {
             GURL(base::StringPrintf(
                 "chrome://history/journeys?q=%s",
                 net::EscapeQueryParamValue(query, /*use_plus=*/false)
-                    .c_str()))) {}
+                    .c_str()))) {
+#if BUILDFLAG(IS_ANDROID)
+    CreateOrUpdateJavaObject();
+#endif
+  }
 
   void RecordActionShown(size_t position) const override {
     base::UmaHistogramExactLinear(
@@ -55,8 +66,23 @@ class HistoryClustersAction : public OmniboxAction {
     return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override {
+    return j_omnibox_action_;
+  }
+
+  void CreateOrUpdateJavaObject() {
+    j_omnibox_action_.Reset(BuildOmniboxPedal(
+        GetID(), strings_.hint, strings_.suggestion_contents,
+        strings_.accessibility_suffix, strings_.accessibility_hint, url_));
+  }
+#endif
+
  private:
   ~HistoryClustersAction() override = default;
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+#endif
 };
 
 }  // namespace
@@ -65,7 +91,7 @@ void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
     PrefService* prefs,
     AutocompleteResult& result) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Compile out this method for Mobile, which doesn't omnibox actions yet.
   // This is to prevent binary size increase for no reason.
   return;
