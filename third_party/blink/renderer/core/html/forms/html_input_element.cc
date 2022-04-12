@@ -2228,6 +2228,13 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
     }
   }
 
+  if (IsDisabledOrReadOnly()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "HTMLInputElement::showPicker() cannot be used on immutable controls.");
+    return;
+  }
+
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,

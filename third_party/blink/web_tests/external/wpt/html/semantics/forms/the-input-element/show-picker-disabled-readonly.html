@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Test showPicker() disabled/readonly requirement</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type=module>
+import inputTypes from "./input-types.js";
+
+for (const inputType of inputTypes) {
+  test(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", inputType);
+    input.setAttribute("disabled", "");
+
+    assert_throws_dom('InvalidStateError', () => { input.showPicker(); });
+  }, `input[type=${inputType}] showPicker() throws when disabled`);
+}
+
+for (const inputType of inputTypes) {
+  test(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", inputType);
+    input.setAttribute("readonly", "");
+
+    assert_throws_dom('InvalidStateError', () => { input.showPicker(); });
+  }, `input[type=${inputType}] showPicker() throws when readonly`);
+}
+</script>
