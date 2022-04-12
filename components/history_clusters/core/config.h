@@ -29,11 +29,14 @@ struct Config {
   // annotations; i.e. `kPersistContextAnnotationsInHistoryDb` is true.
   int max_days_to_cluster = 9;
 
-  // A soft cap on the number of keyword phrases to cache. If 0, there is no
-  // limit.
-  // 20k should be more than enough for most cases and should avoid consuming
-  // large amounts of memory in extreme cases.
-  int max_keyword_phrases = 20000;
+  // A soft cap on the number of keyword phrases to cache. 5000 should be more
+  // than enough, as the 99.9th percentile of users has 2000. A few nuances:
+  //  - We cache both entity keywords and URLs, each limited separately.
+  //  - We have both a long and short duration cache, each limited separately.
+  //  - We complete processing each cluster even if it means slightly going over
+  //    this limit.
+  //  - 0 and -1 are not interpreted as sentinel values. We always have a limit.
+  size_t max_keyword_phrases = 5000;
 
   // If enabled, updating clusters will persist the results to the history DB
   // and accessing clusters will retrieve them from the history DB. If disabled,

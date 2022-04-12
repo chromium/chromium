@@ -445,28 +445,19 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     }
     // Lowercase the keywords for case insensitive matching while adding to the
     // accumulator.
-    for (auto& keyword : cluster.keywords) {
-      keyword_accumulator->push_back(base::i18n::ToLower(keyword));
+    if (keyword_accumulator->size() < max_keyword_phrases) {
+      for (auto& keyword : cluster.keywords) {
+        keyword_accumulator->push_back(base::i18n::ToLower(keyword));
+      }
     }
 
     // Push a simplified form of the URL for each visit into the cache.
-    for (const auto& visit : cluster.visits) {
-      url_keyword_accumulator->push_back(
-          history::VisitSegmentDatabase::ComputeSegmentName(
-              visit.normalized_url));
-    }
-
-    // Limit the cache size. It's possible for the `cache.size()` to exceed
-    // `max_keyword_phrases` since:
-    // 1) We cache all of a particular cluster's keywords if we haven't yet
-    //    reached the cap, even if doing so will exceed the cap.
-    // 2) We have 2 caches which are capped separately.
-    // 3) We cap the # of phrase, each of which may contain multiple words,
-    //    whereas `cache` contains individual words.
-    // TODO(tommycli): Apply this limit to the URL keyword cache too.
-    if (max_keyword_phrases != 0 &&
-        keyword_accumulator->size() >= max_keyword_phrases) {
-      break;
+    if (url_keyword_accumulator->size() < max_keyword_phrases) {
+      for (const auto& visit : cluster.visits) {
+        url_keyword_accumulator->push_back(
+            history::VisitSegmentDatabase::ComputeSegmentName(
+                visit.normalized_url));
+      }
     }
   }
 
@@ -476,8 +467,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   constexpr char kKeywordCacheThreadTimeUmaName[] =
       "History.Clusters.KeywordCache.ThreadTime";
   if (!continuation_end_time.is_null() &&
-      (max_keyword_phrases == 0 ||
-       keyword_accumulator->size() < max_keyword_phrases)) {
+      (keyword_accumulator->size() < max_keyword_phrases ||
+       url_keyword_accumulator->size() < max_keyword_phrases)) {
     QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
         continuation_end_time,
