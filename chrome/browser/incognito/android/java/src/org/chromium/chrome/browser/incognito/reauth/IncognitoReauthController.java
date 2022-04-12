@@ -36,23 +36,17 @@ public class IncognitoReauthController
     // This contains the logic to not require further re-authentication if the last one was a
     // success. Please note, a re-authentication would be required again when Chrome is brought to
     // foreground again.
-    // TODO(crbug.com/1227656): Connect this callback to "Unlock Incognito" option once the MVC is
-    // added.
     private final IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallback =
             new IncognitoReauthManager.IncognitoReauthCallback() {
                 @Override
                 public void onIncognitoReauthNotPossible() {
-                    // TODO(crbug.com/1227656): Add new dialog dismissal cause as the meaning can be
-                    // ambiguous.
-                    hideDialogIfShowing(DialogDismissalCause.UNKNOWN);
+                    hideDialogIfShowing(DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE);
                 }
 
                 @Override
                 public void onIncognitoReauthSuccess() {
                     mIncognitoReauthPending = false;
-                    // TODO(crbug.com/1227656): Add new dialog dismissal cause as the meaning can be
-                    // ambiguous.
-                    hideDialogIfShowing(DialogDismissalCause.ACTION_ON_CONTENT);
+                    hideDialogIfShowing(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
                 }
 
                 @Override
@@ -203,9 +197,7 @@ public class IncognitoReauthController
         if ((newModel.isIncognito())) {
             showDialogIfRequired();
         } else {
-            // TODO(crbug.com/1227656): Add new dialog dismissal cause as the meaning can be
-            // ambiguous.
-            hideDialogIfShowing(DialogDismissalCause.NAVIGATE);
+            hideDialogIfShowing(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
         }
     }
 
