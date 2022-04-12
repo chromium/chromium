@@ -683,6 +683,7 @@ class PrivateNetworkAccessBrowserTestNoBlocking
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+                features::kPrivateNetworkAccessSendPreflights,
             }) {}
 };
 
