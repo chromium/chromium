@@ -13,7 +13,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PIIDataItem} from 'chrome://support-tool/browser_proxy.js';
-import {SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
+import {DataExportResult, SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -69,6 +69,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'startDataCollection',
       'cancelDataCollection',
       'startDataExport',
+      'showExportedDataInFolder',
     ]);
   }
 
@@ -94,6 +95,10 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   startDataExport(piiDataItems: PIIDataItem[]) {
     this.methodCalled('startDataExport', [piiDataItems]);
+  }
+
+  showExportedDataInFolder() {
+    this.methodCalled('showExportedDataInFolder');
   }
 }
 
@@ -207,5 +212,15 @@ suite('SupportToolTest', function() {
     assertEquals(
         supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
         SupportToolPageIndex.EXPORT_SPINNER);
+    const exportResult: DataExportResult = {
+      success: true,
+      path: '/usr/testuser/downloads/fake_support_packet_path.zip',
+      error: ''
+    };
+    webUIListenerCallback('data-export-completed', exportResult);
+    flush();
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        SupportToolPageIndex.DATA_EXPORT_DONE);
   });
 });

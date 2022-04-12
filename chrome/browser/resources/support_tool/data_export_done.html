@@ -1,0 +1,28 @@
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style include="support-tool-shared action-link">
+  #check-icon {
+    --iron-icon-fill-color: var(--google-green-500);
+    height: 20px;
+    width: 20px;
+  }
+  #path-link {
+    margin-inline-start: 8px;
+    margin-top: 8px;
+  }
+
+</style>
+
+<h2>Diagnostics data is exported</h2>
+<div class="support-tool-title">
+  Data has been exported into the selected location
+</div>
+<div>
+  <iron-icon id="check-icon" icon="cr:check-circle"></iron-icon>
+  <a id="path-link" on-click="onFilePathClicked_" is="action-link">
+    [[path_]]
+  </a>
+</div>
+

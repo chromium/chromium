@@ -21,7 +21,12 @@
 
 // The error code that a Support Tool component can return.
 enum class SupportToolErrorCode {
+  // Errors that occurred in individual DataCollector level. An error in a
+  // DataCollector instance won't disturb the execution of the caller of
+  // DataCollector functions.
   kDataCollectorError,
+  // Errors that occur during the data export process of the caller of
+  // DataCollector instances.
   kDataExportError,
 };
 

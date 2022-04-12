@@ -33,6 +33,9 @@
     <spinner-page page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]"
         page-title="Exporting diagnostic data">
     </spinner-page>
+    <data-export-done id="dataExportDone"
+        page-index="[[supportToolPageIndex_.DATA_EXPORT_DONE]]">
+    </data-export-done>
   </iron-pages>
 </div>
 <div class="navigation-buttons" id="continueButtonContainer"
@@ -46,3 +49,9 @@
     Continue
   </cr-button>
 </div>
+<cr-toast id="errorMessageToast" duration="0">
+  <span>[[errorMessage_]]</span>
+  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
+      iron-icon="cr:close">
+  </cr-icon-button>
+</cr-toast>

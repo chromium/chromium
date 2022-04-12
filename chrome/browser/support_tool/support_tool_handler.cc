@@ -34,14 +34,15 @@
 #include "third_party/zlib/google/zip.h"
 
 // Zip archieves the contents of `src_path` into `target_path`. Adds ".zip"
-// extension to target file path. Returns true on success, false otherwise.
-bool ZipOutput(base::FilePath src_path, base::FilePath target_path) {
+// extension to target file path. Returns the path of zip archive on success, an
+// empty path otherwise.
+base::FilePath ZipOutput(base::FilePath src_path, base::FilePath target_path) {
   base::FilePath zip_path = target_path.AddExtension(FILE_PATH_LITERAL(".zip"));
   if (!zip::Zip(src_path, zip_path, true)) {
     LOG(ERROR) << "Couldn't zip files";
-    return false;
+    return base::FilePath();
   }
-  return true;
+  return zip_path;
 }
 
 // Creates a unique temp directory to store the output files. The caller is
@@ -187,7 +188,8 @@ void SupportToolHandler::ExportIntoTempDir(
     collected_errors_.insert(
         {SupportToolErrorCode::kDataExportError,
          "Failed to create temporary directory for output."});
-    std::move(on_data_export_done_callback_).Run(collected_errors_);
+    std::move(on_data_export_done_callback_)
+        .Run(base::FilePath(), collected_errors_);
     return;
   }
 
@@ -229,13 +231,14 @@ void SupportToolHandler::OnAllDataCollectorsDoneExporting(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SupportToolHandler::OnDataExportDone(bool success) {
+void SupportToolHandler::OnDataExportDone(base::FilePath exported_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Clean-up the temporary directory after exporting the data.
   CleanUp();
-  if (!success) {
+  if (exported_path.empty()) {
     collected_errors_.insert({SupportToolErrorCode::kDataExportError,
                               "Failed to archive the output files."});
   }
-  std::move(on_data_export_done_callback_).Run(collected_errors_);
+  std::move(on_data_export_done_callback_)
+      .Run(exported_path, collected_errors_);
 }

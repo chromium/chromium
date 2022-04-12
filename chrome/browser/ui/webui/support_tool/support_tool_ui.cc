@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -43,6 +44,9 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/path_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kSupportCaseIDQuery[] = "case_id";
 const char kModuleQuery[] = "module";
@@ -313,6 +317,8 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
 
   void HandleStartDataExport(const base::Value::List& args);
 
+  void HandleShowExportedDataInFolder(const base::Value::List& args);
+
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
                     int index,
@@ -330,6 +336,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
 
   std::set<feedback::PIIType> selected_pii_to_keep_;
   base::Time data_collection_time_;
+  base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::WeakPtrFactory<SupportToolMessageHandler> weak_ptr_factory_{this};
@@ -357,6 +364,11 @@ void SupportToolMessageHandler::RegisterMessages() {
       "startDataExport",
       base::BindRepeating(&SupportToolMessageHandler::HandleStartDataExport,
                           weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "showExportedDataInFolder",
+      base::BindRepeating(
+          &SupportToolMessageHandler::HandleShowExportedDataInFolder,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 base::Value::List SupportToolMessageHandler::GetAccountsList() {
@@ -469,7 +481,7 @@ void SupportToolMessageHandler::FileSelected(const base::FilePath& path,
   this->handler_->ExportCollectedData(
       std::move(selected_pii_to_keep_), path,
       base::BindOnce(&SupportToolMessageHandler::OnDataExportDone,
-                     weak_ptr_factory_.GetWeakPtr(), path));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SupportToolMessageHandler::FileSelectionCanceled(void* params) {
@@ -477,11 +489,46 @@ void SupportToolMessageHandler::FileSelectionCanceled(void* params) {
   select_file_dialog_.reset();
 }
 
+// Checks `errors` and fires WebUIListener with the error message or the
+// exported path according to the returned errors.
+// type DataExportResult = {
+//  success: boolean,
+//  path: string,
+//  error: string,
+// }
 void SupportToolMessageHandler::OnDataExportDone(
     base::FilePath path,
     std::set<SupportToolError> errors) {
-  // TODO(b/227328957): Fire WebUIListener to notify UI that the data export is
-  // done.
+  data_path_ = path;
+  base::Value::Dict data_export_result;
+  const auto& export_error = std::find_if(
+      errors.begin(), errors.end(), [](const SupportToolError& error) {
+        return (error.error_code == SupportToolErrorCode::kDataExportError);
+      });
+  if (export_error == errors.end()) {
+    data_export_result.Set("success", true);
+    std::string displayed_path = data_path_.AsUTF8Unsafe();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    displayed_path = file_manager::util::GetPathDisplayTextForSettings(
+        Profile::FromWebUI(web_ui()), displayed_path);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    data_export_result.Set("path", displayed_path);
+    data_export_result.Set("error", std::string());
+  } else {
+    // If a data export error is found in the returned set of errors, send the
+    // error message to UI with empty string as path since it means the export
+    // operation has failed.
+    data_export_result.Set("success", false);
+    data_export_result.Set("path", std::string());
+    data_export_result.Set("error", export_error->error_message);
+  }
+  FireWebUIListener("data-export-completed",
+                    base::Value(std::move(data_export_result)));
+}
+
+void SupportToolMessageHandler::HandleShowExportedDataInFolder(
+    const base::Value::List& args) {
+  platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui()), data_path_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

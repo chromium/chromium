@@ -26,7 +26,7 @@ using SupportToolDataCollectedCallback =
     base::OnceCallback<void(const PIIMap&, std::set<SupportToolError>)>;
 
 using SupportToolDataExportedCallback =
-    base::OnceCallback<void(std::set<SupportToolError>)>;
+    base::OnceCallback<void(base::FilePath, std::set<SupportToolError>)>;
 
 // The SupportToolHandler collects debug data from a list of DataCollectors.
 //
@@ -48,7 +48,8 @@ using SupportToolDataExportedCallback =
 //     handler_.CollectSupportData(base::BindOnce(&Foo::ProcessCollectedData,
 //                                           weak_ptr_factory_.GetWeakPtr()));
 //   }
-//   void OnDataExported(std::set<SupportToolError>) {
+//   void OnDataExported(base::FilePath path, std::set<SupportToolError> errors)
+//   {
 //     // Do something about the data that has been exported.
 //     // Check and do something if any errors returned.
 //   }
@@ -89,8 +90,11 @@ class SupportToolHandler {
   void CollectSupportData(
       SupportToolDataCollectedCallback on_data_collection_done_callback);
 
-  // Exports collected data to the `target_path` and archives the file. This
-  // function should be called only once on an instance of SupportToolHandler.
+  // Exports collected data to the `target_path` and archives the file. Runs
+  // `on_data_exported_callback` with the set of errors in case of an error and
+  // the exported filepath. The filepath given to callback will be empty if the
+  // export couldn't happen due to an error. This function should be called only
+  // once on an instance of SupportToolHandler.
   void ExportCollectedData(
       std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_path,
@@ -131,7 +135,7 @@ class SupportToolHandler {
 
   // Cleans up the temporary directory created to store the output files and
   // then calls `on_data_export_done_callback_`.
-  void OnDataExportDone(bool success);
+  void OnDataExportDone(base::FilePath exported_path);
 
   // Cleans up `this.temp_dir_`. We need to clean-up the temporary directory
   // explicitly since SupportToolHandler will work on UI thread and all file

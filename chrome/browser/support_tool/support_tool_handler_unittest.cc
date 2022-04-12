@@ -202,12 +202,16 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
   // Export collected data into a file in temporary directory.
   base::FilePath target_path = GetPathForOutput().Append(
       FILE_PATH_LITERAL("support-tool-export-success"));
-  base::test::TestFuture<std::set<SupportToolError>> test_future;
+  base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
+      test_future;
   std::set<feedback::PIIType> pii_types{
       feedback::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
-  std::set<SupportToolError> errors = test_future.Get();
+  // handler should return the exported path on success.
+  base::FilePath exported_path = test_future.Get<0>();
+  EXPECT_FALSE(exported_path.empty());
+  std::set<SupportToolError> errors = test_future.Get<1>();
   EXPECT_TRUE(errors.empty());
 
   // SupportToolHandler will achieve the data into a .zip archieve.
@@ -272,14 +276,14 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
       GetPathForOutput().Append(FILE_PATH_LITERAL("support-tool-export-error"));
 
   // Export collected data into the target temporary directory.
-  base::test::TestFuture<std::set<SupportToolError>> test_future;
+  base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
+      test_future;
   std::set<feedback::PIIType> pii_types{
       feedback::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
-
   // Check the error message.
-  std::set<SupportToolError> errors = test_future.Get();
+  std::set<SupportToolError> errors = test_future.Get<1>();
   EXPECT_FALSE(errors.empty());
   // SupportToolErrorCode::kDataCollectorError should be present in the errors
   // returned.
