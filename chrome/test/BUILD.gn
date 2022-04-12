@@ -3085,10 +3085,10 @@ if (!is_android) {
         "//google_apis/common:test_support",
         "//google_apis/drive",
 
-        # TODO(rockot) bug 505926: The chrome_extensions_browsertests target
-        # should be deleted and this line removed. See the
-        # chrome_extensions_browsertests target for more.
-        "//extensions:chrome_extensions_browsertests",
+        # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
+        # target should be deleted and this line removed. See the
+        # chrome_extensions_browsertests_sources target for more.
+        "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
         "//extensions/common:mojom",
         "//extensions/common/api",

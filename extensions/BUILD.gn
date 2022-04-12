@@ -315,7 +315,7 @@ test("extensions_browsertests") {
 # and these moved to the extensions_browsertests target. Currently, we solve
 # the problem by making this a source set and linking it into
 # //chrome/test:browser_tests.
-source_set("chrome_extensions_browsertests") {
+source_set("chrome_extensions_browsertests_sources") {
   testonly = true
   sources = [
     "browser/api/app_window/app_window_apitest.cc",
