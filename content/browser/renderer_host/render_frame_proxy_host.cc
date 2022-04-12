@@ -577,9 +577,12 @@ void RenderFrameProxyHost::RouteMessageEvent(
       // actual non-empty value for |translated_source_token|. Otherwise (if the
       // proxy wasn't created), use an empty |translated_source_token| (see
       // https://crbug.com/485520 for discussion on why this is ok).
+      // The proxy may be in a different BrowsingContextState in the case of
+      // postMessages exchanged across inner and outer delegates.
       RenderFrameProxyHost* source_proxy_in_target_site_instance_group =
           source_rfh->browsing_context_state()->GetRenderFrameProxyHost(
-              target_site_instance->group());
+              target_site_instance->group(),
+              BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
       if (source_proxy_in_target_site_instance_group) {
         translated_source_token =
             source_proxy_in_target_site_instance_group->GetFrameToken();

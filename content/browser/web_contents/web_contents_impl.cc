@@ -2497,8 +2497,10 @@ void WebContentsImpl::AttachInnerWebContents(
   // Create a proxy in top-level RenderFrameHostManager, pointing to the
   // SiteInstance of the outer WebContents. The proxy will be used to send
   // postMessage to the inner WebContents.
-  auto* proxy = inner_render_manager->CreateOuterDelegateProxy(
-      render_frame_host_impl->GetSiteInstance());
+  auto* proxy =
+      inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
+          render_frame_host_impl->GetSiteInstance(),
+          inner_main_frame->frame_tree_node());
 
   // When attaching a GuestView as an inner WebContents, there should already be
   // a live RenderFrame, which has to be swapped. When attaching a portal, there
@@ -2569,11 +2571,13 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   for (auto* render_view_host : render_view_hosts)
     render_view_host->GetWidget()->GetView()->Destroy();
 
-  GetRenderManager()->DeleteOuterDelegateProxy(
-      node_.OuterContentsFrameTreeNode()
-          ->current_frame_host()
-          ->GetSiteInstance()
-          ->group());
+  GetRenderManager()
+      ->current_frame_host()
+      ->browsing_context_state()
+      ->DeleteOuterDelegateProxy(node_.OuterContentsFrameTreeNode()
+                                     ->current_frame_host()
+                                     ->GetSiteInstance()
+                                     ->group());
   view_.reset(CreateWebContentsView(
       this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
       &render_view_host_delegate_view_));

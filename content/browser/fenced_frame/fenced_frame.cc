@@ -157,8 +157,10 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
 
   FrameTreeNode* inner_root = frame_tree_->root();
   proxy_to_inner_main_frame_ =
-      inner_root->render_manager()->CreateOuterDelegateProxy(
-          owner_render_frame_host_->GetSiteInstance());
+      inner_root->current_frame_host()
+          ->browsing_context_state()
+          ->CreateOuterDelegateProxy(
+              owner_render_frame_host_->GetSiteInstance(), inner_root);
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 

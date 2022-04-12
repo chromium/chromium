@@ -134,8 +134,23 @@ class CONTENT_EXPORT BrowsingContextState
     replication_state_->has_active_user_gesture = has_active_user_gesture;
   }
 
+  // All proxies except outer delegate proxies should belong to the same
+  // BrowsingInstance as their BrowsingContextState. See the comment for the
+  // CHECK inside BrowsingContextState::GetRenderFrameProxyHost for more
+  // details. All proxy accessing/creating/deleting functionality assumes the
+  // same BrowsingInstance. However, in very select cases (i.e. outer
+  // delegates), the proxies will not have the same BrowsingInstance. As such,
+  // we use this enum to specify whether or not we need to check for a
+  // BrowsingInstance match when creating/deleting or accessing proxies from
+  // this BrowsingContextState.
+  enum class ProxyAccessMode {
+    kRegular,
+    kAllowOuterDelegate,
+  };
+
   RenderFrameProxyHost* GetRenderFrameProxyHost(
-      SiteInstanceGroup* site_instance_group) const;
+      SiteInstanceGroup* site_instance_group,
+      ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular) const;
 
   // Returns the number of RenderFrameProxyHosts for this frame.
   size_t GetProxyCount();
@@ -165,7 +180,9 @@ class CONTENT_EXPORT BrowsingContextState
   void SetIsAdSubframe(bool is_ad_subframe);
 
   // Delete a RenderFrameProxyHost owned by this object.
-  void DeleteRenderFrameProxyHost(SiteInstanceGroup* site_instance_group);
+  void DeleteRenderFrameProxyHost(
+      SiteInstanceGroup* site_instance_group,
+      ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular);
 
   // SiteInstanceGroup::Observer
   void ActiveFrameCountIsZero(SiteInstanceGroup* site_instance_group) override;
@@ -207,7 +224,21 @@ class CONTENT_EXPORT BrowsingContextState
   RenderFrameProxyHost* CreateRenderFrameProxyHost(
       SiteInstance* site_instance,
       const scoped_refptr<RenderViewHostImpl>& rvh,
+      FrameTreeNode* frame_tree_node,
+      ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular);
+
+  // Called on the RFHM of the inner WebContents to create a
+  // RenderFrameProxyHost in its outer WebContents's SiteInstance,
+  // |outer_contents_site_instance|.
+  RenderFrameProxyHost* CreateOuterDelegateProxy(
+      SiteInstance* outer_contents_site_instance,
       FrameTreeNode* frame_tree_node);
+
+  // Called on an inner WebContents that's being detached from its outer
+  // WebContents. This will delete the proxy in the
+  // |outer_contents_site_instance_group|.
+  void DeleteOuterDelegateProxy(
+      SiteInstanceGroup* outer_contents_site_instance_group);
 
   // Deletes any proxy hosts associated with this node. Used during destruction
   // of WebContentsImpl.
@@ -240,7 +271,8 @@ class CONTENT_EXPORT BrowsingContextState
 
  private:
   RenderFrameProxyHost* GetRenderFrameProxyHostImpl(
-      SiteInstanceGroup* site_instance_group) const;
+      SiteInstanceGroup* site_instance_group,
+      ProxyAccessMode proxy_access_mode) const;
 
   // Proxy hosts for this browsing context in various renderer processes, keyed
   // by SiteInstanceGroup ID.

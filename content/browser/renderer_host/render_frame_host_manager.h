@@ -430,21 +430,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   absl::optional<blink::FrameToken> GetOpenerFrameToken(
       SiteInstanceGroup* group);
 
-  // Called on the RFHM of the inner WebContents to create a
-  // RenderFrameProxyHost in its outer WebContents's SiteInstance,
-  // |outer_contents_site_instance|. The frame in outer WebContents that is
-  // hosting the inner WebContents is |render_frame_host|, and the frame will
-  // be swapped with the proxy. Note that this method must only be called for an
-  // OOPIF-based inner WebContents.
-  RenderFrameProxyHost* CreateOuterDelegateProxy(
-      SiteInstance* outer_contents_site_instance);
-
-  // Called on an inner WebContents that's being detached from its outer
-  // WebContents. This will delete the proxy in the
-  // |outer_contents_site_instance_group|.
-  void DeleteOuterDelegateProxy(
-      SiteInstanceGroup* outer_contents_site_instance_group);
-
   // Tells the |render_frame_host|'s renderer that its RenderFrame is being
   // swapped for a frame in another process, and that it should create a
   // RenderFrameProxy to replace it using the |proxy| RenderFrameProxyHost.

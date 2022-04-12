@@ -50,21 +50,25 @@ BrowsingContextState::~BrowsingContextState() {
 }
 
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
-    SiteInstanceGroup* site_instance_group) const {
+    SiteInstanceGroup* site_instance_group,
+    ProxyAccessMode proxy_access_mode) const {
   TRACE_EVENT_BEGIN("navigation",
                     "BrowsingContextState::GetRenderFrameProxyHost",
                     ChromeTrackEvent::kBrowsingContextState, this,
                     ChromeTrackEvent::kSiteInstanceGroup, site_instance_group);
-  auto* proxy = GetRenderFrameProxyHostImpl(site_instance_group);
+  auto* proxy =
+      GetRenderFrameProxyHostImpl(site_instance_group, proxy_access_mode);
   TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost, proxy);
   return proxy;
 }
 
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHostImpl(
-    SiteInstanceGroup* site_instance_group) const {
+    SiteInstanceGroup* site_instance_group,
+    ProxyAccessMode proxy_access_mode) const {
   if (features::GetBrowsingContextMode() ==
-      features::BrowsingContextStateImplementationType::
-          kSwapForCrossBrowsingInstanceNavigations) {
+          features::BrowsingContextStateImplementationType::
+              kSwapForCrossBrowsingInstanceNavigations &&
+      proxy_access_mode == ProxyAccessMode::kRegular) {
     // CHECK to verify that the proxy is being accessed from the correct
     // BrowsingContextState. As both BrowsingContextState (in non-legacy mode)
     // and RenderFrameProxyHost (via SiteInstance) are tied to a given
@@ -80,7 +84,6 @@ RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHostImpl(
     // only cases of a proxy associated with a SiteInstanceGroup from another
     // BrowsingInstance. Meanwhile, for openers the opener and openee have to be
     // in the same BrowsingInstance as well.
-    // TODO(crbug.com/1270671): Add exception here for outer delegate proxies.
     CHECK_EQ(browsing_instance_id_.value(),
              site_instance_group->browsing_instance_id());
   }
@@ -92,10 +95,12 @@ RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHostImpl(
 }
 
 void BrowsingContextState::DeleteRenderFrameProxyHost(
-    SiteInstanceGroup* site_instance_group) {
+    SiteInstanceGroup* site_instance_group,
+    ProxyAccessMode proxy_access_mode) {
   if (features::GetBrowsingContextMode() ==
-      features::BrowsingContextStateImplementationType::
-          kSwapForCrossBrowsingInstanceNavigations) {
+          features::BrowsingContextStateImplementationType::
+              kSwapForCrossBrowsingInstanceNavigations &&
+      proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
     CHECK_EQ(browsing_instance_id_.value(),
              site_instance_group->browsing_instance_id());
@@ -110,7 +115,8 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
 RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
     SiteInstance* site_instance,
     const scoped_refptr<RenderViewHostImpl>& rvh,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    ProxyAccessMode proxy_access_mode) {
   TRACE_EVENT_BEGIN(
       "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
       ChromeTrackEvent::kBrowsingContextState, this,
@@ -127,8 +133,9 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   }
 
   if (features::GetBrowsingContextMode() ==
-      features::BrowsingContextStateImplementationType::
-          kSwapForCrossBrowsingInstanceNavigations) {
+          features::BrowsingContextStateImplementationType::
+              kSwapForCrossBrowsingInstanceNavigations &&
+      proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
     CHECK_EQ(browsing_instance_id_.value(),
              site_instance->GetBrowsingInstanceId());
@@ -146,6 +153,22 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost,
                   proxy_host);
   return proxy_host;
+}
+
+RenderFrameProxyHost* BrowsingContextState::CreateOuterDelegateProxy(
+    SiteInstance* outer_contents_site_instance,
+    FrameTreeNode* frame_tree_node) {
+  // We only get here when Delegate for this manager is an inner delegate.
+  return CreateRenderFrameProxyHost(outer_contents_site_instance,
+                                    /*rvh=*/nullptr, frame_tree_node,
+                                    ProxyAccessMode::kAllowOuterDelegate);
+}
+
+void BrowsingContextState::DeleteOuterDelegateProxy(
+    SiteInstanceGroup* outer_contents_site_instance_group) {
+  DeleteRenderFrameProxyHost(
+      outer_contents_site_instance_group,
+      BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
 }
 
 size_t BrowsingContextState::GetProxyCount() {
@@ -326,7 +349,8 @@ void BrowsingContextState::ActiveFrameCountIsZero(
 void BrowsingContextState::RenderProcessGone(
     SiteInstanceGroup* site_instance_group,
     const ChildProcessTerminationInfo& info) {
-  GetRenderFrameProxyHost(site_instance_group)
+  GetRenderFrameProxyHost(site_instance_group,
+                          ProxyAccessMode::kAllowOuterDelegate)
       ->SetRenderFrameProxyCreated(false);
 }
 
