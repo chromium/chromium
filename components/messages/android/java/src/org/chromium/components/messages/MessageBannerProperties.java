@@ -93,6 +93,8 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
             SECONDARY_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey SECONDARY_MENU_MAX_SIZE =
+            new WritableIntPropertyKey();
     // Unit: milliseconds.
     public static final WritableLongPropertyKey DISMISSAL_DURATION = new WritableLongPropertyKey();
     /**
@@ -125,5 +127,6 @@ public class MessageBannerProperties {
             SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
             TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
-            ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE};
+            ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
+            SECONDARY_MENU_MAX_SIZE};
 }

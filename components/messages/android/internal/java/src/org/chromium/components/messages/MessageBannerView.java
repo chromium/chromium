@@ -164,6 +164,16 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryButtonMenuText = text;
     }
 
+    void setSecondaryMenuMaxSize(@SecondaryMenuMaxSize int maxSize) {
+        int dimenId = R.dimen.message_secondary_menu_max_size_small;
+        if (maxSize == SecondaryMenuMaxSize.MEDIUM) {
+            dimenId = R.dimen.message_secondary_menu_max_size_medium;
+        } else if (maxSize == SecondaryMenuMaxSize.LARGE) {
+            dimenId = R.dimen.message_secondary_menu_max_size_large;
+        }
+        mSecondaryButton.setMenuMaxWidth(getResources().getDimensionPixelSize(dimenId));
+    }
+
     void setSecondaryMenuButtonDelegate(ListMenuButtonDelegate delegate) {
         mSecondaryButton.dismiss();
         mSecondaryMenuButtonDelegate = delegate;

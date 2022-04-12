@@ -38,10 +38,10 @@ public class ListMenuButton
         default void onPopupMenuDismissed() {}
     }
 
-    private final int mMenuMaxWidth;
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
 
+    private int mMenuMaxWidth;
     private AnchoredPopupWindow mPopupMenu;
     private ListMenuButtonDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
@@ -133,6 +133,14 @@ public class ListMenuButton
         initPopupWindow();
         mPopupMenu.show();
         notifyPopupListeners(true);
+    }
+
+    /**
+     * Set the max width of the popup menu.
+     * @param maxWidth The max width of the popup.
+     */
+    public void setMenuMaxWidth(int maxWidth) {
+        mMenuMaxWidth = maxWidth;
     }
 
     /**

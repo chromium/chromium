@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageDispatcher.java",
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
     "java/src/org/chromium/components/messages/MessageDispatcherProvider.java",
+    "java/src/org/chromium/components/messages/MessageSecondaryMenuItems.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
     "java/src/org/chromium/components/messages/MessagesMetrics.java",
   ]

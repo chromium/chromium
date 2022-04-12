@@ -125,4 +125,36 @@ public class MessageWrapperTest {
         Mockito.verify(mNativeMock, never())
                 .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
     }
+
+    /**
+     * Tests the secondary menu functionality including addition, selection and clearance of items.
+     */
+    @Test
+    @SmallTest
+    public void testSecondaryMenuUpdates() {
+        final long nativePtr = 1;
+        MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
+
+        message.setTitle("Title");
+        message.setSecondaryIconResourceId(2);
+        message.setPrimaryButtonText("Primary button");
+
+        // Add secondary menu items.
+        PropertyModel item1 = message.addSecondaryMenuItem(1, 0, "Item 1");
+        message.addSecondaryMenuItemDivider();
+        PropertyModel item2 = message.addSecondaryMenuItem(2, 0, "Item 2");
+        MessageSecondaryMenuItems messageSecondaryMenuItems =
+                message.getMessageSecondaryMenuItemsForTesting();
+        Assert.assertEquals("Size of secondary menu does not match.", 3,
+                messageSecondaryMenuItems.mMenuItems.size());
+
+        // Select a secondary menu item.
+        message.onItemSelected(item1);
+        Mockito.verify(mNativeMock).handleSecondaryMenuItemSelected(nativePtr, 1);
+
+        // Clear the secondary menu.
+        message.clearSecondaryMenuItems();
+        Assert.assertEquals(
+                "Secondary menu is not cleared.", 0, messageSecondaryMenuItems.mMenuItems.size());
+    }
 }

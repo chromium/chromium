@@ -116,6 +116,15 @@ enum class PrimaryActionClickBehavior {
   DISMISS_IMMEDIATELY = 1
 };
 
+// The max size of the message secondary menu.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+enum class SecondaryMenuMaxSize {
+  SMALL = 0,   // default: 180dp -> @dimen/message_secondary_menu_max_size_small
+  MEDIUM = 1,  // 250dp -> @dimen/message_secondary_menu_max_size_medium
+  LARGE = 2,   // 300dp -> @dimen/message_secondary_menu_max_size_large
+};
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGE_ENUMS_H_
