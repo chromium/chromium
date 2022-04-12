@@ -168,12 +168,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.CleanSession.RestarterResult" enum="CrostiniResult"
     expires_after="2022-05-01">
+  <obsolete>
+    Removed in M102 - no longer needed
+  </obsolete>
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
     The result of a single run of CrostiniRestarter. This is the same as
     Crostini.RestarterResult except only emitted in sessions that happen after a
-    clean start (e.g. after fresh login).
+    clean start (e.g. after fresh login). Removed in Milestone 102.
   </summary>
 </histogram>
 
@@ -522,12 +525,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.UncleanSession.RestarterResult" enum="CrostiniResult"
     expires_after="2023-01-06">
+  <obsolete>
+    Removed in M102 - no longer needed
+  </obsolete>
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
     The result of a single run of CrostiniRestarter. This is the same as
     Crostini.RestarterResult except only emitted in sessions that happen after
-    an unclean restart (e.g. after a Chrome crash).
+    an unclean restart (e.g. after a Chrome crash). Removed in milestone 102.
   </summary>
 </histogram>
 

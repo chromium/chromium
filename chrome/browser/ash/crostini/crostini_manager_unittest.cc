@@ -780,10 +780,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   void ExpectRestarterUmaCount(int count) {
     histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", count);
     histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
-    histogram_tester_.ExpectTotalCount("Crostini.CleanSession.RestarterResult",
-                                       count);
-    histogram_tester_.ExpectTotalCount(
-        "Crostini.UncleanSession.RestarterResult", 0);
     histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
   }
 
@@ -851,10 +847,6 @@ TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
             DefaultContainerUserNameForProfile(profile()));
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 1);
-  histogram_tester_.ExpectTotalCount("Crostini.CleanSession.RestarterResult",
-                                     0);
-  histogram_tester_.ExpectTotalCount("Crostini.UncleanSession.RestarterResult",
-                                     1);
   histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
 }
 
