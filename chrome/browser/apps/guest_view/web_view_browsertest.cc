@@ -4209,6 +4209,26 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewAccessibleResource) {
 IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
   TestHelper("testNavigateGuestToWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NO_TEST_SERVER);
+
+  // Ensure that the <webview> process isn't considered an extension process,
+  // even though the last committed URL is an extension URL.
+  content::WebContents* guest = GetGuestViewManager()->GetLastGuestCreated();
+  GURL guest_url(guest->GetLastCommittedURL());
+  EXPECT_TRUE(guest_url.SchemeIs(extensions::kExtensionScheme));
+
+  auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
+  auto* guest_process = guest->GetMainFrame()->GetProcess();
+  EXPECT_FALSE(process_map->Contains(guest_process->GetID()));
+  EXPECT_TRUE(
+      process_map->GetExtensionsInProcess(guest_process->GetID()).empty());
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  const extensions::Extension* extension =
+      registry->enabled_extensions().GetByID(guest_url.host());
+  EXPECT_NE(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
+            process_map->GetMostLikelyContextType(
+                extension, guest_process->GetID(), &guest_url));
 }
 
 // Tests that a WebView can reload a WebView accessible resource. See
@@ -4290,11 +4310,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 }
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        InaccessibleResourceDoesNotLoadInAppWebviewFrame) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   TestHelper("testInaccessibleResourceDoesNotLoadInAppWebviewFrame",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }

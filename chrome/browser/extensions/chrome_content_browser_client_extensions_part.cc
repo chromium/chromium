@@ -628,6 +628,13 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
   if (!extension)
     return;
 
+  // Don't consider guests that load extension URLs as extension processes.
+  // This is possible when an embedder app navigates <webview> to a
+  // webview-accessible app resource; the resulting <webview> process shouldn't
+  // receive extension process privileges.
+  if (site_instance->IsGuest())
+    return;
+
   ProcessMap::Get(context)->Insert(extension->id(),
                                    site_instance->GetProcess()->GetID(),
                                    site_instance->GetId());
