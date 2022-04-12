@@ -202,10 +202,10 @@
       },
     },
   },
-  'android_s': {
+  'android_t': {
     'swarming': {
       'dimensions': {
-        'device_os': 'S',
+        'device_os': 'T',
       },
     },
   },

@@ -3871,7 +3871,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -3916,7 +3916,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -3961,7 +3961,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4006,7 +4006,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4051,7 +4051,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4100,7 +4100,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4154,7 +4154,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4208,7 +4208,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4253,7 +4253,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4298,7 +4298,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4352,7 +4352,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4406,7 +4406,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4452,7 +4452,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4498,7 +4498,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4543,7 +4543,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4588,7 +4588,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4634,7 +4634,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",
@@ -4681,7 +4681,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "S",
+              "device_os": "T",
               "device_os_type": "userdebug",
               "device_type": "oriole",
               "os": "Android",

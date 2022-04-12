@@ -4304,7 +4304,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'android_s',
+          'android_t',
           'has_native_resultdb_integration',
           'limited_capacity_bot',
           'oriole',
