@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -229,7 +230,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     }
 
     private boolean shouldShowIncognitoPlaceholder() {
-        return mIsIncognito;
+        return mIsIncognito
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO);
     }
 
     /**

@@ -26,11 +26,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -145,6 +147,7 @@ public class NavigationPopupTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
+    @Features.EnableFeatures({ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO})
     public void testPopupForIncognito() throws ExecutionException {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, true);
