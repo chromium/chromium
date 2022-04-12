@@ -375,6 +375,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThatSkipsEngineConnection) {
 
   EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_TRUE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_TRUE(dtm_->GetActiveProxyDataTypes().Has(BOOKMARKS));
 
   // Even if all APIs above indicate the datatype is active, in reality the
   // configurer (SyncEngine) hasn't been activated/connected.
@@ -1365,6 +1366,7 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
 
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(2U, configurer_.connected_types().Size());
+  EXPECT_TRUE(dtm_->GetActiveProxyDataTypes().Empty());
 
   dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());

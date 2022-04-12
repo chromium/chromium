@@ -917,6 +917,8 @@ void SyncServiceImpl::OnConfigureDone(
 
   NotifyObservers();
 
+  UpdateDataTypesForInvalidations();
+
   if (migrator_.get() && migrator_->state() != BackendMigrator::IDLE) {
     // Migration in progress.  Let the migrator know we just finished
     // configuring something.  It will be up to the migrator to call
@@ -1161,8 +1163,6 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   }
   data_type_manager_->Configure(GetDataTypesToConfigure(), configure_context);
 
-  UpdateDataTypesForInvalidations();
-
   // Record in UMA whether we're configuring the full Sync feature or only the
   // transport.
   enum class ConfigureDataTypeManagerOption {
@@ -1235,8 +1235,15 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
     return;
   }
 
+  // Wait for configuring data types. This is needed to consider proxy types
+  // which become known during configuration.
+  if (data_type_manager_->state() != DataTypeManager::CONFIGURED) {
+    return;
+  }
+
   // No need to register invalidations for non-protocol or commit-only types.
-  // TODO(crbug.com/1260836): This could break with dynamic proxy types.
+  // TODO(crbug.com/1260836): consider DataTypeManager::GetActiveDataTypes() to
+  // unsubscribe from failed data types.
   ModelTypeSet types = Intersection(GetDataTypesToConfigure(), ProtocolTypes());
   types.RemoveAll(CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
@@ -1246,6 +1253,9 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
         base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer))) {
     types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
+
+  types.RemoveAll(data_type_manager_->GetActiveProxyDataTypes());
+
   invalidations_service->SetInterestedDataTypes(types);
 }
 

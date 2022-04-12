@@ -53,7 +53,7 @@ class DataTypeManager {
     DataTypeStatusTable data_type_status_table;
   };
 
-  virtual ~DataTypeManager() {}
+  virtual ~DataTypeManager() = default;
 
   // Convert a ConfigureStatus to string for debug purposes.
   static std::string ConfigureStatusToString(ConfigureStatus status);
@@ -100,6 +100,10 @@ class DataTypeManager {
   // datatypes, which doesn't necessarily mean the sync metadata was cleared, if
   // KEEP_DATA was used when stopping (or if the datatype was never started).
   virtual ModelTypeSet GetPurgedDataTypes() const = 0;
+
+  // Returns the datatypes that are configured but not connected to the sync
+  // engine. Note that during configuration, this will be empty.
+  virtual ModelTypeSet GetActiveProxyDataTypes() const = 0;
 
   // The current state of the data type manager.
   virtual State state() const = 0;

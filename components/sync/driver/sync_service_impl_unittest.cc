@@ -51,6 +51,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AllOf;
 using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
@@ -60,6 +61,10 @@ using testing::Return;
 namespace syncer {
 
 namespace {
+
+MATCHER_P(ContainsDataType, type, "") {
+  return arg.Has(type);
+}
 
 constexpr char kTestUser[] = "test_user@gmail.com";
 
@@ -1120,13 +1125,16 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldSendDataTypesToSyncInvalidationsService) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetInterestedDataTypes);
-  InitializeForFirstSync();
-}
-
-MATCHER(ContainsSessions, "") {
-  return arg.Has(SESSIONS);
+  CreateService(SyncServiceImpl::MANUAL_START, /*policy_service=*/nullptr,
+                /*registered_types_and_transport_mode_support=*/
+                {
+                    {BOOKMARKS, false},
+                    {DEVICE_INFO, true},
+                });
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(BOOKMARKS),
+                                           ContainsDataType(DEVICE_INFO))));
+  InitializeForNthSync();
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
@@ -1137,18 +1145,36 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   InitializeForNthSync();
 
   EXPECT_CALL(*sync_invalidations_service(),
-              SetInterestedDataTypes(ContainsSessions()));
+              SetInterestedDataTypes(ContainsDataType(SESSIONS)));
   service()->SetInvalidationsForSessionsEnabled(true);
   EXPECT_CALL(*sync_invalidations_service(),
-              SetInterestedDataTypes(Not(ContainsSessions())));
+              SetInterestedDataTypes(Not(ContainsDataType(SESSIONS))));
   service()->SetInvalidationsForSessionsEnabled(false);
+}
+
+TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+       ShouldNotSubscribeToProxyTypes) {
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START, /*policy_service=*/nullptr,
+                /*registered_types_and_transport_mode_support=*/
+                {
+                    {BOOKMARKS, false},
+                    {DEVICE_INFO, true},
+                });
+  get_controller(BOOKMARKS)
+      ->model()
+      ->EnableSkipEngineConnectionForActivationResponse();
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           Not(ContainsDataType(BOOKMARKS)))));
+  InitializeForNthSync();
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(true)).Times(0);
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(false)).Times(0);
   EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
   InitializeForFirstSync();
 }

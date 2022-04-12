@@ -52,6 +52,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void Stop(ShutdownReason reason) override;
   ModelTypeSet GetActiveDataTypes() const override;
   ModelTypeSet GetPurgedDataTypes() const override;
+  ModelTypeSet GetActiveProxyDataTypes() const override;
   State state() const override;
 
   // |ModelLoadManagerDelegate| implementation.
@@ -186,6 +187,10 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // A set of types that were enabled at the time of Restart().
   ModelTypeSet last_enabled_types_;
+
+  // A set of types that have been configured but haven't been
+  // connected/activated.
+  ModelTypeSet configured_proxy_types_;
 
   // A set of types that should be redownloaded even if initial sync is
   // completed for them.

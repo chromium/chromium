@@ -249,6 +249,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
       // currently possible for PROXY_TABS and, on Android, for PASSWORDS.
       DCHECK(!activation_response->type_processor);
       downloaded_types_.Put(type);
+      configured_proxy_types_.Put(type);
       continue;
     }
 
@@ -651,6 +652,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
                                                    const SyncError& error) {
   // No-op if the type is not connected.
   configurer_->DisconnectDataType(type);
+  configured_proxy_types_.Remove(type);
 
   if (error.IsSet()) {
     data_type_status_table_.UpdateFailedDataType(type, error);
@@ -786,6 +788,13 @@ ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   }
 
   return purged_types;
+}
+
+ModelTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {
+  if (state_ != CONFIGURED) {
+    return ModelTypeSet();
+  }
+  return configured_proxy_types_;
 }
 
 DataTypeManager::State DataTypeManagerImpl::state() const {
