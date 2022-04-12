@@ -32,28 +32,47 @@ void SwapRemoveElement(Container& container, const Item& item) {
   container.pop_back();
 }
 
+// Note: The `test_case` is destroyed in place as it is checked.
+void VerifyTestCase(fuzzy::Node* node,
+                    TestCase& test_case,
+                    fuzzy::ToleranceSchedule tolerance_schedule) {
+  std::vector<fuzzy::Correction> corrections;
+  bool found =
+      node->FindCorrections(test_case.input, tolerance_schedule, corrections);
+  for (const fuzzy::Correction& correction : corrections) {
+    std::u16string corrected_input = test_case.input;
+    correction.ApplyTo(corrected_input);
+    DVLOG(1) << "-> " << corrected_input;
+  }
+  CHECK_EQ(found, test_case.expect_found)
+      << " input(" << test_case.tolerance << "): " << test_case.input;
+  CHECK_EQ(test_case.corrected_inputs.size(), corrections.size())
+      << " input(" << test_case.tolerance << "): " << test_case.input;
+  for (const fuzzy::Correction& correction : corrections) {
+    std::u16string corrected_input = test_case.input;
+    correction.ApplyTo(corrected_input);
+    SwapRemoveElement(test_case.corrected_inputs, corrected_input);
+  }
+  CHECK_EQ(test_case.corrected_inputs.size(), size_t{0})
+      << " input(" << test_case.tolerance << "): " << test_case.input;
+}
+
+// Verifies a vector of `cases`, destroying them in the process.
 void VerifyCases(fuzzy::Node* node, std::vector<TestCase>& cases) {
-  // Note: Each case is destroyed in place as it is checked.
   for (TestCase& test_case : cases) {
-    std::vector<fuzzy::Correction> corrections;
-    bool found = node->FindCorrections(test_case.input, test_case.tolerance,
-                                       corrections);
-    for (const fuzzy::Correction& correction : corrections) {
-      std::u16string corrected_input = test_case.input;
-      correction.ApplyTo(corrected_input);
-      DVLOG(1) << "-> " << corrected_input;
-    }
-    CHECK_EQ(found, test_case.expect_found)
-        << " input(" << test_case.tolerance << "): " << test_case.input;
-    CHECK_EQ(test_case.corrected_inputs.size(), corrections.size())
-        << " input(" << test_case.tolerance << "): " << test_case.input;
-    for (const fuzzy::Correction& correction : corrections) {
-      std::u16string corrected_input = test_case.input;
-      correction.ApplyTo(corrected_input);
-      SwapRemoveElement(test_case.corrected_inputs, corrected_input);
-    }
-    CHECK_EQ(test_case.corrected_inputs.size(), size_t{0})
-        << " input(" << test_case.tolerance << "): " << test_case.input;
+    VerifyTestCase(
+        node, test_case,
+        {.start_index = 0, .step_length = 0, .limit = test_case.tolerance});
+  }
+}
+
+// This is just like `VerifyCases` but uses a specified `tolerance_schedule`
+// for all cases instead of each TestCase `tolerance` value.
+void VerifyCasesWithSchedule(fuzzy::Node* node,
+                             std::vector<TestCase>& cases,
+                             fuzzy::ToleranceSchedule tolerance_schedule) {
+  for (TestCase& test_case : cases) {
+    VerifyTestCase(node, test_case, tolerance_schedule);
   }
 }
 
@@ -317,4 +336,88 @@ TEST_F(HistoryFuzzyProviderTest, LongerResultsArePreferred) {
   };
 
   VerifyCases(&node, cases);
+}
+
+TEST_F(HistoryFuzzyProviderTest, EmptyTrieRespectsToleranceSchedule) {
+  fuzzy::Node node;
+  TestCase test_case;
+
+  // Blank is produced by deleting at index zero.
+  test_case = {
+      0,
+      u"x",
+      false,
+      {
+          u"",
+      },
+  };
+  VerifyTestCase(&node, test_case, {.start_index = 0, .limit = 1});
+
+  // But this is not allowed when `start_index` is one.
+  test_case = {
+      0,
+      u"x",
+      false,
+      {},
+  };
+  VerifyTestCase(&node, test_case, {.start_index = 1, .limit = 1});
+}
+
+TEST_F(HistoryFuzzyProviderTest, ToleranceScheduleIsEnforced) {
+  fuzzy::Node node;
+  node.Insert(u"abcdefghijklmnopqrstuv", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          0,
+          u"axcdef",
+          false,
+          {},
+      },
+      {
+          0,
+          u"abxdef",
+          false,
+          {
+              u"abcdef",
+          },
+      },
+      {
+          0,
+          u"abxxdef",
+          false,
+          {},
+      },
+      {
+          0,
+          u"abxdexghi",
+          false,
+          {},
+      },
+      {
+          0,
+          u"abxdefxhi",
+          false,
+          {
+              u"abcdefghi",
+          },
+      },
+      {
+          0,
+          u"abxdefxhijxlmnop",
+          false,
+          {
+              u"abcdefghijklmnop",
+          },
+      },
+      {
+          0,
+          u"abxdefxhijxlmnopqx",
+          false,
+          {},
+      },
+  };
+
+  VerifyCasesWithSchedule(&node, cases,
+                          {.start_index = 2, .step_length = 4, .limit = 3});
 }

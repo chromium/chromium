@@ -14,8 +14,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -133,9 +136,10 @@ void Node::Insert(const std::u16string& text, size_t from) {
 }
 
 bool Node::FindCorrections(const std::u16string& text,
-                           int tolerance,
+                           ToleranceSchedule tolerance_schedule,
                            std::vector<Correction>& corrections) const {
-  DVLOG(1) << "FindCorrections(" << text << ", " << tolerance << ")";
+  DVLOG(1) << "FindCorrections(" << text << ", " << tolerance_schedule.limit
+           << ")";
   DCHECK(corrections.empty());
 
   if (text.length() == 0) {
@@ -245,6 +249,7 @@ bool Node::FindCorrections(const std::u16string& text,
       }
       continue;
     }
+    int tolerance = tolerance_schedule.ToleranceAt(step.index);
     if (step.distance < tolerance) {
       // Delete
       pq.push({step.node,
@@ -288,9 +293,6 @@ bool Node::FindCorrections(const std::u16string& text,
 }
 
 void Node::Log(std::u16string built) const {
-  if (built.empty()) {
-    DVLOG(1) << "Trie Log:";
-  }
   if (relevance > 0) {
     DVLOG(1) << "  <" << built << ">";
   }
@@ -327,6 +329,12 @@ size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
 HistoryFuzzyProvider::~HistoryFuzzyProvider() = default;
 
 void HistoryFuzzyProvider::DoAutocomplete() {
+  // TODO(orinj): This schedule may want some measurement and tinkering.
+  constexpr fuzzy::ToleranceSchedule kToleranceSchedule = {
+      .start_index = 1,
+      .step_length = 4,
+      .limit = 3,
+  };
   AddMatchForText(u"fuzzyurlhere.org");
 
   const std::u16string& text = autocomplete_input_.text();
@@ -335,21 +343,23 @@ void HistoryFuzzyProvider::DoAutocomplete() {
   }
   if (text[text.length() - 1] == u'!') {
     if (text == u"log!") {
+      DVLOG(1) << "Trie Log: !{";
       root_.Log(std::u16string());
+      DVLOG(1) << "}!";
     } else {
       root_.Insert(text.substr(0, text.length() - 1), 0);
     }
   } else {
     std::vector<fuzzy::Correction> corrections;
     DVLOG(1) << "FindCorrections: <" << text << "> ---> ?{";
-    if (root_.FindCorrections(text, 1, corrections)) {
+    if (root_.FindCorrections(text, kToleranceSchedule, corrections)) {
       DVLOG(1) << "Trie contains input; no fuzzy results needed?";
       AddMatchForText(u"INPUT ON TRIE");
     }
     for (const auto& correction : corrections) {
       std::u16string fixed = text;
       correction.ApplyTo(fixed);
-      DVLOG(1) << "  " << fixed;
+      DVLOG(1) << ":  " << fixed;
       AddMatchForText(fixed);
     }
     DVLOG(1) << "}?";
