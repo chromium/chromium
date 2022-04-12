@@ -34,9 +34,12 @@ const topRowKeyMap = {
   [TopRowKey.kScreenBrightnessDown]: DiagramTopRowKey.kScreenBrightnessDown,
   [TopRowKey.kScreenBrightnessUp]: DiagramTopRowKey.kScreenBrightnessUp,
   [TopRowKey.kPrivacyScreenToggle]: DiagramTopRowKey.kPrivacyScreenToggle,
+  [TopRowKey.kMicrophoneMute]: DiagramTopRowKey.kMicrophoneMute,
   [TopRowKey.kVolumeMute]: DiagramTopRowKey.kVolumeMute,
   [TopRowKey.kVolumeDown]: DiagramTopRowKey.kVolumeDown,
   [TopRowKey.kVolumeUp]: DiagramTopRowKey.kVolumeUp,
+  [TopRowKey.kKeyboardBacklightToggle]:
+      DiagramTopRowKey.kKeyboardBacklightToggle,
   [TopRowKey.kKeyboardBacklightDown]: DiagramTopRowKey.kKeyboardBacklightDown,
   [TopRowKey.kKeyboardBacklightUp]: DiagramTopRowKey.kKeyboardBacklightUp,
   [TopRowKey.kNextTrack]: DiagramTopRowKey.kNextTrack,

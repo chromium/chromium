@@ -90,6 +90,10 @@ export const TopRowKey = {
     icon: 'keyboard:electronic-privacy-screen',
     ariaNameI18n: 'keyboardDiagramAriaNamePrivacyScreenToggle'
   },
+  kMicrophoneMute: {
+    icon: 'keyboard:microphone-mute',
+    ariaNameI18n: 'keyboardDiagramAriaNameMicrophoneMute',
+  },
   kVolumeMute: {
     icon: 'keyboard:volume-mute',
     ariaNameI18n: 'keyboardDiagramAriaNameMute'
@@ -101,6 +105,10 @@ export const TopRowKey = {
   kVolumeUp: {
     icon: 'keyboard:volume-up',
     ariaNameI18n: 'keyboardDiagramAriaNameVolumeUp'
+  },
+  kKeyboardBacklightToggle: {
+    icon: 'keyboard:keyboard-brightness-toggle',
+    ariaNameI18n: 'keyboardDiagramAriaNameKeyboardBacklightToggle',
   },
   kKeyboardBacklightDown: {
     icon: 'keyboard:keyboard-brightness-down',

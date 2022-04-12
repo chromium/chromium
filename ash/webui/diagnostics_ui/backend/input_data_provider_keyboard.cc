@@ -85,6 +85,8 @@ constexpr auto kCustomScancodeMapping =
         {0x98, mojom::TopRowKey::kKeyboardBacklightUp},
         {0x99, mojom::TopRowKey::kNextTrack},
         {0x9A, mojom::TopRowKey::kPlayPause},
+        {0x9B, mojom::TopRowKey::kMicrophoneMute},
+        {0x9E, mojom::TopRowKey::kKeyboardBacklightToggle},
         {0xA0, mojom::TopRowKey::kVolumeMute},
         {0xAE, mojom::TopRowKey::kVolumeDown},
         {0xB0, mojom::TopRowKey::kVolumeUp},
@@ -94,6 +96,7 @@ constexpr auto kCustomScancodeMapping =
 
         // HID 32-bit usage codes
         {0x070046, mojom::TopRowKey::kScreenshot},
+        {0x0B002F, mojom::TopRowKey::kMicrophoneMute},
         {0x0C00E2, mojom::TopRowKey::kVolumeMute},
         {0x0C00E9, mojom::TopRowKey::kVolumeUp},
         {0x0C00EA, mojom::TopRowKey::kVolumeDown},
@@ -101,6 +104,7 @@ constexpr auto kCustomScancodeMapping =
         {0x0C0070, mojom::TopRowKey::kScreenBrightnessDown},
         {0x0C0079, mojom::TopRowKey::kKeyboardBacklightUp},
         {0x0C007A, mojom::TopRowKey::kKeyboardBacklightDown},
+        {0x0C007C, mojom::TopRowKey::kKeyboardBacklightToggle},
         {0x0C00B5, mojom::TopRowKey::kNextTrack},
         {0x0C00B6, mojom::TopRowKey::kPreviousTrack},
         {0x0C00CD, mojom::TopRowKey::kPlayPause},

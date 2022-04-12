@@ -1267,11 +1267,17 @@ Try tapping the mic to ask me anything.
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_FULLSCREEN" desc="Describes the Fullscreen key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Fullscreen key not pressed', 'Fullscreen key pressed', or 'Fullscreen key tested')">
         Fullscreen
       </message>
-      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_DOWN" desc="Describes the key for decreasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness up key not pressed', 'Keyboard brightness up key pressed', or 'Keyboard brightness up key tested')">
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_DOWN" desc="Describes the key for decreasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness down key not pressed', 'Keyboard brightness down key pressed', or 'Keyboard brightness down key tested')">
         Keyboard brightness down
       </message>
-      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_UP" desc="Describes the key for increasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness down key not pressed', 'Keyboard brightness down key pressed', or 'Keyboard brightness down key tested')">
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_TOGGLE" desc="Describes the key for toggling the keyboard backlight on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard backlight toggle key not pressed', 'Keyboard backlight toggle key pressed', or 'Keyboard backlight toggle key tested')">
+        Keyboard backlight toggle
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_KEYBOARD_BACKLIGHT_UP" desc="Describes the key for increasing keyboard backlight brightness on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Keyboard brightness up key not pressed', 'Keyboard brightness up key pressed', or 'Keyboard brightness up key tested')">
         Keyboard brightness up
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_MICROPHONE_MUTE" desc="Describes the key on the top row of a ChromeOS keyboard for muting and unmuting the microphone. Used as part of an ARIA label on a keyboard testing UI (one of 'Microphone mute key not pressed', 'Microphone mute key pressed', or 'Microphone mute key tested')">
+        Microphone mute
       </message>
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_MUTE" desc="Describes the Mute key on the top row of a ChromeOS keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Mute key not pressed', 'Mute key pressed', or 'Mute key tested')">
         Mute
