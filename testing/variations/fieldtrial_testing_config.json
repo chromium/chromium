@@ -6116,8 +6116,7 @@
                         "QueryTilesInNTP",
                         "QueryTilesLocalOrdering",
                         "QueryTilesRemoveTrendingAfterInactivity",
-                        "QueryTilesSegmentation",
-                        "SegmentationPlatformQueryTiles"
+                        "QueryTilesSegmentation"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
@@ -6143,8 +6142,7 @@
                         "QueryTilesInNTP",
                         "QueryTilesLocalOrdering",
                         "QueryTilesRemoveTrendingAfterInactivity",
-                        "QueryTilesSegmentation",
-                        "SegmentationPlatformQueryTiles"
+                        "QueryTilesSegmentation"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
