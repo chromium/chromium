@@ -77,6 +77,11 @@ void RecordAddressSpaceFeature(LocalFrame* client_frame,
   }
 
   LocalDOMWindow* window = client_frame->DomWindow();
+
+  if (response.RemoteIPEndpoint().address().IsZero()) {
+    UseCounter::Count(window, WebFeature::kPrivateNetworkAccessNullIpAddress);
+  }
+
   absl::optional<WebFeature> feature = AddressSpaceFeature(
       FetchType::kSubresource, response.ClientAddressSpace(),
       window->IsSecureContext(), response.AddressSpace());

@@ -53,6 +53,11 @@ void ResourceLoadObserverForWorker::DidChangePriority(
 void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
                                        const ResourceResponse& response) {
   DCHECK(execution_context);
+
+  if (response.RemoteIPEndpoint().address().IsZero()) {
+    execution_context->CountUse(WebFeature::kPrivateNetworkAccessNullIpAddress);
+  }
+
   if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
                                          response.ClientAddressSpace()))
     return;

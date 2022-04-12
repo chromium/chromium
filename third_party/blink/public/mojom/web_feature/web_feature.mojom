@@ -3521,6 +3521,7 @@ enum WebFeature {
   kOldConstraintIgnored = 4200,
   kExplicitOverflowVisibleOnReplacedElement = 4201,
   kExplicitOverflowVisibleOnReplacedElementWithObjectProp = 4202,
+  kPrivateNetworkAccessNullIpAddress = 4203,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

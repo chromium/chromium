@@ -5967,6 +5967,11 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   DCHECK(!IsSameDocument());
   DCHECK(!IsPageActivation());
 
+  if (GetSocketAddress().address().IsZero()) {
+    web_features_to_log_.push_back(
+        blink::mojom::WebFeature::kPrivateNetworkAccessNullIpAddress);
+  }
+
   ContentBrowserClient* client = GetContentClient()->browser();
   BrowserContext* context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
