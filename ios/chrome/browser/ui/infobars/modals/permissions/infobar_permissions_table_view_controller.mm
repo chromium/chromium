@@ -234,26 +234,29 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        tableViewLoaded:(BOOL)tableViewLoaded {
   if ([self.tableViewModel hasItemForItemType:itemType
                             sectionIdentifier:SectionIdentifierContent]) {
+    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+
     // Remove the switch item if the permission is not accessible.
     if (state == web::PermissionStateNotAccessible) {
       [self.tableViewModel removeItemWithType:itemType
                     fromSectionWithIdentifier:SectionIdentifierContent];
-      return;
-    }
-
-    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
-    TableViewSwitchItem* currentItem =
-        base::mac::ObjCCastStrict<TableViewSwitchItem>(
-            [self.tableViewModel itemAtIndexPath:index]);
-    TableViewSwitchCell* currentCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(
-            [self.tableView cellForRowAtIndexPath:index]);
-    currentItem.on = state == web::PermissionStateAllowed;
-
-    // Reload the switch cell if its value is outdated.
-    if (currentItem.isOn != currentCell.switchView.isOn) {
-      [self.tableView reloadRowsAtIndexPaths:@[ index ]
+      [self.presentationHandler resizeInfobarModal];
+      [self.tableView deleteRowsAtIndexPaths:@[ index ]
                             withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else {
+      TableViewSwitchItem* currentItem =
+          base::mac::ObjCCastStrict<TableViewSwitchItem>(
+              [self.tableViewModel itemAtIndexPath:index]);
+      TableViewSwitchCell* currentCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(
+              [self.tableView cellForRowAtIndexPath:index]);
+      currentItem.on = state == web::PermissionStateAllowed;
+      // Reload the switch cell if its value is outdated.
+      if (currentItem.isOn != currentCell.switchView.isOn) {
+        [self.tableView
+            reloadRowsAtIndexPaths:@[ index ]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+      }
     }
     return;
   }
