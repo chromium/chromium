@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
@@ -1157,8 +1158,8 @@ ScriptPromise NavigatorAuction::createAdRequest(
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->CreateAdRequest(
       std::move(mojo_config),
-      WTF::Bind(&NavigatorAuction::AdsRequested, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind(&NavigatorAuction::AdsRequested, WrapPersistent(this))));
   return promise;
 }
 
@@ -1174,12 +1175,9 @@ ScriptPromise NavigatorAuction::createAdRequest(
 
 void NavigatorAuction::AdsRequested(ScriptPromiseResolver* resolver,
                                     const WTF::String&) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
-    return;
-
   // TODO(https://crbug.com/1249186): Add full impl of methods.
-  resolver->Reject(MakeGarbageCollected<DOMException>(
+  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+      resolver->GetScriptState()->GetIsolate(),
       DOMExceptionCode::kNotSupportedError,
       "createAdRequest API not yet implemented"));
 }
@@ -1214,8 +1212,8 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->FinalizeAd(
       ads->GetGuid(), std::move(mojo_config),
-      WTF::Bind(&NavigatorAuction::FinalizeAdComplete, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(WTF::Bind(
+          &NavigatorAuction::FinalizeAdComplete, WrapPersistent(this))));
   return promise;
 }
 
@@ -1232,14 +1230,12 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
 void NavigatorAuction::FinalizeAdComplete(
     ScriptPromiseResolver* resolver,
     const absl::optional<KURL>& creative_url) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
-    return;
   if (creative_url) {
     resolver->Resolve(creative_url);
   } else {
     // TODO(https://crbug.com/1249186): Add full impl of methods.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotSupportedError,
         "finalizeAd API not yet implemented"));
   }
