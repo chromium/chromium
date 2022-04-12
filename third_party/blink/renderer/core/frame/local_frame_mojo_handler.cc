@@ -1301,7 +1301,7 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate) {
-  DCHECK(frame_->IsMainFrame());
+  DCHECK(frame_->IsOutermostMainFrame());
   TRACE_EVENT2("renderer", "LocalFrame::UpdateBrowserControlsState",
                "Constraint", static_cast<int>(constraints), "Current",
                static_cast<int>(current));
