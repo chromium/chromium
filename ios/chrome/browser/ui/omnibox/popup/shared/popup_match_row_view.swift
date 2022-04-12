@@ -92,13 +92,6 @@ struct PopupMatchRowView: View {
           }
           .frame(height: Dimensions.textHeight)
           .allowsHitTesting(false)
-
-          if let pedal = match.pedal {
-            PopupMatchRowActionButton(pedal: pedal)
-              .padding(Dimensions.actionButtonOuterPadding)
-              .offset(Dimensions.actionButtonOffset)
-              .accessibilityHidden(true)
-          }
         }
         Spacer()
         if match.isAppendable || match.isTabMatch {

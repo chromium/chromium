@@ -94,7 +94,8 @@ extension PopupMatch {
       icon: FakeOmniboxIcon.favicon))
   static let pedal = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
-      text: "clear browsing data",
+      text: "This has pedal attached",
+      detailText: "no pedal button in current design",
       pedal: OmniboxPedalData(
         title: "Click here", subtitle: "PAR → NYC",
         accessibilityHint: "a11y hint", imageName: "pedal_dino",

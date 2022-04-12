@@ -48,8 +48,6 @@
     for (id<AutocompleteSuggestion> suggestion in group.suggestions) {
       if (suggestion.pedal != nil) {
         [self.extractedPedals addObject:suggestion.pedal];
-        // TODO: the pedals as buttons should not be shown, they should be
-        // disabled downstream with a feature flag. We're not removing it here!
       }
     }
   }
