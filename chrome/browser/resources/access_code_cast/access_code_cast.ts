@@ -150,6 +150,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (addResult !== AddSinkResultCode.OK) {
       this.$.errorMessage.setAddSinkError(addResult);
       this.set('canCast', true);
+      this.$.codeInput.focusInput();
       return;
     }
 
@@ -160,6 +161,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (castResult !== RouteRequestResultCode.OK) {
       this.$.errorMessage.setCastError(castResult);
       this.set('canCast', true);
+      this.$.codeInput.focusInput();
       return;
     }
 

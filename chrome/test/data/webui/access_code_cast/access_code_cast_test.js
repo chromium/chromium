@@ -267,4 +267,23 @@ suite('AccessCodeCastAppTest', () => {
     BrowserProxy.setInstance(testProxy);
     app.addSinkAndCast();
   });
+
+  test('input is refocused after unsuccessful cast attempts', async () => {
+    let testProxy = createTestProxy(
+      AddSinkResultCode.OK,
+      RouteRequestResultCode.UNKNOWN_ERROR,
+      () => {
+        // Unfocus the code input during execution of addSinkAndCast.
+        app.$.castButton.focus();
+        assertFalse(app.$.codeInput.focused);
+      }
+    );
+    BrowserProxy.setInstance(testProxy);
+    app.setAccessCodeForTest('foobar');
+    // Code input must be focused in order for addSinkAndCast to execute.
+    app.$.codeInput.focusInput();
+
+    await app.addSinkAndCast();
+    assertTrue(app.$.codeInput.focused);
+  });
 });
