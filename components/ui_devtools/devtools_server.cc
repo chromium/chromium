@@ -223,8 +223,9 @@ void UiDevToolsServer::OnWebSocketRequest(
   size_t target_id = 0;
   if (info.path.empty() ||
       !base::StringToSizeT(info.path.substr(1), &target_id) ||
-      target_id > clients_.size())
+      target_id >= clients_.size()) {
     return;
+  }
 
   UiDevToolsClient* client = clients_[target_id].get();
   // Only one user can inspect the client at a time
