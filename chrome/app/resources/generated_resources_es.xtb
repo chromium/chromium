@@ -1609,7 +1609,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2548545707296594436">Borrar caché de perfil de eSIM</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
 <translation id="2550212893339833758">Memoria trasladada al espacio de reserva</translation>
-<translation id="2550596535588364872">¿Quieres permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
+<translation id="2550596535588364872">¿Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
 <translation id="2552230905527343195">No se puede añadir la pestaña actual</translation>
 <translation id="2552966063069741410">Zona horaria</translation>
 <translation id="2553290675914258594">Acceso verificado</translation>
@@ -2132,7 +2132,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3067198179881736288">¿Quieres instalar la aplicación?</translation>
 <translation id="3067198360141518313">Ejecutar este complemento</translation>
 <translation id="3071624960923923138">Puedes hacer clic aquí para abrir una pestaña nueva</translation>
-<translation id="3072775339180057696">¿Quieres permitir que el sitio web vea <ph name="FILE_NAME" />?</translation>
+<translation id="3072775339180057696">¿Permitir que el sitio web vea <ph name="FILE_NAME" />?</translation>
 <translation id="3075874217500066906">Es necesario reiniciar el dispositivo antes de comenzar el proceso de Powerwash. Después de reiniciar, se te pedirá que confirmes si quieres continuar.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar solo en este dispositivo</translation>
@@ -2811,7 +2811,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3759933321830434300">Bloquear partes de páginas web</translation>
 <translation id="3760460896538743390">Inspeccionar página &amp;en segundo plano</translation>
 <translation id="37613671848467444">Abrir en una ventana de &amp;incógnito</translation>
-<translation id="3761556954875533505">¿Quieres permitir que el sitio web edite archivos?</translation>
+<translation id="3761556954875533505">¿Permitir que el sitio web edite archivos?</translation>
 <translation id="3764314093345384080">Información detallada de compilación</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
 <translation id="3764753550716962406">¿Permitir que Google use tu carrito para buscar descuentos disponibles?</translation>
@@ -3066,7 +3066,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3983769721878416534">Retraso antes del clic</translation>
 <translation id="3984135167056005094">No incluir dirección de correo electrónico</translation>
 <translation id="3984159763196946143">No se ha podido iniciar el modo demo</translation>
-<translation id="3984431586879874039">¿Quieres permitir que este sitio web vea tu llave de seguridad?</translation>
+<translation id="3984431586879874039">¿Permitir que este sitio web vea tu llave de seguridad?</translation>
 <translation id="398477389655464998">Copiar enlace al texto destacado</translation>
 <translation id="3984862166739904574">Definiciones de Respuestas rápidas</translation>
 <translation id="3986164906089840270"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos Chrome OS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en Chrome OS. Estos informes pueden incluir información como cuándo ha fallado Chrome OS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
@@ -3451,7 +3451,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4411578466613447185">Firmante del código</translation>
 <translation id="4412698727486357573">Centro de Ayuda</translation>
 <translation id="4413088271097062326">¿Qué aplicación quieres usar?</translation>
-<translation id="44141919652824029">¿Quieres permitir que "<ph name="APP_NAME" />" obtenga la lista de tus dispositivos USB adjuntos?</translation>
+<translation id="44141919652824029">¿Permitir que "<ph name="APP_NAME" />" obtenga la lista de tus dispositivos USB adjuntos?</translation>
 <translation id="4414232939543644979">Nueva ventana de &amp;incógnito</translation>
 <translation id="4415213869328311284">Ya puedes empezar a usar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">No se ha encontrado ningún dispositivo. Abre un artículo del Centro de Ayuda en una pestaña nueva.</translation>
@@ -3936,7 +3936,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4909038193460299775">Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo. No obstante, tus datos permanecerán almacenados en tu cuenta de Google y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Activación inactiva</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
-<translation id="4916542008280060967">¿Quieres permitir que el sitio web edite <ph name="FILE_NAME" />?</translation>
+<translation id="4916542008280060967">¿Permitir que el sitio web edite <ph name="FILE_NAME" />?</translation>
 <translation id="491691592645955587">Cambia a un navegador seguro</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quiere comunicarse con al extensión <ph name="EXTENSION_NAME" /></translation>
@@ -6057,7 +6057,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7077829361966535409">No se ha podido cargar la página de inicio de sesión con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta iniciar sesión de nuevo<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Todas las redes</translation>
 <translation id="708060913198414444">C&amp;opiar dirección de audio</translation>
-<translation id="7085389578340536476">¿Quieres permitir que Chrome grabe audio?</translation>
+<translation id="7085389578340536476">¿Permitir que Chrome grabe audio?</translation>
 <translation id="7086672505018440886">Incluye archivos de registro de Chrome en el archivo.</translation>
 <translation id="7088434364990739311">No se ha podido iniciar la comprobación de actualizaciones (código de error <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">El administrador ha puesto este dispositivo en el estado Sin aprovisionamiento. Para poder registrarlo, el administrador debe actualizar el estado del dispositivo a Pendiente.</translation>
@@ -6584,7 +6584,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> añadido</translation>
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
-<translation id="7643932971554933646">¿Quieres permitir que el sitio web vea los archivos?</translation>
+<translation id="7643932971554933646">¿Permitir que el sitio web vea los archivos?</translation>
 <translation id="7644543211198159466">Color y tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguridad de Linux</translation>

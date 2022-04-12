@@ -3,7 +3,7 @@
 <translationbundle lang="as">
 <translation id="1569387923882100876">সংযোজিত ডিভাইচ</translation>
 <translation id="1612196535745283361">ডিভাইচ স্কেন কৰিবলৈ Chromeএ অৱস্থান এক্সেছ কৰাটো প্ৰয়োজনীয়। এই ডিভাইচটোৰ বাবে <ph name="BEGIN_LINK" />অৱস্থান এক্সেছ অফ কৰা আছে৷<ph name="END_LINK" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" />এ যোৰা লগাব বিচাৰে</translation>
+<translation id="1993768208584545658"><ph name="SITE" />এ পেয়াৰ কৰিব বিচাৰে</translation>
 <translation id="2077832278056815832">অন্য এপৰ যিকোনো বাবল অথবা অ’ভাৰলে’ বন্ধ কৰক। তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="230115972905494466">খাপ খোৱা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
@@ -15,7 +15,7 @@
 <translation id="5230560987958996918"><ph name="SITE" />এ নিকটৱৰ্তী ব্লুটুথ ডিভাইচবোৰ বিচাৰি স্কেন কৰিব বিচাৰে। এই ডিভাইচকেইটা বিচাৰি পোৱা গৈছে:</translation>
 <translation id="5527082711130173040">ডিভাইচ স্কেন কৰিবলৈ Chromeএ অৱস্থান এক্সেছ কৰাটো প্ৰয়োজনীয়। <ph name="BEGIN_LINK1" />অনুমতি আপডে’ট কৰক<ph name="END_LINK1" />। অৱস্থান ইতিহাস <ph name="BEGIN_LINK2" />এই ডিভাইচটোৰ বাবেও অফ কৰি থোৱা হৈছে<ph name="END_LINK2" />।</translation>
 <translation id="557283862590186398">Chromeক এই ছাইটৰ বাবে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ অনুমতিৰ আৱশ্যক।</translation>
-<translation id="5817918615728894473">যোৰা লগাওক</translation>
+<translation id="5817918615728894473">পেয়াৰ কৰক</translation>
 <translation id="5858741533101922242">Chromeএ ব্লুটুথ এডাপ্টৰটো অন কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
 <translation id="6092062101542170135">অব্যাহত ৰাখিবলৈ Android ছেটিংসমূহত NFC অন কৰক</translation>

@@ -2447,7 +2447,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="343115368966109153">Pobrać plik <ph name="FILE_NAME" />? Każda osoba używająca urządzenia będzie mogła go zobaczyć.</translation>
 <translation id="3432227430032737297">Usuń wszystkie wyświetlone</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
-<translation id="3433507769937235446">Zablokuj, kiedy odchodzę od urządzenia</translation>
+<translation id="3433507769937235446">Blokuj, gdy odchodzę od urządzenia</translation>
 <translation id="3433621910545056227">Ups! System nie mógł ustanowić blokady atrybutów urządzenia na czas instalacji.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie. Więcej informacji o tych ustawieniach i sposobie ich zmiany znajdziesz na families.google.com.</translation>
@@ -6653,7 +6653,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701869757853594372">Uchwyty USER</translation>
 <translation id="7702574632857388784">Usuń plik <ph name="FILE_NAME" /> z listy</translation>
-<translation id="7702599324215660661">Zablokuj, kiedy odchodzę od urządzenia</translation>
+<translation id="7702599324215660661">Blokuj, gdy odchodzę od urządzenia</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="7704305437604973648">Zadanie</translation>
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
