@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("find_in_page") {
   deps = [
@@ -31,17 +31,17 @@ source_set("find_in_page") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("find_in_page_js") {
+optimize_js("find_in_page_js") {
   visibility = [ ":find_in_page" ]
-  closure_entry_point = "__crWeb.findInPage"
 
+  primary_script = "resources/find_in_page.js"
   sources = [ "resources/find_in_page.js" ]
 }
 
-js_compile_bundle("find_in_page_event_listeners_js") {
+optimize_js("find_in_page_event_listeners_js") {
   visibility = [ ":find_in_page" ]
-  closure_entry_point = "__crWeb.findInPageEventListeners"
 
+  primary_script = "resources/find_in_page_event_listeners.js"
   sources = [ "resources/find_in_page_event_listeners.js" ]
 }
 

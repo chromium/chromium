@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('__crWeb.findInPage');
-
-// Requires __crWeb.base
-
 /**
  * Based on code from the Google iOS app.
  *
@@ -15,7 +11,6 @@ goog.provide('__crWeb.findInPage');
  * selected one in orange color;
  */
 
-(function() {
 /**
  * Namespace for this file.
  */
@@ -737,14 +732,6 @@ function enable_() {
 };
 
 /**
- * Gets the scale ratio between the application window and the web document.
- * @return {number} Scale.
- */
-function getPageScale_() {
-  return (pageWidth_ / getBodyWidth_());
-};
-
-/**
  * Adds the appropriate style element to the page.
  */
 function addDocumentStyle_(thisDocument) {
@@ -752,9 +739,6 @@ function addDocumentStyle_(thisDocument) {
   function addCSSRule(name, style) {
     styleContent.push(name, '{', style, '}');
   };
-  let scale = getPageScale_();
-  let zoom = (1.0 / scale);
-  let left = ((1 - scale) / 2 * 100);
   addCSSRule(
       '.' + CSS_CLASS_NAME,
       'background-color:#ffff00 !important;' +
@@ -923,5 +907,3 @@ function escapeHTML_(text) {
 function escapeRegex_(text) {
   return text.replace(REGEX_ESCAPER, '\\$1');
 };
-
-})();
