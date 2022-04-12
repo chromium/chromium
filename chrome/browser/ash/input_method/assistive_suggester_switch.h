@@ -18,6 +18,12 @@ class AssistiveSuggesterSwitch {
     bool emoji_suggestions = false;
     bool multi_word_suggestions = false;
     bool personal_info_suggestions = false;
+
+    bool operator==(const EnabledSuggestions& rhs) const {
+      return emoji_suggestions == rhs.emoji_suggestions &&
+             multi_word_suggestions == rhs.multi_word_suggestions &&
+             personal_info_suggestions == rhs.personal_info_suggestions;
+    }
   };
 
   AssistiveSuggesterSwitch() = default;

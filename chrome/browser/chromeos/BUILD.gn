@@ -4360,6 +4360,7 @@ source_set("unit_tests") {
     "../ash/hats/hats_dialog_unittest.cc",
     "../ash/hats/hats_finch_helper_unittest.cc",
     "../ash/hats/hats_notification_controller_unittest.cc",
+    "../ash/input_method/assistive_suggester_client_filter_unittest.cc",
     "../ash/input_method/assistive_suggester_unittest.cc",
     "../ash/input_method/assistive_window_controller_unittest.cc",
     "../ash/input_method/autocorrect_manager_unittest.cc",
