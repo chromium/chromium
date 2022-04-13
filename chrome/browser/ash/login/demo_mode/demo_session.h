@@ -28,6 +28,12 @@ class OneShotTimer;
 }
 
 namespace ash {
+
+struct CountryCodeAndFullNamePair {
+  std::string country_id;
+  std::u16string country_name;
+};
+
 class DemoResources;
 
 // Tracks global demo session state, such as whether the demo session has
@@ -71,14 +77,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // The list of countries that Demo Mode supports, ie the countries we have
   // created OUs and admin users for in the admin console.
-  // Sorted by the English name of the country (not the country code), except US
-  // is first.
-  // TODO(crbug.com/983359): Sort these by country name in the current locale
-  // instead of using this hard-coded US-centric order.
+  // Sorted by country code except US is first.
   static constexpr char kSupportedCountries[][3] = {
-      "US", "AU", "AT", "BE", "BR", "CA", "DK", "FI", "FR",
-      "DE", "IN", "IE", "IT", "JP", "LU", "MX", "NL", "NZ",
-      "NO", "PL", "PT", "ZA", "ES", "SE", "GB"};
+      "US", "AT", "AU", "BE", "BR", "CA", "DE", "DK", "ES",
+      "FI", "FR", "GB", "IE", "IN", "IT", "JP", "LU", "MX",
+      "NL", "NO", "NZ", "PL", "PT", "SE", "ZA"};
 
   static constexpr char kCountryNotSelectedId[] = "N/A";
 
@@ -181,6 +184,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
  private:
   DemoSession();
   ~DemoSession() override;
+
+  // Get country code and full name in current language pair sorted by their
+  // full name in currently selected language.
+  static std::vector<CountryCodeAndFullNamePair>
+  GetSortedCountryCodeAndNamePairList();
 
   // Installs resources for Demo Mode from the offline demo mode resources, such
   // as apps and media.

@@ -266,9 +266,9 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
 
   // Test other supported countries.
   const std::string testing_supported_countries[] = {
-      "US", "AU", "AT", "BE", "BR", "CA", "DK", "FI", "FR",
-      "DE", "IN", "IE", "IT", "JP", "LU", "MX", "NL", "NZ",
-      "NO", "PL", "PT", "ZA", "ES", "SE", "GB"};
+      "US", "AT", "AU", "BE", "BR", "CA", "DE", "DK", "ES",
+      "FI", "FR", "GB", "IE", "IN", "IT", "JP", "LU", "MX",
+      "NL", "NO", "NZ", "PL", "PT", "SE", "ZA"};
 
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,

@@ -377,19 +377,32 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   // Verify the country names are displayed correctly. Regression test for
   // potential country code changes.
   const base::flat_map<std::string, std::string> kCountryCodeToNameMap = {
-      {"US", "United States"},  {"AU", "Australia"},
-      {"AT", "Austria"},        {"BE", "Belgium"},
-      {"BR", "Brazil"},         {"CA", "Canada"},
-      {"DK", "Denmark"},        {"FI", "Finland"},
-      {"FR", "France"},         {"DE", "Germany"},
-      {"IN", "India"},          {"IE", "Ireland"},
-      {"IT", "Italy"},          {"JP", "Japan"},
-      {"LU", "Luxembourg"},     {"MX", "Mexico"},
-      {"NL", "Netherlands"},    {"NZ", "New Zealand"},
-      {"NO", "Norway"},         {"PL", "Poland"},
-      {"PT", "Portugal"},       {"ZA", "South Africa"},
-      {"ES", "Spain"},          {"SE", "Sweden"},
-      {"GB", "United Kingdom"}, {"N/A", "Please select a country"}};
+      {"US", "United States"},
+      {"AT", "Austria"},
+      {"AU", "Australia"},
+      {"BE", "Belgium"},
+      {"BR", "Brazil"},
+      {"CA", "Canada"},
+      {"DE", "Germany"},
+      {"DK", "Denmark"},
+      {"ES", "Spain"},
+      {"FI", "Finland"},
+      {"FR", "France"},
+      {"GB", "United Kingdom"},
+      {"IE", "Ireland"},
+      {"IN", "India"},
+      {"IT", "Italy"},
+      {"JP", "Japan"},
+      {"LU", "Luxembourg"},
+      {"MX", "Mexico"},
+      {"N/A", "Please select a country"},
+      {"NL", "Netherlands"},
+      {"NO", "Norway"},
+      {"NZ", "New Zealand"},
+      {"PL", "Poland"},
+      {"PT", "Portugal"},
+      {"SE", "Sweden"},
+      {"ZA", "South Africa"}};
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
 

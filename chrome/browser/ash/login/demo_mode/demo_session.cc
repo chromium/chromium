@@ -17,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/string_compare.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -53,6 +54,8 @@
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/icu/source/common/unicode/uloc.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -366,14 +369,14 @@ bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
 base::Value DemoSession::GetCountryList() {
   base::Value country_list(base::Value::Type::LIST);
   std::string region(GetDefaultRegion());
-  const std::string current_locale = g_browser_process->GetApplicationLocale();
   bool country_selected = false;
 
-  for (const std::string country : kSupportedCountries) {
+  for (CountryCodeAndFullNamePair pair :
+       GetSortedCountryCodeAndNamePairList()) {
+    std::string country = pair.country_id;
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetStringKey("value", country);
-    dict.SetStringKey(
-        "title", l10n_util::GetDisplayNameForCountry(country, current_locale));
+    dict.SetStringKey("title", pair.country_name);
     if (country == region) {
       dict.SetBoolKey("selected", true);
       g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
@@ -384,6 +387,7 @@ base::Value DemoSession::GetCountryList() {
     }
     country_list.Append(std::move(dict));
   }
+
   if (!country_selected) {
     base::Value countryNotSelectedDict(base::Value::Type::DICTIONARY);
     countryNotSelectedDict.SetStringKey("value",
@@ -475,6 +479,28 @@ DemoSession::DemoSession()
 
 DemoSession::~DemoSession() {
   ChromeUserManager::Get()->RemoveSessionStateObserver(this);
+}
+
+std::vector<CountryCodeAndFullNamePair>
+DemoSession::GetSortedCountryCodeAndNamePairList() {
+  const std::string current_locale = g_browser_process->GetApplicationLocale();
+  std::vector<CountryCodeAndFullNamePair> result;
+  for (const std::string country : kSupportedCountries) {
+    result.push_back({country, l10n_util::GetDisplayNameForCountry(
+                                   country, current_locale)});
+  }
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));
+  DCHECK(U_SUCCESS(error_code));
+
+  std::sort(result.begin(), result.end(),
+            [&collator](CountryCodeAndFullNamePair pair1,
+                        CountryCodeAndFullNamePair pair2) {
+              return base::i18n::CompareString16WithCollator(
+                         *collator, pair1.country_name, pair2.country_name) < 0;
+            });
+  return result;
 }
 
 void DemoSession::InstallDemoResources() {
