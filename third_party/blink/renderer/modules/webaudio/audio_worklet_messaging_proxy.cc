@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 
 namespace blink {
 

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/webmediaplayer_ms_compositor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

@@ -32,6 +32,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace blink {
 
 class CORE_EXPORT FileList final : public ScriptWrappable {

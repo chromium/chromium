@@ -34,25 +34,12 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "base/files/file.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"  // FunctionThreadAffinity
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-
-namespace base {
-template <typename, typename>
-class RefCountedThreadSafe;
-template <typename>
-class FileErrorOr;
-class TimeDelta;
-class TimeTicks;
-class Time;
-class UnguessableToken;
-}  // namespace base
 
 struct SkISize;
 class SkRefCnt;
@@ -127,58 +114,13 @@ struct CrossThreadCopier<RetainedRefWrapper<T>> {
   using Type = RetainedRefWrapper<T>;
   static Type Copy(Type pointer) { return pointer; }
 };
-template <typename T>
-struct CrossThreadCopier<scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
-                "scoped_refptr<T> can be passed across threads only if T is "
-                "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
-  using Type = scoped_refptr<T>;
-  static scoped_refptr<T> Copy(scoped_refptr<T> pointer) { return pointer; }
-};
+
 template <typename T>
 struct CrossThreadCopier<sk_sp<T>>
     : public CrossThreadCopierPassThrough<sk_sp<T>> {
   STATIC_ONLY(CrossThreadCopier);
   static_assert(std::is_base_of<SkRefCnt, T>::value,
                 "sk_sp<T> can be passed across threads only if T is SkRefCnt.");
-};
-
-template <typename T>
-struct CrossThreadCopier<base::FileErrorOr<T>>
-    : public CrossThreadCopierPassThrough<base::FileErrorOr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<base::TimeDelta>
-    : public CrossThreadCopierPassThrough<base::TimeDelta> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<base::TimeTicks>
-    : public CrossThreadCopierPassThrough<base::TimeTicks> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<base::Time>
-    : public CrossThreadCopierPassThrough<base::Time> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<base::File> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = base::File;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-template <>
-struct CrossThreadCopier<base::UnguessableToken>
-    : public CrossThreadCopierPassThrough<base::UnguessableToken> {
-  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>
@@ -259,12 +201,6 @@ struct CrossThreadCopier<Vector<String, inlineCapacity, Allocator>> {
 template <typename T>
 struct CrossThreadCopier<CrossThreadUnretainedWrapper<T>>
     : public CrossThreadCopierPassThrough<CrossThreadUnretainedWrapper<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<base::WeakPtr<T>>
-    : public CrossThreadCopierPassThrough<base::WeakPtr<T>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

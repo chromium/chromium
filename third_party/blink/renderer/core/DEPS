@@ -4,6 +4,7 @@ include_rules = [
     "+base/cancelable_callback.h",
     "+base/memory/values_equivalent.h",
     "+base/files/file.h",
+    "+base/files/file_path.h",
     "+base/guid.h",
     "+base/mac/foundation_util.h",
     "+base/memory/scoped_policy.h",
