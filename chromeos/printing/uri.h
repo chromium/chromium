@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 
 namespace chromeos {
 
@@ -320,6 +321,8 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Uri {
   std::vector<std::string> GetPath() const;
   std::vector<std::pair<std::string, std::string>> GetQuery() const;
   std::string GetFragment() const;
+  // In the returned flat_map, vectors are never empty.
+  base::flat_map<std::string, std::vector<std::string>> GetQueryAsMap() const;
 
   // These methods are similar to aforementioned Get* methods. The only
   // difference is that all strings are %-escaped according to the

@@ -286,6 +286,14 @@ std::vector<std::pair<std::string, std::string>> Uri::GetQuery() const {
 std::string Uri::GetFragment() const {
   return pim_->fragment();
 }
+base::flat_map<std::string, std::vector<std::string>> Uri::GetQueryAsMap()
+    const {
+  base::flat_map<std::string, std::vector<std::string>> output;
+  for (const auto& [key, value] : pim_->query()) {
+    output[key].push_back(value);
+  }
+  return output;
+}
 
 std::string Uri::GetUserinfoEncoded() const {
   Encoder enc("+&=:");

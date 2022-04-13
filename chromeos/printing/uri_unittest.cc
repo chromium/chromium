@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/printing/uri.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -377,6 +378,19 @@ TEST(UriTest, ParserErrorInFragment) {
   EXPECT_EQ(pe.status, Uri::ParserStatus::kDisallowedASCIICharacter);
   EXPECT_EQ(pe.parsed_chars, 68u);
   EXPECT_EQ(pe.parsed_strings, 0u);
+}
+
+TEST(UriTest, GetQueryAsMap) {
+  Uri uri("ipp://example.org?p1&p2=val&p1=123&p3=aa&p1=&p2=val&other=x&end");
+  EXPECT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
+  using KeyValue = std::pair<std::string, std::vector<std::string>>;
+  // Parameters from the query sorted by keys.
+  const KeyValue e1("end", {""});
+  const KeyValue e2("other", {"x"});
+  const KeyValue e3("p1", {"", "123", ""});
+  const KeyValue e4("p2", {"val", "val"});
+  const KeyValue e5("p3", {"aa"});
+  EXPECT_THAT(uri.GetQueryAsMap(), testing::ElementsAre(e1, e2, e3, e4, e5));
 }
 
 }  // namespace
