@@ -191,16 +191,6 @@ chromium-metrics-reviews@google.com.
   <summary>Methods where leveldb's Mojo environment has IO errors.</summary>
 </histogram>
 
-<histogram name="NativeFileSystemAPI.ConfirmReadDirectoryResult"
-    enum="PermissionAction" expires_after="2022-02-06">
-  <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    Did the user confirm read access to a directory via the Native File System
-    API.
-  </summary>
-</histogram>
-
 <histogram name="NativeFileSystemAPI.FileChooserResult.{Type}" units="units"
     expires_after="2023-05-01">
   <owner>asully@chromium.org</owner>
