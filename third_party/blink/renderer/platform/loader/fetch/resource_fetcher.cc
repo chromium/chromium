@@ -884,10 +884,14 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         DetermineRequestDestination(resource_type));
   }
 
-  // Add the "Purpose: prefetch" header to requests for prefetch or issued from
-  // prerendered pages.
-  if (resource_type == ResourceType::kLinkPrefetch ||
-      Context().IsPrerendering()) {
+  if (resource_type == ResourceType::kLinkPrefetch) {
+    // Add the "Purpose: prefetch" header to requests for prefetch.
+    resource_request.SetPurposeHeader("prefetch");
+  } else if (Context().IsPrerendering()) {
+    // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
+    // prerendered pages. Add "Purpose: prefetch" as well for compatibility
+    // concerns (See https://github.com/WICG/nav-speculation/issues/133).
+    resource_request.SetHttpHeaderField("Sec-Purpose", "prefetch;prerender");
     resource_request.SetPurposeHeader("prefetch");
   }
 

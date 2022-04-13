@@ -5605,9 +5605,16 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
   bool TestPurposePrefetchHeader(const GURL& url) {
     net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
     auto it = headers.find("Purpose");
-    if (it == headers.end())
+    if (it == headers.end()) {
       return false;
+    }
     EXPECT_EQ("prefetch", it->second);
+
+    it = headers.find("Sec-Purpose");
+    if (it == headers.end()) {
+      return false;
+    }
+    EXPECT_EQ("prefetch;prerender", it->second);
     return true;
   }
 };

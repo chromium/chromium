@@ -49,12 +49,15 @@ bool AreHttpRequestHeadersCompatible(
   potential_activation_headers.AddHeadersFromString(
       potential_activation_headers_str);
 
-  // `prerender_headers` contains the "Purpose: prefetch" to notify servers of
-  // prerender requests, while `potential_activation_headers` doesn't contain
-  // it. Remove "Purpose" matching from consideration so that activation works
-  // with the header.
+  // `prerender_headers` contains the "Purpose: prefetch" and "Sec-Purpose:
+  // prefetch;prerender" to notify servers of prerender requests, while
+  // `potential_activation_headers` doesn't contain it. Remove "Purpose" and
+  // "Sec-Purpose" matching from consideration so that activation works with the
+  // header.
   prerender_headers.RemoveHeader("Purpose");
   potential_activation_headers.RemoveHeader("Purpose");
+  prerender_headers.RemoveHeader("Sec-Purpose");
+  potential_activation_headers.RemoveHeader("Sec-Purpose");
 
   return prerender_headers.ToString() ==
          potential_activation_headers.ToString();
