@@ -87,6 +87,12 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
       std::move(callback));
 }
 
+void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
+    absl::optional<std::string> account,
+    LoginsOrErrorReply callback) {
+  NOTREACHED();
+}
+
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,

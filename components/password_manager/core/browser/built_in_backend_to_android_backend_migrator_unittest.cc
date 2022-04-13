@@ -20,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,6 +64,10 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
                       current_migration_version);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           0.0);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kRequiresMigrationAfterSyncStatusChange, false);
+    prefs_.registry()->RegisterStringPref(::prefs::kGoogleServicesLastUsername,
+                                          "testaccount@gmail.com");
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         &built_in_backend_, &android_backend_, &prefs_, &sync_delegate_);
   }
@@ -255,7 +260,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       InitialMigrationForSyncingUserShouldMoveLocalOnlyDataToAndroidBackend) {
+       MigrationForSyncingUserShouldMoveLocalOnlyDataToAndroidBackend) {
   feature_list().InitAndEnableFeatureWithParameters(
       /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
       {{"migration_version", "1"}, {"stage", "0"}});
@@ -281,6 +286,40 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       std::make_unique<PasswordForm>(form_with_local_data));
   EXPECT_CALL(mock_reply,
               Run(LoginsResultsOrErrorAre(&expected_logins_android_backend)));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       MigrationUserAfterSyncDisablingShouldMoveLocalOnlyDataToBuiltInBackend) {
+  feature_list().InitAndEnableFeatureWithParameters(
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+  Init();
+
+  // Simulate sync being recently disabled.
+  prefs()->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  PasswordForm form = CreateTestPasswordForm();
+  built_in_backend().AddLoginAsync(form, base::DoNothing());
+
+  // 'skip_zero_click' is a local only field in PasswordForm and hence not
+  // available in the built-in backend before the migration.
+  PasswordForm form_with_local_data = form;
+  form_with_local_data.skip_zero_click = true;
+  android_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
+
+  migrator()->StartMigrationIfNecessary();
+  RunUntilIdle();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins_built_in_backend;
+  expected_logins_built_in_backend.push_back(
+      std::make_unique<PasswordForm>(form_with_local_data));
+  EXPECT_CALL(mock_reply,
+              Run(LoginsResultsOrErrorAre(&expected_logins_built_in_backend)));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 }
@@ -505,6 +544,8 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs()->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                             0.0);
+    prefs()->registry()->RegisterBooleanPref(
+        prefs::kRequiresMigrationAfterSyncStatusChange, false);
     if (GetParam().is_initial_migration) {
       feature_list().InitAndEnableFeatureWithParameters(
           /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
@@ -601,6 +642,8 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs()->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                             0.0);
+    prefs()->registry()->RegisterBooleanPref(
+        prefs::kRequiresMigrationAfterSyncStatusChange, false);
     feature_list().InitAndEnableFeatureWithParameters(
         /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
         {{"migration_version", "1"}, {"stage", "0"}});

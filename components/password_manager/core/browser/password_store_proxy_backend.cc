@@ -450,6 +450,12 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
   }
 }
 
+void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
+    absl::optional<std::string> account,
+    LoginsOrErrorReply callback) {
+  NOTREACHED();
+}
+
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,

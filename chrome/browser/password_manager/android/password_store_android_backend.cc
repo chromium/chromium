@@ -276,6 +276,13 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
               MetricInfix("GetAutofillableLoginsAsync"));
 }
 
+void PasswordStoreAndroidBackend::GetAllLoginsForAccountAsync(
+    absl::optional<std::string> account,
+    LoginsOrErrorReply callback) {
+  DCHECK(account.has_value());
+  GetAllLoginsForAccount(GetAccount(account), std::move(callback));
+}
+
 void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,

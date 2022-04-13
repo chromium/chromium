@@ -63,6 +63,12 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
       std::move(callback));
 }
 
+void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
+    absl::optional<std::string> account,
+    LoginsOrErrorReply callback) {
+  GetAllLoginsAsync(std::move(callback));
+}
+
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,

@@ -54,6 +54,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
+                                   LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       bool include_psl,

@@ -377,6 +377,22 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLoginsForAccount) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  absl::optional<std::string> account = "mytestemail@gmail.com";
+  backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
+      CreateTestLogins();
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  RunUntilIdle();
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
   DisableSyncFeature();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),

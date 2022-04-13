@@ -21,6 +21,9 @@ const char kCurrentMigrationVersionToGoogleMobileServices[] =
     "current_migration_version_to_google_mobile_services";
 
 const char kTimeOfLastMigrationAttempt[] = "time_of_last_migration_attempt";
+
+const char kRequiresMigrationAfterSyncStatusChange[] =
+    "requires_migration_after_sync_status_change";
 #endif
 
 #if BUILDFLAG(IS_WIN)
