@@ -839,16 +839,26 @@ void UnifiedMessageListView::AnimationCanceled(
 
 MessageView* UnifiedMessageListView::CreateMessageView(
     const Notification& notification) {
-  auto* view =
+  auto* message_view =
       MessageViewFactory::Create(notification, /*shown_in_popup=*/false)
           .release();
+  ConfigureMessageView(message_view);
+  return message_view;
+}
+
+void UnifiedMessageListView::ConfigureMessageView(
+    message_center::MessageView* message_view) {
   // Setting grouped notifications as nested is handled in
   // `AshNotificationView`.
-  if (!notification.group_child())
-    view->SetIsNested();
-  view->AddObserver(this);
-  message_center_view_->ConfigureMessageView(view);
-  return view;
+  auto* notification = MessageCenter::Get()->FindNotificationById(
+      message_view->notification_id());
+  // `notification` may not exist in tests.
+  if (notification && !notification->group_child())
+    message_view->SetIsNested();
+  message_view_multi_source_observation_.AddObservation(message_view);
+  // `message_center_view_` may not exist in tests.
+  if (message_center_view_)
+    message_center_view_->ConfigureMessageView(message_view);
 }
 
 std::vector<message_center::Notification*>
@@ -969,6 +979,8 @@ void UnifiedMessageListView::DeleteRemovedNotifications() {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);
     for (auto* view : removed_views) {
       model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
+      message_view_multi_source_observation_.RemoveObservation(
+          AsMVC(view)->message_view());
       delete view;
     }
   }

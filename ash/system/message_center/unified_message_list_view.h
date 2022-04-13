@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/message_center/message_center.h"
@@ -152,6 +153,8 @@ class ASH_EXPORT UnifiedMessageListView
   virtual message_center::MessageView* CreateMessageView(
       const message_center::Notification& notification);
 
+  void ConfigureMessageView(message_center::MessageView* message_view);
+
   // Virtual for testing.
   virtual std::vector<message_center::Notification*> GetStackedNotifications()
       const;
@@ -283,6 +286,10 @@ class ASH_EXPORT UnifiedMessageListView
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       message_center_observation_{this};
+
+  base::ScopedMultiSourceObservation<message_center::MessageView,
+                                     message_center::MessageView::Observer>
+      message_view_multi_source_observation_{this};
 };
 
 }  // namespace ash

@@ -100,9 +100,9 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
   // UnifiedMessageListView:
   message_center::MessageView* CreateMessageView(
       const message_center::Notification& notification) override {
-    auto* view = new TestNotificationView(notification);
-    view->SetIsNested();
-    return view;
+    auto* message_view = new TestNotificationView(notification);
+    ConfigureMessageView(message_view);
+    return message_view;
   }
 
   std::vector<message_center::Notification*> GetStackedNotifications()
