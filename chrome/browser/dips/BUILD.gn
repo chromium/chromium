@@ -19,7 +19,10 @@ source_set("unit_tests") {
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
-    sources = [ "dips_helper_browsertest.cc" ]
+    sources = [
+      "dips_bounce_detector_browsertest.cc",
+      "dips_helper_browsertest.cc",
+    ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
