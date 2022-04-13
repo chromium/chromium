@@ -24,6 +24,8 @@ class BrowserBench(object):
     if optargs.arguments:
       for arg in optargs.arguments.split(','):
         options.add_argument(arg)
+    if optargs.chrome_path:
+      options.binary_location = optargs.chrome_path
     service = webdriver.chrome.service.Service(
         executable_path=optargs.executable)
     chrome = webdriver.Chrome(service=service, options=options)
@@ -84,6 +86,12 @@ class BrowserBench(object):
                       '--output',
                       dest='output',
                       help='Path to the output json file.')
+    parser.add_option(
+        '--chrome-path',
+        dest='chrome_path',
+        help=
+        'Path of the chrome executable. If not specified, the default is picked'
+        ' up from chromedriver.')
     self.AddExtraParserOptions(parser)
 
     (optargs, args) = parser.parse_args()
@@ -109,4 +117,19 @@ class BrowserBench(object):
     pass
 
   def RunAndExtractMeasurements(self, driver, optargs):
+    '''Runs the benchmark and returns the result.
+
+    The result is a dictionary with an entry per suite as well as an entry for
+    the overall score. The value of each entry is a list of dictionaries, with
+    the key 'value' denoting the type of value. For example:
+    {
+      'score': [{ 'value': 'score',
+                  'measurement': 10 }],
+      'Suite1': [{ 'value': 'score',
+                   'measurement': 11 }],
+    }
+    The has an overall score of 10, and the suite 'Suite1' has an overall
+    score of 11. Additional values types are 'min' and 'max', these are
+    optional as not all tests provide them.
+    '''
     return {'error': 'Benchmark has not been set up correctly.'}

@@ -15,6 +15,19 @@ The following command line flags are supported for all benchmarks:
 
 - `-o`: Path to the output json file.
 
+- `--chrome-path`: Path to the chrome binary. If not present, default binary
+                   is used.
+
+In order to use these scripts, you must have the following present:
+
+- Install [chromedriver][https://chromedriver.chromium.org/downloads].
+- Install [selenium][https://pypi.org/project/selenium/].
+
+Safari requires enabling remote automation:
+
+1. Enable the developer menu in the Advanced tab of Preferences.
+2. Enable 'Remote Automation' via the 'Developer' menu.
+
 ## MotionMark
 
 The script in `motionmark.py` helps automatically run MotionMark1.2 benchmark in
@@ -49,4 +62,18 @@ Example usage:
       -b chrome                                        \
       -e out/Default/chromedriver                      \
       -o speedometer.json
+```
+
+## JetStream
+
+This script in `jetstream.py` runs JetStream benchmark in a browser, and
+extracts the score out of it.
+
+Example usage:
+
+```
+  python3 tools/browserbench-webdriver/jetstream.py    \
+      -b chrome                                        \
+      -e out/Default/chromedriver                      \
+      -o jetstream.json
 ```
