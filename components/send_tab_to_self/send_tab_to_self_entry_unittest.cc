@@ -118,28 +118,36 @@ TEST(SendTabToSelfEntry, IsExpired) {
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
 }
 
-// Tests that the send tab to self entry rejects strings that are not utf8.
+// Tests that the send tab to self entry rejects strings that are not utf8
+// gracefully.
 TEST(SendTabToSelfEntry, InvalidStrings) {
   const char16_t term[1] = {u'\uFDD1'};
   std::string invalid_utf8;
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 
-  EXPECT_DCHECK_DEATH(SendTabToSelfEntry(
-      "1", GURL("http://example.com"), invalid_utf8, base::Time::FromTimeT(10),
-      base::Time::FromTimeT(10), "device", "device"));
+  SendTabToSelfEntry invalid1("1", GURL("http://example.com"), invalid_utf8,
+                              base::Time::FromTimeT(10),
+                              base::Time::FromTimeT(10), "device", "device");
 
-  EXPECT_DCHECK_DEATH(
-      SendTabToSelfEntry(invalid_utf8, GURL("http://example.com"), "title",
-                         base::Time::FromTimeT(10), base::Time::FromTimeT(10),
-                         "device", "device"));
+  EXPECT_EQ(std::string(), invalid1.GetGUID());
 
-  EXPECT_DCHECK_DEATH(SendTabToSelfEntry(
+  SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"), "title",
+                              base::Time::FromTimeT(10),
+                              base::Time::FromTimeT(10), "device", "device");
+
+  EXPECT_EQ(std::string(), invalid2.GetGUID());
+
+  SendTabToSelfEntry invalid3(
       "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
-      base::Time::FromTimeT(10), invalid_utf8, "device"));
+      base::Time::FromTimeT(10), invalid_utf8, "device");
 
-  EXPECT_DCHECK_DEATH(SendTabToSelfEntry(
+  EXPECT_EQ(std::string(), invalid3.GetGUID());
+
+  SendTabToSelfEntry invalid4(
       "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
-      base::Time::FromTimeT(10), "device", invalid_utf8));
+      base::Time::FromTimeT(10), "device", invalid_utf8);
+
+  EXPECT_EQ(std::string(), invalid4.GetGUID());
 
   std::unique_ptr<sync_pb::SendTabToSelfSpecifics> pb_entry =
       std::make_unique<sync_pb::SendTabToSelfSpecifics>();
@@ -152,8 +160,10 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   pb_entry->set_shared_time_usec(1);
   pb_entry->set_navigation_time_usec(1);
 
-  EXPECT_DCHECK_DEATH(
+  std::unique_ptr<SendTabToSelfEntry> invalid_entry(
       SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
+
+  EXPECT_EQ(invalid_entry, nullptr);
 }
 
 // Tests that the send tab to self entry is correctly encoded to
