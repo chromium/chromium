@@ -358,6 +358,10 @@ cr.define('cr.login', function() {
       return this.getConsolidatedScrapedPasswords_().length;
     }
 
+    get scrapedPasswords() {
+      return this.getConsolidatedScrapedPasswords_();
+    }
+
     /**
      * Gets the list of passwords which have matching passwordProperty and
      * are scraped exactly |times| times.

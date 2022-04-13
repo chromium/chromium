@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
+#include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
@@ -169,6 +170,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
@@ -690,6 +692,11 @@ WizardController::CreateScreens() {
       &WizardController::OnGaiaScreenExit, weak_factory_.GetWeakPtr()));
   gaia_screen->SetView(oobe_ui->GetView<GaiaScreenHandler>());
   append(std::move(gaia_screen));
+
+  append(std::make_unique<SamlConfirmPasswordScreen>(
+      oobe_ui->GetView<SamlConfirmPasswordHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnSamlConfirmPasswordScreenExit,
+                          weak_factory_.GetWeakPtr())));
   append(std::make_unique<OfflineLoginScreen>(
       oobe_ui->GetView<OfflineLoginScreenHandler>(),
       base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
@@ -1087,6 +1094,21 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       LoginDisplayHost::default_host()->HideOobeDialog(
           /*saml_video_timeout=*/true);
       break;
+  }
+}
+
+void WizardController::OnSamlConfirmPasswordScreenExit(
+    SamlConfirmPasswordScreen::Result result) {
+  OnScreenExit(SamlConfirmPasswordView::kScreenId,
+               SamlConfirmPasswordScreen::GetResultString(result));
+  switch (result) {
+    case SamlConfirmPasswordScreen::Result::kCancel:
+      LoginDisplayHost::default_host()->StartSignInScreen();
+      return;
+    case SamlConfirmPasswordScreen::Result::kTooManyAttempts:
+      ShowSignInFatalErrorScreen(
+          SignInFatalErrorScreen::Error::SCRAPED_PASSWORD_VERIFICATION_FAILURE,
+          nullptr);
   }
 }
 
@@ -2189,7 +2211,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == ParentalHandoffScreenView::kScreenId ||
              screen_id == HWDataCollectionView::kScreenId ||
              screen_id == SmartPrivacyProtectionView::kScreenId ||
-             screen_id == ThemeSelectionScreenView::kScreenId) {
+             screen_id == ThemeSelectionScreenView::kScreenId ||
+             screen_id == SamlConfirmPasswordView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

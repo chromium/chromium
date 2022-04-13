@@ -6378,6 +6378,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Recommend-apps.Selected" label=""/>
   <suffix name="Recommend-apps.Skipped" label=""/>
   <suffix name="Reset.Cancel" label=""/>
+  <suffix name="Saml-confirm-password.Cancel" label=""/>
+  <suffix name="Saml-confirm-password.TooManyAttempts" label=""/>
   <suffix name="Sync-consent.Next" label=""/>
   <suffix name="Terms-of-service.Accepted" label=""/>
   <suffix name="Terms-of-service.Declined" label=""/>

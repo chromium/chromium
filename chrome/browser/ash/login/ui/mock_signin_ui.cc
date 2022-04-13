@@ -6,8 +6,8 @@
 
 namespace ash {
 
-MockSigninUI::MockSigninUI() {}
+MockSigninUI::MockSigninUI() = default;
 
-MockSigninUI::~MockSigninUI() {}
+MockSigninUI::~MockSigninUI() = default;
 
 }  // namespace ash

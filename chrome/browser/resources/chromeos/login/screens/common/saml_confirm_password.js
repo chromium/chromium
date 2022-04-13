@@ -58,15 +58,10 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   constructor() {
     super();
-    /**
-     * Callback to run when the screen is dismissed.
-     * @type {?function(string)}
-     */
-    this.callback_ = null;
   }
 
   get EXTERNAL_API() {
-    return ['show'];
+    return ['retry'];
   }
 
   defaultUIStep() {
@@ -95,25 +90,21 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
   }
 
   /**
-   * Shows the confirm password screen.
-   * @param {string} email The authenticated user's e-mail.
-   * @param {boolean} manualPasswordInput True if no password has been
-   *     scrapped and the user needs to set one manually for the device.
-   * @param {number} attemptCount Number of attempts tried, starting at 0.
-   * @param {function(string)} callback The callback to be invoked when the
-   *     screen is dismissed.
+   * Event handler that is invoked just before the screen is shown.
+   * @param {Object} data Screen init payload
    */
-  show(email, manualPasswordInput, attemptCount, callback) {
-    this.callback_ = callback;
-    this.reset();
-    this.email = email;
-    this.isManualInput = manualPasswordInput;
-    if (attemptCount > 0)
-      this.$.passwordInput.invalid = true;
-    Oobe.getInstance().showScreen({id: 'saml-confirm-password'});
+  onBeforeShow(data) {
+    this.reset_();
+    this.email = data['email'];
+    this.isManualInput = data['manualPasswordInput'];
   }
 
-  resetFields() {
+  retry() {
+    this.reset_();
+    this.$.passwordInput.invalid = true;
+  }
+
+  resetFields_() {
     this.$.passwordInput.invalid = false;
     this.$.passwordInput.value = '';
     if (this.isManualInput) {
@@ -122,11 +113,11 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
     }
   }
 
-  reset() {
+  reset_() {
     if (this.$.cancelConfirmDlg.open)
       this.$.cancelConfirmDlg.hideDialog();
     this.setUIStep(SamlConfirmPasswordState.PASSWORD);
-    this.resetFields();
+    this.resetFields_();
   }
 
 
@@ -140,8 +131,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   onCancelYes_() {
     this.$.cancelConfirmDlg.hideDialog();
-
-    Oobe.getInstance().showScreen({id: 'gaia-signin'});
+    this.userActed('cancel');
   }
 
   submit_() {
@@ -160,8 +150,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
       }
     }
     this.setUIStep(SamlConfirmPasswordState.PROGRESS);
-    this.callback_(this.$.passwordInput.value);
-    this.resetFields();
+    this.userActed(['inputPassword', this.$.passwordInput.value]);
+    this.resetFields_();
   }
 
   subtitleText_(locale, manual) {

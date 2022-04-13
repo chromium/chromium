@@ -212,6 +212,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const std::string& gaia_id,
       const std::string& email,
       const std::string& password,
+      const base::Value::List& scraped_saml_passwords_value,
       bool using_saml,
       const base::Value::List& services_list,
       const base::Value::Dict& password_attributes,
@@ -226,8 +227,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // is_third_party_idp == false means GAIA-based authentication
   void HandleUsingSAMLAPI(bool is_third_party_idp);
   void HandleRecordSAMLProvider(const std::string& x509certificate);
-  void HandleScrapedPasswordCount(int password_count);
-  void HandleScrapedPasswordVerificationFailed();
   void HandleSamlChallengeMachineKey(const std::string& callback_id,
                                      const std::string& url,
                                      const std::string& challenge);
@@ -237,9 +236,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void HandleIdentifierEntered(const std::string& account_identifier);
 
   void HandleAuthExtensionLoaded();
-  void HandleGetIsSamlUserPasswordless(const std::string& callback_id,
-                                       const std::string& typed_email,
-                                       const std::string& gaia_id);
 
   // Allows WebUI to control the login shelf's guest and apps buttons visibility
   // during OOBE.
@@ -278,6 +274,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Updates the member variable and UMA histogram indicating whether the
   // Chrome Credentials Passing API was used during SAML login.
   void SetSAMLPrincipalsAPIUsed(bool is_third_party_idp, bool is_api_used);
+
+  void RecordScrapedPasswordCount(int password_count);
+  bool IsSamlUserPasswordless();
 
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
@@ -323,6 +322,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Callback method to load Gaia screen after reauth request token is fetched.
   void OnGaiaReauthTokenFetched(const login::GaiaContext& context,
                                 const std::string& token);
+
+  void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
+                           std::unique_ptr<UserContext> user_context);
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;

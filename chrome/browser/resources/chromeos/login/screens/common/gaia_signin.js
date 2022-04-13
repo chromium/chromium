@@ -334,13 +334,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authCompleted_ = false;
 
     /**
-     * SAML password confirmation attempt count.
-     * @type {number}
-     * @private
-     */
-    this.samlPasswordConfirmAttempt_ = 0;
-
-    /**
      * Whether the result was reported to the handler for the most recent PIN
      * dialog.
      * @type {boolean}
@@ -378,11 +371,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.authenticator_.confirmPasswordCallback =
-        this.onAuthConfirmPassword_.bind(this);
-    this.authenticator_.onePasswordCallback =
-        this.onAuthOnePassword_.bind(this);
-    this.authenticator_.noPasswordCallback = this.onAuthNoPassword_.bind(this);
     this.authenticator_.insecureContentBlockedCallback =
         this.onInsecureContentBlocked_.bind(this);
     this.authenticator_.missingGaiaInfoCallback =
@@ -390,8 +378,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authenticator_.samlApiUsedCallback = this.samlApiUsed_.bind(this);
     this.authenticator_.recordSAMLProviderCallback =
         this.recordSAMLProvider_.bind(this);
-    this.authenticator_.getIsSamlUserPasswordlessCallback =
-        this.getIsSamlUserPasswordless_.bind(this);
 
     this.initializeLoginScreen('GaiaSigninScreen', {
       resetAllowed: true,
@@ -613,7 +599,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // Reset SAML
     this.isSaml_ = false;
     this.usedSaml_ = false;
-    this.samlPasswordConfirmAttempt_ = 0;
 
     // Reset the PIN dialog, in case it's shown.
     this.closePinDialog();
@@ -742,20 +727,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Invoked when the authenticator requests whether the specified user is a
-   * user without a password (neither a manually entered one nor one provided
-   * via Credentials Passing API).
-   * @param {string} email
-   * @param {string} gaiaId
-   * @param {function(boolean)} callback
-   * @private
-   */
-  getIsSamlUserPasswordless_(email, gaiaId, callback) {
-    cr.sendWithPromise('getIsSamlUserPasswordless', email, gaiaId)
-        .then(callback);
-  }
-
-  /**
    * Invoked when the authenticator emits 'showView' event or when corresponding
    * guard time fires.
    * @private
@@ -775,91 +746,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   onLoginUIVisible_() {
     chrome.send('loginWebuiReady');
-  }
-
-  /**
-   * TODO(crbug.com/1229130) - Remove suppression.
-   * login.ConfirmSamlPasswordScreen has a `show` method exposed through its
-   * usage of LoginScreenBehavior. Suppressing for now, but this should be
-   * improved.
-   *
-   * Invoked when the user has successfully authenticated via SAML,
-   * the Chrome Credentials Passing API was not used and the authenticator needs
-   * the user to confirm the scraped password.
-   * @param {string} email The authenticated user's e-mail.
-   * @param {number} passwordCount The number of passwords that were scraped.
-   * @private
-   * @suppress {missingProperties}
-   */
-  onAuthConfirmPassword_(email, passwordCount) {
-    if (this.samlPasswordConfirmAttempt_ == 0)
-      chrome.send('scrapedPasswordCount', [passwordCount]);
-
-    if (this.samlPasswordConfirmAttempt_ < 2) {
-      window.login.ConfirmSamlPasswordScreen.show(
-          email, false /* manual password entry */,
-          this.samlPasswordConfirmAttempt_,
-          this.onConfirmPasswordCollected_.bind(this));
-    } else {
-      chrome.send('scrapedPasswordVerificationFailed');
-      this.showFatalAuthError_(
-          OobeTypes.FatalErrorCode.SCRAPED_PASSWORD_VERIFICATION_FAILURE);
-    }
-  }
-
-  /**
-   * Invoked when the user has successfully authenticated via SAML,
-   * the Chrome Credentials Passing API was not used and exactly one password
-   * was scraped (so we didn't have to ask the user to confirm their password).
-   * @private
-   */
-  onAuthOnePassword_() {
-    chrome.send('scrapedPasswordCount', [1]);
-  }
-
-  /**
-   * Invoked when the confirm password screen is dismissed.
-   * @param {string} password The password entered at the confirm screen.
-   * @private
-   */
-  onConfirmPasswordCollected_(password) {
-    this.samlPasswordConfirmAttempt_++;
-    this.authenticator_.verifyConfirmedPassword(password);
-
-    // Shows signin UI again without changing states.
-    Oobe.showScreen({id: SCREEN_GAIA_SIGNIN});
-  }
-
-  /**
-   * TODO(crbug.com/1229130) - Remove suppression
-   * login.ConfirmSamlPasswordScreen has a `show` method exposed through its
-   * usage of LoginScreenBehavior. Suppressing for now, but this should be
-   * improved.
-   * Invoked when the user has successfully authenticated via SAML, the
-   * Chrome Credentials Passing API was not used and no passwords
-   * could be scraped.
-   * The user will be asked to pick a manual password for the device.
-   * @param {string} email The authenticated user's e-mail.
-   * @private
-   * @suppress {missingProperties} login.ConfirmSamlPasswordScreen
-   */
-  onAuthNoPassword_(email) {
-    chrome.send('scrapedPasswordCount', [0]);
-    window.login.ConfirmSamlPasswordScreen.show(
-        email, true /* manual password entry */,
-        this.samlPasswordConfirmAttempt_,
-        this.onManualPasswordCollected_.bind(this));
-  }
-
-  /**
-   * Invoked when the dialog where the user enters a manual password for the
-   * device, when password scraping fails.
-   * @param {string} password The password the user entered. Not necessarily
-   *     the same as their SAML password.
-   * @private
-   */
-  onManualPasswordCollected_(password) {
-    this.authenticator_.completeAuthWithManualPassword(password);
   }
 
   /**
@@ -923,8 +809,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     } else {
       chrome.send('completeAuthentication', [
         credentials.gaiaId, credentials.email, credentials.password,
-        credentials.usingSAML, credentials.services,
-        credentials.passwordAttributes, credentials.syncTrustedVaultKeys || {}
+        credentials.scrapedSAMLPasswords, credentials.usingSAML,
+        credentials.services, credentials.passwordAttributes,
+        credentials.syncTrustedVaultKeys || {}
       ]);
     }
 

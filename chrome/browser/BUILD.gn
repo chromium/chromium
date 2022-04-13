@@ -7898,6 +7898,7 @@ static_library("test_support") {
       "//chromeos:test_support",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
+      "//components/login",
       "//components/session_manager/core",
       "//components/soda",
       "//components/user_manager:test_support",

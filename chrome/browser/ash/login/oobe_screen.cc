@@ -38,15 +38,4 @@ OobeScreenId StaticOobeScreenId::AsId() const {
   return OobeScreenId(name);
 }
 
-// OobeScreenId instances should always be attached to their associated handler;
-// the list below contains only OobeScreenId instances that do not have a
-// handler.
-//
-// Ideally this list should contain only special or helper screens, e.g., those
-// without a JS counterpart.
-//
-// TODO(crbug.com/958905): Reduce this list to only special or helper screens
-
-// static
-constexpr StaticOobeScreenId OobeScreen::SCREEN_CONFIRM_PASSWORD;
 }  // namespace ash

@@ -53,11 +53,6 @@ struct StaticOobeScreenId {
   OobeScreenId AsId() const;
 };
 
-struct OobeScreen {
-  constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
-      "saml-confirm-password"};
-};
-
 /* Keep it as `inline constexpr` (do not add `static`) so it exists as `inline
  * variable` and have the same address in every translation unit (more at
  * https://en.cppreference.com/w/cpp/language/inline).

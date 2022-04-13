@@ -203,26 +203,7 @@ SigninScreenHandler::~SigninScreenHandler() {
 }
 
 void SigninScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {
-  builder->AddF("confirmPasswordTitle", IDS_LOGIN_CONFIRM_PASSWORD_TITLE,
-                ui::GetChromeOSDeviceName());
-  builder->Add("manualPasswordTitle", IDS_LOGIN_MANUAL_PASSWORD_TITLE);
-  builder->Add("manualPasswordInputLabel",
-               IDS_LOGIN_MANUAL_PASSWORD_INPUT_LABEL);
-  builder->Add("manualPasswordMismatch",
-               IDS_LOGIN_MANUAL_PASSWORD_MISMATCH);
-  builder->Add("confirmPasswordLabel", IDS_LOGIN_CONFIRM_PASSWORD_LABEL);
-  builder->Add("confirmPasswordIncorrectPassword",
-               IDS_LOGIN_CONFIRM_PASSWORD_INCORRECT_PASSWORD);
-  builder->Add("accountSetupCancelDialogTitle",
-               IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_TITLE);
-  builder->Add("accountSetupCancelDialogNo",
-               IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_NO);
-  builder->Add("accountSetupCancelDialogYes",
-               IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_YES);
-}
-
-void SigninScreenHandler::InitializeDeprecated() {}
+    ::login::LocalizedValuesBuilder* builder) {}
 
 void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);

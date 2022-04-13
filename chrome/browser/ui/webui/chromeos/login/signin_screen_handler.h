@@ -118,7 +118,6 @@ class SigninScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;

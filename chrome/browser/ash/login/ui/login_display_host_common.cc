@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -530,6 +532,16 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
   GetWizardController()->GetScreen<SignInFatalErrorScreen>()->SetCustomError(
       error_text, keyboard_hint, details, help_link_text);
   StartWizard(SignInFatalErrorView::kScreenId);
+}
+
+void LoginDisplayHostCommon::SAMLConfirmPassword(
+    ::login::StringList scraped_passwords,
+    std::unique_ptr<UserContext> user_context) {
+  GetWizardController()
+      ->GetScreen<SamlConfirmPasswordScreen>()
+      ->SetContextAndPasswords(std::move(user_context),
+                               std::move(scraped_passwords));
+  StartWizard(SamlConfirmPasswordView::kScreenId);
 }
 
 WizardContext* LoginDisplayHostCommon::GetWizardContextForTesting() {

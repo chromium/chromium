@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 
+#include <memory>
+#include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
+#include "components/login/base_screen_handler_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -13,7 +16,7 @@ namespace ash {
 class MockSigninUI : public SigninUI {
  public:
   MockSigninUI();
-  virtual ~MockSigninUI();
+  ~MockSigninUI() override;
   MockSigninUI(const MockSigninUI&) = delete;
   MockSigninUI& operator=(const SigninUI&) = delete;
 
@@ -42,6 +45,10 @@ class MockSigninUI : public SigninUI {
               (SigninError, const std::string&),
               (override));
   MOCK_METHOD(void, StartBrowserDataMigration, (), (override));
+  MOCK_METHOD(void,
+              SAMLConfirmPassword,
+              (::login::StringList, std::unique_ptr<UserContext>),
+              (override));
 };
 
 }  // namespace ash
