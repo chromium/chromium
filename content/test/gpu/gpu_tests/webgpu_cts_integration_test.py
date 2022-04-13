@@ -28,6 +28,8 @@ WEBSOCKET_PORT_TIMEOUT_SECONDS = 10
 WEBSOCKET_SETUP_TIMEOUT_SECONDS = 5
 DEFAULT_TEST_TIMEOUT = 5
 SLOW_MULTIPLIER = 5
+ASAN_MULTIPLIER = 4
+BACKEND_VALIDATION_MULTIPLIER = 6
 
 # TODO: Switch this to reading from a file in the Dawn repo so that Dawn
 # contributors can update this without a full Chromium checkout.
@@ -94,6 +96,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _page_loaded = False
 
   _test_timeout = DEFAULT_TEST_TIMEOUT
+  _is_asan = False
   _enable_dawn_backend_validation = False
   _use_webgpu_adapter = None  # use the default
 
@@ -309,8 +312,15 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return 'Slow' in expectation.raw_results
 
   def _GetTestTimeout(self):
-    timeout = (self._test_timeout *
-               SLOW_MULTIPLIER if self._IsSlowTest() else self._test_timeout)
+    timeout = self._test_timeout
+
+    if self._IsSlowTest():
+      timeout *= SLOW_MULTIPLIER
+    if self._is_asan:
+      timeout *= ASAN_MULTIPLIER
+    if self._enable_dawn_backend_validation:
+      timeout *= BACKEND_VALIDATION_MULTIPLIER
+
     return timeout
 
   @classmethod
@@ -324,6 +334,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
+
+    system_info = browser.GetSystemInfo()
+    if system_info:
+      cls._is_asan = system_info.gpu.aux_attributes.get('is_asan', False)
+
     return tags
 
   @classmethod

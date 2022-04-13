@@ -2742,6 +2742,24 @@
       },
     },
 
+    'gpu_dawn_telemetry_cts_asan_tests': {
+      'webgpu_cts': {
+        'args': [
+          '--extra-browser-args=--force_high_performance_gpu',
+          '--retry-limit=3',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,Vulkan',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
+    },
+
     'gpu_dawn_telemetry_cts_tests': {
       'webgpu_cts': {
         'args': [
@@ -2765,7 +2783,6 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--enable-dawn-backend-validation',
-          '--override-timeout=30',
           '--retry-limit=3',
         ],
         'linux_args': [
@@ -2786,7 +2803,6 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--enable-dawn-backend-validation',
-          '--override-timeout=30',
           '--retry-limit=3',
         ],
         'linux_args': [
@@ -3812,9 +3828,6 @@
           'webgpu_cts',
           'skia_gold_test',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
     },
 
@@ -3838,9 +3851,6 @@
           'webgpu_cts',
           'skia_gold_test',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
     },
 
@@ -3859,9 +3869,6 @@
           'webgpu_cts',
           'skia_gold_test',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
     },
 
