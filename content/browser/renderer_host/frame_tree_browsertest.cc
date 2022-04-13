@@ -40,6 +40,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1087,64 +1088,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // not visible via frames[].
   EXPECT_FALSE(ExecJs(root, "window.frames[0].location"));
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
-}
-
-// Tests that the fenced frame with a urn:uuid commits the navigation with the
-// associated reporting metadata.
-IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
-                       FencedFrameReportingMetadata) {
-  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-
-  {
-    EXPECT_TRUE(ExecJs(root,
-                       "var f = document.createElement('fencedframe');"
-                       "document.body.appendChild(f);"));
-  }
-  EXPECT_EQ(1U, root->child_count());
-  FrameTreeNode* fenced_frame_root_node =
-      GetFencedFrameRootNode(root->child_at(0));
-
-  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
-
-  // Add reporting metadata.
-  ReportingMetadata fenced_frame_reporting;
-  GURL reporting_url(https_server()->GetURL("c.test", "/hello.html"));
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
-                                 ["mouse interaction"] = reporting_url;
-
-  GURL https_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-  FencedFrameURLMapping& url_mapping =
-      root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid =
-      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
-  EXPECT_TRUE(urn_uuid.is_valid());
-
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
-
-  TestFencedFrameURLMappingResultObserver mapping_observer;
-  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
-  TestFrameNavigationObserver observer(fenced_frame_root_node);
-  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
-  observer.WaitForCommit();
-  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
-  EXPECT_EQ(reporting_url,
-            mapping_observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kBuyer]
-                         ["mouse interaction"]);
-
-  EXPECT_EQ(
-      https_url,
-      fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
-  EXPECT_EQ(
-      url::Origin::Create(https_url),
-      fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
 }
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
@@ -2805,6 +2748,171 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     FencedFrameIgnoreCertErrors,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &FencedFrameTreeBrowserTest::DescribeParams);
+
+class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    // Set up the host resolver to allow serving separate sites, so we can
+    // perform cross-process navigation.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Fenced frames require potentially trustworthy URLs so creating an https
+    // server.
+    https_server()->RegisterRequestMonitor(
+        base::BindRepeating(&FencedFrameTreeBrowserTest::ObserveRequestHeaders,
+                            base::Unretained(this)));
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  }
+};
+
+// Tests that the fenced frame with a urn:uuid commits the navigation with the
+// associated reporting metadata and `fence.reportEvent` sends the beacon to
+// the registered reporting url.
+IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportingMetadata) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  // Add reporting metadata.
+  ReportingMetadata fenced_frame_reporting;
+  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
+  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
+                                 ["mouse interaction"] = reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::mojom::ReportingDestination::kBuyer]["click"] =
+      https_server()->GetURL("c.test", "/title1.html");
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid =
+      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(reporting_url,
+            mapping_observer.reporting_metadata()
+                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                         ["mouse interaction"]);
+
+  EXPECT_EQ(
+      https_url,
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(
+      url::Origin::Create(https_url),
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
+
+  std::string event_data = "this is a click";
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+                     JsReplace("window.fence.reportEvent({"
+                               "  eventType: 'mouse interaction',"
+                               "  eventData: $1,"
+                               "  destination: ['buyer']});",
+                               event_data)));
+
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, event_data);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+                       NestedIframeReportEvent) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  // Add reporting metadata.
+  ReportingMetadata fenced_frame_reporting;
+  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
+  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
+                                 ["mouse interaction"] = reporting_url;
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid =
+      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  // Navigate the fenced frame.
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, urn_uuid, navigate_urn_script);
+
+  // Add a nested iframe inside the fenced frame and navigate.
+  AddIframeInFencedFrame(fenced_frame_root_node, 0);
+  EXPECT_EQ(1U, fenced_frame_root_node->child_count());
+  FrameTreeNode* nested_iframe_node = fenced_frame_root_node->child_at(0);
+
+  GURL iframe_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
+  NavigateIframeInFencedFrame(nested_iframe_node, iframe_url);
+
+  std::string event_data = "this is a click";
+  EXPECT_TRUE(
+      ExecJs(nested_iframe_node, JsReplace("window.fence.reportEvent({"
+                                           "  eventType: 'mouse interaction',"
+                                           "  eventData: $1,"
+                                           "  destination: ['buyer']});",
+                                           event_data)));
+
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, event_data);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FencedFrameReportEventBrowserTest,
     ::testing::Values(
         blink::features::FencedFramesImplementationType::kShadowDOM,
         blink::features::FencedFramesImplementationType::kMPArch),

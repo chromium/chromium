@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+enum FenceReportingDestination {"buyer", "seller", "component-seller"};
+
 dictionary FenceEvent {
-  required DOMString event_type;
-  required DOMString event_data;
-  required sequence<DOMString> destination;
+  required DOMString eventType;
+  required DOMString eventData;
+  required sequence<FenceReportingDestination> destination;
 };

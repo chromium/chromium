@@ -14,10 +14,10 @@ promise_test(async(t) => {
     let event = {};
     assert_throws_js(TypeError, () => {window.fence.reportEvent(event);});
 
-    event.event_type = "click";
+    event.eventType = "click";
     assert_throws_js(TypeError, () => {window.fence.reportEvent(event);});
 
-    event.event_data = "dummy";
+    event.eventData = "dummy";
     assert_throws_js(TypeError, () => {window.fence.reportEvent(event);});
 
     event.destination = ["buyer"];

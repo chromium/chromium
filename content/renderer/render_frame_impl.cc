@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/crash_logging.h"
@@ -1071,6 +1072,20 @@ void FillMiscNavigationParams(
       // `ad_auction_components` must be a list of URNs, to avoid leaking data.
       DCHECK(urn.SchemeIs(url::kUrnScheme));
       navigation_params->ad_auction_components->push_back(blink::WebURL(urn));
+    }
+  }
+
+  if (commit_params.fenced_frame_reporting_metadata) {
+    navigation_params->fenced_frame_reporting.emplace();
+    for (const auto& [destination, metadata] :
+         commit_params.fenced_frame_reporting_metadata->metadata) {
+      base::flat_map<blink::WebString, blink::WebURL> data;
+      for (const auto& [event_type, url] : metadata) {
+        data.emplace(blink::WebString::FromUTF8(event_type),
+                     blink::WebURL(url));
+      }
+      navigation_params->fenced_frame_reporting->metadata.emplace(
+          destination, std::move(data));
     }
   }
 }

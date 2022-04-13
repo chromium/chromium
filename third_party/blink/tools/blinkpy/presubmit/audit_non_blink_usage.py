@@ -1030,10 +1030,21 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/bindings/core/v8/v8_code_cache.cc',
-            'third_party/blink/renderer/bindings/core/v8/v8_code_cache.h',
             'third_party/blink/renderer/core/loader/document_loader.cc',
             'third_party/blink/renderer/core/loader/document_loader.h',
+        ],
+        'allowed': [
+            'base::flat_map',
+            # TODO(mythria): Allow use of non-blink mojo interface. Once
+            # //content/renderer/loader is moved to Blink as a part of onion
+            # soup we can update all uses to blink::mojom::blink::CodeCacheHost.
+            'blink::mojom::CodeCacheHost',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/bindings/core/v8/v8_code_cache.cc',
+            'third_party/blink/renderer/bindings/core/v8/v8_code_cache.h',
             'third_party/blink/renderer/core/workers/worklet_global_scope.h',
             'third_party/blink/renderer/core/workers/worklet_global_scope.cc',
             'third_party/blink/renderer/core/workers/worker_global_scope.cc',

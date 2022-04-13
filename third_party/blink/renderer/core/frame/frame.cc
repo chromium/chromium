@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_remote_frame_client.h"
@@ -379,6 +380,29 @@ bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
     }
     default:
       return false;
+  }
+}
+
+absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
+    const {
+  DCHECK(!IsDetached());
+
+  if (!blink::features::IsFencedFramesEnabled())
+    return absl::nullopt;
+
+  if (!IsInFencedFrameTree())
+    return absl::nullopt;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return GetPage()->FencedFrameMode();
+    case blink::features::FencedFramesImplementationType::kShadowDOM:
+      DCHECK(Tree().Top(FrameTreeBoundary::kFenced).Owner());
+      return Tree()
+          .Top(FrameTreeBoundary::kFenced)
+          .Owner()
+          ->GetFramePolicy()
+          .fenced_frame_mode;
   }
 }
 

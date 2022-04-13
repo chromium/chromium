@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_fenced_frame_reporting.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
@@ -443,6 +444,13 @@ struct BLINK_EXPORT WebNavigationParams {
   // contains URNs mapped to the ad components returned by the winning bid.
   // Null, otherwise.
   absl::optional<WebVector<WebURL>> ad_auction_components;
+
+  // If this is a navigation to a "opaque-ads" mode fenced frame, there might
+  // be associated reporting metadata. This is a map from destination type to
+  // reporting metadata which in turn is a map from the event type to the
+  // reporting url. Null, otherwise.
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
 
   // Whether or not this navigation will commit in an anonymous frame.
   bool anonymous = false;

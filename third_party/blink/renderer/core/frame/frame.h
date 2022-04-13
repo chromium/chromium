@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink-forward.h"
@@ -415,6 +416,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // implementation for fenced frames, or even earlier when we refactor mode
   // checks to be based on capabilities instead.
   bool IsInShadowDOMOpaqueAdsFencedFrameTree() const;
+
+  // Returns the mode set on the fenced frame if the frame is inside a fenced
+  // frame tree. Otherwise returns `absl::nullopt`. This should not be called
+  // on a detached frame.
+  absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or

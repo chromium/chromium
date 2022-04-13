@@ -178,6 +178,8 @@ class WebString {
     return *this;
   }
 
+  BLINK_PLATFORM_EXPORT bool operator<(const WebString& other) const;
+
 #if INSIDE_BLINK
   BLINK_PLATFORM_EXPORT WebString(const WTF::String&);
   BLINK_PLATFORM_EXPORT WebString& operator=(const WTF::String&);

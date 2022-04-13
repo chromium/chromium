@@ -204,6 +204,7 @@ source_set("blink_headers") {
     "platform/web_encrypted_media_key_information.h",
     "platform/web_encrypted_media_request.h",
     "platform/web_encrypted_media_types.h",
+    "platform/web_fenced_frame_reporting.h",
     "platform/web_fetch_client_settings_object.h",
     "platform/web_file_system_type.h",
     "platform/web_font.h",

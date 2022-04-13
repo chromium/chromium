@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
@@ -366,6 +367,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return ad_auction_components_;
   }
 
+  const mojom::blink::FencedFrameReportingPtr& FencedFrameReporting() const {
+    return fenced_frame_reporting_;
+  }
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
@@ -661,6 +666,13 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // contains URNs to the ad components returned by the winning bid. Null,
   // otherwise.
   absl::optional<Vector<KURL>> ad_auction_components_;
+
+  // If this is a navigation to a "opaque-ads" mode fenced frame, there might
+  // be associated reporting metadata. This is a map from destination type to
+  // reporting metadata which in turn is a map from the event type to the
+  // reporting url. `nullptr` otherwise.
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  mojom::blink::FencedFrameReportingPtr fenced_frame_reporting_;
 
   // Whether the document should be anonymous or not.
   const bool anonymous_ = false;

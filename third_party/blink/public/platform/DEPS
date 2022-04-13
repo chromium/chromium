@@ -3,6 +3,7 @@ include_rules = [
     "+base/check.h",
     "+base/check_op.h",
     "+base/containers/flat_set.h",
+    "+base/containers/flat_map.h",
     "+base/containers/span.h",
     "+base/files/file.h",
     "+base/location.h",

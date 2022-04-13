@@ -25,14 +25,15 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
  public:
   explicit Fence(LocalDOMWindow& window);
 
-  // Currently it's no-op. When integrated with the browser side changes, the
-  // fenced frame will send a beacon with the data in `event` to the URL
-  // registered.
+  // Sends a beacon with the data in `event` to the registered reporting URL.
   void reportEvent(ScriptState* script_state,
                    const FenceEvent* event,
                    ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
+
+ private:
+  void AddConsoleMessage(const String& message);
 };
 
 }  // namespace blink
