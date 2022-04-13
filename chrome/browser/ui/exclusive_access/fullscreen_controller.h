@@ -209,6 +209,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // The state before entering tab fullscreen mode via webkitRequestFullScreen.
   // When not in tab fullscreen, it is STATE_INVALID.
   PriorFullscreenState state_prior_to_tab_fullscreen_ = STATE_INVALID;
+  // The display that the window was on before entering tab fullscreen mode.
+  int64_t display_id_prior_to_tab_fullscreen_ = display::kInvalidDisplayId;
   // True if the site has entered into fullscreen.
   bool tab_fullscreen_ = false;
 

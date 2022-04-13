@@ -702,12 +702,14 @@ class MultiScreenFullscreenControllerInteractiveTest
   void RequestContentFullscreenFromScript(
       const std::string& eval_js_script,
       int eval_js_options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-      bool expect_fullscreen = true) {
+      bool expect_content_fullscreen = true,
+      bool expect_window_fullscreen = true) {
     FullscreenNotificationObserver fullscreen_observer(browser());
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(expect_fullscreen, EvalJs(tab, eval_js_script, eval_js_options));
+    EXPECT_EQ(expect_content_fullscreen,
+              EvalJs(tab, eval_js_script, eval_js_options));
     fullscreen_observer.Wait();
-    EXPECT_EQ(expect_fullscreen, browser()->window()->IsFullscreen());
+    EXPECT_EQ(expect_window_fullscreen, browser()->window()->IsFullscreen());
   }
 
   // Execute JS to request content fullscreen on the current screen.
@@ -738,7 +740,7 @@ class MultiScreenFullscreenControllerInteractiveTest
   }
 
   // Execute JS to exit content fullscreen.
-  void ExitContentFullscreen() {
+  void ExitContentFullscreen(bool expect_window_fullscreen = false) {
     const std::string exit_fullscreen_script = R"(
       (async () => {
         await document.exitFullscreen();
@@ -746,9 +748,9 @@ class MultiScreenFullscreenControllerInteractiveTest
       })();
     )";
     // Exiting fullscreen does not require a user gesture; do not supply one.
-    RequestContentFullscreenFromScript(exit_fullscreen_script,
-                                       content::EXECUTE_SCRIPT_NO_USER_GESTURE,
-                                       /*expect_fullscreen=*/false);
+    RequestContentFullscreenFromScript(
+        exit_fullscreen_script, content::EXECUTE_SCRIPT_NO_USER_GESTURE,
+        /*expect_content_fullscreen=*/false, expect_window_fullscreen);
   }
 
   // Awaits expiry of the navigator.userActivation signal on the active tab.
@@ -909,6 +911,45 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   browser()->window()->Restore();
   EXPECT_FALSE(browser()->window()->IsMaximized());
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
+}
+
+// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
+// display::Screen configuration used in this test. Disabled on Mac and Linux,
+// where the window server's async handling of the fullscreen window state may
+// transition the window into fullscreen on the actual (non-mocked) display
+// bounds before or after the window bounds checks, yielding flaky results.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_BrowserFullscreenContentFullscreenSwapDisplay \
+  DISABLED_BrowserFullscreenContentFullscreenSwapDisplay
+#else
+#define MAYBE_BrowserFullscreenContentFullscreenSwapDisplay \
+  BrowserFullscreenContentFullscreenSwapDisplay
+#endif
+// Test requesting browser fullscreen on current display, launching
+// tab-fullscreen on a different display, and then closing tab-fullscreen to
+// restore browser-fullscreen on the original display.
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+                       MAYBE_BrowserFullscreenContentFullscreenSwapDisplay) {
+  SetUpTestScreenAndWindowPlacementTab();
+
+  ToggleBrowserFullscreen(true);
+  EXPECT_TRUE(IsFullscreenForBrowser());
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  const gfx::Rect fullscreen_bounds = browser()->window()->GetBounds();
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), fullscreen_bounds);
+
+  RequestContentFullscreenOnScreen(1);
+  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
+  // Fullscreen was originally initiated by browser, this should still be true.
+  EXPECT_TRUE(IsFullscreenForBrowser());
+  EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
+
+  ExitContentFullscreen(/*expect_window_fullscreen=*/true);
+  EXPECT_EQ(fullscreen_bounds, browser()->window()->GetBounds());
+  EXPECT_TRUE(IsFullscreenForBrowser());
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
 // TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler

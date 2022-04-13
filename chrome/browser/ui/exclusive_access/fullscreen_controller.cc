@@ -47,12 +47,17 @@ namespace {
 const char kFullscreenBubbleReshowsHistogramName[] =
     "ExclusiveAccess.BubbleReshowsPerSession.Fullscreen";
 
+int64_t GetDisplayId(WebContents* web_contents) {
+  DCHECK(web_contents);
+  auto* screen = display::Screen::GetScreen();
+  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
+  return display.id();
+}
+
 bool IsAnotherScreen(WebContents* web_contents, const int64_t display_id) {
   if (display_id == display::kInvalidDisplayId)
     return false;
-  auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
-  return display_id != display.id();
+  return display_id != GetDisplayId(web_contents);
 }
 
 }  // namespace
@@ -193,17 +198,14 @@ void FullscreenController::EnterFullscreenModeForTab(
     // top UI style.
     exclusive_access_context->UpdateUIForTabFullscreen();
 
+    state_prior_to_tab_fullscreen_ =
+        IsFullscreenForBrowser() ? STATE_BROWSER_FULLSCREEN : STATE_NORMAL;
+
     if (!exclusive_access_context->IsFullscreen() ||
         requesting_another_screen) {
-      // Normal -> Tab Fullscreen.
-      state_prior_to_tab_fullscreen_ = STATE_NORMAL;
       EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
       return;
     }
-
-    // Browser Fullscreen -> Tab Fullscreen.
-    if (exclusive_access_context->IsFullscreen())
-      state_prior_to_tab_fullscreen_ = STATE_BROWSER_FULLSCREEN;
 
     // We need to update the fullscreen exit bubble, e.g., going from browser
     // fullscreen to tab fullscreen will need to show different content.
@@ -248,16 +250,26 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   // All exiting tab fullscreen to non-fullscreen mode cases are handled in
   // BrowserNonClientFrameView::OnFullscreenStateChanged(); but exiting tab
   // fullscreen to browser fullscreen should be handled here.
-  bool should_update_ui =
+  const bool was_browser_fullscreen =
       state_prior_to_tab_fullscreen_ == STATE_BROWSER_FULLSCREEN;
 
   NotifyTabExclusiveAccessLost();
-  if (should_update_ui)
+  if (was_browser_fullscreen)
     exclusive_access_context->UpdateUIForTabFullscreen();
 
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
   PostFullscreenChangeNotification();
+
+  // For Tab Fullscreen -> Browser Fullscreen, enter browser fullscreen on the
+  // display that originated the browser fullscreen prior to the tab fullscreen.
+  // crbug.com/1313606.
+  if (was_browser_fullscreen &&
+      display_id_prior_to_tab_fullscreen_ != display::kInvalidDisplayId &&
+      display_id_prior_to_tab_fullscreen_ != GetDisplayId(web_contents)) {
+    EnterFullscreenModeInternal(BROWSER, nullptr,
+                                display_id_prior_to_tab_fullscreen_);
+  }
 }
 
 void FullscreenController::FullscreenTabOpeningPopup(
@@ -427,6 +439,7 @@ void FullscreenController::EnterFullscreenModeInternal(
 #endif
 
   toggled_into_fullscreen_ = true;
+  bool entering_tab_fullscreen = option == TAB && !tab_fullscreen_;
   GURL url;
   if (option == TAB) {
     url = GetRequestingOrigin();
@@ -436,7 +449,7 @@ void FullscreenController::EnterFullscreenModeInternal(
       url = extension_caused_fullscreen_;
   }
 
-  if (display_id != display::kInvalidDisplayId) {
+  if (option == TAB && display_id != display::kInvalidDisplayId) {
     // Check, but do not prompt, for permission to request a specific screen.
     // Sites generally need permission to get the display id in the first place.
     if (!requesting_frame ||
@@ -447,6 +460,10 @@ void FullscreenController::EnterFullscreenModeInternal(
                     requesting_frame) !=
             blink::mojom::PermissionStatus::GRANTED) {
       display_id = display::kInvalidDisplayId;
+    }
+    if (entering_tab_fullscreen) {
+      display_id_prior_to_tab_fullscreen_ =
+          GetDisplayId(WebContents::FromRenderFrameHost(requesting_frame));
     }
   }
 
