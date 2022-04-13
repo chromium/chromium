@@ -177,6 +177,8 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   };
 
   std::vector<base::Feature> disabled_features = {
+    // TODO(crbug.com/1313771): Support Digital Goods API.
+    ::features::kDigitalGoodsApi,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,
