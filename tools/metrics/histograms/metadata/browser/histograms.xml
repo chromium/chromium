@@ -730,6 +730,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.RoutingIDSpaceUsed"
+    units="% of routing ID space used for browser-allocated routing IDs"
+    expires_after="2022-10-11">
+  <owner>alexmos@chromium.org</owner>
+  <owner>dcheng@chromium.org</owner>
+  <summary>
+    Record the percentage of routing IDs ever used by a RenderProcessHost when
+    the C++ object is destroyed. The denominator is the range of all potentially
+    usable routing IDs—usually std::numeric_limits&lt;int32_t&gt;::max()—but may
+    be smaller (e.g. half that range).
+
+    This histogram does not record data if the routing ID overflows; that event
+    is captured as a browser crash instead.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction"
     enum="SpareProcessMaybeTakeAction" expires_after="2022-09-11">
   <owner>alexmos@chromium.org</owner>
