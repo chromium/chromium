@@ -218,6 +218,12 @@ class CC_EXPORT DroppedFrameCounter {
 
   bool report_for_ui_ = false;
   double sliding_window_current_percent_dropped_ = 0.0;
+
+  // Sets to true on a newly dropped frame and stays true as long as the frames
+  // that follow are dropped. Reset when a frame is presented. It is used to
+  // generate asynchronous trace events that cover the duration of consecutive
+  // dropped frames
+  bool in_dropping_ = false;
 };
 
 CC_EXPORT std::ostream& operator<<(
