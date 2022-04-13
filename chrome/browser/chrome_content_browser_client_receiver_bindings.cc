@@ -157,17 +157,6 @@ void MaybeCreateSafeBrowsingForRenderer(
   std::vector<std::string> allowlist_domains =
       safe_browsing::GetURLAllowlistByPolicy(pref_service);
 
-  // Log the size of the domains to make sure copying them is
-  // not too expensive.
-  if (allowlist_domains.size() > 0) {
-    int total_size = 0;
-    for (const auto& domains : allowlist_domains) {
-      total_size += domains.size();
-    }
-    base::UmaHistogramCounts10000(
-        "SafeBrowsing.Policy.AllowlistDomainsTotalSize", total_size);
-  }
-
   bool safe_browsing_enabled =
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
   content::GetIOThreadTaskRunner({})->PostTask(

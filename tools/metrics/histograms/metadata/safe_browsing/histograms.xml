@@ -1446,19 +1446,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.Policy.AllowlistDomainsTotalSize" units="bytes"
-    expires_after="2022-05-01">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The size of the allowlist domains set by the enterprise policy in bytes.
-    Note that this is measuring the total bytes of the list rather than the
-    length of the list. These domains are copied to the Safe Browsing checker
-    delegate. Logged each time a Safe Browsing checker delegate is created for
-    the renderer and the allowlist policy is set.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.PopulationMatchesCachedValue.{Field}"
     enum="BooleanMatched" expires_after="2022-11-11">
   <owner>drubery@chromium.org</owner>
@@ -1669,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetCache.FallbackThreatType"
-    enum="SBThreatType" expires_after="2022-04-24">
+    enum="SBThreatType" expires_after="2023-04-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2262,7 +2249,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.RemovalsHashesCount"
-    units="entries" expires_after="2022-04-29">
+    units="entries" expires_after="2023-04-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
