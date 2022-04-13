@@ -53,7 +53,7 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)backButton {
   UIImage* backImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    backImage = [UIImage systemImageNamed:@"arrow.left"
+    backImage = [UIImage systemImageNamed:@"arrow.backward"
                         withConfiguration:SymbolConfiguration()];
   } else {
     backImage = [UIImage imageNamed:@"toolbar_back"];
@@ -74,7 +74,7 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    forwardImage = [UIImage systemImageNamed:@"arrow.right"
+    forwardImage = [UIImage systemImageNamed:@"arrow.forward"
                            withConfiguration:SymbolConfiguration()];
   } else {
     forwardImage = [UIImage imageNamed:@"toolbar_forward"];
@@ -185,7 +185,7 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)stopButton {
   UIImage* stopImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    stopImage = [UIImage systemImageNamed:@"multiply"
+    stopImage = [UIImage systemImageNamed:@"xmark"
                         withConfiguration:SymbolConfiguration()];
   } else {
     stopImage = [UIImage imageNamed:@"toolbar_stop"];
