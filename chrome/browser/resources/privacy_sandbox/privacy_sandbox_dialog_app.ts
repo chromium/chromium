@@ -76,6 +76,13 @@ export class PrivacySandboxDialogAppElement extends
         proxy.showDialog();
       });
     });
+
+    window.addEventListener('keydown', event => {
+      // Only notice dialog can be dismissed by pressing "Esc".
+      if (event.key === 'Escape' && !this.isConsent_) {
+        this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_DISMISS);
+      }
+    });
   }
 
   private onNoticeOpenSettings_() {

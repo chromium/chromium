@@ -8,6 +8,7 @@ import {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/pr
 import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -125,6 +126,13 @@ suite('PrivacySandboxDialogConsent', function() {
     assertFalse(collapseElement!.opened);
     assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
   });
+
+  test('escPressed', async function() {
+    browserProxy.reset();
+    pressAndReleaseKeyOn(page, 0, '', 'Escape');
+    // No user action is triggered by pressing Esc.
+    assertEquals(browserProxy.getCallCount('dialogActionOccurred'), 0);
+  });
 });
 
 suite('PrivacySandboxDialogNotice', function() {
@@ -181,5 +189,11 @@ suite('PrivacySandboxDialogNotice', function() {
     testClickButton('#settingsButton');
     const [action] = await browserProxy.whenCalled('dialogActionOccurred');
     assertEquals(action, PrivacySandboxDialogAction.NOTICE_OPEN_SETTINGS);
+  });
+
+  test('escPressed', async function() {
+    pressAndReleaseKeyOn(page, 0, '', 'Escape');
+    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
+    assertEquals(action, PrivacySandboxDialogAction.NOTICE_DISMISS);
   });
 });
