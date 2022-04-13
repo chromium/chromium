@@ -263,7 +263,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   }
 
   void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
-    FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
     FLAGS_quic_reloadable_flag_quic_server_reverse_validate_new_path3 = true;
     FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
     quic_params_->connection_options.push_back(quic::kRVCM);
@@ -5061,17 +5060,8 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  base::TimeDelta next_task_delay;
-  if (!session->connection()->use_path_validator()) {
-    // Next connectivity probe is scheduled to be sent in 2 *
-    // kDefaultRTTMilliSecs.
-    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-    next_task_delay = task_runner->NextPendingTaskDelay();
-    EXPECT_EQ(base::Milliseconds(2 * kDefaultRTTMilliSecs), next_task_delay);
-  } else {
-    // The retry mechanism is internal to path validator.
-    EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
-  }
+  // The retry mechanism is internal to path validator.
+  EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));

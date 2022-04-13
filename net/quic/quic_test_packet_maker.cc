@@ -40,6 +40,8 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
       case quic::BLOCKED_FRAME:
       case quic::WINDOW_UPDATE_FRAME:
       case quic::STOP_SENDING_FRAME:
+      case quic::PATH_CHALLENGE_FRAME:
+      case quic::PATH_RESPONSE_FRAME:
         break;
       case quic::ACK_FRAME:
         frame.ack_frame = new quic::QuicAckFrame(*frame.ack_frame);
@@ -55,10 +57,6 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
       case quic::GOAWAY_FRAME:
         frame.goaway_frame = new quic::QuicGoAwayFrame(*frame.goaway_frame);
         break;
-      case quic::PATH_CHALLENGE_FRAME:
-        frame.path_challenge_frame =
-            new quic::QuicPathChallengeFrame(*frame.path_challenge_frame);
-        break;
       case quic::NEW_CONNECTION_ID_FRAME:
         frame.new_connection_id_frame =
             new quic::QuicNewConnectionIdFrame(*frame.new_connection_id_frame);
@@ -67,10 +65,6 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
         frame.retire_connection_id_frame =
             new quic::QuicRetireConnectionIdFrame(
                 *frame.retire_connection_id_frame);
-        break;
-      case quic::PATH_RESPONSE_FRAME:
-        frame.path_response_frame =
-            new quic::QuicPathResponseFrame(*frame.path_response_frame);
         break;
       case quic::MESSAGE_FRAME:
         DCHECK(false) << "Message frame not supported";
@@ -1470,7 +1464,7 @@ void QuicTestPacketMaker::AddQuicPathResponseFrame() {
   quic::test::MockRandom rand(0);
   quic::QuicPathFrameBuffer payload;
   rand.RandBytes(payload.data(), payload.size());
-  auto* path_response_frame = new quic::QuicPathResponseFrame(0, payload);
+  auto path_response_frame = quic::QuicPathResponseFrame(0, payload);
   frames_.push_back(quic::QuicFrame(path_response_frame));
   DVLOG(1) << "Adding frame: " << frames_.back();
 }
@@ -1479,7 +1473,7 @@ void QuicTestPacketMaker::AddQuicPathChallengeFrame() {
   quic::test::MockRandom rand(0);
   quic::QuicPathFrameBuffer payload;
   rand.RandBytes(payload.data(), payload.size());
-  auto* path_challenge_frame = new quic::QuicPathChallengeFrame(0, payload);
+  auto path_challenge_frame = quic::QuicPathChallengeFrame(0, payload);
   frames_.push_back(quic::QuicFrame(path_challenge_frame));
   DVLOG(1) << "Adding frame: " << frames_.back();
 }

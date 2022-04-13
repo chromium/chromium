@@ -467,13 +467,13 @@ void QuicEventLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
     case quic::PATH_RESPONSE_FRAME:
       net_log_.AddEvent(
           NetLogEventType::QUIC_SESSION_PATH_RESPONSE_FRAME_SENT, [&] {
-            return NetLogQuicPathData(frame.path_response_frame->data_buffer);
+            return NetLogQuicPathData(frame.path_response_frame.data_buffer);
           });
       break;
     case quic::PATH_CHALLENGE_FRAME:
       net_log_.AddEvent(
           NetLogEventType::QUIC_SESSION_PATH_CHALLENGE_FRAME_SENT, [&] {
-            return NetLogQuicPathData(frame.path_challenge_frame->data_buffer);
+            return NetLogQuicPathData(frame.path_challenge_frame.data_buffer);
           });
       break;
     case quic::STOP_SENDING_FRAME:
