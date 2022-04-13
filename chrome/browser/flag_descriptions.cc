@@ -1978,6 +1978,12 @@ const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
 const char kPasswordScriptsFetchingDescription[] =
     "Fetches scripts for password change flows.";
 
+const char kForceEnablePasswordDomainCapabilitiesName[] =
+    "Force enable password change capabilities for domains";
+const char kForceEnablePasswordDomainCapabilitiesDescription[] =
+    "Force enables password change capabilities for every domain, regardless "
+    "of the server response.";
+
 const char kPdfOcrName[] = "Performs OCR on inaccessible PDFs";
 const char kPdfOcrDescription[] =
     "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "

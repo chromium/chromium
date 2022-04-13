@@ -3299,6 +3299,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "force-enable-password-domain-capabilities",
+    "owners": [ "vizcay", "treib", "brunobraga" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "force-major-version-to-minor",
     "owners": [ "brgoldstein", "potassium-katabolism@google.com" ],
     "expiry_milestone": 110

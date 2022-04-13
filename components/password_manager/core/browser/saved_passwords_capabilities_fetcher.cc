@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -93,6 +94,11 @@ void SavedPasswordsCapabilitiesFetcher::FetchScriptAvailability(
 
 bool SavedPasswordsCapabilitiesFetcher::IsScriptAvailable(
     const url::Origin& origin) const {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kForceEnablePasswordDomainCapabilities)) {
+    return true;
+  }
+
   auto domains_it = cache_.find(origin);
   // Domain not present.
   if (domains_it == cache_.end() || domains_it->second.IsResultStale()) {

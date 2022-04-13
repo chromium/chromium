@@ -9,10 +9,12 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/capabilities_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -315,6 +317,44 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
       "PasswordManager.SavedPasswordsCapabilitiesFetcher."
       "AllOriginsResponseTime",
       1u);
+}
+
+TEST_F(SavedPasswordsCapabilitiesFetcherTest,
+       EnablePasswordDomainCapabilitiesFlag) {
+  // |kEnablePasswordDomainCapabilities| flag is disabled, |IsScriptAvailable|
+  // returns the default value (false).
+  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kForceEnablePasswordDomainCapabilities);
+
+  // |kEnablePasswordDomainCapabilities| is enabled and all scripts should have
+  // capabilities enabled.
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+
+  ExpectCacheRefresh();
+  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+
+  // Cache is ready.
+  // All scripts should have capabilities regardless of the server response.
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+
+  // Make cache stale again.
+  task_env_.AdvanceClock(base::Minutes(10));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {

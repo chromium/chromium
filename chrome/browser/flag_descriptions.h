@@ -1112,6 +1112,9 @@ extern const char kPasswordDomainCapabilitiesFetchingDescription[];
 extern const char kPasswordScriptsFetchingName[];
 extern const char kPasswordScriptsFetchingDescription[];
 
+extern const char kForceEnablePasswordDomainCapabilitiesName[];
+extern const char kForceEnablePasswordDomainCapabilitiesDescription[];
+
 extern const char kPdfOcrName[];
 extern const char kPdfOcrDescription[];
 

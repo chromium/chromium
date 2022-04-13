@@ -5,8 +5,10 @@
 #include "components/password_manager/core/browser/password_scripts_fetcher_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -332,6 +334,39 @@ TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
   EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
+}
+
+TEST_F(PasswordScriptsFetcherImplTest, EnablePasswordDomainCapabilitiesFlag) {
+  // |kEnablePasswordDomainCapabilities| flag is disabled, |IsScriptAvailable|
+  // returns the default value (false).
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kForceEnablePasswordDomainCapabilities);
+
+  // |kEnablePasswordDomainCapabilities| is enabled, all scripts should have
+  // capabilities enabled.
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
+  // Request capabilities from the server.
+  StartBulkCheck();
+  EXPECT_EQ(1, GetNumberOfPendingRequests());
+  SimulateResponse();
+  base::RunLoop().RunUntilIdle();
+  // Cache is ready.
+  // All scripts should have capabilities regardless of the server response.
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 }
 
 TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {

@@ -25,6 +25,11 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 #endif
 };
 
+// Force enables password change capabilities for every domain, regardless of
+// the server response. The flag is meant for end-to-end testing purposes only.
+const base::Feature kForceEnablePasswordDomainCapabilities = {
+    "ForceEnablePasswordDomainCapabilities", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables favicons in Password Manager.
 const base::Feature kEnableFaviconForPasswords{
     "EnableFaviconForPasswords", base::FEATURE_DISABLED_BY_DEFAULT};

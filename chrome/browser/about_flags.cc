@@ -6741,6 +6741,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
                                     kPasswordChangeFeatureVariations,
                                     "PasswordChangeFeatureVariations")},
+    {"force-enable-password-domain-capabilities",
+     flag_descriptions::kForceEnablePasswordDomainCapabilitiesName,
+     flag_descriptions::kForceEnablePasswordDomainCapabilitiesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kForceEnablePasswordDomainCapabilities)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

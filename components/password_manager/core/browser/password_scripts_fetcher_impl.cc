@@ -161,6 +161,10 @@ void PasswordScriptsFetcherImpl::FetchScriptAvailability(
 
 bool PasswordScriptsFetcherImpl::IsScriptAvailable(
     const url::Origin& origin) const {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kForceEnablePasswordDomainCapabilities)) {
+    return true;
+  }
   const auto& it = password_change_domains_.find(origin);
   if (it == password_change_domains_.end()) {
     return false;
