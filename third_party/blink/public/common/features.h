@@ -541,6 +541,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kIncludeBackgroundSVGInLCP;
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
 
+// TODO(crbug.com/1315717): This flag is being used to deprecate support for
+// <param> urls within <object> elements. This feature is controlled by
+// blink::features::kHTMLParamElementUrlSupport.
+BLINK_COMMON_EXPORT extern const base::Feature kHTMLParamElementUrlSupport;
+
 // The HTTP RTT threshold: decide whether the
 // `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
 // practically according to the network connection state.

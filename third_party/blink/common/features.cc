@@ -1140,6 +1140,9 @@ const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "MaxNumOfThrottleableRequestsInTightMode", 5};
 
+const base::Feature kHTMLParamElementUrlSupport{
+    "HTMLParamElementUrlSupport", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::FeatureParam<base::TimeDelta> kHttpRttThreshold{
     &kDelayLowPriorityRequestsAccordingToNetworkState, "HttpRttThreshold",
     base::Milliseconds(450)};

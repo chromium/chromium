@@ -1040,6 +1040,12 @@
     "args": ["--disable-features=UACHPlatformEnabledByDefault"]
   },
   {
+    "prefix": "object-param-url",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/html/semantics/embedded-content/the-object-element/object-param-url.html"],
+    "args": ["--disable-features=HTMLParamElementUrlSupport"]
+  },
+  {
     "prefix": "virtual-keyboard",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/virtual-keyboard"],

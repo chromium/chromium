@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -125,6 +126,11 @@ void HTMLObjectElement::ParseAttribute(
 // serviceType!
 void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   HashSet<StringImpl*, CaseFoldingHash> unique_param_names;
+
+  if (!RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled()) {
+    // The <param> element functionality has been deprecated/removed.
+    return;
+  }
 
   // Scan the PARAM children and store their name/value pairs.
   // Get the URL and type from the params if we don't already have them.
