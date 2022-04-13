@@ -446,11 +446,12 @@ TEST_F(DomainReliabilityMonitorTest, ClearBeaconsWithFilter) {
   OnRequestLegComplete(request);
 
   // Delete the beacons for |origin1|.
-  monitor_.ClearBrowsingData(
-      CLEAR_BEACONS,
-      base::BindRepeating(
-          [](const GURL& url1, const GURL& url2) { return url1 == url2; },
-          origin1));
+  monitor_.ClearBrowsingData(CLEAR_BEACONS, base::BindRepeating(
+                                                [](const url::Origin& origin1,
+                                                   const url::Origin& origin2) {
+                                                  return origin1 == origin2;
+                                                },
+                                                url::Origin::Create(origin1)));
 
   // Beacons for |context1| were cleared. Beacons for |context2| and
   // the contexts themselves were not.
@@ -501,8 +502,10 @@ TEST_F(DomainReliabilityMonitorTest, ClearContextsWithFilter) {
   monitor_.ClearBrowsingData(
       CLEAR_CONTEXTS,
       base::BindRepeating(
-          [](const GURL& url1, const GURL& url2) { return url1 == url2; },
-          origin1));
+          [](const url::Origin& origin1, const url::Origin& origin2) {
+            return origin1 == origin2;
+          },
+          url::Origin::Create(origin1)));
 
   // Only one of the contexts should have been deleted.
   EXPECT_EQ(1u, monitor_.contexts_size_for_testing());

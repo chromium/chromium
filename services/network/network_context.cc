@@ -256,33 +256,33 @@ base::RepeatingCallback<bool(const std::string& host_name)> MakeDomainFilter(
                              std::move(filter_domains));
 }
 
-// Predicate function to determine if the given |url| matches the |filter_type|,
-// |filter_domains| and |filter_origins| from a |mojom::ClearDataFilter|.
-bool MatchesUrlFilter(mojom::ClearDataFilter_Type filter_type,
-                      std::set<std::string> filter_domains,
-                      std::set<url::Origin> filter_origins,
-                      const GURL& url) {
+// Predicate function to determine if the given |origin| matches the
+// |filter_type|, |filter_domains| and |filter_origins| from a
+// |mojom::ClearDataFilter|.
+bool MatchesOriginFilter(mojom::ClearDataFilter_Type filter_type,
+                         std::set<std::string> filter_domains,
+                         std::set<url::Origin> filter_origins,
+                         const url::Origin& origin) {
   std::string url_registrable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   bool found_domain =
       (filter_domains.find(url_registrable_domain != ""
                                ? url_registrable_domain
-                               : url.host()) != filter_domains.end());
+                               : origin.host()) != filter_domains.end());
 
-  bool found_origin =
-      (filter_origins.find(url::Origin::Create(url)) != filter_origins.end());
+  bool found_origin = (filter_origins.find(origin) != filter_origins.end());
 
   return (filter_type == mojom::ClearDataFilter_Type::DELETE_MATCHES) ==
          (found_domain || found_origin);
 }
 
-// Builds a generic GURL-matching predicate function based on |filter|. If
+// Builds a generic Origin-matching predicate function based on |filter|. If
 // |filter| is null, creates an always-true predicate.
-base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
+base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter(
     mojom::ClearDataFilterPtr filter) {
   if (!filter) {
-    return base::BindRepeating([](const GURL&) { return true; });
+    return base::BindRepeating([](const url::Origin&) { return true; });
   }
 
   std::set<std::string> filter_domains;
@@ -291,7 +291,7 @@ base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
   std::set<url::Origin> filter_origins;
   filter_origins.insert(filter->origins.begin(), filter->origins.end());
 
-  return base::BindRepeating(&MatchesUrlFilter, filter->type,
+  return base::BindRepeating(&MatchesOriginFilter, filter->type,
                              std::move(filter_domains),
                              std::move(filter_origins));
 }
@@ -1027,7 +1027,7 @@ void NetworkContext::ClearReportingCacheReports(
     if (filter) {
       reporting_service->RemoveBrowsingData(
           net::ReportingBrowsingDataRemover::DATA_TYPE_REPORTS,
-          BuildUrlFilter(std::move(filter)));
+          BuildOriginFilter(std::move(filter)));
     } else {
       reporting_service->RemoveAllBrowsingData(
           net::ReportingBrowsingDataRemover::DATA_TYPE_REPORTS);
@@ -1048,7 +1048,7 @@ void NetworkContext::ClearReportingCacheClients(
     if (filter) {
       reporting_service->RemoveBrowsingData(
           net::ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS,
-          BuildUrlFilter(std::move(filter)));
+          BuildOriginFilter(std::move(filter)));
     } else {
       reporting_service->RemoveAllBrowsingData(
           net::ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS);
@@ -1067,7 +1067,7 @@ void NetworkContext::ClearNetworkErrorLogging(
       url_request_context_->network_error_logging_service();
   if (logging_service) {
     if (filter) {
-      logging_service->RemoveBrowsingData(BuildUrlFilter(std::move(filter)));
+      logging_service->RemoveBrowsingData(BuildOriginFilter(std::move(filter)));
     } else {
       logging_service->RemoveAllBrowsingData();
     }
@@ -1256,7 +1256,7 @@ void NetworkContext::ClearDomainReliability(
     }
 
     domain_reliability_monitor_->ClearBrowsingData(
-        dr_mode, BuildUrlFilter(std::move(filter)));
+        dr_mode, BuildOriginFilter(std::move(filter)));
   }
   std::move(callback).Run();
 }

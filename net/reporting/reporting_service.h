@@ -112,7 +112,8 @@ class NET_EXPORT ReportingService {
   // ReportingBrowsingDataRemover for more details.
   virtual void RemoveBrowsingData(
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) = 0;
+      const base::RepeatingCallback<bool(const url::Origin&)>&
+          origin_filter) = 0;
 
   // Like RemoveBrowsingData except removes data for all origins without a
   // filter.

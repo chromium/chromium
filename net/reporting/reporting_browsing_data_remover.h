@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -37,7 +37,7 @@ class NET_EXPORT ReportingBrowsingDataRemover {
   static void RemoveBrowsingData(
       ReportingCache* cache,
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Like RemoveBrowsingData except removes data for all origins without a
   // filter. Allows slight optimization over passing an always-true filter to

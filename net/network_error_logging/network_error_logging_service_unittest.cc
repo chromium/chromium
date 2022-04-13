@@ -1034,7 +1034,7 @@ TEST_P(NetworkErrorLoggingServiceTest, RemoveSomeBrowsingData) {
 
   // Remove policy for kOrigin_ but not kOriginDifferentHost_
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   EXPECT_EQ(1u, PolicyCount());
@@ -1496,7 +1496,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SendsCommandsToStoreSynchronous) {
   // Removes policy1 but not policy2.
   EXPECT_EQ(2, store()->StoredPoliciesCount());
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   expected_commands.emplace_back(
@@ -1543,7 +1543,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SendsCommandsToStoreDeferred) {
 
   // Removes policy1 but not policy2.
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   EXPECT_TRUE(store()->VerifyCommands(expected_commands));
@@ -1622,7 +1622,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
 
   // Removes policy1 but not policy2.
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   expected_commands.emplace_back(
@@ -1665,7 +1665,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SendsCommandsToStoreDeferredLoadFailed) {
 
   // Removes policy1 but not policy2.
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   EXPECT_TRUE(store()->VerifyCommands(expected_commands));
@@ -1747,7 +1747,7 @@ TEST_P(NetworkErrorLoggingServiceTest, DoNothingIfShutDown) {
   service()->QueueSignedExchangeReport(MakeSignedExchangeReportDetails(
       kNik_, false, "sxg.failed", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
   service()->RemoveBrowsingData(
-      base::BindRepeating([](const GURL& origin) -> bool {
+      base::BindRepeating([](const url::Origin& origin) -> bool {
         return origin.host() == "example.com";
       }));
   service()->RemoveAllBrowsingData();

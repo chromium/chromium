@@ -467,10 +467,10 @@ TEST_P(ReportingServiceTest, WriteToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->RemoveBrowsingData(ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS,
-                                base::BindRepeating([](const GURL& url) {
-                                  return url.host() == "origin";
-                                }));
+  service()->RemoveBrowsingData(
+      ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS,
+      base::BindRepeating(
+          [](const url::Origin& origin) { return origin.host() == "origin"; }));
   expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT,
                                  kGroupKey_, kEndpoint_);
   expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT_GROUP,
@@ -526,10 +526,10 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->RemoveBrowsingData(ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS,
-                                base::BindRepeating([](const GURL& url) {
-                                  return url.host() == "origin";
-                                }));
+  service()->RemoveBrowsingData(
+      ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS,
+      base::BindRepeating(
+          [](const url::Origin& origin) { return origin.host() == "origin"; }));
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 

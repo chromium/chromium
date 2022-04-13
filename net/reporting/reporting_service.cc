@@ -132,9 +132,10 @@ class ReportingServiceImpl : public ReportingService {
         std::move(header_value)));
   }
 
-  void RemoveBrowsingData(uint64_t data_type_mask,
-                          const base::RepeatingCallback<bool(const GURL&)>&
-                              origin_filter) override {
+  void RemoveBrowsingData(
+      uint64_t data_type_mask,
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter)
+      override {
     DoOrBacklogTask(base::BindOnce(&ReportingServiceImpl::DoRemoveBrowsingData,
                                    base::Unretained(this), data_type_mask,
                                    origin_filter));
@@ -239,7 +240,7 @@ class ReportingServiceImpl : public ReportingService {
 
   void DoRemoveBrowsingData(
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
     DCHECK(initialized_);
     ReportingBrowsingDataRemover::RemoveBrowsingData(
         context_->cache(), data_type_mask, origin_filter);

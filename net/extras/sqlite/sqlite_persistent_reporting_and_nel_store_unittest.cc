@@ -850,7 +850,7 @@ TEST_F(SQLitePersistNelTest, RemoveSomeBrowsingData) {
   SimulateRestart();
 
   service_->RemoveBrowsingData(base::BindRepeating(
-      [](const std::string& host, const GURL& origin) {
+      [](const std::string& host, const url::Origin& origin) {
         return origin.host() == host;
       },
       kOrigin1.host()));

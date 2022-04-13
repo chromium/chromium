@@ -53,7 +53,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // |origin_filter| is interpreted as an always-true filter, indicating
   // complete deletion.
   void ClearBeacons(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Creates and stores a context for the given |config|, which should be for an
   // origin distinct from any existing ones. Returns pointer to the inserted
@@ -65,7 +65,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // (discarding all queued beacons in the process). A null |origin_filter|
   // is interpreted as an always-true filter, indicating complete deletion.
   void RemoveContexts(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Finds a context for the exact domain |host|. Otherwise returns nullptr.
   DomainReliabilityContext* GetContext(const std::string& host) const;

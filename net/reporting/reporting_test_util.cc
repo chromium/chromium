@@ -353,7 +353,7 @@ void TestReportingService::ProcessReportToHeader(
 
 void TestReportingService::RemoveBrowsingData(
     uint64_t data_type_mask,
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   NOTREACHED();
 }
 

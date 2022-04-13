@@ -38,7 +38,7 @@ void TestNetworkErrorLoggingService::QueueSignedExchangeReport(
     SignedExchangeReportDetails details) {}
 
 void TestNetworkErrorLoggingService::RemoveBrowsingData(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {}
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {}
 
 void TestNetworkErrorLoggingService::RemoveAllBrowsingData() {}
 

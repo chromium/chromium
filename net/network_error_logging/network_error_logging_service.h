@@ -253,7 +253,8 @@ class NET_EXPORT NetworkErrorLoggingService {
   // Removes browsing data (origin policies) associated with any origin for
   // which |origin_filter| returns true.
   virtual void RemoveBrowsingData(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) = 0;
+      const base::RepeatingCallback<bool(const url::Origin&)>&
+          origin_filter) = 0;
 
   // Removes browsing data (origin policies) for all origins. Allows slight
   // optimization over passing an always-true filter to RemoveBrowsingData.

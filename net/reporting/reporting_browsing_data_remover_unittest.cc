@@ -31,7 +31,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
       data_type_mask |= ReportingBrowsingDataRemover::DATA_TYPE_CLIENTS;
 
     if (!host.empty()) {
-      base::RepeatingCallback<bool(const GURL&)> origin_filter =
+      base::RepeatingCallback<bool(const url::Origin&)> origin_filter =
           base::BindRepeating(&ReportingBrowsingDataRemoverTest::HostIs, host);
       ReportingBrowsingDataRemover::RemoveBrowsingData(cache(), data_type_mask,
                                                        origin_filter);
@@ -56,8 +56,8 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
         kEndpoint_, base::Time::Now() + base::Days(7));
   }
 
-  static bool HostIs(std::string host, const GURL& url) {
-    return url.host() == host;
+  static bool HostIs(std::string host, const url::Origin& origin) {
+    return origin.host() == host;
   }
 
   size_t report_count() {
