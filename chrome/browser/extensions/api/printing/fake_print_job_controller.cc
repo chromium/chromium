@@ -21,6 +21,16 @@
 
 namespace extensions {
 
+// Subclass PrintJob to allow construction without supplying a PrintJobManager
+// instance.
+class PrintJobForTesting : public printing::PrintJob {
+ public:
+  PrintJobForTesting() = default;
+
+ private:
+  ~PrintJobForTesting() override = default;
+};
+
 FakePrintJobController::FakePrintJobController() = default;
 
 FakePrintJobController::~FakePrintJobController() = default;
@@ -29,7 +39,7 @@ scoped_refptr<printing::PrintJob> FakePrintJobController::StartPrintJob(
     const std::string& extension_id,
     std::unique_ptr<printing::MetafileSkia> metafile,
     std::unique_ptr<printing::PrintSettings> settings) {
-  auto job = base::MakeRefCounted<printing::PrintJob>();
+  auto job = base::MakeRefCounted<PrintJobForTesting>();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FakePrintJobController::StartPrinting,
                                 weak_ptr_factory_.GetWeakPtr(), job,

@@ -897,7 +897,8 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   }
 
   DCHECK(!print_job_);
-  print_job_ = base::MakeRefCounted<PrintJob>();
+  print_job_ =
+      base::MakeRefCounted<PrintJob>(g_browser_process->print_job_manager());
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages());
 #if BUILDFLAG(IS_CHROMEOS)
   print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()

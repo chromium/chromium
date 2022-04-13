@@ -102,9 +102,13 @@ PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
 
 }  // namespace
 
-PrintJob::PrintJob() {
+PrintJob::PrintJob(PrintJobManager* print_job_manager)
+    : print_job_manager_(print_job_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(print_job_manager_);
 }
+
+PrintJob::PrintJob() = default;
 
 PrintJob::~PrintJob() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

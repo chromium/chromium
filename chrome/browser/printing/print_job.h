@@ -30,6 +30,7 @@ namespace printing {
 
 class JobEventDetails;
 class MetafilePlayer;
+class PrintJobManager;
 class PrintJobWorker;
 class PrintedDocument;
 #if BUILDFLAG(IS_WIN)
@@ -67,7 +68,8 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // post-constructor initialization must be done with Initialize().
   // If PrintJob is created on Chrome OS, call SetSource() to set which
   // component initiated this print job.
-  PrintJob();
+  // |print_job_manager| must outlive this object.
+  explicit PrintJob(PrintJobManager* print_job_manager);
 
   PrintJob(const PrintJob&) = delete;
   PrintJob& operator=(const PrintJob&) = delete;
@@ -164,6 +166,10 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   virtual ~PrintJob();
 
+  // Constructs a PrintJob with a null PrintJobManager instance. Used only in
+  // testing contexts.
+  PrintJob();
+
   // The functions below are used for tests only.
   void set_job_pending(bool pending);
 
@@ -226,6 +232,10 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // are blocking and enters a message loop without your consent. There is one
   // worker thread per print job.
   std::unique_ptr<PrintJobWorker> worker_;
+
+  // The global PrintJobManager. May be null in testing contexts
+  // only. Otherwise guaranteed to outlive this object.
+  raw_ptr<PrintJobManager> print_job_manager_ = nullptr;
 
   // The printed document.
   scoped_refptr<PrintedDocument> document_;
