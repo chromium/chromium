@@ -29,7 +29,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 bool AreDesksTemplatesEnabled() {
   PrefService* pref_service = GetPrimaryUserPrefService();
 
-  DCHECK(pref_service);
+  if (!pref_service)
+    return false;
 
   const PrefService::Preference* desk_templates_pref =
       pref_service->FindPreference(prefs::kDeskTemplatesEnabled);
