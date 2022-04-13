@@ -14,9 +14,10 @@ class HoverHighlightView;
 class TrayBubbleWrapper;
 
 // Pen colors.
-constexpr SkColor kProjectorRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
-constexpr SkColor kProjectorYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
-constexpr SkColor kProjectorBluePenColor = SkColorSetRGB(0x1A, 0x73, 0xE8);
+constexpr SkColor kProjectorMagentaPenColor = SkColorSetRGB(0xFF, 0x00, 0xE5);
+constexpr SkColor kProjectorRedPenColor = SkColorSetRGB(0xE9, 0x42, 0x35);
+constexpr SkColor kProjectorYellowPenColor = SkColorSetRGB(0xFB, 0xF1, 0x04);
+constexpr SkColor kProjectorBluePenColor = SkColorSetRGB(0x42, 0x85, 0xF4);
 
 // Status area tray which allows you to access the annotation tools for
 // Projector.

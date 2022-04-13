@@ -34,7 +34,7 @@ namespace {
 constexpr int kPaddingBetweenBottomAndLastTrayItem = 4;
 
 // Width of the bubble itself (dp).
-constexpr int kBubbleWidth = 242;
+constexpr int kBubbleWidth = 196;
 
 // Insets for the views (dp).
 constexpr auto kPenViewPadding = gfx::Insets::TLBR(4, 16, 0, 16);
@@ -49,9 +49,9 @@ constexpr int kMenuRowHeight = 48;
 constexpr int kColorButtonColorViewSize = 16;
 constexpr int kColorButtonViewRadius = 28;
 
-constexpr SkColor kPenColors[] = {kProjectorRedPenColor, kProjectorBluePenColor,
-                                  SK_ColorWHITE, kProjectorYellowPenColor,
-                                  SK_ColorBLACK};
+constexpr SkColor kPenColors[] = {
+    kProjectorMagentaPenColor, kProjectorBluePenColor, kProjectorYellowPenColor,
+    kProjectorRedPenColor};
 
 // TODO(b/201664243): Use AnnotatorToolType.
 enum ProjectorTool { kToolNone, kToolPen };
@@ -68,12 +68,21 @@ ProjectorTool GetCurrentTool() {
   return kToolNone;
 }
 
-const gfx::VectorIcon& GetIconForTool(ProjectorTool tool) {
+const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
   switch (tool) {
     case kToolNone:
       return kPaletteTrayIconProjectorIcon;
     case kToolPen:
-      return kInkPenIcon;
+      switch (color) {
+        case kProjectorMagentaPenColor:
+          return kPaletteTrayIconProjectorMagentaIcon;
+        case kProjectorBluePenColor:
+          return kPaletteTrayIconProjectorBlueIcon;
+        case kProjectorRedPenColor:
+          return kPaletteTrayIconProjectorRedIcon;
+        case kProjectorYellowPenColor:
+          return kPaletteTrayIconProjectorYellowIcon;
+      }
   }
 
   NOTREACHED();
@@ -91,8 +100,8 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
-  // The default pen color upon creation is red.
-  current_pen_color_ = kProjectorRedPenColor;
+  // The default pen color upon creation is magenta.
+  current_pen_color_ = kProjectorMagentaPenColor;
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
@@ -224,7 +233,7 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
   // Reset pen color to default color.
-  current_pen_color_ = kProjectorRedPenColor;
+  current_pen_color_ = kProjectorMagentaPenColor;
 }
 
 void ProjectorAnnotationTray::ToggleAnnotator() {
@@ -254,7 +263,7 @@ void ProjectorAnnotationTray::DeactivateActiveTool() {
 void ProjectorAnnotationTray::UpdateIcon() {
   const ProjectorTool tool = GetCurrentTool();
   image_view_->SetImage(gfx::CreateVectorIcon(
-      GetIconForTool(tool),
+      GetIconForTool(tool, current_pen_color_),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   SetIsActive(tool != kToolNone);
@@ -277,12 +286,10 @@ int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
       return IDS_RED_COLOR_BUTTON;
     case kProjectorBluePenColor:
       return IDS_BLUE_COLOR_BUTTON;
-    case SK_ColorWHITE:
-      return IDS_WHITE_COLOR_BUTTON;
     case kProjectorYellowPenColor:
       return IDS_YELLOW_COLOR_BUTTON;
-    case SK_ColorBLACK:
-      return IDS_BLACK_COLOR_BUTTON;
+    case kProjectorMagentaPenColor:
+      return IDS_MAGENTA_COLOR_BUTTON;
   }
   NOTREACHED();
   return IDS_RED_COLOR_BUTTON;

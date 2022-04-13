@@ -171,11 +171,10 @@ void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
 ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
     SkColor color) {
   std::map<SkColor, ProjectorMarkerColor> marker_colors_map = {
-      {SK_ColorBLACK, ProjectorMarkerColor::kBlack},
-      {SK_ColorWHITE, ProjectorMarkerColor::kWhite},
-      {ash::kProjectorBluePenColor, ProjectorMarkerColor::kBlue},
-      {ash::kProjectorRedPenColor, ProjectorMarkerColor::kRed},
-      {ash::kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
+      {kProjectorMagentaPenColor, ProjectorMarkerColor::kMagenta},
+      {kProjectorBluePenColor, ProjectorMarkerColor::kBlue},
+      {kProjectorRedPenColor, ProjectorMarkerColor::kRed},
+      {kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
   return marker_colors_map[color];
 }
 }  // namespace ash

@@ -4369,6 +4369,10 @@ Here are some things you can try to get started.
         Blue
       </message>
 
+      <message name="IDS_MAGENTA_COLOR_BUTTON" desc="The name for the magenta marker button.">
+        Magenta
+      </message>
+
       <message name="IDS_UNKNOWN_COLOR_BUTTON" desc="The name for the unknown marker button.">
         Unknown
       </message>
