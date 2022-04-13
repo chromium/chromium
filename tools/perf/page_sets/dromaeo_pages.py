@@ -10,9 +10,9 @@ from page_sets import press_story
 
 class DromaeoStory(press_story.PressStory):
 
-  def __init__(self, url, ps):
+  def __init__(self, url, page_set):
     self.URL = url
-    super(DromaeoStory, self).__init__(ps)
+    super(DromaeoStory, self).__init__(page_set)
 
 
   def ExecuteTest(self, action_runner):

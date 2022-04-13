@@ -32,19 +32,19 @@ chrome_sizes,"heiserya@chromium.org, johnchen@chromium.org",Build,https://chromi
 components_perftests,csharrison@chromium.org,,,
 dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,smoke_test
-dromaeo,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,,
+dromaeo,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,,all
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
-jetstream,hablich@chromium.org,Blink>JavaScript,,
-jetstream2,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream/in-depth.html,
-kraken,hablich@chromium.org,Blink>JavaScript,,
+jetstream,hablich@chromium.org,Blink>JavaScript,,all
+jetstream2,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream/in-depth.html,all
+kraken,hablich@chromium.org,Blink>JavaScript,,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 loading.desktop,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_warm,international,intl_ar_fa_he,intl_es_fr_pt_BR,intl_hi_ru,intl_ja_zh,intl_ko_th_vi,typical"
 loading.mobile,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_hot,cache_temperature_warm,easy_ttfmp,easy_tti,global,pwa,tough_ttfmp,tough_tti"
 media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
 media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
 memory.desktop,erikchen@chromium.org,,,
-octane,hablich@chromium.org,Blink>JavaScript,,
+octane,hablich@chromium.org,Blink>JavaScript,,all
 performance_browser_tests,"johnchen@chromium.org, jophba@chromium.org",Internals>Media>ScreenCapture,,
 power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
 power.mobile,chrometto-team@google.com,,https://goto.google.com/power-mobile-benchmark,"2018,2019,2021,health_check,infinite_scroll,javascript_heavy"
@@ -61,12 +61,12 @@ resource_sizes_system_webview_bundle,"agrieve@chromium.org, jbudorick@chromium.o
 resource_sizes_system_webview_google_bundle,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-speedometer,hablich@chromium.org,Blink>JavaScript,,
-speedometer-future,hablich@chromium.org,Blink>JavaScript,,
-speedometer2,hablich@chromium.org,Blink>JavaScript,,
-speedometer2-chrome-health,hablich@chromium.org,Blink>JavaScript,,
-speedometer2-future,hablich@chromium.org,Blink>JavaScript,,
-speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,
+speedometer,hablich@chromium.org,Blink>JavaScript,,all
+speedometer-future,hablich@chromium.org,Blink>JavaScript,,all
+speedometer2,hablich@chromium.org,Blink>JavaScript,,all
+speedometer2-chrome-health,hablich@chromium.org,Blink>JavaScript,,all
+speedometer2-future,hablich@chromium.org,Blink>JavaScript,,all
+speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
@@ -84,5 +84,5 @@ v8.browsing_mobile,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.or
 v8.browsing_mobile-future,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.runtime_stats.top_25,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
-wasmpspdfkit,ahaas@chromium.org,Blink>JavaScript>WebAssembly,,
-webrtc,"qiangchen@chromium.org, mbonadei@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
+wasmpspdfkit,ahaas@chromium.org,Blink>JavaScript>WebAssembly,,all
+webrtc,"qiangchen@chromium.org, mbonadei@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"all,datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
