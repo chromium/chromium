@@ -23,9 +23,9 @@ grit("autofill_address_rewriter_resources") {
 
 action("regex_patterns_inl_h") {
   visibility = [ ":*" ]
-  sources = [ "pattern_provider/resources/regex_patterns.json" ]
-  script = "pattern_provider/transpile_regex_patterns.py"
-  outputs = [ "$target_gen_dir/pattern_provider/regex_patterns_inl.h" ]
+  sources = [ "form_parsing/resources/regex_patterns.json" ]
+  script = "form_parsing/transpile_regex_patterns.py"
+  outputs = [ "$target_gen_dir/form_parsing/regex_patterns_inl.h" ]
   args = rebase_path(sources, root_build_dir) +
          rebase_path(outputs, root_build_dir)
 }
@@ -164,6 +164,8 @@ static_library("browser") {
     "form_parsing/phone_field.h",
     "form_parsing/price_field.cc",
     "form_parsing/price_field.h",
+    "form_parsing/regex_patterns.cc",
+    "form_parsing/regex_patterns.h",
     "form_parsing/search_field.cc",
     "form_parsing/search_field.h",
     "form_parsing/travel_field.cc",
@@ -220,8 +222,6 @@ static_library("browser") {
     "metrics/payments/save_credit_card_prompt_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
-    "pattern_provider/regex_patterns.cc",
-    "pattern_provider/regex_patterns.h",
     "payments/account_info_getter.h",
     "payments/autofill_offer_manager.cc",
     "payments/autofill_offer_manager.h",
@@ -760,6 +760,7 @@ source_set("unit_tests") {
     "form_parsing/parsing_test_utils.h",
     "form_parsing/phone_field_unittest.cc",
     "form_parsing/price_field_unittest.cc",
+    "form_parsing/regex_patterns_unittest.cc",
     "form_parsing/search_field_unittest.cc",
     "form_processing/label_processing_util_unittest.cc",
     "form_processing/name_processing_util_unittest.cc",
@@ -776,7 +777,6 @@ source_set("unit_tests") {
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
-    "pattern_provider/regex_patterns_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",
     "payments/credit_card_cvc_authenticator_unittest.cc",

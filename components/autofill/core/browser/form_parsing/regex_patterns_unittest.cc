@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 
 // Keep these tests in sync with
 // components/autofill/core/browser/autofill_regexes_unittest.cc.
@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
-#include "components/autofill/core/browser/pattern_provider/regex_patterns_inl.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

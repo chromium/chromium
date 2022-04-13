@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
@@ -89,4 +89,4 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_

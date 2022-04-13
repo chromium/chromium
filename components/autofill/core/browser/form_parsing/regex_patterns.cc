@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 
 #include "base/check.h"
-#include "components/autofill/core/browser/pattern_provider/regex_patterns_inl.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 
 namespace autofill {
 

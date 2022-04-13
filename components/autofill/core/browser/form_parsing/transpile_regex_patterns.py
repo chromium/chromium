@@ -182,8 +182,8 @@ def generate_cpp_lines(input_json):
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_INL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_INL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 
 #include <array>
 
@@ -191,7 +191,7 @@ def generate_cpp_lines(input_json):
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
-#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 
@@ -256,7 +256,7 @@ struct NameAndLanguageComparator {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_REGEX_PATTERNS_INL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 """
 
 def build_cpp_file(input_json, output_handle):
