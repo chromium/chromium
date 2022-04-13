@@ -2805,6 +2805,19 @@ void Document::Shutdown() {
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
 
+  if (!data_->already_sent_automatic_lazy_load_frame_ukm_) {
+    data_->already_sent_automatic_lazy_load_frame_ukm_ = true;
+    if (data_->lazy_ads_frame_count_ > 0 ||
+        data_->lazy_embeds_frame_count_ > 0) {
+      ukm::builders::Blink_AutomaticLazyLoadFrame(UkmSourceID())
+          .SetLazyAdsFrameCount(ukm::GetExponentialBucketMinForCounts1000(
+              data_->lazy_ads_frame_count_))
+          .SetLazyEmbedsFrameCount(ukm::GetExponentialBucketMinForCounts1000(
+              data_->lazy_embeds_frame_count_))
+          .Record(UkmRecorder());
+    }
+  }
+
   GetFontMatchingMetrics()->PublishAllMetrics();
 
   GetViewportData().Shutdown();
@@ -6608,6 +6621,14 @@ DocumentNameCollection* Document::DocumentNamedItems(const AtomicString& name) {
 HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
   return EnsureCachedCollection<DocumentAllNameCollection>(
       kDocumentAllNamedItems, name);
+}
+
+void Document::IncrementLazyAdsFrameCount() {
+  data_->lazy_ads_frame_count_++;
+}
+
+void Document::IncrementLazyEmbedsFrameCount() {
+  data_->lazy_embeds_frame_count_++;
 }
 
 DOMWindow* Document::defaultView() const {
