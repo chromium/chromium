@@ -15,6 +15,7 @@
 #include "chrome/browser/android/preferences/clipboard_android.h"
 #include "chrome/browser/android/seccomp_support_detector.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -55,6 +56,10 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
                                                     bool is_initial_profile) {
   DCHECK(is_initial_profile);  // No multiprofile on Android, only the initial
                                // call should happen.
+
+  // Get the OS Data Saver setting. This will be needed later on, so we want to
+  // fetch this setting as soon as possible to avoid blocking on it.
+  data_saver::FetchDataSaverOSSettingAsynchronously();
 
   ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
 

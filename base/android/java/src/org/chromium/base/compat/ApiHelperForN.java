@@ -13,6 +13,7 @@ import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaCodec.CryptoInfo;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Process;
 import android.security.NetworkSecurityPolicy;
@@ -102,5 +103,10 @@ public final class ApiHelperForN {
     public static Notification.Builder setCustomBigContentView(
             Notification.Builder builder, RemoteViews view) {
         return builder.setCustomBigContentView(view);
+    }
+
+    /** See {@link ConnectivityManager#getRestrictBackgroundStatus(ConnectivityManager)}. */
+    public static int getRestrictBackgroundStatus(ConnectivityManager cm) {
+        return cm.getRestrictBackgroundStatus();
     }
 }

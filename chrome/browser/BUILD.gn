@@ -377,6 +377,8 @@ static_library("browser") {
     "data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h",
     "data_reduction_proxy/data_reduction_proxy_tab_helper.cc",
     "data_reduction_proxy/data_reduction_proxy_tab_helper.h",
+    "data_saver/data_saver.cc",
+    "data_saver/data_saver.h",
     "data_use_measurement/chrome_data_use_measurement.cc",
     "data_use_measurement/chrome_data_use_measurement.h",
     "defaults.cc",

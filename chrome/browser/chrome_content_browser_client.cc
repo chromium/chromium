@@ -43,6 +43,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
@@ -2560,9 +2561,7 @@ bool ChromeContentBrowserClient::IsDataSaverEnabled(
   if (!browser_context || browser_context->IsOffTheRecord())
     return false;
 
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return profile && data_reduction_proxy::DataReductionProxySettings::
-                        IsDataSaverEnabledByUser(profile->IsOffTheRecord());
+  return data_saver::IsDataSaverEnabled(browser_context);
 }
 
 void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(

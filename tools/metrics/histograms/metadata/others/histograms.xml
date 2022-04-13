@@ -3949,6 +3949,16 @@ chromium-metrics-reviews@google.com.
   <summary>Errors when trying to load DataPack files.</summary>
 </histogram>
 
+<histogram name="DataSaver.BlockingReadOSSettingCall" units="ms"
+    expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Time that the UI thread is blocked on loading the Android Data Saver setting
+    from the OS.
+  </summary>
+</histogram>
+
 <histogram name="DBus.AsyncMethodCallSuccess" enum="BooleanSuccess"
     expires_after="M81">
   <owner>satorux@chromium.org</owner>
