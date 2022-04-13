@@ -137,7 +137,6 @@ group("gn_all") {
       "//chrome/test:browser_tests",
       "//chrome/test:interactive_ui_tests",
       "//chrome/test:sync_integration_tests",
-      "//chrome/test/chromedriver:chromedriver_unittests",
       "//components/subresource_filter/tools:subresource_filter_tools",
       "//components/zucchini:zucchini",
       "//components/zucchini:zucchini_unittests",
@@ -169,6 +168,7 @@ group("gn_all") {
 
   if (!is_ios) {
     deps += [
+      ":chromedriver",
       "//cc:cc_unittests",
       "//chrome/test:unit_tests",
       "//components:components_browsertests",
@@ -423,7 +423,6 @@ group("gn_all") {
         "//chrome/android:chrome_public_unit_test_apk",
         "//chrome/browser/android/examples/custom_tabs_client:custom_tabs_client_example_apk",
         "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
-        "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
         "//content/shell/android:content_shell_test_apk",
       ]
     }
@@ -558,7 +557,6 @@ group("gn_all") {
       deps += [
         "//chrome/test:load_library_perf_tests",
         "//chrome/test:sync_performance_tests",
-        "//chrome/test/chromedriver:chromedriver",
         "//courgette:courgette",
         "//courgette:courgette_fuzz",
         "//courgette:courgette_minimal_tool",
@@ -574,10 +572,6 @@ group("gn_all") {
         "//third_party/leveldatabase:env_chromium_unittests",
         "//third_party/libaddressinput:libaddressinput_unittests",
       ]
-    }
-
-    if (is_android) {
-      deps += [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
     }
 
     if (enable_extensions) {
@@ -605,17 +599,6 @@ group("gn_all") {
       "//ppapi:pepper_hash_for_uma",
       "//ppapi:ppapi_perftests",
     ]
-  }
-
-  # TODO(crbug.com/1258253): Consolidate all ChromeDriver deps in one location
-  # and avoid conditionally removing targets.
-  if (is_fuchsia && !is_chromecast) {
-    # For Fuchsia, ChromeDriver runs on the host, not on Fuchsia.
-    deps -= [
-      "//chrome/test/chromedriver:chromedriver",
-      "//chrome/test/chromedriver:chromedriver_unittests",
-    ]
-    deps += [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
   }
 
   if (is_android || is_linux || is_chromeos_lacros) {
@@ -1047,6 +1030,26 @@ group("gn_visibility") {
 }
 
 if (!is_ios) {
+  group("chromedriver") {
+    testonly = true
+
+    if (is_fuchsia || is_android) {
+      # On Fuchsia/Android, ChromeDriver runs on the host, not the device.
+      if (!is_chromecast) {
+        deps = [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
+
+        if (is_android) {
+          deps += [ "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk" ]
+        }
+      }
+    } else {
+      deps = [
+        "//chrome/test/chromedriver:chromedriver",
+        "//chrome/test/chromedriver:chromedriver_unittests",
+      ]
+    }
+  }
+
   # This group includes all of the targets needed to build and test Blink,
   # including running web tests (see below). This target is defined here because
   # previously //third_party/WebKit, now //third_party/blink, couldn't depend on
