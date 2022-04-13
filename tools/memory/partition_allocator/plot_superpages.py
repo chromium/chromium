@@ -103,6 +103,55 @@ def PlotSuperPageData(data: dict, output_filename: str):
   plt.savefig(output_filename, bbox_inches='tight')
 
 
+def PlotSuperPageCompressionData(data: dict, output_filename: str):
+  num_superpages = len(data)
+  num_pages = len(data[0]['page_sizes'])
+  data_np = np.zeros((num_superpages, num_pages, 3))
+
+  address_to_superpage = {superpage['address']: superpage for superpage in data}
+  addresses = sorted(address_to_superpage.keys())
+
+  WHITE = (1., 1., 1.)
+  cmap = matplotlib.cm.get_cmap('coolwarm')
+
+  total_compressed_size = 0
+  total_uncompressed_size = 0
+  for superpage_index in range(len(addresses)):
+    superpage = address_to_superpage[addresses[superpage_index]]
+    for index, page in enumerate(superpage['page_sizes']):
+      total_uncompressed_size += page['uncompressed']
+      total_compressed_size += page['compressed']
+      if page['uncompressed'] == 0:
+        value = WHITE
+      else:
+        value = cmap(page['compressed'] / page['uncompressed'])[:3]
+      data_np[superpage_index, index] = value
+
+  overall_compression_ratio = (100. * total_compressed_size /
+                               total_uncompressed_size)
+  plt.figure(figsize=(20, len(address_to_superpage)))
+  plt.imshow(data_np, aspect=8)
+  plt.title('Super page compression ratio map - Ratio = %.1f%% '
+            '- Compressed Size = %.1fMiB' %
+            (overall_compression_ratio, total_compressed_size / (1 << 20)))
+  plt.yticks(ticks=range(len(addresses)), labels=addresses)
+  plt.xlabel('Page index in SuperPage')
+
+  handles = [
+      matplotlib.patches.Patch(facecolor=WHITE,
+                               edgecolor='k',
+                               label='Empty / Decommitted'),
+      matplotlib.patches.Patch(facecolor=cmap(0.),
+                               edgecolor='k',
+                               label='Compressible'),
+      matplotlib.patches.Patch(facecolor=cmap(1.),
+                               edgecolor='k',
+                               label='Incompressible'),
+  ]
+  plt.legend(handles=handles, loc='lower left', fontsize=12, framealpha=.7)
+  plt.savefig(output_filename, bbox_inches='tight')
+
+
 def _PlotFragmentationCommon(bucket_to_allocated: dict[int, list],
                              output_filename: str):
   slot_sizes = sorted(bucket_to_allocated.keys())
@@ -218,16 +267,18 @@ def main():
   args = parser.parse_args()
   data = ParseJson(args.json)
 
-  PlotSuperPageData(data['superpages'], args.output + "_superpage.png")
+  PlotSuperPageData(data['superpages'], args.output + '_superpage.png')
+  PlotSuperPageCompressionData(data['superpages'],
+                               args.output + '_compression.png')
 
   # Allocated object data is not always available.
   if 'allocated_sizes' in data:
     bucket_sizes = [x['slot_size'] for x in data['buckets']]
     PlotFragmentationData(data['allocated_sizes'], bucket_sizes,
-                          args.output + "_waste.png")
+                          args.output + '_waste.png')
     PlotSimulatedFragmentationData(data['allocated_sizes'], bucket_sizes,
-                                   args.output + "_waste_simulated.png")
-    PlotDelta(data['allocated_sizes'], bucket_sizes, args.output + "_delta.png")
+                                   args.output + '_waste_simulated.png')
+    PlotDelta(data['allocated_sizes'], bucket_sizes, args.output + '_delta.png')
 
 
 if __name__ == '__main__':

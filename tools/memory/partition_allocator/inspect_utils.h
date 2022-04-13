@@ -32,6 +32,7 @@ class ScopedSigStopper {
 };
 
 base::ScopedFD OpenProcMem(pid_t pid);
+base::ScopedFD OpenPagemap(pid_t pid);
 
 // Reads remove process memory from |fd| at |address| into |buffer|.
 bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer);

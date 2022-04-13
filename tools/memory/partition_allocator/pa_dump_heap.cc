@@ -5,6 +5,8 @@
 // Dumps PartitionAlloc's heap into a file.
 
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -23,6 +25,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/snappy/src/snappy.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
 namespace partition_alloc::tools {
@@ -38,9 +42,35 @@ using partition_alloc::internal::PartitionSuperPageExtentEntry;
 using partition_alloc::internal::SystemPageSize;
 using partition_alloc::internal::ThreadSafe;
 
+// See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
+struct PageMapEntry {
+  uint64_t pfn_or_swap : 55;
+  uint64_t soft_dirty : 1;
+  uint64_t exclusively_mapped : 1;
+  uint64_t unused : 4;
+  uint64_t file_mapped_or_shared_anon : 1;
+  uint64_t swapped : 1;
+  uint64_t present : 1;
+};
+static_assert(sizeof(PageMapEntry) == sizeof(uint64_t), "Wrong bitfield size");
+
+absl::optional<PageMapEntry> EntryAtAddress(int pagemap_fd, uintptr_t address) {
+  constexpr size_t kPageShift = 12;
+  off_t offset = (address >> kPageShift) * sizeof(PageMapEntry);
+  if (lseek(pagemap_fd, offset, SEEK_SET) != offset)
+    return absl::nullopt;
+
+  PageMapEntry entry;
+  if (read(pagemap_fd, &entry, sizeof(PageMapEntry)) != sizeof(PageMapEntry))
+    return absl::nullopt;
+
+  return {entry};
+}
+
 class HeapDumper {
  public:
-  HeapDumper(pid_t pid, int mem_fd) : pid_(pid), mem_fd_(mem_fd) {}
+  HeapDumper(pid_t pid, int mem_fd, int pagemap_fd)
+      : pid_(pid), mem_fd_(mem_fd), pagemap_fd_(pagemap_fd) {}
   ~HeapDumper() {
     for (const auto& p : super_pages_) {
       munmap(p.second, kSuperPageSize);
@@ -181,6 +211,7 @@ class HeapDumper {
         }
       }
       ret.SetKey("all_zeros", base::Value{all_zeros});
+
       return ret;
     };
     auto super_page_to_value = [&](uintptr_t address,
@@ -194,6 +225,49 @@ class HeapDumper {
         partition_pages.Append(partition_page_to_value(offset, data));
       }
       ret.SetKey("partition_pages", std::move(partition_pages));
+
+      auto page_sizes = base::Value(base::Value::Type::LIST);
+      // Looking at how well the heap would compress.
+      constexpr size_t kPageSize = 1 << 12;
+      for (uintptr_t page_address = address;
+           page_address < address + partition_alloc::internal::kSuperPageSize;
+           page_address += kPageSize) {
+        auto maybe_pagemap_entry = EntryAtAddress(pagemap_fd_, page_address);
+        size_t uncompressed_size = 0, compressed_size = 0;
+
+        bool all_zeros = true;
+        for (size_t i = 0; i < kPageSize; i++) {
+          if (reinterpret_cast<unsigned char*>(page_address)[i]) {
+            all_zeros = false;
+            break;
+          }
+        }
+
+        if (maybe_pagemap_entry && !all_zeros) {
+          // If it's not in memory and not in swap, only the PTE exists.
+          bool populated =
+              maybe_pagemap_entry->present || maybe_pagemap_entry->swapped;
+          if (populated) {
+            std::string compressed;
+            uncompressed_size = kPageSize;
+            // Use snappy to approximate what a fast compression algorithm
+            // operating with a page granularity would do. This is not the
+            // algorithm used in either Linux or macOS, but should give some
+            // indication.
+            compressed_size =
+                snappy::Compress(reinterpret_cast<const char*>(page_address),
+                                 kPageSize, &compressed);
+          }
+        }
+
+        auto page_size = base::Value(base::Value::Type::DICTIONARY);
+        page_size.SetKey("uncompressed",
+                         base::Value{static_cast<int>(uncompressed_size)});
+        page_size.SetKey("compressed",
+                         base::Value{static_cast<int>(compressed_size)});
+        page_sizes.Append(std::move(page_size));
+      }
+      ret.SetKey("page_sizes", std::move(page_sizes));
 
       return ret;
     };
@@ -337,6 +411,7 @@ class HeapDumper {
 
   const pid_t pid_;
   const int mem_fd_;
+  const int pagemap_fd_;
   uintptr_t root_address_ = 0;
   RawBuffer<PartitionRoot<ThreadSafe>> root_ = {};
   std::map<uintptr_t, char*> super_pages_ = {};
@@ -362,7 +437,9 @@ int main(int argc, char** argv) {
   LOG(WARNING) << "PID = " << pid;
 
   auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
-  partition_alloc::tools::HeapDumper dumper{pid, mem_fd.get()};
+  auto pagemap_fd = partition_alloc::tools::OpenPagemap(pid);
+  partition_alloc::tools::HeapDumper dumper{pid, mem_fd.get(),
+                                            pagemap_fd.get()};
 
   {
     partition_alloc::tools::ScopedSigStopper stopper{pid};

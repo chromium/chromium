@@ -22,6 +22,15 @@ base::ScopedFD OpenProcMem(pid_t pid) {
   return base::ScopedFD(fd);
 }
 
+base::ScopedFD OpenPagemap(pid_t pid) {
+  std::string path = base::StringPrintf("/proc/%d/pagemap", pid);
+  int fd = open(path.c_str(), O_RDONLY);
+  CHECK_NE(fd, -1)
+      << "Do you have 0 set in /proc/sys/kernel/yama/ptrace_scope?";
+
+  return base::ScopedFD(fd);
+}
+
 // Reads a remote process memory.
 bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
   if (HANDLE_EINTR(pread(fd, buffer, size, address)) ==
