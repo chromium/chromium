@@ -1775,3 +1775,7 @@ crbug.com/591099 fast/forms/text/input-appearance-scroll-size-mocked.html [ Fail
 crbug.com/1147859 virtual/css-highlight-overlay-painting/* [ Skip ]
 
 crbug.com/1303102 wpt_internal/css/css-images/object-view-box* [ Skip ]
+
+# only NGHighlightPainter has the ability to paint decorations added by ::target-text
+crbug.com/1223918 wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
+crbug.com/1223918 virtual/css-highlight-inheritance/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
