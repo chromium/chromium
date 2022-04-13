@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
@@ -87,6 +86,8 @@ class GaiaRemoteConsentFlow
   void SetAccountsInCookie();
 
   void GaiaRemoteConsentFlowFailed(Failure failure);
+
+  void DetachWebAuthFlow();
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;

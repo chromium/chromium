@@ -70,10 +70,15 @@ class ConsistencyCookieManagerTest : public testing::Test {
   }
 
   void ExpectCookieSet(const std::string& value) {
+    ExpectCookieSetInManager(cookie_manager_, value);
+  }
+
+  void ExpectCookieSetInManager(MockCookieManager* manager,
+                                const std::string& value) {
     const std::string expected_domain =
         std::string(".") + GaiaUrls::GetInstance()->gaia_url().host();
     EXPECT_CALL(
-        *cookie_manager_,
+        *manager,
         SetCanonicalCookie(
             testing::AllOf(
                 testing::Property(&net::CanonicalCookie::Name,
@@ -508,6 +513,46 @@ TEST_F(ConsistencyCookieManagerTest, CancelPendingQuery) {
     // though the previous query returned "Consistent".
     ExpectGetCookie();
   }
+}
+
+TEST_F(ConsistencyCookieManagerTest, ExtraCookieManager) {
+  // Start with "Consistent" in the main cookie manager.
+  SetCookieInManager(ConsistencyCookieManager::kCookieValueStringConsistent);
+  ExpectGetCookie();
+  SetReconcilorState(signin_metrics::ACCOUNT_RECONCILOR_OK);
+
+  // Add an extra cookie manager, the cookie is set immediately.
+  MockCookieManager extra_cookie_manager;
+  ExpectCookieSetInManager(
+      &extra_cookie_manager,
+      ConsistencyCookieManager::kCookieValueStringConsistent);
+  GetConsistencyCookieManager()->AddExtraCookieManager(&extra_cookie_manager);
+  testing::Mock::VerifyAndClearExpectations(&extra_cookie_manager);
+
+  // Cookie changes are applied in the extra manager.
+  ExpectGetCookie();
+  ExpectCookieSet(ConsistencyCookieManager::kCookieValueStringInconsistent);
+  ExpectCookieSetInManager(
+      &extra_cookie_manager,
+      ConsistencyCookieManager::kCookieValueStringInconsistent);
+  SetReconcilorState(signin_metrics::ACCOUNT_RECONCILOR_ERROR);
+  testing::Mock::VerifyAndClearExpectations(&extra_cookie_manager);
+
+  // Changes from the `ScopedAccountUpdate` are applied too.
+  ExpectGetCookie();
+  ExpectCookieSet(ConsistencyCookieManager::kCookieValueStringUpdating);
+  ExpectCookieSetInManager(
+      &extra_cookie_manager,
+      ConsistencyCookieManager::kCookieValueStringUpdating);
+  ConsistencyCookieManager::ScopedAccountUpdate update =
+      GetConsistencyCookieManager()->CreateScopedAccountUpdate();
+  testing::Mock::VerifyAndClearExpectations(&extra_cookie_manager);
+
+  GetConsistencyCookieManager()->RemoveExtraCookieManager(
+      &extra_cookie_manager);
+  // Cookie is set back to inconsistent in the main manager, when the
+  // `ScopedAccountUpdate` is destroyed.
+  ExpectCookieSet(ConsistencyCookieManager::kCookieValueStringInconsistent);
 }
 
 }  // namespace signin

@@ -5,6 +5,8 @@
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/signin_client.h"
@@ -75,11 +77,29 @@ ConsistencyCookieManager::ConsistencyCookieManager(
   UpdateCookieIfNeeded(/*force_creation=*/false);
 }
 
-ConsistencyCookieManager::~ConsistencyCookieManager() = default;
+ConsistencyCookieManager::~ConsistencyCookieManager() {
+  DCHECK(extra_cookie_managers_.empty());
+}
 
 ConsistencyCookieManager::ScopedAccountUpdate
 ConsistencyCookieManager::CreateScopedAccountUpdate() {
   return ScopedAccountUpdate(weak_factory_.GetWeakPtr());
+}
+
+void ConsistencyCookieManager::AddExtraCookieManager(
+    network::mojom::CookieManager* manager) {
+  DCHECK(manager);
+  DCHECK(!base::Contains(extra_cookie_managers_, manager));
+  extra_cookie_managers_.push_back(manager);
+  if (cookie_value_ && cookie_value_ != CookieValue::kInvalid)
+    SetCookieValue(manager, cookie_value_.value());
+}
+
+void ConsistencyCookieManager::RemoveExtraCookieManager(
+    network::mojom::CookieManager* manager) {
+  DCHECK(manager);
+  DCHECK(base::Contains(extra_cookie_managers_, manager));
+  base::Erase(extra_cookie_managers_, manager);
 }
 
 // static
@@ -203,6 +223,8 @@ void ConsistencyCookieManager::UpdateCookieIfNeeded(bool force_creation) {
     // Cancel any ongoing operation and set the cookie immediately.
     pending_cookie_update_ = absl::nullopt;
     SetCookieValue(signin_client_->GetCookieManager(), cookie_value_.value());
+    for (auto* extra_manager : extra_cookie_managers_)
+      SetCookieValue(extra_manager, cookie_value_.value());
     return;
   }
 
@@ -261,6 +283,8 @@ void ConsistencyCookieManager::UpdateCookieIfExists(
   }
   cookie_value_ = target_value;
   SetCookieValue(signin_client_->GetCookieManager(), target_value);
+  for (auto* extra_manager : extra_cookie_managers_)
+    SetCookieValue(extra_manager, target_value);
 }
 
 }  // namespace signin

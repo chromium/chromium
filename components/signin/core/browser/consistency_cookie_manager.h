@@ -65,6 +65,13 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   // the account has been added to the `IdentityManager`.
   ScopedAccountUpdate CreateScopedAccountUpdate();
 
+  // Adds or removes an extra cookie manager where the cookie updates are
+  // duplicated. It is expected that an extra cookie manager is only set
+  // temporarily (e.g. for the duration of a single signin flow), with the
+  // intent of importing the accounts from the main cookie manager.
+  void AddExtraCookieManager(network::mojom::CookieManager* manager);
+  void RemoveExtraCookieManager(network::mojom::CookieManager* manager);
+
   // Creates the `CanonicalCookie` corresponding to the consistency cookie.
   static std::unique_ptr<net::CanonicalCookie> CreateConsistencyCookie(
       const std::string& value);
@@ -84,6 +91,7 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CookieAlreadySet);
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CoalesceCookieQueries);
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CancelPendingQuery);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, ExtraCookieManager);
 
   enum class CookieValue {
     kConsistent,    // Value is "Consistent".
@@ -142,6 +150,11 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   // Pending cookie update, applied after querying the cookie value. The pending
   // update is only applied if the cookie already exists.
   absl::optional<CookieValue> pending_cookie_update_;
+
+  // Extra cookie managers where the cookie is also written. These are never
+  // read, and if they go out of sync with the main cookie manager, they may
+  // not be updated correctly.
+  std::vector<network::mojom::CookieManager*> extra_cookie_managers_;
 
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
       account_reconcilor_observation_{this};
