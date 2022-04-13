@@ -55,7 +55,7 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
       return ScopedSharedBufferHandle();
   }
 
-  base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle =
+  base::subtle::ScopedPlatformSharedMemoryHandle handle =
       region.PassPlatformHandle();
   MojoPlatformHandle platform_handles[2];
   uint32_t num_platform_handles = 1;
@@ -115,7 +115,7 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
   if (result != MOJO_RESULT_OK)
     return base::subtle::PlatformSharedMemoryRegion();
 
-  base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle region_handle;
+  base::subtle::ScopedPlatformSharedMemoryHandle region_handle;
 #if BUILDFLAG(IS_WIN)
   if (num_platform_handles != 1)
     return base::subtle::PlatformSharedMemoryRegion();

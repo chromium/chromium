@@ -94,26 +94,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  uintptr_t addr;
-  zx_vm_option_t options = ZX_VM_REQUIRE_NON_RESIZABLE | ZX_VM_PERM_READ;
-  if (mode_ != Mode::kReadOnly)
-    options |= ZX_VM_PERM_WRITE;
-  zx_status_t status = zx::vmar::root_self()->map(
-      options, /*vmar_offset=*/0, handle_, offset, size, &addr);
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "zx_vmar_map";
-    return false;
-  }
-
-  *memory = reinterpret_cast<void*>(addr);
-  *mapped_size = size;
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
@@ -156,7 +136,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
 // static
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   zx_info_handle_basic_t basic = {};

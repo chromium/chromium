@@ -148,7 +148,7 @@ WritableSharedMemoryMapping MapForTesting(
 
 WritableSharedMemoryMapping MapAtForTesting(
     subtle::PlatformSharedMemoryRegion* region,
-    off_t offset,
+    uint64_t offset,
     size_t size) {
   void* memory = nullptr;
   size_t mapped_size = 0;

@@ -26,7 +26,7 @@ bool CheckReadOnlyPlatformSharedMemoryRegionForTesting(
 // be wrapped with {Writable,Unsafe,ReadOnly}SharedMemoryRegion.
 WritableSharedMemoryMapping MapAtForTesting(
     subtle::PlatformSharedMemoryRegion* region,
-    off_t offset,
+    uint64_t offset,
     size_t size);
 
 WritableSharedMemoryMapping MapForTesting(

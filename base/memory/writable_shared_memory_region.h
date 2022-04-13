@@ -12,6 +12,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 
+#include <stdint.h>
+
 namespace base {
 
 // Scoped move-only handle to a region of platform shared memory. The instance
@@ -88,7 +90,7 @@ class BASE_EXPORT WritableSharedMemoryRegion {
   // starting with the given |offset|. |offset| must be aligned to value of
   // |SysInfo::VMAllocationGranularity()|. Returns an invalid mapping if
   // requested bytes are out of the region limits.
-  WritableSharedMemoryMapping MapAt(off_t offset, size_t size) const;
+  WritableSharedMemoryMapping MapAt(uint64_t offset, size_t size) const;
 
   // Whether underlying platform handles are valid.
   bool IsValid() const;

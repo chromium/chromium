@@ -129,31 +129,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  vm_prot_t vm_prot_write = write_allowed ? VM_PROT_WRITE : 0;
-  kern_return_t kr = mach_vm_map(
-      mach_task_self(),
-      reinterpret_cast<mach_vm_address_t*>(memory),  // Output parameter
-      size,
-      0,  // Alignment mask
-      VM_FLAGS_ANYWHERE, handle_.get(), offset,
-      FALSE,                         // Copy
-      VM_PROT_READ | vm_prot_write,  // Current protection
-      VM_PROT_READ | vm_prot_write,  // Maximum protection
-      VM_INHERIT_NONE);
-  if (kr != KERN_SUCCESS) {
-    MACH_DLOG(ERROR, kr) << "mach_vm_map";
-    return false;
-  }
-
-  *mapped_size = size;
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
@@ -187,7 +162,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
 // static
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   mach_vm_address_t temp_addr = 0;

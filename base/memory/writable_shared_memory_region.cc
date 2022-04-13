@@ -68,7 +68,7 @@ WritableSharedMemoryMapping WritableSharedMemoryRegion::Map() const {
 }
 
 WritableSharedMemoryMapping WritableSharedMemoryRegion::MapAt(
-    off_t offset,
+    uint64_t offset,
     size_t size) const {
   if (!IsValid())
     return {};

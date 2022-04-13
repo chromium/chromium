@@ -396,6 +396,10 @@ mixed_component("base") {
     "memory/nonscannable_memory.cc",
     "memory/nonscannable_memory.h",
     "memory/page_size.h",
+    "memory/platform_shared_memory_handle.cc",
+    "memory/platform_shared_memory_handle.h",
+    "memory/platform_shared_memory_mapper.cc",
+    "memory/platform_shared_memory_mapper.h",
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
     "memory/ptr_util.h",
@@ -1680,6 +1684,7 @@ mixed_component("base") {
       "android/trace_event_binding.h",
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
+      "memory/platform_shared_memory_mapper_android.cc",
       "memory/platform_shared_memory_region_android.cc",
       "system/sys_info_android.cc",
 
@@ -1795,6 +1800,7 @@ mixed_component("base") {
       "fuchsia/startup_context.cc",
       "fuchsia/startup_context.h",
       "memory/page_size_posix.cc",
+      "memory/platform_shared_memory_mapper_fuchsia.cc",
       "memory/platform_shared_memory_region_fuchsia.cc",
       "message_loop/message_pump_fuchsia.cc",
       "message_loop/message_pump_fuchsia.h",
@@ -2006,6 +2012,7 @@ mixed_component("base") {
   if (is_win) {
     sources += [
       "files/file_enumerator_win.cc",
+      "memory/platform_shared_memory_mapper_win.cc",
       "memory/platform_shared_memory_region_win.cc",
       "power_monitor/power_monitor_device_source_win.cc",
       "power_monitor/speed_limit_observer_win.cc",
@@ -2060,6 +2067,7 @@ mixed_component("base") {
       "files/file_path_watcher_kqueue.cc",
       "files/file_path_watcher_kqueue.h",
       "mac/scoped_typeref.h",
+      "memory/platform_shared_memory_mapper_mac.cc",
       "memory/platform_shared_memory_region_mac.cc",
       "message_loop/message_pump_kqueue.cc",
       "message_loop/message_pump_kqueue.h",
@@ -2246,7 +2254,10 @@ mixed_component("base") {
   # Android and MacOS have their own custom shared memory handle
   # implementations. e.g. due to supporting both POSIX and native handles.
   if (is_posix && !is_android && !is_mac) {
-    sources += [ "memory/platform_shared_memory_region_posix.cc" ]
+    sources += [
+      "memory/platform_shared_memory_mapper_posix.cc",
+      "memory/platform_shared_memory_region_posix.cc",
+    ]
   }
 
   if (is_posix && !is_apple) {

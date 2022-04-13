@@ -50,7 +50,7 @@ WritableSharedMemoryMapping UnsafeSharedMemoryRegion::Map() const {
   return MapAt(0, handle_.GetSize());
 }
 
-WritableSharedMemoryMapping UnsafeSharedMemoryRegion::MapAt(off_t offset,
+WritableSharedMemoryMapping UnsafeSharedMemoryRegion::MapAt(uint64_t offset,
                                                             size_t size) const {
   if (!IsValid())
     return {};

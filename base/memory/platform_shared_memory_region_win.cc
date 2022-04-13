@@ -42,16 +42,6 @@ typedef ULONG(__stdcall* NtQuerySectionType)(
     ULONG SectionInformationLength,
     PULONG ResultLength);
 
-// Returns the length of the memory section starting at the supplied address.
-size_t GetMemorySectionSize(void* address) {
-  MEMORY_BASIC_INFORMATION memory_info;
-  if (!::VirtualQuery(address, &memory_info, sizeof(memory_info)))
-    return 0;
-  return memory_info.RegionSize -
-         (static_cast<char*>(address) -
-          static_cast<char*>(memory_info.AllocationBase));
-}
-
 // Checks if the section object is safe to map. At the moment this just means
 // it's not an image section.
 bool IsSectionSafeToMap(HANDLE handle) {
@@ -192,30 +182,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  // Try to map the shared memory. On the first failure, release any reserved
-  // address space for a single entry.
-  for (int i = 0; i < 2; ++i) {
-    *memory = MapViewOfFile(
-        handle_.get(), FILE_MAP_READ | (write_allowed ? FILE_MAP_WRITE : 0),
-        static_cast<uint64_t>(offset) >> 32, static_cast<DWORD>(offset), size);
-    if (*memory)
-      break;
-    ReleaseReservation();
-  }
-  if (!*memory) {
-    DPLOG(ERROR) << "Failed executing MapViewOfFile";
-    return false;
-  }
-
-  *mapped_size = GetMemorySectionSize(*memory);
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
@@ -284,7 +250,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
 // static
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   // Call ::DuplicateHandle() with FILE_MAP_WRITE as a desired access to check

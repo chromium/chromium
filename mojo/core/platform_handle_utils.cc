@@ -25,7 +25,7 @@ namespace mojo {
 namespace core {
 
 void ExtractPlatformHandlesFromSharedMemoryRegionHandle(
-    base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle,
+    base::subtle::ScopedPlatformSharedMemoryHandle handle,
     PlatformHandle* extracted_handle,
     PlatformHandle* extracted_readonly_handle) {
 #if BUILDFLAG(IS_WIN)
@@ -45,7 +45,7 @@ void ExtractPlatformHandlesFromSharedMemoryRegionHandle(
 #endif
 }
 
-base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle
+base::subtle::ScopedPlatformSharedMemoryHandle
 CreateSharedMemoryRegionHandleFromPlatformHandles(
     PlatformHandle handle,
     PlatformHandle readonly_handle) {

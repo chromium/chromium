@@ -228,7 +228,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
  private:
   friend WritableSharedMemoryMapping MapAtForTesting(
       subtle::PlatformSharedMemoryRegion* region,
-      off_t offset,
+      uint64_t offset,
       size_t size);
   friend class ReadOnlySharedMemoryRegion;
   friend class WritableSharedMemoryRegion;

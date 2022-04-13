@@ -116,27 +116,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  // IMPORTANT: Even if the mapping is readonly and the mapped data is not
-  // changing, the region must ALWAYS be mapped with MAP_SHARED, otherwise with
-  // ashmem the mapping is equivalent to a private anonymous mapping.
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  *memory = mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
-                 MAP_SHARED, handle_.get(), offset);
-
-  bool mmap_succeeded = *memory && *memory != reinterpret_cast<void*>(-1);
-  if (!mmap_succeeded) {
-    DPLOG(ERROR) << "mmap " << handle_.get() << " failed";
-    return false;
-  }
-
-  *mapped_size = size;
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
@@ -175,7 +154,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   int prot = GetAshmemRegionProtectionMask(handle);

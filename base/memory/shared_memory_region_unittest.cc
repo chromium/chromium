@@ -166,12 +166,12 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
     ptr[i] = i;
 
   rw_mapping = WritableSharedMemoryMapping();
-  off_t bytes_offset = kPageSize;
+  size_t bytes_offset = kPageSize;
   typename TypeParam::MappingType mapping =
       region.MapAt(bytes_offset, kDataSize - bytes_offset);
   ASSERT_TRUE(mapping.IsValid());
 
-  off_t int_offset = bytes_offset / sizeof(uint32_t);
+  size_t int_offset = bytes_offset / sizeof(uint32_t);
   const uint32_t* ptr2 = static_cast<const uint32_t*>(mapping.memory());
   for (size_t i = int_offset; i < kCount; ++i) {
     EXPECT_EQ(ptr2[i - int_offset], i);
@@ -184,7 +184,7 @@ TYPED_TEST(SharedMemoryRegionTest, MapAtNotAlignedOffsetFails) {
   auto [region, rw_mapping] = CreateMappedRegion<TypeParam>(kDataSize);
   ASSERT_TRUE(region.IsValid());
   ASSERT_TRUE(rw_mapping.IsValid());
-  off_t offset = kDataSize / 2;
+  size_t offset = kDataSize / 2;
   typename TypeParam::MappingType mapping =
       region.MapAt(offset, kDataSize - offset);
   EXPECT_FALSE(mapping.IsValid());

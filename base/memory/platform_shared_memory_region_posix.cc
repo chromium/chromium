@@ -55,21 +55,6 @@ bool CheckFDAccessMode(int fd, int expected_mode) {
 
 }  // namespace
 
-ScopedFDPair::ScopedFDPair() = default;
-
-ScopedFDPair::ScopedFDPair(ScopedFDPair&&) = default;
-
-ScopedFDPair& ScopedFDPair::operator=(ScopedFDPair&&) = default;
-
-ScopedFDPair::~ScopedFDPair() = default;
-
-ScopedFDPair::ScopedFDPair(ScopedFD in_fd, ScopedFD in_readonly_fd)
-    : fd(std::move(in_fd)), readonly_fd(std::move(in_readonly_fd)) {}
-
-FDPair ScopedFDPair::get() const {
-  return {fd.get(), readonly_fd.get()};
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
@@ -183,24 +168,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  *memory = mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
-                 MAP_SHARED, handle_.fd.get(), offset);
-
-  bool mmap_succeeded = *memory && *memory != MAP_FAILED;
-  if (!mmap_succeeded) {
-    DPLOG(ERROR) << "mmap " << handle_.fd.get() << " failed";
-    return false;
-  }
-
-  *mapped_size = size;
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size
@@ -305,7 +272,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
 #if !BUILDFLAG(IS_NACL)

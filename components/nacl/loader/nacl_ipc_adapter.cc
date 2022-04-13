@@ -245,7 +245,7 @@ std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
   DCHECK_NE(region.GetMode(),
             base::subtle::PlatformSharedMemoryRegion::Mode::kWritable);
   size_t size = region.GetSize();
-  base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle =
+  base::subtle::ScopedPlatformSharedMemoryHandle handle =
       region.PassPlatformHandle();
   return std::make_unique<NaClDescWrapper>(
 #if BUILDFLAG(IS_APPLE)

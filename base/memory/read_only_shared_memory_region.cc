@@ -72,7 +72,7 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::Map() const {
 }
 
 ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
-    off_t offset,
+    uint64_t offset,
     size_t size) const {
   if (!IsValid())
     return {};
