@@ -347,8 +347,7 @@ if (is_chromeos_ash) {
            ] + rebase_path(sources, root_build_dir)
   }
 
-  chromevox_test_modules = [ "testing/test_msgs.js" ] +
-                           get_target_outputs(":chromevox_test_messages_js")
+  chromevox_test_modules = get_target_outputs(":chromevox_test_messages_js")
 
   generate_deps_js("chromevox_test_deps_js") {
     sources =
