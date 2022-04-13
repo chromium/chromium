@@ -200,6 +200,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   void SetIsLoading(bool is_loading) { is_loading_ = is_loading; }
   bool IsLoading() const { return is_loading_; }
 
+  // Determines if the frame should be allowed to pull focus from a JavaScript
+  // call.
+  bool ShouldAllowScriptFocus();
+
   // Tells the frame to check whether its load has completed, based on the state
   // of its subframes, etc.
   virtual void CheckCompleted() = 0;
@@ -486,6 +490,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // child after |previous_sibling|, or first child if |previous_sibling| is
   // null. The child frame's parent must be set in the constructor.
   void InsertAfter(Frame* new_child, Frame* previous_sibling);
+
+  // Returns true if this frame pulling focus will cause focus to traverse
+  // across a fenced frame boundary. This handles checking for focus entering
+  // a fenced frame, as well as focus leaving a fenced frames.
+  // Note: This is only called if fenced frames are enabled with ShadowDOM
+  bool FocusCrossesFencedBoundary();
 
   Member<FrameClient> client_;
   const Member<WindowProxyManager> window_proxy_manager_;

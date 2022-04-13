@@ -667,6 +667,37 @@ Frame* Frame::NextSibling(FrameTreeBoundary frame_tree_boundary) const {
   return sibling;
 }
 
+bool Frame::FocusCrossesFencedBoundary() {
+  DCHECK(blink::features::IsFencedFramesShadowDOMBased());
+
+  if (Frame* focused_frame = GetPage()->GetFocusController().FocusedFrame()) {
+    if (!focused_frame->IsInFencedFrameTree() && !IsInFencedFrameTree())
+      return false;
+
+    return Tree().Top(FrameTreeBoundary::kFenced) !=
+           focused_frame->Tree().Top(FrameTreeBoundary::kFenced);
+  }
+
+  return false;
+}
+
+bool Frame::ShouldAllowScriptFocus() {
+  if (!features::IsFencedFramesEnabled())
+    return true;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      // For a newly-loaded page, no page will have focus. We allow a non-fenced
+      // frame to get the first focus before enforcing if a page already has
+      // focus.
+      return (!GetPage()->GetFocusController().IsActive() &&
+              !IsInFencedFrameTree()) ||
+             GetPage()->GetFocusController().IsFocused();
+    case blink::features::FencedFramesImplementationType::kShadowDOM:
+      return !FocusCrossesFencedBoundary();
+  }
+}
+
 bool Frame::Swap(WebFrame* new_web_frame) {
   DCHECK(IsAttached());
 

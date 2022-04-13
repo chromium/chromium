@@ -56,6 +56,11 @@
                  .pointerUp()
                  .send();
 
+    await actions.pointerMove(0, 0, {origin: document.body})
+                 .pointerDown()
+                 .pointerUp()
+                 .send();
+
     document.getElementById('input').focus();
     testRunner.setBrowserHandlesFocus(true);
 
