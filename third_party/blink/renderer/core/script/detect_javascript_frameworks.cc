@@ -186,6 +186,7 @@ void DetectJavascriptFrameworksOnLoad(Document& document) {
   // executing JavaScript. See the document that explains this in more detail:
   // https://docs.google.com/document/d/1R5170is5vY425OO2Ru-HJBEraEKu0HjQEakcYldcSzM/edit?usp=sharing
   if (!document.GetFrame() || !document.GetFrame()->IsMainFrame() ||
+      document.GetFrame()->IsInFencedFrameTree() ||
       !document.Url().ProtocolIsInHTTPFamily() ||
       !document.BaseURL().ProtocolIsInHTTPFamily()) {
     return;
