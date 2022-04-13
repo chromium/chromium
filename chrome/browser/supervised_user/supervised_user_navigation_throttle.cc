@@ -58,6 +58,7 @@ int GetHistogramValueForFilteringBehavior(
     bool uncertain) {
   switch (behavior) {
     case SupervisedUserURLFilter::ALLOW:
+    case SupervisedUserURLFilter::WARN:
       if (reason == supervised_user_error_page::ALLOWLIST)
         return FILTERING_BEHAVIOR_ALLOW_ALLOWLIST;
       return uncertain ? FILTERING_BEHAVIOR_ALLOW_UNCERTAIN
