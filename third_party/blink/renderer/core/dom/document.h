@@ -94,6 +94,11 @@ class QuadF;
 class RectF;
 }
 
+namespace mojo {
+template <typename Interface>
+class PendingRemote;
+}  // namespace mojo
+
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm

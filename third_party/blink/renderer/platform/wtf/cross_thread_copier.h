@@ -37,7 +37,6 @@
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"  // FunctionThreadAffinity
@@ -82,21 +81,6 @@ struct VideoCaptureFeedback;
 struct VideoTransformation;
 }  // namespace media
 
-namespace mojo {
-template <typename Interface>
-class PendingReceiver;
-template <typename Interface>
-class PendingRemote;
-template <typename Interface>
-class PendingAssociatedRemote;
-template <typename Interface>
-class PendingAssociatedReceiver;
-template <typename Interface>
-class ScopedHandleBase;
-class DataPipeProducerHandle;
-typedef ScopedHandleBase<DataPipeProducerHandle> ScopedDataPipeProducerHandle;
-}  // namespace mojo
-
 namespace WTF {
 
 template <typename T>
@@ -133,6 +117,7 @@ struct CrossThreadCopier
 };
 
 // CrossThreadCopier specializations follow.
+// See cross_thread_copier_*.h too.
 template <typename T>
 struct CrossThreadCopier<RetainedRefWrapper<T>> {
   STATIC_ONLY(CrossThreadCopier);
@@ -308,41 +293,6 @@ struct CrossThreadCopier<String> {
   STATIC_ONLY(CrossThreadCopier);
   typedef String Type;
   WTF_EXPORT static Type Copy(const String&);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingReceiver<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingReceiver<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingRemote<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingRemote<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingAssociatedRemote<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingAssociatedRemote<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Interface>
-struct CrossThreadCopier<mojo::PendingAssociatedReceiver<Interface>>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::PendingAssociatedReceiver<Interface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<mojo::ScopedDataPipeProducerHandle>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::ScopedDataPipeProducerHandle> {
-  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>
