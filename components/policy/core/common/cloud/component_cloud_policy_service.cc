@@ -32,6 +32,8 @@
 
 namespace em = enterprise_management;
 
+using ComponentPolicyMap =
+    policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap;
 using ScopedResponseMap = std::unordered_map<policy::PolicyNamespace,
                                              em::PolicyFetchResponse,
                                              policy::PolicyNamespaceHash>;
@@ -56,7 +58,7 @@ bool ToPolicyNamespace(const std::pair<std::string, std::string>& key,
 
 }  // namespace
 
-ComponentCloudPolicyService::Delegate::~Delegate() {}
+ComponentCloudPolicyService::Delegate::~Delegate() = default;
 
 // Owns the objects that live on the background thread, and posts back to the
 // thread that the ComponentCloudPolicyService runs on whenever the policy
@@ -205,8 +207,10 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
   std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
-                                service_, std::move(bundle)));
+      FROM_HERE,
+      base::BindOnce(
+          &ComponentCloudPolicyService::SetPolicy, service_, std::move(bundle),
+          std::make_unique<ComponentPolicyMap>(store_.serialized_policy())));
 
   initialized_ = true;
 
@@ -236,8 +240,10 @@ void ComponentCloudPolicyService::Backend::
   std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
-                                service_, std::move(bundle)));
+      FROM_HERE,
+      base::BindOnce(
+          &ComponentCloudPolicyService::SetPolicy, service_, std::move(bundle),
+          std::make_unique<ComponentPolicyMap>(store_.serialized_policy())));
 }
 
 void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
@@ -312,6 +318,9 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
 ComponentCloudPolicyService::~ComponentCloudPolicyService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  for (auto& observer : observers_)
+    observer.OnComponentPolicyServiceDestruction(this);
+
   schema_registry_->RemoveObserver(this);
   core_->store()->RemoveObserver(this);
   core_->RemoveObserver(this);
@@ -331,6 +340,23 @@ void ComponentCloudPolicyService::ClearCache() {
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Backend::ClearCache, base::Unretained(backend_.get())));
+}
+
+void ComponentCloudPolicyService::AddObserver(
+    ComponentCloudPolicyServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+  // Pretend that the ComponentPolicyStore was updated so Backend triggers
+  // notification of all observers, including the newly added one.
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Backend::OnComponentCloudPolicyStoreUpdated,
+                                base::Unretained(backend_.get())));
+}
+
+void ComponentCloudPolicyService::RemoveObserver(
+    ComponentCloudPolicyServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
 }
 
 void ComponentCloudPolicyService::OnSchemaRegistryReady() {
@@ -483,12 +509,14 @@ void ComponentCloudPolicyService::Disconnect() {
 }
 
 void ComponentCloudPolicyService::SetPolicy(
-    std::unique_ptr<PolicyBundle> policy) {
+    std::unique_ptr<PolicyBundle> policy,
+    std::unique_ptr<ComponentPolicyMap> serialized_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Store the current unfiltered policies.
   unfiltered_policy_ = std::move(policy);
 
+  NotifyComponentPolicyUpdated(std::move(serialized_policy));
   FilterAndInstallPolicy();
 }
 
@@ -508,6 +536,13 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
   DVLOG(1) << "Installed policy (count = "
            << std::distance(policy_.begin(), policy_.end()) << ")";
   delegate_->OnComponentCloudPolicyUpdated();
+}
+
+void ComponentCloudPolicyService::NotifyComponentPolicyUpdated(
+    std::unique_ptr<ComponentPolicyMap> serialized_policy) {
+  for (auto& observer : observers_) {
+    observer.OnComponentPolicyUpdated(*serialized_policy);
+  }
 }
 
 }  // namespace policy

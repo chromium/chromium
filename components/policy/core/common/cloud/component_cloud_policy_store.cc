@@ -82,7 +82,7 @@ const ComponentCloudPolicyStore::DomainConstants* GetDomainConstantsForType(
 
 }  // namespace
 
-ComponentCloudPolicyStore::Delegate::~Delegate() {}
+ComponentCloudPolicyStore::Delegate::~Delegate() = default;
 
 ComponentCloudPolicyStore::ComponentCloudPolicyStore(
     Delegate* delegate,
@@ -197,7 +197,11 @@ void ComponentCloudPolicyStore::Load() {
     cached_hashes_[ns] = payload.secure_hash();
     stored_policy_times_[ns] =
         base::Time::FromJavaTime(policy_data.timestamp());
+
+    serialized_policy_[ns] =
+        std::vector<uint8_t>(it->second.begin(), it->second.end());
   }
+  delegate_->OnComponentCloudPolicyStoreUpdated();
 }
 
 bool ComponentCloudPolicyStore::Store(const PolicyNamespace& ns,
@@ -228,6 +232,8 @@ bool ComponentCloudPolicyStore::Store(const PolicyNamespace& ns,
   policy_bundle_.Get(ns).Swap(&policy);
   cached_hashes_[ns] = secure_hash;
   stored_policy_times_[ns] = base::Time::FromJavaTime(policy_data->timestamp());
+  serialized_policy_[ns] =
+      std::vector<uint8_t>(serialized_policy.begin(), serialized_policy.end());
   delegate_->OnComponentCloudPolicyStoreUpdated();
   return true;
 }
@@ -244,6 +250,7 @@ void ComponentCloudPolicyStore::Delete(const PolicyNamespace& ns) {
 
   if (!policy_bundle_.Get(ns).empty()) {
     policy_bundle_.Get(ns).Clear();
+    serialized_policy_.erase(ns);
     delegate_->OnComponentCloudPolicyStoreUpdated();
   }
 }
@@ -279,13 +286,15 @@ void ComponentCloudPolicyStore::Purge(const PurgeFilter& filter) {
       cached_hashes_.erase(prev);
       DCHECK(stored_policy_times_.count(ns));
       stored_policy_times_.erase(ns);
+      serialized_policy_.erase(ns);
     } else {
       ++it;
     }
   }
 
-  if (purged_current_policies)
+  if (purged_current_policies) {
     delegate_->OnComponentCloudPolicyStoreUpdated();
+  }
 }
 
 void ComponentCloudPolicyStore::Clear() {
@@ -296,6 +305,7 @@ void ComponentCloudPolicyStore::Clear() {
 
   cached_hashes_.clear();
   stored_policy_times_.clear();
+  serialized_policy_.clear();
   const PolicyBundle empty_bundle;
   if (!policy_bundle_.Equals(empty_bundle)) {
     policy_bundle_.Clear();

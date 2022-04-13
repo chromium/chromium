@@ -55,6 +55,7 @@ source_set("internal") {
     "cloud/cloud_policy_validator.h",
     "cloud/component_cloud_policy_service.cc",
     "cloud/component_cloud_policy_service.h",
+    "cloud/component_cloud_policy_service_observer.h",
     "cloud/component_cloud_policy_store.cc",
     "cloud/component_cloud_policy_store.h",
     "cloud/component_cloud_policy_updater.cc",

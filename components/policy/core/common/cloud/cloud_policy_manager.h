@@ -54,6 +54,9 @@ class POLICY_EXPORT CloudPolicyManager
 
   CloudPolicyCore* core() { return &core_; }
   const CloudPolicyCore* core() const { return &core_; }
+  ComponentCloudPolicyService* component_policy_service() const {
+    return component_policy_service_.get();
+  }
 
   // Returns true if the underlying CloudPolicyClient is already registered.
   // Virtual for mocking.
@@ -98,9 +101,6 @@ class POLICY_EXPORT CloudPolicyManager
   const CloudPolicyStore* store() const { return core_.store(); }
   CloudPolicyService* service() { return core_.service(); }
   const CloudPolicyService* service() const { return core_.service(); }
-  ComponentCloudPolicyService* component_policy_service() const {
-    return component_policy_service_.get();
-  }
 
  private:
   // Completion handler for policy refresh operations.

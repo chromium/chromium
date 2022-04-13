@@ -1203,6 +1203,17 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
   store->RemoveObserver(this);
 }
 
+void BrowserManager::OnComponentPolicyUpdated(
+    const policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap&
+        serialized_policy) {
+  // TODO(crbug.com/1284279): Pass the data through Mojo to Lacros.
+}
+
+void BrowserManager::OnComponentPolicyServiceDestruction(
+    policy::ComponentCloudPolicyService* service) {
+  service->RemoveObserver(this);
+}
+
 void BrowserManager::OnEvent(Events event, const std::string& id) {
   // Track whether an update has been installed and should be loaded next time
   // the browser is started.
@@ -1241,26 +1252,11 @@ void BrowserManager::OnLoadComplete(
 }
 
 void BrowserManager::PrepareLacrosPolicies() {
-  policy::CloudPolicyStore* store = GetDeviceAccountPolicyStore();
-  if (!store)
-    return;
-
-  if (!store->policy_fetch_response())
-    return;
-  const std::string policy_blob =
-      store->policy_fetch_response()->SerializeAsString();
-  SetDeviceAccountPolicy(policy_blob);
-  // The lifetime of `BrowserManager` is longer than lifetime of policy store.
-  // That is why `CloudPolicyStore::RemoveObserver()` is called during
-  // `CloudPolicyStore::Observer::OnStoreDestruction()`.
-  store->AddObserver(this);
-}
-
-policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
 
+  policy::CloudPolicyStore* store = nullptr;
+  policy::ComponentCloudPolicyService* component_policy_service = nullptr;
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD: {
@@ -1268,9 +1264,12 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
       DCHECK(profile);
       policy::CloudPolicyManager* user_cloud_policy_manager =
           profile->GetUserCloudPolicyManagerAsh();
-      if (!user_cloud_policy_manager)
-        return nullptr;
-      return user_cloud_policy_manager->core()->store();
+      if (user_cloud_policy_manager) {
+        store = user_cloud_policy_manager->core()->store();
+        component_policy_service =
+            user_cloud_policy_manager->component_policy_service();
+      }
+      break;
     }
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
     case user_manager::USER_TYPE_WEB_KIOSK_APP: {
@@ -1279,10 +1278,30 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
               ->browser_policy_connector_ash()
               ->GetDeviceLocalAccountPolicyService()
               ->GetBrokerForUser(user->GetAccountId().GetUserEmail());
-      return broker ? broker->core()->store() : nullptr;
+      if (broker) {
+        store = broker->core()->store();
+        component_policy_service = broker->component_policy_service();
+      }
+      break;
     }
     default:
-      return nullptr;
+      break;
+  }
+
+  if (store && store->policy_fetch_response()) {
+    const std::string policy_blob =
+        store->policy_fetch_response()->SerializeAsString();
+    SetDeviceAccountPolicy(policy_blob);
+    // The lifetime of `BrowserManager` is longer than lifetime of policy store.
+    // That is why `CloudPolicyStore::RemoveObserver()` is called during
+    // `CloudPolicyStore::Observer::OnStoreDestruction()`.
+    store->AddObserver(this);
+  }
+
+  if (component_policy_service) {
+    // Same as above, the RemoveObserver function is called during
+    // `ComponentCloudPolicyService::Observer::OnComponentStoreDestruction()`.
+    component_policy_service->AddObserver(this);
   }
 }
 
