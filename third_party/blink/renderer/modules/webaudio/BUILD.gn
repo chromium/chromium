@@ -58,6 +58,8 @@ blink_modules_sources("webaudio") {
     "audio_worklet.h",
     "audio_worklet_global_scope.cc",
     "audio_worklet_global_scope.h",
+    "audio_worklet_handler.cc",
+    "audio_worklet_handler.h",
     "audio_worklet_messaging_proxy.cc",
     "audio_worklet_messaging_proxy.h",
     "audio_worklet_node.cc",
