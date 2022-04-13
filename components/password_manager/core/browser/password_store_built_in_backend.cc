@@ -93,6 +93,10 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
     const std::vector<PasswordFormDigest>& forms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreBuiltInBackend"),
+          MetricInfix("FillMatchingLoginsAsync"));
   if (forms.empty()) {
     std::move(callback).Run({});
     return;
@@ -103,7 +107,7 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::FillMatchingLogins,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          forms, include_psl),
+          forms, include_psl, std::move(metrics_recorder)),
       std::move(callback));
 }
 

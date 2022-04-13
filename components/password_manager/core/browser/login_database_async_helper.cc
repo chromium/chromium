@@ -122,17 +122,26 @@ LoginsResult LoginDatabaseAsyncHelper::GetAutofillableLogins(
 
 LoginsResult LoginDatabaseAsyncHelper::FillMatchingLogins(
     const std::vector<PasswordFormDigest>& forms,
-    bool include_psl) {
+    bool include_psl,
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<PasswordForm>> results;
+  bool success = false;
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms;
     if (login_db_ && !login_db_->GetLogins(form, include_psl, &matched_forms))
       continue;
+    success = true;
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
   }
+  metrics_recorder.RecordMetrics(
+      success,
+      /*error=*/success
+          ? absl::nullopt
+          : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+                PasswordStoreBackendError::kUnrecoverable));
   return results;
 }
 

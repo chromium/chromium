@@ -46,8 +46,10 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       PasswordStoreBackendMetricsRecorder metrics_recorder);
   LoginsResult GetAutofillableLogins(
       PasswordStoreBackendMetricsRecorder metrics_recorder);
-  LoginsResult FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
-                                  bool include_psl);
+  LoginsResult FillMatchingLogins(
+      const std::vector<PasswordFormDigest>& forms,
+      bool include_psl,
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   PasswordStoreChangeList AddLogin(
       const PasswordForm& form,
       PasswordStoreBackendMetricsRecorder metrics_recorder);

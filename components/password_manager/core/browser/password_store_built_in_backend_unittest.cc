@@ -770,4 +770,68 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
 }
 
+TEST_F(PasswordStoreBuiltInBackendTest, FillMatchingLoginsAsyncMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "FillMatchingLoginsAsync."
+      "Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "FillMatchingLoginsAsync."
+      "Success";
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackend* backend = Initialize();
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+  const std::string kTestPasswordFormURL = form.signon_realm;
+  backend->AddLoginAsync(std::move(form), base::DoNothing());
+  RunUntilIdle();
+
+  std::vector<PasswordFormDigest> forms;
+  forms.emplace_back(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                        kTestPasswordFormURL,
+                                        GURL(kTestPasswordFormURL)));
+
+  backend->FillMatchingLoginsAsync(base::DoNothing(), /*include_psl=*/false,
+                                   std::move(forms));
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+}
+
+TEST_F(PasswordStoreBuiltInBackendTest,
+       FillMatchingLoginsAsyncNothingToFillMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "FillMatchingLoginsAsync."
+      "Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend."
+      "FillMatchingLoginsAsync."
+      "Success";
+  base::HistogramTester histogram_tester;
+  std::string kTestPasswordFormURL("http://foo.example.com");
+
+  PasswordStoreBackend* backend = Initialize();
+
+  std::vector<PasswordFormDigest> forms;
+  forms.emplace_back(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                        kTestPasswordFormURL,
+                                        GURL(kTestPasswordFormURL)));
+
+  backend->FillMatchingLoginsAsync(base::DoNothing(), /*include_psl=*/false,
+                                   std::move(forms));
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+}
+
 }  // namespace password_manager
