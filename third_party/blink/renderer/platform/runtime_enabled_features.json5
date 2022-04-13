@@ -1579,7 +1579,7 @@
     },
     {
       name: "NavigationApi",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigationId",

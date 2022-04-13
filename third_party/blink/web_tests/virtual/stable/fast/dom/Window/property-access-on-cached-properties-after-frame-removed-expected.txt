@@ -15,6 +15,14 @@ PASS window.cached_location.search is undefined
 FAIL window.cached_location_ancestorOrigins.length should be 0. Was 1.
 PASS window.cached_locationbar.visible is false
 PASS window.cached_menubar.visible is false
+PASS window.cached_navigation.canGoBack is false
+PASS window.cached_navigation.canGoForward is false
+PASS window.cached_navigation.currentEntry is null
+PASS window.cached_navigation.oncurrententrychange is null
+PASS window.cached_navigation.onnavigate is null
+PASS window.cached_navigation.onnavigateerror is null
+PASS window.cached_navigation.onnavigatesuccess is null
+PASS window.cached_navigation.transition is null
 PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''

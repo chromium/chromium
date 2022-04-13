@@ -15,6 +15,14 @@ PASS childWindow.location.href is undefined
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
+PASS childWindow.navigation.canGoBack is false
+PASS childWindow.navigation.canGoForward is false
+PASS childWindow.navigation.currentEntry is null
+PASS childWindow.navigation.oncurrententrychange is null
+PASS childWindow.navigation.onnavigate is null
+PASS childWindow.navigation.onnavigateerror is null
+PASS childWindow.navigation.onnavigatesuccess is null
+PASS childWindow.navigation.transition is null
 PASS childWindow.navigator.appCodeName is window.navigator.appCodeName
 PASS childWindow.navigator.appName is window.navigator.appName
 PASS childWindow.navigator.appVersion is ''
