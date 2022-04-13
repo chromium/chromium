@@ -70,7 +70,7 @@ var expectedVolume3 = {
 
 var expectedDownloadsVolume = {
   volumeId: /^downloads:[^\/]*$/,
-  volumeLabel: '',
+  volumeLabel: 'My files',
   volumeType: 'downloads',
   isReadOnly: false,
   isReadOnlyRemovableDevice: false,

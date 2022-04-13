@@ -55,6 +55,8 @@
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace file_manager {
 namespace {
@@ -222,6 +224,22 @@ void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
   }
 }
 
+// Returns the localized label for a given media view.
+std::string MediaViewDocumentIdToLabel(std::string root_document_id) {
+  if (root_document_id == arc::kAudioRootDocumentId) {
+    return l10n_util::GetStringUTF8(
+        IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
+  } else if (root_document_id == arc::kImagesRootDocumentId) {
+    return l10n_util::GetStringUTF8(
+        IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL);
+  } else if (root_document_id == arc::kVideosRootDocumentId) {
+    return l10n_util::GetStringUTF8(
+        IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 Volume::Volume()
@@ -251,6 +269,8 @@ std::unique_ptr<Volume> Volume::CreateForDrive(
   volume->mount_path_ = drive_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->volume_label_ =
+      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -266,6 +286,8 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   volume->mount_path_ = downloads_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->volume_label_ =
+      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -389,7 +411,7 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
-  volume->volume_label_ = root_document_id;
+  volume->volume_label_ = MediaViewDocumentIdToLabel(root_document_id);
   volume->is_read_only_ = true;
   volume->watchable_ = false;
   volume->volume_id_ = arc::GetMediaViewVolumeId(root_document_id);
@@ -409,6 +431,8 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
   volume->remote_mount_path_ = remote_mount_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->volume_label_ =
+      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
   volume->watchable_ = false;
   return volume;
 }
@@ -443,6 +467,8 @@ std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
   volume->mount_path_ = mount_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->volume_label_ =
+      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
   volume->watchable_ = true;
   return volume;
 }
