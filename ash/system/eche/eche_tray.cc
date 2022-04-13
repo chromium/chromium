@@ -30,6 +30,7 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -324,6 +325,9 @@ void EcheTray::HideBubble() {
 }
 
 void EcheTray::InitBubble() {
+  base::UmaHistogramEnumeration(
+      "Eche.StreamEvent",
+      eche_app::mojom::StreamStatus::kStreamStatusInitializing);
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   // Note: The container id must be smaller than `kShellWindowId_ShelfContainer`

@@ -86776,6 +86776,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Rough estimate"/>
 </enum>
 
+<enum name="StreamState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Eche is setting up video streaming"/>
+  <int value="2" label="Video streaming is set up and started"/>
+  <int value="3" label="Video streaming is stopped"/>
+</enum>
+
 <enum name="StrongPopupBlockerAction">
   <int value="0" label="Navigation commit"/>
   <int value="1" label="Commit warn site"/>

@@ -4899,6 +4899,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.StreamEvent" enum="StreamState"
+    expires_after="2022-09-30">
+  <owner>paulzchen@google.com</owner>
+  <owner>andychou@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is started and
+    initialized after the user interacts with a PhoneHub notification or the
+    recent app by clicking it to launch the app streaming window.
+  </summary>
+</histogram>
+
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
     enum="BottomSheet.StateChangeReason" expires_after="M92">
   <obsolete>
