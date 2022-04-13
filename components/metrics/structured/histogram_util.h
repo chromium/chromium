@@ -4,7 +4,6 @@
 
 #ifndef COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_
 #define COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_
-
 #include "components/prefs/persistent_pref_store.h"
 
 namespace metrics {
@@ -68,6 +67,11 @@ void LogNumEventsInUpload(int num_events);
 
 // Logs that an event was recorded using the mojo API.
 void LogIsEventRecordedUsingMojo(bool used_mojo_api);
+
+// Logs the number of events that were recorded before device and user
+// cryptographic keys have been loaded to hash events. These events will be kept
+// in memory.
+void LogNumEventsRecordedBeforeInit(int num_events);
 
 }  // namespace structured
 }  // namespace metrics

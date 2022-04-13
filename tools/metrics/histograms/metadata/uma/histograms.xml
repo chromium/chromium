@@ -706,6 +706,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StructuredMetrics.EventsRecordedBeforeInit" units="count"
+    expires_after="2022-10-04">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Number of events recorded before private keys are initialized to hash
+    events. This metric should be recorded once per session.
+  </summary>
+</histogram>
+
 <histogram name="UMA.StructuredMetrics.EventsRecordedUsingMojo" enum="Boolean"
     expires_after="2022-03-27">
   <owner>jongahn@chromium.org</owner>

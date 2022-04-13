@@ -685,23 +685,37 @@ TEST_F(StructuredMetricsProviderTest,
   EXPECT_EQ(GetSessionData().events_size(), 0);
 }
 
-// Test that events reported at various stages before and during initialization
-// are ignored (and don't cause a crash).
-TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
+// Test that events reported before recording is enabled are ignored.
+TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeRecordingEnabled) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   provider_ = std::make_unique<StructuredMetricsProvider>();
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  OnProfileAdded(TempDirPath());
-  // This one should still fail even though all of the initialization calls are
-  // done, because the provider hasn't finished loading the keys from disk.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   Wait();
+
   EXPECT_EQ(GetSessionData().events_size(), 0);
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
+
+  ExpectNoErrors();
+}
+
+// Test that events reported after recording is enabled but before the keys are
+// loaded are hashed and stored after keys are loaded.
+TEST_F(StructuredMetricsProviderTest, EventsRecordedBeforeKeysInitialized) {
+  provider_ = std::make_unique<StructuredMetricsProvider>();
+  OnRecordingEnabled();
+  // Emulate metric before login.
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+
+  OnProfileAdded(TempDirPath());
+  // Called before user key is loaded.
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  Wait();
+
+  EXPECT_EQ(GetSessionData().events_size(), 0);
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 2);
 
   ExpectNoErrors();
 }

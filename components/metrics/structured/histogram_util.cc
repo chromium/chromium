@@ -31,5 +31,10 @@ void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
                         used_mojo_api);
 }
 
+void LogNumEventsRecordedBeforeInit(int num_events) {
+  UMA_HISTOGRAM_COUNTS_100("UMA.StructuredMetrics.EventsRecordedBeforeInit",
+                           num_events);
+}
+
 }  // namespace structured
 }  // namespace metrics

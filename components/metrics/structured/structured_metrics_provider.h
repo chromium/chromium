@@ -104,6 +104,16 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
   void SetDeviceKeyDataPathForTest(const base::FilePath& path);
 
+  // Records events before |init_state_| is kInitialized.
+  void RecordEventBeforeInitialization(const EventBase& event);
+
+  // Hashes data from |event| to be persisted to disk and eventually sent.
+  void RecordEventFromEventBase(const EventBase& event);
+
+  // Hashes events and persists the events to disk. Should be called once |this|
+  // has been initialized.
+  void HashUnhashedEventsAndPersist();
+
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
   static int kMaxEventsPerUpload;
@@ -162,6 +172,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   // On-device storage within the user's cryptohome for unsent logs.
   std::unique_ptr<PersistentProto<EventsProto>> events_;
+
+  // Store for events that were recorded before user/device keys are loaded.
+  std::vector<EventBase> unhashed_events_;
 
   // Storage for all event's keys, and hashing logic for values. This stores
   // keys on disk. |profile_key_data_| stores keys for per-profile projects,
