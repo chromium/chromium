@@ -76,9 +76,11 @@ const GREYHostApplicationCrashHandler kHostApplicationCrashHandler = ^{
                          @"your operation again. If that fails, quit and "
                          @"relaunch the application and try again."] ||
       [issue.compactDescription containsString:@" crashed in "]) {
-    [[NSException exceptionWithName:@"foo" reason:@"bar" userInfo:nil] raise];
+    [[NSException exceptionWithName:@"XCTIssue"
+                             reason:issue.compactDescription
+                           userInfo:nil] raise];
   }
-  INVOKE_ORIGINAL_IMP1(void, @selector(recordIssue:), issue);
+  INVOKE_ORIGINAL_IMP1(void, @selector(swizzledRecordIssue:), issue);
 }
 @end
 
