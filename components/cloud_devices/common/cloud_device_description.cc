@@ -13,9 +13,17 @@
 
 namespace cloud_devices {
 
-CloudDeviceDescription::CloudDeviceDescription()
-    : root_(base::Value(base::Value::Type::DICTIONARY)) {
-  root_.GetDict().Set(json::kVersion, base::Value(json::kVersion10));
+namespace {
+
+bool IsValidTicketImpl(const base::Value::Dict& value) {
+  const std::string* version = value.FindString(json::kVersion);
+  return version && *version == json::kVersion10;
+}
+
+}  // namespace
+
+CloudDeviceDescription::CloudDeviceDescription() {
+  root_.Set(json::kVersion, base::Value(json::kVersion10));
 }
 
 CloudDeviceDescription::~CloudDeviceDescription() = default;
@@ -31,8 +39,8 @@ bool CloudDeviceDescription::InitFromString(const std::string& json) {
 bool CloudDeviceDescription::InitFromValue(base::Value ticket) {
   if (!ticket.is_dict())
     return false;
-  root_ = std::move(ticket);
-  return IsValidTicket(root_);
+  root_ = std::move(ticket.GetDict());
+  return IsValidTicketImpl(root_);
 }
 
 // static
@@ -40,8 +48,7 @@ bool CloudDeviceDescription::IsValidTicket(const base::Value& ticket) {
   if (!ticket.is_dict())
     return false;
 
-  const std::string* version = ticket.GetDict().FindString(json::kVersion);
-  return version && *version == json::kVersion10;
+  return IsValidTicketImpl(ticket.GetDict());
 }
 
 std::string CloudDeviceDescription::ToString() const {
@@ -52,19 +59,29 @@ std::string CloudDeviceDescription::ToString() const {
 }
 
 base::Value CloudDeviceDescription::ToValue() && {
-  return std::move(root_);
+  return base::Value(std::move(root_));
 }
 
-const base::Value* CloudDeviceDescription::GetItem(
-    const std::vector<base::StringPiece>& path,
-    base::Value::Type type) const {
-  return root_.FindPathOfType(path, type);
+const base::Value::Dict* CloudDeviceDescription::GetDictItem(
+    base::StringPiece path) const {
+  return root_.FindDictByDottedPath(path);
 }
 
-base::Value* CloudDeviceDescription::CreateItem(
-    const std::vector<base::StringPiece>& path,
-    base::Value::Type type) {
-  return root_.SetPath(path, base::Value(type));
+const base::Value::List* CloudDeviceDescription::GetListItem(
+    base::StringPiece path) const {
+  return root_.FindListByDottedPath(path);
+}
+
+base::Value::Dict* CloudDeviceDescription::CreateDictItem(
+    base::StringPiece path) {
+  base::Value* result = root_.SetByDottedPath(path, base::Value::Dict());
+  return result ? &result->GetDict() : nullptr;
+}
+
+base::Value::List* CloudDeviceDescription::CreateListItem(
+    base::StringPiece path) {
+  base::Value* result = root_.SetByDottedPath(path, base::Value::List());
+  return result ? &result->GetList() : nullptr;
 }
 
 }  // namespace cloud_devices

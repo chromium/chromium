@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
@@ -984,12 +984,12 @@ bool Interval::operator==(const Interval& other) const {
 template <const char* kName>
 class ItemsTraits {
  public:
-  static std::vector<base::StringPiece> GetCapabilityPath() {
-    return {kSectionPrinter, kName};
+  static std::string GetCapabilityPath() {
+    return base::JoinString({kSectionPrinter, kName}, ".");
   }
 
-  static std::vector<base::StringPiece> GetTicketItemPath() {
-    return {kSectionPrint, kName};
+  static std::string GetTicketItemPath() {
+    return base::JoinString({kSectionPrint, kName}, ".");
   }
 };
 
