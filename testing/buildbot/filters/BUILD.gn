@@ -186,12 +186,6 @@ source_set("sync_integration_tests_filters") {
   ]
 }
 
-source_set("base_perftests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/fuchsia.base_perftests.filter" ]
-}
-
 source_set("compositor_unittests_filters") {
   testonly = true
 
