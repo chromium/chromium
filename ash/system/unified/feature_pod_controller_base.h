@@ -20,7 +20,7 @@ class ASH_EXPORT FeaturePodControllerBase {
   virtual ~FeaturePodControllerBase() {}
 
   // Create the view. Subclasses instantiate FeaturePodButton.
-  // The view will be onwed by views hierarchy. The view will be always deleted
+  // The view will be owned by views hierarchy. The view will be always deleted
   // after the controller is destructed (UnifiedSystemTrayBubble guarantees
   // this).
   virtual FeaturePodButton* CreateButton() = 0;
