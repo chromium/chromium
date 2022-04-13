@@ -505,8 +505,7 @@ represent, the bucket range or number of buckets, etc.), create a new histogram
 with a new name. Otherwise analysis that mixes the data pre- and post- change
 may be misleading. If the histogram name is still the best name choice, the
 recommendation is to simply append a '2' to the name. See [Cleaning Up Histogram
-Entries](#Cleaning-Up-Histogram-Entries) for details on how to handle the XML
-changes.
+Entries](#obsolete) for details on how to handle the XML changes.
 
 ## Deleting Histograms
 
