@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -420,6 +421,11 @@ void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
   if (enabled != sync_settings->IsSyncEverythingEnabled()) {
     syncer::UserSelectableTypeSet empty_set;
     sync_settings->SetSelectedTypes(enabled, empty_set);
+
+    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+      syncer::UserSelectableOsTypeSet os_empty_set;
+      sync_settings->SetSelectedOsTypes(enabled, os_empty_set);
+    }
   }
 }
 
