@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -71,6 +72,11 @@ void MetricIntegrationTest::LoadHTML(const std::string& content) {
   Serve("/test.html", content);
   Start();
   Load("/test.html");
+}
+
+content::RenderWidgetHost* MetricIntegrationTest::GetRenderWidgetHost() {
+  EXPECT_TRUE(web_contents());
+  return web_contents()->GetRenderWidgetHostView()->GetRenderWidgetHost();
 }
 
 void MetricIntegrationTest::StartTracing(

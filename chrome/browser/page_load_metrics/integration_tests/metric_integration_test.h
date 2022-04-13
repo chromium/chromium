@@ -66,6 +66,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // resource at the URL "/test.html".
   void LoadHTML(const std::string& content);
 
+  content::RenderWidgetHost* GetRenderWidgetHost();
+
   // Begin trace collection for the specified trace categories. The
   // trace includes events from all processes (browser and renderer).
   void StartTracing(const std::vector<std::string>& categories);
