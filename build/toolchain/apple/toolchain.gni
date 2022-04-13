@@ -106,6 +106,21 @@ template("apple_toolchain") {
       toolchain_uses_lld = use_lld
     }
 
+    # The value of all global variables (such as `is_component_build`) is the
+    # one from the default toolchain when evaluating a secondary toolchain
+    # (see https://crbug.com/gn/286). This mean that the value may change when
+    # evaluating target/configs in the new toolchain if the variable default
+    # value depends on variable set in `toolchain_args`.
+    #
+    # For this reason, "ios" needs to override `is_component_build` as its
+    # default value depends on `current_os`. Use the overridden value if it
+    # is set in `toolchain_args`.
+    if (defined(toolchain_args.is_component_build)) {
+      toolchain_is_component_build = toolchain_args.is_component_build
+    } else {
+      toolchain_is_component_build = is_component_build
+    }
+
     prefix = rebase_path("$clang_base_path/bin/", root_build_dir)
     _cc = "${prefix}clang"
     _cxx = "${prefix}clang++"
@@ -393,7 +408,7 @@ template("apple_toolchain") {
       does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 
       link_command = "$linker_driver $ld -shared "
-      if (is_component_build) {
+      if (toolchain_is_component_build) {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch

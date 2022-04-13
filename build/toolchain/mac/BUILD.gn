@@ -25,6 +25,11 @@ template("mac_toolchain") {
         # Use LLD for the host part of a chrome/ios build.
         use_lld = true
 
+        # Override `is_component_build` for the host toolchain.
+        # See https://crbug.com/gn/286 for details why this is
+        # required.
+        is_component_build = is_debug
+
         # Defined in //base, would trigger a warning if the build doesn't depend
         # on it.
         if (build_with_chromium) {
