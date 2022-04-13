@@ -191,6 +191,10 @@ void LoginDisplayHostCommon::BeforeSessionStart() {
   session_starting_ = true;
 }
 
+bool LoginDisplayHostCommon::LoginDisplayHostCommon::IsFinalizing() {
+  return is_finalizing_;
+}
+
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
   LOG(WARNING) << "Finalize";
   // If finalize is called twice the LoginDisplayHost instance will be deleted

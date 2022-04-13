@@ -66,6 +66,10 @@ WebUILoginView* FakeLoginDisplayHost::GetWebUILoginView() const {
 
 void FakeLoginDisplayHost::BeforeSessionStart() {}
 
+bool FakeLoginDisplayHost::IsFinalizing() {
+  return false;
+}
+
 void FakeLoginDisplayHost::Finalize(base::OnceClosure) {}
 
 void FakeLoginDisplayHost::FinalizeImmediately() {}

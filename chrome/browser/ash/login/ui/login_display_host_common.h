@@ -44,6 +44,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // LoginDisplayHost:
   void BeforeSessionStart() final;
+  bool IsFinalizing() final;
   void Finalize(base::OnceClosure completion_callback) final;
   void FinalizeImmediately() final;
   KioskLaunchController* GetKioskLaunchController() final;

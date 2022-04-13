@@ -29,6 +29,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -2310,9 +2311,15 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   // Mark login host for deletion after browser starts.  This
   // guarantees that the message loop will be referenced by the
   // browser before it is dereferenced by the login host.
+  // TODO(crbug.com/1267769): `login_host` Finalize called twice, but it
+  // shouldn't. Remove DumpWithoutCrashing when we know the root cause.
   if (LoginDisplayHost::default_host()) {
-    LoginDisplayHost::default_host()->Finalize(
-        std::move(login_host_finalized_callback));
+    if (!LoginDisplayHost::default_host()->IsFinalizing()) {
+      LoginDisplayHost::default_host()->Finalize(
+          std::move(login_host_finalized_callback));
+    } else {
+      base::debug::DumpWithoutCrashing();
+    }
   } else {
     std::move(login_host_finalized_callback).Run();
   }

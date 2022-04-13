@@ -103,6 +103,9 @@ class LoginDisplayHost {
   // Called when browsing session starts before creating initial browser.
   virtual void BeforeSessionStart() = 0;
 
+  // Whether the process of deleting LoginDisplayHost has been started.
+  virtual bool IsFinalizing() = 0;
+
   // Called when user enters or returns to browsing session so LoginDisplayHost
   // instance may delete itself. `completion_callback` will be invoked when the
   // instance is gone.

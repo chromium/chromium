@@ -36,6 +36,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   content::WebContents* GetOobeWebContents() const override;
   WebUILoginView* GetWebUILoginView() const override;
   void BeforeSessionStart() override;
+  bool IsFinalizing() override;
   void Finalize(base::OnceClosure) override;
   void FinalizeImmediately() override;
   void SetStatusAreaVisible(bool visible) override;
