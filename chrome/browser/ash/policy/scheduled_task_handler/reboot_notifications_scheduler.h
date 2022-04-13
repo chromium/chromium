@@ -33,6 +33,10 @@ class RebootNotificationsScheduler
       delete;
   ~RebootNotificationsScheduler() override;
 
+  // Returns current RebootNotificationsScheduler instance or NULL if it hasn't
+  // been initialized yet.
+  static RebootNotificationsScheduler* Get();
+
   // Registers boolean pref for showing post reboot notification.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -67,6 +71,10 @@ class RebootNotificationsScheduler
   // dialog or notification.
   void OnRebootButtonClicked();
 
+  // Sets RebootNotificationsScheduler instance.
+  static void SetInstance(
+      RebootNotificationsScheduler* reboot_notifications_scheduler);
+
  private:
   virtual void MaybeShowPendingRebootNotification();
   virtual void MaybeShowPendingRebootDialog();
@@ -89,6 +97,10 @@ class RebootNotificationsScheduler
   // Returns true if the full restore service is available for the profile and
   // we need to wait for full restore service initialization.
   virtual bool ShouldWaitFullRestoreInit() const;
+
+  // Pointer to the existing RebootNotificationsScheduler instance (if any). Not
+  // owned.
+  static RebootNotificationsScheduler* instance;
 
   // Timers for scheduling notification or dialog displaying.
   base::WallClockTimer notification_timer_, dialog_timer_;
