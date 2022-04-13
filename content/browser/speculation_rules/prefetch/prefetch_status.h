@@ -60,8 +60,8 @@ enum class PrefetchStatus {
   // The prefetch failed with a non-2XX HTTP response code.
   kPrefetchFailedNon2XX = 12,
 
-  // The prefetch's Content-Type header was not html.
-  kPrefetchFailedNotHTML = 13,
+  // The prefetch's Content-Type header was not supported.
+  kPrefetchFailedMIMENotSupported = 13,
 
   // The prefetch finished successfully but was never used.
   kPrefetchSuccessful = 14,

@@ -884,7 +884,7 @@ TEST_F(PrefetchProxyTabHelperTest, NetErrorOKOnly) {
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
-TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
+TEST_F(PrefetchProxyTabHelperTest, PDF) {
   base::HistogramTester histogram_tester;
 
   NavigateSomewhere();
@@ -892,7 +892,56 @@ TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
   GURL prediction_url("https://www.cat-food.com/");
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
-  std::string body = "console.log('Hello world');";
+  std::string body = "fake PDF";
+  VerifyCommonRequestState(prediction_url);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, "application/pdf",
+                      /*headers=*/{}, body);
+
+  EXPECT_EQ(predicted_urls_count(), 1U);
+  EXPECT_EQ(prefetch_eligible_count(), 1U);
+  EXPECT_EQ(prefetch_attempted_count(), 1U);
+  EXPECT_EQ(prefetch_successful_count(), 1U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", body.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
+}
+
+class PrefetchProxyTabHelperWithHTMLOnly
+    : public PrefetchProxyTabHelperTestBase {
+ public:
+  PrefetchProxyTabHelperWithHTMLOnly() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders, {{"html_only", "true"}});
+  }
+};
+
+TEST_F(PrefetchProxyTabHelperWithHTMLOnly, NonHTMLUnsupported) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+
+  std::string body = "console.log('Hello world')";
   VerifyCommonRequestState(prediction_url);
   MakeResponseAndWait(net::HTTP_OK, net::OK, "application/javascript",
                       /*headers=*/{}, body);

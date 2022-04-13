@@ -311,3 +311,8 @@ absl::optional<std::string> PrefetchProxyBypassProxyForHost() {
     value = std::move(val_str);
   return value;
 }
+
+bool PrefetchProxyHTMLOnly() {
+  return base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
+                                                 "html_only", false);
+}
