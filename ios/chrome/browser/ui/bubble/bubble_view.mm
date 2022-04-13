@@ -79,6 +79,9 @@ const CGFloat kCloseButtonSize = 48.0f;
 // The padding for the top and trailing edges of the close button.
 const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 
+// Margin between title and label.
+const CGFloat kTitleBottomMargin = 3.0f;
+
 // Margin between the imageView its leading and trailing sides.
 const CGFloat kImageViewLeadingMargin = 16.0f;
 const CGFloat kImageViewTrailingMargin = 12.0f;
@@ -518,9 +521,10 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   NSArray<NSLayoutConstraint*>* constraints = @[
     [titleLabel.topAnchor constraintEqualToAnchor:self.background.topAnchor
                                          constant:kBubbleVerticalPadding],
-    [titleLabel.bottomAnchor constraintEqualToAnchor:label.topAnchor],
     [titleLabel.leadingAnchor constraintEqualToAnchor:label.leadingAnchor],
     [titleLabel.trailingAnchor constraintEqualToAnchor:label.trailingAnchor],
+    [label.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
+                                    constant:kTitleBottomMargin],
   ];
   return constraints;
 }
@@ -679,6 +683,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   CGSize titleSize = CGSizeZero;
   if (self.titleLabel) {
     titleSize = [self.titleLabel sizeThatFits:size];
+    titleSize.height += kTitleBottomMargin;
   }
   CGSize snoozeButtonTitleSize = CGSizeZero;
   if (self.showsSnoozeButton) {
