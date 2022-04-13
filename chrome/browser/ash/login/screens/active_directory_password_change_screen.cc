@@ -71,13 +71,21 @@ void ActiveDirectoryPasswordChangeScreen::HideImpl() {
   username_.clear();
 }
 
-void ActiveDirectoryPasswordChangeScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void ActiveDirectoryPasswordChangeScreen::OnUserAction(
+    const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancel) {
     HandleCancel();
-  } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
   }
+  if (action_id == "changePassword") {
+    CHECK_EQ(3, args.size());
+    const std::string& old_password = args[1].GetString();
+    const std::string& new_password = args[2].GetString();
+    HandleChangePassword(old_password, new_password);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 void ActiveDirectoryPasswordChangeScreen::HandleCancel() {
@@ -85,7 +93,7 @@ void ActiveDirectoryPasswordChangeScreen::HandleCancel() {
   exit_callback_.Run();
 }
 
-void ActiveDirectoryPasswordChangeScreen::ChangePassword(
+void ActiveDirectoryPasswordChangeScreen::HandleChangePassword(
     const std::string& old_password,
     const std::string& new_password) {
   DCHECK(!old_password.empty() && !new_password.empty())

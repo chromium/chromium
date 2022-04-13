@@ -43,18 +43,18 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
   // Set username.
   void SetUsername(const std::string& username);
 
-  // Handles password change request.
-  void ChangePassword(const std::string& old_password,
-                      const std::string& new_password);
-
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Handles cancel password change request.
   void HandleCancel();
+
+  // Handles password change request.
+  void HandleChangePassword(const std::string& old_password,
+                            const std::string& new_password);
 
   // Callback called by AuthPolicyHelper::AuthenticateUser with results and
   // error code. (see AuthPolicyHelper::AuthenticateUser)

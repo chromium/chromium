@@ -57,21 +57,11 @@ class ActiveDirectoryPasswordChangeScreenHandler
       ::login::LocalizedValuesBuilder* builder) override;
   void InitializeDeprecated() override;
 
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
-
   // ActiveDirectoryPasswordChangeView:
   void Show(const std::string& username, int error) override;
   void Bind(ash::ActiveDirectoryPasswordChangeScreen* screen) override;
   void Unbind() override;
   void ShowSignInError(const std::string& error_text) override;
-
- private:
-  // WebUI message handlers.
-  void HandleComplete(const std::string& old_password,
-                      const std::string& new_password);
-
-  ash::ActiveDirectoryPasswordChangeScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

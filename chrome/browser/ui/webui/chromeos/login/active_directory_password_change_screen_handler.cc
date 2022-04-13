@@ -37,12 +37,6 @@ void ActiveDirectoryPasswordChangeScreenHandler::DeclareLocalizedValues(
 
 void ActiveDirectoryPasswordChangeScreenHandler::InitializeDeprecated() {}
 
-void ActiveDirectoryPasswordChangeScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("login.ActiveDirectoryPasswordChangeScreen.changePassword",
-              &ActiveDirectoryPasswordChangeScreenHandler::HandleComplete);
-}
-
 void ActiveDirectoryPasswordChangeScreenHandler::Show(
     const std::string& username,
     int error) {
@@ -54,12 +48,10 @@ void ActiveDirectoryPasswordChangeScreenHandler::Show(
 
 void ActiveDirectoryPasswordChangeScreenHandler::Bind(
     ActiveDirectoryPasswordChangeScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void ActiveDirectoryPasswordChangeScreenHandler::Unbind() {
-  screen_ = nullptr;
   BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
@@ -67,12 +59,6 @@ void ActiveDirectoryPasswordChangeScreenHandler::ShowSignInError(
     const std::string& error_text) {
   CallJS("login.ActiveDirectoryPasswordChangeScreen.showErrorDialog",
          error_text);
-}
-
-void ActiveDirectoryPasswordChangeScreenHandler::HandleComplete(
-    const std::string& old_password,
-    const std::string& new_password) {
-  screen_->ChangePassword(old_password, new_password);
 }
 
 }  // namespace chromeos

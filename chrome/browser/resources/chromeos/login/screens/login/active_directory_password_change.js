@@ -209,9 +209,7 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
       return;
     }
     this.setUIStep(UIState.PROGRESS);
-    chrome.send(
-        'login.ActiveDirectoryPasswordChangeScreen.changePassword',
-        [this.oldPassword_, this.newPassword_]);
+    this.userActed(['changePassword', this.oldPassword_, this.newPassword_]);
     this.resetInputFields_();
   }
 
