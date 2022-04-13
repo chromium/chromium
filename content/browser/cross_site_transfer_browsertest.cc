@@ -49,7 +49,7 @@ class NoTransferRequestDelegate : public WebContentsDelegate {
       delete;
 
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
-      bool is_main_frame_navigation) override {
+      bool is_outermost_main_frame_navigation) override {
     // Intentionally cancel the transfer.
     return false;
   }

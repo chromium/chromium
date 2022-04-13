@@ -405,8 +405,7 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
 
   // Navigate a fenced frame.
-  GURL fenced_frame_url =
-      GURL("https://username:password@hostname/path?query#hash");
+  GURL fenced_frame_url = GURL("https://hostname/path?query#hash");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
       content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
                                                          fenced_frame_root);

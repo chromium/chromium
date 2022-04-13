@@ -1068,7 +1068,10 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
 
       // Calculate the relative path for referring to the |save_item|.
       base::FilePath local_path(base::FilePath::kCurrentDirectory);
-      if (target_tree_node->IsMainFrame()) {
+      // TODO(crbug.com/1314749): With MPArch there may be multiple main frames
+      // and so IsMainFrame should not be used to identify subframes. Follow up
+      // to confirm correctness.
+      if (target_tree_node->IsOutermostMainFrame()) {
         local_path = local_path.Append(saved_main_directory_path_.BaseName());
       }
       local_path = local_path.Append(save_item->full_path().BaseName());

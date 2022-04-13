@@ -239,6 +239,9 @@ class NavigationSimulator {
   // to complete.
   virtual bool IsDeferred() = 0;
 
+  // Returns true if a previous operation has caused the navigation to fail.
+  virtual bool HasFailed() = 0;
+
   // --------------------------------------------------------------------------
 
   // The following functions are used to specify the parameters of the

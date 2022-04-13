@@ -571,6 +571,13 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     } else {
       Start();
 
+      // If a request is blocked, we may not have a request. In this case, mark
+      // as failed and exit.
+      if (!request_) {
+        state_ = FAILED;
+        return;
+      }
+
       // For prerendered page activation, CommitDeferringConditions
       // asynchronously run before the navigation starts. Wait here until all
       // the conditions run.
@@ -1429,6 +1436,10 @@ RenderFrameHost* NavigationSimulatorImpl::GetFinalRenderFrameHost() {
 
 bool NavigationSimulatorImpl::IsDeferred() {
   return !throttle_checks_complete_closure_.is_null();
+}
+
+bool NavigationSimulatorImpl::HasFailed() {
+  return state_ == FAILED;
 }
 
 bool NavigationSimulatorImpl::DidCreateNewEntry(

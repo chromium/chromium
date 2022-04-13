@@ -147,11 +147,11 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
 }
 
 bool ExtensionViewHost::ShouldAllowRendererInitiatedCrossProcessNavigation(
-    bool is_main_frame_navigation) {
+    bool is_outermost_main_frame_navigation) {
   // Block navigations that cause main frame of an extension pop-up (or
   // background page) to navigate to non-extension content (i.e. to web
   // content).
-  return !is_main_frame_navigation;
+  return !is_outermost_main_frame_navigation;
 }
 
 content::KeyboardEventProcessingResult

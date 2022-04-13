@@ -385,9 +385,23 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     WebContentsConsoleObserver console_observer(GetWebContents());
     console_observer.SetPattern("*avigat*");
     EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
-                       "location.href = 'ftp://user:pass@example.com/';"));
+                       "location.href = 'ftp://example.com/';"));
     console_observer.Wait();
     EXPECT_THAT(console_observer.GetMessageAt(0u), ::testing::HasSubstr("ftp"));
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
+    EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
+  }
+
+  {
+    // Credentialed subresource requests are blocked no matter what scheme is
+    // used.
+    WebContentsConsoleObserver console_observer(GetWebContents());
+    console_observer.SetPattern(
+        "*Subresource requests whose URLs contain embedded credentials (e.g. "
+        "`https://user:pass@host/`) are blocked.*");
+    EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
+                       "location.href = 'ftp://user:pass@example.com/';"));
+    console_observer.Wait();
     SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }

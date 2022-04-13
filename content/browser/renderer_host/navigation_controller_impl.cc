@@ -3418,7 +3418,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   }
 
   // navigation_ui_data should only be present for main frame navigations.
-  DCHECK(node->IsMainFrame() || !params.navigation_ui_data);
+  DCHECK(node->IsOutermostMainFrame() || !params.navigation_ui_data);
 
   // This will be used to set the Navigation Timing API navigationStart
   // parameter for browser navigations in new tabs (intents, tabs opened through
@@ -3603,7 +3603,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   // For main frames, rewrite the URL if necessary and compute the virtual URL
   // that should be shown in the address bar.
-  if (node->IsMainFrame()) {
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness.
+  if (node->IsOutermostMainFrame()) {
     bool ignored_reverse_on_redirect = false;
     RewriteUrlForNavigation(params.url, browser_context_, &url_to_load,
                             &virtual_url, &ignored_reverse_on_redirect);
@@ -3642,13 +3645,14 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(node->IsMainFrame(), virtual_url, url_to_load))
+  if (!IsValidURLForNavigation(node->IsOutermostMainFrame(), virtual_url,
+                               url_to_load))
     return nullptr;
 
   if (!DoesURLMatchOriginForNavigation(
           url_to_load, origin_to_commit,
           frame_entry->subresource_web_bundle_navigation_info(), entry,
-          node->IsMainFrame())) {
+          node->IsOutermostMainFrame())) {
     DCHECK(false) << " url:" << url_to_load
                   << " origin:" << origin_to_commit.value();
     return nullptr;
@@ -3810,7 +3814,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(frame_tree_node->IsMainFrame(),
+  if (!IsValidURLForNavigation(frame_tree_node->IsOutermostMainFrame(),
                                entry->GetVirtualURL(), dest_url)) {
     return nullptr;
   }
@@ -3818,7 +3822,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   if (!DoesURLMatchOriginForNavigation(
           dest_url, origin_to_commit,
           frame_entry->subresource_web_bundle_navigation_info(), entry,
-          frame_tree_node->IsMainFrame())) {
+          frame_tree_node->IsOutermostMainFrame())) {
     DCHECK(false) << " url:" << dest_url
                   << " base_url_for_data_url: " << entry->GetBaseURLForDataURL()
                   << " origin:" << origin_to_commit.value();

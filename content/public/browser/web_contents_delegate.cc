@@ -32,7 +32,7 @@ WebContents* WebContentsDelegate::OpenURLFromTab(WebContents* source,
 }
 
 bool WebContentsDelegate::ShouldAllowRendererInitiatedCrossProcessNavigation(
-    bool is_main_frame_navigation) {
+    bool is_outermost_main_frame_navigation) {
   return true;
 }
 

@@ -43,4 +43,21 @@ TEST_F(FencedFrameTest, FencedFrameSanityTest) {
   EXPECT_EQ(fenced_frame_root->GetLastCommittedURL(), fenced_frame_url);
 }
 
+TEST_F(FencedFrameTest, CredentialedSubresourceRequestsAreBlocked) {
+  NavigateAndCommit(GURL("https://test.org"));
+
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_test_rfh())->AppendFencedFrame();
+
+  // Navigate a fenced frame. This will fail due to credentialed subresources
+  // being blocked.
+  GURL fenced_frame_url =
+      GURL("https://username:password@hostname/path?query#hash");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
+                                                         fenced_frame_root);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(navigation_simulator->HasFailed());
+}
+
 }  // namespace content

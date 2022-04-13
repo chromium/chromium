@@ -628,7 +628,10 @@ void FrameTreeNode::DidFocus() {
 
 void FrameTreeNode::BeforeUnloadCanceled() {
   // TODO(clamy): Support BeforeUnload in subframes.
-  if (!IsMainFrame())
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness.
+  if (!IsOutermostMainFrame())
     return;
 
   RenderFrameHostImpl* current_frame_host =

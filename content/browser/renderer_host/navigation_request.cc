@@ -1510,7 +1510,10 @@ NavigationRequest::NavigationRequest(
   common_params_->referrer = Referrer::SanitizeForRequest(
       common_params_->url, *common_params_->referrer);
 
-  if (frame_tree_node_->IsMainFrame()) {
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness.
+  if (frame_tree_node_->IsOutermostMainFrame()) {
     loading_mem_tracker_ =
         PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   }
@@ -1600,7 +1603,8 @@ NavigationRequest::NavigationRequest(
   if (entry) {
     // TODO(altimin, crbug.com/933147): Remove this logic after we are done
     // with implementing back-forward cache.
-    if (frame_tree_node->IsMainFrame() && entry->back_forward_cache_metrics()) {
+    if (frame_tree_node->IsOutermostMainFrame() &&
+        entry->back_forward_cache_metrics()) {
       entry->back_forward_cache_metrics()
           ->MainFrameDidStartNavigationToDocument();
     }
@@ -1668,8 +1672,11 @@ NavigationRequest::NavigationRequest(
 #if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
       frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness.
   if (base::FeatureList::IsEnabled(features::kOptimizeEarlyNavigation) &&
-      NeedsUrlLoader() && frame_tree_node_->IsMainFrame() && host &&
+      NeedsUrlLoader() && frame_tree_node_->IsOutermostMainFrame() && host &&
       !host->is_hidden() && host->GetView() &&
       host->GetView()->GetNativeView() &&
       host->GetView()->GetNativeView()->GetWindowAndroid()) {
@@ -3509,7 +3516,7 @@ void NavigationRequest::OnResponseStarted(
     if (!frame_tree_node_->navigator()
              .GetDelegate()
              ->ShouldAllowRendererInitiatedCrossProcessNavigation(
-                 frame_tree_node_->IsMainFrame())) {
+                 frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
       frame_tree_node_->ResetNavigationRequest(false);
       return;
@@ -5221,7 +5228,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
 NavigationRequest::CredentialedSubresourceCheckResult
 NavigationRequest::CheckCredentialedSubresource() const {
   // It only applies to subframes.
-  if (frame_tree_node_->IsMainFrame())
+  if (frame_tree_node_->IsOutermostMainFrame())
     return CredentialedSubresourceCheckResult::ALLOW_REQUEST;
 
   // URLs with no embedded credentials should load correctly.
@@ -5231,7 +5238,7 @@ NavigationRequest::CheckCredentialedSubresource() const {
 
   // Relative URLs on top-level pages that were loaded with embedded credentials
   // should load correctly.
-  RenderFrameHostImpl* parent = frame_tree_node_->parent();
+  RenderFrameHostImpl* parent = frame_tree_node_->GetParentOrOuterDocument();
   DCHECK(parent);
   const GURL& parent_url = parent->GetLastCommittedURL();
   if (url::IsSameOriginWith(parent_url, common_params_->url) &&

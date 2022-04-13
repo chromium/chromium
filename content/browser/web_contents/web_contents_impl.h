@@ -876,7 +876,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const LoadCommittedDetails& details) override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
-      bool is_main_frame_navigation) override;
+      bool is_outermost_main_frame_navigation) override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
       NavigationHandle* navigation_handle) override;
   std::vector<std::unique_ptr<CommitDeferringCondition>>

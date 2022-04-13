@@ -81,6 +81,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   RenderFrameHost* GetFinalRenderFrameHost() override;
   void Wait() override;
   bool IsDeferred() override;
+  bool HasFailed() override;
   void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) override;
   void SetTransition(ui::PageTransition transition) override;
   void SetHasUserGesture(bool has_user_gesture) override;

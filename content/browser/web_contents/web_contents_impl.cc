@@ -5727,15 +5727,15 @@ void WebContentsImpl::NotifyChangedNavigationState(
 }
 
 bool WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation(
-    bool is_main_frame_navigation) {
+    bool is_outermost_main_frame_navigation) {
   OPTIONAL_TRACE_EVENT1(
       "content",
       "WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation",
-      "is_main_frame_navigation", is_main_frame_navigation);
+      "is_outermost_main_frame_navigation", is_outermost_main_frame_navigation);
   if (!delegate_)
     return true;
   return delegate_->ShouldAllowRendererInitiatedCrossProcessNavigation(
-      is_main_frame_navigation);
+      is_outermost_main_frame_navigation);
 }
 
 bool WebContentsImpl::ShouldPreserveAbortedURLs() {
