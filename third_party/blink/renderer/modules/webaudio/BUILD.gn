@@ -144,6 +144,8 @@ blink_modules_sources("webaudio") {
     "offline_audio_destination_node.h",
     "offline_audio_worklet_thread.cc",
     "offline_audio_worklet_thread.h",
+    "oscillator_handler.cc",
+    "oscillator_handler.h",
     "oscillator_node.cc",
     "oscillator_node.h",
     "panner_handler.cc",
