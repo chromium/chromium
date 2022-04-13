@@ -134,19 +134,3 @@ export function getNetworkConfigService() {
   assert(!!networkConfigService);
   return networkConfigService;
 }
-
-/**
- * @param {number} error
- * @return {string}
- */
-export function rmadErrorString(error) {
-  if (error === RmadErrorCode.kOk) {
-    return '';
-  }
-  for (const [k, v] of Object.entries(RmadErrorCode)) {
-    if (v === error) {
-      return 'Error: ' + k + '(' + error + ')';
-    }
-  }
-  return 'Error: unknown (' + error + ')';
-}

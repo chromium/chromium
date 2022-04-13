@@ -31,7 +31,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getShimlessRmaService, rmadErrorString} from './mojo_interface_provider.js';
+import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ErrorObserverInterface, ErrorObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma_types.js';
 
 /**
@@ -260,12 +260,6 @@ export class ShimlessRma extends ShimlessRmaBase {
         value: {},
       },
 
-      /** @protected {string} */
-      errorMessage_: {
-        type: String,
-        value: '',
-      },
-
       /**
        * Used to disable all buttons while waiting for long running mojo API
        * calls to complete. Also controls the busy state overlay.
@@ -478,8 +472,7 @@ export class ShimlessRma extends ShimlessRmaBase {
       this.showState_(State.kUnknown, false, false);
       return true;
     }
-    // TODO(gavindodd): Handle error appropriately
-    this.errorMessage_ = rmadErrorString(error);
+
     return false;
   }
 
