@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -208,17 +209,28 @@ struct ExtraRequestCompleteInfo {
 // owned by the PageLoadTracker tracking a page load. The page would be a
 // primary page, Prerendering page, FencedFrames page, or pages for new other
 // features based on MPArch.
+// TODO(https://crbug.com/1301880): Split observer interfaces into a pure
+// virtual class so that PageLoadMetricsForwardObserver can override it
+// directly. It helps to ensure that the class override all virtual methods
+// to forward all events certainly. Other inheritances will override it via
+// PageLoadMetricsObserver.
 class PageLoadMetricsObserver {
  public:
   // ObservePolicy is used as a return value on some PageLoadMetricsObserver
-  // callbacks to indicate whether the observer would like to continue observing
-  // metric callbacks. Observers that wish to continue observing metric
-  // callbacks should return CONTINUE_OBSERVING; observers that wish to stop
-  // observing callbacks should return STOP_OBSERVING. Observers that return
-  // STOP_OBSERVING may be deleted.
+  // callbacks to indicate how the observer would like to handle subsequent
+  // callbacks. Observers that wish to continue observing metric callbacks
+  // should return CONTINUE_OBSERVING; observers that wish to stop observing
+  // callbacks should return STOP_OBSERVING; observers that wish to forward
+  // callbacks to the one bound with the parent page should return
+  // FORWARD_OBSERVING. Observers that return STOP_OBSERVING or
+  // FORWARD_OBSERVING may be deleted. If the observer in the parent page
+  // receives forward metrics via FORWARD_OBSERVING, and returns STOP_OBSERVING,
+  // It just stop observing forward metrics, and still see other callbacks for
+  // the orinally bound page.
   enum ObservePolicy {
     CONTINUE_OBSERVING,
     STOP_OBSERVING,
+    FORWARD_OBSERVING,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -233,15 +245,26 @@ class PageLoadMetricsObserver {
 
   using FrameTreeNodeId = int;
 
-  virtual ~PageLoadMetricsObserver() {}
+  PageLoadMetricsObserver();
+  virtual ~PageLoadMetricsObserver();
 
   static bool IsStandardWebPageMimeType(const std::string& mime_type);
+
+  // Obtains a weak pointer for this instance.
+  base::WeakPtr<PageLoadMetricsObserver> GetWeakPtr();
 
   // Gets/Sets the delegate. The delegate must outlive the observer and is
   // normally set when the observer is first registered for the page load. The
   // delegate can only be set once.
   const PageLoadMetricsObserverDelegate& GetDelegate() const;
   void SetDelegate(PageLoadMetricsObserverDelegate*);
+
+  // Returns the observer name. It should points a fixed address that is bound
+  // to the class as we use the pointer as a key in a map at PageLoadTracker.
+  // Should be implemented when the class needs to return FORWARD_OBSERVING.
+  // TODO(https://crbug.com/1301880): Make all inheritances override this method
+  // and make it pure virtual method.
+  virtual const char* GetObserverName() const;
 
   // The page load started, with the given navigation handle.
   // currently_committed_url contains the URL of the committed page load at the
@@ -582,6 +605,8 @@ class PageLoadMetricsObserver {
 
  private:
   PageLoadMetricsObserverDelegate* delegate_ = nullptr;
+
+  base::WeakPtrFactory<PageLoadMetricsObserver> weak_factory_{this};
 };
 
 }  // namespace page_load_metrics

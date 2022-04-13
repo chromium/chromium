@@ -295,16 +295,18 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
     NOTREACHED();
   }
 
-  // Passing raw pointers to `observers_` and `embedder_interface_` is safe
-  // because the MetricsWebContentsObserver owns them both list and they are
-  // torn down after the PageLoadTracker. The PageLoadTracker does not hold on
-  // to `primary_page_` or `navigation_handle` beyond the scope of the
-  // constructor.
+  // Passing raw pointers to `embedder_interface_` is safe because the
+  // MetricsWebContentsObserver owns them both list and they are torn down after
+  // the PageLoadTracker. The PageLoadTracker does not hold on to
+  // `navigation_handle` beyond the scope of the constructor.
   auto insertion_result = provisional_loads_.insert(std::make_pair(
       navigation_handle,
       std::make_unique<PageLoadTracker>(
           in_foreground, embedder_interface_.get(), currently_committed_url,
-          !has_navigated_, navigation_handle, user_initiated_info, source_id)));
+          !has_navigated_, navigation_handle, user_initiated_info, source_id,
+          (navigation_handle->IsInPrimaryMainFrame() || !primary_page_)
+              ? nullptr
+              : primary_page_->GetWeakPtr())));
   DCHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : lifecycle_observers_)
