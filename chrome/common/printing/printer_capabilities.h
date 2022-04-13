@@ -6,7 +6,6 @@
 #define CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_H_
 
 #include <string>
-#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -22,11 +21,6 @@ extern const char kPrinter[];
 #if BUILDFLAG(IS_WIN)
 std::string GetUserFriendlyName(const std::string& printer_name);
 #endif
-
-// Extracts the printer display name and description from the
-// appropriate fields in `printer` for the platform.
-std::pair<std::string, std::string> GetPrinterNameAndDescription(
-    const PrinterBasicInfo& printer);
 
 // Returns a value containing printer capabilities and settings for the device
 // registered as `device_name` in the `PrintBackend`.  The returned value is
