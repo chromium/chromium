@@ -28,7 +28,7 @@ ReadAnythingContainerView::ReadAnythingContainerView(
 
   SetLayoutManager(std::move(layout));
   SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorPrimaryBackground));
+      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
 
   // Set flex behavior on provided toolbar and content, and include a separator.
   toolbar->SetProperty(

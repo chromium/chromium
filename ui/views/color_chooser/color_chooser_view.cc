@@ -402,22 +402,13 @@ class SelectedColorPatchView : public views::View {
   SelectedColorPatchView& operator=(const SelectedColorPatchView&) = delete;
   ~SelectedColorPatchView() override = default;
 
-  // views::View
-  void OnThemeChanged() override;
-
   void SetColor(SkColor color);
 };
 
 SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
-  SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
-}
-
-void SelectedColorPatchView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  GetBorder()->set_color(
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused));
-  SchedulePaint();
+  SetBorder(CreateThemedSolidBorder(kBorderWidth,
+                                    ui::kColorFocusableBorderUnfocused));
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {
@@ -434,8 +425,7 @@ END_METADATA
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();
   tracker_.SetView(view.get());
-  view->SetBackground(
-      CreateThemedSolidBackground(view.get(), ui::kColorWindowBackground));
+  view->SetBackground(CreateThemedSolidBackground(ui::kColorWindowBackground));
   view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));

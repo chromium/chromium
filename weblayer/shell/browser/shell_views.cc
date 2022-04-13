@@ -139,7 +139,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
 
     views::Builder<views::WidgetDelegateView>(this)
         .SetBackground(
-            CreateThemedSolidBackground(this, ui::kColorWindowBackground))
+            views::CreateThemedSolidBackground(ui::kColorWindowBackground))
         .AddChildren(
             views::Builder<views::FlexLayoutView>()
                 .CopyAddressTo(&toolbar_view_)

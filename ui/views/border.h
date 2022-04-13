@@ -66,6 +66,10 @@ class VIEWS_EXPORT Border {
   // content laid out relative to these images.
   virtual gfx::Size GetMinimumSize() const = 0;
 
+  // This is called by the View on which it is attached. This is overridden for
+  // subclasses that depend on theme colors.
+  virtual void OnViewThemeChanged(View* view);
+
   SkColor color() const { return color_; }
 
   // Sets the border color.
@@ -97,6 +101,17 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(
     float corner_radius,
     const gfx::Insets& paint_insets,
     SkColor color);
+
+// Same as above except the color updates with theme changes.
+VIEWS_EXPORT std::unique_ptr<Border> CreateThemedRoundedRectBorder(
+    int thickness,
+    float corner_radius,
+    ui::ColorId color_id);
+VIEWS_EXPORT std::unique_ptr<Border> CreateThemedRoundedRectBorder(
+    int thickness,
+    float corner_radius,
+    const gfx::Insets& paint_insets,
+    ui::ColorId color_id);
 
 // Creates a border for reserving space. The returned border does not paint
 // anything.

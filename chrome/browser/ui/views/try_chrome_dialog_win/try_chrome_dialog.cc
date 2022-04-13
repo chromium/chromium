@@ -180,9 +180,9 @@ class Win10StyleButton : public views::LabelButton {
                            CONTEXT_WINDOWS10_NATIVE) {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetBackground(views::CreateThemedSolidBackground(
-        this, button_type == TryChromeButtonType::OPEN_CHROME
-                  ? kColorTryChromeButtonBackgroundAccept
-                  : kColorTryChromeButtonBackgroundNoThanks));
+        button_type == TryChromeButtonType::OPEN_CHROME
+            ? kColorTryChromeButtonBackgroundAccept
+            : kColorTryChromeButtonBackgroundNoThanks));
     // Request specific 32pt height, 166+pt width.
     SetMinSize(gfx::Size(166, 32));
     SetMaxSize(gfx::Size(0, 32));
@@ -1139,7 +1139,7 @@ void TryChromeDialog::OnContextInitialized() {
               [](Context* context, views::Widget* popup,
                  ClickableView* contents_view) {
                 contents_view->SetBackground(views::CreateThemedSolidBackground(
-                    contents_view, kColorTryChromeBackground));
+                    kColorTryChromeBackground));
                 context->AddBorderToContents(popup, contents_view);
               },
               context_.get(), popup_));

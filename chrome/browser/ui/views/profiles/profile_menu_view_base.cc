@@ -425,8 +425,7 @@ void BuildProfileBackgroundContainer(
   } else {
     DCHECK_EQ(SK_ColorTRANSPARENT, background_color);
     profile_background_container->SetBackground(
-        views::CreateThemedVectorIconBackground(profile_background_container,
-                                                avatar_header_art));
+        views::CreateThemedVectorIconBackground(avatar_header_art));
   }
 
   // |avatar_margin| is derived from |avatar_header_art| asset height, it

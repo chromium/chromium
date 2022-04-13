@@ -98,8 +98,8 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_use_custom_frame(true);
-  SetBackground(views::CreateThemedSolidBackground(
-      this, kColorBorealisSplashScreenBackground));
+  SetBackground(
+      views::CreateThemedSolidBackground(kColorBorealisSplashScreenBackground));
 
   // Get logo path and add it to view.
   borealis::GetDlcPath(base::BindOnce(&BorealisSplashScreenView::OnGetRootPath,

@@ -57,8 +57,7 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetEnabled(true);
-  SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorMenuBackground));
+  SetBackground(views::CreateThemedSolidBackground(ui::kColorMenuBackground));
   SetCallback(base::BindRepeating(&SharingHubBubbleViewImpl::OnActionSelected,
                                   base::Unretained(bubble),
                                   base::Unretained(this)));

@@ -313,8 +313,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   // The minimum cross axis size should the expected height of the header.
   constexpr int kDefaultSidePanelHeaderHeight = 40;
   header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
-  header->SetBackground(views::CreateThemedSolidBackground(
-      header.get(), ui::kColorWindowBackground));
+  header->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
 
   header_combobox_ = header->AddChildView(CreateCombobox());
 

@@ -78,22 +78,27 @@ gfx::Size SolidSidedBorder::GetMinimumSize() const {
 
 class ThemedSolidSidedBorder : public SolidSidedBorder {
  public:
-  ThemedSolidSidedBorder(const gfx::Insets& insets, ui::ColorId color);
+  ThemedSolidSidedBorder(const gfx::Insets& insets, ui::ColorId color_id);
 
   // SolidSidedBorder:
   void Paint(const View& view, gfx::Canvas* canvas) override;
+  void OnViewThemeChanged(View* view) override;
 
  private:
-  ui::ColorId color_;
+  ui::ColorId color_id_;
 };
 
 ThemedSolidSidedBorder::ThemedSolidSidedBorder(const gfx::Insets& insets,
-                                               ui::ColorId color)
-    : SolidSidedBorder(insets, gfx::kPlaceholderColor), color_(color) {}
+                                               ui::ColorId color_id)
+    : SolidSidedBorder(insets, gfx::kPlaceholderColor), color_id_(color_id) {}
 
 void ThemedSolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  set_color(view.GetColorProvider()->GetColor(color_));
+  set_color(view.GetColorProvider()->GetColor(color_id_));
   SolidSidedBorder::Paint(view, canvas);
+}
+
+void ThemedSolidSidedBorder::OnViewThemeChanged(View* view) {
+  view->SchedulePaint();
 }
 
 // A border with a rounded rectangle and single color.
@@ -249,6 +254,32 @@ gfx::Size BorderPainter::GetMinimumSize() const {
   return painter_->GetMinimumSize();
 }
 
+class ThemedRoundedRectBorder : public RoundedRectBorder {
+ public:
+  ThemedRoundedRectBorder(int thickness,
+                          float corner_radius,
+                          const gfx::Insets& paint_insets,
+                          ui::ColorId color_id)
+      : RoundedRectBorder(thickness,
+                          corner_radius,
+                          paint_insets,
+                          gfx::kPlaceholderColor),
+        color_id_(color_id) {}
+
+  ThemedRoundedRectBorder(const ThemedRoundedRectBorder&) = delete;
+  ThemedRoundedRectBorder& operator=(const ThemedRoundedRectBorder&) = delete;
+
+  void Paint(const View& view, gfx::Canvas* canvas) override {
+    set_color(view.GetColorProvider()->GetColor(color_id_));
+    RoundedRectBorder::Paint(view, canvas);
+  }
+
+  void OnViewThemeChanged(View* view) override { view->SchedulePaint(); }
+
+ private:
+  const ui::ColorId color_id_;
+};
+
 }  // namespace
 
 Border::Border() = default;
@@ -256,6 +287,8 @@ Border::Border() = default;
 Border::Border(SkColor color) : color_(color) {}
 
 Border::~Border() = default;
+
+void Border::OnViewThemeChanged(View* view) {}
 
 std::unique_ptr<Border> NullBorder() {
   return nullptr;
@@ -285,12 +318,29 @@ std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
   return CreateRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
                                  color);
 }
+
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
                                                 const gfx::Insets& paint_insets,
                                                 SkColor color) {
   return std::make_unique<RoundedRectBorder>(thickness, corner_radius,
                                              paint_insets, color);
+}
+
+std::unique_ptr<Border> CreateThemedRoundedRectBorder(int thickness,
+                                                      float corner_radius,
+                                                      ui::ColorId color_id) {
+  return CreateThemedRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
+                                       color_id);
+}
+
+std::unique_ptr<Border> CreateThemedRoundedRectBorder(
+    int thickness,
+    float corner_radius,
+    const gfx::Insets& paint_insets,
+    ui::ColorId color_id) {
+  return std::make_unique<ThemedRoundedRectBorder>(thickness, corner_radius,
+                                                   paint_insets, color_id);
 }
 
 std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,

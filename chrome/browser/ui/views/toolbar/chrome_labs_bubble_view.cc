@@ -68,8 +68,8 @@ class ChromeLabsFooter : public views::View {
                          IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
                      .SetProminent(true)
                      .Build());
-    SetBackground(views::CreateThemedSolidBackground(
-        this, ui::kColorBubbleFooterBackground));
+    SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(

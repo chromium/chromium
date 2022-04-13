@@ -103,7 +103,7 @@ class TipTextContainer : public views::View {
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(container_insets), container_child_space));
     SetBackground(views::CreateThemedSolidBackground(
-        this, kColorPaymentsFeedbackTipBackground));
+        kColorPaymentsFeedbackTipBackground));
 
     constexpr int kTipImageSize = 16;
     auto* lightbulb_outline_image = AddChildView(

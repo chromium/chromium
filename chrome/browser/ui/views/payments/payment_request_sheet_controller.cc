@@ -180,7 +180,7 @@ class BorderedScrollView : public views::ScrollView {
 
   BorderedScrollView() {
     SetBackground(
-        views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
+        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   }
 
   bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
@@ -246,7 +246,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                   sheet_view->SetID(static_cast<int>(sheet_id));
 
                 sheet_view->SetBackground(views::CreateThemedSolidBackground(
-                    sheet_view, ui::kColorDialogBackground));
+                    ui::kColorDialogBackground));
 
                 // Paint the sheets to layers, otherwise the MD buttons (which
                 // do paint to a layer) won't do proper clipping.
@@ -304,7 +304,6 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                                             ->SetFillsBoundsOpaquely(true);
                                         content_view->SetBackground(
                                             views::CreateThemedSolidBackground(
-                                                content_view,
                                                 ui::kColorDialogBackground));
                                       })))))
           .Build();
@@ -441,8 +440,7 @@ PaymentRequestSheetController::CreateHeaderContentView(
 
 std::unique_ptr<views::Background>
 PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
-  return views::CreateThemedSolidBackground(header_view,
-                                            ui::kColorDialogBackground);
+  return views::CreateThemedSolidBackground(ui::kColorDialogBackground);
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {

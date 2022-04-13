@@ -483,8 +483,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // does.
   set_owned_by_client();
 
-  SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
+  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,

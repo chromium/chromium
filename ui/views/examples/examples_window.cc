@@ -153,8 +153,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
     combobox->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_EXAMPLES_COMBOBOX_AX_LABEL));
 
-    SetBackground(
-        CreateThemedSolidBackground(this, ui::kColorDialogBackground));
+    SetBackground(CreateThemedSolidBackground(ui::kColorDialogBackground));
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         BoxLayout::Orientation::kVertical, gfx::Insets(5)));

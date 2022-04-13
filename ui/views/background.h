@@ -57,6 +57,10 @@ class VIEWS_EXPORT Background {
   // controls.  Unfortunately alpha=0 is not an option.
   void SetNativeControlColor(SkColor color);
 
+  // This is called by the View on which it is attached. This is overridden for
+  // subclasses that depend on theme colors.
+  virtual void OnViewThemeChanged(View* view);
+
   // Returns the "background color".  This is equivalent to the color set in
   // SetNativeControlColor().  For solid backgrounds, this is the color; for
   // gradient backgrounds, it's the midpoint of the gradient; for painter
@@ -79,10 +83,16 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     float radius,
     int for_border_thickness = 0);
 
+// Same as above except it uses the color specified by the views's ColorProvider
+// and the given color identifier.
+VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
+    ui::ColorId color_id,
+    float radius,
+    int for_border_thickness = 0);
+
 // Creates a background that fills the canvas in the color specified by the
 // view's ColorProvider and the given color identifier.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(
-    View* view,
     ui::ColorId color_id);
 
 // Creates a background from the specified Painter.
@@ -91,7 +101,6 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 
 // Creates a background from the specified ThemedVectorIcon.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
-    View* view,
     const ui::ThemedVectorIcon& icon);
 
 }  // namespace views

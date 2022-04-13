@@ -148,8 +148,8 @@ ExtensionDialog::ExtensionDialog(
 
   // Show a white background while the extension loads.  This is prettier than
   // flashing a black unfilled window frame.
-  extension_view_->SetBackground(views::CreateThemedSolidBackground(
-      extension_view_, kColorExtensionDialogBackground));
+  extension_view_->SetBackground(
+      views::CreateThemedSolidBackground(kColorExtensionDialogBackground));
   extension_view_->SetPreferredSize(init_params.size);
   extension_view_->SetMinimumSize(init_params.min_size);
   extension_view_->SetVisible(true);

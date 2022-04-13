@@ -201,7 +201,7 @@ void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView() {
 void SendTabToSelfBubbleViewImpl::CreateManageDevicesLink() {
   auto* container = AddChildView(std::make_unique<views::View>());
   container->SetBackground(views::CreateThemedSolidBackground(
-      container, ui::kColorMenuItemBackgroundHighlighted));
+      ui::kColorMenuItemBackgroundHighlighted));
 
   auto* provider = ChromeLayoutProvider::Get();
   gfx::Insets margins = provider->GetInsetsMetric(views::INSETS_DIALOG);

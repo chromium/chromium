@@ -95,8 +95,8 @@ class TestTipMarqueeViewLearnMoreBubble
     placeholder_image->SetPreferredSize(gfx::Size(150, 175));
     // In real UI, we wouldn't use kColorMidground directly, but rather create
     // a new color ID mapped to it (or similar).
-    placeholder_image->SetBackground(views::CreateThemedSolidBackground(
-        placeholder_image, ui::kColorMidground));
+    placeholder_image->SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorMidground));
 
     views::View* const rhs_view = AddChildView(std::make_unique<views::View>());
     auto* const rhs_layout =

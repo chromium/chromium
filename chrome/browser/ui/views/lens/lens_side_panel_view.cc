@@ -51,7 +51,7 @@ std::unique_ptr<views::WebView> CreateWebView(
   // prevent personal color themes from showing in the side panel when
   // navigating to a new Lens results panel.
   webview->SetBackground(
-      views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
+      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
   return webview;
 }
 
@@ -150,7 +150,7 @@ void LensSidePanelView::CreateAndInstallHeader(
   // The minimum cross axis size should the expected height of the header.
   header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
   header->SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorWindowBackground));
+      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
 
   // Create Google Lens Logo branding.
   branding_ = header->AddChildView(std::make_unique<views::ImageView>());

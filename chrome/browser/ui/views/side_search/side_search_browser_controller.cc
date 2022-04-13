@@ -230,7 +230,7 @@ class HeaderView : public views::View {
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kPreferred));
     SetBackground(
-        views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
+        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
     UpdateSpacing();
   }
   ~HeaderView() override = default;

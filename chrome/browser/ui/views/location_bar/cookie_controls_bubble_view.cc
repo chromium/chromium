@@ -225,8 +225,8 @@ void CookieControlsBubbleView::Init() {
 void CookieControlsBubbleView::AddedToWidget() {
   auto header_view = std::make_unique<NonAccessibleImageView>();
   header_view_ = header_view.get();
-  header_view_->SetBackground(views::CreateThemedSolidBackground(
-      header_view_, ui::kColorBubbleFooterBackground));
+  header_view_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 }
 

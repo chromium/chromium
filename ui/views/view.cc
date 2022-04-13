@@ -3212,6 +3212,10 @@ void View::PropagateThemeChanged() {
       child->PropagateThemeChanged();
   }
   OnThemeChanged();
+  if (border_)
+    border_->OnViewThemeChanged(this);
+  if (background_)
+    background_->OnViewThemeChanged(this);
 #if DCHECK_IS_ON()
   DCHECK(on_theme_changed_called_)
       << "views::View::OnThemeChanged() has not been called. This means that "

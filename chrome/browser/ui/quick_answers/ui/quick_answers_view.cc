@@ -221,7 +221,7 @@ class ReportQueryView : public views::Button {
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
     SetBackground(views::CreateThemedSolidBackground(
-        this, kColorQuickAnswersReportQueryButtonBackground));
+        kColorQuickAnswersReportQueryButtonBackground));
 
     auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal)

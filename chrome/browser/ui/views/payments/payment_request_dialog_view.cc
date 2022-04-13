@@ -550,8 +550,8 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   throbber_overlay_->SetVisible(false);
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
-  throbber_overlay_->SetBackground(views::CreateThemedSolidBackground(
-      throbber_overlay_, ui::kColorDialogBackground));
+  throbber_overlay_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
 
   views::BoxLayout* layout =
       throbber_overlay_->SetLayoutManager(std::make_unique<views::BoxLayout>(
