@@ -264,9 +264,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
     shouldRecognizeSimultaneouslyWithGestureRecognizer:
         (UIGestureRecognizer*)otherGestureRecognizer {
-  // Allow the swipeRecognizer to be triggered at the same time as other gesture
-  // recognizers.
-  return gestureRecognizer == self.swipeRecognizer;
+  // Allow swipeRecognizer and outsideBubbleTapRecognizer to be triggered at the
+  // same time as other gesture recognizers.
+  return gestureRecognizer == self.swipeRecognizer ||
+         gestureRecognizer == self.outsideBubbleTapRecognizer;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -275,6 +276,13 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   // the bubble.
   if (gestureRecognizer == self.outsideBubbleTapRecognizer &&
       [touch.view isDescendantOfView:self.bubbleViewController.view]) {
+    return NO;
+  }
+  // If the swipe originated from a button inside the bubble, cancel the touch
+  // instead of dismissing the bubble.
+  if (gestureRecognizer == self.swipeRecognizer &&
+      [touch.view isDescendantOfView:self.bubbleViewController.view] &&
+      [touch.view isKindOfClass:[UIButton class]]) {
     return NO;
   }
   // Prevents inside gesture recognizers from triggering when tapping on a
