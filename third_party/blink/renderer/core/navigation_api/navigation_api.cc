@@ -93,7 +93,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
     }
 
     NavigationApi* navigation_api = NavigationApi::navigation(*window);
-    navigation_api->ongoing_navigation_signal_ = nullptr;
+    navigation_api->ongoing_navigate_event_ = nullptr;
 
     if (resolve_type_ == ResolveType::kFulfill) {
       if (react_type_ == ReactType::kTransitionWhile)
@@ -810,12 +810,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   navigate_event->SaveStateFromDestinationItem(params.destination_item);
 
   DCHECK(!ongoing_navigate_event_);
-  DCHECK(!ongoing_navigation_signal_);
   ongoing_navigate_event_ = navigate_event;
-  ongoing_navigation_signal_ = navigate_event->signal();
   has_dropped_navigation_ = false;
   DispatchEvent(*navigate_event);
-  ongoing_navigate_event_ = nullptr;
 
   if (navigate_event->defaultPrevented()) {
     if (!navigate_event->signal()->aborted())
@@ -879,7 +876,7 @@ void NavigationApi::InformAboutCanceledNavigation(
     return;
   }
 
-  if (ongoing_navigation_signal_) {
+  if (ongoing_navigate_event_) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
     ScriptState::Scope scope(script_state);
@@ -912,7 +909,10 @@ void NavigationApi::ContextDestroyed() {
 }
 
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
-  return ongoing_navigation_signal_ && !has_dropped_navigation_;
+  bool has_ongoing_transition_while =
+      ongoing_navigate_event_ &&
+      !ongoing_navigate_event_->GetNavigationActionPromisesList().IsEmpty();
+  return has_ongoing_transition_while && !has_dropped_navigation_;
 }
 
 void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
@@ -964,19 +964,16 @@ void NavigationApi::CleanupApiNavigation(NavigationApiNavigation& navigation) {
 void NavigationApi::FinalizeWithAbortedNavigationError(
     ScriptState* script_state,
     NavigationApiNavigation* navigation) {
-  if (ongoing_navigate_event_) {
-    ongoing_navigate_event_->preventDefault();
-    ongoing_navigate_event_ = nullptr;
-  }
-
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
 
-  if (ongoing_navigation_signal_) {
-    ongoing_navigation_signal_->SignalAbort(script_state, error);
-    ongoing_navigation_signal_ = nullptr;
+  if (ongoing_navigate_event_) {
+    if (ongoing_navigate_event_->IsBeingDispatched())
+      ongoing_navigate_event_->preventDefault();
+    ongoing_navigate_event_->signal()->SignalAbort(script_state, error);
+    ongoing_navigate_event_ = nullptr;
   }
 
   RejectPromisesAndFireNavigateErrorEvent(navigation, error);
@@ -1003,7 +1000,6 @@ void NavigationApi::Trace(Visitor* visitor) const {
   visitor->Trace(upcoming_traversals_);
   visitor->Trace(upcoming_non_traversal_navigation_);
   visitor->Trace(ongoing_navigate_event_);
-  visitor->Trace(ongoing_navigation_signal_);
 }
 
 }  // namespace blink

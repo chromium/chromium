@@ -23,7 +23,6 @@
 
 namespace blink {
 
-class AbortSignal;
 class NavigationApiNavigation;
 class NavigationUpdateCurrentEntryOptions;
 class NavigationHistoryEntry;
@@ -70,7 +69,7 @@ class CORE_EXPORT NavigationApi final
       const mojom::blink::NavigationApiHistoryEntryArraysPtr&);
 
   // From the navigation API's perspective, a dropped navigation is still
-  // "ongoing"; that is, ongoing_navigation_signal_ and ongoing_navigation_ are
+  // "ongoing"; that is, ongoing_navigation_event_ and ongoing_navigation_ are
   // non-null. (The impact of this is that another navigation will cancel that
   // ongoing navigation, in a web-developer-visible way.) But from the
   // perspective of other parts of Chromium which interface with the navigation
@@ -205,7 +204,6 @@ class CORE_EXPORT NavigationApi final
   Member<NavigationApiNavigation> upcoming_non_traversal_navigation_;
 
   Member<NavigateEvent> ongoing_navigate_event_;
-  Member<AbortSignal> ongoing_navigation_signal_;
 };
 
 }  // namespace blink
