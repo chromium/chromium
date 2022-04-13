@@ -2554,6 +2554,12 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixelsAsync(
   }
 
   pending_read_pixels.fence = gl::GLFence::Create();
+  if (!pending_read_pixels.fence) {
+    InsertError(GL_INVALID_OPERATION, "gl::GLFence::Create() failed.");
+    MarkContextLost(error::kUnknown);
+    group_->LoseContexts(error::kUnknown);
+    return error::kLostContext;
+  }
 
   if (CheckErrorCallbackState()) {
     return error::kNoError;
@@ -3724,10 +3730,22 @@ error::Error GLES2DecoderPassthroughImpl::DoEndQueryEXT(GLenum target,
   switch (target) {
     case GL_COMMANDS_COMPLETED_CHROMIUM:
       pending_query.commands_completed_fence = gl::GLFence::Create();
+      if (!pending_query.commands_completed_fence) {
+        InsertError(GL_INVALID_OPERATION, "gl::GLFence::Create() failed.");
+        MarkContextLost(error::kUnknown);
+        group_->LoseContexts(error::kUnknown);
+        return error::kLostContext;
+      }
       break;
 
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
       pending_query.buffer_shadow_update_fence = gl::GLFence::Create();
+      if (!pending_query.buffer_shadow_update_fence) {
+        InsertError(GL_INVALID_OPERATION, "gl::GLFence::Create() failed.");
+        MarkContextLost(error::kUnknown);
+        group_->LoseContexts(error::kUnknown);
+        return error::kLostContext;
+      }
       pending_query.buffer_shadow_updates = std::move(buffer_shadow_updates_);
       buffer_shadow_updates_.clear();
       break;
