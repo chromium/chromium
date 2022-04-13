@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -106,7 +107,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
   int32_t next_script_id_ = 0;
   std::vector<DocumentStartJavaScript> scripts_;
   std::vector<std::unique_ptr<JsObject>> js_objects_;
-  std::map<content::RenderFrameHost*,
+  std::map<content::GlobalRenderFrameHostId,
            std::vector<std::unique_ptr<JsToBrowserMessaging>>>
       js_to_browser_messagings_;
 };
