@@ -74,6 +74,8 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     case VideoDecoderType::kVaapi: {
       if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
         return VideoDecoderType::kUnknown;
+      if (!gpu_info.vulkan_info.has_value())
+        return VideoDecoderType::kUnknown;
       if (gpu_info.vulkan_info->physical_devices.empty())
         return VideoDecoderType::kUnknown;
       constexpr int kIntel = 0x8086;
