@@ -153,6 +153,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     bool is_underlay;
     bool is_opaque;
     bool is_new;
+    bool prev_was_opaque;
     bool prev_was_underlay;
     bool prev_has_mask_filter;
   };

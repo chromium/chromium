@@ -294,10 +294,12 @@ OverlayProcessorUsingStrategy::OverlayStatus::OverlayStatus(
   auto prev_it = prev_overlays.find(key);
   if (prev_it != prev_overlays.end()) {
     is_new = false;
+    prev_was_opaque = prev_it->second.is_opaque;
     prev_was_underlay = prev_it->second.is_underlay;
     prev_has_mask_filter = prev_it->second.has_mask_filter;
   } else {
     is_new = true;
+    prev_was_opaque = true;
     prev_was_underlay = false;
     prev_has_mask_filter = false;
   }
@@ -348,6 +350,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
 
     // Our current overlays need to damage the primary plane in these cases:
     //  - A previous overlay became an Underlay this frame
+    //  - An overlay became transparent this frame
     //  - An newly promoted underlay or transparent overlay
     //  - An overlay that added/removed a mask filter this frame
     //
@@ -361,7 +364,8 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     //  - The primary plane may be visible underneath transparent overlays, so
     //    we need to damage it to remove any trace this quad left behind.
     //    https://buganizer.corp.google.com/issues/192294199
-    if ((status.is_underlay && !status.prev_was_underlay) ||
+    if ((!status.prev_was_underlay && status.is_underlay) ||
+        (status.prev_was_opaque && !status.is_opaque) ||
         (status.is_new && (status.is_underlay || !status.is_opaque)) ||
         (status.has_mask_filter != status.prev_has_mask_filter)) {
       damage_rect.Union(status.overlay_rect);
