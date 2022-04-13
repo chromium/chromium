@@ -23,10 +23,6 @@ namespace autofill {
 class PersonalDataManager;
 }
 
-namespace feature_engagement {
-class Tracker;
-}
-
 namespace web {
 class WebState;
 }
@@ -38,6 +34,12 @@ class WebStateList;
 
 // The mediator detected that the keyboard input view should be reset.
 - (void)resetFormInputView;
+
+// The mediator notify that password suggestions have been shown.
+- (void)notifyPasswordSuggestionsShown;
+
+// The mediator notify that a password suggestion has been selected.
+- (void)notifyPasswordSuggestionSelected;
 
 @end
 
@@ -57,8 +59,7 @@ class WebStateList;
                  (scoped_refptr<password_manager::PasswordStoreInterface>)
                      passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
-         engagementTracker:(feature_engagement::Tracker*)engagementTracker;
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule;
 
 // Unavailable, use initWithConsumer:webStateList: instead.
 - (instancetype)init NS_UNAVAILABLE;

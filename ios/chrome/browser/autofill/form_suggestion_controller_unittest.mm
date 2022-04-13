@@ -208,15 +208,17 @@ class FormSuggestionControllerTest : public PlatformTest {
 
     fake_web_state_.SetView(mock_web_state_view);
 
+    mock_handler_ =
+        OCMProtocolMock(@protocol(FormInputAccessoryMediatorHandler));
+
     accessory_mediator_ =
         [[FormInputAccessoryMediator alloc] initWithConsumer:mock_consumer
-                                                     handler:nil
+                                                     handler:mock_handler_
                                                 webStateList:NULL
                                          personalDataManager:NULL
                                                passwordStore:nullptr
                                         securityAlertHandler:nil
-                                      reauthenticationModule:nil
-                                           engagementTracker:&mock_tracker_];
+                                      reauthenticationModule:nil];
 
     [accessory_mediator_ injectWebState:&fake_web_state_];
     [accessory_mediator_ injectProvider:suggestion_controller_];
@@ -246,8 +248,8 @@ class FormSuggestionControllerTest : public PlatformTest {
   // Counter to track consumer call on |animateSuggestionLabel|.
   NSInteger call_to_animate_suggestion_label_counter_;
 
-  // The mocked feature engagement tracker.
-  feature_engagement::test::MockTracker mock_tracker_;
+  // Mock FormInputAccessoryMediatorHandler for verifying interactions.
+  id mock_handler_;
 };
 
 // Tests that pages whose URLs don't have a web scheme aren't processed.
@@ -518,14 +520,12 @@ TEST_F(FormSuggestionControllerTest, PasswordSuggestionHighlight) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
   autofill::FormActivityParams params;
 
-  EXPECT_CALL(
-      mock_tracker_,
-      NotifyEvent(feature_engagement::events::kPasswordSuggestionsShown))
-      .Times(testing::Exactly(1));
+  OCMExpect([mock_handler_ notifyPasswordSuggestionsShown]);
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
 
   EXPECT_EQ(call_to_animate_suggestion_label_counter_, 1);
+  [mock_handler_ verify];
 }
 
 // Tests that the suggestion highlight is disabled when not suggesting a
@@ -550,7 +550,7 @@ TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoHighlight) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
   autofill::FormActivityParams params;
 
-  EXPECT_CALL(mock_tracker_, NotifyEvent(testing::_)).Times(0);
+  [[mock_handler_ reject] notifyPasswordSuggestionsShown];
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
 
