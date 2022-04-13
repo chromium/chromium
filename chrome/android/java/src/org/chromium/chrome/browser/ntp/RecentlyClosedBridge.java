@@ -18,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class allows Java code to get and clear the list of recently closed entries.
+ * This class allows Java code to get and clear the list of recently closed tabs.
  */
 @JNINamespace("recent_tabs")
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private long mNativeBridge;
 
     @Nullable
-    private Runnable mEntriesUpdatedRunnable;
+    private Runnable mTabsUpdatedRunnable;
 
     // TODO(crbug/1307345): Remove in favor of generic entries.
     @CalledByNative
@@ -94,12 +94,12 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         assert mNativeBridge != 0;
         RecentlyClosedBridgeJni.get().destroy(mNativeBridge);
         mNativeBridge = 0;
-        mEntriesUpdatedRunnable = null;
+        mTabsUpdatedRunnable = null;
     }
 
     @Override
-    public void setEntriesUpdatedRunnable(@Nullable Runnable runnable) {
-        mEntriesUpdatedRunnable = runnable;
+    public void setTabsUpdatedRunnable(@Nullable Runnable runnable) {
+        mTabsUpdatedRunnable = runnable;
     }
 
     @Override
@@ -126,14 +126,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @Override
-    public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
-        return RecentlyClosedBridgeJni.get().openRecentlyClosedEntry(
-                mNativeBridge, tabModel, recentEntry.getSessionId());
-    }
-
-    @Override
-    public void openMostRecentlyClosedEntry(TabModel tabModel) {
-        RecentlyClosedBridgeJni.get().openMostRecentlyClosedEntry(mNativeBridge, tabModel);
+    public void openMostRecentlyClosedTab(TabModel tabModel) {
+        RecentlyClosedBridgeJni.get().openMostRecentlyClosedTab(mNativeBridge, tabModel);
     }
 
     @Override
@@ -146,7 +140,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
      */
     @CalledByNative
     private void onUpdated() {
-        if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
+        if (mTabsUpdatedRunnable != null) mTabsUpdatedRunnable.run();
     }
 
     @NativeMethods
@@ -159,10 +153,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         boolean getRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge,
                 List<RecentlyClosedEntry> entries, int maxEntryCount);
         boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel,
-                int tabSessionId, int windowOpenDisposition);
-        boolean openRecentlyClosedEntry(
-                long nativeRecentlyClosedTabsBridge, TabModel tabModel, int sessionId);
-        boolean openMostRecentlyClosedEntry(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
+                int recentTabId, int windowOpenDisposition);
+        boolean openMostRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
         void clearRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge);
     }
 }

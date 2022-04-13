@@ -103,8 +103,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
 
-        mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
-        updateRecentlyClosedEntries();
+        mRecentlyClosedTabManager.setTabsUpdatedRunnable(this::updateRecentlyClosedTabs);
+        updateRecentlyClosedTabs();
 
         mForeignSessionHelper.setOnForeignSessionCallback(this::updateForeignSessions);
         updateForeignSessions();
@@ -149,7 +149,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mForeignSessionHelper = null;
     }
 
-    private void updateRecentlyClosedEntries() {
+    private void updateRecentlyClosedTabs() {
         mRecentlyClosedTabs =
                 mRecentlyClosedTabManager.getRecentlyClosedTabs(RECENTLY_CLOSED_MAX_TAB_COUNT);
         onUpdateDone();
