@@ -189,6 +189,7 @@ class ScreenPinningController;
 class ScreenPositionController;
 class ScreenSwitchCheckController;
 class SessionControllerImpl;
+class FeatureDiscoveryDurationReporterImpl;
 class ShelfConfig;
 class ShelfController;
 class ShelfWindowWatcher;
@@ -548,6 +549,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   SessionControllerImpl* session_controller() {
     return session_controller_.get();
   }
+  FeatureDiscoveryDurationReporterImpl* feature_discover_reporter() {
+    return feature_discover_reporter_.get();
+  }
   ::wm::ShadowController* shadow_controller() {
     return shadow_controller_.get();
   }
@@ -813,6 +817,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
+  std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
+      feature_discover_reporter_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;
   std::unique_ptr<NightLightControllerImpl> night_light_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;

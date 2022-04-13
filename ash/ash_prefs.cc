@@ -21,6 +21,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/fullscreen_controller.h"
@@ -82,6 +83,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   desks_restore_util::RegisterProfilePrefs(registry);
   desks_templates_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
+  FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
