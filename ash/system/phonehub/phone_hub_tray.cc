@@ -45,7 +45,8 @@ namespace {
 // Padding for tray icons (dp; the button that shows the phone_hub menu).
 constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
-constexpr int kEcheIconMinSize = 22;
+constexpr int kEcheIconMinSize = 24;
+constexpr int kIconSpacing = 12;
 
 constexpr auto kBubblePadding =
     gfx::Insets::TLBR(0, 0, kBubbleBottomPaddingDip, 0);
@@ -74,6 +75,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
         std::make_unique<EcheIconLoadingIndicatorView>(eche_icon.get()));
     eche_loading_indicator_->SetVisible(false);
     eche_icon_ = tray_container()->AddChildView(std::move(eche_icon));
+    tray_container()->SetSpacingBetweenChildren(kIconSpacing);
   }
   auto icon = std::make_unique<views::ImageButton>(base::BindRepeating(
       &PhoneHubTray::PhoneHubIconActivated, weak_factory_.GetWeakPtr()));

@@ -61,7 +61,7 @@ namespace {
 
 // The icon size should be smaller than the tray item size to avoid the icon
 // padding becoming negative.
-constexpr int kIconSize = 22;
+constexpr int kIconSize = 24;
 
 // This is how much the icon shrinks to give space for the spinner to go
 // around it.

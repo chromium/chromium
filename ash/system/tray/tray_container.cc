@@ -52,7 +52,7 @@ void TrayContainer::CalculateTargetBounds() {
 
   layout_manager_ = std::make_unique<views::BoxLayout>(
       orientation, gfx::Insets::VH(vertical_margin, horizontal_margin),
-      kUnifiedTraySpacingBetweenIcons);
+      new_layout_inputs.spacing_between_children);
   layout_manager_->set_minimum_cross_axis_size(kTrayItemSize);
 }
 
@@ -74,6 +74,11 @@ void TrayContainer::UpdateLayout() {
 void TrayContainer::SetMargin(int main_axis_margin, int cross_axis_margin) {
   main_axis_margin_ = main_axis_margin;
   cross_axis_margin_ = cross_axis_margin;
+  UpdateLayout();
+}
+
+void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
+  spacing_between_children_ = space_dip;
   UpdateLayout();
 }
 
@@ -115,7 +120,10 @@ const char* TrayContainer::GetClassName() const {
 TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
   return {shelf_->IsHorizontalAlignment(),
           ShelfConfig::Get()->status_area_hit_region_padding(),
-          GetAnchorBoundsInScreen(), main_axis_margin_, cross_axis_margin_};
+          GetAnchorBoundsInScreen(),
+          main_axis_margin_,
+          cross_axis_margin_,
+          spacing_between_children_};
 }
 
 }  // namespace ash
