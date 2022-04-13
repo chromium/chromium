@@ -201,9 +201,11 @@ class WebrtcTransport : public Transport,
   // changes.
   void SetPeerConnectionBitrates(int min_bitrate_bps, int max_bitrate_bps);
 
-  // Sets bitrates on the (video) sender. Called when the sender is created, but
-  // also called if the relay status changes.
-  void SetSenderBitrates(int min_bitrate_bps, int max_bitrate_bps);
+  // Sets bitrates on the (video) sender. Called when a video sender is created,
+  // but also called if the relay status changes.
+  void SetSenderBitrates(rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+                         int min_bitrate_bps,
+                         int max_bitrate_bps);
 
   void RequestRtcStats();
   void RequestNegotiation();
@@ -220,10 +222,6 @@ class WebrtcTransport : public Transport,
       rtc::scoped_refptr<webrtc::DataChannelInterface> event_data_channel,
       std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper,
       base::Time start_time);
-
-  // Returns the VideoSender for this connection, or nullptr if it hasn't
-  // been created yet.
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> GetVideoSender();
 
   void StartRtcEventLogging();
   void StopRtcEventLogging();
@@ -257,8 +255,6 @@ class WebrtcTransport : public Transport,
   std::string preferred_video_codec_;
 
   SessionOptions session_options_;
-
-  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> video_transceiver_;
 
   // Track the data channels so we can make sure they are closed before we
   // close the peer connection.  This prevents RTCErrors being thrown on the

@@ -670,7 +670,15 @@ void WebrtcTransport::SetPreferredBitrates(
     auto [actual_min_bitrate_bps, actual_max_bitrate_bps] =
         BitratesForConnection();
     SetPeerConnectionBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
-    SetSenderBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
+    auto senders = peer_connection()->GetSenders();
+    for (auto& sender : senders) {
+      // Only set the cap on the VideoSenders, because the AudioSender (via the
+      // Opus codec) is already configured with a lower bitrate.
+      if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+        SetSenderBitrates(sender, actual_min_bitrate_bps,
+                          actual_max_bitrate_bps);
+      }
+    }
   }
 }
 
@@ -794,13 +802,11 @@ void WebrtcTransport::OnAudioTransceiverCreated(
 
 void WebrtcTransport::OnVideoTransceiverCreated(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
-  video_transceiver_ = transceiver;
-  auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
-  SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
-
   // Sender is always present, regardless of the direction of media
   // (see rtp_transceiver_interface.h).
   auto sender = transceiver->sender();
+  auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
+  SetSenderBitrates(sender, min_bitrate_bps, max_bitrate_bps);
   SetDefaultSenderParameters(sender);
 }
 
@@ -1042,7 +1048,12 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
     // global caps affect the probing configuration used by b/w estimator.
     auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
     SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
-    SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
+    auto senders = peer_connection()->GetSenders();
+    for (auto& sender : senders) {
+      if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+        SetSenderBitrates(sender, min_bitrate_bps, max_bitrate_bps);
+      }
+    }
   }
 
   const cricket::Candidate& local_candidate =
@@ -1140,17 +1151,11 @@ void WebrtcTransport::SetPeerConnectionBitrates(int min_bitrate_bps,
   peer_connection()->SetBitrate(bitrate);
 }
 
-void WebrtcTransport::SetSenderBitrates(int min_bitrate_bps,
-                                        int max_bitrate_bps) {
+void WebrtcTransport::SetSenderBitrates(
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+    int min_bitrate_bps,
+    int max_bitrate_bps) {
   DCHECK_LE(min_bitrate_bps, max_bitrate_bps);
-  // Only set the cap on the VideoSender, because the AudioSender (via the
-  // Opus codec) is already configured with a lower bitrate.
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender = GetVideoSender();
-  if (!sender) {
-    LOG(ERROR) << "Video sender not found.";
-    return;
-  }
-
   webrtc::RtpParameters parameters = sender->GetParameters();
   if (parameters.encodings.empty()) {
     LOG(ERROR) << "No encodings found for sender " << sender->id();
@@ -1242,11 +1247,6 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
     }
     pending_incoming_candidates_.clear();
   }
-}
-
-rtc::scoped_refptr<webrtc::RtpSenderInterface>
-WebrtcTransport::GetVideoSender() {
-  return video_transceiver_ ? video_transceiver_->sender() : nullptr;
 }
 
 void WebrtcTransport::StartRtcEventLogging() {
