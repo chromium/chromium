@@ -94,6 +94,9 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kReportQueryButtonMarginDip = 16;
 constexpr int kReportQueryViewFontSize = 12;
 
+// TTS audio.
+constexpr char kGoogleTtsEngineId[] = "com.google.android.tts";
+
 // Maximum height QuickAnswersView can expand to.
 int MaximumViewHeight() {
   return kMainViewInsets.height() + kContentViewInsets.height() +
@@ -687,6 +690,9 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
   tts_utterance->SetShouldClearQueue(false);
   tts_utterance->SetText(phonetics_info.query_text);
   tts_utterance->SetLang(phonetics_info.locale);
+  // TtsController will use the default TTS engine if the Google TTS engine
+  // is not available.
+  tts_utterance->SetEngineId(kGoogleTtsEngineId);
 
   tts_controller->SpeakOrEnqueue(std::move(tts_utterance));
 }
