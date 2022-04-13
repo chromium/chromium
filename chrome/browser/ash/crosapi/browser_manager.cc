@@ -1206,7 +1206,9 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
 void BrowserManager::OnComponentPolicyUpdated(
     const policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap&
         serialized_policy) {
-  // TODO(crbug.com/1284279): Pass the data through Mojo to Lacros.
+  environment_provider_->SetDeviceAccountComponentPolicy(serialized_policy);
+  if (browser_service_.has_value())
+    browser_service_->service->UpdateComponentPolicy(serialized_policy);
 }
 
 void BrowserManager::OnComponentPolicyServiceDestruction(

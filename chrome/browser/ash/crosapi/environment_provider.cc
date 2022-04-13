@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/policy_namespace.mojom.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -179,6 +180,15 @@ void EnvironmentProvider::SetDeviceAccountPolicy(
 
 std::string EnvironmentProvider::GetDeviceAccountPolicy() {
   return device_account_policy_blob_;
+}
+
+const MojoPolicyMap& EnvironmentProvider::GetDeviceAccountComponentPolicy() {
+  return component_policy_;
+}
+
+void EnvironmentProvider::SetDeviceAccountComponentPolicy(
+    MojoPolicyMap component_policy) {
+  component_policy_ = std::move(component_policy);
 }
 
 bool EnvironmentProvider::GetUseNewAccountManager() {

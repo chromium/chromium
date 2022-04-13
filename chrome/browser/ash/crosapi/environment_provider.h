@@ -9,9 +9,13 @@
 
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
+
+using MojoPolicyMap =
+    base::flat_map<::policy::PolicyNamespace, std::vector<uint8_t>>;
 
 // Provides ash-chrome specific flags/configurations (like session type).
 class EnvironmentProvider {
@@ -46,6 +50,16 @@ class EnvironmentProvider {
   virtual std::string GetDeviceAccountPolicy();
   virtual void SetDeviceAccountPolicy(const std::string& policy_blob);
 
+  // Getter and updater of the component policy for given namespace. The policy
+  // blob is serialized PolicyFetchResponse received from the server, or parsed
+  // from the file after is was validated.
+  const MojoPolicyMap& GetDeviceAccountComponentPolicy();
+
+  // Updates the component policy for given namespace. The policy blob is
+  // serialized PolicyFetchResponse received from the server, or parsed from the
+  // file after is was validated.
+  void SetDeviceAccountComponentPolicy(MojoPolicyMap serialized_policy);
+
   // Returns true if lacros-chrome should use new account manager logic.
   virtual bool GetUseNewAccountManager();
 
@@ -53,6 +67,10 @@ class EnvironmentProvider {
   // The serialized PolicyFetchResponse object corresponding to the policy of
   // device account. Used to pass the data from Ash to Lacros.
   std::string device_account_policy_blob_;
+
+  // The component policy to be passed to Lacros. The map value is the
+  // serialized policy blob.
+  MojoPolicyMap component_policy_;
 };
 
 }  // namespace crosapi

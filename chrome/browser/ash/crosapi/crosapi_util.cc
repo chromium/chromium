@@ -99,6 +99,8 @@
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
+using MojoPolicyMap =
+    base::flat_map<::policy::PolicyNamespace, std::vector<uint8_t>>;
 
 namespace crosapi {
 namespace browser_util {
@@ -124,6 +126,18 @@ absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
   }
   std::string policy_data = environment_provider->GetDeviceAccountPolicy();
   return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
+}
+
+// Returns the map containing component policy for each namespace. The values
+// represent the serialized policy blob for the namespace.
+const absl::optional<MojoPolicyMap> GetDeviceAccountComponentPolicy(
+    EnvironmentProvider* environment_provider) {
+  const MojoPolicyMap& map =
+      environment_provider->GetDeviceAccountComponentPolicy();
+  if (map.empty())
+    return absl::nullopt;
+
+  return map;
 }
 
 // Returns the device specific data needed for Lacros.
@@ -435,6 +449,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
+  params->device_account_component_policy =
+      GetDeviceAccountComponentPolicy(environment_provider);
 
   params->is_ondevice_speech_supported =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);

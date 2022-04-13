@@ -6,6 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+group("policy_namespace") {
+  public_deps = [ ":policy_namespace_internal" ]
+}
+
 group("common") {
   if (is_component_build) {
     public_deps = [ "//components/policy" ]
@@ -14,13 +18,24 @@ group("common") {
   }
 }
 
-source_set("internal") {
+source_set("policy_namespace_internal") {
   visibility = [ "//components/policy/*" ]
 
   configs += [ "//components/policy:component_implementation" ]
 
   sources = [
     "../../policy_export.h",
+    "policy_namespace.cc",
+    "policy_namespace.h",
+  ]
+}
+
+source_set("internal") {
+  visibility = [ "//components/policy/*" ]
+
+  configs += [ "//components/policy:component_implementation" ]
+
+  sources = [
     "async_policy_loader.cc",
     "async_policy_loader.h",
     "async_policy_provider.cc",
@@ -129,8 +144,6 @@ source_set("internal") {
     "policy_merger.h",
     "policy_migrator.cc",
     "policy_migrator.h",
-    "policy_namespace.cc",
-    "policy_namespace.h",
     "policy_proto_decoders.cc",
     "policy_proto_decoders.h",
     "policy_service.cc",
@@ -166,6 +179,7 @@ source_set("internal") {
 
   public_deps = [
     ":common_constants",
+    ":policy_namespace",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",

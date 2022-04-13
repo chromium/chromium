@@ -89,6 +89,9 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
   void UpdateKeepAlive(bool enabled) override {}
   void OpenForFullRestore() override {}
+  void UpdateComponentPolicy(
+      base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy)
+      override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;

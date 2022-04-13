@@ -4,6 +4,7 @@
 include_rules = [
   "+components/services/app_service/public",
   "+components/webapps/browser",
+  "+components/policy/core/common",
 ]
 
 specific_include_rules = {

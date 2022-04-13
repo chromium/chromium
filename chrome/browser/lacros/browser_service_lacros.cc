@@ -652,6 +652,11 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
       profile_info, last_opened_profiles);
 }
 
+void BrowserServiceLacros::UpdateComponentPolicy(
+    base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy) {
+  // TODO(crbug.com/1284279): Process received data in Lacros.
+}
+
 void BrowserServiceLacros::OnBrowserAdded(Browser* browser) {
   // Note: this happens only when ash-chrome is too old.
   // Please see the comment in the ctor for the detail.
