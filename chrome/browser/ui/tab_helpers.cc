@@ -27,6 +27,7 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_tab_helper.h"
+#include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_helper.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
@@ -319,6 +320,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DataReductionProxyTabHelper::CreateForWebContents(web_contents);
+  DIPSBounceDetector::CreateForWebContents(web_contents);
   if (DIPSService* dips_service = DIPSService::Get(profile)) {
     DIPSTabHelper::CreateForWebContents(web_contents, dips_service);
   }
