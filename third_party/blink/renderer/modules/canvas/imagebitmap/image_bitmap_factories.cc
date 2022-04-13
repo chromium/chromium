@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -276,14 +277,25 @@ ImageBitmapFactories::ImageBitmapLoader::~ImageBitmapLoader() {
 
 void ImageBitmapFactories::ImageBitmapLoader::RejectPromise(
     ImageBitmapRejectionReason reason) {
+  CHECK(resolver_);
+  ScriptState* resolver_script_state = resolver_->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     resolver_script_state)) {
+    loader_.reset();
+    factory_->DidFinishLoading(this);
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
   switch (reason) {
     case kUndecodableImageBitmapRejectionReason:
-      resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+          resolver_script_state->GetIsolate(),
           DOMExceptionCode::kInvalidStateError,
           "The source image could not be decoded."));
       break;
     case kAllocationFailureImageBitmapRejectionReason:
-      resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+          resolver_script_state->GetIsolate(),
           DOMExceptionCode::kInvalidStateError,
           "The ImageBitmap could not be allocated."));
       break;
