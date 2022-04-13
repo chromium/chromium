@@ -807,11 +807,13 @@ TEST_P(DesksOverviewHighlightControllerTest,
       desk_bar_view->expanded_state_new_desk_button()->inner_button();
   const auto* desks_controller = DesksController::Get();
 
-  auto check_name_view_at_index = [this](const auto* desk_bar_view, int index) {
+  auto check_name_view_at_index = [this, desks_controller](
+                                      const auto* desk_bar_view, int index) {
     const auto* desk_name_view =
         desk_bar_view->mini_views()[index]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
-    EXPECT_EQ(GetHighlightedView(), desk_name_view);
+    if (desks_controller->CanCreateDesks())
+      EXPECT_EQ(GetHighlightedView(), desk_name_view);
     EXPECT_EQ(std::u16string(), desk_name_view->GetText());
   };
 

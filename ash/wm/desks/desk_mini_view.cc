@@ -487,7 +487,8 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
                                    ->overview_controller()
                                    ->overview_session()
                                    ->highlight_controller();
-  highlight_controller->MoveHighlightToView(desk_name_view_);
+  if (highlight_controller->IsFocusHighlightVisible())
+    highlight_controller->MoveHighlightToView(desk_name_view_);
 
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);

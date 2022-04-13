@@ -1244,6 +1244,10 @@ void DesksBarView::NudgeDeskName(int desk_index) {
   // is cleared.
   name_view->SetAccessibleName(DesksController::GetDeskDefaultName(desk_index));
 
+  auto* highlight_controller = GetHighlightController();
+  if (highlight_controller->IsFocusHighlightVisible())
+    highlight_controller->MoveHighlightToView(name_view);
+
   // If we're in tablet mode and there are no external keyboards, open up the
   // virtual keyboard.
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&

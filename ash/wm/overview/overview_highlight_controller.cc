@@ -53,7 +53,7 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
   if (!highlighted_view_) {
     // Pick up where we left off if |deleted_index_| has a value.
     if (deleted_index_) {
-      index = *deleted_index_ >= count ? count - 1 : *deleted_index_;
+      index = *deleted_index_ >= count ? 0 : *deleted_index_;
       deleted_index_.reset();
     } else if (reverse) {
       index = count - 1;
