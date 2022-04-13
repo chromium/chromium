@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -352,7 +353,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Notifies that the prerendering document this loader is working for is
   // activated.
-  void NotifyPrerenderingDocumentActivated(base::TimeTicks activation_start);
+  void NotifyPrerenderingDocumentActivated(
+      const mojom::blink::PrerenderPageActivationParams& params);
 
   CodeCacheHost* GetCodeCacheHost();
   void SetCodeCacheHost(
@@ -592,8 +594,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // current document or was browser-initiated.
   bool last_navigation_had_trusted_initiator_ = false;
 
-  // Whether this load request comes with a sitcky user activation.
-  const bool had_sticky_activation_ = false;
+  // Whether this load request comes with a sticky user activation. For
+  // prerendered pages, this is initially false but could be updated on
+  // prerender page activation.
+  bool had_sticky_activation_ = false;
 
   // Whether this load request was initiated by the browser.
   const bool is_browser_initiated_ = false;

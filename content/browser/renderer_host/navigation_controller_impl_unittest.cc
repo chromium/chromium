@@ -110,7 +110,8 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
   MOCK_METHOD(void, SetInsidePortal, (bool is_inside_portal), (override));
   MOCK_METHOD(void,
               ActivatePrerenderedPage,
-              (base::TimeTicks navigation_start,
+              (blink::mojom::PrerenderPageActivationParamsPtr
+                   prerender_page_activation_params,
                ActivatePrerenderedPageCallback callback),
               (override));
   MOCK_METHOD(void,

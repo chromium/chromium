@@ -3181,7 +3181,8 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 }
 
 void WebViewImpl::ActivatePrerenderedPage(
-    base::TimeTicks activation_start,
+    mojom::blink::PrerenderPageActivationParamsPtr
+        prerender_page_activation_params,
     ActivatePrerenderedPageCallback callback) {
   DCHECK(features::IsPrerender2Enabled());
 
@@ -3202,14 +3203,15 @@ void WebViewImpl::ActivatePrerenderedPage(
   // A null `activation_start` is sent to the WebViewImpl that does not host the
   // main frame, in which case we expect that it does not have any documents
   // since cross-origin documents are not loaded during prerendering.
-  DCHECK(documents.size() == 0 || !activation_start.is_null());
+  DCHECK(documents.size() == 0 ||
+         !prerender_page_activation_params->activation_start.is_null());
 
   // While the spec says to post a task on the networking task source for each
   // document, we don't post a task here for simplicity. This allows dispatching
   // the event on all documents without a chance for other IPCs from the browser
   // to arrive in the intervening time, resulting in an unclear state.
   for (auto& document : documents) {
-    document->ActivateForPrerendering(activation_start);
+    document->ActivateForPrerendering(*prerender_page_activation_params);
   }
 
   std::move(callback).Run();

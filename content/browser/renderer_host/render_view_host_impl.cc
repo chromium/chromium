@@ -589,15 +589,16 @@ void RenderViewHostImpl::LeaveBackForwardCache(
 }
 
 void RenderViewHostImpl::ActivatePrerenderedPage(
-    base::TimeTicks activation_start,
+    blink::mojom::PrerenderPageActivationParamsPtr
+        prerender_page_activation_params,
     base::OnceClosure callback) {
   // TODO(https://crbug.com/1217977): Consider using a ScopedClosureRunner here
   // in case the renderer crashes before it can send us the callback. But we
   // can't do that until the linked bug is fixed, or else we can reach
   // DidActivateForPrerendering() outside of a Mojo message dispatch which
   // breaks the DCHECK for releasing Mojo Capability Control.
-  page_broadcast_->ActivatePrerenderedPage(activation_start,
-                                           std::move(callback));
+  page_broadcast_->ActivatePrerenderedPage(
+      std::move(prerender_page_activation_params), std::move(callback));
 }
 
 void RenderViewHostImpl::SetFrameTreeVisibility(

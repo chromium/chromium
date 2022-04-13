@@ -8270,7 +8270,8 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
   return find_in_page_active_match_node_;
 }
 
-void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
+void Document::ActivateForPrerendering(
+    const mojom::blink::PrerenderPageActivationParams& params) {
   DCHECK(features::IsPrerender2Enabled());
 
   // TODO(bokan): Portals will change this assumption since they mean an active
@@ -8278,8 +8279,9 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
 
-  if (DocumentLoader* loader = Loader())
-    loader->NotifyPrerenderingDocumentActivated(activation_start);
+  if (DocumentLoader* loader = Loader()) {
+    loader->NotifyPrerenderingDocumentActivated(params);
+  }
 
   Vector<base::OnceClosure> callbacks;
   callbacks.swap(will_dispatch_prerenderingchange_callbacks_);

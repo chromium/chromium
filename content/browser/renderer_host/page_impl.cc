@@ -176,7 +176,13 @@ void PageImpl::ActivateForPrerendering(
     if (main_document_.GetRenderViewHost() == rvh)
       navigation_start_to_send = *activation_start_time_for_prerendering_;
 
-    rvh->ActivatePrerenderedPage(navigation_start_to_send, barrier);
+    auto params = blink::mojom::PrerenderPageActivationParams::New();
+    params->was_user_activated =
+        main_document_.frame_tree_node()->has_received_user_gesture_before_nav()
+            ? blink::mojom::WasActivatedOption::kYes
+            : blink::mojom::WasActivatedOption::kNo;
+    params->activation_start = navigation_start_to_send;
+    rvh->ActivatePrerenderedPage(std::move(params), barrier);
   }
 
   // Prepare each RenderFrameHostImpl in this Page for activation.

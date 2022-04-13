@@ -195,7 +195,21 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     blink::mojom::FrameReplicationState prior_replication_state =
         frame_tree_->root()->current_replication_state();
 
-    // NOTE: TakePrerenderedPage() clears the current_frame_host value of
+    // Update FrameReplicationState::has_received_user_gesture_before_nav of the
+    // prerendered page.
+    //
+    // On regular navigation, it is updated via a renderer => browser IPC
+    // (RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged),
+    // which is sent from blink::DocumentLoader::CommitNavigation. However,
+    // this doesn't happen on prerender page activation, so the value is not
+    // correctly updated without this treatment.
+    //
+    // The updated value will be sent to the renderer on
+    // blink::mojom::Page::ActivatePrerenderedPage.
+    prior_replication_state.has_received_user_gesture_before_nav =
+        navigation_request.frame_tree_node()
+            ->has_received_user_gesture_before_nav();
+
     // frame_tree_->root(). Do not add any code between here and
     // frame_tree_.reset() that calls into observer functions to minimize the
     // duration of current_frame_host being null.

@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -2856,11 +2857,33 @@ bool DocumentLoader::ConsumeTextFragmentToken() {
 }
 
 void DocumentLoader::NotifyPrerenderingDocumentActivated(
-    base::TimeTicks activation_start) {
+    const mojom::blink::PrerenderPageActivationParams& params) {
   DCHECK(!frame_->GetDocument()->IsPrerendering());
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
-  GetTiming().MarkActivationStart(activation_start);
+
+  // A prerendered document won't have user activation, but when it gets moved
+  // to the primary frame, the primary frame might have sticky user activation.
+  // In that case, propagate the sticky user activation to the activated
+  // prerendered document
+  bool had_sticky_activation =
+      params.was_user_activated == mojom::blink::WasActivatedOption::kYes;
+  if (frame_->IsMainFrame() && had_sticky_activation) {
+    DCHECK(!had_sticky_activation_);
+    had_sticky_activation_ = had_sticky_activation;
+
+    // Update Frame::had_sticky_user_activation_before_nav_. On regular
+    // navigation, this is updated on DocumentLoader::CommitNavigation, but
+    // that function is not called on prerender page activation.
+    DCHECK(!frame_->HadStickyUserActivationBeforeNavigation());
+    frame_->SetHadStickyUserActivationBeforeNavigation(had_sticky_activation);
+
+    // Unlike CommitNavigation, there's no need to call
+    // HadStickyUserActivationBeforeNavigationChanged here as the browser
+    // process already knows it.
+  }
+
+  GetTiming().MarkActivationStart(params.activation_start);
 }
 
 HashSet<KURL> DocumentLoader::GetEarlyHintsPreloadedResources() {

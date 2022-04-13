@@ -5,6 +5,7 @@
 module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
@@ -56,6 +57,19 @@ struct PageRestoreParams {
   int32 current_history_list_length;
 };
 
+// Parameters to send with ActivatePrerenderedPage calls when we're activating a
+// prerendered page.
+struct PrerenderPageActivationParams {
+  // Tells the renderer whether this prerender activation comes with a sticky
+  // user activation.
+  blink.mojom.WasActivatedOption was_user_activated;
+
+  // Timestamp of the start of the activation navigation for use in
+  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
+  // host the main frame, to avoid sending the data cross-origin.
+  mojo_base.mojom.TimeTicks activation_start;
+};
+
 // Used for broadcast messages from browser to renderer for messages that need
 // to go to all blink::WebViewImpls for a given content::WebContents. There may
 // be multiple blink::WebViewImpls when there are out-of-process iframes.
@@ -72,15 +86,12 @@ interface PageBroadcast {
   // is expected to update `document.prerendering` and dispatch the
   // prerenderingchange event on relevant documents.
   //
-  // `activation_start` is when the activation navigation started for use in
-  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
-  // host the main frame, to avoid sending the data cross-origin.
-  //
   // The renderer calls the callback once all documents in the
   // blink::WebViewImpl finished activating.
   //
   // TODO(falken): Move this to SetPageLifecycleState.
-  ActivatePrerenderedPage(mojo_base.mojom.TimeTicks activation_start) => ();
+  ActivatePrerenderedPage(
+      PrerenderPageActivationParams prerender_page_activation_params) => ();
 
   // Notifies renderers when a portal web contents is activated or if a
   // web contents is adopted as a portal.

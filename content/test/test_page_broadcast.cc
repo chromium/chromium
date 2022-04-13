@@ -24,7 +24,8 @@ void TestPageBroadcast::SetPageLifecycleState(
 void TestPageBroadcast::AudioStateChanged(bool is_audio_playing) {}
 
 void TestPageBroadcast::ActivatePrerenderedPage(
-    base::TimeTicks activation_start,
+    blink::mojom::PrerenderPageActivationParamsPtr
+        prerender_page_activation_params,
     ActivatePrerenderedPageCallback callback) {
   std::move(callback).Run();
 }

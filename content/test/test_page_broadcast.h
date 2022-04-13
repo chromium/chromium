@@ -23,7 +23,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       blink::mojom::PageRestoreParamsPtr page_restore_params,
       SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
-  void ActivatePrerenderedPage(base::TimeTicks activation_start,
+  void ActivatePrerenderedPage(blink::mojom::PrerenderPageActivationParamsPtr
+                                   prerender_page_activation_params,
                                ActivatePrerenderedPageCallback) override;
   void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(

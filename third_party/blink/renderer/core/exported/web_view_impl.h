@@ -283,7 +283,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
   void ActivatePrerenderedPage(
-      base::TimeTicks activation_start,
+      mojom::blink::PrerenderPageActivationParamsPtr
+          prerender_page_activation_params,
       ActivatePrerenderedPageCallback callback) override;
   void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(

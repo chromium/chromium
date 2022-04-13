@@ -5907,6 +5907,78 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   NavigatePrimaryPage(kPrerenderingUrl);
 }
 
+// Tests that FrameTreeNode::has_received_user_gesture_before_nav_ is not set on
+// the prerendered main frame or the activated main frame when the primary main
+// frame doesn't have it.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       HasReceivedUserGestureBeforeNavigation) {
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // The primary main frame doesn't have the
+  // has_received_user_gesture_before_nav bit.
+  ASSERT_FALSE(current_frame_host()
+                   ->frame_tree_node()
+                   ->has_received_user_gesture_before_nav());
+
+  // Start prerendering.
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  int host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // The prerendered main frame should not have the bit.
+  EXPECT_FALSE(prerendered_render_frame_host->frame_tree_node()
+                   ->has_received_user_gesture_before_nav());
+
+  // Activate the prerendered page.
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  NavigatePrimaryPage(prerendering_url);
+  ASSERT_TRUE(host_observer.was_activated());
+
+  // The activated main frame should not have the bit.
+  EXPECT_FALSE(current_frame_host()
+                   ->frame_tree_node()
+                   ->has_received_user_gesture_before_nav());
+}
+
+// Tests that FrameTreeNode::has_received_user_gesture_before_nav_ is not
+// propagated from the primary main frame to the prerendered main frame but it
+// is propagated to the activated main frame.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       HasReceivedUserGestureBeforeNavigation_Propagation) {
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Set the has_received_user_gesture_before_nav bit on the primary main frame.
+  current_frame_host()->HadStickyUserActivationBeforeNavigationChanged(true);
+  ASSERT_TRUE(current_frame_host()
+                  ->frame_tree_node()
+                  ->has_received_user_gesture_before_nav());
+
+  // Start prerendering.
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  int host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // The prerendered main frame should not have the bit.
+  EXPECT_FALSE(prerendered_render_frame_host->frame_tree_node()
+                   ->has_received_user_gesture_before_nav());
+
+  // Activate the prerendered page.
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  NavigatePrimaryPage(prerendering_url);
+  ASSERT_TRUE(host_observer.was_activated());
+
+  // The activated main frame should have the bit.
+  EXPECT_TRUE(current_frame_host()
+                  ->frame_tree_node()
+                  ->has_received_user_gesture_before_nav());
+}
+
 class PrerenderFencedFrameBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<bool /* shadow_dom_fenced_frames */> {
