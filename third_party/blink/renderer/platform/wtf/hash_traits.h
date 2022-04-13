@@ -63,7 +63,7 @@ struct GenericHashTraitsBase<false, T> {
   // tables with zeroed memory.
   static const bool kEmptyValueIsZero = false;
 
-  // The hasIsEmptyValueFunction flag allows the hash table to automatically
+  // The kHasIsEmptyValueFunction flag allows the hash table to automatically
   // generate code to check for the empty value when it can be done with the
   // equality operator, but allows custom functions for cases like String that
   // need them.
