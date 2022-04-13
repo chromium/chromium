@@ -125,7 +125,6 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
   // Set system priority so the notification is always shown (even in
   // do-not-disturb mode) and it will never time out.
   notification->SetSystemPriority();
-
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }

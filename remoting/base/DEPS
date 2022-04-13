@@ -13,3 +13,10 @@ include_rules = [
   "+third_party/zlib",
   "+ui/base",
 ]
+
+specific_include_rules = {
+  "chromeos_remoting_test_suite.*": [
+    "+ui/aura",
+    "+ui/gl/test",
+  ]
+}
