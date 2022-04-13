@@ -606,9 +606,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseMerchantPromoCodeFields)},
-    {"search-history-link-ios", flag_descriptions::kSearchHistoryLinkIOSName,
-     flag_descriptions::kSearchHistoryLinkIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSearchHistoryLinkIOS)},
     {"interest-feed-v2-clicks-and-views-cond-upload",
      flag_descriptions::kInterestFeedV2ClickAndViewActionsConditionalUploadName,
      flag_descriptions::

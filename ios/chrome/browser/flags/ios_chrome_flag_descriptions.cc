@@ -443,11 +443,6 @@ const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
 
-const char kSearchHistoryLinkIOSName[] = "Enables Search History Link";
-const char kSearchHistoryLinkIOSDescription[] =
-    "Changes the Clear Browsing Data "
-    "UI to display a link to clear search history on My Google Activity.";
-
 const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
 const char kSendTabToSelfSigninPromoDescription[] =
     "Enables a sign-in promo if the user attempts to share a tab while being "

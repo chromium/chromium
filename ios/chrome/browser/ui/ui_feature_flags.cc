@@ -48,9 +48,6 @@ extern const char kIOSOmniboxUpdatedPopupUIVariation2[] = "variant-two";
 const base::Feature kIOSLocationBarUseNativeContextMenu{
     "IOSLocationBarUseNativeContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 

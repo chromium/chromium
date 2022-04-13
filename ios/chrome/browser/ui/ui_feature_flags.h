@@ -61,9 +61,6 @@ extern const char kIOSOmniboxUpdatedPopupUIVariation1[];
 // the SwiftUI omnibox popup.
 extern const char kIOSOmniboxUpdatedPopupUIVariation2[];
 
-// Enables the Search History Link in Clear Browsing Data for iOS.
-extern const base::Feature kSearchHistoryLinkIOS;
-
 // Feature flag to enable removing any entry points to the history UI from
 // Incognito mode.
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;

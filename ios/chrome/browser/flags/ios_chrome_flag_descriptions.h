@@ -401,10 +401,6 @@ extern const char kSaveSessionTabsToSeparateFilesDescription[];
 extern const char kScreenTimeIntegrationName[];
 extern const char kScreenTimeIntegrationDescription[];
 
-// Title and description for the flag to enable the Search History Link feature.
-extern const char kSearchHistoryLinkIOSName[];
-extern const char kSearchHistoryLinkIOSDescription[];
-
 // Title and description for the flag to show a sign-in promo if the user tries
 // to use send-tab-to-self while being signed-out.
 extern const char kSendTabToSelfSigninPromoName[];

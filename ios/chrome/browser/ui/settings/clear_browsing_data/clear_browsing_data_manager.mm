@@ -345,37 +345,29 @@ static NSDictionary* _imageNamesByItemTypes = @{
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(self.browserState);
 
-  if (base::FeatureList::IsEnabled(kSearchHistoryLinkIOS)) {
-    const BOOL loggedIn =
-        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
-        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-    const TemplateURLService* templateURLService =
-        ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
-    const TemplateURL* defaultSearchEngine =
-        templateURLService->GetDefaultSearchProvider();
-    const BOOL isDefaultSearchEngineGoogle =
-        defaultSearchEngine->GetEngineType(
-            templateURLService->search_terms_data()) ==
-        SearchEngineType::SEARCH_ENGINE_GOOGLE;
-    // If the user has their DSE set to Google and is logged out
-    // there is no additional data to delete, so omit this section.
-    if (isDefaultSearchEngineGoogle && !loggedIn) {
-      // Nothing to do.
-    } else {
-      // Show additional instructions for deleting data.
-      [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
-      [model setFooter:[self footerGoogleAccountDSEBasedItem:loggedIn
-                                         defaultSearchEngine:defaultSearchEngine
-                                 isDefaultSearchEngineGoogle:
-                                     isDefaultSearchEngineGoogle]
-          forSectionWithIdentifier:SectionIdentifierGoogleAccount];
-    }
+  const BOOL loggedIn =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  const TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
+  const TemplateURL* defaultSearchEngine =
+      templateURLService->GetDefaultSearchProvider();
+  const BOOL isDefaultSearchEngineGoogle =
+      defaultSearchEngine->GetEngineType(
+          templateURLService->search_terms_data()) ==
+      SearchEngineType::SEARCH_ENGINE_GOOGLE;
+  // If the user has their DSE set to Google and is logged out
+  // there is no additional data to delete, so omit this section.
+  if (isDefaultSearchEngineGoogle && !loggedIn) {
+    // Nothing to do.
   } else {
-    if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-      [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
-      [model setFooter:[self footerForGoogleAccountSectionItem]
-          forSectionWithIdentifier:SectionIdentifierGoogleAccount];
-    }
+    // Show additional instructions for deleting data.
+    [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
+    [model setFooter:[self footerGoogleAccountDSEBasedItem:loggedIn
+                                       defaultSearchEngine:defaultSearchEngine
+                               isDefaultSearchEngineGoogle:
+                                   isDefaultSearchEngineGoogle]
+        forSectionWithIdentifier:SectionIdentifierGoogleAccount];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
@@ -398,20 +390,6 @@ static NSDictionary* _imageNamesByItemTypes = @{
       ios::WebHistoryServiceFactory::GetForBrowserState(_browserState);
 
   __weak ClearBrowsingDataManager* weakSelf = self;
-
-  // The text notice at the bottom of the CBD selector is not needed when
-  // the Search History Link feature is enabled. However, the popup notice
-  // will be left for now.
-  if (!base::FeatureList::IsEnabled(kSearchHistoryLinkIOS)) {
-    browsing_data::ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
-        syncService, historyService, base::BindOnce(^(bool shouldShowNotice) {
-          ClearBrowsingDataManager* strongSelf = weakSelf;
-          [strongSelf
-              setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:
-                  shouldShowNotice
-                                                         forModel:model];
-        }));
-  }
 
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
       syncService, historyService, GetChannel(),
