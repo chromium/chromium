@@ -108,7 +108,8 @@ public class AllPasswordsBottomSheetViewTest {
 
     @Test
     @MediumTest
-    public void testShowsWarningWithOriginByDefault() {
+    @Features.DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testShowsWarningWithOriginByDefaultWithUpmDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
@@ -116,6 +117,18 @@ public class AllPasswordsBottomSheetViewTest {
                 String.format(
                         getString(R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                         "m.example.com"));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testShowsWarningWithOriginByDefaultWithUpmEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
+        assertEquals(mAllPasswordsBottomSheetView.getWarningText().toString(),
+                String.format(
+                        getString(R.string.all_passwords_bottom_sheet_subtitle), "m.example.com"));
     }
 
     @Test

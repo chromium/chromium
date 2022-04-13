@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ORIGIN;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -192,8 +193,9 @@ class AllPasswordsBottomSheetViewBinder {
         String formattedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
                 new GURL(origin), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
         String message = String.format(
-                resources.getString(
-                        R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
+                resources.getString(usesUnifiedPasswordManagerUI()
+                                ? R.string.all_passwords_bottom_sheet_subtitle
+                                : R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                 formattedOrigin);
 
         int startIndex = message.indexOf(formattedOrigin);
