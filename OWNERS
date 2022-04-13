@@ -24,6 +24,7 @@ per-file CODE_OF_CONDUCT.md=benhenry@chromium.org
 per-file CODE_OF_CONDUCT.md=ellyjones@chromium.org
 per-file DEPS=*
 per-file PRESUBMIT*.py=agrieve@chromium.org  # For .pydeps changes
+per-file PRESUBMIT*.py=brucedawson@chromium.org
 per-file PRESUBMIT*.py=dcheng@chromium.org
 per-file PRESUBMIT*.py=jochen@chromium.org
 per-file PRESUBMIT*.py=wnwen@chromium.org  # For .pydeps changes
