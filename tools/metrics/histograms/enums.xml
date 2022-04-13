@@ -47331,7 +47331,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="40" label="Offline is not capable"/>
   <int value="41" label="Pipeline should restart so it stops running one"/>
   <int value="42" label="Timed out when fetching installable data"/>
-  <int value="43" label="WebAPK install falied"/>
+  <int value="43" label="WebAPK install failed"/>
+  <int value="44" label="Manifest URL scheme is not eligible for WebAPKs"/>
 </enum>
 
 <enum name="InstallationCounterReasonEnum">
