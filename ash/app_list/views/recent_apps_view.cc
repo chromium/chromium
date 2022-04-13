@@ -62,14 +62,27 @@ std::string ItemIdFromAppId(const std::string& app_id) {
 }
 
 // Returns a list of recent apps by filtering zero-state suggestion data.
-std::vector<SearchResult*> GetRecentApps(SearchModel* search_model) {
+std::vector<SearchResult*> GetRecentApps(
+    SearchModel* search_model,
+    const std::vector<std::string>& ids_to_ignore) {
   SearchModel::SearchResults* results = search_model->results();
-  auto is_app_suggestion = [](const SearchResult& r) -> bool {
-    return r.display_type() == SearchResultDisplayType::kRecentApps;
-  };
+  auto filter_function = base::BindRepeating(
+      [](const std::vector<std::string>& ids_to_ignore,
+         const SearchResult& r) -> bool {
+        if (r.display_type() != SearchResultDisplayType::kRecentApps)
+          return false;
+
+        for (std::string id : ids_to_ignore) {
+          if (base::EndsWith(r.id(), id))
+            return false;
+        }
+
+        return true;
+      },
+      ids_to_ignore);
   std::vector<SearchResult*> app_suggestion_results =
       SearchModel::FilterSearchResultsByFunction(
-          results, base::BindRepeating(is_app_suggestion),
+          results, filter_function,
           /*max_results=*/kMaxRecommendedApps);
 
   std::sort(app_suggestion_results.begin(), app_suggestion_results.end(),
@@ -161,21 +174,14 @@ RecentAppsView::~RecentAppsView() {
 }
 
 void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
-  std::vector<AppListItemView*> views_to_delete;
+  std::vector<std::string> ids_to_remove;
 
   for (AppListItemView* view : item_views_) {
-    if (!view->item() || view->item() == item)
-      views_to_delete.push_back(view);
+    if (view->item() && view->item() == item)
+      ids_to_remove.push_back(view->item()->id());
   }
-
-  for (AppListItemView* view : views_to_delete) {
-    RemoveChildViewT(view);
-    base::Erase(item_views_, view);
-  }
-
-  SetVisible(item_views_.size() >= kMinRecommendedApps);
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           /*send_native_event=*/true);
+  if (!ids_to_remove.empty())
+    UpdateResults(ids_to_remove);
 }
 
 void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
@@ -185,26 +191,21 @@ void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
     item_view->UpdateAppListConfig(app_list_config);
 }
 
-void RecentAppsView::ShowResults(SearchModel* search_model,
-                                 AppListModel* model) {
+void RecentAppsView::UpdateResults(
+    const std::vector<std::string>& ids_to_ignore) {
+  if (!search_model_ || !model_)
+    return;
+
   DCHECK(app_list_config_);
   item_views_.clear();
   RemoveAllChildViews();
 
-  if (model_ != model) {
-    if (model_)
-      model_->RemoveObserver(this);
-    model_ = model;
-    if (model_)
-      model_->AddObserver(this);
-  }
-
-  std::vector<SearchResult*> apps = GetRecentApps(search_model);
+  std::vector<SearchResult*> apps = GetRecentApps(search_model_, ids_to_ignore);
   std::vector<AppListItem*> items;
 
   for (SearchResult* app : apps) {
     std::string item_id = ItemIdFromAppId(app->id());
-    AppListItem* item = model->FindItem(item_id);
+    AppListItem* item = model_->FindItem(item_id);
     if (item)
       items.push_back(item);
   }
@@ -235,6 +236,19 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
 
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                            /*send_native_event=*/true);
+}
+
+void RecentAppsView::SetModels(SearchModel* search_model, AppListModel* model) {
+  if (model_ != model) {
+    if (model_)
+      model_->RemoveObserver(this);
+    model_ = model;
+    if (model_)
+      model_->AddObserver(this);
+  }
+
+  search_model_ = search_model;
+  UpdateResults(/*ids_to_ignore=*/{});
 }
 
 int RecentAppsView::GetItemViewCount() const {

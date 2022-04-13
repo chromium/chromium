@@ -1346,8 +1346,8 @@ void AppsContainerView::UpdateRecentApps(bool needs_layout) {
     return;
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
-  GetRecentApps()->ShowResults(model_provider->search_model(),
-                               model_provider->model());
+  GetRecentApps()->SetModels(model_provider->search_model(),
+                             model_provider->model());
   if (needs_layout)
     Layout();
 }

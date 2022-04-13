@@ -220,8 +220,8 @@ AppListBubbleAppsPage::~AppListBubbleAppsPage() {
 }
 
 void AppListBubbleAppsPage::UpdateSuggestions() {
-  recent_apps_->ShowResults(AppListModelProvider::Get()->search_model(),
-                            AppListModelProvider::Get()->model());
+  recent_apps_->SetModels(AppListModelProvider::Get()->search_model(),
+                          AppListModelProvider::Get()->model());
   continue_section_->UpdateSuggestionTasks();
   UpdateSeparatorVisibility();
 }
@@ -516,7 +516,7 @@ void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
 
-  recent_apps_->ShowResults(search_model, model);
+  recent_apps_->SetModels(search_model, model);
 }
 
 void AppListBubbleAppsPage::OnViewVisibilityChanged(

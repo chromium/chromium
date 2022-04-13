@@ -58,10 +58,10 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   // `AppListItemViews` shown within this view.
   void UpdateAppListConfig(const AppListConfig* app_list_config);
 
-  // Updates the recent apps view contents to show results provided by the
-  // search model. Should be called at least once, otherwise the recent apps
+  // Sets the search model and app list model used to obtain the list of the
+  // most recent apps. Should be called at least once, otherwise the recent apps
   // view will not display any results.
-  void ShowResults(SearchModel* search_model, AppListModel* model);
+  void SetModels(SearchModel* search_model, AppListModel* model);
 
   // Returns the number of AppListItemView children.
   int GetItemViewCount() const;
@@ -77,6 +77,11 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
+  // Updates the recent apps view contents to show results provided by the
+  // search model. Should be called at least once, otherwise the recent apps
+  // view will not display any results.
+  void UpdateResults(const std::vector<std::string>& ids_to_ignore);
+
   // Requests that focus move up and out (usually to the continue tasks).
   void MoveFocusUp();
 
@@ -94,6 +99,7 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   const AppListConfig* app_list_config_ = nullptr;
   views::BoxLayout* layout_ = nullptr;
   AppListModel* model_ = nullptr;
+  SearchModel* search_model_ = nullptr;
 
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;
