@@ -292,6 +292,9 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
   return feedback_view;
 }
 
+// The height of the bounded legal message ScrollView.
+constexpr int kLegalMessageScrollViewHeight = 140;
+
 }  // namespace
 
 // A view composed of the main contents for local card migration dialog
@@ -333,12 +336,18 @@ class LocalCardMigrationOfferView : public views::View {
 
     AddChildView(std::make_unique<views::Separator>());
 
-    legal_message_container_ = AddChildView(std::make_unique<LegalMessageView>(
+    auto* legal_message_container =
+        AddChildView(std::make_unique<views::ScrollView>());
+    legal_message_container->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    legal_message_container->SetContents(std::make_unique<LegalMessageView>(
         controller->GetLegalMessageLines(),
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
             base::Unretained(controller_))));
-    legal_message_container_->SetBorder(
+    legal_message_container->SetDrawOverflowIndicator(false);
+    legal_message_container->ClipHeightTo(0, kLegalMessageScrollViewHeight);
+    legal_message_container->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
   }
 
@@ -364,10 +373,6 @@ class LocalCardMigrationOfferView : public views::View {
   raw_ptr<LocalCardMigrationDialogController> controller_;
 
   raw_ptr<views::View> card_list_view_ = nullptr;
-
-  // The view that contains legal message and handles legal message links
-  // clicking.
-  raw_ptr<LegalMessageView> legal_message_container_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)
