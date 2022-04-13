@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -154,6 +155,14 @@ void FakeWebAppProvider::SetWebAppPolicyManager(
   web_app_policy_manager_ = std::move(web_app_policy_manager);
 }
 
+void FakeWebAppProvider::SetCommandManager(
+    std::unique_ptr<WebAppCommandManager> command_manager) {
+  CheckNotStarted();
+  if (command_manager_)
+    command_manager_->Shutdown();
+  command_manager_ = std::move(command_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
@@ -225,6 +234,8 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   // auto-installed on |Start|.
   SetSystemWebAppManager(
       std::make_unique<web_app::TestSystemWebAppManager>(profile_));
+
+  SetCommandManager(std::make_unique<WebAppCommandManager>());
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));

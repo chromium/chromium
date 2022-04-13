@@ -40,6 +40,7 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class SyncInstallDelegate;
+class WebAppCommandManager;
 class WebAppDatabase;
 class WebAppRegistryUpdate;
 struct RegistryUpdateData;
@@ -67,7 +68,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   ~WebAppSyncBridge() override;
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
-                     SyncInstallDelegate* install_delegate);
+                     SyncInstallDelegate* install_delegate,
+                     WebAppCommandManager* command_manager);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   // This is the writable API for the registry. Any updates will be written to
@@ -190,6 +192,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable> registrar_;
   raw_ptr<SyncInstallDelegate> install_delegate_;
+  raw_ptr<WebAppCommandManager> command_manager_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;

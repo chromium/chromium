@@ -20,6 +20,8 @@
 
 namespace web_app {
 
+class WebAppRegistrar;
+
 // The command manager is used to enqueue commands or callbacks to write & read
 // from the WebAppProvider system.
 // Commands are queued based on a `WebAppCommandQueueId`, and each queue is
@@ -39,6 +41,10 @@ class WebAppCommandManager {
   WebAppCommandManager();
   virtual ~WebAppCommandManager();
 
+  // Called by WebAppProvider on system setup.
+  void SetSubsystems(WebAppRegistrar* registrar);
+  void Start();
+
   // Enqueues the given command in the queue corresponding to the command's
   // `queue_id()`. `Start()` will always be called asynchronously.
   void EnqueueCommand(std::unique_ptr<WebAppCommand> command);
@@ -56,7 +62,9 @@ class WebAppCommandManager {
   // Called by the sync integration when a list of apps are going to be deleted
   // from the registry. Any commands that whose `queue_id()`s match an id in
   // `app_id` who have also been `Start()`ed will also be notified.
-  void NotifyBeforeSyncUninstalls(std::vector<AppId> app_ids);
+  void NotifyBeforeSyncUninstalls(const std::vector<AppId>& app_ids);
+
+  WebAppRegistrar* registrar() { return registrar_; }
 
   // Outputs a debug value of the state of the commands system, including
   // running and queued commands.
@@ -93,6 +101,8 @@ class WebAppCommandManager {
 
   bool is_in_shutdown_ = false;
   std::deque<base::Value> command_debug_log_;
+
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
 
   base::WeakPtrFactory<WebAppCommandManager> weak_ptr_factory_{this};
 };

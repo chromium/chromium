@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -132,13 +133,15 @@ WebAppSyncBridge::~WebAppSyncBridge() = default;
 
 void WebAppSyncBridge::SetSubsystems(
     AbstractWebAppDatabaseFactory* database_factory,
-    SyncInstallDelegate* install_delegate) {
+    SyncInstallDelegate* install_delegate,
+    WebAppCommandManager* command_manager) {
   DCHECK(database_factory);
   database_ = std::make_unique<WebAppDatabase>(
       database_factory,
       base::BindRepeating(&WebAppSyncBridge::ReportErrorToChangeProcessor,
                           base::Unretained(this)));
   install_delegate_ = install_delegate;
+  command_manager_ = command_manager;
 }
 
 std::unique_ptr<WebAppRegistryUpdate> WebAppSyncBridge::BeginUpdate() {
@@ -669,6 +672,8 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   if (!apps_to_delete.empty()) {
     apps_in_sync_uninstall_.insert(apps_to_delete.begin(),
                                    apps_to_delete.end());
+    command_manager_->NotifyBeforeSyncUninstalls(apps_to_delete);
+
     install_delegate_->UninstallWithoutRegistryUpdateFromSync(
         apps_to_delete,
         base::BindRepeating(&WebAppSyncBridge::WebAppUninstalled,

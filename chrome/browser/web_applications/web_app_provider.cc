@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -211,7 +212,13 @@ const OsIntegrationManager& WebAppProvider::os_integration_manager() const {
   return *os_integration_manager_;
 }
 
+WebAppCommandManager& WebAppProvider::command_manager() {
+  CheckIsConnected();
+  return *command_manager_;
+}
+
 void WebAppProvider::Shutdown() {
+  command_manager_->Shutdown();
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();
   manifest_update_manager_->Shutdown();
@@ -295,6 +302,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), std::move(url_handler_manager));
   }
 
+  command_manager_ = std::make_unique<WebAppCommandManager>();
+
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
 }
@@ -302,7 +311,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  sync_bridge_->SetSubsystems(database_factory_.get(), install_manager_.get());
+  sync_bridge_->SetSubsystems(database_factory_.get(), install_manager_.get(),
+                              command_manager_.get());
   icon_manager_->SetSubsystems(registrar_.get(), install_manager_.get());
   install_finalizer_->SetSubsystems(
       install_manager_.get(), registrar_.get(), ui_manager_.get(),
@@ -336,6 +346,7 @@ void WebAppProvider::ConnectSubsystems() {
                                          ui_manager_.get(),
                                          icon_manager_.get());
 
+  command_manager_->SetSubsystems(registrar_.get());
   connected_ = true;
 }
 

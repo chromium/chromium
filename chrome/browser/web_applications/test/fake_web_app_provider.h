@@ -36,6 +36,7 @@ class WebAppTranslationManager;
 class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppUiManager;
+class WebAppCommandManager;
 
 class FakeWebAppProvider : public WebAppProvider {
  public:
@@ -83,6 +84,7 @@ class FakeWebAppProvider : public WebAppProvider {
       std::unique_ptr<SystemWebAppManager> system_web_app_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
+  void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See

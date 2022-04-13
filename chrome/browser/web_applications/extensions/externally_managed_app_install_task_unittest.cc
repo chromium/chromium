@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -318,9 +319,11 @@ class ExternallyManagedAppInstallTaskTest
     auto ui_manager = std::make_unique<FakeWebAppUiManager>();
     ui_manager_ = ui_manager.get();
 
+    auto command_manager = std::make_unique<WebAppCommandManager>();
+
     auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
     sync_bridge->SetSubsystems(&provider->GetDatabaseFactory(),
-                               install_manager_);
+                               install_manager_, command_manager.get());
 
     provider->SetRegistrar(std::move(registrar));
     provider->SetSyncBridge(std::move(sync_bridge));
@@ -328,6 +331,7 @@ class ExternallyManagedAppInstallTaskTest
     provider->SetInstallFinalizer(std::move(install_finalizer));
     provider->SetWebAppUiManager(std::move(ui_manager));
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
+    provider->SetCommandManager(std::move(command_manager));
 
     provider->Start();
     // Start only WebAppInstallManager for real.

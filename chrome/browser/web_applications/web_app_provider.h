@@ -41,6 +41,7 @@ class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
 class WebAppTranslationManager;
+class WebAppCommandManager;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -132,6 +133,8 @@ class WebAppProvider : public KeyedService {
   OsIntegrationManager& os_integration_manager();
   const OsIntegrationManager& os_integration_manager() const;
 
+  WebAppCommandManager& command_manager();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -187,6 +190,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
+  std::unique_ptr<WebAppCommandManager> command_manager_;
 
   base::OneShotEvent on_registry_ready_;
 

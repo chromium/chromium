@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -103,6 +104,10 @@ WebAppCommandManager::~WebAppCommandManager() {
   DCHECK(is_in_shutdown_);
 }
 
+void WebAppCommandManager::SetSubsystems(WebAppRegistrar* registrar) {
+  registrar_ = registrar;
+}
+
 void WebAppCommandManager::EnqueueCommand(
     std::unique_ptr<WebAppCommand> command) {
   if (is_in_shutdown_) {
@@ -151,7 +156,7 @@ void WebAppCommandManager::Shutdown() {
 }
 
 void WebAppCommandManager::NotifyBeforeSyncUninstalls(
-    std::vector<AppId> app_ids) {
+    const std::vector<AppId>& app_ids) {
   if (is_in_shutdown_)
     return;
 
