@@ -26,6 +26,8 @@ interface RemoteApps {
   // Adds a Remote Apps app to the launcher.
   //
   // Input parameters:
+  // - |source_id|: An ID used to identify the source of the caller. The JS
+  //                bindings manages this and passes the extension ID.
   // - |name|: the name of the app.
   // - |folder_id|: the ID of the parent folder. An empty string indicates the
   //                app has no parent folder.
@@ -36,7 +38,8 @@ interface RemoteApps {
   // Output parameters:
   // - |app_id|: the ID of the newly added app.
   // - |error|: A string describing the error if any.
-  AddApp(string name,
+  AddApp(string source_id,
+         string name,
          string folder_id,
          url.mojom.Url icon_url,
          bool add_to_front) => (string? app_id, string? error);
@@ -53,14 +56,17 @@ interface RemoteApps {
 
 // Factory for creating an instance of RemoteApps.
 interface RemoteAppsFactory {
-  // Creates an instance of RemoteApps.
-  Create(pending_receiver<RemoteApps> remote_apps,
+  // Creates an instance of RemoteApps. The JS bindings manages |source_id|
+  // and passes the extension ID.
+  Create(string source_id,
+         pending_receiver<RemoteApps> remote_apps,
          pending_remote<RemoteAppLaunchObserver> observer);
 };
 
 // A RemoteAppLaunchObserver gets notifications when a remote app is launched.
 interface RemoteAppLaunchObserver {
-  // Invoked when a remote app is launched. |app_id| is the ID of the app which
-  // was launched.
+  // Invoked when a remote app is launched. |app_id| is the ID of the app
+  // which was launched. The event is only dispatched to the extension which
+  // added the app.
   OnRemoteAppLaunched(string app_id);
 };

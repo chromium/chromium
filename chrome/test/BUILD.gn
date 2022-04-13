@@ -4007,6 +4007,7 @@ if (!is_android) {
         "//chromeos/assistant:buildflags",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers/public/cpp:cpp",
+        "//chromeos/components/remote_apps/mojom:mojom",
         "//chromeos/dbus:test_support",
         "//chromeos/dbus/attestation",
         "//chromeos/dbus/attestation:attestation_proto",

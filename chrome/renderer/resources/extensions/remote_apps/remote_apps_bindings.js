@@ -19,6 +19,7 @@ class RemoteAppsAdapter {
     this.callbackRouter_ =
         new chromeos.remoteApps.mojom.RemoteAppLaunchObserverCallbackRouter();
     factory.create(
+        chrome.runtime.id,
         this.remoteApps_.$.bindNewPipeAndPassReceiver(),
         this.callbackRouter_.$.bindNewPipeAndPassRemote());
   }
@@ -50,7 +51,7 @@ class RemoteAppsAdapter {
    */
   addApp(name, folderId, iconUrl, add_to_front = false) {
     return this.remoteApps_.addApp(
-        name, folderId, {url: iconUrl}, add_to_front);
+        chrome.runtime.id, name, folderId, {url: iconUrl}, add_to_front);
   }
 
   /**

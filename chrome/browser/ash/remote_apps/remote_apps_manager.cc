@@ -151,7 +151,8 @@ void RemoteAppsManager::Initialize() {
   is_initialized_ = true;
 }
 
-void RemoteAppsManager::AddApp(const std::string& name,
+void RemoteAppsManager::AddApp(const std::string& source_id,
+                               const std::string& name,
                                const std::string& folder_id,
                                const GURL& icon_url,
                                bool add_to_front,
@@ -179,6 +180,8 @@ void RemoteAppsManager::AddApp(const std::string& name,
       model_->AddApp(name, icon_url, folder_id, add_to_front);
   add_app_callback_map_.insert({info.id, std::move(callback)});
   remote_apps_->AddApp(info);
+  app_id_to_source_id_map_.insert(
+      std::pair<std::string, std::string>(info.id, source_id));
 }
 
 void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
@@ -235,6 +238,7 @@ RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
 
   model_->DeleteApp(id);
   remote_apps_->DeleteApp(id);
+  app_id_to_source_id_map_.erase(id);
   return RemoteAppsError::kNone;
 }
 
@@ -267,14 +271,6 @@ bool RemoteAppsManager::ShouldAddToFront(const std::string& id) const {
   return false;
 }
 
-void RemoteAppsManager::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void RemoteAppsManager::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
 void RemoteAppsManager::BindInterface(
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
         pending_remote_apps_factory) {
@@ -284,11 +280,12 @@ void RemoteAppsManager::BindInterface(
 void RemoteAppsManager::Shutdown() {}
 
 void RemoteAppsManager::Create(
+    const std::string& source_id,
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
         pending_remote_apps,
     mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
-  remote_apps_impl_.Bind(std::move(pending_remote_apps),
+  remote_apps_impl_.Bind(source_id, std::move(pending_remote_apps),
                          std::move(pending_observer));
 }
 
@@ -298,9 +295,11 @@ RemoteAppsManager::GetApps() {
 }
 
 void RemoteAppsManager::LaunchApp(const std::string& id) {
-  for (Observer& observer : observer_list_)
-    observer.OnAppLaunched(id);
-  remote_apps_impl_.OnAppLaunched(id);
+  auto it = app_id_to_source_id_map_.find(id);
+  if (it == app_id_to_source_id_map_.end())
+    return;
+
+  remote_apps_impl_.OnAppLaunched(it->second, id);
 }
 
 gfx::ImageSkia RemoteAppsManager::GetIcon(const std::string& id) {
