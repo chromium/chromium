@@ -818,8 +818,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
       aggregate_data->contributions, std::back_inserter(contributions),
       [](const auto& contribution) {
         return AggregationServicePayloadContents::HistogramContribution{
-            .bucket = contribution.key(),
-            .value = static_cast<int>(contribution.value())};
+            .bucket = contribution.key(), .value = contribution.value()};
       });
 
   absl::optional<AggregatableReportRequest> request =
