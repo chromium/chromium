@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"

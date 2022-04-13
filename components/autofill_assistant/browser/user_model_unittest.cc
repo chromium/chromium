@@ -8,6 +8,7 @@
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/mock_user_model_observer.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {

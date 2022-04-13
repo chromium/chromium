@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"

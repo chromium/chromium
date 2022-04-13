@@ -19,7 +19,6 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/selector.h"
-#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
@@ -36,6 +35,7 @@ struct GlobalRenderFrameHostId;
 
 namespace autofill_assistant {
 class DevtoolsClient;
+class UserData;
 
 // Worker class to find element(s) matching a selector. This will keep entering
 // iFrames until the element is found in the last frame, then returns the

@@ -7,6 +7,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill_assistant {

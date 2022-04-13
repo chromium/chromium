@@ -11,15 +11,21 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/model.pb.h"
-#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace autofill {
+class AutofillProfile;
+class CreditCard;
+}  // namespace autofill
+
 namespace autofill_assistant {
+
+class UserData;
+struct LoginChoice;
+struct CollectUserDataOptions;
 
 // Manages a map of |ValueProto| instances and notifies observers of changes.
 //
