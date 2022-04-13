@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_DEPENDENCIES_WEBLAYER_H_
-#define WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_DEPENDENCIES_WEBLAYER_H_
+#ifndef WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_WEBLAYER_DEPENDENCIES_H_
+#define WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_WEBLAYER_DEPENDENCIES_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
@@ -16,18 +16,18 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
-namespace autofill_assistant {
+namespace weblayer {
 
 // Interface for platform delegates that provide platform-dependent features
 // and dependencies to the starter.
-class DependenciesWebLayer : public Dependencies {
+class WebLayerDependencies : public ::autofill_assistant::Dependencies {
  public:
-  DependenciesWebLayer(
+  WebLayerDependencies(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
-  std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
-      const override;
+  std::unique_ptr<::autofill_assistant::AssistantFieldTrialUtil>
+  CreateFieldTrialUtil() const override;
 
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
 
@@ -39,7 +39,8 @@ class DependenciesWebLayer : public Dependencies {
   std::string GetChromeSignedInEmailAddress(
       content::WebContents* web_contents) const override;
 
-  AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
+  ::autofill_assistant::AnnotateDomModelService*
+  GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const override;
 
   bool IsCustomTab(const content::WebContents& web_contents) const override;
@@ -47,6 +48,6 @@ class DependenciesWebLayer : public Dependencies {
   bool IsWebLayer() const override;
 };
 
-}  // namespace autofill_assistant
+}  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_DEPENDENCIES_WEBLAYER_H_
+#endif  // WEBLAYER_BROWSER_AUTOFILL_ASSISTANT_WEBLAYER_DEPENDENCIES_H_

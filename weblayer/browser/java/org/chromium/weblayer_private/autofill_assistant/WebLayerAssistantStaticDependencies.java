@@ -32,7 +32,7 @@ import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
 /**
  * Provides default implementations of {@link AssistantStaticDependencies} for WebLayer.
  */
-@JNINamespace("autofill_assistant")
+@JNINamespace("weblayer")
 public class WebLayerAssistantStaticDependencies implements AssistantStaticDependencies {
     @Override
     public long createNative() {
