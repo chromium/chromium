@@ -191,7 +191,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
   // frame_callback and presentation_feedback on the top-most possible surface.
-  WaylandSurface* reference_above = nullptr;
+  WaylandSubsurface* reference_above = nullptr;
   for (auto& [subsurface, config] :
        base::Reversed(frame->subsurfaces_to_overlays)) {
     DCHECK(subsurface);
@@ -212,11 +212,12 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
+      subsurface->Show();
       subsurface->ConfigureAndShowSurface(
           config->bounds_rect, root_config->bounds_rect,
           root_config->surface_scale_factor, nullptr, reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
-      reference_above = surface;
+      reference_above = subsurface;
       surface->Commit(false);
     }
   }

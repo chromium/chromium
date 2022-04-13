@@ -17,7 +17,10 @@ void SetSource(wl_client* client,
                wl_fixed_t y,
                wl_fixed_t width,
                wl_fixed_t height) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* test_vp = GetUserDataAs<TestViewport>(resource);
+  DCHECK(test_vp);
+  test_vp->SetSource(wl_fixed_to_double(x), wl_fixed_to_double(y),
+                     wl_fixed_to_double(width), wl_fixed_to_double(height));
 }
 
 void SetDestination(wl_client* client,
@@ -26,7 +29,7 @@ void SetDestination(wl_client* client,
                     int32_t height) {
   auto* test_vp = GetUserDataAs<TestViewport>(resource);
   DCHECK(test_vp);
-  test_vp->SetDestination(width, height);
+  test_vp->SetDestinationImpl(width, height);
 }
 
 }  // namespace
@@ -48,8 +51,9 @@ TestViewport::~TestViewport() {
     mock_surface->set_viewport(nullptr);
 }
 
-void TestViewport::SetDestination(float width, float height) {
+void TestViewport::SetDestinationImpl(float width, float height) {
   destination_size_ = gfx::SizeF(width, height);
+  SetDestination(width, height);
 }
 
 }  // namespace wl

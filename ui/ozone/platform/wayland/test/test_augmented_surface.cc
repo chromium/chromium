@@ -33,8 +33,8 @@ void SetDestinationSize(struct wl_client* client,
 
   auto* viewport = mock_surface->viewport();
   DCHECK(viewport);
-  viewport->SetDestination(wl_fixed_to_double(width),
-                           wl_fixed_to_double(height));
+  viewport->SetDestinationImpl(wl_fixed_to_double(width),
+                               wl_fixed_to_double(height));
 }
 
 void SetRoundedClipBounds(struct wl_client* client,

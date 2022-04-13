@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/linked_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -76,6 +77,10 @@ class WaylandWindow : public PlatformWindow,
   }
   const WidgetSubsurfaceSet& wayland_subsurfaces() const {
     return wayland_subsurfaces_;
+  }
+
+  base::LinkedList<WaylandSubsurface>* subsurface_stack_committed() {
+    return &subsurface_stack_committed_;
   }
 
   void set_parent_window(WaylandWindow* parent_window) {
@@ -419,10 +424,14 @@ class WaylandWindow : public PlatformWindow,
 
   // The stack of sub-surfaces to take effect when Commit() is called.
   // |subsurface_stack_above_| refers to subsurfaces that are stacked above the
-  // primary.
+  // primary. These include the subsurfaces to be hidden as well.
   // Subsurface at the front of the list is the closest to the primary.
   std::list<WaylandSubsurface*> subsurface_stack_above_;
   std::list<WaylandSubsurface*> subsurface_stack_below_;
+
+  // The stack of sub-surfaces currently committed. This list is altered when
+  // the subsurface arrangement are played back by WaylandFrameManager.
+  base::LinkedList<WaylandSubsurface> subsurface_stack_committed_;
 
   // The current cursor bitmap (immutable).
   scoped_refptr<BitmapCursor> cursor_;

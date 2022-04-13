@@ -62,6 +62,9 @@ void WaylandSubsurface::Hide() {
   if (!subsurface_)
     return;
 
+  // Remove it from the stack.
+  RemoveFromList();
+
   augmented_subsurface_.reset();
   subsurface_.reset();
 }
@@ -76,6 +79,10 @@ void WaylandSubsurface::CreateSubsurface() {
   wl_subcompositor* subcompositor = connection_->subcompositor();
   DCHECK(subcompositor);
   subsurface_ = wayland_surface()->CreateSubsurface(parent_->root_surface());
+  position_dip_ = {0, 0};
+
+  // A new sub-surface is initially added as the top-most in the stack.
+  parent_->subsurface_stack_committed()->Append(this);
 
   DCHECK(subsurface_);
   wl_subsurface_set_sync(subsurface_.get());
@@ -99,8 +106,8 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::RectF& bounds_px,
     const gfx::RectF& parent_bounds_px,
     float buffer_scale,
-    const WaylandSurface* reference_below,
-    const WaylandSurface* reference_above) {
+    WaylandSubsurface* new_below,
+    WaylandSubsurface* new_above) {
   Show();
 
   // Chromium positions quads in display::Display coordinates in physical
@@ -110,26 +117,35 @@ void WaylandSubsurface::ConfigureAndShowSurface(
       bounds_px, parent_bounds_px,
       connection_->surface_submission_in_pixel_coordinates() ? 1.f
                                                              : buffer_scale);
-  if (augmented_subsurface_) {
-    DCHECK(
-        connection_->surface_augmenter()->SupportsSubpixelAccuratePosition());
-    augmented_sub_surface_set_position(
-        augmented_subsurface_.get(),
-        wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
-        wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
-  } else {
-    gfx::Rect enclosed_rect_in_parent =
-        gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
-    wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
-                               enclosed_rect_in_parent.y());
+  if (bounds_dip_in_parent_surface.origin() != position_dip_) {
+    position_dip_ = bounds_dip_in_parent_surface.origin();
+    if (augmented_subsurface_) {
+      DCHECK(
+          connection_->surface_augmenter()->SupportsSubpixelAccuratePosition());
+      augmented_sub_surface_set_position(
+          augmented_subsurface_.get(),
+          wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
+          wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
+    } else {
+      gfx::Rect enclosed_rect_in_parent =
+          gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
+      wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
+                                 enclosed_rect_in_parent.y());
+    }
   }
 
   // Setup the stacking order of this subsurface.
-  DCHECK(!reference_above || !reference_below);
-  if (reference_below) {
-    wl_subsurface_place_above(subsurface_.get(), reference_below->surface());
-  } else if (reference_above) {
-    wl_subsurface_place_below(subsurface_.get(), reference_above->surface());
+  DCHECK(!new_above || !new_below);
+  if (new_below && new_below != previous()) {
+    DCHECK_EQ(parent_, new_below->parent_);
+    RemoveFromList();
+    InsertAfter(new_below);
+    wl_subsurface_place_above(subsurface_.get(), new_below->surface());
+  } else if (new_above && new_above != next()) {
+    DCHECK_EQ(parent_, new_above->parent_);
+    RemoveFromList();
+    InsertBefore(new_above);
+    wl_subsurface_place_below(subsurface_.get(), new_above->surface());
   }
 }
 

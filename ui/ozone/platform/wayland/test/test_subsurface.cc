@@ -15,19 +15,19 @@ void SetPosition(wl_client* client,
                  wl_resource* resource,
                  int32_t x,
                  int32_t y) {
-  GetUserDataAs<TestSubSurface>(resource)->SetPosition(x, y);
+  GetUserDataAs<TestSubSurface>(resource)->SetPositionImpl(x, y);
 }
 
 void PlaceAbove(wl_client* client,
                 wl_resource* resource,
                 wl_resource* reference_resource) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  GetUserDataAs<TestSubSurface>(resource)->PlaceAbove(reference_resource);
 }
 
 void PlaceBelow(wl_client* client,
                 wl_resource* resource,
                 wl_resource* sibling_resource) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  GetUserDataAs<TestSubSurface>(resource)->PlaceBelow(sibling_resource);
 }
 
 void SetSync(wl_client* client, wl_resource* resource) {
@@ -61,8 +61,9 @@ TestSubSurface::~TestSubSurface() {
     wl_resource_destroy(augmented_subsurface_->resource());
 }
 
-void TestSubSurface::SetPosition(float x, float y) {
+void TestSubSurface::SetPositionImpl(float x, float y) {
   position_ = gfx::PointF(x, y);
+  SetPosition(x, y);
 }
 
 }  // namespace wl

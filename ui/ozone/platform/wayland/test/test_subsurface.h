@@ -29,7 +29,11 @@ class TestSubSurface : public ServerObject {
   TestSubSurface(const TestSubSurface& rhs) = delete;
   TestSubSurface& operator=(const TestSubSurface& rhs) = delete;
 
-  void SetPosition(float x, float y);
+  MOCK_METHOD1(PlaceAbove, void(wl_resource* reference_resource));
+  MOCK_METHOD1(PlaceBelow, void(wl_resource* sibling_resource));
+  MOCK_METHOD2(SetPosition, void(float x, float y));
+
+  void SetPositionImpl(float x, float y);
   gfx::PointF position() const { return position_; }
 
   void set_sync(bool sync) { sync_ = sync; }

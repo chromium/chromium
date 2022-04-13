@@ -494,7 +494,7 @@ void WaylandSurface::ApplyPendingState() {
   gfx::SizeF bounds = wl::ApplyWaylandTransform(
       gfx::SizeF(pending_state_.buffer_size_px),
       wl::ToWaylandTransform(pending_state_.buffer_transform));
-  int32_t applying_surface_scale;
+  int32_t applying_surface_scale = surface_scale_set_;
 
   // When viewport_px is set, wp_viewport will scale the surface accordingly.
   // Thus, there is no need to downscale bounds as Wayland compositor
@@ -506,35 +506,38 @@ void WaylandSurface::ApplyPendingState() {
     applying_surface_scale = pending_state_.buffer_scale;
     bounds = gfx::ScaleSize(bounds, 1.f / pending_state_.buffer_scale);
   }
-  if (!SurfaceSubmissionInPixelCoordinates())
+  if (!SurfaceSubmissionInPixelCoordinates() &&
+      surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
+    surface_scale_set_ = applying_surface_scale;
+  }
+  DCHECK_GE(surface_scale_set_, 1);
 
   gfx::RectF viewport_src_dip;
+  wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
+                              wl_fixed_from_int(-1), wl_fixed_from_int(-1)};
   if (pending_state_.crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
-    // Unset crop (wp_viewport.set_source).
-    if (viewport()) {
-      wp_viewport_set_source(viewport(), wl_fixed_from_int(-1),
-                             wl_fixed_from_int(-1), wl_fixed_from_int(-1),
-                             wl_fixed_from_int(-1));
-    }
   } else {
     viewport_src_dip =
         gfx::ScaleRect(pending_state_.crop, bounds.width(), bounds.height());
-    // Apply crop (wp_viewport.set_source).
     DCHECK(viewport());
     if (wl_fixed_from_double(viewport_src_dip.width()) == 0 ||
         wl_fixed_from_double(viewport_src_dip.height()) == 0) {
       LOG(ERROR) << "Sending viewport src with width/height zero will result "
                     "in wayland disconnection";
     }
-    if (viewport()) {
-      wp_viewport_set_source(viewport(),
-                             wl_fixed_from_double(viewport_src_dip.x()),
-                             wl_fixed_from_double(viewport_src_dip.y()),
-                             wl_fixed_from_double(viewport_src_dip.width()),
-                             wl_fixed_from_double(viewport_src_dip.height()));
-    }
+    src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
+    src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
+    src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
+    src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
+  }
+  // Apply crop (wp_viewport.set_source).
+  if (viewport() && !std::equal(std::begin(src_to_set), std::end(src_to_set),
+                                std::begin(src_set_))) {
+    wp_viewport_set_source(viewport(), src_to_set[0], src_to_set[1],
+                           src_to_set[2], src_to_set[3]);
+    memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set));
   }
 
   gfx::SizeF viewport_dst_dip =
@@ -542,10 +545,16 @@ void WaylandSurface::ApplyPendingState() {
           ? viewport_src_dip.size()
           : gfx::ScaleSize(pending_state_.viewport_px,
                            1.f / pending_state_.buffer_scale);
+  float dst_to_set[2] = {-1.f, -1.f};
   if (viewport_dst_dip != viewport_src_dip.size()) {
-    // Apply viewport scale (wp_viewport.set_destination).
+    dst_to_set[0] = viewport_dst_dip.width();
+    dst_to_set[1] = viewport_dst_dip.height();
+  }
+  // Apply viewport scale (wp_viewport.set_destination).
+  if (!std::equal(std::begin(dst_to_set), std::end(dst_to_set),
+                  std::begin(dst_set_))) {
     auto* augmented_surface = GetAugmentedSurface();
-    if (augmented_surface &&
+    if (dst_to_set[0] > 0.f && augmented_surface &&
         connection_->surface_augmenter()->SupportsSubpixelAccuratePosition()) {
       // Subpixel accurate positioning is available since the surface augmenter
       // version 2. Since that version, the augmented surface also supports
@@ -558,13 +567,14 @@ void WaylandSurface::ApplyPendingState() {
           augmented_surface, wl_fixed_from_double(viewport_dst_dip.width()),
           wl_fixed_from_double(viewport_dst_dip.height()));
     } else if (viewport()) {
-      wp_viewport_set_destination(viewport(),
-                                  base::ClampCeil(viewport_dst_dip.width()),
-                                  base::ClampCeil(viewport_dst_dip.height()));
+      wp_viewport_set_destination(
+          viewport(),
+          dst_to_set[0] > 0.f ? base::ClampCeil(viewport_dst_dip.width())
+                              : static_cast<int>(dst_to_set[0]),
+          dst_to_set[1] > 0.f ? base::ClampCeil(viewport_dst_dip.height())
+                              : static_cast<int>(dst_to_set[1]));
     }
-  } else if (viewport()) {
-    // Unset viewport scale (wp_viewport.set_destination).
-    wp_viewport_set_destination(viewport(), -1, -1);
+    memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
   }
 
   DCHECK_LE(pending_state_.damage_px.size(), 1u);

@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 
+#include "base/containers/linked_list.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -15,7 +16,11 @@ class WaylandWindow;
 
 // Wraps a wl_surface with a wl_subsurface role assigned. It is used to submit a
 // buffer as a sub region of WaylandWindow.
-class WaylandSubsurface {
+//
+// Inherits base::LinkNode<> s.t. it's location in the subsurface stack can be
+// tracked and prevent us from sending excessive wl_subsurface.place_below/above
+// requests.
+class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
  public:
   WaylandSubsurface(WaylandConnection* connection, WaylandWindow* parent);
   WaylandSubsurface(const WaylandSubsurface&) = delete;
@@ -39,8 +44,8 @@ class WaylandSubsurface {
   void ConfigureAndShowSurface(const gfx::RectF& bounds_px,
                                const gfx::RectF& parent_bounds_px,
                                float buffer_scale,
-                               const WaylandSurface* reference_below,
-                               const WaylandSurface* reference_above);
+                               WaylandSubsurface* reference_below,
+                               WaylandSubsurface* reference_above);
 
   // Assigns wl_subsurface role to the wl_surface so it is visible when a
   // wl_buffer is attached.
@@ -56,6 +61,7 @@ class WaylandSubsurface {
   WaylandSurface wayland_surface_;
   wl::Object<wl_subsurface> subsurface_;
   wl::Object<augmented_sub_surface> augmented_subsurface_;
+  gfx::PointF position_dip_;
 
   WaylandConnection* const connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to

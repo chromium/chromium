@@ -25,7 +25,8 @@ void SetPosition(struct wl_client* client,
   auto* test_subsurface =
       GetUserDataAs<TestSubSurface>(test_augmented_subsurface->sub_surface());
   DCHECK(test_subsurface);
-  test_subsurface->SetPosition(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  test_subsurface->SetPositionImpl(wl_fixed_to_double(x),
+                                   wl_fixed_to_double(y));
 }
 
 }  // namespace

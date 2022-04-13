@@ -7,6 +7,7 @@
 
 #include <viewporter-server-protocol.h>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -23,8 +24,11 @@ class TestViewport : public ServerObject {
   TestViewport(const TestViewport& rhs) = delete;
   TestViewport& operator=(const TestViewport& rhs) = delete;
 
+  MOCK_METHOD2(SetDestination, void(float x, float y));
+  MOCK_METHOD4(SetSource, void(float x, float y, float width, float height));
+
   gfx::SizeF destination_size() const { return destination_size_; }
-  void SetDestination(float x, float y);
+  void SetDestinationImpl(float x, float y);
 
  private:
   // Surface resource that is the ground for this Viewport.
