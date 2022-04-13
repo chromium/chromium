@@ -716,6 +716,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebRTC.Audio.EchoCanceller.PersistentMultichannelContentEverDetected"
+    enum="Boolean" expires_after="2023-04-13">
+  <owner>peah@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    This histogram logs whether the WebRTC echo canceller has encountered
+    persistent multichannel playout reference content during its lifetime. The
+    value is logged at the end of the AEC lifetime if the AEC has processed at
+    least 5 seconds of audio.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebRTC.Audio.EchoCanceller.ProcessingPersistentMultichannelContent"
+    enum="Boolean" expires_after="2023-04-13">
+  <owner>peah@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    This histogram logs the frequency of persistent multichannel playout
+    reference content detected by the WebRTC echo canceller. `true` if a
+    majority of the last 10 seconds of audio was classified as persistent
+    multichannel. A new value is logged every 10 seconds.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"
     enum="WebRTCAecDelayEstimateReliability" expires_after="2022-09-13">
   <owner>peah@chromium.org</owner>
