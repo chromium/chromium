@@ -4130,9 +4130,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-
 crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/idlharness.window.html [ Failure ]
 
-# Update the serializing wasm memory case when crbug.com/v8/12703 is fixed.
-crbug.com/v8/12703 external/wpt/wasm/serialization/arraybuffer/transfer.window.html [ Failure Pass ]
-
 ### virtual/prerender/external/wpt/speculation-rules/prerender
 crbug.com/1126305 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
