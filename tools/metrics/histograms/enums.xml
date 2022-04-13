@@ -29203,6 +29203,7 @@ Called by update_document_policy_enum.py.-->
   <int value="977" label="DefaultLocalFontsSetting"/>
   <int value="978" label="LocalFontsllowedForUrls"/>
   <int value="979" label="LocalFontslockedForUrls"/>
+  <int value="980" label="ProjectorDogfoodForFamilyLinkEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

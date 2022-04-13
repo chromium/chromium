@@ -954,6 +954,11 @@ const char kProjectorViewerOnboardingShowCount[] =
 // policy.
 const char kProjectorAllowByPolicy[] = "ash.projector.allow_by_policy";
 
+// A boolean pref that controls Projector dogfood for Family Link users.
+// Set with an enterprise user policy.
+const char kProjectorDogfoodForFamilyLinkEnabled[] =
+    "ash.projector.dogfood_for_family_link_enabled";
+
 // A boolean pref that indicates whether the migration of Chromad devices to
 // cloud management can be started.
 const char kChromadToCloudMigrationEnabled[] =

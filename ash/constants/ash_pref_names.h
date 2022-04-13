@@ -439,6 +439,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorAllowByPolicy[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorDogfoodForFamilyLinkEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromadToCloudMigrationEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppFolderShortcuts[];

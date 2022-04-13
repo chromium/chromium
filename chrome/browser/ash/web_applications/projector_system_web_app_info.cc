@@ -74,12 +74,20 @@ bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
   if (!IsProjectorAllowedForProfile(profile_))
     return false;
 
-  if (!profile_->GetProfilePolicyConnector()->IsManaged() ||
-      profile_->IsChild()) {
+  // Projector for regular consumer users is controlled by a feature flag.
+  if (!profile_->GetProfilePolicyConnector()->IsManaged())
     return ash::features::IsProjectorAllUserEnabled();
+
+  // Projector dogfood for supervised users is controlled by an enterprise
+  // policy. When the feature is out of dogfood phase the policy will be
+  // deprecated and the feature will be enabled by default.
+  if (profile_->IsChild()) {
+    return profile_->GetPrefs()->GetBoolean(
+        ash::prefs::kProjectorDogfoodForFamilyLinkEnabled);
   }
 
-  // Check feature availability and admin policy for managed users.
+  // Projector for enterprise users is controlled by a combination fo a feature
+  // flag and an enterprise policy.
   return ash::features::IsProjectorEnabled() &&
          profile_->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
 }

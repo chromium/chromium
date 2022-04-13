@@ -55,6 +55,9 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(ash::prefs::kProjectorAllowByPolicy,
                                 /*default_value=*/false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kProjectorDogfoodForFamilyLinkEnabled,
+      /*default_value=*/false);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl()
