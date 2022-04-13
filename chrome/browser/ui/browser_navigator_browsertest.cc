@@ -1637,16 +1637,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(linux_aura) http://crbug.com/163931
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
-#define MAYBE_NavigateFromDefaultToBookmarksInSameTab \
-  DISABLED_NavigateFromDefaultToBookmarksInSameTab
-#else
-#define MAYBE_NavigateFromDefaultToBookmarksInSameTab \
-  NavigateFromDefaultToBookmarksInSameTab
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       MAYBE_NavigateFromDefaultToBookmarksInSameTab) {
+                       NavigateFromDefaultToBookmarksInSameTab) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
