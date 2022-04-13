@@ -135,6 +135,9 @@ const char kSigninBottomSheetShownCount[] =
 
 // Deprecated 03/2022
 const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
+
+// Depreated 04/2022
+const char kFRETrialGroupPrefName[] = "fre_refactoring.trial_group";
 }
 
 // Deprecated 03/2022
@@ -207,6 +210,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrialGroupPrefName, 0);
 
   registry->RegisterIntegerPref(kSigninBottomSheetShownCount, 0);
+
+  registry->RegisterIntegerPref(kFRETrialGroupPrefName, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -349,6 +354,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 10/2021
   prefs->ClearPref(kSigninBottomSheetShownCount);
+
+  // Added 04/2022
+  prefs->ClearPref(kFRETrialGroupPrefName);
 }
 
 // This method should be periodically pruned of year+ old migrations.

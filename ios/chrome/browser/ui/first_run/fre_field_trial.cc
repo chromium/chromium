@@ -75,7 +75,6 @@ constexpr base::FeatureParam<SigninSyncScreenUIStringSet> kStringSetParam{
 namespace {
 // String local state preference with the name of the assigned trial group.
 // Empty if no group has been assigned yet.
-const char kTrialGroupPrefName[] = "fre_refactoring.trial_group";
 const char kTrialGroupV3PrefName[] = "fre_refactoringV3.trial_group";
 
 // Group names for the default browser promo trial.
@@ -472,7 +471,6 @@ int CreateNewMobileIdentityConsistencyFRETrial(
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kTrialGroupPrefName, kDefaultPrefValue);
   registry->RegisterIntegerPref(kTrialGroupV3PrefName, kDefaultPrefValue);
 }
 
