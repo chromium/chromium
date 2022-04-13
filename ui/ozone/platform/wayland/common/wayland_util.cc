@@ -190,6 +190,54 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
   return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 
+gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
+                                 const gfx::SizeF& bounds,
+                                 wl_output_transform transform) {
+  gfx::RectF result = rect;
+  switch (transform) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+      result.set_x(bounds.width() - rect.x() - rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+      result.set_x(rect.y());
+      result.set_y(rect.x());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+      result.set_y(bounds.height() - rect.y() - rect.height());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+      result.set_x(bounds.height() - rect.y() - rect.height());
+      result.set_y(bounds.width() - rect.x() - rect.width());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_90:
+      result.set_x(rect.y());
+      result.set_y(bounds.width() - rect.x() - rect.width());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_180:
+      result.set_x(bounds.width() - rect.x() - rect.width());
+      result.set_y(bounds.height() - rect.y() - rect.height());
+      break;
+    case WL_OUTPUT_TRANSFORM_270:
+      result.set_x(bounds.height() - rect.y() - rect.height());
+      result.set_y(rect.x());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return result;
+}
+
 gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
                                 const gfx::Size& bounds,
                                 wl_output_transform transform) {

@@ -852,13 +852,143 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   EXPECT_FALSE(gl_surface);
 }
 
+class WaylandSurfaceFactoryCompositorV3 : public WaylandSurfaceFactoryTest {};
+
+TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
+  // This tests multiple buffers per-frame and order of SwapCompletionCallbacks.
+  // Even when all OnSubmission from later frames are called, their
+  // SwapCompletionCallbacks should not run until previous frames'
+  // SwapCompletionCallbacks run.
+  gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
+
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+  buffer_manager_gpu_->gbm_device_ = std::make_unique<MockGbmDevice>();
+  buffer_manager_gpu_->supports_dmabuf_ = true;
+
+  auto* gl_ozone = surface_factory_->GetGLOzone(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  EXPECT_TRUE(gl_surface);
+  gl_surface->SetRelyOnImplicitSync();
+  static_cast<ui::GbmSurfacelessWayland*>(gl_surface.get())
+      ->SetNoGLFlushForTests();
+
+  // Expect to create 4 buffers.
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(4);
+
+  gfx::Size test_buffer_size = {300, 100};
+  gfx::RectF test_buffer_dmg_uv = {0.2f, 0.3f, 0.6, 0.32f};
+  gfx::Rect test_buffer_dmg = gfx::ToEnclosingRect(gfx::ScaleRect(
+      test_buffer_dmg_uv, test_buffer_size.width(), test_buffer_size.height()));
+  gfx::RectF crop_uv = {0.1f, 0.2f, 0.5, 0.5f};
+  gfx::RectF expected_combined_uv = {0.2, 0.2, 0.8, 0.64};
+  gfx::Rect expected_surface_dmg = gfx::ToEnclosingRect(
+      gfx::ScaleRect(expected_combined_uv, window_->GetBounds().width(),
+                     window_->GetBounds().height()));
+
+  // Create buffers and FakeGlImageNativePixmap.
+  std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
+  for (int i = 0; i < 4; ++i) {
+    auto native_pixmap = surface_factory_->CreateNativePixmap(
+        widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
+        gfx::BufferUsage::SCANOUT);
+    fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
+        native_pixmap, test_buffer_size));
+
+    Sync();
+
+    // Create one buffer at a time.
+    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+    DCHECK_EQ(params_vector.size(), 1u);
+    zwp_linux_buffer_params_v1_send_created(
+        params_vector.front()->resource(),
+        params_vector.front()->buffer_resource());
+
+    Sync();
+  }
+
+  auto* root_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
+      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+
+  CallbacksHelper cbs_helper;
+  // Submit a frame with an overlay and background.
+  {
+    // Associate each image with swap id so that we could track released
+    // buffers.
+    auto swap_id = cbs_helper.GetNextLocalSwapId();
+    // Associate the image with the next swap id so that we can easily track if
+    // it became free to reuse.
+    fake_gl_image[0]->AssociateWithSwapId(swap_id);
+    // And set it to be busy...
+    fake_gl_image[0]->SetBusy(true);
+
+    // Prepare background.
+    gl_surface->ScheduleOverlayPlane(
+        fake_gl_image[0].get(), nullptr,
+        gfx::OverlayPlaneData(
+            INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+            gfx::RectF(window_->GetBounds()), crop_uv, false,
+            gfx::Rect(test_buffer_dmg), 1.0f, gfx::OverlayPriorityHint::kNone,
+            gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+
+    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
+    gl_images.push_back(fake_gl_image[0]);
+
+    // And submit each image. They will be executed in FIFO manner.
+    gl_surface->SwapBuffersAsync(
+        base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
+                       base::Unretained(&cbs_helper), swap_id, gl_images),
+        base::BindOnce(&CallbacksHelper::BufferPresented,
+                       base::Unretained(&cbs_helper), swap_id));
+  }
+
+  // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
+  // internal queue and fake server processes the request.
+
+  // Wait until the mojo calls are done.
+  base::RunLoop().RunUntilIdle();
+
+  Expectation damage =
+      EXPECT_CALL(*surface_, Damage(expected_surface_dmg.origin().x(),
+                                    expected_surface_dmg.origin().y(),
+                                    expected_surface_dmg.width(),
+                                    expected_surface_dmg.height()));
+  wl_resource* buffer_resource = nullptr;
+  Expectation attach = EXPECT_CALL(*surface_, Attach(_, 0, 0))
+                           .WillOnce(SaveArg<0>(&buffer_resource));
+  EXPECT_CALL(*surface_, Commit()).After(damage, attach);
+
+  Sync();
+
+  testing::Mock::VerifyAndClearExpectations(mock_primary_surface);
+  testing::Mock::VerifyAndClearExpectations(root_surface);
+
+  // Give mojo the chance to pass the callbacks.
+  base::RunLoop().RunUntilIdle();
+
+  // We have just received Attach/DamageBuffer/Commit for buffer with swap
+  // id=0u. The SwapCompletionCallback must be executed automatically as long as
+  // we didn't have any buffers attached to the surface before.
+  EXPECT_EQ(cbs_helper.GetLastFinishedSwapId(), 0u);
+
+  cbs_helper.ResetLastFinishedSwapId();
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSurfaceFactoryTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kStable}));
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandSurfaceFactoryTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(
+    CompositorVersionV3Test,
+    WaylandSurfaceFactoryCompositorV3,
+    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV3}));
 
 }  // namespace ui

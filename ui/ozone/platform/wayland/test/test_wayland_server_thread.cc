@@ -32,6 +32,8 @@ TestWaylandServerThread::TestWaylandServerThread()
                    base::WaitableEvent::InitialState::NOT_SIGNALED),
       resume_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
+      compositor_v4_(4),
+      compositor_v3_(3),
       controller_(FROM_HERE) {}
 
 TestWaylandServerThread::~TestWaylandServerThread() {
@@ -60,8 +62,13 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (wl_display_init_shm(display_.get()) < 0)
     return false;
-  if (!compositor_.Initialize(display_.get()))
-    return false;
+  if (config.compositor_version == CompositorVersion::kV3) {
+    if (!compositor_v3_.Initialize(display_.get()))
+      return false;
+  } else {
+    if (!compositor_v4_.Initialize(display_.get()))
+      return false;
+  }
   if (!sub_compositor_.Initialize(display_.get()))
     return false;
   if (!viewporter_.Initialize(display_.get()))
