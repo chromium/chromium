@@ -243,6 +243,7 @@ class GpuIntegrationTest(
 
   @classmethod
   def StartBrowser(cls):
+    cls._ModifyBrowserEnvironment()
     # We still need to retry the browser's launch even though
     # desktop_browser_finder does so too, because it wasn't possible
     # to push the fetch of the first tab into the lower retry loop
@@ -276,6 +277,27 @@ class GpuIntegrationTest(
     # Re-raise the last exception thrown. Only happens if all the retries
     # fail.
     raise last_exception
+
+  @classmethod
+  def StopBrowser(cls):
+    super(GpuIntegrationTest, cls).StopBrowser()
+    cls._RestoreBrowserEnvironment()
+
+  @classmethod
+  def _ModifyBrowserEnvironment(cls):
+    """Modify the environment before browser startup, if necessary.
+
+    If overridden by a child class, the parent's implementation should be run
+    first.
+    """
+
+  @classmethod
+  def _RestoreBrowserEnvironment(cls):
+    """Restore the environment after browser shutdown, if necessary.
+
+    If overridden by a child class, the parent's implementation should be run
+    last.
+    """
 
   @classmethod
   def _RestartBrowser(cls, reason):

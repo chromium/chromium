@@ -4,6 +4,7 @@
 
 import logging
 import os
+import platform
 import re
 import sys
 
@@ -90,6 +91,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _angle_backend = ''
   _command_decoder = ''
   _verified_flags = False
+  _original_environ = None
 
   @classmethod
   def Name(cls):
@@ -215,6 +217,27 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'WEBGL_video_texture',
         'WEBGL_webcodecs_video_frame',
     ]
+
+  @classmethod
+  def _ModifyBrowserEnvironment(cls):
+    super(WebGLConformanceIntegrationTest, cls)._ModifyBrowserEnvironment()
+    # This is called before browser startup, so we can't grab information
+    # directly from the browser like usual. However, we should be able to
+    # determine if we're on Mac w/ an Intel CPU directly through Python. See
+    # anglebug.com/7003 for more information.
+    if sys.platform == 'darwin' and platform.machine() == 'x86_64':
+      if cls._original_environ is None:
+        cls._original_environ = os.environ.copy()
+      os.environ['MTL_DEBUG_LAYER'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_LOAD_ACTIONS'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_STORE_ACTIONS'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES'] = '4'
+
+  @classmethod
+  def _RestoreBrowserEnvironment(cls):
+    if cls._original_environ is not None:
+      os.environ = cls._original_environ.copy()
+    super(WebGLConformanceIntegrationTest, cls)._RestoreBrowserEnvironment()
 
   def _ShouldForceRetryOnFailureFirstTest(self):
     # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
