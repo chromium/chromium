@@ -332,9 +332,7 @@ class DesksTemplatesTest : public OverviewTestBase {
   }
 
   OverviewHighlightableView* GetHighlightedView() {
-    return OverviewHighlightController::TestApi(
-               GetOverviewSession()->highlight_controller())
-        .GetHighlightView();
+    return GetOverviewSession()->highlight_controller()->highlighted_view();
   }
 
   // Opens overview mode and then clicks the save template button. This should

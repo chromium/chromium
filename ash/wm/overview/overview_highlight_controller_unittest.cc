@@ -400,8 +400,7 @@ class DesksOverviewHighlightControllerTest
   }
 
   OverviewHighlightableView* GetHighlightedView() {
-    return OverviewHighlightController::TestApi(GetHighlightController())
-        .GetHighlightView();
+    return GetHighlightController()->highlighted_view();
   }
 
   const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {

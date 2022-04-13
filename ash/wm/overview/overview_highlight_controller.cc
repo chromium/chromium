@@ -31,23 +31,6 @@
 
 namespace ash {
 
-// -----------------------------------------------------------------------------
-// OverviewHighlightController::TestApi
-
-OverviewHighlightController::TestApi::TestApi(
-    OverviewHighlightController* highlight_controller)
-    : highlight_controller_(highlight_controller) {}
-
-OverviewHighlightController::TestApi::~TestApi() = default;
-
-OverviewHighlightableView*
-OverviewHighlightController::TestApi::GetHighlightView() const {
-  return highlight_controller_->highlighted_view_;
-}
-
-// -----------------------------------------------------------------------------
-// OverviewHighlightController
-
 OverviewHighlightController::OverviewHighlightController(
     OverviewSession* overview_session)
     : overview_session_(overview_session),

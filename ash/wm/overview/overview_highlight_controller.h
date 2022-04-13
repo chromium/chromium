@@ -22,19 +22,6 @@ class ScopedA11yOverrideWindowSetter;
 // overview items with arrow keys and trackpad swipes, or when tab dragging.
 class ASH_EXPORT OverviewHighlightController {
  public:
-  // TestApi is used for tests to get internal implementation details.
-  // TODO(dandersson): Move this class out.
-  class ASH_EXPORT TestApi {
-   public:
-    explicit TestApi(OverviewHighlightController* highlight_controller);
-    ~TestApi();
-
-    OverviewHighlightableView* GetHighlightView() const;
-
-   private:
-    OverviewHighlightController* const highlight_controller_;
-  };
-
   explicit OverviewHighlightController(OverviewSession* overview_session);
   OverviewHighlightController(const OverviewHighlightController&) = delete;
   OverviewHighlightController& operator=(const OverviewHighlightController&) =
