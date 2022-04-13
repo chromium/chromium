@@ -72,7 +72,7 @@ export class AvatarList extends WithPersonalizationStore {
       options_: {
         type: Array,
         computed:
-            'computeOptions_(isCameraPresent_, profileImage_, lastExternalUserImageUrl_, defaultUserImages_, image_)',
+            'computeOptions_(isCameraPresent_, profileImage_, lastExternalUserImageUrl_, defaultUserImages_)',
         observer: 'onOptionsChanged_',
       },
     };
@@ -103,9 +103,10 @@ export class AvatarList extends WithPersonalizationStore {
 
   /** Invoked to compute |options_|. */
   private computeOptions_(
-      isCameraPresent: boolean, profileImage: Url|null,
-      lastExternalUserImageUrl: Url|null,
-      defaultUserImages_: Array<DefaultUserImage>|null) {
+      isCameraPresent: AvatarList['isCameraPresent_'],
+      profileImage: AvatarList['profileImage_'],
+      lastExternalUserImageUrl: AvatarList['lastExternalUserImageUrl_'],
+      defaultUserImages: AvatarList['defaultUserImages_']) {
     const options = [] as Option[];
     if (isCameraPresent) {
       // Add camera and video options.
@@ -150,8 +151,8 @@ export class AvatarList extends WithPersonalizationStore {
         title: this.i18n('lastExternalImageTitle'),
       });
     }
-    if (isNonEmptyArray(defaultUserImages_)) {
-      defaultUserImages_.forEach(defaultImage => {
+    if (isNonEmptyArray(defaultUserImages)) {
+      defaultUserImages.forEach(defaultImage => {
         options.push({
           id: `defaultUserImage-${defaultImage.index}`,
           class: 'image-container',
@@ -277,11 +278,12 @@ export class AvatarList extends WithPersonalizationStore {
   }
 
   private getAriaSelected_(option: Option, image: UserImage|null): string {
+    if (!option) {
+      return 'false';
+    }
     switch (option.id) {
       case 'openCamera':
-        return 'fasle';
       case 'openVideo':
-        return 'false';
       case 'openFolder':
         return 'false';
       case 'profileImage':
