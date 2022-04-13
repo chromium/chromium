@@ -9,13 +9,15 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 
 namespace policy {
 
 class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
  public:
   FakeRebootNotificationsScheduler(const base::Clock* clock,
-                                   const base::TickClock* tick_clock);
+                                   const base::TickClock* tick_clock,
+                                   PrefService* prefs);
   FakeRebootNotificationsScheduler(const FakeRebootNotificationsScheduler&) =
       delete;
   FakeRebootNotificationsScheduler& operator=(
@@ -26,11 +28,14 @@ class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
   int GetShowNotificationCalls() const;
   void SetUptime(base::TimeDelta uptime);
   void SimulateRebootButtonClick();
+  void SetWaitFullRestoreInit(bool should_wait);
 
  private:
-  void MaybeShowNotification() override;
+  void MaybeShowPendingRebootNotification() override;
 
-  void MaybeShowDialog() override;
+  void MaybeShowPendingRebootDialog() override;
+
+  PrefService* GetPrefsForActiveProfile() const override;
 
   const base::Time GetCurrentTime() const override;
 
@@ -38,10 +43,14 @@ class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
 
   void CloseNotifications() override;
 
+  bool ShouldWaitFullRestoreInit() const override;
+
   int show_dialog_calls_ = 0, show_notification_calls_ = 0;
+  bool wait_full_restore_init_ = false;
   const base::Clock* clock_;
   // Default uptime for test is 10h.
   base::TimeDelta uptime_;
+  PrefService* prefs_ = nullptr;
 };
 
 }  // namespace policy

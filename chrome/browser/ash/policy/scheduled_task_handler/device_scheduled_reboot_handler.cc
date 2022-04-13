@@ -108,6 +108,8 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // not skip reboot due to grace period applied.
   if (!skip_reboot_ && base::FeatureList::IsEnabled(
                            ash::features::kDeviceForceScheduledReboot)) {
+    // Schedule post reboot notification for the user in session.
+    notifications_scheduler_->SchedulePostRebootNotification();
     RebootDevice(kRebootDescriptionOnTimerExpired);
     return;
   }
@@ -171,7 +173,7 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
   if (base::FeatureList::IsEnabled(
           ash::features::kDeviceForceScheduledReboot)) {
     if (!skip_reboot_) {
-      notifications_scheduler_->ScheduleNotifications(
+      notifications_scheduler_->SchedulePendingRebootNotifications(
           base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
                          base::Unretained(this)),
           scheduled_task_executor_->GetScheduledTaskTime());

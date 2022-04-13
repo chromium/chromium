@@ -974,6 +974,10 @@ const char kLoginScreenWebUILazyLoading[] =
 // Boolean value for the FloatingWorkspaceEnabled policy
 const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 
+// Boolean value indicating that post reboot notification should be shown to the
+// user.
+const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

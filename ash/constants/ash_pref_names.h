@@ -450,6 +450,7 @@ extern const char kLoginScreenWebUILazyLoading[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFloatingWorkspaceEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowPostRebootNotification[];
 }  // namespace prefs
 }  // namespace ash
 

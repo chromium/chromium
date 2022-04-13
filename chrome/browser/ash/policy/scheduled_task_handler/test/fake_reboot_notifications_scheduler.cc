@@ -6,15 +6,18 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace policy {
 
 FakeRebootNotificationsScheduler::FakeRebootNotificationsScheduler(
     const base::Clock* clock,
-    const base::TickClock* tick_clock)
+    const base::TickClock* tick_clock,
+    PrefService* prefs)
     : RebootNotificationsScheduler(clock, tick_clock),
       clock_(clock),
-      uptime_(base::Hours(10)) {}
+      uptime_(base::Hours(10)),
+      prefs_(prefs) {}
 
 FakeRebootNotificationsScheduler::~FakeRebootNotificationsScheduler() = default;
 
@@ -32,12 +35,22 @@ void FakeRebootNotificationsScheduler::SimulateRebootButtonClick() {
   OnRebootButtonClicked();
 }
 
-void FakeRebootNotificationsScheduler::MaybeShowNotification() {
+void FakeRebootNotificationsScheduler::SetWaitFullRestoreInit(
+    bool should_wait) {
+  wait_full_restore_init_ = should_wait;
+}
+
+void FakeRebootNotificationsScheduler::MaybeShowPendingRebootNotification() {
   ++show_notification_calls_;
 }
 
-void FakeRebootNotificationsScheduler::MaybeShowDialog() {
+void FakeRebootNotificationsScheduler::MaybeShowPendingRebootDialog() {
   ++show_dialog_calls_;
+}
+
+PrefService* FakeRebootNotificationsScheduler::GetPrefsForActiveProfile()
+    const {
+  return prefs_;
 }
 
 const base::Time FakeRebootNotificationsScheduler::GetCurrentTime() const {
@@ -50,5 +63,9 @@ const base::TimeDelta FakeRebootNotificationsScheduler::GetSystemUptime()
 }
 
 void FakeRebootNotificationsScheduler::CloseNotifications() {}
+
+bool FakeRebootNotificationsScheduler::ShouldWaitFullRestoreInit() const {
+  return wait_full_restore_init_;
+}
 
 }  // namespace policy
