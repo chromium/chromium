@@ -275,6 +275,17 @@ export class HistoryItemElement extends HistoryItemElementBase {
     e.stopPropagation();
   }
 
+  private onMenuButtonKeydown_(e: KeyboardEvent) {
+    if (this.item.starred && e.shiftKey && e.key === 'Tab') {
+      // If this item has a bookmark star, pressing shift + Tab from the more
+      // actions menu should move focus to the star. FocusRow will try to
+      // instead move focus to the previous focus row control, and since the
+      // star is not a focus row control, stop immediate propagation here to
+      // instead allow default browser behavior.
+      e.stopImmediatePropagation();
+    }
+  }
+
   /**
    * Record metrics when a result is clicked.
    */
