@@ -405,6 +405,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NumSellersWithBidders"
+    units="sellers" expires_after="2022-08-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The number of sellers participating in a FLEDGE auction with a non-zero
+    number of bidders, including both the top-level seller and sellers in
+    component auctions. A bidder is defined as an interest group owned by one of
+    the owners participating in an auction, or, for the top-level auction, a
+    component auction with such interest groups. Double-counts sellers that
+    participate in multiple component auctions. Only recorded if an auction has
+    at least one interest group participating (could be in the top-level
+    auction, or in any component auction).
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage"
     units="%" expires_after="2022-08-31">
   <owner>caraitto@chromium.org</owner>

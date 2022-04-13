@@ -632,17 +632,27 @@ void AuctionRunner::Auction::OnOneLoadCompleted() {
     // theoretically participate in the auction.
     if (num_owners_loaded_ > 0) {
       int num_interest_groups = bid_states_.size();
+      size_t num_sellers_with_bidders = 0;
       for (auto& component_auction : component_auctions_) {
         // This double-counts interest groups that are participating in multiple
         // auctions.
         num_interest_groups += component_auction->bid_states_.size();
+        ++num_sellers_with_bidders;
       }
+      // If the top-level seller either has interest groups itself, or any of
+      // the component auctions do, then the top-level seller also has bidders.
+      if (num_interest_groups)
+        ++num_sellers_with_bidders;
 
       UMA_HISTOGRAM_COUNTS_1000("Ads.InterestGroup.Auction.NumInterestGroups",
                                 num_interest_groups);
       UMA_HISTOGRAM_COUNTS_100(
           "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
           num_owners_with_interest_groups_);
+
+      UMA_HISTOGRAM_COUNTS_100(
+          "Ads.InterestGroup.Auction.NumSellersWithBidders",
+          num_sellers_with_bidders);
     }
   }
 

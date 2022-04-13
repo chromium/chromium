@@ -1736,7 +1736,8 @@ class AuctionRunnerTest : public testing::Test,
   // histograms are recorded.
   void CheckHistograms(AuctionRunner::AuctionResult expected_result,
                        absl::optional<int> expected_interest_groups,
-                       absl::optional<int> expected_owners) {
+                       absl::optional<int> expected_owners,
+                       absl::optional<int> expected_sellers) {
     histogram_tester_->ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
                                           expected_result, 1);
 
@@ -1757,6 +1758,16 @@ class AuctionRunnerTest : public testing::Test,
       histogram_tester_->ExpectTotalCount(
           "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups", 0);
     }
+
+    if (expected_sellers.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NumSellersWithBidders", *expected_sellers,
+          1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          "Ads.InterestGroup.Auction.NumSellersWithBidders", 0);
+    }
+
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.AbortTime",
         expected_result == AuctionRunner::AuctionResult::kAborted);
@@ -1975,7 +1986,8 @@ TEST_F(AuctionRunnerTest, NullBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 }
 
 // Runs a component auction with all buyers fields null.
@@ -1996,7 +2008,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNullBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 }
 
 // Runs an auction with an empty buyers field.
@@ -2015,7 +2028,8 @@ TEST_F(AuctionRunnerTest, EmptyBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 }
 
 // Runs a component auction with all buyers fields empty.
@@ -2036,7 +2050,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionEmptyBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 }
 
 // Runs the standard auction, but without adding any interest groups to the
@@ -2054,7 +2069,8 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/0);
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0,
+                  /*expected_sellers=*/0);
 }
 
 // Runs a component auction, but without adding any interest groups to the
@@ -2077,7 +2093,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoInterestGroups) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/0);
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0,
+                  /*expected_sellers=*/0);
 }
 
 // Runs an standard auction, but with an interest group that does not list any
@@ -2100,7 +2117,8 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_sellers=*/0);
 }
 
 // Runs an auction with one component that has a buyer with an interest group,
@@ -2123,7 +2141,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneInterestGroupNoAds) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_sellers=*/0);
 }
 
 // Runs an standard auction, but with an interest group that does not list a
@@ -2146,7 +2165,8 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_sellers=*/0);
 }
 
 // Runs the standard auction, but with only adding one of the two standard
@@ -2190,7 +2210,8 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
   EXPECT_THAT(observer_log_,
               testing::UnorderedElementsAre(
                   "Create https://adstuff.publisher1.com/auction.js",
@@ -2256,7 +2277,8 @@ TEST_F(AuctionRunnerTest, Basic) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
   EXPECT_THAT(observer_log_,
               testing::UnorderedElementsAre(
                   "Create https://adstuff.publisher1.com/auction.js",
@@ -2587,7 +2609,8 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
             result_.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/3);
 }
 
 // A component auction with two buyers in the top-level auction. The component
@@ -2626,7 +2649,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
             result_.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // A component auction with one component. Both the top-level and component
@@ -2665,7 +2689,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopLevelSellerBidWins) {
             result_.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 }
 
 // A component auction with one component. Both the top-level and component
@@ -2709,7 +2734,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
             result_.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 }
 
 // Test case where the top-level and a component auction share the same buyer,
@@ -2825,7 +2851,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // Currently an interest groups participating twice in an auction is counted
   // twice.
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 
   //--------------------------------------
   // Case the component auction's bid wins
@@ -2881,7 +2908,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // Currently a bidder participating twice in an auction is counted as two
   // participating interest groups.
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/3, /*expected_owners=*/3);
+                  /*expected_interest_groups=*/3, /*expected_owners=*/3,
+                  /*expected_sellers=*/3);
 }
 
 // A component auction with one component that has two buyers. In this auction,
@@ -2927,7 +2955,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 }
 
 // Test the case a top-level seller returns no signals in its reportResult
@@ -3026,7 +3055,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/2);
 }
 
 TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
@@ -3124,7 +3154,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/2);
 }
 
 // An auction in which the seller origin is not allowed to use the interest
@@ -3148,7 +3179,8 @@ TEST_F(AuctionRunnerTest, DisallowedSeller) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSellerRejected,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 
   // No requests for the bidder worklet URLs should be made.
   task_environment_.RunUntilIdle();
@@ -3180,7 +3212,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSeller) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 
   // No requests for the bidder worklet URLs should be made.
   task_environment_.RunUntilIdle();
@@ -3234,7 +3267,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/2);
 }
 
 // An auction in which the buyer origins are not allowed to use the interest
@@ -3259,7 +3293,8 @@ TEST_F(AuctionRunnerTest, DisallowedBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 
   // No requests for the seller worklet URL should be made.
   task_environment_.RunUntilIdle();
@@ -3311,7 +3346,8 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
 
   // No requests for bidder2's worklet URL should be made.
   task_environment_.RunUntilIdle();
@@ -3345,7 +3381,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
-                  /*expected_owners=*/absl::nullopt);
+                  /*expected_owners=*/absl::nullopt,
+                  /*expected_sellers=*/absl::nullopt);
 
   // No requests for the bidder worklet URLs should be made.
   task_environment_.RunUntilIdle();
@@ -3394,7 +3431,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/2);
 }
 
 // Disallow bidders as sellers and disallow seller as bidder. Auction should
@@ -3430,7 +3468,8 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where one bid is successful, another's script 404s.
@@ -3482,7 +3521,8 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
       testing::ElementsAre("Failed to load https://anotheradthing.com/bids.js "
                            "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 
   // 404 is detected after the worklet is created, so there are still events
   // for it.
@@ -3537,7 +3577,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
                   "Failed to load https://component.seller2.test/bar.js "
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/3);
 }
 
 // An auction where one bid is successful, another's script does not provide a
@@ -3592,7 +3633,8 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
               testing::ElementsAre("https://anotheradthing.com/bids.js "
                                    "`generateBid` is not a function."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where no bidding scripts load successfully.
@@ -3627,7 +3669,8 @@ TEST_F(AuctionRunnerTest, NoBids) {
                   "Failed to load https://anotheradthing.com/bids.js "
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where none of the bidding scripts has a valid bidding function.
@@ -3665,7 +3708,8 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
           "https://anotheradthing.com/bids.js `generateBid` is not a "
           "function."));
   CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where the seller script doesn't have a scoring function.
@@ -3710,7 +3754,8 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
                               "https://adstuff.publisher1.com/auction.js "
                               "`scoreAd` is not a function."));
   CheckHistograms(AuctionRunner::AuctionResult::kAllBidsRejected,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where seller rejects one bid when scoring.
@@ -3763,7 +3808,8 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
   EXPECT_EQ(3u, res.bidder2_prev_wins.size());
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where the seller script fails to load.
@@ -3788,7 +3834,8 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
                   "Failed to load https://adstuff.publisher1.com/auction.js "
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where bidders don't request trusted bidding signals.
@@ -3841,7 +3888,8 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // An auction where trusted bidding signals are requested, but the fetch 404s.
@@ -3900,7 +3948,8 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
                               "signals2?hostname=publisher1.com&keys=l1,l2 "
                               "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // A successful auction where seller reporting worklet doesn't set a URL.
@@ -3947,7 +3996,8 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // A successful auction where bidder reporting worklet doesn't set a URL.
@@ -3995,7 +4045,8 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // A successful auction where neither reporting worklets sets a URL.
@@ -4038,7 +4089,8 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Test the case where the seller worklet provides no signals for the winner,
@@ -4091,7 +4143,8 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                               "%s `reportResult` is not a function.",
                               kSellerUrl.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
@@ -4188,7 +4241,8 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_EQ(6, result_.bidder2_bid_count);
   ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Test the case where the ProcessManager initially prevents creating worklets,
@@ -4344,7 +4398,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2,
-                      /*expected_owners=*/2);
+                      /*expected_owners=*/2, /*expected_sellers=*/1);
     }
   }
 }
@@ -4513,7 +4567,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                       GURL("https://buyer-reporting.example.com/4"))))));
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                      /*expected_sellers=*/3);
     }
   }
 }
@@ -4561,7 +4616,8 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
                   "Failed to load https://adstuff.publisher1.com/auction.js "
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Tests ComponentAuction where a component seller worklet has a load error with
@@ -4661,7 +4717,8 @@ TEST_F(AuctionRunnerTest,
                   "Failed to load https://component.seller1.test/foo.js HTTP "
                   "status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/3);
 }
 
 // Test the case where two interest groups use the same BidderWorklet, with a
@@ -4808,7 +4865,8 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
                              kBidder2Url.spec().c_str())));
 
   CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Test the case a single bidder worklet crashes before bidding. The auction
@@ -4909,7 +4967,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
                     "%s crashed while trying to run generateBid().",
                     kBidder1Url.spec().c_str())));
     CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/1);
   }
 }
 
@@ -4984,7 +5043,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
                                   "%s crashed while trying to run reportWin().",
                                   kBidder1Url.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kWinningBidderWorkletCrashed,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Should not have any debugging win/loss report URLs after auction when feature
@@ -5119,7 +5179,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
     }
     CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletCrashed,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/1);
     EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
                                     "%s crashed.", kSellerUrl.spec().c_str())));
   }
@@ -5155,7 +5216,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
                              kBidder2Url.spec().c_str())));
 
   CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/3);
 }
 
 // Test the case that one component has both bidders, one of which crashes, to
@@ -5252,7 +5314,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
                   "%s crashed while trying to run generateBid().",
                   kBidder1Url.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 }
 
 // Test the three case where a component seller worklet fails during
@@ -5353,7 +5416,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
                       kComponentSeller1Url.spec().c_str())));
       CheckHistograms(
           AuctionRunner::AuctionResult::kWinningComponentSellerWorkletCrashed,
-          /*expected_interest_groups=*/2, /*expected_owners=*/2);
+          /*expected_interest_groups=*/2, /*expected_owners=*/2,
+          /*expected_sellers=*/2);
     } else if (test_case == TestCase::kLoadError) {
       // A load error in the winning component seller worklet will cause the
       // auction to continue to completion.
@@ -5378,7 +5442,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
       EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
                                       "Component seller reset reason"));
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                      /*expected_sellers=*/2);
     } else if (test_case == TestCase::kScriptError) {
       // A script error in the winning component seller worklet will cause the
       // auction to continue to completion.
@@ -5404,7 +5469,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
       EXPECT_EQ(6, result_.bidder1_bid_count);
       EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(kScriptError));
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                      /*expected_sellers=*/2);
     }
   }
 }
@@ -5445,7 +5511,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
                   base::StringPrintf("%s crashed.",
                                      kComponentSeller2Url.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/3);
 }
 
 // Test cases where a component seller returns an invalid
@@ -5538,7 +5605,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     // The component auction failed with a Mojo error, but the top-level auction
     // sees that as no bids.
     CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/2);
   }
 }
 
@@ -5594,7 +5662,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
   EXPECT_EQ("Invalid component_auction_modified_bid_params", TakeBadMessage());
 
   CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 TEST_F(AuctionRunnerTest, NullAdComponents) {
@@ -5666,7 +5735,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/1,
-                      /*expected_owners=*/1);
+                      /*expected_owners=*/1, /*expected_sellers=*/1);
     } else {
       // Since there's no acceptable bid, the seller worklet is never asked to
       // score a bid.
@@ -5684,7 +5753,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                      /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                      /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                      /*expected_sellers=*/1);
     }
   }
 }
@@ -5756,7 +5826,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/1,
-                      /*expected_owners=*/1);
+                      /*expected_owners=*/1, /*expected_sellers=*/1);
     } else {
       // Since there's no acceptable bid, the seller worklet is never asked to
       // score a bid.
@@ -5774,7 +5844,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                      /*expected_interest_groups=*/1, /*expected_owners=*/1);
+                      /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                      /*expected_sellers=*/1);
     }
   }
 }
@@ -5926,7 +5997,8 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
     EXPECT_THAT(result_.errors, testing::ElementsAre());
     CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/1);
   }
 }
 
@@ -5980,7 +6052,8 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Test cases where bad a report URL is received over Mojo from the winning
@@ -6065,7 +6138,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
 }
 
 // Test cases where bad a report URL is received over Mojo from the bidder
@@ -6122,7 +6196,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Check that BidderWorklets that don't make a bid are destroyed immediately.
@@ -6182,7 +6257,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
             result_.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
 }
 
 // Check that the winner of ties is randomized. Mock out bidders so can make
@@ -6283,7 +6359,8 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_EQ(6, result_.bidder2_bid_count);
     EXPECT_THAT(result_.errors, testing::ElementsAre());
     CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/1);
   }
 }
 
