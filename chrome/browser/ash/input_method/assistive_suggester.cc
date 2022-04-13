@@ -187,11 +187,8 @@ AssistiveSuggester::AssistiveSuggester(
 AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
-  // TODO(b/222218270): Remove !IsLacrosEnabled() when assistive feature works
-  // on lacros.
-  return !IsLacrosEnabled() &&
-         (IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
-          IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled());
+  return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
+         IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
