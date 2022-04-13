@@ -16,7 +16,7 @@
 namespace remoting {
 
 MojoServerEndpointConnectorLinux::MojoServerEndpointConnectorLinux(
-    raw_ptr<Delegate> delegate)
+    Delegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -86,7 +86,7 @@ void MojoServerEndpointConnectorLinux::OnFileCanWriteWithoutBlocking(int fd) {
 
 // static
 std::unique_ptr<MojoServerEndpointConnector>
-MojoServerEndpointConnector::Create(raw_ptr<Delegate> delegate) {
+MojoServerEndpointConnector::Create(Delegate* delegate) {
   return std::make_unique<MojoServerEndpointConnectorLinux>(delegate);
 }
 

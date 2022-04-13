@@ -22,7 +22,7 @@ namespace remoting {
 class MojoServerEndpointConnectorWin final
     : public MojoServerEndpointConnector {
  public:
-  explicit MojoServerEndpointConnectorWin(raw_ptr<Delegate> delegate);
+  explicit MojoServerEndpointConnectorWin(Delegate* delegate);
   MojoServerEndpointConnectorWin(const MojoServerEndpointConnectorWin&) =
       delete;
   MojoServerEndpointConnectorWin& operator=(

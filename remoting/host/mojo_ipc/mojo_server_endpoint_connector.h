@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
@@ -47,7 +46,7 @@ class MojoServerEndpointConnector {
   // Creates the platform-specific MojoServerEndpointConnector. |delegate| must
   // outlives the created object.
   static std::unique_ptr<MojoServerEndpointConnector> Create(
-      raw_ptr<Delegate> delegate);
+      Delegate* delegate);
 
   virtual ~MojoServerEndpointConnector() = default;
 

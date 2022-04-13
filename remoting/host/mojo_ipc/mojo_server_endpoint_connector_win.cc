@@ -26,7 +26,7 @@
 namespace remoting {
 
 MojoServerEndpointConnectorWin::MojoServerEndpointConnectorWin(
-    raw_ptr<Delegate> delegate)
+    Delegate* delegate)
     : delegate_(delegate),
       client_connected_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -120,7 +120,7 @@ void MojoServerEndpointConnectorWin::OnError() {
 
 // static
 std::unique_ptr<MojoServerEndpointConnector>
-MojoServerEndpointConnector::Create(raw_ptr<Delegate> delegate) {
+MojoServerEndpointConnector::Create(Delegate* delegate) {
   return std::make_unique<MojoServerEndpointConnectorWin>(delegate);
 }
 

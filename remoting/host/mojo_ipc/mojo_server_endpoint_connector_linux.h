@@ -18,7 +18,7 @@ class MojoServerEndpointConnectorLinux final
     : public MojoServerEndpointConnector,
       public base::MessagePumpForIO::FdWatcher {
  public:
-  explicit MojoServerEndpointConnectorLinux(raw_ptr<Delegate> delegate);
+  explicit MojoServerEndpointConnectorLinux(Delegate* delegate);
   MojoServerEndpointConnectorLinux(const MojoServerEndpointConnectorLinux&) =
       delete;
   MojoServerEndpointConnectorLinux& operator=(

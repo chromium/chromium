@@ -11,7 +11,7 @@ namespace remoting {
 // Mac.
 // TODO(yuweih): Implement MojoServerEndpointConnector for Mac.
 std::unique_ptr<MojoServerEndpointConnector>
-MojoServerEndpointConnector::Create(raw_ptr<Delegate> delegate) {
+MojoServerEndpointConnector::Create(Delegate* delegate) {
   return nullptr;
 }
 
