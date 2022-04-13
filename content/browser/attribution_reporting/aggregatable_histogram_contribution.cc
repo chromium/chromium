@@ -10,9 +10,9 @@ namespace content {
 
 AggregatableHistogramContribution::AggregatableHistogramContribution(
     absl::uint128 key,
-    int value)
+    uint32_t value)
     : key_(key), value_(value) {
-  DCHECK_GT(value, 0);
+  DCHECK_GT(value, 0u);
 }
 
 }  // namespace content

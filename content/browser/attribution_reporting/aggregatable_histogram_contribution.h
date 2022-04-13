@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_HISTOGRAM_CONTRIBUTION_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_HISTOGRAM_CONTRIBUTION_H_
 
+#include <stdint.h>
+
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -12,7 +14,7 @@ namespace content {
 
 class CONTENT_EXPORT AggregatableHistogramContribution {
  public:
-  AggregatableHistogramContribution(absl::uint128 key, int value);
+  AggregatableHistogramContribution(absl::uint128 key, uint32_t value);
   AggregatableHistogramContribution(
       const AggregatableHistogramContribution& other) = default;
   AggregatableHistogramContribution& operator=(
@@ -25,11 +27,11 @@ class CONTENT_EXPORT AggregatableHistogramContribution {
 
   absl::uint128 key() const { return key_; }
 
-  int value() const { return value_; }
+  uint32_t value() const { return value_; }
 
  private:
   absl::uint128 key_;
-  int value_;
+  uint32_t value_;
 };
 
 }  // namespace content
