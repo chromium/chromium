@@ -244,6 +244,18 @@ float AppListColorProviderImpl::GetInkDropOpacity(SkColor bg_color) const {
   return ash_color_provider_->GetInkDropBaseColorAndOpacity(bg_color).second;
 }
 
+SkColor AppListColorProviderImpl::GetInvertedInkDropBaseColor(
+    SkColor bg_color) const {
+  return ash_color_provider_->GetInvertedInkDropBaseColorAndOpacity(bg_color)
+      .first;
+}
+
+float AppListColorProviderImpl::GetInvertedInkDropOpacity(
+    SkColor bg_color) const {
+  return ash_color_provider_->GetInvertedInkDropBaseColorAndOpacity(bg_color)
+      .second;
+}
+
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
   // Use highlight colors when Dark Light mode is enabled.
   if (ShouldUseDarkLightColors()) {

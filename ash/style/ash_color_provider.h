@@ -66,6 +66,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetInactiveDialogTitleBarColor() const override;
   std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
+  std::pair<SkColor, float> GetInvertedInkDropBaseColorAndOpacity(
+      SkColor background_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;
   void RemoveObserver(ColorModeObserver* observer) override;
   // TODO(minch): Rename to ShouldUseDarkColors.

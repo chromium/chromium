@@ -119,6 +119,16 @@ float TestAppListColorProvider::GetInkDropOpacity(SkColor bg_color) const {
   return 0.08f;
 }
 
+SkColor TestAppListColorProvider::GetInvertedInkDropBaseColor(
+    SkColor bg_color) const {
+  return SK_ColorBLACK;
+}
+
+float TestAppListColorProvider::GetInvertedInkDropOpacity(
+    SkColor bg_color) const {
+  return 0.06f;
+}
+
 SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x0D);
 }

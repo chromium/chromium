@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
@@ -34,7 +35,14 @@ namespace {
 
 // Image buttons.
 constexpr int kImageButtonSizeDip = 40;
+constexpr int kProductivityLauncherImageButtonSizeDip = 32;
 constexpr int kActionButtonBetweenSpacing = 8;
+
+int GetButtonSize() {
+  if (features::IsProductivityLauncherEnabled())
+    return kProductivityLauncherImageButtonSizeDip;
+  return kImageButtonSizeDip;
+}
 
 }  // namespace
 
@@ -86,9 +94,14 @@ SearchResultImageButton::SearchResultImageButton(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         auto highlight = std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()),
-            color_provider->GetInkDropBaseColor(bg_color));
+            features::IsProductivityLauncherEnabled()
+                ? SK_ColorTRANSPARENT
+                /*productivity launcher does not use inkdrop highlights*/
+                : color_provider->GetInkDropBaseColor(bg_color));
         highlight->set_visible_opacity(
-            color_provider->GetInkDropOpacity(bg_color));
+            features::IsProductivityLauncherEnabled()
+                ? 0 /*productivity launcher does not use inkdrop highlights*/
+                : color_provider->GetInkDropOpacity(bg_color));
         return highlight;
       },
       this));
@@ -105,12 +118,16 @@ SearchResultImageButton::SearchResultImageButton(
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetInkDropBaseColor(bg_color),
-            color_provider->GetInkDropOpacity(bg_color));
+            features::IsProductivityLauncherEnabled()
+                ? color_provider->GetInvertedInkDropBaseColor(bg_color)
+                : color_provider->GetInkDropBaseColor(bg_color),
+            features::IsProductivityLauncherEnabled()
+                ? color_provider->GetInvertedInkDropOpacity(bg_color)
+                : color_provider->GetInkDropOpacity(bg_color));
       },
       this));
 
-  SetPreferredSize({kImageButtonSizeDip, kImageButtonSizeDip});
+  SetPreferredSize({GetButtonSize(), GetButtonSize()});
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 

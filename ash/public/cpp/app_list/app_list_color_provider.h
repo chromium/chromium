@@ -53,6 +53,10 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual float GetInkDropOpacity(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+  virtual SkColor GetInvertedInkDropBaseColor(
+      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+  virtual float GetInvertedInkDropOpacity(
+      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual SkColor GetSearchResultViewHighlightColor() const = 0;
   virtual SkColor GetTextColorURL() const = 0;
 
