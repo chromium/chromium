@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
+#include "ash/wm/window_properties.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -54,6 +55,9 @@ void ExoAppTypeResolver::PopulateProperties(
     out_properties_container.SetProperty(
         app_restore::kParentToHiddenContainerKey,
         restore_window_id == app_restore::kParentToHiddenContainer);
+
+    out_properties_container.SetProperty(ash::kWebAuthnRequestId,
+                                         new std::string(params.app_id));
     return;
   }
 
