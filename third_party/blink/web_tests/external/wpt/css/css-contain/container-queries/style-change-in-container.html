@@ -16,6 +16,8 @@
 <script>
   setup(() => assert_implements_container_queries());
 
+  let content = document.getElementById("content");
+
   test(() => {
     assert_equals(getComputedStyle(content).color, "rgb(0, 128, 0)");
 
