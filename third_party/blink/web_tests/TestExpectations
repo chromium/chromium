@@ -5632,7 +5632,6 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/scroll-without-mou
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/focus-selectionchange-on-tap.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-click-common-ancestor.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-frame-removed.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/subpixel-overflow-mouse-drag.html [ Crash Failure Pass Timeout ]
@@ -7660,8 +7659,6 @@ crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back
 
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
-crbug.com/1311731 [ Linux ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
-crbug.com/1311731 [ Win ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
 crbug.com/1248581 fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
 crbug.com/1312036 virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 
