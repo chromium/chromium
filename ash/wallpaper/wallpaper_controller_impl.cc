@@ -190,6 +190,12 @@ void SetGlobalChromeOSCustomWallpapersDir(const base::FilePath& path) {
   global_path = path;
 }
 
+base::FilePath GetUserGooglePhotosWallpaperDir(const AccountId& account_id) {
+  DCHECK(account_id.HasAccountIdKey());
+  return GlobalChromeOSGooglePhotosWallpapersDir().Append(
+      account_id.GetAccountIdKey());
+}
+
 // Returns the appropriate wallpaper resolution for all root windows.
 WallpaperControllerImpl::WallpaperResolution GetAppropriateResolution() {
   gfx::Size size = WallpaperControllerImpl::GetMaxDisplaySizeInNative();
@@ -523,9 +529,10 @@ void SaveOnlineWallpaper(const std::string& url,
 
 // Creates the google_photos directory in the local file system for caching
 // Google Photos wallpapers if it does not already exist.
-void EnsureGooglePhotosDirectoryExists() {
-  base::DirectoryExists(GlobalChromeOSGooglePhotosWallpapersDir()) ||
-      base::CreateDirectory(GlobalChromeOSGooglePhotosWallpapersDir());
+void EnsureGooglePhotosDirectoryExists(const AccountId& account_id) {
+  auto user_directory = GetUserGooglePhotosWallpaperDir(account_id);
+  if (!base::DirectoryExists(user_directory))
+    base::CreateDirectory(user_directory);
 }
 
 // Implementation of |WallpaperControllerImpl::GetOfflineWallpaper|.
@@ -737,8 +744,18 @@ void RemoveWallpaperInfo(const AccountId& account_id,
   prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
 }
 
-void DeleteGooglePhotosCache() {
-  base::DeletePathRecursively(GlobalChromeOSGooglePhotosWallpapersDir());
+// Deletes the user-specific directory inside the Google Photos cache
+// directory. Only call this by posting it to `sequenced_task_runner_` with no
+// delay to ensure that file IO is called in a well defined order. This avoids
+// accidentally deleting the cache immediately after creating it, etc.
+void DeleteGooglePhotosCache(const AccountId& account_id) {
+  // Don't bother deleting for anyone without an AccountId, since they don't
+  // have a way to set Google Photos Wallpapers. Guest accounts may not be able
+  // to call `AccountId::GetAccountIdKey()`, so we can't compute a path for
+  // them.
+  if (account_id.HasAccountIdKey()) {
+    base::DeletePathRecursively(GetUserGooglePhotosWallpaperDir(account_id));
+  }
 }
 
 // Fuzzes a timedelta by up to one hour into the future to prevent hotspotting.
@@ -1045,6 +1062,11 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
 
   if (info.type == WallpaperType::kGooglePhotos)
     StartGooglePhotosStalenessTimer();
+
+  if (info.type != WallpaperType::kGooglePhotos) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
+  }
 
   if (IsEphemeralUser(account_id)) {
     ephemeral_users_wallpaper_info_[account_id] = info;
@@ -2245,7 +2267,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     // current wallpaper, we need to reset to the default.
     if (current_wallpaper_->wallpaper_info().location == params.id) {
       sequenced_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache));
+          FROM_HERE,
+          base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
       SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true);
     }
     std::move(callback).Run(false);
@@ -2253,7 +2276,7 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
   }
 
   auto cached_path =
-      GlobalChromeOSGooglePhotosWallpapersDir().Append(params.id);
+      GetUserGooglePhotosWallpaperDir(params.account_id).Append(params.id);
   sequenced_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, cached_path),
       base::BindOnce(
@@ -2324,7 +2347,7 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
   }
 
   sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache),
+      FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, params.account_id),
       base::BindOnce(
           &WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper,
           set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params), image,
@@ -2335,14 +2358,15 @@ void WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper(
     const GooglePhotosWallpaperParams& params,
     const gfx::ImageSkia& image,
     const WallpaperInfo& wallpaper_info) {
-  auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(params.id);
+  auto path =
+      GetUserGooglePhotosWallpaperDir(params.account_id).Append(params.id);
 
   gfx::ImageSkia thread_safe_image(image);
   thread_safe_image.MakeThreadSafe();
 
   sequenced_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&EnsureGooglePhotosDirectoryExists)
+      base::BindOnce(&EnsureGooglePhotosDirectoryExists, params.account_id)
           .Then(base::BindOnce(&ResizeAndSaveWallpaper, thread_safe_image, path,
                                params.layout, thread_safe_image.width(),
                                thread_safe_image.height()))
@@ -2407,7 +2431,8 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                        info, show_wallpaper),
         wallpaper_path);
   } else if (info.type == WallpaperType::kGooglePhotos) {
-    auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(info.location);
+    auto path =
+        GetUserGooglePhotosWallpaperDir(account_id).Append(info.location);
     ReadAndDecodeWallpaper(
         base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded,
                        set_wallpaper_weak_factory_.GetWeakPtr(), info,
@@ -3161,8 +3186,8 @@ void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
     return;
 
   if (!photo) {
-    sequenced_task_runner_->PostTask(FROM_HERE,
-                                     base::BindOnce(&DeleteGooglePhotosCache));
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
     SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
   } else {
     StartGooglePhotosStalenessTimer();

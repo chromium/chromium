@@ -4480,8 +4480,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
   RunAllTasksUntilIdle();
 
-  base::FilePath saved_wallpaper =
-      online_wallpaper_dir_.GetPath().Append("google_photos/").Append(photo_id);
+  base::FilePath saved_wallpaper = online_wallpaper_dir_.GetPath()
+                                       .Append("google_photos/")
+                                       .Append(account_id_1.GetAccountIdKey())
+                                       .Append(photo_id);
   ASSERT_EQ(GooglePhotosEnabled(), base::PathExists(saved_wallpaper));
 }
 
@@ -4506,9 +4508,11 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
             controller_->GetPathFromCache(account_id_1, &path));
   EXPECT_EQ(GooglePhotosEnabled(), controller_->GetWallpaperFromCache(
                                        account_id_1, &cached_wallpaper));
-  EXPECT_EQ(GooglePhotosEnabled(), path == online_wallpaper_dir_.GetPath()
-                                               .Append("google_photos/")
-                                               .Append(photo_id));
+  EXPECT_EQ(GooglePhotosEnabled(),
+            path == online_wallpaper_dir_.GetPath()
+                        .Append("google_photos/")
+                        .Append(account_id_1.GetAccountIdKey())
+                        .Append(photo_id));
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
