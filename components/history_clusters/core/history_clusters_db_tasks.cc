@@ -87,10 +87,13 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     // Tack on all the newly fetched visits onto our accumulator vector.
     AddUnclusteredVisits(backend, options, &limited_by_max_count);
 
-    // If we didn't get enough visits, ask for another day's worth from
-    // History and call this method again when done.
-    if (limited_by_max_count) {
-      DCHECK(!annotated_visits_.empty());
+    // If we didn't get enough visits, ask for another day's worth from History
+    // and call this method again when done.
+    // If `limited_by_max_count` is true, `annotated_visits_` "shouldn't" be
+    // empty. But it actually can be if a visit's URL is missing from the URL
+    // table. `limited_by_max_count` is set before visits are filtered to
+    // those whose URL is found.
+    if (limited_by_max_count && !annotated_visits_.empty()) {
       continuation_end_time_ = annotated_visits_.back().visit_row.visit_time;
     } else {
       continuation_end_time_ = options.begin_time;
