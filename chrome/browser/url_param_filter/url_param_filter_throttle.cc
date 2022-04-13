@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/url_param_filter/cross_otr_observer.h"
 #include "chrome/browser/url_param_filter/url_param_filterer.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -51,7 +53,11 @@ void UrlParamFilterThrottle::MaybeCreateThrottle(
 }
 
 UrlParamFilterThrottle::UrlParamFilterThrottle(
-    const absl::optional<url::Origin>& request_initiator_origin) {
+    const absl::optional<url::Origin>& request_initiator_origin)
+    : should_filter_(base::GetFieldTrialParamByFeatureAsBool(
+          features::kIncognitoParamFilterEnabled,
+          "should_filter",
+          false)) {
   last_hop_initiator_ = request_initiator_origin.has_value()
                             ? request_initiator_origin->GetURL()
                             : GURL();
@@ -65,9 +71,11 @@ void UrlParamFilterThrottle::WillStartRequest(network::ResourceRequest* request,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   FilterResult result = FilterUrl(last_hop_initiator_, request->url);
-  request->url = result.filtered_url;
+  if (should_filter_) {
+    request->url = result.filtered_url;
+    WriteMetrics(result);
+  }
   last_hop_initiator_ = request->url;
-  WriteMetrics(result);
 }
 
 void UrlParamFilterThrottle::WillRedirectRequest(
@@ -79,10 +87,13 @@ void UrlParamFilterThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   FilterResult result = FilterUrl(last_hop_initiator_, redirect_info->new_url);
-  redirect_info->new_url = result.filtered_url;
-  // Future redirects should use the redirect's domain as the navigation source.
+  if (should_filter_) {
+    redirect_info->new_url = result.filtered_url;
+    WriteMetrics(result);
+  }
+  // Future redirects should use the redirect's domain as the navigation
+  // source.
   last_hop_initiator_ = redirect_info->new_url;
-  WriteMetrics(result);
 }
 
 bool UrlParamFilterThrottle::makes_unsafe_redirect() {

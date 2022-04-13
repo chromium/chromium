@@ -19,26 +19,24 @@
 
 namespace url_param_filter {
 
+namespace {
+
 // Tests the UrlParamFilterThrottle, which is currently a very thin wrapper
 // around the url_param_filter::FilterUrl() function. Coverage is accordingly
 // somewhat less thorough than that seen in url_param_filterer_unittest.
 class UrlParamFilterThrottleTest : public ChromeRenderViewHostTestHarness {
  public:
+  UrlParamFilterThrottleTest() = default;
+
+ protected:
   constexpr static const char kHistogramName[] =
       "Navigation.UrlParamFilter.FilteredParamCountExperimental";
-
-  UrlParamFilterThrottleTest() {
-    std::string encoded_classification =
-        CreateBase64EncodedFilterParamClassificationForTesting(
-            {{"source.xyz", {"plzblock"}},
-             {"redirect.abc", {"plzblockredirect"}},
-             {"redirect2.abc", {"plzblockredirect2"}}},
-            {{"destination.xyz", {"plzblock1"}}});
-    // With the flag set, the URL should be filtered.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIncognitoParamFilterEnabled,
-        {{"classifications", encoded_classification}});
-  }
+  std::string encoded_classification =
+      CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}},
+           {"redirect.abc", {"plzblockredirect"}},
+           {"redirect2.abc", {"plzblockredirect2"}}},
+          {{"destination.xyz", {"plzblock1"}}});
 
   void CreateCrossOtrState() {
     NavigateParams params(profile(), GURL("https://www.foo.com"),
@@ -49,12 +47,25 @@ class UrlParamFilterThrottleTest : public ChromeRenderViewHostTestHarness {
     content::WebContents* contents = web_contents();
     CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   }
+};
+
+class UrlParamFilterThrottleFilteringEnabledTest
+    : public UrlParamFilterThrottleTest {
+ public:
+  UrlParamFilterThrottleFilteringEnabledTest() {
+    // With should_filter set true, the URL should be filtered.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"classifications", encoded_classification},
+         {"should_filter", "true"}});
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNullContents) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       ShouldCreateThrottleNullContents) {
   network::ResourceRequest resource_request;
   resource_request.is_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
@@ -65,7 +76,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNullContents) {
   ASSERT_EQ(result.size(), 0u);
 }
 
-TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNotCrossOtr) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       ShouldCreateThrottleNotCrossOtr) {
   network::ResourceRequest resource_request;
   resource_request.is_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
@@ -76,7 +88,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNotCrossOtr) {
   ASSERT_EQ(result.size(), 0u);
 }
 
-TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNotMainFrame) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       ShouldCreateThrottleNotMainFrame) {
   CreateCrossOtrState();
   network::ResourceRequest resource_request;
   resource_request.is_main_frame = false;
@@ -100,7 +113,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottlePolicyDisabled) {
   ASSERT_EQ(result.size(), 0u);
 }
 
-TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleTrueCase) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       ShouldCreateThrottleTrueCase) {
   CreateCrossOtrState();
   network::ResourceRequest resource_request;
   resource_request.is_main_frame = true;
@@ -112,7 +126,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleTrueCase) {
   ASSERT_EQ(result.size(), 1u);
 }
 
-TEST_F(UrlParamFilterThrottleTest, WillStartRequestNullInitiatorNoChanges) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       WillStartRequestNullInitiatorNoChanges) {
   base::HistogramTester histograms;
 
   std::unique_ptr<network::ResourceRequest> resource_request =
@@ -132,7 +147,8 @@ TEST_F(UrlParamFilterThrottleTest, WillStartRequestNullInitiatorNoChanges) {
   ASSERT_FALSE(defer);
 }
 
-TEST_F(UrlParamFilterThrottleTest, WillStartRequestInitiatorChanges) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       WillStartRequestInitiatorChanges) {
   base::HistogramTester histograms;
 
   std::unique_ptr<network::ResourceRequest> resource_request =
@@ -154,7 +170,7 @@ TEST_F(UrlParamFilterThrottleTest, WillStartRequestInitiatorChanges) {
   ASSERT_EQ(resource_request->url, expected_url);
   ASSERT_FALSE(defer);
 }
-TEST_F(UrlParamFilterThrottleTest,
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        WillStartRequestNoInitiatorDestinationChanges) {
   base::HistogramTester histograms;
 
@@ -176,7 +192,8 @@ TEST_F(UrlParamFilterThrottleTest,
   ASSERT_FALSE(defer);
 }
 
-TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestNullInitiatorNoChanges) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       WillRedirectRequestNullInitiatorNoChanges) {
   base::HistogramTester histograms;
 
   std::unique_ptr<net::RedirectInfo> redirect_info =
@@ -200,7 +217,8 @@ TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestNullInitiatorNoChanges) {
   ASSERT_FALSE(defer);
 }
 
-TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestInitiatorChanges) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
+       WillRedirectRequestInitiatorChanges) {
   base::HistogramTester histograms;
 
   std::unique_ptr<net::RedirectInfo> redirect_info =
@@ -226,7 +244,7 @@ TEST_F(UrlParamFilterThrottleTest, WillRedirectRequestInitiatorChanges) {
   ASSERT_EQ(redirect_info->new_url, expected_url);
   ASSERT_FALSE(defer);
 }
-TEST_F(UrlParamFilterThrottleTest,
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        WillRedirectRequestNoInitiatorDestinationChanges) {
   base::HistogramTester histograms;
 
@@ -252,13 +270,14 @@ TEST_F(UrlParamFilterThrottleTest,
   ASSERT_FALSE(defer);
 }
 
-TEST_F(UrlParamFilterThrottleTest, MultipleRedirects) {
+TEST_F(UrlParamFilterThrottleFilteringEnabledTest, MultipleRedirects) {
   std::unique_ptr<net::RedirectInfo> redirect_info =
       std::make_unique<net::RedirectInfo>();
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
 
-  // The chain is: source.xyz-->redirect.abc-->redirect2.abc-->destination.xyz.
+  // The chain is:
+  // source.xyz-->redirect.abc-->redirect2.abc-->destination.xyz.
   resource_request->url = GURL("https://redirect.abc?plzblock=1");
   GURL expected_first_intermediate_url = GURL("https://redirect.abc");
   GURL redirect_url = GURL("https://redirect2.abc?plzblockredirect=1");
@@ -290,5 +309,62 @@ TEST_F(UrlParamFilterThrottleTest, MultipleRedirects) {
   ASSERT_EQ(redirect_info->new_url, expected_url);
   ASSERT_FALSE(defer);
 }
+
+class UrlParamFilterThrottleFilteringDisabledTest
+    : public UrlParamFilterThrottleTest {
+ public:
+  UrlParamFilterThrottleFilteringDisabledTest() {
+    // With should_filter set false, the URL shouldn't be filtered.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"classifications", encoded_classification},
+         {"should_filter", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(UrlParamFilterThrottleFilteringDisabledTest,
+       DoesntFilter_MultipleRedirects) {
+  std::unique_ptr<net::RedirectInfo> redirect_info =
+      std::make_unique<net::RedirectInfo>();
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      std::make_unique<network::ResourceRequest>();
+
+  // The chain is:
+  // source.xyz-->redirect.abc-->redirect2.abc-->destination.xyz.
+  resource_request->url = GURL("https://redirect.abc?plzblock=1");
+  GURL redirect_url = GURL("https://redirect2.abc?plzblockredirect=1");
+  GURL destination_url =
+      GURL("https://destination.xyz?asdf=1&plzblockredirect2=1");
+  UrlParamFilterThrottle throttle =
+      UrlParamFilterThrottle(url::Origin::Create(GURL("https://source.xyz")));
+  redirect_info->new_url = redirect_url;
+
+  bool defer = false;
+  net::HttpRequestHeaders headers;
+  std::vector<std::string> removed_headers;
+  auto response_head = network::mojom::URLResponseHead::New();
+
+  throttle.WillStartRequest(resource_request.get(), &defer);
+  // The param isn't filtered by the UrlParamFilterThrottle.
+  EXPECT_EQ(resource_request->url, GURL("https://redirect.abc?plzblock=1"));
+
+  throttle.WillRedirectRequest(redirect_info.get(), *response_head, &defer,
+                               &removed_headers, &headers, &headers);
+  // The param isn't filtered by the UrlParamFilterThrottle.
+  EXPECT_EQ(redirect_info->new_url,
+            GURL("https://redirect2.abc?plzblockredirect=1"));
+  redirect_info->new_url = destination_url;
+  throttle.WillRedirectRequest(redirect_info.get(), *response_head, &defer,
+                               &removed_headers, &headers, &headers);
+
+  EXPECT_EQ(redirect_info->new_url,
+            GURL("https://destination.xyz?asdf=1&plzblockredirect2=1"));
+  EXPECT_FALSE(defer);
+}
+
+}  // namespace
 
 }  // namespace url_param_filter

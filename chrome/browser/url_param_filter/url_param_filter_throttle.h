@@ -45,6 +45,7 @@ class UrlParamFilterThrottle : public blink::URLLoaderThrottle {
 
  private:
   GURL last_hop_initiator_;
+  bool should_filter_;
 };
 }  // namespace url_param_filter
 #endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_THROTTLE_H_

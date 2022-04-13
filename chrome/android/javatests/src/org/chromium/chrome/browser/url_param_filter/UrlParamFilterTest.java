@@ -130,13 +130,14 @@ public class UrlParamFilterTest {
     }
 
     /**
-     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab".
+     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab",
+     * and that filtering occurs when the should_filter parameter is true.
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
     @CommandLineFlags.Add({"enable-features=IncognitoParamFilterEnabled:classifications/"
-            + LOCAL_IP_DESTINATION_PLZBLOCK})
+            + LOCAL_IP_DESTINATION_PLZBLOCK + "/should_filter/true"})
     public void
     testOpenInIncognitoDestinationFiltering() throws TimeoutException {
         triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
@@ -151,14 +152,16 @@ public class UrlParamFilterTest {
     }
 
     /**
-     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab".
+     * Verifies parameters specified by feature flags are filtered for "Open in new incognito tab",
+     * and that filtering occurs when the should_filter parameter is true.
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @CommandLineFlags.
-    Add({"enable-features=IncognitoParamFilterEnabled:classifications/" + LOCAL_IP_SOURCE_PLZBLOCK})
-    public void testOpenInIncognitoSourceFiltering() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=IncognitoParamFilterEnabled:classifications/"
+            + LOCAL_IP_SOURCE_PLZBLOCK + "/should_filter/true"})
+    public void
+    testOpenInIncognitoSourceFiltering() throws TimeoutException {
         triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
                 "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
 
@@ -171,13 +174,57 @@ public class UrlParamFilterTest {
     }
 
     /**
-     * Verifies that parameters are not filtered for "Open in new incognito tab" unless explicitly
-     * enabled via feature param.
+     * Verifies that parameters are not filtered for "Open in new incognito tab" unless the
+     * feature is explicitly enabled.
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    public void testOpenInIncognitoNonFiltering() throws TimeoutException {
+    public void testOpenInIncognitoNonFilteringDueToFeature() throws TimeoutException {
+        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
+
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        waitForLoad(sLastOpenedTab.getWebContents());
+        Assert.assertFalse(
+                "".equals(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec()));
+        Assert.assertTrue(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec().contains(
+                "plzblock"));
+    }
+
+    /**
+     * Verifies destination parameters aren't filtered for "Open in new incognito tab",
+     * when the should_filter parameter is false.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @CommandLineFlags.Add({"enable-features=IncognitoParamFilterEnabled:classifications/"
+            + LOCAL_IP_DESTINATION_PLZBLOCK + "/should_filter/false"})
+    public void
+    testOpenInIncognitoNonFilteringDestinationDueToParam() throws TimeoutException {
+        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
+
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        waitForLoad(sLastOpenedTab.getWebContents());
+        Assert.assertFalse(
+                "".equals(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec()));
+        Assert.assertTrue(sLastOpenedTab.getWebContents().getLastCommittedUrl().getSpec().contains(
+                "plzblock"));
+    }
+
+    /**
+     * Verifies source parameters aren't filtered for "Open in new incognito tab",
+     * when the should_filter parameter is false.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @CommandLineFlags.Add({"enable-features=IncognitoParamFilterEnabled:classifications/"
+            + LOCAL_IP_SOURCE_PLZBLOCK + "/should_filter/false"})
+    public void
+    testOpenInIncognitoNonFilteringSourceDueToParam() throws TimeoutException {
         triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH),
                 "testLinkFiltered", R.id.contextmenu_open_in_incognito_tab);
 

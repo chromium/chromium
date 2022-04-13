@@ -23,15 +23,20 @@
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
-class ContextMenuIncognitoFilterBrowserTest : public InProcessBrowserTest {
- public:
-  constexpr static const char kCrossOtrResponseMetricName[] =
-      "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
-  constexpr static const char kCrossOtrRefreshCountMetricName[] =
-      "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
-  constexpr static const char kFilteredParamCountMetricName[] =
-      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+namespace url_param_filter {
 
+namespace {
+
+constexpr static const char kCrossOtrResponseMetricName[] =
+    "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
+constexpr static const char kCrossOtrRefreshCountMetricName[] =
+    "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
+constexpr static const char kFilteredParamCountMetricName[] =
+    "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+
+class ContextMenuIncognitoFilterDisabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
   void SetUpInProcessBrowserTestFixture() override {
     // Enable open in incognito param filtering, with rules for:
     // a destination of: <IP address>, for which eTLD+1 is blank,
@@ -43,7 +48,79 @@ class ContextMenuIncognitoFilterBrowserTest : public InProcessBrowserTest {
             {{"127.0.0.1", {"plzblock"}}});
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIncognitoParamFilterEnabled,
-        {{"classifications", encoded_classification}});
+        {{"classifications", encoded_classification},
+         {"should_filter", "false"}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Disable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that no params are filtered as expected.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterDisabledBrowserTest,
+                       OpenIncognitoUrlParamFilter) {
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that the loaded URL has not been filtered.
+  GURL expected(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200, and the navigation went from normal-->OTR
+  // browsing. Since we didn't intervened, we don't expect to see a 307.
+  histogram_tester.ExpectBucketCount(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(307), 0);
+  histogram_tester.ExpectBucketCount(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+}
+
+class ContextMenuIncognitoFilterEnabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Enable open in incognito param filtering, with rules for:
+    // a destination of: <IP address>, for which eTLD+1 is blank,
+    // with outgoing param plzblock
+    // or a source of: foo.com with outgoing param plzblock1
+    std::string encoded_classification = url_param_filter::
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {{"foo.com", {"plzblock1"}}, {"127.0.0.1", {"plzblockredirect"}}},
+            {{"127.0.0.1", {"plzblock"}}});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"classifications", encoded_classification},
+         {"should_filter", "true"}});
   }
 
  protected:
@@ -52,7 +129,7 @@ class ContextMenuIncognitoFilterBrowserTest : public InProcessBrowserTest {
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilter) {
   base::HistogramTester histogram_tester;
 
@@ -88,9 +165,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 
-  // The response was a 200, and the navigation went from normal-->OTR browsing.
-  // Because we intervened, an artificial redirect was injected, so we also
-  // expect a 307.
+  // The response was a 200, and the navigation went from normal-->OTR
+  // browsing. Because we intervened, an artificial redirect was injected, so
+  // we also expect a 307.
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(307), 1);
@@ -101,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters only main frame navigations.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterSubresources) {
   base::HistogramTester histogram_tester;
 
@@ -140,24 +217,22 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
   // Ensure that we don't apply filters to subresource requests, even when
   // there's a destination rule for the domain/param pair.
-  EXPECT_EQ(
-      true,
-      content::EvalJs(
-          tab,
-          "document.getElementById('dummy-frame').src.endsWith('plzblock=1')"));
+  EXPECT_EQ(true, content::EvalJs(tab,
+                                  "document.getElementById('dummy-frame')."
+                                  "src.endsWith('plzblock=1')"));
   EXPECT_EQ(true, content::EvalJs(tab,
                                   "document.getElementById('dummy-script').src."
                                   "endsWith('plzblock=1')"));
 
-  // The response was a 200, and the navigation went from normal-->OTR browsing.
-  // Because we intervened, an artificial redirect was injected, so we also
-  // expect a 307.
+  // The response was a 200, and the navigation went from normal-->OTR
+  // browsing. Because we intervened, an artificial redirect was injected, so
+  // we also expect a 307.
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(307), 1);
   // Ensure we only see the two params on the main navigation being filtered;
-  // the other plzblock instances are on js or subframe requests, so should not
-  // be filtered.
+  // the other plzblock instances are on js or subframe requests, so should
+  // not be filtered.
   EXPECT_EQ(histogram_tester.GetTotalSum(kFilteredParamCountMetricName), 2);
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
@@ -167,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected.
 IN_PROC_BROWSER_TEST_F(
-    ContextMenuIncognitoFilterBrowserTest,
+    ContextMenuIncognitoFilterEnabledBrowserTest,
     OpenIncognitoUrlParamFilterClientRedirectAfterActivation) {
   base::HistogramTester histogram_tester;
 
@@ -215,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected when server redirects are encountered.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterServerRedirect) {
   base::HistogramTester histogram_tester;
 
@@ -257,8 +332,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 
   // The response was a 301-->200, and the navigation went from normal-->OTR
-  // browsing. Because we intervened, an artificial redirect was injected, so we
-  // also expect a 307.
+  // browsing. Because we intervened, an artificial redirect was injected, so
+  // we also expect a 307.
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(301), 1);
@@ -272,16 +347,16 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected when client redirects are encountered.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterClientRedirect) {
   base::HistogramTester histogram_tester;
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  // `plzblock1` is blocked only on navs from foo.com. Because analysis will see
-  // this as a separate navigation, the source domain of the client redirect
-  // will be localhost.
+  // `plzblock1` is blocked only on navs from foo.com. Because analysis will
+  // see this as a separate navigation, the source domain of the client
+  // redirect will be localhost.
   GURL test_root(
       embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2"));
   GURL redirect_page(embedded_test_server()->GetURL(
@@ -309,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
   content::WebContents* tab = add_tab.Wait();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
-  // The prior load stop succeeds for the initial response; we now wait for the
-  // client redirect to occur.
+  // The prior load stop succeeds for the initial response; we now wait for
+  // the client redirect to occur.
   content::LoadStopObserver client_redirect_load_observer(tab);
   client_redirect_load_observer.Wait();
   // Verify that it loaded the filtered URL.
@@ -330,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected when client redirects are encountered.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterClientRedirectThenRefresh) {
   base::HistogramTester histogram_tester;
 
@@ -364,8 +439,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
   content::WebContents* tab = add_tab.Wait();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
-  // The prior load stop succeeds for the initial response; we now wait for the
-  // client redirect to occur.
+  // The prior load stop succeeds for the initial response; we now wait for
+  // the client redirect to occur.
   content::LoadStopObserver client_redirect_load_observer(tab);
   client_redirect_load_observer.Wait();
   // Verify that it loaded the filtered URL.
@@ -390,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 }
 
 // Verify that appropriate metrics are written when redirects are encountered.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterRedirect) {
   base::HistogramTester histogram_tester;
 
@@ -433,8 +508,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
                                 ui::PAGE_TRANSITION_LINK, false);
   content::WebContents* second_contents = tab->OpenURL(params);
   EXPECT_TRUE(content::WaitForLoadStop(second_contents));
-  // The response was a 301 redirect followed by a 200, and the navigation went
-  // from normal-->OTR browsing. The later OpenURL should not write a metric.
+  // The response was a 301 redirect followed by a 200, and the navigation
+  // went from normal-->OTR browsing. The later OpenURL should not write a
+  // metric.
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(301), 1);
@@ -445,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
 // Ensure that enabling URL param filtering does not apply to "Open in new tab"
 // and that cross-off-the-record metrics are not written in that case.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenTabNoUrlParamFilter) {
   const char kPath[] = "/empty.html?plzblock=1&nochanges=2&plzblock1=2";
   base::HistogramTester histogram_tester;
@@ -488,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it does not filter when it is not configured to do so.
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterWithoutChanges) {
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
@@ -522,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   ASSERT_EQ(test_root, tab->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        CrossOtrRefreshCount) {
   base::HistogramTester histogram_tester;
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -575,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        CrossOtrRefreshCountDestroyedContents) {
   base::HistogramTester histogram_tester;
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -634,7 +710,8 @@ class EnterpriseContextMenuIncognitoFilterBrowserTest
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIncognitoParamFilterEnabled,
-        {{"classifications", encoded_classification}});
+        {{"classifications", encoded_classification},
+         {"should_filter", "true"}});
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kUrlParamFilterEnabled,
@@ -733,3 +810,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 }
+
+}  // namespace
+
+}  // namespace url_param_filter

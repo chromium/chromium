@@ -136,13 +136,14 @@ FilterResult FilterUrl(
 }
 
 FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
-  if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    return FilterUrl(
-        source_url, destination_url,
-        ClassificationsLoader::GetInstance()->GetSourceClassifications(),
-        ClassificationsLoader::GetInstance()->GetDestinationClassifications());
+  if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
+    return FilterResult{destination_url, 0};
   }
-  return FilterResult{destination_url, 0};
+
+  return FilterUrl(
+      source_url, destination_url,
+      ClassificationsLoader::GetInstance()->GetSourceClassifications(),
+      ClassificationsLoader::GetInstance()->GetDestinationClassifications());
 }
 
 }  // namespace url_param_filter
