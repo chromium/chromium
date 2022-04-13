@@ -204,8 +204,8 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   ChromeBlobStorageContext* blob_storage_context() const {
     return blob_storage_context_.get();
   }
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
   void AddDatabaseTask(std::unique_ptr<background_fetch::DatabaseTask> task);

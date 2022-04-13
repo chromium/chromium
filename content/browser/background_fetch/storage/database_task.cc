@@ -187,7 +187,8 @@ BackgroundFetchDataManager* DatabaseTask::data_manager() {
   return host_->data_manager();
 }
 
-storage::QuotaManagerProxy* DatabaseTask::quota_manager_proxy() {
+const scoped_refptr<storage::QuotaManagerProxy>&
+DatabaseTask::quota_manager_proxy() {
   return data_manager()->quota_manager_proxy();
 }
 

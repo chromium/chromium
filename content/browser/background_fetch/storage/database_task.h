@@ -106,7 +106,7 @@ class DatabaseTask : public DatabaseTaskHost {
   ServiceWorkerContextWrapper* service_worker_context();
   std::set<std::string>& ref_counted_unique_ids();
   ChromeBlobStorageContext* blob_storage_context();
-  storage::QuotaManagerProxy* quota_manager_proxy();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy();
 
   // DatabaseTaskHost implementation.
   void OnTaskFinished(DatabaseTask* finished_subtask) override;
