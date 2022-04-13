@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -349,9 +350,11 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       modal_signin_widget_ = constrained_window::CreateWebModalDialogViews(
           this, host_web_contents);
       if (should_show_close_button_) {
+        // TODO(https://crbug.com/1315194): stop forcing the light theme once
+        // the reauth dialog supports the dark mode.
         auto bubble_border = std::make_unique<views::BubbleBorder>(
             views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-            gfx::kPlaceholderColor);
+            SK_ColorWHITE);
         bubble_border->set_use_theme_background_color(true);
         GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
       }
