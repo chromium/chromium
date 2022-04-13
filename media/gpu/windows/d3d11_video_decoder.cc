@@ -259,10 +259,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   UINT config_count = 0;
   auto hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
-  if (FAILED(hr)) {
-    return HresultToStatus(hr,
-                           D3D11Status::Codes::kGetDecoderConfigCountFailed);
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kGetDecoderConfigCountFailed, hr};
 
   if (config_count == 0)
     return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed);
@@ -273,9 +271,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   for (UINT i = 0; i < config_count; i++) {
     hr = video_device_->GetVideoDecoderConfig(
         decoder_configurator_->DecoderDescriptor(), i, &dec_config);
-    if (FAILED(hr)) {
-      return HresultToStatus(hr, D3D11Status::Codes::kGetDecoderConfigFailed);
-    }
+    if (FAILED(hr))
+      return {D3D11Status::Codes::kGetDecoderConfigFailed, hr};
 
     if (dec_config.ConfigBitstreamRaw == 1 &&
         (config_.codec() == VideoCodec::kVP9 ||
@@ -330,9 +327,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   if (!video_decoder.Get())
     return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed);
 
-  if (FAILED(hr)) {
-    return HresultToStatus(hr, D3D11Status::Codes::kDecoderCreationFailed);
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kDecoderCreationFailed, hr};
 
   return {std::move(video_decoder)};
 }
@@ -417,18 +413,14 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   ComD3D11Multithread multi_threaded;
   hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
 
-  if (FAILED(hr)) {
-    return NotifyError(
-        HresultToStatus(hr, D3D11Status::Codes::kQueryID3D11MultithreadFailed));
-  }
+  if (FAILED(hr))
+    return NotifyError({D3D11Status::Codes::kQueryID3D11MultithreadFailed, hr});
 
   multi_threaded->SetMultithreadProtected(TRUE);
 
   hr = device_.As(&video_device_);
-  if (!SUCCEEDED(hr)) {
-    return NotifyError(
-        HresultToStatus(hr, D3D11Status::Codes::kFailedToGetVideoDevice));
-  }
+  if (FAILED(hr))
+    return NotifyError({D3D11Status::Codes::kFailedToGetVideoDevice, hr});
 
   auto video_decoder_or_error = CreateD3D11Decoder();
   if (video_decoder_or_error.has_error()) {

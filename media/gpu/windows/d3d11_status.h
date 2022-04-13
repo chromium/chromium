@@ -7,6 +7,8 @@
 
 #include <wrl/client.h>
 
+#include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -67,14 +69,25 @@ struct D3D11StatusTraits {
   static constexpr D3D11StatusCode DefaultEnumValue() {
     return D3D11StatusCode::kOk;
   }
+
+  static void OnCreateFrom(TypedStatus<D3D11StatusTraits>* s, HRESULT hresult) {
+    // Store it as a string for easy human consumption.
+    std::stringstream hresult_str_repr;
+    hresult_str_repr << std::hex << hresult;
+    s->WithData("hresult", hresult_str_repr.str());
+
+    // Store it as an integer for easy machine consumption.
+    s->WithData("hresult_raw", static_cast<int32_t>(hresult));
+
+    // Store the system error that might have been generated, if it's an
+    // allowable string.
+    std::string sys_err = logging::SystemErrorCodeToString(hresult);
+    if (base::IsStringUTF8AllowingNoncharacters(sys_err))
+      s->WithData("hresult_msg", sys_err);
+  }
 };
 
 using D3D11Status = TypedStatus<D3D11StatusTraits>;
-
-D3D11Status HresultToStatus(
-    HRESULT hresult,
-    D3D11Status::Codes code,
-    const base::Location& location = base::Location::Current());
 
 }  // namespace media
 

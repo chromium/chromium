@@ -49,10 +49,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   ComD3D11VideoProcessorOutputView output_view;
   HRESULT hr = video_processor_->CreateVideoProcessorOutputView(
       output_texture_.Get(), &output_view_desc, &output_view);
-  if (!SUCCEEDED(hr)) {
-    return HresultToStatus(
-        hr, D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed);
-  }
+  if (!SUCCEEDED(hr))
+    return {D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed, hr};
 
   D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_view_desc = {0};
   input_view_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
@@ -61,10 +59,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   ComD3D11VideoProcessorInputView input_view;
   hr = video_processor_->CreateVideoProcessorInputView(
       texture_.Get(), &input_view_desc, &input_view);
-  if (!SUCCEEDED(hr)) {
-    return HresultToStatus(
-        hr, D3D11Status::Codes::kCreateVideoProcessorInputViewFailed);
-  }
+  if (!SUCCEEDED(hr))
+    return {D3D11Status::Codes::kCreateVideoProcessorInputViewFailed};
 
   D3D11_VIDEO_PROCESSOR_STREAM streams = {0};
   streams.Enable = TRUE;
@@ -101,9 +97,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
                                            0,  // output_frameno
                                            1,  // stream_count
                                            &streams);
-  if (!SUCCEEDED(hr)) {
-    return HresultToStatus(hr, D3D11Status::Codes::kVideoProcessorBltFailed);
-  }
+  if (!SUCCEEDED(hr))
+    return {D3D11Status::Codes::kVideoProcessorBltFailed, hr};
 
   return output_texture_wrapper_->ProcessTexture(copy_color_space, mailbox_dest,
                                                  output_color_space);

@@ -88,9 +88,8 @@ D3D11Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
   HRESULT hr = video_device_->CreateVideoProcessorEnumerator(
       &desc, &processor_enumerator_);
   if (!SUCCEEDED(hr)) {
-    return DebugStatus(
-        HresultToStatus(hr, D3D11Status::Codes::kCreateDecoderOutputViewFailed),
-        device);
+    return DebugStatus({D3D11Status::Codes::kCreateDecoderOutputViewFailed, hr},
+                       device);
   }
 
   D3D11_VIDEO_PROCESSOR_CAPS caps = {0};
@@ -102,16 +101,14 @@ D3D11Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
   hr = video_device_->CreateVideoProcessor(processor_enumerator_.Get(), 0,
                                            &video_processor_);
   if (!SUCCEEDED(hr)) {
-    return DebugStatus(
-        HresultToStatus(hr, D3D11Status::Codes::kCreateVideoProcessorFailed),
-        device);
+    return DebugStatus({D3D11Status::Codes::kCreateVideoProcessorFailed, hr},
+                       device);
   }
 
   hr = device_context_.As(&video_context_);
   if (!SUCCEEDED(hr)) {
-    return DebugStatus(
-        HresultToStatus(hr, D3D11Status::Codes::kQueryVideoContextFailed),
-        device);
+    return DebugStatus({D3D11Status::Codes::kQueryVideoContextFailed, hr},
+                       device);
   }
 
   return D3D11Status::Codes::kOk;

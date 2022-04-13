@@ -84,7 +84,7 @@ D3D11Status DefaultTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
   if (FAILED(hr)) {
     keyed_mutex_acquired_ = false;
     DPLOG(ERROR) << "Unable to acquire the key mutex, error: " << hr;
-    return HresultToStatus(hr, D3D11Status::Codes::kAcquireKeyedMutexFailed);
+    return {D3D11Status::Codes::kAcquireKeyedMutexFailed, hr};
   }
 
   // Key mutex has been acquired for shared resource.
@@ -103,7 +103,7 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     HRESULT hr = keyed_mutex_->ReleaseSync(gpu::kDXGIKeyedMutexAcquireKey);
     if (FAILED(hr)) {
       DPLOG(ERROR) << "Unable to release the keyed mutex, error: " << hr;
-      return HresultToStatus(hr, D3D11Status::Codes::kReleaseKeyedMutexFailed);
+      return {D3D11Status::Codes::kReleaseKeyedMutexFailed, hr};
     }
 
     keyed_mutex_acquired_ = false;
@@ -145,7 +145,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
       if (FAILED(hr)) {
         DPLOG(ERROR) << "Failed to get key_mutex from output resource, error "
                      << std::hex << hr;
-        return HresultToStatus(hr, D3D11Status::Codes::kGetKeyedMutexFailed);
+        return {D3D11Status::Codes::kGetKeyedMutexFailed, hr};
       }
     }
   }

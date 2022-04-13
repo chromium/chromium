@@ -135,15 +135,11 @@ D3D11DecoderConfigurator::CreateOutputTexture(ComD3D11Device device,
   ComD3D11Texture2D texture;
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
-  if (FAILED(hr)) {
-    return HresultToStatus(
-        hr, D3D11Status::Codes::kCreateDecoderOutputTextureFailed);
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
-  if (FAILED(hr)) {
-    return HresultToStatus(
-        hr, D3D11Status::Codes::kCreateDecoderOutputTextureFailed);
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
   return texture;
 }
 
