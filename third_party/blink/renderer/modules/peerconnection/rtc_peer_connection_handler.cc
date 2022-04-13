@@ -155,6 +155,7 @@ void RunSynchronousOnceClosure(base::OnceClosure closure,
 
 // Converter functions from Blink types to WebRTC types.
 
+#if BUILDFLAG(IS_FUCHSIA)
 absl::optional<bool> ConstraintToOptional(
     const MediaConstraints& constraints,
     const blink::BooleanConstraint MediaTrackConstraintSetPlatform::*picker) {
@@ -164,6 +165,7 @@ absl::optional<bool> ConstraintToOptional(
   }
   return absl::nullopt;
 }
+#endif
 
 void CopyConstraintsIntoRtcConfiguration(
     const MediaConstraints constraints,
@@ -211,9 +213,6 @@ void CopyConstraintsIntoRtcConfiguration(
           &rate)) {
     configuration->screencast_min_bitrate = rate;
   }
-  configuration->combined_audio_video_bwe = ConstraintToOptional(
-      constraints,
-      &MediaTrackConstraintSetPlatform::goog_combined_audio_video_bwe);
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   configuration->enable_dtls_srtp = ConstraintToOptional(

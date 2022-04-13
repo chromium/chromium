@@ -94,9 +94,9 @@ TEST(MediaTrackConstraintsTest, MandatoryChecks) {
   EXPECT_FALSE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"height"}, found_name));
   EXPECT_EQ("width", found_name);
-  the_set.goog_payload_padding.SetExact(true);
+  the_set.echo_cancellation.SetExact(true);
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
-  EXPECT_EQ("googPayloadPadding", found_name);
+  EXPECT_EQ("echoCancellation", found_name);
 }
 
 TEST(MediaTrackConstraintsTest, SetToString) {

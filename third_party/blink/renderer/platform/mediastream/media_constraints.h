@@ -266,7 +266,6 @@ struct MediaTrackConstraintSetPlatform {
   LongConstraint offer_to_receive_video;
   BooleanConstraint voice_activity_detection;
   BooleanConstraint ice_restart;
-  BooleanConstraint goog_use_rtp_mux;
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   BooleanConstraint enable_dtls_srtp;
@@ -275,13 +274,8 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint enable_dscp;
   BooleanConstraint enable_i_pv6;
   BooleanConstraint goog_enable_video_suspend_below_min_bitrate;
-  LongConstraint goog_num_unsignalled_recv_streams;
-  BooleanConstraint goog_combined_audio_video_bwe;
   LongConstraint goog_screencast_min_bitrate;
   BooleanConstraint goog_cpu_overuse_detection;
-  LongConstraint goog_high_start_bitrate;
-  BooleanConstraint goog_payload_padding;
-  LongConstraint goog_latency_ms;
 
   PLATFORM_EXPORT bool IsUnconstrained() const;
   PLATFORM_EXPORT bool HasMandatory() const;

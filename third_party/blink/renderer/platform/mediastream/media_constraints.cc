@@ -370,7 +370,6 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       offer_to_receive_video("offerToReceiveVideo"),
       voice_activity_detection("voiceActivityDetection"),
       ice_restart("iceRestart"),
-      goog_use_rtp_mux("googUseRtpMux"),
 #if BUILDFLAG(IS_FUCHSIA)
       // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
       enable_dtls_srtp("enableDtlsSrtp"),
@@ -380,13 +379,8 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       enable_i_pv6("enableIPv6"),
       goog_enable_video_suspend_below_min_bitrate(
           "googEnableVideoSuspendBelowMinBitrate"),
-      goog_num_unsignalled_recv_streams("googNumUnsignalledRecvStreams"),
-      goog_combined_audio_video_bwe("googCombinedAudioVideoBwe"),
       goog_screencast_min_bitrate("googScreencastMinBitrate"),
-      goog_cpu_overuse_detection("googCpuOveruseDetection"),
-      goog_high_start_bitrate("googHighStartBitrate"),
-      goog_payload_padding("googPayloadPadding"),
-      goog_latency_ms("latencyMs") {
+      goog_cpu_overuse_detection("googCpuOveruseDetection") {
 }
 
 Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
@@ -402,16 +396,14 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
         &goog_highpass_filter, &goog_experimental_noise_suppression,
         &goog_audio_mirroring, &goog_da_echo_cancellation,
         &goog_noise_reduction, &offer_to_receive_audio, &offer_to_receive_video,
-        &voice_activity_detection, &ice_restart, &goog_use_rtp_mux,
+        &voice_activity_detection, &ice_restart,
 #if BUILDFLAG(IS_FUCHSIA)
         // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
         &enable_dtls_srtp,
 #endif
         &enable_rtp_data_channels, &enable_dscp, &enable_i_pv6,
         &goog_enable_video_suspend_below_min_bitrate,
-        &goog_num_unsignalled_recv_streams, &goog_combined_audio_video_bwe,
-        &goog_screencast_min_bitrate, &goog_cpu_overuse_detection,
-        &goog_high_start_bitrate, &goog_payload_padding, &goog_latency_ms
+        &goog_screencast_min_bitrate, &goog_cpu_overuse_detection
   };
 }
 
