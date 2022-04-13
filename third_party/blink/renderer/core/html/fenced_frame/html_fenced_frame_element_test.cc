@@ -13,8 +13,10 @@
 
 namespace blink {
 
-class HTMLFencedFrameElementTest : private ScopedFencedFramesForTest,
-                                   public RenderingTest {
+class HTMLFencedFrameElementTest
+    : private ScopedFencedFramesForTest,
+      public testing::WithParamInterface<const char*>,
+      public RenderingTest {
  public:
   HTMLFencedFrameElementTest()
       : ScopedFencedFramesForTest(true),
@@ -24,7 +26,7 @@ class HTMLFencedFrameElementTest : private ScopedFencedFramesForTest,
   void SetUp() override {
     RenderingTest::SetUp();
     base::FieldTrialParams params;
-    params["implementation_type"] = "mparch";
+    params["implementation_type"] = GetParam();
     enabled_feature_list_.InitAndEnableFeatureWithParameters(
         features::kFencedFrames, params);
 
@@ -41,10 +43,15 @@ class HTMLFencedFrameElementTest : private ScopedFencedFramesForTest,
   base::test::ScopedFeatureList enabled_feature_list_;
 };
 
-TEST_F(HTMLFencedFrameElementTest, FreezeSizePageZoomFactor) {
+INSTANTIATE_TEST_CASE_P(HTMLFencedFrameElementTest,
+                        HTMLFencedFrameElementTest,
+                        testing::Values("mparch", "shadow_dom"));
+
+TEST_P(HTMLFencedFrameElementTest, FreezeSizePageZoomFactor) {
   Document& doc = GetDocument();
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
   doc.body()->AppendChild(fenced_frame);
+  UpdateAllLifecyclePhasesForTest();
 
   LocalFrame& frame = GetFrame();
   const float zoom_factor = frame.PageZoomFactor();
