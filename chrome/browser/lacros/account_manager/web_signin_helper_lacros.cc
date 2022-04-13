@@ -5,19 +5,20 @@
 #include "chrome/browser/lacros/account_manager/web_signin_helper_lacros.h"
 
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/core_account_id.h"
 
 WebSigninHelperLacros::WebSigninHelperLacros(
     const base::FilePath& profile_path,
     AccountProfileMapper* account_profile_mapper,
     signin::IdentityManager* identity_manager,
     signin::ConsistencyCookieManager* consistency_cookie_manager,
-    base::OnceClosure callback)
+    base::OnceCallback<void(const CoreAccountId&)> callback)
     : callback_(std::move(callback)),
       profile_path_(profile_path),
       account_profile_mapper_(account_profile_mapper),
@@ -37,7 +38,7 @@ WebSigninHelperLacros::WebSigninHelperLacros(
 }
 
 WebSigninHelperLacros::~WebSigninHelperLacros() {
-  Finalize();
+  Finalize(CoreAccountId());
 }
 
 void WebSigninHelperLacros::OnAccountsAvailableAsSecondaryFetched(
@@ -71,16 +72,17 @@ void WebSigninHelperLacros::OnAccountAdded(
 
 void WebSigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
   if (gaia_id.empty()) {
-    Finalize();
+    Finalize(CoreAccountId());
     return;
   }
 
   std::vector<CoreAccountInfo> accounts_in_tokens =
       identity_manager_->GetAccountsWithRefreshTokens();
-  if (base::Contains(accounts_in_tokens, gaia_id,
-                     [](const CoreAccountInfo& info) { return info.gaia; })) {
+  auto it =
+      base::ranges::find(accounts_in_tokens, gaia_id, &CoreAccountInfo::gaia);
+  if (it != accounts_in_tokens.end()) {
     // Account is already in tokens.
-    Finalize();
+    Finalize(it->account_id);
     return;
   }
 
@@ -89,18 +91,18 @@ void WebSigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
   identity_manager_observervation_.Observe(identity_manager_);
 }
 
-void WebSigninHelperLacros::Finalize() {
+void WebSigninHelperLacros::Finalize(const CoreAccountId& account_id) {
   identity_manager_observervation_.Reset();
   scoped_account_update_.reset();
   if (callback_)
-    std::move(callback_).Run();
+    std::move(callback_).Run(account_id);
   // `this` may be deleted.
 }
 
 void WebSigninHelperLacros::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   if (account_added_to_mapping_ == account_info.gaia) {
-    Finalize();
+    Finalize(account_info.account_id);
     return;
   }
 }

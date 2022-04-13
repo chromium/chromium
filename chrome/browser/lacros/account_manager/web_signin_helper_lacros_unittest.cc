@@ -131,12 +131,12 @@ class WebSigninHelperLacrosTest : public testing::Test {
   // the `IdentityManager` are not connected to each other, and must be managed
   // separately.
   std::unique_ptr<WebSigninHelperLacros> CreateWebSigninHelperLacros(
-      base::OnceClosure closure) {
+      base::OnceCallback<void(const CoreAccountId&)> callback) {
     return std::make_unique<WebSigninHelperLacros>(
         profile_path_,
         testing_profile_manager_.profile_manager()->GetAccountProfileMapper(),
         identity_test_env_.identity_manager(),
-        reconcilor_.GetConsistencyCookieManager(), std::move(closure));
+        reconcilor_.GetConsistencyCookieManager(), std::move(callback));
   }
 
   void ExpectCookieSet(const std::string& value) {
@@ -211,7 +211,8 @@ class WebSigninHelperLacrosTest : public testing::Test {
 // Checks that creating a deleting the helper updates the cookie and that the
 // destruction callback is run.
 TEST_F(WebSigninHelperLacrosTest, DeletionCallback) {
-  testing::StrictMock<base::MockOnceClosure> helper_deleted;
+  testing::StrictMock<base::MockOnceCallback<void(const CoreAccountId&)>>
+      helper_deleted;
 
   // Create the helper.
   ExpectCookieSet("Updating");
@@ -219,7 +220,7 @@ TEST_F(WebSigninHelperLacrosTest, DeletionCallback) {
       CreateWebSigninHelperLacros(helper_deleted.Get());
 
   // Delete the helper.
-  EXPECT_CALL(helper_deleted, Run).Times(1);
+  EXPECT_CALL(helper_deleted, Run(CoreAccountId())).Times(1);
   ExpectCookieSet("Consistent");
   web_signin_helper.reset();
 }
@@ -227,7 +228,8 @@ TEST_F(WebSigninHelperLacrosTest, DeletionCallback) {
 // Checks that an account can be added through the OS when there is no available
 // account.
 TEST_F(WebSigninHelperLacrosTest, NoAccountAvailable) {
-  testing::StrictMock<base::MockOnceClosure> helper_complete;
+  testing::StrictMock<base::MockOnceCallback<void(const CoreAccountId&)>>
+      helper_complete;
 
   const std::string email("testemail");
   std::string gaia_id = signin::GetTestGaiaIdForEmail(email);
@@ -259,7 +261,7 @@ TEST_F(WebSigninHelperLacrosTest, NoAccountAvailable) {
   // Simmulate the mapper adding the account to the profile.
   identity_test_env()->MakeAccountAvailable(email);
 
-  EXPECT_CALL(helper_complete, Run).Times(1);
+  EXPECT_CALL(helper_complete, Run(CoreAccountId(gaia_id))).Times(1);
 
   // `AccountProfileMapper` expects a call of `OnAccountUpserted()` before
   // completing the account addition.

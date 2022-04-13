@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -28,6 +29,7 @@ class ConsistencyCookieManager;
 class AccountProfileMapper;
 class WebSigninHelperLacros;
 class SigninClient;
+struct CoreAccountId;
 #endif
 
 class PrefService;
@@ -47,7 +49,9 @@ class SigninManager : public KeyedService,
   void StartWebSigninFlow(
       const base::FilePath& profile_path,
       AccountProfileMapper* account_profile_mapper,
-      signin::ConsistencyCookieManager* consistency_cookie_manager);
+      signin::ConsistencyCookieManager* consistency_cookie_manager,
+      base::OnceCallback<void(const CoreAccountId&)> on_completion_callback =
+          base::DoNothing());
 #endif
 
  private:
@@ -88,7 +92,9 @@ class SigninManager : public KeyedService,
   void OnSigninAllowedPrefChanged();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnWebSigninHelperLacrosComplete();
+  void OnWebSigninHelperLacrosComplete(
+      base::OnceCallback<void(const CoreAccountId&)> on_completion_callback,
+      const CoreAccountId& account_id);
 #endif
 
   raw_ptr<PrefService> prefs_;

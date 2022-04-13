@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountProfileMapper;
+struct CoreAccountId;
 
 // Handles the signin flow starting from the web (when receiving the
 // `GAIA_SERVICE_TYPE_ADDSESSION` parameter). Maintains a `ScopedAccountUpdate`
@@ -36,7 +37,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
       AccountProfileMapper* account_profile_mapper,
       signin::IdentityManager* identity_manager,
       signin::ConsistencyCookieManager* consistency_cookie_manager,
-      base::OnceClosure callback);
+      base::OnceCallback<void(const CoreAccountId&)> callback);
 
   ~WebSigninHelperLacros() override;
 
@@ -58,7 +59,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
 
   // Unregisters the identity manager observation, releases
   // the `ScopedAccountUpdate`, and calls `callback_`.
-  void Finalize();
+  void Finalize(const CoreAccountId& account_id);
 
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
@@ -68,7 +69,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
   std::unique_ptr<signin::ConsistencyCookieManager::ScopedAccountUpdate>
       scoped_account_update_;
 
-  base::OnceClosure callback_;
+  base::OnceCallback<void(const CoreAccountId&)> callback_;
   base::FilePath profile_path_;
   AccountProfileMapper* const account_profile_mapper_;
 

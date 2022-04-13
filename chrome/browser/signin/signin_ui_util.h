@@ -62,7 +62,20 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                const std::string& email_hint);
 
 namespace internal {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+using CreateTurnSyncOnHelperCallback = base::OnceCallback<void(
+    Profile* profile,
+    Browser* browser,
+    signin_metrics::AccessPoint signin_access_point,
+    signin_metrics::PromoAction signin_promo_action,
+    signin_metrics::Reason signin_reason,
+    const CoreAccountId& account_id,
+    TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+using OnAccountAddedCallback = base::OnceCallback<void(const CoreAccountId&)>;
+
 // Same as `ShowReauthForPrimaryAccountWithAuthError` but with a getter function
 // for AccountManagerFacade so that it can be unit tested.
 void ShowReauthForPrimaryAccountWithAuthErrorLacros(
@@ -74,12 +87,17 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Same as `ShowExtensionSigninPrompt()` but with an additional parameters that
 // can be injected for unit testing.
-// `add_account_callback` encapsulates the logic to add a new account.
+// `add_account_callback` encapsulates the logic to add a new account. It
+// accepts a callback parameter that is invoked when the add account flow is
+// complete.
+// `create_turn_sync_on_helper_callback` creates a TurnSyncOnHelper when Sync
+// needs to be enabled.
 void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
-    base::OnceClosure add_account_callback,
+    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
 #endif
     bool enable_sync,
     const std::string& email_hint);
@@ -147,15 +165,7 @@ void EnableSyncFromPromo(
     const AccountInfo& account,
     signin_metrics::AccessPoint access_point,
     bool is_default_promo_account,
-    base::OnceCallback<
-        void(Profile* profile,
-             Browser* browser,
-             signin_metrics::AccessPoint signin_access_point,
-             signin_metrics::PromoAction signin_promo_action,
-             signin_metrics::Reason signin_reason,
-             const CoreAccountId& account_id,
-             TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
-        create_turn_sync_on_helper_callback);
+    CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback);
 }  // namespace internal
 #endif
 
