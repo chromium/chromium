@@ -18,9 +18,24 @@ struct MaxYPreferenceKey: PreferenceKey {
   }
 }
 
+/// A preference key to return the height of a `SelfSizingList`.
+struct SelfSizingListHeightPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat? = nil
+  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    if let nextValue = nextValue() {
+      if let currentValue = value {
+        value = max(currentValue, nextValue)
+      } else {
+        value = nextValue
+      }
+    }
+  }
+}
+
 /// View which acts like a `List` but which also clips whatever empty space
 /// is available below the actual content to replace it with an arbitrary view.
 struct SelfSizingList<Content: View, EmptySpace: View, ListModifier: ViewModifier>: View {
+
   let bottomMargin: CGFloat
   var listModifier: ListModifier
   var content: () -> Content
@@ -66,6 +81,7 @@ struct SelfSizingList<Content: View, EmptySpace: View, ListModifier: ViewModifie
           }
           .frame(height: availableHeight, alignment: .top)
         }
+        .preference(key: SelfSizingListHeightPreferenceKey.self, value: self.contentHeightEstimate)
         .frame(height: self.contentHeightEstimate, alignment: .top)
         .clipped()
 

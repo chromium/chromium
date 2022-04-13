@@ -68,6 +68,10 @@ struct PopupView: View {
     // Default height if no other header or footer. This spaces the sections
     // out properly.
     static let headerFooterHeight: CGFloat = 16
+
+    // Default list row insets. These are removed to inset the popup to the
+    // width of the omnibox
+    static let defaultInset: CGFloat = 16
   }
 
   /// Custom modifier for the background of the list.
@@ -90,9 +94,31 @@ struct PopupView: View {
     }
   }
 
+  /// Custom modifier emulating `.padding(edges, length)`.
+  struct PaddingModifier: ViewModifier {
+    let edges: Edge.Set
+    let length: CGFloat?
+    init(_ edges: Edge.Set = .all, _ length: CGFloat? = nil) {
+      self.edges = edges
+      self.length = length
+    }
+    func body(content: Content) -> some View {
+      content.padding(edges, length)
+    }
+  }
+
   @ObservedObject var model: PopupModel
   private let shouldSelfSize: Bool
   private let appearanceContainerType: UIAppearanceContainer.Type?
+
+  @Environment(\.popupUIVariation) var popupUIVariation: PopupUIVariation
+
+  /// Memory of scrolling offset, so as to be able to tell the difference between user drag gesture and automatic scroll-to-top on new matches
+  @State private var initialScrollingOffset: CGFloat? = nil
+  @State private var scrollingOffset: CGFloat? = nil
+
+  /// The current height of the self-sizing list.
+  @State private var selfSizingListHeight: CGFloat? = nil
 
   init(
     model: PopupModel, shouldSelfSize: Bool = false,
@@ -125,7 +151,7 @@ struct PopupView: View {
                 inSection: UInt(sectionIndex))
             }
           )
-          .id("\(sectionIndex) \(matchIndex)")
+          .id(indexPath)
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
           .accessibilityElement(children: .contain)
@@ -151,37 +177,40 @@ struct PopupView: View {
     }
   }
 
-  /// Memory of scrolling offset, so as to be able to tell the difference between user drag gesture and automatic scroll-to-top on new matches
-  @State private var initialScrollingOffset: CGFloat? = nil
-  @State private var scrollingOffset: CGFloat? = nil
-
   @ViewBuilder
   var listView: some View {
     let listModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
-    .concat(ListBackgroundModifier())
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
+    .concat(omniboxPaddingModifier)
 
     GeometryReader { geometry in
       if shouldSelfSize {
-        SelfSizingList(
-          bottomMargin: Dimensions.selfSizingListBottomMargin,
-          listModifier: listModifier,
-          content: {
-            listContent
-              .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
-          },
-          emptySpace: {
-            PopupEmptySpaceView()
-          }
-        ).frame(width: geometry.size.width, height: geometry.size.height)
+        ZStack(alignment: .top) {
+          listBackground.frame(height: selfSizingListHeight)
+          SelfSizingList(
+            bottomMargin: Dimensions.selfSizingListBottomMargin,
+            listModifier: listModifier,
+            content: {
+              listContent
+                .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
+            },
+            emptySpace: {
+              PopupEmptySpaceView()
+            }
+          ).frame(width: geometry.size.width, height: geometry.size.height)
+            .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
+              selfSizingListHeight = height
+            }
+        }
       } else {
         List {
           listContent
             .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
         }
+        .background(listBackground)
         .modifier(listModifier)
         .ignoresSafeArea(.keyboard)
         .frame(width: geometry.size.width, height: geometry.size.height)
@@ -210,6 +239,27 @@ struct PopupView: View {
     }
   }
 
+  /// Returns a `ViewModifier` to correctly space the sides of the list based
+  /// on the current omnibox spacing
+  var omniboxPaddingModifier: some ViewModifier {
+    let leadingSpace: CGFloat
+    let trailingSpace: CGFloat
+    switch popupUIVariation {
+    case .one:
+      leadingSpace = 0
+      trailingSpace = 0
+    case .two:
+      leadingSpace = model.omniboxLeadingSpace - Dimensions.defaultInset
+      trailingSpace = model.omniboxTrailingSpace - Dimensions.defaultInset
+    }
+    return PaddingModifier([.leading], leadingSpace).concat(
+      PaddingModifier([.trailing], trailingSpace))
+  }
+
+  var listBackground: some View {
+    return Color.cr_groupedPrimaryBackground.edgesIgnoringSafeArea(.all)
+  }
+
   func onAppear() {
     if let appearanceContainerType = self.appearanceContainerType {
       let listAppearance = UITableView.appearance(whenContainedInInstancesOf: [
@@ -231,7 +281,7 @@ struct PopupView: View {
 
   func onNewSections(sections: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
     // Scroll to the very top of the list.
-    scrollProxy.scrollTo("0 0", anchor: UnitPoint(x: 0, y: -.infinity))
+    scrollProxy.scrollTo(IndexPath(row: 0, section: 0), anchor: UnitPoint(x: 0, y: -.infinity))
   }
 
   func onNewScrollingOffset(oldScrollingOffset: CGFloat?, newScrollingOffset: CGFloat) {

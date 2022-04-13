@@ -51,6 +51,20 @@ where Content: View {
     view.isOpaque = false
   }
 
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
+    guard let guide = NamedGuide(name: kOmniboxGuide, view: view) else {
+      return
+    }
+
+    // Calculate the leading and trailing space here in UIKit world so SwiftUI
+    // gets accurate spacing.
+    let frameInView = guide.constrainedView.convert(guide.constrainedView.bounds, to: view)
+    model.omniboxLeadingSpace = frameInView.minX
+    model.omniboxTrailingSpace = view.bounds.width - frameInView.width - frameInView.minX
+  }
+
   var hasContent: Bool {
     return model.sections.map(\.matches.count).reduce(0, +) > 0
   }
