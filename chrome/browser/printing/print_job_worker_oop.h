@@ -40,6 +40,10 @@ class PrintJobWorkerOop : public PrintJobWorker {
   void StartPrinting(PrintedDocument* new_document) override;
 
  protected:
+  // For testing.
+  PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
+                    bool simulate_spooling_memory_errors);
+
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
   // support testing.
   virtual void OnDidUseDefaultSettings(
@@ -60,9 +64,9 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // `PrintJobWorker` overrides.
 #if BUILDFLAG(IS_WIN)
-  void SpoolPage(PrintedPage* page) override;
+  bool SpoolPage(PrintedPage* page) override;
 #endif
-  void SpoolDocument() override;
+  bool SpoolDocument() override;
   void OnDocumentDone() override;
   void InvokeUseDefaultSettings(SettingsCallback callback) override;
   void InvokeGetSettingsWithUI(uint32_t document_page_count,
@@ -112,6 +116,9 @@ class PrintJobWorkerOop : public PrintJobWorker {
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_data);
   void SendDocumentDone();
+
+  // Used to test spooling memory error handling.
+  bool simulate_spooling_memory_errors_ = false;
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.

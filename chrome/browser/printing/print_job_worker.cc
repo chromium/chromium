@@ -427,7 +427,8 @@ void PrintJobWorker::OnNewPage() {
       PostWaitForPage();
       return;
     }
-    SpoolDocument();
+    if (!SpoolDocument())
+      return;
   }
 
   OnDocumentDone();
@@ -454,7 +455,8 @@ bool PrintJobWorker::OnNewPageHelperGdi() {
       return false;
     }
     // The page is there, print it.
-    SpoolPage(page.get());
+    if (!SpoolPage(page.get()))
+      return false;
     ++page_number_;
     if (page_number_ == PageNumber::npos())
       break;
@@ -524,7 +526,7 @@ void PrintJobWorker::FinishDocumentDone(int job_id) {
 }
 
 #if BUILDFLAG(IS_WIN)
-void PrintJobWorker::SpoolPage(PrintedPage* page) {
+bool PrintJobWorker::SpoolPage(PrintedPage* page) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(page_number_, PageNumber::npos());
 
@@ -532,7 +534,7 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   if (document_->RenderPrintedPage(*page, printing_context_.get()) !=
       mojom::ResultCode::kSuccess) {
     OnFailure();
-    return;
+    return false;
   }
 
   // Signal everyone that the page is printed.
@@ -541,10 +543,11 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
       FROM_HERE,
       base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job_.get()),
                      base::RetainedRef(page)));
+  return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void PrintJobWorker::SpoolDocument() {
+bool PrintJobWorker::SpoolDocument() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   mojom::ResultCode result =
       document_->RenderPrintedDocument(printing_context_.get());
@@ -552,7 +555,9 @@ void PrintJobWorker::SpoolDocument() {
     PRINTER_LOG(ERROR) << "Failure to render printed document - error "
                        << result;
     OnFailure();
+    return false;
   }
+  return true;
 }
 
 void PrintJobWorker::OnFailure() {

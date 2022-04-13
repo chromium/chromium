@@ -2129,8 +2129,10 @@ INSTANTIATE_TEST_SUITE_P(
 class TestPrintJobWorker : public PrintJobWorkerOop {
  public:
   TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
+                     bool simulate_spooling_memory_errors,
                      TestPrintCallbacks* callbacks)
-      : PrintJobWorkerOop(rfh_id), callbacks_(callbacks) {}
+      : PrintJobWorkerOop(rfh_id, simulate_spooling_memory_errors),
+        callbacks_(callbacks) {}
   TestPrintJobWorker(const TestPrintJobWorker&) = delete;
   TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
   ~TestPrintJobWorker() override = default;
@@ -2360,6 +2362,10 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
   void PrimeAsRepeatingErrorGenerator() { reset_errors_after_check_ = false; }
 
+  void PrimeForSpoolingSharedMemoryErrors() {
+    simulate_spooling_memory_errors_ = true;
+  }
+
   void PrimeForFailInUseDefaultSettings() {
     test_printing_context_factory_.SetFailErrorOnUseDefaultSettings();
   }
@@ -2522,7 +2528,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
       content::GlobalRenderFrameHostId rfh_id) {
-    return std::make_unique<TestPrintJobWorker>(rfh_id, &test_print_callbacks_);
+    return std::make_unique<TestPrintJobWorker>(
+        rfh_id, simulate_spooling_memory_errors_, &test_print_callbacks_);
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2604,6 +2611,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   TestPrintCallbacks test_print_callbacks_;
   CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
+  bool simulate_spooling_memory_errors_ = false;
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2723,6 +2731,37 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(stop_invoked());
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+                       StartPrintingSpoolingSharedMemoryError) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForSpoolingSharedMemoryErrors();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // No attempt to retry is made if a job has a shared memory error when trying
+  // to spool a page/document fails on a shared memory error.  The test will
+  // succeed to start the print job, and fails in spooling when it is preparing
+  // to send the data for rendering.  This will cause a printing error dialog
+  // to be displayed.  Wait for a call to `Stop()` to ensure print job wrap-up
+  // finished cleanly before completing the test.  This results in a total of 3
+  // expected calls.
+  SetNumExpectedMessages(/*num=*/3);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(error_dialog_shown());
   EXPECT_TRUE(stop_invoked());
 }
 

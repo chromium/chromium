@@ -116,13 +116,13 @@ class PrintJobWorker {
   std::u16string GetDocumentName(const PrintedDocument* new_document) const;
 
 #if BUILDFLAG(IS_WIN)
-  // Renders a page in the printer.
+  // Renders a page in the printer.  Returns false if any errors occur.
   // This is applicable when using the Windows GDI print API.
-  virtual void SpoolPage(PrintedPage* page);
+  virtual bool SpoolPage(PrintedPage* page);
 #endif
 
-  // Renders the document to the printer.
-  virtual void SpoolDocument();
+  // Renders the document to the printer.  Returns false if any errors occur.
+  virtual bool SpoolDocument();
 
   // Internal state verification that spooling of the document is complete.
   void CheckDocumentSpoolingComplete();

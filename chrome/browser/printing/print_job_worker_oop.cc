@@ -48,6 +48,11 @@ mojom::PrintTargetType DeterminePrintTargetType(
 PrintJobWorkerOop::PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id)
     : PrintJobWorker(rfh_id) {}
 
+PrintJobWorkerOop::PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
+                                     bool simulate_spooling_memory_errors)
+    : PrintJobWorker(rfh_id),
+      simulate_spooling_memory_errors_(simulate_spooling_memory_errors) {}
+
 PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());
 }
@@ -209,7 +214,7 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
 }
 
 #if BUILDFLAG(IS_WIN)
-void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
+bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DCHECK_NE(page_number(), PageNumber::npos());
 
@@ -221,9 +226,13 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
   DCHECK(metafile);
   base::MappedReadOnlyRegion region_mapping =
       metafile->GetDataAsSharedMemoryRegion();
-  if (!region_mapping.IsValid()) {
-    OnFailure();
-    return;
+  if (simulate_spooling_memory_errors_ || !region_mapping.IsValid()) {
+    PRINTER_LOG(ERROR) << "Spooling page failed due to shared memory error.";
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PrintJobWorkerOop::NotifyFailure,
+                                  ui_weak_factory_.GetWeakPtr(),
+                                  mojom::ResultCode::kFailed));
+    return false;
   }
 
   VLOG(1) << "Spooling page " << page_number() << " to print via service";
@@ -233,19 +242,25 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
                      ui_weak_factory_.GetWeakPtr(), base::RetainedRef(page),
                      metafile->GetDataType(),
                      std::move(region_mapping.region)));
+  return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void PrintJobWorkerOop::SpoolDocument() {
+bool PrintJobWorkerOop::SpoolDocument() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
   const MetafilePlayer* metafile = document()->GetMetafile();
   DCHECK(metafile);
   base::MappedReadOnlyRegion region_mapping =
       metafile->GetDataAsSharedMemoryRegion();
-  if (!region_mapping.IsValid()) {
-    OnFailure();
-    return;
+  if (simulate_spooling_memory_errors_ || !region_mapping.IsValid()) {
+    PRINTER_LOG(ERROR)
+        << "Spooling document failed due to shared memory error.";
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PrintJobWorkerOop::NotifyFailure,
+                                  ui_weak_factory_.GetWeakPtr(),
+                                  mojom::ResultCode::kFailed));
+    return false;
   }
 
   VLOG(1) << "Spooling job to print via service";
@@ -254,6 +269,7 @@ void PrintJobWorkerOop::SpoolDocument() {
       base::BindOnce(&PrintJobWorkerOop::SendRenderPrintedDocument,
                      ui_weak_factory_.GetWeakPtr(), metafile->GetDataType(),
                      std::move(region_mapping.region)));
+  return true;
 }
 
 void PrintJobWorkerOop::OnDocumentDone() {
