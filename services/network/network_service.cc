@@ -62,7 +62,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/crl_set_distributor.h"
 #include "services/network/dns_config_change_manager.h"
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
@@ -351,8 +351,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
         std::move(params->default_observer));
   }
 
-  first_party_sets_ =
-      std::make_unique<FirstPartySets>(params->first_party_sets_enabled);
+  first_party_sets_manager_ =
+      std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -803,7 +803,7 @@ void NetworkService::BindTestInterface(
 
 void NetworkService::SetFirstPartySets(
     const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets) {
-  first_party_sets_->SetCompleteSets(sets);
+  first_party_sets_manager_->SetCompleteSets(sets);
 }
 
 void NetworkService::SetExplicitlyAllowedPorts(

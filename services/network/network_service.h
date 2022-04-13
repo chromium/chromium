@@ -36,7 +36,7 @@
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
@@ -253,7 +253,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 #endif
 
-  FirstPartySets* first_party_sets() const { return first_party_sets_.get(); }
+  FirstPartySetsManager* first_party_sets() const {
+    return first_party_sets_manager_.get();
+  }
 
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
@@ -347,11 +349,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
 
-  // Globally-scoped state for First-Party Sets. Must be above the `receiver_`
-  // so it's destroyed after, to make sure even when the reply callback owned by
-  // the `first_party_sets_` is never run when destroyed, the receiver which the
-  // reply callback associated with is already disconnected.
-  std::unique_ptr<FirstPartySets> first_party_sets_;
+  // Globally-scoped state for First-Party Sets.
+  std::unique_ptr<FirstPartySetsManager> first_party_sets_manager_;
 
   mojo::Receiver<mojom::NetworkService> receiver_{this};
 

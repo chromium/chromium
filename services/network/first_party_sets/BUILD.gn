@@ -4,7 +4,7 @@
 
 import("//services/network/public/cpp/features.gni")
 
-source_set("first_party_sets") {
+source_set("first_party_sets_manager") {
   visibility = [
     ":*",
     "//services/network:network_service",
@@ -14,8 +14,8 @@ source_set("first_party_sets") {
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
   sources = [
-    "first_party_sets.cc",
-    "first_party_sets.h",
+    "first_party_sets_manager.cc",
+    "first_party_sets_manager.h",
   ]
 
   deps = [
@@ -37,7 +37,7 @@ source_set("test_support") {
   sources = []
 
   deps = [
-    ":first_party_sets",
+    ":first_party_sets_manager",
     "//base",
     "//base/test:test_support",
     "//components/cbor",
@@ -55,10 +55,10 @@ source_set("tests") {
 
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
-  sources = [ "first_party_sets_unittest.cc" ]
+  sources = [ "first_party_sets_manager_unittest.cc" ]
 
   deps = [
-    ":first_party_sets",
+    ":first_party_sets_manager",
     ":test_support",
     "//base",
     "//base/test:test_support",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets_manager.h"
 
 #include <set>
 #include <string>
@@ -35,19 +35,19 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
-class FirstPartySetsTest : public ::testing::Test {
+class FirstPartySetsManagerTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsTest(bool enabled) : sets_(enabled) {}
+  explicit FirstPartySetsManagerTest(bool enabled) : manager_(enabled) {}
 
   void SetCompleteSets(
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& content) {
-    sets_.SetCompleteSets(content);
+    manager_.SetCompleteSets(content);
   }
 
-  FirstPartySets::SetsByOwner SetsAndWait() {
-    base::test::TestFuture<FirstPartySets::SetsByOwner> future;
-    absl::optional<FirstPartySets::SetsByOwner> result =
-        sets_.Sets(future.GetCallback());
+  FirstPartySetsManager::SetsByOwner SetsAndWait() {
+    base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
+    absl::optional<FirstPartySetsManager::SetsByOwner> result =
+        manager_.Sets(future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
@@ -56,41 +56,43 @@ class FirstPartySetsTest : public ::testing::Test {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) {
     base::test::TestFuture<net::FirstPartySetMetadata> future;
-    absl::optional<net::FirstPartySetMetadata> result = sets_.ComputeMetadata(
-        site, top_frame_site, party_context, future.GetCallback());
+    absl::optional<net::FirstPartySetMetadata> result =
+        manager_.ComputeMetadata(site, top_frame_site, party_context,
+                                 future.GetCallback());
     return result.has_value() ? std::move(result).value() : future.Take();
   }
 
-  FirstPartySets::OwnerResult FindOwnerAndWait(const net::SchemefulSite& site) {
-    base::test::TestFuture<FirstPartySets::OwnerResult> future;
-    absl::optional<FirstPartySets::OwnerResult> result =
-        sets_.FindOwner(site, future.GetCallback());
+  FirstPartySetsManager::OwnerResult FindOwnerAndWait(
+      const net::SchemefulSite& site) {
+    base::test::TestFuture<FirstPartySetsManager::OwnerResult> future;
+    absl::optional<FirstPartySetsManager::OwnerResult> result =
+        manager_.FindOwner(site, future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
-  FirstPartySets::OwnersResult FindOwnersAndWait(
+  FirstPartySetsManager::OwnersResult FindOwnersAndWait(
       const base::flat_set<net::SchemefulSite>& site) {
-    base::test::TestFuture<FirstPartySets::OwnersResult> future;
-    absl::optional<FirstPartySets::OwnersResult> result =
-        sets_.FindOwners(site, future.GetCallback());
+    base::test::TestFuture<FirstPartySetsManager::OwnersResult> future;
+    absl::optional<FirstPartySetsManager::OwnersResult> result =
+        manager_.FindOwners(site, future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
-  FirstPartySets& sets() { return sets_; }
+  FirstPartySetsManager& manager() { return manager_; }
 
   base::test::TaskEnvironment& env() { return env_; }
 
  private:
   base::test::TaskEnvironment env_;
-  FirstPartySets sets_;
+  FirstPartySetsManager manager_;
 };
 
-class FirstPartySetsDisabledTest : public FirstPartySetsTest {
+class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsDisabledTest() : FirstPartySetsTest(false) {}
+  FirstPartySetsManagerDisabledTest() : FirstPartySetsManagerTest(false) {}
 };
 
-TEST_F(FirstPartySetsDisabledTest, SetCompleteSets) {
+TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
   SetCompleteSets({{net::SchemefulSite(GURL("https://aaaa.test")),
                     net::SchemefulSite(GURL("https://example.test"))},
                    {net::SchemefulSite(GURL("https://example.test")),
@@ -98,14 +100,14 @@ TEST_F(FirstPartySetsDisabledTest, SetCompleteSets) {
   EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsDisabledTest, FindOwners) {
+TEST_F(FirstPartySetsManagerDisabledTest, FindOwners) {
   net::SchemefulSite kExample =
       net::SchemefulSite(GURL("https://example.test"));
 
   EXPECT_THAT(FindOwnersAndWait({kExample}), IsEmpty());
 }
 
-TEST_F(FirstPartySetsDisabledTest, ComputeMetadata_InfersSingletons) {
+TEST_F(FirstPartySetsManagerDisabledTest, ComputeMetadata_InfersSingletons) {
   net::SchemefulSite member(GURL("https://member1.test"));
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite wss_member(GURL("wss://member1.test"));
@@ -144,7 +146,7 @@ TEST_F(FirstPartySetsDisabledTest, ComputeMetadata_InfersSingletons) {
                             Type::kSameParty));
 }
 
-TEST_F(FirstPartySetsDisabledTest, FindOwner) {
+TEST_F(FirstPartySetsManagerDisabledTest, FindOwner) {
   SetCompleteSets({{net::SchemefulSite(GURL("https://member.test")),
                     net::SchemefulSite(GURL("https://example.test"))},
                    {net::SchemefulSite(GURL("https://example.test")),
@@ -155,13 +157,13 @@ TEST_F(FirstPartySetsDisabledTest, FindOwner) {
       FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
 }
 
-TEST_F(FirstPartySetsDisabledTest, Sets_IsEmpty) {
+TEST_F(FirstPartySetsManagerDisabledTest, Sets_IsEmpty) {
   EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
-class FirstPartySetsEnabledTest : public FirstPartySetsTest {
+class FirstPartySetsEnabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsEnabledTest() : FirstPartySetsTest(true) {}
+  FirstPartySetsEnabledTest() : FirstPartySetsManagerTest(true) {}
 };
 
 TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
@@ -197,9 +199,10 @@ TEST_F(FirstPartySetsEnabledTest, SetCompleteSets_Idempotent) {
 
 // Test fixture that allows precise control over when the instance gets FPS
 // data. Useful for testing async flows.
-class AsyncPopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
+class AsyncPopulatedFirstPartySetsManagerTest
+    : public FirstPartySetsEnabledTest {
  public:
-  AsyncPopulatedFirstPartySetsTest() = default;
+  AsyncPopulatedFirstPartySetsManagerTest() = default;
 
  protected:
   void Populate() {
@@ -234,13 +237,14 @@ class AsyncPopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
   }
 };
 
-TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_ComputeMetadata) {
+TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
+       QueryBeforeReady_ComputeMetadata) {
   net::SchemefulSite member(GURL("https://member1.test"));
   net::SchemefulSite owner(GURL("https://example.test"));
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  EXPECT_FALSE(
-      sets().ComputeMetadata(member, &member, {member}, future.GetCallback()));
+  EXPECT_FALSE(manager().ComputeMetadata(member, &member, {member},
+                                         future.GetCallback()));
 
   Populate();
 
@@ -250,9 +254,9 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_ComputeMetadata) {
                 net::FirstPartySetsContextType::kHomogeneous));
 }
 
-TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwner) {
-  base::test::TestFuture<FirstPartySets::OwnerResult> future;
-  EXPECT_FALSE(sets().FindOwner(
+TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwner) {
+  base::test::TestFuture<FirstPartySetsManager::OwnerResult> future;
+  EXPECT_FALSE(manager().FindOwner(
       net::SchemefulSite(GURL("https://member1.test")), future.GetCallback()));
 
   Populate();
@@ -262,9 +266,9 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwner) {
       absl::make_optional(net::SchemefulSite(GURL("https://example.test"))));
 }
 
-TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwners) {
-  base::test::TestFuture<FirstPartySets::OwnersResult> future;
-  EXPECT_FALSE(sets().FindOwners(
+TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwners) {
+  base::test::TestFuture<FirstPartySetsManager::OwnersResult> future;
+  EXPECT_FALSE(manager().FindOwners(
       {
           net::SchemefulSite(GURL("https://member1.test")),
           net::SchemefulSite(GURL("https://member2.test")),
@@ -280,9 +284,9 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwners) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_Sets) {
-  base::test::TestFuture<FirstPartySets::SetsByOwner> future;
-  EXPECT_FALSE(sets().Sets(future.GetCallback()));
+TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_Sets) {
+  base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
+  EXPECT_FALSE(manager().Sets(future.GetCallback()));
 
   Populate();
 
@@ -298,12 +302,13 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_Sets) {
                                     SerializesTo("https://member2.test")))));
 }
 
-class PopulatedFirstPartySetsTest : public AsyncPopulatedFirstPartySetsTest {
+class PopulatedFirstPartySetsManagerTest
+    : public AsyncPopulatedFirstPartySetsManagerTest {
  public:
-  PopulatedFirstPartySetsTest() { Populate(); }
+  PopulatedFirstPartySetsManagerTest() { Populate(); }
 };
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_EmptyContext) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_EmptyContext) {
   net::SchemefulSite example_site(GURL("https://example.test"));
   net::SchemefulSite nonmember(GURL("https://nonmember.test"));
 
@@ -339,7 +344,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_EmptyContext) {
             Type::kCrossParty);
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsNonmember) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsNonmember) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://nonmember.test")),
   });
@@ -392,7 +397,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsNonmember) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsOwner) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsOwner) {
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://example.test"))});
 
@@ -444,7 +449,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsOwner) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsMember) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsMember) {
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://member1.test"))});
 
@@ -503,7 +508,8 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsMember) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsOwnerAndMember) {
+TEST_F(PopulatedFirstPartySetsManagerTest,
+       ComputeMetadata_ContextIsOwnerAndMember) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -564,7 +570,8 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextIsOwnerAndMember) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextMixesParties) {
+TEST_F(PopulatedFirstPartySetsManagerTest,
+       ComputeMetadata_ContextMixesParties) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -619,7 +626,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextMixesParties) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest,
+TEST_F(PopulatedFirstPartySetsManagerTest,
        ComputeMetadata_ContextMixesMembersAndNonmembers) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
@@ -675,7 +682,8 @@ TEST_F(PopulatedFirstPartySetsTest,
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextMixesSchemes) {
+TEST_F(PopulatedFirstPartySetsManagerTest,
+       ComputeMetadata_ContextMixesSchemes) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -730,7 +738,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_ContextMixesSchemes) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata) {
   net::SchemefulSite nonmember(GURL("https://nonmember.test"));
   net::SchemefulSite nonmember1(GURL("https://nonmember1.test"));
   net::SchemefulSite member(GURL("https://member1.test"));
@@ -823,7 +831,7 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata) {
                 net::FirstPartySetsContextType::kTopResourceMatchMixed));
 }
 
-TEST_F(PopulatedFirstPartySetsTest, FindOwner) {
+TEST_F(PopulatedFirstPartySetsManagerTest, FindOwner) {
   const absl::optional<net::SchemefulSite> kSetOwner1 =
       absl::make_optional(net::SchemefulSite(GURL("https://example.test")));
   const absl::optional<net::SchemefulSite> kSetOwner2 =
@@ -852,7 +860,7 @@ TEST_F(PopulatedFirstPartySetsTest, FindOwner) {
   }
 }
 
-TEST_F(PopulatedFirstPartySetsTest, FindOwners) {
+TEST_F(PopulatedFirstPartySetsManagerTest, FindOwners) {
   net::SchemefulSite kExample =
       net::SchemefulSite(GURL("https://example.test"));
   net::SchemefulSite kFoo = net::SchemefulSite(GURL("https://foo.test"));
@@ -900,7 +908,7 @@ TEST_F(PopulatedFirstPartySetsTest, FindOwners) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
+TEST_F(PopulatedFirstPartySetsManagerTest, Sets_NonEmpty) {
   EXPECT_THAT(
       SetsAndWait(),
       UnorderedElementsAre(
@@ -913,7 +921,7 @@ TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
                                     SerializesTo("https://member2.test")))));
 }
 
-TEST_F(PopulatedFirstPartySetsTest, ComputeContextType) {
+TEST_F(PopulatedFirstPartySetsManagerTest, ComputeContextType) {
   // ComputeContextType assumes that the instance is fully initialized, so we
   // wait for that before proceeding.
   SetsAndWait();
@@ -933,37 +941,39 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeContextType) {
   net::SchemefulSite singleton(GURL("https://implicit-singleton.test"));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-            sets().ComputeContextType(example, nullptr, {}));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-            sets().ComputeContextType(example, nullptr, homogeneous_context));
+            manager().ComputeContextType(example, nullptr, {}));
+  EXPECT_EQ(
+      net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+      manager().ComputeContextType(example, nullptr, homogeneous_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
-            sets().ComputeContextType(example, nullptr, mixed_context));
+            manager().ComputeContextType(example, nullptr, mixed_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(example, &member1, {}));
+            manager().ComputeContextType(example, &member1, {}));
+  EXPECT_EQ(
+      net::FirstPartySetsContextType::kHomogeneous,
+      manager().ComputeContextType(example, &member1, homogeneous_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(example, &member1, homogeneous_context));
-  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(singleton, &singleton, {singleton}));
+            manager().ComputeContextType(singleton, &singleton, {singleton}));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(example, &member1, {foo}));
+            manager().ComputeContextType(example, &member1, {foo}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(example, &member1, mixed_context));
+            manager().ComputeContextType(example, &member1, mixed_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(example, &member1, {singleton}));
+            manager().ComputeContextType(example, &member1, {singleton}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(singleton, &singleton, mixed_context));
+            manager().ComputeContextType(singleton, &singleton, mixed_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(example, &foo, {}));
+            manager().ComputeContextType(example, &foo, {}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(example, &foo, homogeneous_context));
+            manager().ComputeContextType(example, &foo, homogeneous_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(example, &foo, mixed_context));
+            manager().ComputeContextType(example, &foo, mixed_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(example, &singleton, mixed_context));
+            manager().ComputeContextType(example, &singleton, mixed_context));
 }
 
 }  // namespace network

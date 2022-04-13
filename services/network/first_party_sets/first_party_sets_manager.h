@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_
-#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_
+#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_MANAGER_H_
+#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -25,10 +25,9 @@
 
 namespace network {
 
-// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it
-// handles loading First-Party Sets from multiple sources and answers queries
-// about First-Party Sets.
-class FirstPartySets {
+// Class FirstPartySetsManager is a pseudo-singleton owned by NetworkService; it
+// answers queries about First-Party Sets after they've been loaded.
+class FirstPartySetsManager {
  public:
   using SetsByOwner =
       base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>;
@@ -36,11 +35,11 @@ class FirstPartySets {
   using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
 
-  explicit FirstPartySets(bool enabled);
-  ~FirstPartySets();
+  explicit FirstPartySetsManager(bool enabled);
+  ~FirstPartySetsManager();
 
-  FirstPartySets(const FirstPartySets&) = delete;
-  FirstPartySets& operator=(const FirstPartySets&) = delete;
+  FirstPartySetsManager(const FirstPartySetsManager&) = delete;
+  FirstPartySetsManager& operator=(const FirstPartySetsManager&) = delete;
 
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -152,10 +151,9 @@ class FirstPartySets {
 
   // Same as `FindOwner`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
-  void FindOwnerAndInvoke(
-      const net::SchemefulSite& site,
-      base::OnceCallback<void(FirstPartySets::OwnerResult)> callback,
-      base::TimeTicks enqueued_at) const;
+  void FindOwnerAndInvoke(const net::SchemefulSite& site,
+                          base::OnceCallback<void(OwnerResult)> callback,
+                          base::TimeTicks enqueued_at) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
@@ -169,10 +167,9 @@ class FirstPartySets {
 
   // Same as `FindOwners`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
-  void FindOwnersAndInvoke(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(FirstPartySets::OwnersResult)> callback,
-      base::TimeTicks enqueued_at) const;
+  void FindOwnersAndInvoke(const base::flat_set<net::SchemefulSite>& sites,
+                           base::OnceCallback<void(OwnersResult)> callback,
+                           base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `FindOwners`, to be run only once the instance is
   // initialized.
@@ -181,9 +178,8 @@ class FirstPartySets {
 
   // Same as `Sets`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
-  void SetsAndInvoke(
-      base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback,
-      base::TimeTicks enqueued_at) const;
+  void SetsAndInvoke(base::OnceCallback<void(SetsByOwner)> callback,
+                     base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `Sets`, to be run only once the instance is
   // initialized.
@@ -219,11 +215,12 @@ class FirstPartySets {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<FirstPartySets> weak_factory_{this};
+  base::WeakPtrFactory<FirstPartySetsManager> weak_factory_{this};
 
-  FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsTest, ComputeContextType);
+  FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsManagerTest,
+                           ComputeContextType);
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_H_
+#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_MANAGER_H_

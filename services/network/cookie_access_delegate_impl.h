@@ -17,7 +17,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "services/network/cookie_settings.h"
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   // If non-null, |cookie_settings| is expected to outlive this class. If
   // non-null, `first_party_sets` must outlive `this`.
   CookieAccessDelegateImpl(mojom::CookieAccessDelegateType type,
-                           FirstPartySets* const first_party_sets,
+                           FirstPartySetsManager* const first_party_sets,
                            const CookieSettings* cookie_settings = nullptr);
 
   ~CookieAccessDelegateImpl() override;
@@ -61,22 +61,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback)
       const override;
-  [[nodiscard]] absl::optional<FirstPartySets::OwnerResult>
-  FindFirstPartySetOwner(const net::SchemefulSite& site,
-                         base::OnceCallback<void(FirstPartySets::OwnerResult)>
-                             callback) const override;
-  [[nodiscard]] absl::optional<FirstPartySets::OwnersResult>
-  FindFirstPartySetOwners(const base::flat_set<net::SchemefulSite>& sites,
-                          base::OnceCallback<void(FirstPartySets::OwnersResult)>
-                              callback) const override;
-  [[nodiscard]] absl::optional<FirstPartySets::SetsByOwner>
-  RetrieveFirstPartySets(base::OnceCallback<void(FirstPartySets::SetsByOwner)>
-                             callback) const override;
+  [[nodiscard]] absl::optional<FirstPartySetsManager::OwnerResult>
+  FindFirstPartySetOwner(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback)
+      const override;
+  [[nodiscard]] absl::optional<FirstPartySetsManager::OwnersResult>
+  FindFirstPartySetOwners(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(FirstPartySetsManager::OwnersResult)> callback)
+      const override;
+  [[nodiscard]] absl::optional<FirstPartySetsManager::SetsByOwner>
+  RetrieveFirstPartySets(
+      base::OnceCallback<void(FirstPartySetsManager::SetsByOwner)> callback)
+      const override;
 
  private:
   const mojom::CookieAccessDelegateType type_;
   const raw_ptr<const CookieSettings> cookie_settings_;
-  const raw_ptr<FirstPartySets> first_party_sets_;
+  const raw_ptr<FirstPartySetsManager> first_party_sets_manager_;
 };
 
 }  // namespace network

@@ -37,7 +37,7 @@
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_context_client.h"
@@ -438,15 +438,15 @@ class SamePartyEnabledRestrictedCookieManagerTest
     : public RestrictedCookieManagerTest {
  public:
   SamePartyEnabledRestrictedCookieManagerTest()
-      : first_party_sets_(/*enabled=*/true) {
-    first_party_sets_.SetCompleteSets(
+      : first_party_sets_manager_(/*enabled=*/true) {
+    first_party_sets_manager_.SetCompleteSets(
         {{net::SchemefulSite(GURL("https://example.com")),
           net::SchemefulSite(GURL("https://example.com"))},
          {net::SchemefulSite(GURL("https://member1.com")),
           net::SchemefulSite(GURL("https://example.com"))}});
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(
         mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS,
-        &first_party_sets_, &cookie_settings_);
+        &first_party_sets_manager_, &cookie_settings_);
     cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
   }
   ~SamePartyEnabledRestrictedCookieManagerTest() override = default;
@@ -471,7 +471,7 @@ class SamePartyEnabledRestrictedCookieManagerTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  FirstPartySets first_party_sets_;
+  FirstPartySetsManager first_party_sets_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
