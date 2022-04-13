@@ -65,7 +65,7 @@ public class NavigationTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @FlakyTest
+    @FlakyTest(message = "https://crbug.com/1316064")
     public void testDirectedNavigationHistory() throws Throwable {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(URL_1);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
