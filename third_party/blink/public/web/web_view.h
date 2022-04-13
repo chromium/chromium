@@ -31,25 +31,24 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 
-#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
-#include "ui/gfx/geometry/size.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace cc {
 class PaintCanvas;
@@ -60,6 +59,7 @@ class ColorSpace;
 class Point;
 class PointF;
 class Rect;
+class Size;
 class SizeF;
 }
 
