@@ -569,6 +569,9 @@ Things to consider:
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP" desc="The text of the tip explaining to the user they can tap on Autofill password suggestions">
+        Use the password you saved in Chrome to sign in faster
+      </message>
     </messages>
   </release>
 </grit>
