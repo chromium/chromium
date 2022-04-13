@@ -55,6 +55,11 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   ~UnifiedSystemTrayBubble() override;
 
+  // Add observers that can delete `this`. This needs to be done separately
+  // after `UnifiedSystemTrayBubble` and `UnifiedMessageCenterBubble` have been
+  // completely constructed to prevent crashes. (crbug/1310675)
+  void InitializeObservers();
+
   // Return the bounds of the bubble in the screen.
   gfx::Rect GetBoundsInScreen() const;
 
