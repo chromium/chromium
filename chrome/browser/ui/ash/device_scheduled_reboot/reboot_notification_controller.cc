@@ -22,16 +22,16 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace {
+namespace ash {
 
 // Id of the pending reboot notification
-constexpr char kPendingRebootNotificationId[] =
+const char kPendingRebootNotificationId[] =
     "ash.device_scheduled_reboot_pending_notification";
 
 // Id of the post reboot notification
-constexpr char kPostRebootNotificationId[] =
+const char kPostRebootNotificationId[] =
     "ash.device_scheduled_reboot_post_reboot_notification";
-}  // namespace
+}  // namespace ash
 
 RebootNotificationController::RebootNotificationController() = default;
 
@@ -60,8 +60,8 @@ void RebootNotificationController::MaybeShowPendingRebootNotification(
               &RebootNotificationController::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr()));
 
-  ShowNotification(kPendingRebootNotificationId, reboot_title, reboot_message,
-                   notification_data, delegate);
+  ShowNotification(ash::kPendingRebootNotificationId, reboot_title,
+                   reboot_message, notification_data, delegate);
 }
 
 void RebootNotificationController::MaybeShowPendingRebootDialog(
@@ -89,7 +89,7 @@ void RebootNotificationController::MaybeShowPostRebootNotification() const {
           base::BindRepeating(
               &RebootNotificationController::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr()));
-  ShowNotification(kPostRebootNotificationId, title, std::u16string(),
+  ShowNotification(ash::kPostRebootNotificationId, title, std::u16string(),
                    message_center::RichNotificationData(), delegate);
 }
 
@@ -100,7 +100,7 @@ void RebootNotificationController::CloseRebootNotification() const {
       NotificationDisplayService::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
-                                      kPendingRebootNotificationId);
+                                      ash::kPendingRebootNotificationId);
 }
 
 void RebootNotificationController::CloseRebootDialog() {

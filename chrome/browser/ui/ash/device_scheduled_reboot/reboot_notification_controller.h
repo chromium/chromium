@@ -20,6 +20,15 @@ namespace base {
 class Time;
 }
 
+namespace ash {
+
+// Id of the pending reboot notification
+extern const char kPendingRebootNotificationId[];
+
+// Id of the post reboot notification
+extern const char kPostRebootNotificationId[];
+}  // namespace ash
+
 // This class is responsible for creating and managing notifications about the
 // reboot when DeviceScheduledRebootPolicy is set.
 class RebootNotificationController {

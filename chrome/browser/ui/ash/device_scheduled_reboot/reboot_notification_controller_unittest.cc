@@ -25,10 +25,6 @@ constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 constexpr char kKioskEmailId[] = "test-kiosk@example.com";
 constexpr char kKioskGaiaId[] = "6789";
-constexpr char kPendingRebootNotificationId[] =
-    "ash.device_scheduled_reboot_pending_notification";
-constexpr char kPostRebootNotificationId[] =
-    "ash.device_scheduled_reboot_post_reboot_notification";
 const base::Time::Exploded kRebootTime2022Feb2At1520 = {
     2022,  // year
     2,     // month
@@ -73,11 +69,12 @@ class RebootNotificationControllerTest : public testing::Test {
  protected:
   absl::optional<Notification> GetPendingRebootNotification() const {
     return display_service_tester_->GetNotification(
-        kPendingRebootNotificationId);
+        ash::kPendingRebootNotificationId);
   }
 
   absl::optional<Notification> GetPostRebootNotification() const {
-    return display_service_tester_->GetNotification(kPostRebootNotificationId);
+    return display_service_tester_->GetNotification(
+        ash::kPostRebootNotificationId);
   }
 
   int GetTransientNotificationCount() const {
