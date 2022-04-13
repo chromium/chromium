@@ -19,7 +19,7 @@
     Settings
   </message>
 
-  <!-- Subtitles of the Chrome OS version of the management page -->
+  <!-- Subtitles of the ChromeOS version of the management page -->
  <if expr="chromeos_ash">
     <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by an unknown manager">
       Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> is managed
@@ -65,7 +65,7 @@
     </if>
   </if>
 
-  <!-- Chrome OS managed status section -->
+  <!-- ChromeOS managed status section -->
   <if expr="chromeos_ash">
     <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
       This device and account are not managed by a company or other organization.
@@ -167,7 +167,7 @@
       Your administrator has allowed <ph name="APP_NAME">$1<ex>Plugin VM</ex></ph> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://www.parallels.com/pcep"&gt;</ph>https://www.parallels.com/pcep<ph name="END_LINK">&lt;/a&gt;</ph> for more information.
     </message>
 
-    <!-- Chrome OS update required end-of-life reached section -->
+    <!-- ChromeOS update required end-of-life reached section -->
     <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE" desc="Message indicating that the device needs to be returned back before the deadline because the device has reached end-of-life and an update is required as per policy.">
       <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
     </message>

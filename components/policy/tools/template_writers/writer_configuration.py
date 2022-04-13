@@ -30,7 +30,7 @@ def GetConfigurationForBuild(defines):
         'app_name': 'Chromium',
         'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Chromium Frame',
-        'os_name': 'Chromium OS',
+        'os_name': 'ChromiumOS',
         'webview_name': 'Chromium WebView',
         'win_config': {
             'win': {
@@ -52,9 +52,8 @@ def GetConfigurationForBuild(defines):
                 'mandatory_category_path': ['chromium_os'],
                 'recommended_category_path': ['chromium_os_recommended'],
                 'category_path_strings': {
-                    'chromium_os': 'Chromium OS',
-                    'chromium_os_recommended':
-                    'Chromium OS - {doc_recommended}',
+                    'chromium_os': 'ChromiumOS',
+                    'chromium_os_recommended': 'ChromiumOS - {doc_recommended}',
                 },
                 'namespace': 'Chromium.Policies.ChromiumOS'
             },
@@ -69,7 +68,7 @@ def GetConfigurationForBuild(defines):
         'app_name': 'Google Chrome',
         'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Google Chrome Frame',
-        'os_name': 'Google Chrome OS',
+        'os_name': 'Google ChromeOS',
         'webview_name': 'Android System WebView',
         'win_config': {
             'win': {
@@ -100,9 +99,9 @@ def GetConfigurationForBuild(defines):
                 ['Google:Cat_Google', 'googlechromeos_recommended'],
                 'category_path_strings': {
                     'googlechromeos':
-                    'Google Chrome OS',
+                    'Google ChromeOS',
                     'googlechromeos_recommended':
-                    'Google Chrome OS - {doc_recommended}'
+                    'Google ChromeOS - {doc_recommended}'
                 },
                 'namespace':
                 'Google.Policies.ChromeOS',

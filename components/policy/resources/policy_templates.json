@@ -34,7 +34,7 @@
 #   'dict' - perhaps should be named JSON. An arbitrarily complex object or
 #     array, nested objects/arrays, etc. The user defines the value with JSON.
 #   'external' - a policy that references external data.
-#     NOTE: This type is currently supported on Chrome OS only.
+#     NOTE: This type is currently supported on ChromeOS only.
 #
 # NOTE to 'dict' vs 'list' - in the past, 'list' has been used for a policy
 # that is an array of objects. The user supplied a list of strings, and each
@@ -261,7 +261,7 @@
 # Placeholders:
 #   The following placeholder strings are automatically substituted:
 #     $1 -> Google Chrome / Chromium
-#     $2 -> Google Chrome OS / Chromium OS
+#     $2 -> Google ChromeOS / ChromiumOS
 #     $3 -> Google Chrome Frame / Chromium Frame
 #     $6 is reserved for doc_writer
 #
@@ -270,21 +270,21 @@
 #   that this policy is only supported as a device-level Cloud Policy. In that
 #   case no entry in the UserPolicy Protobuf is generated and it is assumed that
 #   it will be added to the DevicePolicy Protobuf manually. Device policy only
-#   exists on Chrome OS.
+#   exists on ChromeOS.
 #
 # Management Type:
-#   Chrome OS devices can either be managed through the Google cloud or through
+#   ChromeOS devices can either be managed through the Google cloud or through
 #   Active Directory. Most policies are supported for both management types, but
 #   some are not. To indicate supported management types, use
 #     'supported_chrome_os_management': ['google_cloud', 'active_directory'],
 #   where
 #     'google_cloud' = Policy is supported for Google cloud management.
 #     'active_directory' = Policy is supported for Active Directory management.
-#   This setting applies to Chrome OS only. If the setting is missing, both
+#   This setting applies to ChromeOS only. If the setting is missing, both
 #   types are assumed. The array must not be empty.
 #
 # Enterprise defaults for user policy:
-#   For managed users on Chrome OS (i.e. users receiving user policy from the
+#   For managed users on ChromeOS (i.e. users receiving user policy from the
 #   cloud), if the optional key 'default_for_enterprise_users' is set, its value
 #   is applied as mandatory policy unless a different setting is received from
 #   the cloud. This default value handling is automatically enforced by the
@@ -652,7 +652,7 @@
       'name': 'Drive',
       'type': 'group',
       'caption': '''Google Drive''',
-      'desc': '''Configure Google Drive in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'desc': '''Configure Google Drive in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'policies': [
         'DriveDisabled',
         'DriveDisabledOverCellular',
@@ -662,9 +662,9 @@
       'name': 'PowerManagement',
       'type': 'group',
       'caption': '''Power management''',
-      'desc': '''Configure power management in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Configure power management in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
-      These policies let you configure how <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> behaves when the user remains idle for some amount of time.''',
+      These policies let you configure how <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> behaves when the user remains idle for some amount of time.''',
       'policies': [
         'ScreenDimDelayAC',
         'ScreenOffDelayAC',
@@ -709,7 +709,7 @@
       'name': 'Accessibility',
       'type': 'group',
       'caption': '''Accessibility settings''',
-      'desc': '''Configure <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> accessibility features.''',
+      'desc': '''Configure <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> accessibility features.''',
       'policies': [
         'ShowAccessibilityOptionsInSystemTrayMenu',
         'LargeCursorEnabled',
@@ -821,7 +821,7 @@
       'name': 'CastReceiver',
       'type': 'group',
       'caption': '''Cast Receiver''',
-      'desc': '''Configure the Cast Receiver in <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'desc': '''Configure the Cast Receiver in <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'policies': [
         'CastReceiverEnabled',
         'CastReceiverName',
@@ -864,7 +864,7 @@
       When the policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME">CloudReportingEnabled</ph> is left unset or set to disabled, these policies will be ignored.
 
       These policies are only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      These policies are always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      These policies are always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'policies': [
         'ReportVersionData',
         'ReportPolicyData',
@@ -1017,7 +1017,7 @@
       'name': 'DeviceUpdate',
       'type': 'group',
       'caption': '''Device update settings''',
-      'desc': '''Controls how and when Chrome OS updates are applied.''',
+      'desc': '''Controls how and when <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> updates are applied.''',
       'policies': [
         'ChromeOsReleaseChannel',
         'ChromeOsReleaseChannelDelegated',
@@ -1176,7 +1176,7 @@
       'name': 'ActiveDirectoryManagement',
       'type': 'group',
       'caption': '''<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> management settings''',
-      'desc': '''Controls settings specific to <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.''',
+      'desc': '''Controls settings specific to <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.''',
       'policies': [
         'DeviceMachinePasswordChangeRate',
         'DeviceUserPolicyLoopbackProcessingMode',
@@ -2191,7 +2191,7 @@
       'tags': [],
       'desc': '''Setting the policy to True allows users to play the dinosaur game. Setting the policy to False means users can't play the dinosaur easter egg game when device is offline.
 
-      Leaving the policy unset means users can't play the game on enrolled <ph name="PRODUCT_OS_NAME">$2<ex>GoogleChromeOS</ex></ph>, but can under other circumstances.''',
+      Leaving the policy unset means users can't play the game on enrolled <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, but can under other circumstances.''',
     },
     {
       'name': 'ForceLegacyDefaultReferrerPolicy',
@@ -2234,7 +2234,7 @@
       'supported_on': ['chrome.*:14-16', 'chrome_os:14-16'],
       'features': {
         'dynamic_refresh': True,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       # Mark this 'removed' when https://crbug.com/100216 is resolved.
       'deprecated': True,
@@ -2258,7 +2258,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'deprecated': True,
       'example_value': 'my-awesome-domain.com',
@@ -2279,7 +2279,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'example_value': ['my-awesome-domain.com', 'my-auxiliary-domain.com'],
       'id': 369,
@@ -2302,7 +2302,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'items': [
         {
@@ -2331,7 +2331,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'deprecated': True,
       'example_value': 'my-awesome-domain.com',
@@ -2352,7 +2352,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'example_value': ['my-awesome-domain.com', 'my-auxiliary-domain.com'],
       'id': 368,
@@ -2398,7 +2398,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'deprecated': True,
       'example_value': 'chromoting-host',
@@ -2514,7 +2514,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'items': [
         {
@@ -2543,7 +2543,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'example_value': '12400-12409',
       'id': 264,
@@ -2653,7 +2653,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'deprecated': True,
       'example_value': '{ "RemoteAccessHostMatchUsername": true }',
@@ -2814,7 +2814,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'example_value': 1048576,  # 1MiB
       'default': None,
@@ -2842,7 +2842,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
-        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+        'platform_only': True,  # No cloud-policy support outside of ChromeOS.
       },
       'items': [
         {
@@ -2863,7 +2863,7 @@
 
           This policy does not affect remote access scenarios.
 
-          This policy does not prevent enterprise admins from connecting to managed Chrome OS devices.
+          This policy does not prevent enterprise admins from connecting to managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
 
           This policy has no effect if enabled, left empty, or is not set.''',
     },
@@ -3548,7 +3548,7 @@
 
       When this policy is set to a value of -1, the print jobs metadata is stored indefinitely. When this policy is set to a value of 0, the print jobs metadata is not stored at all. When this policy is set to any other value, it specifies the period of time during which the metadata of completed print jobs is stored on the device.
 
-      If not set, the default period of 90 days is used for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.
+      If not set, the default period of 90 days is used for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
 
       The policy value should be specified in days.''',
     },
@@ -3874,7 +3874,7 @@
 
       This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
 
-      (For Chrome OS, see DeviceMetricsReportingEnabled.)''',
+      (For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see DeviceMetricsReportingEnabled.)''',
     },
     {
       'name': 'PasswordManagerEnabled',
@@ -4639,7 +4639,7 @@
 
       Note: See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).''',
       'label': '''Set download directory''',
-      'arc_support': 'This policy has no effect on Android apps. Android apps always use the default downloads directory and cannot access any files downloaded by <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> into a non-default downloads directory.',
+      'arc_support': 'This policy has no effect on Android apps. Android apps always use the default downloads directory and cannot access any files downloaded by <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> into a non-default downloads directory.',
     },
     {
       'name': 'AutoOpenFileTypes',
@@ -4814,7 +4814,7 @@
       'id': 295,
       'caption': '''Captive portal authentication ignores proxy''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled lets <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> bypass any proxy for captive portal authentication. These authentication webpages, starting from the captive portal sign-in page until Chrome detects a successful internet connection, open in a separate window, ignoring all policy settings and restrictions for the current user. This policy only takes effect if a proxy is set up (by policy, extension, or the user in chrome://settings).
+      'desc': '''Setting the policy to Enabled lets <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> bypass any proxy for captive portal authentication. These authentication webpages, starting from the captive portal sign-in page until Chrome detects a successful internet connection, open in a separate window, ignoring all policy settings and restrictions for the current user. This policy only takes effect if a proxy is set up (by policy, extension, or the user in chrome://settings).
 
       Setting the policy to Disabled or leaving it unset means any captive portal authentication pages are shown in a (regular) new browser tab, using the current user's proxy settings.''',
     },
@@ -7341,7 +7341,7 @@
 
       The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
 
-      On Chrome OS, this policy only applies to affiliated users.
+      On <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy only applies to affiliated users.
 
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.''',
     },
@@ -7395,7 +7395,7 @@
 
       The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
 
-      On Chrome OS, this policy only applies to affiliated users.
+      On ChromeOS, this policy only applies to affiliated users.
 
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
 
@@ -7524,7 +7524,7 @@
 
       The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
 
-      On Chrome OS, this policy only applies to affiliated users.
+      On ChromeOS, this policy only applies to affiliated users.
 
       This policy overrides <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph>, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph>, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph> and the user's preferences.''',
     },
@@ -9088,7 +9088,7 @@
       'id': 61,
       'caption': '''Enable lock when the device become idle or suspended''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> asks users for a password to unlock the device when it becomes idle.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> asks users for a password to unlock the device when it becomes idle.
 
       Setting the policy to Disabled means users are not asked for a password to unlock the device from sleep.
 
@@ -9133,7 +9133,7 @@
       'id': 244,
       'caption': '''Control the user behavior in a multiprofile session''',
       'tags': [],
-      'desc': '''Control the user behavior in a multiprofile session on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.
+      'desc': '''Control the user behavior in a multiprofile session on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
 
       If this policy is set to 'MultiProfileUserBehaviorUnrestricted', the user can be either primary or secondary user in a multiprofile session.
 
@@ -9174,7 +9174,7 @@
       'id': 406,
       'caption': '''Allow Sign-in To Additional Google Accounts''',
       'tags': [],
-      'desc': '''This setting allows users to switch between Google Accounts within the content area of their browser window and in Android applications, after they sign into their <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device.
+      'desc': '''This setting allows users to switch between Google Accounts within the content area of their browser window and in Android applications, after they sign into their <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device.
 
       If this policy is set to false, signing in to a different Google Account from a non-Incognito browser content area and Android applications will not be allowed.
 
@@ -9210,13 +9210,13 @@
         {
           'name': 'PrimaryAccountSignin',
           'value': 'primary_account_signin',
-          'caption': 'Block addition of a managed account as Secondary Account on Chrome OS (in-session)',
+          'caption': 'Block addition of a managed account as Secondary Account on ChromeOS (in-session)',
         },
       ],
       'default': 'all',
       'example_value': 'primary_account_signin',
       'id': 956,
-      'caption': '''Add restrictions on a managed account's usage as a secondary account on Chrome OS''',
+      'caption': '''Add restrictions on a managed account's usage as a secondary account on ChromeOS''',
       'tags': [],
       'desc': '''If this policy is set to <ph name="POLICY_VALUE_ALL">'all'</ph> or not set, all usages of managed accounts are allowed. This may result in a managed account being a secondary account, which would only receive policies when the account is signed-in as a primary account in a browser Profile.
       Policies set to the account won't be enforced in the following scenarios:
@@ -9277,7 +9277,7 @@
       },
       'example_value': 'LOGOUT',
       'id': 799,
-      'caption': '''Action on security token removal (e.g., smart card) for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'caption': '''Action on security token removal (e.g., smart card) for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'tags': [],
       'desc': '''Specifies what happens when a user who is authenticating via a security token (e.g., with a smart card) removes that token while in a session. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>: Nothing happens. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph>: The screen is locked until the user authenticates again. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>: The session is ended and the user is logged out. If this policy is not set, it defaults to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>.'''
     },
@@ -9293,7 +9293,7 @@
       },
       'example_value': 10,
       'id': 800,
-      'caption': '''Duration of the notification on smart card removal for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'caption': '''Duration of the notification on smart card removal for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'tags': [],
       'desc': '''This policy only takes effect when the policy <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME">SecurityTokenSessionBehavior</ph> is set to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph> or <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>, and a user who authenticates via a smart card removes that smart card. Then, this policy specifies for how many seconds a notification which informs the user of the impending action is displayed. This notification is blocking the screen. The action will only happen after this notification expires. The user can prevent the action from happening by re-inserting the smart card before the notification expires. If this policy is set to zero, no notification will be displayed and the action happens immediately.'''
     },
@@ -9697,7 +9697,7 @@
       'tags': [],
       'desc': '''Setting the policy specifies the period in milliseconds at which the device management service is queried for device policy information. Valid values range from 1,800,000 (30 minutes) to 86,400,000 (1 day). Values outside this range will be clamped to the respective boundary.
 
-      Leaving the policy unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> uses the default value of 3 hours.
+      Leaving the policy unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> uses the default value of 3 hours.
 
       Note: Policy notifications force a refresh when the policy changes, making frequent refreshes unnecessary. So, if the platform supports these notifications, the refresh delay is 24 hours (ignoring defaults and the value of this policy).''',
     },
@@ -10213,7 +10213,7 @@
       'id': 108,
       'caption': '''Device-level network configuration''',
       'tags': ['full-admin-access'],
-      'desc': '''Setting the policy allows pushing network configuration for all users of a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device. The network configuration is a JSON-formatted string, as defined by the Open Network Configuration format.''',
+      'desc': '''Setting the policy allows pushing network configuration for all users of a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device. The network configuration is a JSON-formatted string, as defined by the Open Network Configuration format.''',
       'arc_support': 'Android apps can use the network configurations and CA certificates set via this policy, but do not have access to some configuration options.',
     },
     {
@@ -10733,11 +10733,11 @@
       'id': 821,
       'caption': '''Limit the time for which a user authenticated via GAIA without SAML can log in offline''',
       'tags': [],
-      'desc': '''During login, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
+      'desc': '''During login, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
       When this policy is set to a value of -1, this policy will not enforce online authentication and will allow the user to use offline authentication until a different reason than this policy enforces an online login. If the policy is set to a value of 0, online login will always be required. When this policy is set to any other value, it specifies the length of time since the last online authentication after which the user must use online authentication again in the next sign-in.
 
-      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> use offline login.
+      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> use offline login.
 
       This policy affects only users who authenticated using GAIA without SAML.
 
@@ -10757,11 +10757,11 @@
       'id': 254,
       'caption': '''Limit the time for which a user authenticated via SAML can log in offline''',
       'tags': [],
-      'desc': '''During login, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
+      'desc': '''During login, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
       When this policy is set to a value of -1, the user can authenticate offline indefinitely. When this policy is set to any other value, it specifies the length of time since the last online authentication after which the user must use online authentication again.
 
-      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> use a default time limit of 14 days after which the user must use online authentication again.
+      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> use a default time limit of 14 days after which the user must use online authentication again.
 
       This policy affects only users who authenticated using SAML.
 
@@ -10786,7 +10786,7 @@
       'id': 833,
       'caption': '''Limit the time for which a user authenticated via GAIA without SAML can log in offline at the lock screen''',
       'tags': [],
-      'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
+      'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
       When this policy is set to -2, it will match the value of the login screen offline signin time limit which comes from <ph name="POLICY">GaiaOfflineSigninTimeLimitDays</ph>.
 
@@ -10819,7 +10819,7 @@
       'id': 834,
       'caption': '''Limit the time for which a user authenticated via SAML can log in offline at the lock screen''',
       'tags': [],
-      'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
+      'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
       When this policy is set to -2, it will match the value of the login screen offline signin time limit which comes from <ph name="POLICY">SAMLOfflineSigninTimeLimit</ph>.
 
@@ -10863,9 +10863,9 @@
       'id': 246,
       'caption': '''Select the strategy used to free up disk space during automatic clean-up (deprecated)''',
       'tags': [],
-      'desc': '''This policy is deprecated. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will always use the 'RemoveLRU' clean-up strategy.
+      'desc': '''This policy is deprecated. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will always use the 'RemoveLRU' clean-up strategy.
 
-      Controls the automatic clean-up behavior on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices. Automatic clean-up is triggered when the amount of free disk space reaches a critical level to recover some disk space.
+      Controls the automatic clean-up behavior on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices. Automatic clean-up is triggered when the amount of free disk space reaches a critical level to recover some disk space.
 
       If this policy is set to 'RemoveLRU', the automatic clean-up will keep removing users from the device in least-recently-logged-in order until there is enough free space.
 
@@ -11846,7 +11846,7 @@
       This policy is deprecated, please use <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME">DeviceUserAllowlist</ph> instead.
       ''',
 
-      'arc_support': 'This policy controls who may start a <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph> session. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
+      'arc_support': 'This policy controls who may start a <ph name="PRODUCT_OS_NAME">$2<ex>ChromiumOS</ex></ph> session. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
     },
     {
       'name': 'DeviceUserAllowlist',
@@ -11870,7 +11870,7 @@
 
       If this policy is not configured, there are no restrictions on which users are allowed to sign in. Note that creating new users still requires the <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME">DeviceAllowNewUsers</ph> policy to be configured appropriately.
       If <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME">DeviceFamilyLinkAccountsAllowed</ph> is enabled, Family Link users will be allowed additionally to the accounts defined in this policy.''',
-      'arc_support': 'This policy controls who may start a <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph> session. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
+      'arc_support': 'This policy controls who may start a <ph name="PRODUCT_OS_NAME">$2<ex>ChromiumOS</ex></ph> session. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
     },
     {
       'name': 'DeviceAllowNewUsers',
@@ -11886,12 +11886,12 @@
       'id': 123,
       'caption': '''Allow creation of new user accounts''',
       'tags': [],
-      'desc': '''Controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> allows new user accounts to be created.
+      'desc': '''Controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> allows new user accounts to be created.
 
       If this policy is set to false, only users present in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME">DeviceUserAllowlist</ph> will be able to login.
 
       If this policy is set to true or not configured, all users will be able to login.''',
-      'arc_support': 'This policy controls whether new users can be added to <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph>. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
+      'arc_support': 'This policy controls whether new users can be added to <ph name="PRODUCT_OS_NAME">$2<ex>ChromiumOS</ex></ph>. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
     },
     {
       'name': 'DeviceGuestModeEnabled',
@@ -11907,9 +11907,9 @@
       'id': 124,
       'caption': '''Enable guest mode''',
       'tags': [],
-      'desc': '''If this policy is set to true or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will enable guest logins. Guest logins are anonymous user sessions and do not require a password.
+      'desc': '''If this policy is set to true or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will enable guest logins. Guest logins are anonymous user sessions and do not require a password.
 
-      If this policy is set to false, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will not allow guest sessions to be started.''',
+      If this policy is set to false, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will not allow guest sessions to be started.''',
     },
     {
       'name': 'DeviceShowUserNamesOnSignin',
@@ -11925,9 +11925,9 @@
       'id': 125,
       'caption': '''Show usernames on login screen''',
       'tags': [],
-      'desc': '''If this policy is set to true or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will show existing users on the login screen and allow to pick one.
+      'desc': '''If this policy is set to true or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will show existing users on the login screen and allow to pick one.
 
-      If this policy is set to false, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will not show existing users on the login screen. The normal sign-in screen (prompting for the user email and password or phone) or the SAML interstitial screen (if enabled via the <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME">LoginAuthenticationBehavior</ph> policy) will be shown, unless a Managed Session is configured. When a Managed Session is configured, only the Managed Session accounts will be shown, allowing to pick one of them.
+      If this policy is set to false, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will not show existing users on the login screen. The normal sign-in screen (prompting for the user email and password or phone) or the SAML interstitial screen (if enabled via the <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME">LoginAuthenticationBehavior</ph> policy) will be shown, unless a Managed Session is configured. When a Managed Session is configured, only the Managed Session accounts will be shown, allowing to pick one of them.
 
       Note that this policy does not affect whether the device keeps or discards the local user data.''',
     },
@@ -11966,7 +11966,7 @@
         'admin-sharing',
         'google-sharing',
       ],
-      'desc': '''Setting the policy to Enabled has <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> report usage metrics and diagnostic data, including crash reports, back to Google. Setting the policy to Disabled turns off metrics and diagnostic data reporting.
+      'desc': '''Setting the policy to Enabled has <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> report usage metrics and diagnostic data, including crash reports, back to Google. Setting the policy to Disabled turns off metrics and diagnostic data reporting.
 
        Leaving the policy unset keeps metrics and diagnostic data reporting off on unmanaged devices and on for managed devices.''',
       'arc_support': 'This policy also controls Android usage and diagnostic data collection.',
@@ -12021,7 +12021,7 @@
       },
       'example_value': False,
       'id': 134,
-      'caption': '''Users may configure the Chrome OS release channel''',
+      'caption': '''Users may configure the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> release channel''',
       'tags': [],
       'desc': '''Users are only allowed to change the release channel of the device if this policy is set to True. If this policy is False or not set, users are not allowed to change the channel.
 
@@ -12102,7 +12102,7 @@
       'id': 128,
       'caption': '''Wipe user data on sign-out''',
       'tags': [],
-      'desc': '''Determines whether <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> keeps local account data after logout. If set to true, no persistent accounts are kept by <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> and all data from the user session will be discarded after logout. If this policy is set to false or not configured, the device may keep (encrypted) local user data.''',
+      'desc': '''Determines whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> keeps local account data after logout. If set to true, no persistent accounts are kept by <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> and all data from the user session will be discarded after logout. If this policy is set to false or not configured, the device may keep (encrypted) local user data.''',
     },
     {
       'name': 'DeviceStartUpUrls',
@@ -12248,7 +12248,7 @@
       'tags': ['system-security'],
       'desc': '''Disables automatic updates when set to True.
 
-      <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices automatically check for updates when this setting is not configured or set to False.
+      <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices automatically check for updates when this setting is not configured or set to False.
 
       Warning: It is recommended to keep auto-updates enabled so that users receive software updates and critical security fixes. Turning off auto-updates might leave users at risk.''',
     },
@@ -12291,7 +12291,7 @@
       'id': 426,
       'caption': '''Number of milestones rollback is allowed''',
       'tags': ['system-security'],
-      'desc': '''Specifies the minimum number of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> milestones rollback should be allowed starting from the stable version at any time.
+      'desc': '''Specifies the minimum number of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> milestones rollback should be allowed starting from the stable version at any time.
 
       Default is 0 for consumer, 4 (approx. half a year) for enterprise enrolled devices.
 
@@ -12324,7 +12324,7 @@
           'name': 'RollbackAndRestoreIfPossible',
           'value': 3,
           'caption': '''Roll back and stay on target version if OS version is newer than target. Try to carry over device-level configuration (including network credentials) through the rollback process, if possible, but do the rollback with full powerwash even if restoring the data is not possible (because the target version doesn't support restoring data or because of a backward-incompatible change).
-          Supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 75 and higher. For older clients, this value means that rollback is disabled.''',
+          Supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 75 and higher. For older clients, this value means that rollback is disabled.''',
         },
       ],
       'supported_on': ['chrome_os:67-'],
@@ -12356,7 +12356,7 @@
       'tags': ['system-security'],
       'desc': '''Sets a target version for Auto Updates.
 
-      Specifies the prefix of a target version <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> should update to. If the device is running a version that's before the specified prefix, it will update to the latest version with the given prefix. If the device is already on a later version, effects depend on the value of <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME">DeviceRollbackToTargetVersion</ph>. The prefix format works component-wise as is demonstrated in the following example:
+      Specifies the prefix of a target version <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> should update to. If the device is running a version that's before the specified prefix, it will update to the latest version with the given prefix. If the device is already on a later version, effects depend on the value of <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME">DeviceRollbackToTargetVersion</ph>. The prefix format works component-wise as is demonstrated in the following example:
 
       "" (or not configured): update to latest version available.
       "1412.": update to any minor version of 1412 (e.g. 1412.24.34 or 1412.60.2)
@@ -12379,7 +12379,7 @@
       'id': 891,
       'caption': '''Allow devices to select a specific version to update to''',
       'tags': ['system-security'],
-      'desc': '''This setting allows devices to select a specific target version of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> they will update to.
+      'desc': '''This setting allows devices to select a specific target version of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> they will update to.
 
       If not set, devices will update according to other settings or to the latest available version.
 
@@ -12447,9 +12447,9 @@
       'id': 243,
       'caption': '''Allow autoupdate downloads via HTTP''',
       'tags': [],
-      'desc': '''Auto-update payloads on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can be downloaded via HTTP instead of HTTPS. This allows transparent HTTP caching of HTTP downloads.
+      'desc': '''Auto-update payloads on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can be downloaded via HTTP instead of HTTPS. This allows transparent HTTP caching of HTTP downloads.
 
-      If this policy is set to true, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will attempt to download auto-update payloads via HTTP. If the policy is set to false or not set, HTTPS will be used for downloading auto-update payloads.''',
+      If this policy is set to true, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will attempt to download auto-update payloads via HTTP. If the policy is set to false or not set, HTTPS will be used for downloading auto-update payloads.''',
     },
     {
       'name': 'DeviceLocalAccounts',
@@ -12560,7 +12560,7 @@
       'id': 202,
       'caption': '''Enable bailout keyboard shortcut for auto-login''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving it unset means a device-local account is set up for zero-delay, automatic sign-in. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> honors the keyboard shortcut Ctrl+Alt+S for bypassing automatic sign-in and showing the sign-in screen.
+      'desc': '''Setting the policy to Enabled or leaving it unset means a device-local account is set up for zero-delay, automatic sign-in. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> honors the keyboard shortcut Ctrl+Alt+S for bypassing automatic sign-in and showing the sign-in screen.
 
       Setting the policy to Disabled means users can't bypass zero-delay automatic sign-in (if configured).'''
     },
@@ -12579,7 +12579,7 @@
       'id': 250,
       'caption': '''Enable network configuration prompt when offline''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving it unset means when a device is offline, if a device-local account is set for zero-delay, automatic sign-in, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shows a network-configuration prompt.
+      'desc': '''Setting the policy to Enabled or leaving it unset means when a device is offline, if a device-local account is set for zero-delay, automatic sign-in, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows a network-configuration prompt.
 
       Setting the policy to Disabled has an error message displayed instead.'''
     },
@@ -12598,7 +12598,7 @@
       'id': 463,
       'caption': '''Allow managed session on device''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 88. Public sessions are no longer supported. Please use <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME">DeviceLocalAccounts</ph> to configure managed-guest sessions instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 88. Public sessions are no longer supported. Please use <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME">DeviceLocalAccounts</ph> to configure managed-guest sessions instead.
       If this policy is set to false, managed guest session will behave as documented in https://support.google.com/chrome/a/answer/3017014 - the standard "Public Session".
 
       If this policy is set to true or left unset, managed guest session will take on "Managed Session" behaviour which lifts many of the restrictions that are in place for regular "Public Sessions".
@@ -12620,10 +12620,10 @@
       'id': 266,
       'caption': '''Block developer mode''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> stops the device from going into Developer mode.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> stops the device from going into Developer mode.
 
        Setting the policy to Disabled or leaving it unset keeps Developer mode available for the device.''',
-      'arc_support': 'This policy controls <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> developer mode only. If you want to prevent access to Android Developer Options, you need to set the <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME">DeveloperToolsDisabled</ph> policy.',
+      'arc_support': 'This policy controls <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> developer mode only. If you want to prevent access to Android Developer Options, you need to set the <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME">DeveloperToolsDisabled</ph> policy.',
     }, {
       'name': 'ManagedGuestSessionAutoLaunchNotificationReduced',
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
@@ -12642,7 +12642,7 @@
       'tags': [],
       'desc': ''' Note that this policy is deprecated in M87 and removed in M89. Please use <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME">ManagedGuestSessionPrivacyWarningsEnabled</ph> to configure the privacy warnings of managed-guest sessions instead.
 
-      Control the auto launch notification of the managed guest session on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      Control the auto launch notification of the managed guest session on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
       If this policy is set to True, the privacy warning notification will be closed after some seconds.
 
@@ -12664,7 +12664,7 @@
       'id': 723,
       'caption': '''Reduce Managed-guest session auto-launch notifications''',
       'tags': [],
-      'desc': ''' Controls the privacy warning of the managed-guest session on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': ''' Controls the privacy warning of the managed-guest session on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
       If this policy is set to False, the privacy warnings on the login screen and the auto-launch notification inside the managed-guest session will get deactivated.
 
@@ -12705,9 +12705,9 @@
       },
       'example_value': True,
       'id': 139,
-      'caption': '''Disable Drive in the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Files app''',
+      'caption': '''Disable Drive in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Files app. No data is uploaded to Drive.
+      'desc': '''Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app. No data is uploaded to Drive.
 
       Setting the policy to Disabled or leaving it unset lets users transfer files to Drive.''',
       'arc_support': 'This policy does not prevent the user from using the Android Google Drive app. If you want to prevent access to Google Drive, you should disallow installation of the Android Google Drive app as well.',
@@ -12724,9 +12724,9 @@
       },
       'example_value': True,
       'id': 140,
-      'caption': '''Disable Google Drive over cellular connections in the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Files app''',
+      'caption': '''Disable Google Drive over cellular connections in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Files app when on a cellular connection. Data is only synced to Drive when connected through Wi-Fi or Ethernet.
+      'desc': '''Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app when on a cellular connection. Data is only synced to Drive when connected through Wi-Fi or Ethernet.
 
       Setting the policy to Disabled or leaving it unset lets users transfer files to Drive on cellular connections.''',
       'arc_support': 'This policy has no effect on the Android Google Drive app. If you want to prevent use of Google Drive over cellular connections, you should disallow installation of the Android Google Drive app.',
@@ -12749,7 +12749,7 @@
       'id': 144,
       'caption': '''List of pinned apps to show in the launcher''',
       'tags': [],
-      'desc': '''Setting the policy fixes which application identifiers <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shows as pinned apps in the launcher bar, and users can't change them.
+      'desc': '''Setting the policy fixes which application identifiers <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows as pinned apps in the launcher bar, and users can't change them.
 
       Specify Chrome apps by their ID, such as pjkljhegncpnkpknbcohdijeoejaedia; Android apps by their package name, such as com.google.android.gm; and web apps by the URL used in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>, such as https://google.com/maps.
 
@@ -13071,9 +13071,9 @@
       'tags': [],
       'desc': '''Controls the on-screen keyboard, acting as a supplementary policy to the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy.
 
-      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is True or if the Enable on-screen keyboard Chrome OS setting is on, this policy has no effect.
+      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is True or if the Enable on-screen keyboard ChromeOS setting is on, this policy has no effect.
 
-      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is False or not set and the Enable on-screen keyboard Chrome OS setting is off, this policy has the following effect:
+      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is False or not set and the Enable on-screen keyboard ChromeOS setting is off, this policy has the following effect:
       If this policy is not set, the on-screen keyboard is displayed when the device is in tablet mode.
       If this policy is set to True, the on-screen keyboard is always displayed.
       If this policy is set to False, the on-screen keyboard is never displayed.
@@ -13124,7 +13124,7 @@
 
       If this policy is set to Disabled, the built-in DNS client will only be used when DNS-over-HTTPS is in use.
 
-      If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
     },
     {
       'name': 'DnsOverHttpsMode',
@@ -13279,7 +13279,7 @@
       'id': 166,
       'caption': '''Control shelf auto-hiding''',
       'tags': [],
-      'desc': '''Setting the policy to Always will autohide the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shelf. Setting the policy to Never ensures the shelf never autohides.
+      'desc': '''Setting the policy to Always will autohide the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shelf. Setting the policy to Never ensures the shelf never autohides.
 
       If you set the policy, users can't change it. If not set, users decide whether the shelf autohides.''',
     },
@@ -13326,7 +13326,7 @@
       'id': 620,
       'caption': '''Control the shelf position''',
       'tags': [],
-      'desc': '''Control the position of the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shelf.
+      'desc': '''Control the position of the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shelf.
 
       If this policy is set to 'Bottom', the shelf will be placed at the bottom of the screen.
 
@@ -13416,11 +13416,11 @@
       'id': 689,
       'caption': '''Configure the camera, browser settings, os settings, scanning, web store, canvas, explore and crosh features to be disabled''',
       'tags': [],
-      'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
+      'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features to be disabled.
 
       Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin". The user experience of disabled features is decided by <ph name="SYSTEM_FEATURES_DISABLE_MODE">SystemFeaturesDisableMode</ph>
 
-      If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features will be enabled by default and the user can use any of them.
+      If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features will be enabled by default and the user can use any of them.
 
       Note: The scanning feature is currently disabled by default via a feature flag. If the user enables the feature via the feature flag, the feature can still be disabled by this policy.''',
     },
@@ -13500,11 +13500,11 @@
       'id': 169,
       'caption': '''Set the display name for device-local accounts''',
       'tags': [],
-      'desc': '''Controls the account name <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shows on the login screen for the corresponding device-local account.
+      'desc': '''Controls the account name <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows on the login screen for the corresponding device-local account.
 
       If this policy is set, the login screen will use the specified string in the picture-based login chooser for the corresponding device-local account.
 
-      If the policy is left not set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will use the device-local account's email account ID as the display name on the login screen.
+      If the policy is left not set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will use the device-local account's email account ID as the display name on the login screen.
 
       This policy is ignored for regular user accounts.''',
     },
@@ -13628,13 +13628,13 @@
       'id': 172,
       'caption': '''Screen dim delay when running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the screen is dimmed when running on AC power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> dims the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> dims the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not dim the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not dim the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
@@ -13659,13 +13659,13 @@
       'id': 173,
       'caption': '''Screen off delay when running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the screen is turned off when running on AC power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> turns off the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> turns off the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not turn off the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not turn off the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
@@ -13690,17 +13690,17 @@
       'id': 174,
       'caption': '''Screen lock delay when running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME">ScreenLockDelays</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME">ScreenLockDelays</ph> instead.
 
           Specifies the length of time without user input after which the screen is locked when running on AC power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> locks the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> locks the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not lock the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not lock the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
-          The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
+          The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
 
           The policy value should be specified in milliseconds. Values are clamped to be less than the idle delay.''',
     },
@@ -13723,11 +13723,11 @@
       'id': 197,
       'caption': '''Idle warning delay when running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which a warning dialog is shown when running on AC power.
 
-          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shows a warning dialog telling the user that the idle action is about to be taken.
+          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows a warning dialog telling the user that the idle action is about to be taken.
 
           When this policy is unset, no warning dialog is shown.
 
@@ -13754,11 +13754,11 @@
       'id': 175,
       'caption': '''Idle delay when running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the idle action is taken when running on AC power.
 
-          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes the idle action, which can be configured separately.
+          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes the idle action, which can be configured separately.
 
           When this policy is unset, a default length of time is used.
 
@@ -13783,13 +13783,13 @@
       'id': 176,
       'caption': '''Screen dim delay when running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the screen is dimmed when running on battery power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> dims the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> dims the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not dim the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not dim the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
@@ -13814,13 +13814,13 @@
       'id': 177,
       'caption': '''Screen off delay when running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the screen is turned off when running on battery power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> turns off the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> turns off the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not turn off the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not turn off the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
@@ -13845,17 +13845,17 @@
       'id': 178,
       'caption': '''Screen lock delay when running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME">ScreenLockDelays</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME">ScreenLockDelays</ph> instead.
 
           Specifies the length of time without user input after which the screen is locked when running on battery power.
 
-          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> locks the screen.
+          When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> locks the screen.
 
-          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not lock the screen when the user becomes idle.
+          When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not lock the screen when the user becomes idle.
 
           When this policy is unset, a default length of time is used.
 
-          The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
+          The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
 
           The policy value should be specified in milliseconds. Values are clamped to be less than the idle delay.''',
     },
@@ -13878,11 +13878,11 @@
       'id': 198,
       'caption': '''Idle warning delay when running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which a warning dialog is shown when running on battery power.
 
-          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shows a warning dialog telling the user that the idle action is about to be taken.
+          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows a warning dialog telling the user that the idle action is about to be taken.
 
           When this policy is unset, no warning dialog is shown.
 
@@ -13909,11 +13909,11 @@
       'id': 179,
       'caption': '''Idle delay when running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           Specifies the length of time without user input after which the idle action is taken when running on battery power.
 
-          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes the idle action, which can be configured separately.
+          When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes the idle action, which can be configured separately.
 
           When this policy is unset, a default length of time is used.
 
@@ -13960,7 +13960,7 @@
       'id': 180,
       'caption': '''Action to take when the idle delay is reached''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
           This policy provides a fallback value for the more-specific <ph name="IDLE_ACTION_AC_POLICY_NAME">IdleActionAC</ph> and <ph name="IDLE_ACTION_BATTERY_POLICY_NAME">IdleActionBattery</ph> policies. If this policy is set, its value gets used if the respective more-specific policy is not set.
 
@@ -14007,13 +14007,13 @@
       'id': 226,
       'caption': '''Action to take when the idle delay is reached while running on AC power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
-          When this policy is set, it specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes when the user remains idle for the length of time given by the idle delay, which can be configured separately.
+          When this policy is set, it specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes when the user remains idle for the length of time given by the idle delay, which can be configured separately.
 
           When this policy is unset, the default action is taken, which is suspend.
 
-          If the action is suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can separately be configured to either lock or not lock the screen before suspending.''',
+          If the action is suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can separately be configured to either lock or not lock the screen before suspending.''',
     },
     {
       'name': 'IdleActionBattery',
@@ -14056,13 +14056,13 @@
       'id': 222,
       'caption': '''Action to take when the idle delay is reached while running on battery power''',
       'tags': [],
-      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+      'desc': '''Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
 
-          When this policy is set, it specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes when the user remains idle for the length of time given by the idle delay, which can be configured separately.
+          When this policy is set, it specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes when the user remains idle for the length of time given by the idle delay, which can be configured separately.
 
           When this policy is unset, the default action is taken, which is suspend.
 
-          If the action is suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can separately be configured to either lock or not lock the screen before suspending.''',
+          If the action is suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can separately be configured to either lock or not lock the screen before suspending.''',
     },
     {
       'name': 'LidCloseAction',
@@ -14103,11 +14103,11 @@
       'id': 181,
       'caption': '''Action to take when the user closes the lid''',
       'tags': [],
-      'desc': '''Setting the policy specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes when the user closes the device's lid.
+      'desc': '''Setting the policy specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes when the user closes the device's lid.
 
       Leaving the policy unset means the Suspend action is taken.
 
-      Note: If the action is Suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can separately be set up to lock or not lock the screen before suspending.''',
+      Note: If the action is Suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can separately be set up to lock or not lock the screen before suspending.''',
     },
     {
       'name': 'PowerManagementUsesAudioActivity',
@@ -14161,7 +14161,7 @@
       'id': 184,
       'caption': '''Percentage by which to scale the idle delay in presentation mode (deprecated)''',
       'tags': [],
-      'desc': '''This policy has been retired as of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 29. Please use the PresentationScreenDimDelayScale policy instead.''',
+      'desc': '''This policy has been retired as of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 29. Please use the PresentationScreenDimDelayScale policy instead.''',
     },
     {
       'name': 'PresentationScreenDimDelayScale',
@@ -14363,7 +14363,7 @@
 
       * The action specified by <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> is taken if the user is idle for the time specified by <ph name="IDLE_FIELD_NAME">Idle</ph>.
 
-      For each of the above actions, the delay should be specified in milliseconds and must be set to a value greater than zero to trigger the corresponding action. If the delay is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> won't take the corresponding action.
+      For each of the above actions, the delay should be specified in milliseconds and must be set to a value greater than zero to trigger the corresponding action. If the delay is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> won't take the corresponding action.
 
       For each of the above delays, when the time is unset, a default value is used.
 
@@ -14416,9 +14416,9 @@
       'tags': [],
       'desc': '''Setting the policy specifies the length of time in milliseconds without user input after which the screen locks when running on AC power or battery. Values are clamped to be less than the idle delay in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph>.
 
-      When set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> doesn't lock the screen when the user becomes idle. If unset, a default time is used.
+      When set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> doesn't lock the screen when the user becomes idle. If unset, a default time is used.
 
-      Recommendation: Lock the screen on idle by turning on screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> suspend after the idle delay. Only use this policy when screen locking should occur a significant amount of time sooner than suspend or when you don't want suspend on idle.''',
+      Recommendation: Lock the screen on idle by turning on screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> suspend after the idle delay. Only use this policy when screen locking should occur a significant amount of time sooner than suspend or when you don't want suspend on idle.''',
     },
     {
       'name': 'DeviceLoginScreenPowerManagement',
@@ -14498,7 +14498,7 @@
       'id': 225,
       'caption': '''Power management on the login screen''',
       'tags': [],
-      'desc': '''Setting the policy lets you set how <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> behaves when there is no user activity for some amount of time while the sign-in screen appears. The policy controls multiple settings. For their individual semantics and value ranges, see the corresponding policies that control power management within a session.
+      'desc': '''Setting the policy lets you set how <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> behaves when there is no user activity for some amount of time while the sign-in screen appears. The policy controls multiple settings. For their individual semantics and value ranges, see the corresponding policies that control power management within a session.
 
       The deviations from these policies are:
 
@@ -14521,19 +14521,19 @@
       'items': [
         {
           'value': True,
-          'caption': 'Allow users to redeem offers through Chrome OS Registration',
+          'caption': 'Allow users to redeem offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Registration',
         },
         {
           'value': False,
-          'caption': 'Prevent users from redeeming offers through Chrome OS Registration',
+          'caption': 'Prevent users from redeeming offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Registration',
         },
       ],
       'example_value': True,
       'default': True,
       'id': 185,
-      'caption': '''Allow users to redeem offers through Chrome OS Registration''',
+      'caption': '''Allow users to redeem offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Registration''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving it unset lets enterprise device users redeem offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Registration.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets enterprise device users redeem offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Registration.
 
       Setting the policy to Disabled means users can't redeem these offers.''',
     },
@@ -14551,11 +14551,11 @@
       'id': 186,
       'caption': '''Set the Terms of Service for a device-local account''',
       'tags': [],
-      'desc': '''Setting the policy means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the Terms of Service and presents them to users whenever a device-local account session starts. Users can only sign in to the session after accepting the Terms of Service.
+      'desc': '''Setting the policy means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> downloads the Terms of Service and presents them to users whenever a device-local account session starts. Users can only sign in to the session after accepting the Terms of Service.
 
       Leaving the policy unset means no Terms of Service appear.
 
-      The policy should be set to a URL from which <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can download the Terms of Service. The Terms of Service must be plain text, served as MIME type text/plain. No markup is allowed.''',
+      The policy should be set to a URL from which <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can download the Terms of Service. The Terms of Service must be plain text, served as MIME type text/plain. No markup is allowed.''',
     },
     {
       'name': 'ShowAccessibilityOptionsInSystemTrayMenu',
@@ -15618,7 +15618,7 @@
       'id': 189,
       'caption': '''Hide the web store from the New Tab Page and app launcher''',
       'tags': [],
-      'desc': '''Hide the Chrome Web Store app and footer link from the New Tab Page and <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> app launcher.
+      'desc': '''Hide the Chrome Web Store app and footer link from the New Tab Page and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> app launcher.
 
       When this policy is set to true, the icons are hidden.
 
@@ -15681,11 +15681,11 @@
       'id': 193,
       'caption': '''Automatically reboot after update''',
       'tags': [],
-      'desc': '''Schedule an automatic reboot after a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> update has been applied.
+      'desc': '''Schedule an automatic reboot after a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> update has been applied.
 
-      When this policy is set to true, an automatic reboot is scheduled when a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> update has been applied and a reboot is required to complete the update process. The reboot is scheduled immediately but may be delayed on the device by up to 24 hours if a user is currently using the device.
+      When this policy is set to true, an automatic reboot is scheduled when a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> update has been applied and a reboot is required to complete the update process. The reboot is scheduled immediately but may be delayed on the device by up to 24 hours if a user is currently using the device.
 
-      When this policy is set to false, no automatic reboot is scheduled after applying a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> update. The update process is completed when the user next reboots the device.
+      When this policy is set to false, no automatic reboot is scheduled after applying a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> update. The update process is completed when the user next reboots the device.
 
       If you set this policy, users cannot change or override it.
 
@@ -15727,7 +15727,7 @@
       'id': 199,
       'caption': '''Set the restriction on the fetching of the Variations seed''',
       'tags': [],
-      'desc': '''Add a parameter to the fetching of the Variations seed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Add a parameter to the fetching of the Variations seed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
       If specified, will add a query parameter called 'restrict' to the URL used to fetch the Variations seed. The value of the parameter will be the value specified in this policy.
 
@@ -15813,17 +15813,17 @@
       },
       'example_value': 1,
       'id': 674,
-      'caption': '''Determine the availability of variations on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
+      'caption': '''Determine the availability of variations on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
       'tags': [],
-      'desc': '''Configuring this policy allows to specify which variations are allowed to be applied on an enterprise-managed <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device.
+      'desc': '''Configuring this policy allows to specify which variations are allowed to be applied on an enterprise-managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device.
 
-      Variations provide a means for offering modifications to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> without shipping a new version  by selectively enabling or disabling already existing features. See https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework for more information.
+      Variations provide a means for offering modifications to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> without shipping a new version  by selectively enabling or disabling already existing features. See https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework for more information.
 
-      Setting the <ph name="VARIATIONS_ENABLED_OPTION_NAME">VariationsEnabled</ph> (value 0), or leaving the policy not set allows all variations to be applied to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      Setting the <ph name="VARIATIONS_ENABLED_OPTION_NAME">VariationsEnabled</ph> (value 0), or leaving the policy not set allows all variations to be applied to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
-      Setting the <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME">CriticalFixesOnly</ph> (value 1), allows only variations considered critical security or stability fixes to be applied to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      Setting the <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME">CriticalFixesOnly</ph> (value 1), allows only variations considered critical security or stability fixes to be applied to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
-      Setting the <ph name="VARIATIONS_DISABLED_OPTION_NAME">VariationsDisabled</ph> (value 2), will prevent all variations from being applied to the browser on the login screen. Please note that this mode can potentially prevent the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> developers from providing critical security fixes in a timely manner and is thus not recommended.'''
+      Setting the <ph name="VARIATIONS_DISABLED_OPTION_NAME">VariationsDisabled</ph> (value 2), will prevent all variations from being applied to the browser on the login screen. Please note that this mode can potentially prevent the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> developers from providing critical security fixes in a timely manner and is thus not recommended.'''
     },
     {
       'name': 'AttestationEnabledForDevice',
@@ -15858,7 +15858,7 @@
       'id': 200,
       'caption': '''Enable remote attestation for the user''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled lets users use the hardware on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices to remotely attest its identity to the privacy CA through the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> using <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph>.
+      'desc': '''Setting the policy to Enabled lets users use the hardware on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices to remotely attest its identity to the privacy CA through the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> using <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph>.
 
       Setting the policy to Disabled or leaving it unset has calls to the API fail with an error code.''',
     },
@@ -15922,7 +15922,7 @@
       'id': 239,
       'caption': '''Enable the use of remote attestation for content protection for the device''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices use remote attestation (Verified Access) to get a certificate issued by the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> CA that asserts the device is eligible to play protected content. This process involves sending hardware endorsement information to the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> CA which uniquely identifies the device.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices use remote attestation (Verified Access) to get a certificate issued by the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> CA that asserts the device is eligible to play protected content. This process involves sending hardware endorsement information to the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> CA which uniquely identifies the device.
 
       Setting the policy to Disabled means the device won't use remote attestation for content protection, and the device may not play protected content.''',
     },
@@ -16113,11 +16113,11 @@
       'id': 249,
       'caption': '''User avatar image''',
       'tags': [],
-      'desc': '''This policy allows you to configure the avatar image representing the user on the login screen. The policy is set by specifying the URL from which <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can download the avatar image and a cryptographic hash used to verify the integrity of the download. The image must be in JPEG format, its size must not exceed 512kB. The URL must be accessible without any authentication.
+      'desc': '''This policy allows you to configure the avatar image representing the user on the login screen. The policy is set by specifying the URL from which <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can download the avatar image and a cryptographic hash used to verify the integrity of the download. The image must be in JPEG format, its size must not exceed 512kB. The URL must be accessible without any authentication.
 
       The avatar image is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download and use the avatar image.
+      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will download and use the avatar image.
 
       If you set this policy, users cannot change or override it.
 
@@ -16150,9 +16150,9 @@
       'id': 262,
       'caption': '''Wallpaper image''',
       'tags': [],
-      'desc': '''If you set the policy, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>
+      'desc': '''If you set the policy, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
 
-      downloads and uses the wallpaper image you set for the user's desktop and sign-in screen background, and users can't change it. Specify the URL (that's accessible without authentication) which <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>
+      downloads and uses the wallpaper image you set for the user's desktop and sign-in screen background, and users can't change it. Specify the URL (that's accessible without authentication) which <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
 
       can download the wallpaper image from, as well as a cryptographic hash (in JPEG format with a file size up to 16 MB) to verify its integrity.
 
@@ -16270,7 +16270,7 @@
 
       If you set the policy and turn automatic sign-in on (see the <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME">DeviceLocalAccountAutoLoginId</ph> and <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME">DeviceLocalAccountAutoLoginDelay</ph> policies), the managed session uses the first recommended locale and the most popular matching keyboard layout.
 
-      The preselected keyboard layout is always the most popular layout matching the preselected locale. Users can always choose any locale supported by <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> for their session.''',
+      The preselected keyboard layout is always the most popular layout matching the preselected locale. Users can always choose any locale supported by <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> for their session.''',
     },
     {
       'name': 'BrowserGuestModeEnabled',
@@ -16660,7 +16660,7 @@
       'id': 436,
       'caption': '''Disable Certificate Transparency enforcement for a list of Legacy Certificate Authorities''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy turns off enforcement of Certificate Transparency disclosure requirements for a list of Legacy Certificate Authorities (CA) for certificate chains with a specified <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash. Enterprise hosts can keep using certificates that otherwise wouldn't be trusted (because they weren't properly publicly disclosed). To turn off enforcement, the <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash must appear in a CA certificate recognized as a Legacy CA. A Legacy CA is publicly trusted by one or more operating systems supported by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, but not Android Open Source Project or <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Setting the policy turns off enforcement of Certificate Transparency disclosure requirements for a list of Legacy Certificate Authorities (CA) for certificate chains with a specified <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash. Enterprise hosts can keep using certificates that otherwise wouldn't be trusted (because they weren't properly publicly disclosed). To turn off enforcement, the <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash must appear in a CA certificate recognized as a Legacy CA. A Legacy CA is publicly trusted by one or more operating systems supported by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, but not Android Open Source Project or <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
       Specify a <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash by linking the hash algorithm name, a slash and the Base64 encoding of that hash algorithm applied to the DER-encoded <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> of the specified certificate. Base64 encoding format matches that of an SPKI Fingerprint. The only recognized hash algorithm is sha256; others are ignored.
 
@@ -16763,9 +16763,9 @@
       'id': 284,
       'caption': '''Automatic reboot on device shutdown''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> triggers a restart when users shut down the device. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> replaces all shutdown buttons in the UI with restart buttons. If the users shut down devices using the power button, they won't automatically restart, even if the policy is on.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> triggers a restart when users shut down the device. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> replaces all shutdown buttons in the UI with restart buttons. If the users shut down devices using the power button, they won't automatically restart, even if the policy is on.
 
-      Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lets them shut down the device.''',
+      Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lets them shut down the device.''',
     },
     {
       'name': 'ExtensionCacheSize',
@@ -16783,7 +16783,7 @@
       'id': 296,
       'caption': '''Set Apps and Extensions cache size (in bytes)''',
       'tags': [],
-      'desc': '''Setting to lower than 1 MB or leaving it unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> uses the default size of 256 MiB for caching apps and extensions for installation by multiple users of a single device, avoiding the need to redownload each one for every user.''',
+      'desc': '''Setting to lower than 1 MB or leaving it unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> uses the default size of 256 MiB for caching apps and extensions for installation by multiple users of a single device, avoiding the need to redownload each one for every user.''',
       'arc_support': 'The cache is not used for Android apps. If multiple users install the same Android app, it will be downloaded anew for each user.',
     },
     {
@@ -16800,8 +16800,8 @@
       'id': 297,
       'caption': '''Enable domain name autocomplete during user sign in''',
       'tags': [],
-      'desc': '''If this policy is set to a blank string or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will not show an autocomplete option during user sign-in flow.
-      If this policy is set to a string representing a domain name, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will show an autocomplete option during user sign-in allowing the user to type in only their user name without the domain name extension.  The user will be able to overwrite this domain name extension.
+      'desc': '''If this policy is set to a blank string or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will not show an autocomplete option during user sign-in flow.
+      If this policy is set to a string representing a domain name, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will show an autocomplete option during user sign-in allowing the user to type in only their user name without the domain name extension.  The user will be able to overwrite this domain name extension.
       If the value of the policy is not a valid domain, the policy will not be applied.''',
     },
     {
@@ -17139,14 +17139,14 @@
       },
       'example_value': True,
       'id': 319,
-      'caption': '''Allow the auto launched with zero delay kiosk app to control <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version''',
+      'caption': '''Allow the auto launched with zero delay kiosk app to control <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version''',
       'tags': ['system-security'],
       'desc': '''Setting the policy to Enabled means the value of the <ph name="REQUIRED_PLATFORM_VERSION">required_platform_version</ph> manifest key of the zero-delay, autolaunched kiosk app is used as the autoupdate target version prefix.
 
       Setting the policy to Disabled or leaving it unset means the <ph name="REQUIRED_PLATFORM_VERSION">required_platform_version</ph> manifest key is ignored and autoupdate proceeds as normal.
 
-      Warning: Do not delegate control of the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version to a kiosk app, because it might prevent the device from getting software updates and critical security fixes. Delegating control of the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version might leave users at risk.''',
-      'arc_support': 'If the kiosk app is an Android app, it will have no control over the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version, even if this policy is set to <ph name="TRUE">True</ph>.',
+      Warning: Do not delegate control of the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version to a kiosk app, because it might prevent the device from getting software updates and critical security fixes. Delegating control of the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version might leave users at risk.''',
+      'arc_support': 'If the kiosk app is an Android app, it will have no control over the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version, even if this policy is set to <ph name="TRUE">True</ph>.',
     },
     {
       'name': 'LoginAuthenticationBehavior',
@@ -17278,7 +17278,7 @@
       'tags': [],
       'desc': '''Setting the policy to Enabled or leaving it unset lets users turn Bluetooth on or off.
 
-      Setting the policy to Disabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> turns Bluetooth off, and users can't turn it on.
+      Setting the policy to Disabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> turns Bluetooth off, and users can't turn it on.
 
       Note: To turn on Bluetooth, users must sign out and in again.''',
     },
@@ -17332,7 +17332,7 @@
       When this policy is set to false, the device will not attempt to
       contact the Quirks Server to download configuration files.
 
-      If this policy is true or not configured then <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will automatically contact the Quirks Server and download configuration files, if available, and store them on the device.  Such files might, for example, be used to improve display quality of attached monitors.''',
+      If this policy is true or not configured then <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will automatically contact the Quirks Server and download configuration files, if available, and store them on the device.  Such files might, for example, be used to improve display quality of attached monitors.''',
     },
     {
       'name': 'SystemTimezoneAutomaticDetection',
@@ -17503,7 +17503,7 @@
       'owners': ['apotapchuk@chromium.org'],
       'device_only': True,
       'caption': '''Enable WiFi''',
-      'desc': '''Setting the policy to Disabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> turns off Wi-Fi, and users can't change it.
+      'desc': '''Setting the policy to Disabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> turns off Wi-Fi, and users can't change it.
 
       Setting the policy to Enabled or leaving it unset lets users turn Wi-Fi on or off.''',
       'type': 'main',
@@ -17646,12 +17646,12 @@
         {
           'name': 'SyncDisabled',
           'value': 0,
-          'caption': '''Disable usage of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> certificates to ARC-apps''',
+          'caption': '''Disable usage of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> certificates to ARC-apps''',
         },
         {
           'name': 'CopyCaCerts',
           'value': 1,
-          'caption': '''Enable <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> CA certificates to ARC-apps'''
+          'caption': '''Enable <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> CA certificates to ARC-apps'''
         },
       ],
       'supported_on': ['chrome_os:52-'],
@@ -17665,7 +17665,7 @@
       'tags': ['system-security'],
       'desc': '''Setting the policy to CopyCaCerts makes all ONC-installed CA certificates with <ph name="WEB_TRUSTED_BIT">Web TrustBit</ph> available for ARC-apps.
 
-       Setting to None or leaving it unset makes <ph name="PRODUCT_OS_NAME">$2<ex>Chrome OS</ex></ph> certificates unavailable for ARC-apps.''',
+       Setting to None or leaving it unset makes <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph> certificates unavailable for ARC-apps.''',
     },
     {
       'name': 'AllowedDomainsForApps',
@@ -17799,7 +17799,7 @@
       'caption': '''Enable Android Backup Service''',
       'tags': ['google-sharing'],
       'desc':
-      '''This policy was removed in <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> 68 and replaced by <ph name="ARC_BR_POLICY_NAME">ArcBackupRestoreServiceEnabled</ph>.''',
+      '''This policy was removed in <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph> 68 and replaced by <ph name="ARC_BR_POLICY_NAME">ArcBackupRestoreServiceEnabled</ph>.''',
     },
     {
       'name': 'ArcLocationServiceEnabled',
@@ -17817,7 +17817,7 @@
       'caption': '''Enable Android Google Location Service''',
       'tags': ['google-sharing'],
       'desc':
-      '''This policy was removed in <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> 68 and replaced by <ph name="ARC_GLS_POLICY_NAME">ArcGoogleLocationServicesEnabled</ph>.''',
+      '''This policy was removed in <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph> 68 and replaced by <ph name="ARC_GLS_POLICY_NAME">ArcGoogleLocationServicesEnabled</ph>.''',
     },
     {
       'name': 'NTPContentSuggestionsEnabled',
@@ -18038,11 +18038,11 @@
               'properties': {
                 'effective_model': {
                   'type': 'string',
-                  'description': 'This field must match one of the strings which represent a <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> supported printer. The string will be used to identify and install the appropriate PPD for the printer. More information can be found at https://support.google.com/chrome?p=noncloudprint.'
+                  'description': 'This field must match one of the strings which represent a <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph> supported printer. The string will be used to identify and install the appropriate PPD for the printer. More information can be found at https://support.google.com/chrome?p=noncloudprint.'
                 },
                 'autoconf': {
                   'type': 'boolean',
-                  'description': 'Boolean flag indicating whether IPP Everywhere should be used to set up the printer. This flag is supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 76 and higher.'
+                  'description': 'Boolean flag indicating whether IPP Everywhere should be used to set up the printer. This flag is supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 76 and higher.'
                 }
               }
             }
@@ -18118,7 +18118,7 @@
               'properties': {
                 'effective_model': {
                   'type': 'string',
-                  'description': 'This field must match one of the strings which represent a <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> supported printer. The string will be used to identify and install the appropriate PPD for the printer. More information can be found at https://support.google.com/chrome?p=noncloudprint.'
+                  'description': 'This field must match one of the strings which represent a <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph> supported printer. The string will be used to identify and install the appropriate PPD for the printer. More information can be found at https://support.google.com/chrome?p=noncloudprint.'
                 },
                 'autoconf': {
                   'type': 'boolean',
@@ -18194,7 +18194,7 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file''',
       'tags': [],
-      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph>, and <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph>.
+      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME">NativePrintersBulkAccessMode</ph>, <ph name="BULK_PRINTERS_WHITELIST">NativePrintersBulkWhitelist</ph>, and <ph name="BULK_PRINTERS_BLACKLIST">NativePrintersBulkBlacklist</ph>.
 
       This policy has no effect on whether users can configure printers on individual devices. It is intended to be supplementary to the configuration of printers by individual users.
 
@@ -18226,7 +18226,7 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file''',
       'tags': [],
-      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PrintersBulkAllowlist</ph>, and <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME">PrintersBulkBlocklist</ph>.
+      'desc': '''Setting this policy configure enterprise printers. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME">PrintersBulkAccessMode</ph>, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME">PrintersBulkAllowlist</ph>, and <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME">PrintersBulkBlocklist</ph>.
 
       This policy has no effect on whether users can configure printers on individual devices. It is intended to be supplementary to the configuration of printers by individual users.
 
@@ -18433,7 +18433,7 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file for devices''',
       'tags': [],
-      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
+      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="NATIVE_PRINTERS_POLICY_NAME">NativePrinters</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
 
       This policy:
 
@@ -18563,7 +18563,7 @@
       'max_size': 5242880,
       'caption': '''Enterprise printer configuration file for devices''',
       'tags': [],
-      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
+      'desc': '''Setting the policy provides configurations for enterprise printers bound to devices. Its format matches the <ph name="PRINTERS_POLICY_NAME">Printers</ph> dictionary, with an additional required "id" or "guid" field for each printer for allow listing or deny listing. The file size can't exceed 5MB and is in JSON format. A file with about 21,000 printers encodes as a 5MB file. The cryptographic hash helps verify download integrity. The file is downloaded, cached, and redownloaded when the URL or the hash changes. <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> downloads the file for printer configurations and makes printers available along with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
 
       This policy:
 
@@ -18751,16 +18751,16 @@
               'type': 'object',
               'properties': {
                 'chromeos_version': {
-                  'description': '''Minimum allowed <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version''',
+                  'description': '''Minimum allowed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version''',
                   'type': 'string',
                 },
                 'warning_period': {
-                  'description': '''Time in days after which the user will be signed out if <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version is less than the specified <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph>''',
+                  'description': '''Time in days after which the user will be signed out if <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version is less than the specified <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph>''',
                   'type': 'integer',
                   'minimum': 0,
                 },
                 'aue_warning_period': {
-                  'description': '''Time in days after auto update expiration post which the user will be signed out if <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version is less than the specified <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph>''',
+                  'description': '''Time in days after auto update expiration post which the user will be signed out if <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version is less than the specified <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph>''',
                   'type': 'integer',
                   'minimum': 0,
                 },
@@ -18794,9 +18794,9 @@
         "unmanaged_user_restricted": True
       },
       'id': 670,
-      'caption': '''Configure minimum allowed Chrome OS version for the device.''',
+      'caption': '''Configure minimum allowed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version for the device.''',
       'tags': [],
-      'desc': '''Configures the requirement of the minimum allowed version of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Configures the requirement of the minimum allowed version of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 
       When this policy is set to a non-empty list:
       If none of the entries has a <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph> greater than the current version of the device, then no restrictions are applied and the already existing restrictions are revoked.
@@ -18814,7 +18814,7 @@
 
       Unmanaged user sessions do not receive notifications and force log out if <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME">unmanaged_user_restricted</ph> is unset or set to False.
 
-      If this policy is not set or set to empty, no restrictions are applied, already existing restrictions are revoked and user can sign in regardless of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version.
+      If this policy is not set or set to empty, no restrictions are applied, already existing restrictions are revoked and user can sign in regardless of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version.
 
       Here <ph name="CHROMEOS_VERSION_PROPERTY_NAME">chromeos_version</ph> can be either an exact version like '13305.0.0' or a version prefix, like '13305'.
       The <ph name="WARNING_PERIOD_PROPERTY_NAME">warning_period</ph> and <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME">aue_warning_period</ph> are optional values specified in number of days. Default value for them is 0 days, which means that there is no warning period.
@@ -18835,7 +18835,7 @@
       'id': 714,
       'caption': '''Configure auto update expiration message for DeviceMinimumVersion policy''',
       'tags': [],
-      'desc': '''This policy is only effective when the device has reached auto update expiration and does not meet the minimum allowed version of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> set through <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME">DeviceMinimumVersion</ph> policy.
+      'desc': '''This policy is only effective when the device has reached auto update expiration and does not meet the minimum allowed version of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> set through <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME">DeviceMinimumVersion</ph> policy.
 
       When this policy is set to a non-empty string :
       If the warning time mentioned in <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME">DeviceMinimumVersion</ph> policy has expired, this message is shown at the login screen when the device is blocked for any user to sign in.
@@ -19135,9 +19135,9 @@
       'id': 357,
       'caption': '''Device wallpaper image''',
       'tags': [],
-      'desc': '''Configure device-level wallpaper image that is shown on the login screen if no user has yet signed in to the device. The policy is set by specifying the URL from which the Chrome OS device can download the wallpaper image and a cryptographic hash used to verify the integrity of the download. The image must be in JPEG format, its file size must not exceed 16MB. The URL must be accessible without any authentication. The wallpaper image is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
+      'desc': '''Configure device-level wallpaper image that is shown on the login screen if no user has yet signed in to the device. The policy is set by specifying the URL from which the ChromeOS device can download the wallpaper image and a cryptographic hash used to verify the integrity of the download. The image must be in JPEG format, its file size must not exceed 16MB. The URL must be accessible without any authentication. The wallpaper image is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
 
-      If the device wallpaper policy is set, the Chrome OS device will download and use the wallpaper image on the login screen if no user has yet signed in to the device. Once the user logs in, the user's wallpaper policy kicks in.
+      If the device wallpaper policy is set, the ChromeOS device will download and use the wallpaper image on the login screen if no user has yet signed in to the device. Once the user logs in, the user's wallpaper policy kicks in.
 
       If the device wallpaper policy is left not set, it's the user's wallpaper policy to decide what to show if the user's wallpaper policy is set.''',
     },
@@ -19158,7 +19158,7 @@
       'id': 364,
       'caption': '''Device sign-in screen locale''',
       'tags': [],
-      'desc': '''Configures the locale which is enforced on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> sign-in screen.
+      'desc': '''Configures the locale which is enforced on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> sign-in screen.
 
       If this policy is set, the sign-in screen will always be displayed in the locale which is given by the first value of this policy (the policy is defined as a list for forward compatibility).  If this policy is not set or is set to an empty list, the sign-in screen will be displayed in the locale of the last user session.  If this policy is set to a value which is not a valid locale, the sign-in screen will be displayed in a fallback locale (currently, en-US).'''
     },
@@ -19179,7 +19179,7 @@
       'id': 365,
       'caption': '''Device sign-in screen keyboard layouts''',
       'tags': [],
-      'desc': '''Configures which keyboard layouts are allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> sign-in screen.
+      'desc': '''Configures which keyboard layouts are allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> sign-in screen.
 
       If this policy is set to a list of input method identifiers, the given input methods will be available on the sign-in screen. The first given input method will be preselected. While a user pod is focused on the sign-in screen, the user's last used input method will be available in addition to the input methods given by this policy. If this policy is not set, the input methods on the sign-in screen will be derived from the locale in which the sign-in screen is displayed. Values which are not valid input method identifiers will be ignored.''',
     },
@@ -19198,7 +19198,7 @@
       'id': 609,
       'caption': '''Force the sign-in screen to show or hide system information.''',
       'tags': [],
-      'desc': '''Specify whether the system information (e.g. Chrome OS version, device serial
+      'desc': '''Specify whether the system information (e.g. ChromeOS version, device serial
       number) is always shown (or hidden) on the login screen.
 
       If the policy is set to true, the system information will be shown forcedly.
@@ -19240,9 +19240,9 @@
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 798,
-      'caption': '''Allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices and a connected Android phone.''',
+      'caption': '''Allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices and a connected Android phone.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users will be allowed to sync Wi-Fi network configurations between their <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device(s) and a connected Android phone. Before Wi-Fi network configurations can sync, users must explicitly opt in to this feature by completing a setup flow.
+      'desc': '''If this setting is enabled, users will be allowed to sync Wi-Fi network configurations between their <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device(s) and a connected Android phone. Before Wi-Fi network configurations can sync, users must explicitly opt in to this feature by completing a setup flow.
 
       If this setting is disabled, users will not be allowed to sync Wi-Fi network configurations.
 
@@ -19307,7 +19307,7 @@
       'id': 795,
       'caption': '''Allow Phone Hub to be enabled.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users will be allowed to opt in to Phone Hub, which allows them to interact with their phone on a Chrome OS device.
+      'desc': '''If this setting is enabled, users will be allowed to opt in to Phone Hub, which allows them to interact with their phone on a ChromeOS device.
 
       If this setting is disabled, users will not be allowed to opt in to Phone Hub.
 
@@ -19338,7 +19338,7 @@
       'id': 936,
       'caption': '''Allow recent photos and videos taken on the phone to be accessed via Phone Hub.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub will be able to view and download recent photos and videos taken on their phone on Chrome OS.
+      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub will be able to view and download recent photos and videos taken on their phone on ChromeOS.
 
       If this setting is disabled, users will not be allowed to use this feature. If the <ph name="PHONE_HUB_ALLOWED_POLICY_NAME">PhoneHubAllowed</ph> policy is disabled, users also will not be allowed to use this feature.
 
@@ -19358,7 +19358,7 @@
       'id': 796,
       'caption': '''Allow Phone Hub notifications to be enabled.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub, will be able to send/receive their phone's notifications on Chrome OS.
+      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub, will be able to send/receive their phone's notifications on ChromeOS.
 
       If this setting is disabled, users will not be allowed to use this feature. If the PhoneHubAllowed policy is disabled, users also will not be allowed to use this feature.
 
@@ -19378,7 +19378,7 @@
       'id': 797,
       'caption': '''Allow Phone Hub task continuation to be enabled.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub, will be able to continue tasks such as viewing their phone's webpages on Chrome OS.
+      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub, will be able to continue tasks such as viewing their phone's webpages on ChromeOS.
 
       If this setting is disabled, users will not be allowed to use this feature. If the PhoneHubAllowed policy is disabled, users also will not be allowed to use this feature.
 
@@ -19706,7 +19706,7 @@
       'id': 522,
       'caption': '''Select task scheduler configuration''',
       'tags': [],
-      'desc': '''Setting the policy instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to use the task scheduler configuration identified by the specified name. This policy can be set to <ph name="CONSERVATIVE_VALUE">Conservative</ph> or <ph name="PERFORMANCE_VALUE">Performance</ph>, which tune the task scheduler for stability or maximum performance, respectively.
+      'desc': '''Setting the policy instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to use the task scheduler configuration identified by the specified name. This policy can be set to <ph name="CONSERVATIVE_VALUE">Conservative</ph> or <ph name="PERFORMANCE_VALUE">Performance</ph>, which tune the task scheduler for stability or maximum performance, respectively.
 
       If unset, users make their own choice.''',
     },
@@ -19728,11 +19728,11 @@
       'deprecated': True,
       'example_value': ['abcdefghabcdefghabcdefghabcdefgh'],
       'id': 377,
-      'caption': '''Whitelist note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen''',
+      'caption': '''Whitelist note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lock screen''',
       'tags': [],
       'desc': '''This policy is deprecated, please use <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST">NoteTakingAppsLockScreenAllowlist</ph> instead.
 
-      Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
+      Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lock screen.
 
       If the preferred app is on the lock screen, a UI element for launching the preferred note-taking app appears on the screen. When launched, the app can create a window on top of the lock screen and create notes in this context. The app can import created notes to the primary user session, when the session is unlocked. Only <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> note-taking apps are supported on the lock screen.
 
@@ -19757,9 +19757,9 @@
       },
       'example_value': ['abcdefghabcdefghabcdefghabcdefgh'],
       'id': 759,
-      'caption': '''The list of note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen''',
+      'caption': '''The list of note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lock screen''',
       'tags': [],
-      'desc': '''Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
+      'desc': '''Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lock screen.
 
       If the preferred app is on the lock screen, a UI element for launching the preferred note-taking app appears on the screen. When launched, the app can create a window on top of the lock screen and create notes in this context. The app can import created notes to the primary user session, when the session is unlocked. Only <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> note-taking apps are supported on the lock screen.
 
@@ -19785,7 +19785,7 @@
       'tags': [],
       'desc': '''Allow content to be cast to the device using <ph name="PRODUCT_NAME">Google Cast</ph>.
 
-          If this policy is set to False, users will not be able to cast content to their device. If this policy is set to True, users are allowed to cast content. If this policy is not set, users are not allowed to cast content to enrolled Chrome OS devices, but can cast to non enrolled devices.''',
+          If this policy is set to False, users will not be able to cast content to their device. If this policy is set to True, users are allowed to cast content. If this policy is not set, users are not allowed to cast content to enrolled ChromeOS devices, but can cast to non enrolled devices.''',
     },
     {
       'name': 'CastReceiverName',
@@ -19983,7 +19983,7 @@
       'tags': [],
       'desc': '''Unless ARC is turned off by other means, then setting the policy to True or leaving it unset lets users use ARC. Setting the policy to False means unaffiliated users may not use ARC.
 
-      Changes to the policy only apply while ARC isn't running, for example, while starting Chrome OS.''',
+      Changes to the policy only apply while ARC isn't running, for example, while starting ChromeOS.''',
     },
     {
       'name': 'DeviceArcDataSnapshotHours',
@@ -20083,7 +20083,7 @@
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME">IsolateOrigins</ph> might also be useful for isolating specific origins at a finer granularity than site (e.g., https://a.example.com).
 
-      On <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 76 and earlier, set the <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME">DeviceLoginScreenSitePerProcess</ph> device policy to the same value. (If the values don't match, a delay can occur when entering a user session.)
+      On <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 76 and earlier, set the <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME">DeviceLoginScreenSitePerProcess</ph> device policy to the same value. (If the values don't match, a delay can occur when entering a user session.)
 
       Note: For Android, use the <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME">SitePerProcessAndroid</ph> policy instead.''',
     },
@@ -20633,7 +20633,7 @@
       'id': 408,
       'caption': '''Enable spellcheck''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled turns spellcheck on, and users can't turn it off. On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> and <ph name="LINUX_OS_NAME">Linux®</ph>, spellcheck languages can be switched on or off individually, so users can still turn spellcheck off by switching off every spellcheck language. To avoid that, use the <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> to force-enable specific spellcheck languages.
+      'desc': '''Setting the policy to Enabled turns spellcheck on, and users can't turn it off. On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> and <ph name="LINUX_OS_NAME">Linux®</ph>, spellcheck languages can be switched on or off individually, so users can still turn spellcheck off by switching off every spellcheck language. To avoid that, use the <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> to force-enable specific spellcheck languages.
 
       Setting the policy to Disabled turns off spellcheck from all sources, and users can't turn it on. The <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME">SpellCheckServiceEnabled</ph>, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> and <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME">SpellcheckLanguageBlocklist</ph> policies have no effect when this policy is set to False.
 
@@ -20775,9 +20775,9 @@
         },
       ],
       'example_value': 1,
-      'desc': '''Notify users that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must be relaunched or <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> must be restarted to apply a pending update.
+      'desc': '''Notify users that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must be relaunched or <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> must be restarted to apply a pending update.
 
-      This policy setting enables notifications to inform the user that a browser relaunch or device restart is recommended or required. If not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> indicates to the user that a relaunch is needed via subtle changes to its menu, while <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> indicates such via a notification in the system tray. If set to 'Recommended', a recurring warning will be shown to the user that a relaunch is recommended. The user can dismiss this warning to defer the relaunch. If set to 'Required', a recurring warning will be shown to the user indicating that a browser relaunch will be forced once the notification period passes. The default period is seven days for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and four days for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>, and may be configured via the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy setting.
+      This policy setting enables notifications to inform the user that a browser relaunch or device restart is recommended or required. If not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> indicates to the user that a relaunch is needed via subtle changes to its menu, while <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> indicates such via a notification in the system tray. If set to 'Recommended', a recurring warning will be shown to the user that a relaunch is recommended. The user can dismiss this warning to defer the relaunch. If set to 'Required', a recurring warning will be shown to the user indicating that a browser relaunch will be forced once the notification period passes. The default period is seven days for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and four days for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, and may be configured via the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy setting.
 
       The user's session is restored following the relaunch/restart.''',
     },
@@ -20796,9 +20796,9 @@
       'caption': '''Set the time period for update notifications''',
       'label': '''Time period (milliseconds)''',
       'example_value': 604800000,
-      'desc': '''Allows you to set the time period, in milliseconds, over which users are notified that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must be relaunched or that a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device must be restarted to apply a pending update.
+      'desc': '''Allows you to set the time period, in milliseconds, over which users are notified that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must be relaunched or that a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device must be restarted to apply a pending update.
 
-      Over this time period, the user will be repeatedly informed of the need for an update. For <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices, a restart notification appears in the system tray according to the <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME">RelaunchHeadsUpPeriod</ph> policy. For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browsers, the app menu changes to indicate that a relaunch is needed once one third of the notification period passes. This notification changes color once two thirds of the notification period passes, and again once the full notification period has passed. The additional notifications enabled by the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy follow this same schedule.
+      Over this time period, the user will be repeatedly informed of the need for an update. For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, a restart notification appears in the system tray according to the <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME">RelaunchHeadsUpPeriod</ph> policy. For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browsers, the app menu changes to indicate that a relaunch is needed once one third of the notification period passes. This notification changes color once two thirds of the notification period passes, and again once the full notification period has passed. The additional notifications enabled by the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy follow this same schedule.
 
       If not set, the default period of 604800000 milliseconds (one week) is used.''',
     },
@@ -20817,9 +20817,9 @@
       'caption': '''Set the time of the first user relaunch notification''',
       'label': '''Time period (milliseconds)''',
       'example_value': 86400000,
-      'desc': '''Allows you to set the time period, in milliseconds, between the first notification that a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device must be restarted to apply a pending update and the end of the time period specified by the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy.
+      'desc': '''Allows you to set the time period, in milliseconds, between the first notification that a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device must be restarted to apply a pending update and the end of the time period specified by the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy.
 
-      If not set, the default period of 259200000 milliseconds (three days) is used for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.''',
+      If not set, the default period of 259200000 milliseconds (three days) is used for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.''',
     },
     {
       'id': 854,
@@ -20887,7 +20887,7 @@
 
       Users are notified of the need for a browser relaunch or device restart based on the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> and <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy settings. Browsers and devices are forcibly restarted at the end of the notification period when the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy is set to 'Required'. This <ph name="RELAUNCH_WINDOW_POLICY_NAME">RelaunchWindow</ph> policy can be used to defer the end of the notification period so that it falls within a specific time window.
 
-      If this policy is not set, the default target time window for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> is between 2 AM and 4 AM. The default target time window for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is the whole day (i.e., the end of the notification period is never deferred).
+      If this policy is not set, the default target time window for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> is between 2 AM and 4 AM. The default target time window for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is the whole day (i.e., the end of the notification period is never deferred).
 
       Note: Though the policy can accept multiple items in <ph name="ENTRIES_FIELD_NAME">entries</ph>, all but the first item are ignored.
       Warning: Setting this policy may delay application of software updates.''',
@@ -20905,9 +20905,9 @@
       'example_value': True,
       'default_for_managed_devices_doc_only': False,
       'id': 421,
-      'caption': '''Allow devices to run virtual machines on Chrome OS''',
+      'caption': '''Allow devices to run virtual machines on ChromeOS''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy to Enabled lets the device run virtual machines on <ph name="PRODUCT_OS_NAME">$2<ex>Chrome OS</ex></ph>. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME">VirtualMachinesAllowed</ph> and <ph name="CROSTINI_ALLOWED_POLICY_NAME">CrostiniAllowed</ph> must be Enabled to use <ph name="PRODUCT_CROSTINI_NAME">Crostini</ph>. Setting the policy to Disabled means the device can't run virtual machines. Changing it to Disabled starts applying the policy to starting new virtual machines, not those already running.
+      'desc': '''Setting the policy to Enabled lets the device run virtual machines on <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph>. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME">VirtualMachinesAllowed</ph> and <ph name="CROSTINI_ALLOWED_POLICY_NAME">CrostiniAllowed</ph> must be Enabled to use <ph name="PRODUCT_CROSTINI_NAME">Crostini</ph>. Setting the policy to Disabled means the device can't run virtual machines. Changing it to Disabled starts applying the policy to starting new virtual machines, not those already running.
 
       When this policy is not set on a managed device, the device can't run virtual machines. Unmanaged devices can run virtual machines.''',
     },
@@ -21560,7 +21560,7 @@
 
       If not set or set to an empty list, users can specify languages as preferred.
 
-      If set to a list with invalid values, those values are ignored. If users added languages not allowed by this policy to the list of preferred languages, they're removed. If they had <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> displayed in a language not allowed by this policy, the next time they sign in, the display language switches to an allowed UI language. Otherwise, if this policy only has invalid entries, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> switches to the first valid value specified by this policy or a fallback locale such as en-US.'''
+      If set to a list with invalid values, those values are ignored. If users added languages not allowed by this policy to the list of preferred languages, they're removed. If they had <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> displayed in a language not allowed by this policy, the next time they sign in, the display language switches to an allowed UI language. Otherwise, if this policy only has invalid entries, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> switches to the first valid value specified by this policy or a fallback locale such as en-US.'''
     },
     {
       'name': 'AllowedInputMethods',
@@ -21580,7 +21580,7 @@
       'id': 456,
       'caption': '''Configure the allowed input methods in a user session''',
       'tags': [],
-      'desc': '''Setting the policy lets users choose one of the input methods for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> sessions that you specify.
+      'desc': '''Setting the policy lets users choose one of the input methods for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> sessions that you specify.
 
        If you leave it unset or set to an empty list, users can select all supported input methods.
 
@@ -21975,13 +21975,13 @@
       'id': 453,
       'caption': '''Update Time Restrictions''',
       'tags': [],
-      'desc': '''This policy controls the time frames during which the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device is not allowed to check for updates automatically.
+      'desc': '''This policy controls the time frames during which the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device is not allowed to check for updates automatically.
       When this policy is set to a non-empty list of time intervals:
-      Devices will not be able to check for updates automatically during the specified time intervals. Devices that require an enterprise rollback or are below the minimum <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version will not be affected by this policy due to potential security issues. Furthermore, this policy will not block update checks requested by users or administrators.
+      Devices will not be able to check for updates automatically during the specified time intervals. Devices that require an enterprise rollback or are below the minimum <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version will not be affected by this policy due to potential security issues. Furthermore, this policy will not block update checks requested by users or administrators.
       Starting from M88, this policy cancels an ongoing update when a restricted time interval is reached. The next auto update after the restricted time interval ends will automatically resume the update. Devices updating to a Quick Fix Build will not be affected by this policy.
       When this policy is unset or contains no time intervals:
       No automatic update checks will be blocked by this policy, but they may be blocked by other policies.
-      Till M88, this feature is only enabled on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices configured as auto-launch kiosks. Other devices will not be restricted by this policy. However starting from M89, this policy is enabled on all <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.''',
+      Till M88, this feature is only enabled on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices configured as auto-launch kiosks. Other devices will not be restricted by this policy. However starting from M89, this policy is enabled on all <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.''',
     },
     {
       'id': 454,
@@ -22100,7 +22100,7 @@
       'id': 458,
       'caption': '''The staging schedule for applying a new update''',
       'tags': ['system-security'],
-      'desc': '''This policy defines a list of percentages that will define the fraction of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices in the OU to update per day starting from the day the update is first discovered. The discovery time is later than the update published time, since it could be a while after the update publishing until the device checks for updates.
+      'desc': '''This policy defines a list of percentages that will define the fraction of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices in the OU to update per day starting from the day the update is first discovered. The discovery time is later than the update published time, since it could be a while after the update publishing until the device checks for updates.
 
       Each (day, percentage) pair contains which percentage of the fleet has to be updated by the given number of days since the update has been discovered. For example, if we have the pairs [(4, 40), (10, 70), (15, 100)], then 40% of the fleet should have been updated 4 days after seeing the update. 70% should be updated after 10 days, and so on.
 
@@ -22165,7 +22165,7 @@
       'supported_on': ['chrome_os:70-'],
       'caption': '''Controls Network File Shares for ChromeOS availability''',
       'example_value': True,
-      'desc': '''Setting the policy to Enabled lets users use Network File Shares for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>. Setting the policy to Disabled means users can't use this feature.''',
+      'desc': '''Setting the policy to Enabled lets users use Network File Shares for <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph>. Setting the policy to Disabled means users can't use this feature.''',
     },
     {
       'name': 'WebRtcEventLogCollectionAllowed',
@@ -22244,7 +22244,7 @@
       'caption': '''Controls Network File Share discovery via <ph name="NETBIOS_NAME">NetBIOS</ph>''',
       'example_value': True,
       'default_for_enterprise_users': False,
-      'desc': '''Setting the policy to Enabled means share discovery (the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>) uses the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> to discover shares on the network. Setting the policy to Disabled means share discovery won't use this protocol to discover shares.
+      'desc': '''Setting the policy to Enabled means share discovery (the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph>) uses the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> to discover shares on the network. Setting the policy to Disabled means share discovery won't use this protocol to discover shares.
 
       Leaving the policy unset means the behavior defaults to off for managed users and on for other users.''',
     },
@@ -22376,7 +22376,7 @@
       (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
       version 99, allows you to permanently override the app name for all web
       apps and PWAs. Currently only supported on
-      <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.)
+      <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.)
 
       - <ph name="CUSTOM_ICON_LABEL">custom_icon</ph>
       (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
@@ -22384,9 +22384,9 @@
       icons have to be square, maximal 1 MB in size, and in one of the following
       formats: jpeg, png, gif, webp, ico. The hash value has to be the SHA256
       hash of the icon file. Currently only supported on
-      <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.)
+      <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.)
 
-      See <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME">PinnedLauncherApps</ph> for pinning apps to the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shelf.''',
+      See <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME">PinnedLauncherApps</ph> for pinning apps to the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shelf.''',
       'label': '''URLs for Web Apps to be silently installed.''',
     },
     {
@@ -22412,7 +22412,7 @@
       When this policy is set to False, version information is not gathered.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 471,
@@ -22437,7 +22437,7 @@
       When this policy is set to False, policy data and time of policy fetch are not gathered.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 472,
@@ -22486,7 +22486,7 @@
       When this policy is set to False, information that can be used to identify users is not gathered.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 499,
@@ -22511,7 +22511,7 @@
       When this policy is set to False, extensions and plugins data are not gathered.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 500,
@@ -22537,7 +22537,7 @@
       When this policy is set to False, Safe Browsing data are not gathered.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 608,
@@ -22563,7 +22563,7 @@
       Extension installation requests are created when users try to install an extension that is not allowed by <ph name="EXTENSION_INSTALL_ALLOWLIST">ExtensionInstallAllowlist</ph> or <ph name="EXTENSION_SETTINGS">ExtensionSettings</ph>.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
+      This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.'''
     },
     {
       'id': 493,
@@ -22602,7 +22602,7 @@
       When this policy is set to Enabled, the data is collected and uploaded to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
       For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, this policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph>.
-      For <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>, this policy is always effective.'''
+      For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy is always effective.'''
     },
     {
       'id': 942,
@@ -22703,7 +22703,7 @@
       'tags': [],
       'desc': '''Setting the policy to Enabled or leaving it unset lets users manage (disconnect or modify) VPN connections. If the VPN connection is created using a VPN app, the UI inside the app isn't affected. So, users might still be able to use the app to modify the VPN connection. Use this policy with the Always on VPN feature, which lets the admin decide to establish a VPN connection when starting a device.
 
-      Setting the policy to Disabled turns off the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> user interfaces that would let the user disconnect or modify VPN connections.''',
+      Setting the policy to Disabled turns off the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> user interfaces that would let the user disconnect or modify VPN connections.''',
     },
     {
       'id': 489,
@@ -22720,7 +22720,7 @@
       'caption': '''Controls enabling NTLM as an authentication protocol for SMB mounts''',
       'example_value': True,
       'default_for_enterprise_users': False,
-      'desc': '''Setting the policy to Enabled means the Network File Shares feature for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> uses NTLM for authentication to SMB shares if necessary. Setting the policy to Disabled turns off NTLM authentication to SMB shares.
+      'desc': '''Setting the policy to Enabled means the Network File Shares feature for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> uses NTLM for authentication to SMB shares if necessary. Setting the policy to Disabled turns off NTLM authentication to SMB shares.
 
       Leaving the policy unset means the behavior defaults to off for managed users and on for other users.''',
     },
@@ -23170,7 +23170,7 @@
       },
       'example_value': True,
       'id': 503,
-      'caption': '''Allow devices to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
+      'caption': '''Allow devices to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
       'tags': [],
       'desc': '''Setting the policy to Enabled turns on <ph name="PLUGIN_VM_NAME">PluginVm</ph> for the device, as long as other settings also allow it. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME">PluginVmAllowed</ph> and <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME">UserPluginVmAllowed</ph> must be True, and either <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME">PluginVmLicenseKey</ph> or <ph name="PLUGIN_VM_USER_ID_POLICY_NAME">PluginVmUserId</ph> must be set for <ph name="PLUGIN_VM_NAME">PluginVm</ph> to run.
 
@@ -23189,7 +23189,7 @@
       'default': False,
       'example_value': True,
       'id': 705,
-      'caption': '''Allow users to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
+      'caption': '''Allow users to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
       'tags': [],
       'desc': '''Allow this user to run PluginVm.
 
@@ -23612,7 +23612,7 @@
       'example_value': True,
       'id': 694,
       'caption': '''Allow Quick Answers to access selected content''',
-      'desc': '''This policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 89.
+      'desc': '''This policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 89.
 
       This policy gives Quick Answers permission to access selected content and send the info to server.
 
@@ -24695,7 +24695,7 @@
       'tags': [],
       'desc': '''Provides configurations of available print servers.
 
-      This policy allows you to provide configuration of external print servers to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices as JSON file.
+      This policy allows you to provide configuration of external print servers to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices as JSON file.
 
       The size of the file must not exceed 1MB and must contain an array of records (JSON objects). Each record must contain fields "id", "url" and "display_name" with strings as values. Values of "id" fields must be unique.
 
@@ -24742,7 +24742,7 @@
       'tags': [],
       'desc': '''Provides configurations of available print servers.
 
-      This policy allows you to provide configuration of external print servers to <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices as JSON file.
+      This policy allows you to provide configuration of external print servers to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices as JSON file.
 
       The size of the file must not exceed 1MB and must contain an array of records (JSON objects). Each record must contain fields "id", "url" and "display_name" with strings as values. Values of "id" fields must be unique.
 
@@ -24771,7 +24771,7 @@
       'id': 577,
       'caption': '''Specify VM CLI permission''',
       'tags': [],
-      'desc': '''Instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to enable or disable virtual machine management console tools.
+      'desc': '''Instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to enable or disable virtual machine management console tools.
 
       If the policy is set to true or left unset, the user will be able to use VM management CLI.
       Otherwise, all of VM management CLI is disabled and hidden.
@@ -26035,7 +26035,7 @@
       'caption': '''Per-App Time Limits''',
       'tags': [],
       'desc': '''Allows to set per-app usage restrictions.
-        Usage restrictions can be applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> for the given user.
+        Usage restrictions can be applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> for the given user.
         Restrictions should be passed in |app_limits| list. Only one entry per-app is allowed. Apps not included in the list have no restrictions.
         It is not possible to block apps that are essential for the operating system, the restrictions for such apps will be ignored.
         App is uniquely identified by |app_id|. Since different types of apps can use different id format |app_type| needs to be specified next to |app_id|.
@@ -26563,7 +26563,7 @@
       'tags': [],
       'supported_on': ['chrome_os: 80-100'],
       'desc': '''This policy specifies which applications and URLs should be whitelisted for per-app usage restrictions.
-        The configured whitelist are applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> for the given user with per-app time limits.
+        The configured whitelist are applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> for the given user with per-app time limits.
         The configured whitelist can only be applied to child user accounts and take effect when <ph name="PER_APP_TIME_LIMITS_POLICY_NAME">PerAppTimeLimits</ph> policy is set.
         The configured whitelist are applied to applications and URLs so that they will not be blocked by per-app time limits.
         Accessing whitelisted URLs will not count towards the chrome time limit.
@@ -26636,7 +26636,7 @@
       'tags': [],
       'supported_on': ['chrome_os: 86-'],
       'desc': '''This policy specifies which applications and URLs should be allowed for per-app usage restrictions.
-        The configured allowlist is applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> for the given user with per-app time limits.
+        The configured allowlist is applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> for the given user with per-app time limits.
         The configured allowlist can only be applied to child user accounts and take effect when <ph name="PER_APP_TIME_LIMITS_POLICY_NAME">PerAppTimeLimits</ph> policy is set.
         The configured allowlist is applied to applications and URLs so that they will not be blocked by per-app time limits.
         Accessing allowed URLs will not count towards the chrome time limit.
@@ -26670,7 +26670,7 @@
       'id': 662,
       'caption': '''Enable <ph name="CHROME_DEVICES_LINK">chrome://devices</ph>''',
       'tags': [],
-      'desc': '''This policy controls access to controllable features in the local discovery UI (<ph name="CHROME_DEVICES_LINK">chrome://devices</ph>) which shows discoverable devices near the user as well as cloud devices registered to them. On all operating systems except for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>, the local discovery UI also allows users to add classic printers connected to their computers to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.
+      'desc': '''This policy controls access to controllable features in the local discovery UI (<ph name="CHROME_DEVICES_LINK">chrome://devices</ph>) which shows discoverable devices near the user as well as cloud devices registered to them. On all operating systems except for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, the local discovery UI also allows users to add classic printers connected to their computers to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.
 
       Setting the policy to Enabled or not set allow local device discovery.
 
@@ -26886,7 +26886,7 @@
         'system_services_password': '0000',
         'policy_credentials_auth_schemes': ['basic','ntlm']
       },
-      'caption': '''Configures System-proxy service for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'caption': '''Configures System-proxy service for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.''',
       'tags': [],
       'desc': '''Configures the availability of System-proxy service and the proxy credentials for system services.
       If the policy is not set, System-proxy service will not be available.''',
@@ -27028,7 +27028,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
               'type': 'integer'
             },
             'policy_version': {
-              'description': 'The client should not interpret this data and should forward it verbatim. The DMServer uses policy_version to verify that the policy view of DMServer matches the view of Chrome OS device.',
+              'description': 'The client should not interpret this data and should forward it verbatim. The DMServer uses policy_version to verify that the policy view of DMServer matches the view of ChromeOS device.',
               'type': 'string'
             },
             'enable_remote_attestation_check': {
@@ -27080,7 +27080,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
               'type': 'integer'
             },
             'policy_version': {
-              'description': 'The client should not interpret this data and should forward it verbatim. The DMServer uses policy_version to verify that the policy view of DMServer matches the view of Chrome OS device.',
+              'description': 'The client should not interpret this data and should forward it verbatim. The DMServer uses policy_version to verify that the policy view of DMServer matches the view of ChromeOS device.',
               'type': 'string'
             },
             'enable_remote_attestation_check': {
@@ -27302,7 +27302,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 718,
       'caption': '''Enable PIN auto-submit feature on the lock and login screen.''',
       'tags': [],
-      'desc': '''The PIN auto-submit feature changes how PINs are entered in Chrome OS.
+      'desc': '''The PIN auto-submit feature changes how PINs are entered in ChromeOS.
           Instead of showing the same textfield that is used for password input, this
           feature shows a special UI that clearly shows to the user how many
           digits are necessary for their PIN. As a consequence, the user's PIN length
@@ -27327,7 +27327,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 721,
       'caption': '''Enable Emoji Suggestion''',
       'tags': [],
-      'desc': '''This policy enables <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to suggest emojis when users type text with their virtual or physical keyboards.
+      'desc': '''This policy enables <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to suggest emojis when users type text with their virtual or physical keyboards.
       If this policy is set to true, the feature will be enabled, and users will be able to change it.
       This policy is defaulted to false, no emoji will be suggested and users cannot override it.''',
     },
@@ -27843,7 +27843,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 786,
       'caption': '''Sets a list of data leak prevention rules.''',
       'tags': [],
-      'desc': '''Configures a list of rules to prevent data leak on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Configures a list of rules to prevent data leak on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
       Data leak can happen by copying and pasting data, transferring files, printing, screensharing, or taking screenshots ...etc.
 
       Each rule consists of the following:
@@ -27946,7 +27946,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 789,
       'caption': '''Allow addition of Family Link accounts to the device''',
       'tags': [],
-      'desc': '''Controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> allows new Family Link user accounts to be added on the device.
+      'desc': '''Controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> allows new Family Link user accounts to be added on the device.
       This policy is only useful in combination with <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME">DeviceUserAllowlist</ph>. It allows Family Link accounts additionally to the accounts defined in the allowlist.
       This policy does not affect the behavior of other sign-in policies. Particularly it will not have any effect when:
       - Adding new users to the device is disabled with <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME">DeviceAllowNewUsers</ph> policy.
@@ -28166,7 +28166,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       If the policy is unset, the default is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph> for enterprise-managed users and <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> for non-managed users.
 
-      In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.''',
+      In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.''',
     },
     {
       'name': 'IntegratedWebAuthenticationAllowed',
@@ -28182,17 +28182,17 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'items': [
         {
           'value': True,
-          'caption': 'The <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials will be used for network authentication to a managed proxy.',
+          'caption': 'The <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> login credentials will be used for network authentication to a managed proxy.',
         },
         {
           'value': False,
-          'caption': 'The <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials will not be used for network authentication.',
+          'caption': 'The <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> login credentials will not be used for network authentication.',
         },
       ],
       'example_value': True,
       'id': 808,
       'default': False,
-      'caption': '''Allow reusing the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials for network authentication''',
+      'caption': '''Allow reusing the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> login credentials for network authentication''',
       'tags': [],
       'desc': ''' This policy is deprecated, please configure Kerberos policies to reuse the login password instead.''',
     },
@@ -28649,7 +28649,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default': True,
       'example_value': True,
       'id': 830,
-      'caption': '''Allow devices to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
+      'caption': '''Allow devices to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
       'tags': [],
       'desc': '''Controls the availability of <ph name="BOREALIS_NAME">Borealis</ph> for this device.
 
@@ -28678,7 +28678,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default': True,
       'example_value': True,
       'id': 831,
-      'caption': '''Allow users to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
+      'caption': '''Allow users to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
       'tags': [],
       'desc': '''Controls the availability of <ph name="BOREALIS_NAME">Borealis</ph> for this user.
 
@@ -28862,9 +28862,9 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 848,
       'caption': '''Only allow connection to the Bluetooth services in the list''',
       'tags': [],
-      'desc': '''This policy allows admins to configure Bluetooth services that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> is allowed to connect to.
+      'desc': '''This policy allows admins to configure Bluetooth services that <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> is allowed to connect to.
 
-When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> only allows users to connect to the specified Bluetooth services with an exception when the list is empty which means any service is allowed to use. UUIDs reserved by the Bluetooth SIG can be represented as <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X">'0xABCD'</ph> or <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X">'ABCD'</ph>. Custom UUIDs can be represented as <ph name="BLUETOOTH_CUSTOM_UUID">'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE'</ph>. UUIDs are case insensitive. Leaving this policy unset lets users connect to any Bluetooth service.'''
+When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> only allows users to connect to the specified Bluetooth services with an exception when the list is empty which means any service is allowed to use. UUIDs reserved by the Bluetooth SIG can be represented as <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X">'0xABCD'</ph> or <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X">'ABCD'</ph>. Custom UUIDs can be represented as <ph name="BLUETOOTH_CUSTOM_UUID">'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE'</ph>. UUIDs are case insensitive. Leaving this policy unset lets users connect to any Bluetooth service.'''
     },
     {
       'name': 'ExplicitlyAllowedNetworkPorts',
@@ -29792,7 +29792,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'tags': [],
       'desc': '''Setting this policy will force Fast Pair to be enabled or disabled.
       Fast Pair is a new Bluetooth pairing flow that links paired peripherals with a GAIA account.
-      This allows other Chrome OS (and Android) devices signed in with the same GAIA account to pair automatically.
+      This allows other ChromeOS (and Android) devices signed in with the same GAIA account to pair automatically.
       If unset, the default value is disabled for enterprise users and enabled for non
       managed accounts.''',
     },
@@ -30159,7 +30159,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'id': 938,
       'caption': '''Controls use of <ph name="AES_KL_NAME">AES Keylocker</ph> for user storage encryption if supported''',
       'example_value': True,
-      'desc': '''This policy controls whether the <ph name="AES_KL_NAME">AES Keylocker</ph> implementation is enabled for user storage encryption for <ph name="DM_CRYPT">dm-crypt</ph> user homes on Chrome OS, if supported.
+      'desc': '''This policy controls whether the <ph name="AES_KL_NAME">AES Keylocker</ph> implementation is enabled for user storage encryption for <ph name="DM_CRYPT">dm-crypt</ph> user homes on ChromeOS, if supported.
 
        This policy only applies to user homes which use <ph name="DM_CRYPT">dm-crypt</ph>) for encryption. Legacy user homes (those which do not use <ph name="DM_CRYPT">dm-crypt</ph>) do not support the use of <ph name="AES_KL_NAME">AES Keylocker</ph> and will default to using <ph name="AES_NI_NAME">AESNI</ph>.
 
@@ -30588,7 +30588,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'caption': '''Allow Developer Mode for Isolated Apps.''',
       'desc': '''Setting the policy to Enabled lets users access Developer Mode for Isolated Apps.
       Setting the policy to Disabled means users will not be able to access these capabilities.
-      If this policy is left not set, the default is not allowed for enterprise-managed users on Chrome OS and allowed for all other users and OSes.'''
+      If this policy is left not set, the default is not allowed for enterprise-managed users on ChromeOS and allowed for all other users and OSes.'''
     },
     {
       'name': 'FloatingWorkspaceEnabled',
@@ -30759,11 +30759,11 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'items': [
         {
           'value': True,
-          'caption': 'Enable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>',
+          'caption': 'Enable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>',
         },
         {
           'value': False,
-          'caption': 'Disable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>',
+          'caption': 'Disable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>',
         },
       ],
       'default': False,
@@ -30940,8 +30940,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'text': '''<ph name="OMA_URI">OMA-URI</ph>:'''
     },
     'doc_chrome_os_reg_loc': {
-      'desc': '''Caption text of the field '<ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> registry location' in the summary chart of a policy in the generated documentation''',
-      'text': '''Windows registry location for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> clients:'''
+      'desc': '''Caption text of the field '<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> registry location' in the summary chart of a policy in the generated documentation''',
+      'text': '''Windows registry location for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> clients:'''
     },
     'doc_mac_linux_pref_name': {
       'desc': '''Caption text of the field 'mac/linux preference name' in the summary chart of a policy in the generated documentation''',
@@ -30976,8 +30976,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'text': '''Description:'''
     },
     'doc_arc_support': {
-      'desc': '''Caption text of the field in the generated documentation that describes how a policy affects Android applications on Chrome OS''',
-      'text': '''Note for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices supporting Android apps:'''
+      'desc': '''Caption text of the field in the generated documentation that describes how a policy affects Android applications on ChromeOS''',
+      'text': '''Note for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices supporting Android apps:'''
     },
     'doc_schema': {
       'desc': '''Caption text of the 'schema' in the summary chart of a policy in the generated documentation''',
@@ -30996,8 +30996,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'text': '''Windows (Windows clients):'''
     },
     'doc_chrome_os_example_value': {
-      'desc': '''Caption text of the field 'windows (Chrome OS clients)' in the summary chart of a policy in the generated documentation''',
-      'text': '''Windows (<ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> clients):'''
+      'desc': '''Caption text of the field 'windows (ChromeOS clients)' in the summary chart of a policy in the generated documentation''',
+      'text': '''Windows (<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> clients):'''
     },
     'doc_banner': {
       'desc': '''A banner shown at the top of the policy documentation''',

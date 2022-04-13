@@ -62,7 +62,7 @@
         </message>
       </if>
       <if expr="is_macosx or chromeos_ash or chromeos_lacros">
-        <message name="IDS_SAD_TAB_RELOAD_CLOSE_TABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other Chrome tabs or apps running on their computer (Mac, Chrome OS).">
+        <message name="IDS_SAD_TAB_RELOAD_CLOSE_TABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other Chrome tabs or apps running on their computer (Mac, ChromeOS).">
           Close other tabs or apps
         </message>
       </if>

@@ -219,7 +219,7 @@
       </if>
       <if expr="not reven">
         <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
-          Chrome OS hasn’t completed its initial setup.
+          ChromeOS hasn’t completed its initial setup.
         </message>
       </if>
       <if expr="is_macosx">
@@ -229,7 +229,7 @@
           and deselect any proxies that have been selected.
         </message>
       </if>
-      <!-- The Chrome OS version of this string is defined in //components/error_page_strings.grdp. -->
+      <!-- The ChromeOS version of this string is defined in //components/error_page_strings.grdp. -->
       <!-- TODO(crbug.com/1307455): Remove ` and not chromeos_ash and not chromeos_lacros` once fixed. -->
       <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Linux instructions for disabling use of a proxy server.">
@@ -265,7 +265,7 @@
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to restart Chrome OS. Shown next to a button that says 'Restart Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
       </if>
@@ -277,7 +277,7 @@
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart Chrome OS. Shown next to a button that says 'Restart Now'.">
+        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
       </if>

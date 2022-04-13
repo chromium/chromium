@@ -90,7 +90,7 @@
     </message>
   </if>
   <if expr="chromeos_ash or chromeos_lacros">
-    <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Chrome OS instructions for disabling use of a proxy server.">
+    <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="ChromeOS instructions for disabling use of a proxy server.">
       You can disable any proxies configured for a connection from the settings page.
     </message>
   </if>

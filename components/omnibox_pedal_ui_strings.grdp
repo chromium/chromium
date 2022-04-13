@@ -449,13 +449,13 @@
     Manage accessibility settings
   </message>
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROMEOS_ACCESSIBILITY">
-    Personalize your accessibility tools in Chrome OS settings
+    Personalize your accessibility tools in ChromeOS settings
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_CHROMEOS_ACCESSIBILITY.">
-    <ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to personalize your accessibility tools in Chrome OS settings
+    <ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to personalize your accessibility tools in ChromeOS settings
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY" desc="Announcement when pedal action button is focused, MANAGE_CHROMEOS_ACCESSIBILITY">
-    Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome OS settings
+    Manage accessibility settings button, Enter to personalize your accessibility tools in ChromeOS settings
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_HINT" desc="The button text contents to suggest pedal action, SET_CHROME_AS_DEFAULT_BROWSER">

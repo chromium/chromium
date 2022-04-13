@@ -493,7 +493,7 @@ Additional details:
   <message name="IDS_POLICY_LEVEL_MANDATORY" desc="Text displayed in the Level column when a policy is mandatory.">
     Mandatory
   </message>
-  <message name="IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT" desc="Indicates that a policy is set by default in an enterprise environment and can be overridden (for Chrome OS only).">
+  <message name="IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT" desc="Indicates that a policy is set by default in an enterprise environment and can be overridden (for ChromeOS only).">
     Enterprise default
   </message>
   <message name="IDS_POLICY_SOURCE_DEFAULT" desc="Indicates that a policy is set by default and can be overridden.">
@@ -520,7 +520,7 @@ Additional details:
   <message name="IDS_POLICY_SOURCE_PLATFORM" desc="Indicates that the policy is obtained from the local OS.">
     Platform
   </message>
-  <message name="IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE" desc="Indicates that the policy is set programmatically because of an active device-local account session: managed session or Kiosk app (both for Chrome OS only). It could have overridden other sources that set this policy.">
+  <message name="IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE" desc="Indicates that the policy is set programmatically because of an active device-local account session: managed session or Kiosk app (both for ChromeOS only). It could have overridden other sources that set this policy.">
     Device local account override
   </message>
   <message name="IDS_POLICY_RISK_TAG_FULL_ADMIN_ACCESS" desc="Title of a group/tag whose policies potentially allow the administrator to access all of a user's data.">

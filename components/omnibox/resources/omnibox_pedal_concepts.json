@@ -11308,9 +11308,9 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage accessibility settings",
-            "description_text": "Personalize your accessibility tools in Chrome OS settings",
-            "spoken_suggestion_description_suffix": "$1, Press tab then Enter to personalize your accessibility tools in Chrome OS settings",
-            "spoken_button_focus_announcement": "Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome OS settings"
+            "description_text": "Personalize your accessibility tools in ChromeOS settings",
+            "spoken_suggestion_description_suffix": "$1, Press tab then Enter to personalize your accessibility tools in ChromeOS settings",
+            "spoken_button_focus_announcement": "Manage accessibility settings button, Enter to personalize your accessibility tools in ChromeOS settings"
           },
           "date_modified_omnibox_ui_strings": "2021-11-03T00:11:18.049Z"
         },

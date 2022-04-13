@@ -46,7 +46,7 @@
     Not available on your platform.
   </message>
   <if expr="chromeos_ash">
-    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts chrome os.">
+    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
     <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" translateable="false" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
@@ -120,7 +120,7 @@
     Not available on your platform.
   </message>
   <if expr="chromeos_ash">
-    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts chrome os.">
+    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
     <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
