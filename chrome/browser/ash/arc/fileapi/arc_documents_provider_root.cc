@@ -808,7 +808,8 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
   metadata.supports_thumbnail = document->supports_thumbnail;
-  metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
+  if (document->last_modified > 0)
+    metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
   metadata.size = document->size;
   std::move(callback).Run(base::File::FILE_OK, metadata);
 }

@@ -813,6 +813,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FilesSwa(),
         TestCase("openQuickViewCrostini"),
         TestCase("openQuickViewCrostini").FilesSwa(),
+        TestCase("openQuickViewLastModifiedMetaData")
+            .EnableGenericDocumentsProvider(),
+        TestCase("openQuickViewLastModifiedMetaData")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("openQuickViewUsb"),
         TestCase("openQuickViewUsb").FilesSwa(),
         TestCase("openQuickViewRemovablePartitions"),

@@ -1449,6 +1449,16 @@ export const ENTRIES = {
     sizeText: '--',
     typeText: 'Folder'
   }),
+
+  invalidLastModifiedDate: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'invalidLastModifiedDate.txt',
+    mimeType: 'text/plain',
+    nameText: 'invalidLastModifiedDate.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text'
+  }),
 };
 
 

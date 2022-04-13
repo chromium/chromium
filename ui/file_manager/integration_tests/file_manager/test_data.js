@@ -260,3 +260,15 @@ export const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN =
       ENTRIES.world,
       ENTRIES.directoryA,
     ]);
+
+/**
+ * Entry set for modified times.
+ *
+ * @type {!Array<TestEntryInfo>}
+ * @const
+ */
+export const MODIFIED_ENTRY_SET = [
+  ENTRIES.hello,
+  ENTRIES.photos,
+  ENTRIES.invalidLastModifiedDate,
+];

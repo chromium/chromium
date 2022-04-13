@@ -110,6 +110,16 @@ constexpr DocumentSpec kNoDeleteSpec{"no-delete-id",
                                      true,
                                      true,
                                      true};
+constexpr DocumentSpec kNoLastModifiedDateSpec{"no-last-modified-date-id",
+                                               kDirSpec.document_id,
+                                               "no-last-modified-date.jpg",
+                                               "image/jpeg",
+                                               3,
+                                               0,
+                                               true,
+                                               true,
+                                               true,
+                                               true};
 constexpr DocumentSpec kNoRenameSpec{"no-rename-id",
                                      kDirSpec.document_id,
                                      "no-rename.jpg",
@@ -193,6 +203,7 @@ constexpr DocumentSpec kAllDocumentSpecs[] = {kRootSpec,
                                               kPhotoSpec,
                                               kMusicSpec,
                                               kNoDeleteSpec,
+                                              kNoLastModifiedDateSpec,
                                               kNoRenameSpec,
                                               kUnknownSizeFileSpec,
                                               kUnknownSizePipeSpec,
@@ -513,7 +524,7 @@ TEST_F(ArcDocumentsProviderRootTest, ReadDirectory) {
              std::vector<ArcDocumentsProviderRoot::ThinFileInfo> file_list) {
             run_loop->Quit();
             EXPECT_EQ(base::File::FILE_OK, error);
-            ASSERT_EQ(6u, file_list.size());
+            ASSERT_EQ(7u, file_list.size());
             EXPECT_EQ(FILE_PATH_LITERAL("music.bin.mp3"), file_list[0].name);
             EXPECT_EQ("music-id", file_list[0].document_id);
             EXPECT_FALSE(file_list[0].is_directory);
@@ -522,22 +533,27 @@ TEST_F(ArcDocumentsProviderRootTest, ReadDirectory) {
             EXPECT_EQ("no-delete-id", file_list[1].document_id);
             EXPECT_FALSE(file_list[1].is_directory);
             EXPECT_EQ(base::Time::FromJavaTime(45), file_list[1].last_modified);
-            EXPECT_EQ(FILE_PATH_LITERAL("no-rename.jpg"), file_list[2].name);
-            EXPECT_EQ("no-rename-id", file_list[2].document_id);
+            EXPECT_EQ(FILE_PATH_LITERAL("no-last-modified-date.jpg"),
+                      file_list[2].name);
+            EXPECT_EQ("no-last-modified-date-id", file_list[2].document_id);
             EXPECT_FALSE(file_list[2].is_directory);
-            EXPECT_EQ(base::Time::FromJavaTime(46), file_list[2].last_modified);
-            EXPECT_EQ(FILE_PATH_LITERAL("photo.jpg"), file_list[3].name);
-            EXPECT_EQ("photo-id", file_list[3].document_id);
+            EXPECT_EQ(base::Time::FromJavaTime(0), file_list[2].last_modified);
+            EXPECT_EQ(FILE_PATH_LITERAL("no-rename.jpg"), file_list[3].name);
+            EXPECT_EQ("no-rename-id", file_list[3].document_id);
             EXPECT_FALSE(file_list[3].is_directory);
-            EXPECT_EQ(base::Time::FromJavaTime(33), file_list[3].last_modified);
-            EXPECT_EQ(FILE_PATH_LITERAL("size-file.jpg"), file_list[4].name);
-            EXPECT_EQ("size-file-id", file_list[4].document_id);
+            EXPECT_EQ(base::Time::FromJavaTime(46), file_list[3].last_modified);
+            EXPECT_EQ(FILE_PATH_LITERAL("photo.jpg"), file_list[4].name);
+            EXPECT_EQ("photo-id", file_list[4].document_id);
             EXPECT_FALSE(file_list[4].is_directory);
-            EXPECT_EQ(base::Time::FromJavaTime(46), file_list[4].last_modified);
-            EXPECT_EQ(FILE_PATH_LITERAL("size-pipe.jpg"), file_list[5].name);
-            EXPECT_EQ("size-pipe-id", file_list[5].document_id);
+            EXPECT_EQ(base::Time::FromJavaTime(33), file_list[4].last_modified);
+            EXPECT_EQ(FILE_PATH_LITERAL("size-file.jpg"), file_list[5].name);
+            EXPECT_EQ("size-file-id", file_list[5].document_id);
             EXPECT_FALSE(file_list[5].is_directory);
             EXPECT_EQ(base::Time::FromJavaTime(46), file_list[5].last_modified);
+            EXPECT_EQ(FILE_PATH_LITERAL("size-pipe.jpg"), file_list[6].name);
+            EXPECT_EQ("size-pipe-id", file_list[6].document_id);
+            EXPECT_FALSE(file_list[5].is_directory);
+            EXPECT_EQ(base::Time::FromJavaTime(46), file_list[6].last_modified);
           },
           &run_loop));
   run_loop.Run();
@@ -1481,6 +1497,29 @@ TEST_F(ArcDocumentsProviderRootTest, ResolveToContentUrlDups) {
             run_loop->Quit();
             EXPECT_EQ(GURL("content://org.chromium.test/document/dup3-id"),
                       url);
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ArcDocumentsProviderRootTest, GetExtraMetadataFromDocument) {
+  base::RunLoop run_loop;
+  root_->GetExtraFileMetadata(
+      base::FilePath(FILE_PATH_LITERAL("dir/no-last-modified-date.jpg")),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, base::File::Error error,
+             const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+            run_loop->Quit();
+            EXPECT_EQ(metadata.last_modified, base::Time());
+          },
+          &run_loop));
+  root_->GetExtraFileMetadata(
+      base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, base::File::Error error,
+             const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+            run_loop->Quit();
+            EXPECT_EQ(metadata.last_modified, base::Time::FromJavaTime(33));
           },
           &run_loop));
   run_loop.Run();

@@ -10,7 +10,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, r
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
 /**
  * The name of the UMA emitted to track how Quick View is opened.
@@ -536,6 +536,45 @@ testcase.openQuickViewRemovablePartitions = async () => {
 
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.hello.nameText);
+};
+
+/**
+ * Tests seeing dashes for an empty last_modified for DocumentsProvider.
+ */
+testcase.openQuickViewLastModifiedMetaData = async () => {
+  const documentsProviderVolumeQuery =
+      '[has-children="true"] [volume-type-icon="documents_provider"]';
+
+  // Add files to the DocumentsProvider volume.
+  await addEntries(['documents_provider'], MODIFIED_ENTRY_SET);
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+
+  // Wait for the DocumentsProvider volume to mount and then click to open
+  // DocumentsProvider Volume.
+  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+
+  // Check: the DocumentsProvider files should appear in the file list.
+  const files = TestEntryInfo.getExpectedRows(MODIFIED_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Open a DocumentsProvider file in Quick View.
+  await openQuickView(appId, ENTRIES.hello.nameText);
+
+  const lastValidModifiedText =
+      await getQuickViewMetadataBoxField(appId, 'Date modified');
+  chrome.test.assertEq(ENTRIES.hello.lastModifiedTime, lastValidModifiedText);
+
+  await closeQuickView(appId);
+
+  // Open a DocumentsProvider file in Quick View.
+  await openQuickView(appId, ENTRIES.invalidLastModifiedDate.nameText);
+
+  // Modified time should be displayed as "--" when it's absent.
+  const lastInvalidModifiedText =
+      await getQuickViewMetadataBoxField(appId, 'Date modified');
+  chrome.test.assertEq('--', lastInvalidModifiedText);
 };
 
 /**
