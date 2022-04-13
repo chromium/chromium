@@ -470,13 +470,13 @@ int CSSStyleSheet::addRule(const String& selector,
 }
 
 ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
-                                     const String& text) {
+                                     const String& text,
+                                     ExceptionState& exception_state) {
   if (!IsConstructed()) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotAllowedError,
-            "Can't call replace on non-constructed CSSStyleSheets."));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Can't call replace on non-constructed CSSStyleSheets.");
+    return ScriptPromise();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
   // We currently parse synchronously, and since @import support was removed,
