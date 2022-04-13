@@ -246,15 +246,8 @@ TEST_F(BaseFileTest, WriteAndDetach) {
   expect_file_survives_ = true;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314068): Re-enable when WriteWithHashAndDetach works on
-// Fuchsia.
-#define MAYBE_WriteWithHashAndDetach DISABLED_WriteWithHashAndDetach
-#else
-#define MAYBE_WriteWithHashAndDetach WriteWithHashAndDetach
-#endif
 // Write data to the file and detach it, and calculate its sha256 hash.
-TEST_F(BaseFileTest, MAYBE_WriteWithHashAndDetach) {
+TEST_F(BaseFileTest, WriteWithHashAndDetach) {
   ASSERT_TRUE(InitializeFile());
   ASSERT_TRUE(AppendDataToFile(kTestData1));
   ExpectHashValue(kHashOfTestData1, base_file_->Finish());
@@ -470,29 +463,17 @@ TEST_F(BaseFileTest, MAYBE_WriteWithError) {
   base_file_->Finish();
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314067): Re-enable when UninitializedFile works on Fuchsia.
-#define MAYBE_UninitializedFile DISABLED_UninitializedFile
-#else
-#define MAYBE_UninitializedFile UninitializedFile
-#endif
 // Try to write to uninitialized file.
-TEST_F(BaseFileTest, MAYBE_UninitializedFile) {
+TEST_F(BaseFileTest, UninitializedFile) {
   expect_in_progress_ = false;
   set_expected_error(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   EXPECT_FALSE(AppendDataToFile(kTestData1));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314056): Re-enable when duplicate file works on Fuchsia.
-#define MAYBE_DuplicateBaseFile DISABLED_DuplicateBaseFile
-#else
-#define MAYBE_DuplicateBaseFile DuplicateBaseFile
-#endif
 // Create two |BaseFile|s with the same file, and attempt to write to both.
 // Overwrite base_file_ with another file with the same name and
 // non-zero contents, and make sure the last file to close 'wins'.
-TEST_F(BaseFileTest, MAYBE_DuplicateBaseFile) {
+TEST_F(BaseFileTest, DuplicateBaseFile) {
   ASSERT_TRUE(InitializeFile());
 
   // Create another |BaseFile| referring to the file that |base_file_| owns.
@@ -567,15 +548,9 @@ TEST_F(BaseFileTest, MAYBE_ReadonlyBaseFile) {
   expect_file_survives_ = true;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314059): Re-enable when BaseFileKnownHash works on Fuchsia.
-#define MAYBE_ExistingBaseFileKnownHash DISABLED_ExistingBaseFileKnownHash
-#else
-#define MAYBE_ExistingBaseFileKnownHash ExistingBaseFileKnownHash
-#endif
 // Open an existing file and continue writing to it. The hash of the partial
 // file is known and matches the existing contents.
-TEST_F(BaseFileTest, MAYBE_ExistingBaseFileKnownHash) {
+TEST_F(BaseFileTest, ExistingBaseFileKnownHash) {
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("existing");
   ASSERT_EQ(kTestDataLength1,
             base::WriteFile(file_path, kTestData1, kTestDataLength1));
@@ -717,18 +692,9 @@ TEST_F(BaseFileTest, ExistingBaseFileKnownHashTooLong) {
   ExpectHashValue(kHashOfTestData1To3, base_file_->Finish());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314061): Re-enable when ExistingBaseFileUnknownHashTooLong
-// works on Fuchsia.
-#define MAYBE_ExistingBaseFileUnknownHashTooLong \
-  DISABLED_ExistingBaseFileUnknownHashTooLong
-#else
-#define MAYBE_ExistingBaseFileUnknownHashTooLong \
-  ExistingBaseFileUnknownHashTooLong
-#endif
 // Open an existing file. The size is large than expected and the hash is
 // unknown.
-TEST_F(BaseFileTest, MAYBE_ExistingBaseFileUnknownHashTooLong) {
+TEST_F(BaseFileTest, ExistingBaseFileUnknownHashTooLong) {
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("existing");
   std::string contents;
   contents.append(kTestData1);
@@ -747,19 +713,10 @@ TEST_F(BaseFileTest, MAYBE_ExistingBaseFileUnknownHashTooLong) {
   ExpectHashValue(kHashOfTestData1To3, base_file_->Finish());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314061): Re-enable when ExistingBaseFileUnknownHashTooLong
-// works on Fuchsia.
-#define MAYBE_ExistingBaseFileUnknownHashTooLongForLargeFile \
-  DISABLED_ExistingBaseFileUnknownHashTooLongForLargeFile
-#else
-#define MAYBE_ExistingBaseFileUnknownHashTooLongForLargeFile \
-  ExistingBaseFileUnknownHashTooLongForLargeFile
-#endif
 // Similar to ExistingBaseFileKnownHashTooLong test, but with a file large
 // enough to requre multiple Read()s to complete. This provides additional code
 // coverage for the CalculatePartialHash() logic.
-TEST_F(BaseFileTest, MAYBE_ExistingBaseFileUnknownHashTooLongForLargeFile) {
+TEST_F(BaseFileTest, ExistingBaseFileUnknownHashTooLongForLargeFile) {
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("existing");
   const size_t kFileSize = 1024 * 1024;
   const size_t kIntermediateSize = kFileSize / 2 + 111;
