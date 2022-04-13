@@ -73,6 +73,9 @@ enum class OobeDialogState {
 
   // Showing enrollment screen with the possibility to cancel.
   ENROLLMENT_CANCEL_ENABLED = 16,
+
+  // Showing enrollment success step.
+  ENROLLMENT_SUCCESS = 17,
 };
 
 // Supported multi-profile user behavior values.

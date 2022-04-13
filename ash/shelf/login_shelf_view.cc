@@ -303,15 +303,6 @@ class LoginShelfButton : public views::LabelButton {
   const gfx::VectorIcon& icon_;
 };
 
-bool ShutdownButtonHidden(OobeDialogState state) {
-  return state == OobeDialogState::MIGRATION ||
-         state == OobeDialogState::ENROLLMENT ||
-         state == OobeDialogState::ENROLLMENT_CANCEL_ENABLED ||
-         state == OobeDialogState::ONBOARDING ||
-         state == OobeDialogState::KIOSK_LAUNCH ||
-         state == OobeDialogState::PASSWORD_CHANGED;
-}
-
 }  // namespace
 
 class KioskAppsButton : public views::MenuButton,
@@ -877,10 +868,10 @@ void LoginShelfView::UpdateUi() {
 
   GetViewByID(kShutdown)->SetVisible(!show_reboot &&
                                      !is_lock_screen_note_in_foreground &&
-                                     !ShutdownButtonHidden(dialog_state_));
+                                     ShouldShowShutdownButton());
   GetViewByID(kRestart)->SetVisible(show_reboot &&
                                     !is_lock_screen_note_in_foreground &&
-                                    !ShutdownButtonHidden(dialog_state_));
+                                    ShouldShowShutdownButton());
   GetViewByID(kSignOut)->SetVisible(is_locked &&
                                     !is_lock_screen_note_in_foreground);
   GetViewByID(kCloseNote)
@@ -963,6 +954,29 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
       Shell::Get()->session_controller()->NumberOfLoggedInUsers() != 0;
 
   return dialog_state_allowed && !user_session_started;
+}
+
+// If OobeRemoveShutdownButton feature is ON: show Shutdown button only in one
+// of the cases:
+//  1. On general login screen, when OOBE is completed and device is owned;
+//  2. On enrollment success step (admins/resellers may use the on screen button
+//     to shut down the device after enrollment);
+//  3. On first screen of gaia login flow (same reason as 2).
+bool LoginShelfView::ShouldShowShutdownButton() const {
+  if (features::IsOobeRemoveShutdownButtonEnabled()) {
+    return dialog_state_ == OobeDialogState::HIDDEN ||
+           dialog_state_ == OobeDialogState::ENROLLMENT_SUCCESS ||
+           dialog_state_ == OobeDialogState::EXTENSION_LOGIN ||
+           dialog_state_ == OobeDialogState::BLOCKING ||
+           (dialog_state_ == OobeDialogState::GAIA_SIGNIN &&
+            is_first_signin_step_);
+  }
+  return !(dialog_state_ == OobeDialogState::MIGRATION ||
+           dialog_state_ == OobeDialogState::ENROLLMENT ||
+           dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_ENABLED ||
+           dialog_state_ == OobeDialogState::ONBOARDING ||
+           dialog_state_ == OobeDialogState::KIOSK_LAUNCH ||
+           dialog_state_ == OobeDialogState::PASSWORD_CHANGED);
 }
 
 // Show guest button if:

@@ -189,6 +189,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // would appear. If not, the device would shutdown immediately.
   void RequestShutdown();
 
+  bool ShouldShowShutdownButton() const;
+
   bool ShouldShowGuestButton() const;
 
   bool ShouldShowEnterpriseEnrollmentButton() const;

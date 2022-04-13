@@ -89,6 +89,11 @@ class SigninFatalScreen extends SigninFatalErrorBase {
     });
   }
 
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.BLOCKING;
+  }
+
   /**
    * Returns the control which should receive initial focus.
    */

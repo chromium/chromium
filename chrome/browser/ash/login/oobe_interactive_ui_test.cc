@@ -105,7 +105,13 @@ void RunWelcomeScreenChecks() {
   test::OobeJS().ExpectHiddenPath({"connect", "languageScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "timezoneScreen"});
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
+
+  if (features::IsOobeRemoveShutdownButtonEnabled()) {
+    EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  } else {
+    EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  }
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
@@ -115,7 +121,11 @@ void RunWelcomeScreenChecks() {
 void RunNetworkSelectionScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"network-selection", "nextButton"});
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  if (features::IsOobeRemoveShutdownButtonEnabled()) {
+    EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  } else {
+    EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  }
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
@@ -131,7 +141,11 @@ void RunEulaScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"oobe-eula-md", "acceptButton"});
   test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "crosEulaFrame"})->Wait();
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown);
+  if (features::IsOobeRemoveShutdownButtonEnabled()) {
+    EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  } else {
+    EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  }
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
@@ -505,6 +519,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     bool is_tablet;
     bool is_quick_unlock_enabled;
     bool hide_shelf_controls_in_tablet_mode;
+    bool is_oobe_remove_shutdown_button_enabled;
     ArcState arc_state;
 
     std::string ToString() const {
@@ -513,6 +528,8 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
              (is_quick_unlock_enabled ? "true" : "false") +
              ", hide_shelf_controls_in_tablet_mode: " +
              (hide_shelf_controls_in_tablet_mode ? "true" : "false") +
+             ", is_oobe_remove_shutdown_button_enabled: " +
+             (is_oobe_remove_shutdown_button_enabled ? "true" : "false") +
              ", arc_state: " + ArcStateToString(arc_state) + "}";
     }
   };
@@ -520,18 +537,25 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   explicit OobeEndToEndTestSetupMixin(
       InProcessBrowserTestMixinHost* mixin_host,
       net::EmbeddedTestServer* arc_tos_server,
-      const std::tuple<bool, bool, bool, ArcState>& parameters)
+      const std::tuple<bool, bool, bool, bool, ArcState>& parameters)
       : InProcessBrowserTestMixin(mixin_host), arc_tos_server_(arc_tos_server) {
     std::tie(params_.is_tablet, params_.is_quick_unlock_enabled,
-             params_.hide_shelf_controls_in_tablet_mode, params_.arc_state) =
-        parameters;
+             params_.hide_shelf_controls_in_tablet_mode,
+             params_.is_oobe_remove_shutdown_button_enabled,
+             params_.arc_state) = parameters;
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
     if (params_.hide_shelf_controls_in_tablet_mode) {
-      feature_list_.InitWithFeatures({features::kHideShelfControlsInTabletMode},
-                                     {});
+      enabled_features.push_back(features::kHideShelfControlsInTabletMode);
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kHideShelfControlsInTabletMode});
+      disabled_features.push_back(features::kHideShelfControlsInTabletMode);
     }
+    if (params_.is_oobe_remove_shutdown_button_enabled) {
+      enabled_features.push_back(features::kOobeRemoveShutdownButton);
+    } else {
+      disabled_features.push_back(features::kOobeRemoveShutdownButton);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   OobeEndToEndTestSetupMixin(const OobeEndToEndTestSetupMixin&) = delete;
@@ -622,6 +646,10 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     return params_.hide_shelf_controls_in_tablet_mode;
   }
 
+  bool is_oobe_remove_shutdown_button_enabled() const {
+    return params_.is_oobe_remove_shutdown_button_enabled;
+  }
+
   ArcState arc_state() const { return params_.arc_state; }
 
  private:
@@ -636,9 +664,10 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
 }  // namespace
 
-class OobeInteractiveUITest : public OobeBaseTest,
-                              public ::testing::WithParamInterface<
-                                  std::tuple<bool, bool, bool, ArcState>> {
+class OobeInteractiveUITest
+    : public OobeBaseTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, bool, bool, bool, ArcState>> {
  public:
   OobeInteractiveUITest(const OobeInteractiveUITest&) = delete;
   OobeInteractiveUITest& operator=(const OobeInteractiveUITest&) = delete;
@@ -795,6 +824,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
+                     testing::Bool(),
                      testing::Values(ArcState::kNotAvailable,
                                      ArcState::kAcceptTerms)));
 
@@ -884,12 +914,14 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
+                     testing::Bool(),
                      testing::Values(ArcState::kNotAvailable,
                                      ArcState::kAcceptTerms)));
 
-class PublicSessionOobeTest : public MixinBasedInProcessBrowserTest,
-                              public ::testing::WithParamInterface<
-                                  std::tuple<bool, bool, bool, ArcState>> {
+class PublicSessionOobeTest
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, bool, bool, bool, ArcState>> {
  public:
   PublicSessionOobeTest()
       : PublicSessionOobeTest(false /*requires_terms_of_service*/) {}
@@ -978,6 +1010,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
+                     testing::Bool(),
                      testing::Values(ArcState::kNotAvailable)));
 
 class PublicSessionWithTermsOfServiceOobeTest : public PublicSessionOobeTest {
@@ -1012,11 +1045,13 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
+                     testing::Bool(),
                      testing::Values(ArcState::kNotAvailable)));
 
-class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
-                              public ::testing::WithParamInterface<
-                                  std::tuple<bool, bool, bool, ArcState>> {
+class EphemeralUserOobeTest
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, bool, bool, bool, ArcState>> {
  public:
   EphemeralUserOobeTest() { login_manager_.set_should_launch_browser(true); }
   ~EphemeralUserOobeTest() override = default;
@@ -1109,6 +1144,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     EphemeralUserOobeTest,
     testing::Combine(testing::Bool(),
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Values(ArcState::kNotAvailable,

@@ -372,13 +372,14 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||
-        step === OobeTypes.EnrollmentStep.SUCCESS ||
         step == OobeTypes.EnrollmentStep.TPM_CHECKING;
     if (this.isCancelDisabled) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
       Oobe.getInstance().setOobeUIState(
-          OOBE_UI_STATE.ENROLLMENT_CANCEL_ENABLED);
+          step === OobeTypes.EnrollmentStep.SUCCESS ?
+              OOBE_UI_STATE.ENROLLMENT_SUCCESS :
+              OOBE_UI_STATE.ENROLLMENT_CANCEL_ENABLED);
     }
   }
 

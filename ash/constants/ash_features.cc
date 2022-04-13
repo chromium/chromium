@@ -1051,6 +1051,11 @@ const base::Feature kOobeQuickStart{"OobeQuickStart",
 const base::Feature kOobeNewRecommendApps{"OobeNewRecommendApps",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Removes "Shut down" button from OOBE, except first login screen and
+// successful enrollment step.
+const base::Feature kOobeRemoveShutdownButton{
+    "OobeRemoveShutdownButton", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the feedback tool new UX on Chrome OS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
@@ -1921,6 +1926,10 @@ bool IsOobeQuickStartEnabled() {
 
 bool IsOobeNewRecommendAppsEnabled() {
   return base::FeatureList::IsEnabled(kOobeNewRecommendApps);
+}
+
+bool IsOobeRemoveShutdownButtonEnabled() {
+  return base::FeatureList::IsEnabled(kOobeRemoveShutdownButton);
 }
 
 bool IsOobeThemeSelectionEnabled() {

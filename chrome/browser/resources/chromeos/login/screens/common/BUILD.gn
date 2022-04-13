@@ -543,6 +543,7 @@ js_library("saml_confirm_password.m") {
 js_library("signin_fatal_error.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.m.js" ]
   deps = [
+    "../../components:display_manager_types.m",
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
