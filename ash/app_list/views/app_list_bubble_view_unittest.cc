@@ -1424,5 +1424,21 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
   EXPECT_FALSE(gradient_mask_bounds_end.Intersects(app_view_bounds));
 }
 
+// Verifies that hidden app list bubble view does not attempt to change its
+// active page when app list model gets cleared.
+TEST_F(AppListBubbleViewTest, HiddenAppListPageNotSetDuringShutdown) {
+  // Show app list so AppListBubbleView gets created.
+  AddAppItems(5);
+  ShowAppList();
+
+  DismissAppList();
+  EXPECT_EQ(AppListBubblePage::kNone,
+            GetAppListTestHelper()->GetBubbleView()->current_page_for_test());
+
+  AppListModelProvider::Get()->ClearActiveModel();
+  EXPECT_EQ(AppListBubblePage::kNone,
+            GetAppListTestHelper()->GetBubbleView()->current_page_for_test());
+}
+
 }  // namespace
 }  // namespace ash

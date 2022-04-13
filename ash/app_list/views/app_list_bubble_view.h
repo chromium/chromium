@@ -112,6 +112,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
 
+  AppListBubblePage current_page_for_test() { return current_page_; }
   ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
   SearchBoxView* search_box_view_for_test() { return search_box_view_; }
   views::View* separator_for_test() { return separator_; }
