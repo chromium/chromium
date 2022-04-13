@@ -720,6 +720,11 @@ class CORE_EXPORT LocalFrameView final
   void ScrollRectToVisibleInRemoteParent(const PhysicalRect&,
                                          mojom::blink::ScrollIntoViewParamsPtr);
 
+  // Returns true if a scroll into view can continue to cause scrolling in the
+  // parent frame.
+  bool AllowedToPropagateScrollIntoView(
+      const mojom::blink::ScrollIntoViewParamsPtr&);
+
   PaintArtifactCompositor* GetPaintArtifactCompositor() const;
 
   cc::Layer* RootCcLayer();

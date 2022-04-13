@@ -16,8 +16,10 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -753,6 +755,90 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   // Finish scrolling the container
   Compositor().BeginFrame(0.5);
   ASSERT_EQ(Window().scrollY(), target->OffsetTop());
+}
+
+TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
+  v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main("https://example.com/test.html", "text/html");
+  SimRequest child("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main.Complete(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            width: 2000px;
+            height: 2000px;
+          }
+
+          iframe {
+            position: absolute;
+            left: 1000px;
+            top: 1200px;
+            width: 200px;
+            height: 200px;
+          }
+        </style>
+        <iframe id="childFrame" src="child.html"></iframe>
+      )HTML");
+  child.Complete(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            width: 1000px;
+            height: 1000px;
+          }
+
+          div {
+            position: absolute;
+            left: 300px;
+            top: 400px;
+            background-color: red;
+          }
+        </style>
+        <div id="target">Target</div>
+      )HTML");
+
+  Compositor().BeginFrame();
+  ASSERT_EQ(Window().scrollY(), 0);
+
+  Element* child_frame = GetDocument().getElementById("childFrame");
+  ASSERT_TRUE(child_frame);
+  Document* child_document =
+      To<HTMLIFrameElement>(child_frame)->contentDocument();
+
+  Element* target = child_document->getElementById("target");
+  PhysicalRect rect(target->GetLayoutObject()->AbsoluteBoundingBoxRect());
+
+  child_frame->setAttribute(html_names::kStyleAttr, "display:none");
+  Compositor().BeginFrame();
+
+  // Calling scroll into view on an element without a LayoutObject shouldn't
+  // cause scrolling or a crash
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+  options->setBlock("start");
+  options->setBehavior("smooth");
+  auto* arg =
+      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
+  target->scrollIntoView(arg);
+
+  EXPECT_EQ(Window().scrollY(), 0);
+  EXPECT_EQ(Window().scrollX(), 0);
+
+  // The display:none iframe can still have a LayoutView which other Blink code
+  // may call into so ensure we don't crash or do something strange since its
+  // owner element will not have a LayoutObject.
+  ASSERT_TRUE(child_document->GetLayoutView());
+  auto params = ScrollAlignment::CreateScrollIntoViewParams(
+      ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
+      mojom::blink::ScrollType::kProgrammatic, false,
+      mojom::blink::ScrollBehavior::kInstant);
+  child_document->GetLayoutView()->ScrollRectToVisible(rect, std::move(params));
+
+  EXPECT_EQ(Window().scrollY(), 0);
+  EXPECT_EQ(Window().scrollX(), 0);
 }
 
 }  // namespace

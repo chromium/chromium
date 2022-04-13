@@ -887,11 +887,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedScrollWidth() const;
   int PixelSnappedScrollHeight() const;
 
-  // If makeVisibleInVisualViewport is set, the visual viewport will be scrolled
-  // if required to make the rect visible.
-  PhysicalRect ScrollRectToVisibleRecursive(
-      const PhysicalRect&,
-      mojom::blink::ScrollIntoViewParamsPtr);
+  // Reveals the given rect, given in absolute coordinates, by scrolling this
+  // LayoutBox and then all its ancestors up to the local root frame. To
+  // continue the reveal through remote ancestors, use
+  // LayoutObject::ScrollRectToVisible.
+  PhysicalRect ScrollRectToVisibleLocally(
+      const PhysicalRect& absolute_rect,
+      const mojom::blink::ScrollIntoViewParamsPtr&);
 
   LayoutRectOutsets MarginBoxOutsets() const {
     NOT_DESTROYED();
@@ -1507,7 +1509,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool CanBeScrolledAndHasScrollableArea() const;
-  virtual bool CanBeProgramaticallyScrolled() const;
+  virtual bool CanBeProgrammaticallyScrolled() const;
   virtual void Autoscroll(const PhysicalOffset&);
   PhysicalOffset CalculateAutoscrollDirection(
       const gfx::PointF& point_in_root_frame) const;
@@ -2295,10 +2297,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddSnapArea(LayoutBox&);
   void RemoveSnapArea(const LayoutBox&);
 
-  // Returns true when the current recursive scroll into visible could propagate
-  // to parent frame.
-  bool AllowedToPropagateRecursiveScrollToParentFrame(
-      const mojom::blink::ScrollIntoViewParamsPtr&);
+  // Returns the parent LayoutBox, crossing local frame boundaries, that a
+  // scroll should bubble up to or nullptr if no such box exists.
+  LayoutBox* GetScrollParent(const mojom::blink::ScrollIntoViewParamsPtr&);
 
   PhysicalRect DebugRect() const override;
 

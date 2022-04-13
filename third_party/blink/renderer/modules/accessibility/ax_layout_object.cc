@@ -148,7 +148,7 @@ ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
   // used to; however, accessibility must consider any kind of non-visible
   // overflow as programmatically scrollable. Unfortunately
   // LayoutBox::CanBeScrolledAndHasScrollableArea() method calls
-  // LayoutBox::CanBeProgramaticallyScrolled() which does not consider
+  // LayoutBox::CanBeProgrammaticallyScrolled() which does not consider
   // visibility:hidden content to be programmatically scrollable, although it
   // certainly is, and can even be scrolled by selecting and using shift+arrow
   // keys. It should be noticed that the new code used here reduces the overall

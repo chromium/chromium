@@ -3853,6 +3853,26 @@ void LocalFrameView::ScrollRectToVisibleInRemoteParent(
       std::move(params));
 }
 
+bool LocalFrameView::AllowedToPropagateScrollIntoView(
+    const mojom::blink::ScrollIntoViewParamsPtr& params) {
+  if (!params->cross_origin_boundaries) {
+    Frame* parent_frame = GetFrame().Tree().Parent();
+    if (parent_frame &&
+        !parent_frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            GetFrame().GetSecurityContext()->GetSecurityOrigin())) {
+      return false;
+    }
+  }
+
+  if (params->type != mojom::blink::ScrollType::kProgrammatic)
+    return true;
+
+  if (!GetFrame().GetDocument())
+    return true;
+
+  return !GetFrame().GetDocument()->IsVerticalScrollEnforced();
+}
+
 void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {
   if (root_layer_did_scroll_) {
     root_layer_did_scroll_ = false;

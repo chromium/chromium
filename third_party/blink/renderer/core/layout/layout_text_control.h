@@ -89,7 +89,7 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  bool CanBeProgramaticallyScrolled() const final {
+  bool CanBeProgrammaticallyScrolled() const final {
     NOT_DESTROYED();
     return true;
   }
