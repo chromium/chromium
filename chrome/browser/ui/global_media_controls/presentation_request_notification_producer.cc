@@ -7,15 +7,10 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/unguessable_token.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "components/global_media_controls/public/media_item_manager.h"
-#include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
