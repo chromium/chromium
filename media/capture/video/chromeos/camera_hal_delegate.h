@@ -45,9 +45,9 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT CameraHalDelegate final
     : public cros::mojom::CameraModuleCallbacks {
  public:
-  CameraHalDelegate();
-  // CameraHalDelegate is functional only after this call succeeds.
-  bool Init();
+  // All the Mojo IPC operations happen on |ipc_task_runner|.
+  explicit CameraHalDelegate(
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
 
   ~CameraHalDelegate() final;
 
@@ -72,22 +72,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
       scoped_refptr<base::SingleThreadTaskRunner>
           task_runner_for_screen_observer,
       const VideoCaptureDeviceDescriptor& device_descriptor);
-
   void GetDevicesInfo(
       VideoCaptureDeviceFactory::GetDevicesInfoCallback callback);
-
-  // Returns camera pan, tilt, zoom capability support.
-  VideoCaptureControlSupport GetControlSupport(
-      const cros::mojom::CameraInfoPtr& camera_info);
-
-  // Gets the camera info of |device_id|. Returns null CameraInfoPtr on error.
-  cros::mojom::CameraInfoPtr GetCameraInfoFromDeviceId(
-      const std::string& device_id);
-
-  void EnableVirtualDevice(const std::string& device_id, bool enable);
-  void DisableAllVirtualDevices();
-
-  const VendorTagInfo* GetVendorTagInfoByName(const std::string& full_name);
 
   // Asynchronous method to open the camera device designated by |camera_id|.
   // This method may be called on any thread; |callback| will run on
@@ -100,6 +86,20 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   // Gets camera id from device id. Returns -1 on error.
   int GetCameraIdFromDeviceId(const std::string& device_id);
+
+  // Returns camera pan, tilt, zoom capability support.
+  VideoCaptureControlSupport GetControlSupport(
+      const cros::mojom::CameraInfoPtr& camera_info);
+
+  // Gets the camera info of |device_id|. Returns null CameraInfoPtr on error.
+  cros::mojom::CameraInfoPtr GetCameraInfoFromDeviceId(
+      const std::string& device_id);
+
+  const VendorTagInfo* GetVendorTagInfoByName(const std::string& full_name);
+
+  void EnableVirtualDevice(const std::string& device_id, bool enable);
+
+  void DisableAllVirtualDevices();
 
  private:
   void OnRegisteredCameraHalClient(int32_t result);
@@ -205,12 +205,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   std::unique_ptr<CameraBufferFactory> camera_buffer_factory_;
 
-  // The thread that all the Mojo operations of CameraHalDelegate take
-  // place.  Started in constructor and stopped in destructor.
-  base::Thread camera_hal_ipc_thread_;
-
   // The task runner where all the camera module Mojo communication takes place.
-  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
 
   // The Mojo proxy to access the camera module at the remote camera HAL.  Bound
   // to |ipc_task_runner_|.
@@ -223,7 +219,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   // An internal delegate to handle VendorTagOps mojo connection and query
   // information of vendor tags.  Bound to |ipc_task_runner_|.
-  std::unique_ptr<VendorTagOpsDelegate> vendor_tag_ops_delegate_;
+  VendorTagOpsDelegate vendor_tag_ops_delegate_;
 
   // A map from camera id to corresponding delegate instance.
   base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>

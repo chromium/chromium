@@ -38,7 +38,7 @@ namespace media {
 
 class CameraHalDelegateTest : public ::testing::Test {
  public:
-  CameraHalDelegateTest() {}
+  CameraHalDelegateTest() : hal_delegate_thread_("HalDelegateThread") {}
 
   CameraHalDelegateTest(const CameraHalDelegateTest&) = delete;
   CameraHalDelegateTest& operator=(const CameraHalDelegateTest&) = delete;
@@ -46,17 +46,17 @@ class CameraHalDelegateTest : public ::testing::Test {
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
-    camera_hal_delegate_ = std::make_unique<CameraHalDelegate>();
-    if (!camera_hal_delegate_->Init()) {
-      LOG(ERROR) << "Failed to initialize CameraHalDelegate";
-      camera_hal_delegate_.reset();
-      return;
-    }
+    hal_delegate_thread_.Start();
+    camera_hal_delegate_ =
+        std::make_unique<CameraHalDelegate>(hal_delegate_thread_.task_runner());
     camera_hal_delegate_->SetCameraModule(
         mock_camera_module_.GetPendingRemote());
   }
 
-  void TearDown() override { camera_hal_delegate_->Reset(); }
+  void TearDown() override {
+    camera_hal_delegate_->Reset();
+    hal_delegate_thread_.Stop();
+  }
 
   void Wait() {
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -71,6 +71,7 @@ class CameraHalDelegateTest : public ::testing::Test {
   unittest_internal::MockGpuMemoryBufferManager mock_gpu_memory_buffer_manager_;
 
  private:
+  base::Thread hal_delegate_thread_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
