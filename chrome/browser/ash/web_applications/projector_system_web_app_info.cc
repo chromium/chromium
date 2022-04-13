@@ -89,5 +89,7 @@ bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
   // Projector for enterprise users is controlled by a combination fo a feature
   // flag and an enterprise policy.
   return ash::features::IsProjectorEnabled() &&
-         profile_->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
+         (ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
+          profile_->GetPrefs()->GetBoolean(
+              ash::prefs::kProjectorAllowByPolicy));
 }

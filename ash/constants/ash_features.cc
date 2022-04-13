@@ -1157,6 +1157,12 @@ const base::Feature kProjectorTutorialVideoView(
 const base::Feature kProjectorCustomThumbnail("kProjectorCustomThumbnail",
                                               base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to ignore policy setting for enabling Projector for managed
+// users.
+const base::Feature kProjectorManagedUserIgnorePolicy(
+    "ProjectorManagedUserIgnorePolicy",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2019,6 +2025,10 @@ bool IsProjectorTutorialVideoViewEnabled() {
 
 bool IsProjectorCustomThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kProjectorCustomThumbnail);
+}
+
+bool IsProjectorManagedUserIgnorePolicyEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorManagedUserIgnorePolicy);
 }
 
 bool IsQuickDimEnabled() {
