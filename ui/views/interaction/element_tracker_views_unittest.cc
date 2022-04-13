@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -865,6 +866,78 @@ TEST_F(ElementTrackerViewsTest, WidgetShownAfterAdd) {
   widget->Show();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kTestElementID, context));
+}
+
+// This is a gross corner case where a Widget might not report IsVisible()
+// during show, but we're still showing views and could conceivably add another
+// view as part of a callback.
+TEST_F(ElementTrackerViewsTest, AddedDuringWidgetShow) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  View* const child1 = contents->AddChildView(std::make_unique<View>());
+  View* const child2 = contents->AddChildView(std::make_unique<View>());
+  child1->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kTestElementID,
+          ElementTrackerViews::GetContextForWidget(widget.get()),
+          base::BindLambdaForTesting([&](ui::TrackedElement*) {
+            child2->SetProperty(kElementIdentifierKey, kTestElementID2);
+          }));
+
+  bool called = false;
+
+  auto subscription2 =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kTestElementID2,
+          ElementTrackerViews::GetContextForWidget(widget.get()),
+          base::BindLambdaForTesting([&](ui::TrackedElement* element) {
+            EXPECT_EQ(child2, element->AsA<TrackedElementViews>()->view());
+            called = true;
+          }));
+
+  test::WidgetVisibleWaiter visible_waiter(widget.get());
+  widget->Show();
+  visible_waiter.Wait();
+  EXPECT_TRUE(called);
+
+  // Now verify that hiding a widget which we engaged during initial Show(),
+  // without destroying the views, causes the elements to be hidden.
+  subscription2 =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          kTestElementID2,
+          ElementTrackerViews::GetContextForWidget(widget.get()),
+          base::BindLambdaForTesting([&](ui::TrackedElement* element) {
+            EXPECT_EQ(child2, element->AsA<TrackedElementViews>()->view());
+            called = true;
+          }));
+
+  called = false;
+  widget->Hide();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ElementTrackerViewsTest, CleansUpWidgetTrackers) {
+  auto widget1 = CreateWidget();
+  View* const contents1 = widget1->SetContentsView(std::make_unique<View>());
+  contents1->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto widget2 = CreateWidget();
+  View* const contents2 = widget1->SetContentsView(std::make_unique<View>());
+  contents2->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  test::WidgetVisibleWaiter waiter1(widget1.get());
+  test::WidgetVisibleWaiter waiter2(widget2.get());
+  widget1->Show();
+  widget2->Show();
+  waiter1.Wait();
+  waiter2.Wait();
+
+  widget1->Hide();
+  test::WidgetDestroyedWaiter destroyed_waiter(widget2.get());
+  widget2->Close();
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(ElementTrackerViews::GetInstance()->widget_trackers_.empty());
 }
 
 TEST_F(ElementTrackerViewsTest, GetUniqueView) {

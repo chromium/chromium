@@ -305,15 +305,10 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageCombobox)
                    .SetType(ui::InteractionSequence::StepType::kShown)
-                   .SetStartCallback(
-                       base::BindOnce([](ui::InteractionSequence*,
-                                         ui::TrackedElement* element) {
-                         EXPECT_FALSE(
-                             ui::ElementTracker::GetElementTracker()
-                                 ->IsElementVisible(
-                                     TranslateBubbleView::kChangeTargetLanguage,
-                                     element->context()));
-                       }))
+                   .Build())
+      .AddStep(ui::InteractionSequence::StepBuilder()
+                   .SetElementID(TranslateBubbleView::kChangeTargetLanguage)
+                   .SetType(ui::InteractionSequence::StepType::kHidden)
                    .Build())
       // P4. Select a language from the list and select translate.
       .AddStep(
@@ -406,15 +401,10 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageCombobox)
                    .SetType(ui::InteractionSequence::StepType::kShown)
-                   .SetStartCallback(
-                       base::BindOnce([](ui::InteractionSequence*,
-                                         ui::TrackedElement* element) {
-                         EXPECT_FALSE(
-                             ui::ElementTracker::GetElementTracker()
-                                 ->IsElementVisible(
-                                     TranslateBubbleView::kChangeSourceLanguage,
-                                     element->context()));
-                       }))
+                   .Build())
+      .AddStep(ui::InteractionSequence::StepBuilder()
+                   .SetElementID(TranslateBubbleView::kChangeSourceLanguage)
+                   .SetType(ui::InteractionSequence::StepType::kHidden)
                    .Build())
       // P4. Select a language from the list and select translate.
       .AddStep(ui::InteractionSequence::StepBuilder()
@@ -576,12 +566,6 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
               .SetType(ui::InteractionSequence::StepType::kShown)
               .SetStartCallback(base::BindOnce(
                   [](ui::InteractionSequence*, ui::TrackedElement* element) {
-                    EXPECT_FALSE(
-                        ui::ElementTracker::GetElementTracker()
-                            ->IsElementVisible(
-                                TranslateBubbleView::kChangeTargetLanguage,
-                                element->context()));
-
                     auto* error_message_label =
                         static_cast<views::Label*>(ElementToView(element));
                     EXPECT_EQ(
@@ -590,6 +574,10 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
                             IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
                   }))
               .Build())
+      .AddStep(ui::InteractionSequence::StepBuilder()
+                   .SetElementID(TranslateBubbleView::kChangeTargetLanguage)
+                   .SetType(ui::InteractionSequence::StepType::kHidden)
+                   .Build())
       .Build()
       ->RunSynchronouslyForTesting();
 }

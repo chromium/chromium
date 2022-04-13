@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
@@ -15,8 +16,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/views_export.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 
@@ -41,7 +40,7 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
 };
 
 // Manages TrackedElements associated with View objects.
-class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
+class VIEWS_EXPORT ElementTrackerViews {
  public:
   using ViewList = std::vector<View*>;
 
@@ -131,25 +130,28 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
 
  private:
   friend class base::NoDestructor<ElementTrackerViews>;
+  FRIEND_TEST_ALL_PREFIXES(ElementTrackerViewsTest, CleansUpWidgetTrackers);
   class ElementDataViews;
+  class WidgetTracker;
 
   ElementTrackerViews();
-  ~ElementTrackerViews() override;
-
-  // WidgetObserver:
-  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
-  void OnWidgetDestroying(Widget* widget) override;
+  ~ElementTrackerViews();
 
   // We do not get notified at the View level if a view's widget has not yet
   // been shown. We need this notification to know when the view is actually
   // visible to the user. So if a view is added to the trakcer or is added to
   // a widget, and its widget is not visible, we watch it until it is (or it is
   // destroyed).
-  void MaybeObserveWidget(Widget* widget);
+  void MaybeTrackWidget(Widget* widget);
+
+  // Keep track of widgets for which we've received an
+  // OnWidgetVisibilityChanged(true) event for but which are still reporting
+  // IsVisible() = false. This happens because visibility of native window in
+  // Aura is not exactly synced with our event reporting.
+  bool IsWidgetVisible(const Widget* widget) const;
 
   std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
-  base::ScopedMultiSourceObservation<Widget, WidgetObserver> widget_observer_{
-      this};
+  std::map<const Widget*, WidgetTracker> widget_trackers_;
 };
 
 }  // namespace views
