@@ -6,11 +6,15 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -613,4 +617,119 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
 
   histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);
   ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 1);
+}
+
+class EnterpriseContextMenuIncognitoFilterBrowserTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Enable open in incognito param filtering, with rules for:
+    // a destination of: <IP address>, for which eTLD+1 is blank,
+    // with outgoing param plzblock
+    // or a source of: foo.com with outgoing param plzblock1
+    std::string encoded_classification = url_param_filter::
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {{"foo.com", {"plzblock1"}}, {"127.0.0.1", {"plzblockredirect"}}},
+            {{"127.0.0.1", {"plzblock"}}});
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"classifications", encoded_classification}});
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kUrlParamFilterEnabled,
+              absl::optional<base::Value>(false));
+    provider_.UpdateChromePolicy(policies);
+  }
+  // Prevent additional feature/field trial enablement beyond that defined in
+  // `SetUpInProcessBrowserTestFixture`.
+  void SetUpCommandLine(base::CommandLine* command_line) override {}
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// When the policy is disabled, filtering should not occur.
+IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
+                       PolicyDisabled) {
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the unfiltered URL due to the escape hatch policy
+  // overriding the feature flag.
+  ASSERT_EQ(test_root, tab->GetLastCommittedURL());
+}
+
+// When the policy is enabled, filtering should occur, and changes should not
+// require a browser restart.
+IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
+                       PolicyEnabledDynamicRefresh) {
+  base::HistogramTester histogram_tester;
+
+  // Reset the policy that was already set to false in
+  // `SetUpInProcessBrowserTestFixture`, then see if the change is reflected
+  // without requiring a browser restart.
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kUrlParamFilterEnabled,
+            absl::optional<base::Value>(true));
+  provider_.UpdateChromePolicy(policies);
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
 }

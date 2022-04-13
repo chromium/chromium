@@ -4636,6 +4636,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
 
   url_param_filter::UrlParamFilterThrottle::MaybeCreateThrottle(
+      profile->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kUrlParamFilterEnabled),
       wc_getter.Run(), request, &result);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

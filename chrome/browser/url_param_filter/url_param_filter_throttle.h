@@ -19,6 +19,7 @@ class UrlParamFilterThrottle : public blink::URLLoaderThrottle {
   // `throttle_list` if created. Otherwise, leave `throttle_list` unchanged and
   // do nothing.
   static void MaybeCreateThrottle(
+      bool enabled_by_policy,
       content::WebContents* web_contents,
       const network::ResourceRequest& request,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttle_list);

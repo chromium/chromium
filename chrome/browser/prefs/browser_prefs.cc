@@ -1531,6 +1531,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kUrlParamFilterEnabled,
+                                true);
 
   RegisterProfilePrefsForMigration(registry);
 }

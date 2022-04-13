@@ -91,6 +91,10 @@ const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
+// Boolean policy preference to disable the URL parameter
+// filter.
+const char kUrlParamFilterEnabled[] = "policy.url_param_filter_enabled";
+
 // Boolean policy to allow isolated apps developer mode.
 const char kIsolatedAppsDeveloperModeAllowed[] =
     "policy.isolated_apps_developer_mode_allowed";

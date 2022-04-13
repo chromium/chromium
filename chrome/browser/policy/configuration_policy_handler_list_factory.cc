@@ -1658,6 +1658,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kConfirmToQuitEnabled,
     base::Value::Type::BOOLEAN },
 #endif
+  { key::kUrlParamFilterEnabled,
+    policy_prefs::kUrlParamFilterEnabled,
+    base::Value::Type::BOOLEAN}
 };
 // clang-format on
 

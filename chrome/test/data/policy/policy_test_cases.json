@@ -15779,6 +15779,34 @@
       }
     ]
   },
+  "UrlParamFilterEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.url_param_filter_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": { "UrlParamFilterEnabled": false },
+        "prefs": {
+          "policy.url_param_filter_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "ShowFullUrlsInAddressBar": {
     "os": [
       "win",

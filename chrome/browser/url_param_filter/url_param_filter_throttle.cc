@@ -25,9 +25,16 @@ void WriteMetrics(FilterResult result) {
 }  // anonymous namespace
 
 void UrlParamFilterThrottle::MaybeCreateThrottle(
+    bool enabled_by_policy,
     content::WebContents* web_contents,
     const network::ResourceRequest& request,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttle_list) {
+  // If the enterprise escape hatch policy has been set, do not create the
+  // throttle.
+  if (!enabled_by_policy) {
+    return;
+  }
+  // If we lack a web_contents, do not create the throttle.
   if (!web_contents) {
     return;
   }

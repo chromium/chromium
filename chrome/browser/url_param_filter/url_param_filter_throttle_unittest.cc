@@ -59,8 +59,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNullContents) {
   resource_request.is_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
-  UrlParamFilterThrottle::MaybeCreateThrottle(nullptr, resource_request,
-                                              &result);
+  UrlParamFilterThrottle::MaybeCreateThrottle(
+      /*enabled_by_policy=*/true, nullptr, resource_request, &result);
 
   ASSERT_EQ(result.size(), 0u);
 }
@@ -70,8 +70,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNotCrossOtr) {
   resource_request.is_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
-  UrlParamFilterThrottle::MaybeCreateThrottle(web_contents(), resource_request,
-                                              &result);
+  UrlParamFilterThrottle::MaybeCreateThrottle(
+      /*enabled_by_policy=*/true, web_contents(), resource_request, &result);
 
   ASSERT_EQ(result.size(), 0u);
 }
@@ -82,8 +82,20 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleNotMainFrame) {
   resource_request.is_main_frame = false;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
-  UrlParamFilterThrottle::MaybeCreateThrottle(web_contents(), resource_request,
-                                              &result);
+  UrlParamFilterThrottle::MaybeCreateThrottle(
+      /*enabled_by_policy=*/true, web_contents(), resource_request, &result);
+
+  ASSERT_EQ(result.size(), 0u);
+}
+
+TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottlePolicyDisabled) {
+  CreateCrossOtrState();
+  network::ResourceRequest resource_request;
+  resource_request.is_main_frame = true;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+
+  UrlParamFilterThrottle::MaybeCreateThrottle(
+      /*enabled_by_policy=*/false, web_contents(), resource_request, &result);
 
   ASSERT_EQ(result.size(), 0u);
 }
@@ -94,8 +106,8 @@ TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottleTrueCase) {
   resource_request.is_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
-  UrlParamFilterThrottle::MaybeCreateThrottle(web_contents(), resource_request,
-                                              &result);
+  UrlParamFilterThrottle::MaybeCreateThrottle(
+      /*enabled_by_policy=*/true, web_contents(), resource_request, &result);
 
   ASSERT_EQ(result.size(), 1u);
 }
