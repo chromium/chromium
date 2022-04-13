@@ -138,7 +138,8 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callback that should generate and return a unique request id.
-  using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
+  using ChromeOSGenerateRequestIdCallback =
+      base::RepeatingCallback<std::string()>;
 
   // Returns a callback to generate a request id for a WebAuthn request
   // originating from |RenderFrameHost|. The request id has two purposes: 1.

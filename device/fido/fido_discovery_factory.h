@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_FIDO_DISCOVERY_FACTORY_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -113,7 +114,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if BUILDFLAG(IS_CHROMEOS)
   // Sets a callback to generate an identifier when making DBUS requests to
   // u2fd.
-  void set_generate_request_id_callback(base::RepeatingCallback<uint32_t()>);
+  void set_generate_request_id_callback(base::RepeatingCallback<std::string()>);
 
   // Configures the ChromeOS platform authenticator discovery to instantiate an
   // authenticator if the legacy U2F authenticator is enabled by policy.
@@ -158,7 +159,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS)
-  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;
   absl::optional<CtapGetAssertionRequest>
       get_assertion_request_for_legacy_credential_check_;

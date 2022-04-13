@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(CHROMEOS_WEBAUTHN) WebAuthnRequestRegistrar {
 
   // Returns a callback to generate request id for |window|. The callback is
   // not thread-safe, and must be invoked from the browser UI thread only.
-  using GenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
+  using GenerateRequestIdCallback = base::RepeatingCallback<std::string()>;
   virtual GenerateRequestIdCallback GetRegisterCallback(
       aura::Window* window) = 0;
 

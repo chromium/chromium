@@ -4,6 +4,8 @@
 
 #include "ash/in_session_auth/webauthn_request_registrar_impl.h"
 
+#include <string>
+
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
@@ -19,7 +21,7 @@ constexpr uint32_t kInvalidRequestId = 0u;
 uint32_t g_current_request_id = kInvalidRequestId;
 
 // A property key to tie the WebAuthn request id to a window.
-DEFINE_UI_CLASS_PROPERTY_KEY(uint32_t, kWebAuthnRequestId, kInvalidRequestId)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
 
 }  // namespace
 
@@ -35,7 +37,7 @@ WebAuthnRequestRegistrarImpl::GetRegisterCallback(aura::Window* window) {
   // GetAssertion, the Chrome OS auth dialog will not show up and the operation
   // fails gracefully.
   if (!window) {
-    return base::BindRepeating([] { return kInvalidRequestId; });
+    return base::BindRepeating([] { return std::string(); });
   }
 
   window_tracker_.Add(window);
@@ -47,7 +49,7 @@ WebAuthnRequestRegistrarImpl::GetRegisterCallback(aura::Window* window) {
                              base::Unretained(this), window);
 }
 
-uint32_t WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
+std::string WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Avoid uint32_t overflow.
@@ -55,25 +57,28 @@ uint32_t WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
     g_current_request_id++;
   } while (g_current_request_id == kInvalidRequestId);
 
+  std::string request_id = base::NumberToString(g_current_request_id);
+
   // If |window| is still valid, associate it with the new request id.
   // If |window| is gone, the incremented id will fail the request later,
   // which is ok.
-  if (window_tracker_.Contains(window))
-    window->SetProperty(kWebAuthnRequestId, g_current_request_id);
-  return g_current_request_id;
+  if (window_tracker_.Contains(window)) {
+    window->SetProperty(kWebAuthnRequestId, new std::string(request_id));
+  }
+  return request_id;
 }
 
 aura::Window* WebAuthnRequestRegistrarImpl::GetWindowForRequestId(
     std::string request_id) {
-  if (request_id == base::NumberToString(kInvalidRequestId)) {
+  if (request_id.empty()) {
     return nullptr;
   }
 
   MruWindowTracker::WindowList windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   for (aura::Window* window : windows) {
-    uint32_t window_request_id = window->GetProperty(kWebAuthnRequestId);
-    if (base::NumberToString(window_request_id) == request_id) {
+    std::string* window_request_id = window->GetProperty(kWebAuthnRequestId);
+    if (window_request_id && *window_request_id == request_id) {
       return window;
     }
   }

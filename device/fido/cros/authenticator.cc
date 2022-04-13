@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/fido/cros/authenticator.h"
+
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
-
-#include "device/fido/cros/authenticator.h"
 
 #include "base/bind.h"
 #include "base/containers/span.h"
@@ -26,7 +27,7 @@
 namespace device {
 
 ChromeOSAuthenticator::ChromeOSAuthenticator(
-    base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+    base::RepeatingCallback<std::string()> generate_request_id_callback,
     ChromeOSAuthenticator::Config config)
     : generate_request_id_callback_(std::move(generate_request_id_callback)),
       config_(config),
@@ -155,9 +156,9 @@ void ChromeOSAuthenticator::MakeCredential(
     req.set_user_display_name(request.user.display_name.value());
   req.set_resident_credential(request.resident_key_required);
   DCHECK(generate_request_id_callback_);
-  DCHECK_EQ(current_request_id_, 0u);
+  DCHECK(current_request_id_.empty());
   current_request_id_ = generate_request_id_callback_.Run();
-  req.set_request_id(current_request_id_);
+  req.set_request_id_str(current_request_id_);
 
   for (const PublicKeyCredentialDescriptor& descriptor : request.exclude_list) {
     req.add_excluded_credential_id(
@@ -240,9 +241,9 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   req.set_client_data_hash(std::string(request.client_data_hash.begin(),
                                        request.client_data_hash.end()));
   DCHECK(generate_request_id_callback_);
-  DCHECK_EQ(current_request_id_, 0u);
+  DCHECK(current_request_id_.empty());
   current_request_id_ = generate_request_id_callback_.Run();
-  req.set_request_id(current_request_id_);
+  req.set_request_id_str(current_request_id_);
 
   for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
     req.add_allowed_credential_id(
@@ -357,11 +358,11 @@ void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
 }
 
 void ChromeOSAuthenticator::Cancel() {
-  if (current_request_id_ == 0u)
+  if (current_request_id_.empty())
     return;
 
   u2f::CancelWebAuthnFlowRequest req;
-  req.set_request_id(current_request_id_);
+  req.set_request_id_str(current_request_id_);
   chromeos::U2FClient::Get()->CancelWebAuthnFlow(
       req, base::BindOnce(&ChromeOSAuthenticator::OnCancelResponse,
                           weak_factory_.GetWeakPtr()));
@@ -369,7 +370,7 @@ void ChromeOSAuthenticator::Cancel() {
 
 void ChromeOSAuthenticator::OnCancelResponse(
     absl::optional<u2f::CancelWebAuthnFlowResponse> response) {
-  current_request_id_ = 0u;
+  current_request_id_.clear();
 
   if (!response) {
     FIDO_LOG(ERROR)

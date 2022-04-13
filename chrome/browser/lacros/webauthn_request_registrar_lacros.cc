@@ -4,17 +4,13 @@
 
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
-
-namespace {
-
-constexpr uint32_t kInvalidRequestId = 0u;
-
-}  // namespace
 
 WebAuthnRequestRegistrarLacros::WebAuthnRequestRegistrarLacros() = default;
 
@@ -24,7 +20,7 @@ WebAuthnRequestRegistrarLacros::GenerateRequestIdCallback
 WebAuthnRequestRegistrarLacros::GetRegisterCallback(aura::Window* window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::BindRepeating([] { return kInvalidRequestId; });
+  return base::BindRepeating([] { return std::string(); });
 }
 
 // GetWindowForRequestId is not used in Lacros's WebAuthnRequestRegistrar:

@@ -238,7 +238,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
-    base::RepeatingCallback<uint32_t()> callback) {
+    base::RepeatingCallback<std::string()> callback) {
   generate_request_id_callback_ = std::move(callback);
 }
 

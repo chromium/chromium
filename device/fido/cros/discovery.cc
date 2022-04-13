@@ -4,6 +4,8 @@
 
 #include "device/fido/cros/discovery.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -12,7 +14,7 @@
 namespace device {
 
 FidoChromeOSDiscovery::FidoChromeOSDiscovery(
-    base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+    base::RepeatingCallback<std::string()> generate_request_id_callback,
     absl::optional<CtapGetAssertionRequest> get_assertion_request)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       generate_request_id_callback_(generate_request_id_callback),

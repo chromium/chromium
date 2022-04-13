@@ -39,11 +39,6 @@ class UserAuthenticationServiceProvider
 
   // Called on UI thread in response to D-Bus requests. This expects the
   // request_id field to be a string.
-  void ShowAuthDialogV2(dbus::MethodCall* method_call,
-                        dbus::ExportedObject::ResponseSender response_sender);
-
-  // [Deprecated] Use ShowAuthDialogV2. Called on UI thread in response to D-Bus
-  // requests. This expects the request_id field to be an integer.
   void ShowAuthDialog(dbus::MethodCall* method_call,
                       dbus::ExportedObject::ResponseSender response_sender);
 

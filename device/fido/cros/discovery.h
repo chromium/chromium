@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_CROS_DISCOVERY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -22,7 +23,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
     : public FidoDiscoveryBase {
  public:
   FidoChromeOSDiscovery(
-      base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+      base::RepeatingCallback<std::string()> generate_request_id_callback,
       absl::optional<CtapGetAssertionRequest> get_assertion_request_);
   ~FidoChromeOSDiscovery() override;
 
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
   void MaybeAddAuthenticator(bool power_button_enabled, bool uv_available);
   void OnHasLegacyU2fCredential(bool has_credential);
 
-  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_power_button_mode_ = false;
   absl::optional<CtapGetAssertionRequest> get_assertion_request_;
   std::unique_ptr<ChromeOSAuthenticator> authenticator_;

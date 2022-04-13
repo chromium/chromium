@@ -32,7 +32,7 @@ class WebAuthnRequestRegistrarImpl
   aura::Window* GetWindowForRequestId(std::string request_id) override;
 
  private:
-  uint32_t DoRegister(aura::Window* window);
+  std::string DoRegister(aura::Window* window);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   };
 
   ChromeOSAuthenticator(
-      base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+      base::RepeatingCallback<std::string()> generate_request_id_callback,
       Config config);
   ~ChromeOSAuthenticator() override;
 
@@ -111,10 +111,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       absl::optional<u2f::CancelWebAuthnFlowResponse> response);
 
   // Current request_id, used for cancelling the request.
-  uint32_t current_request_id_ = 0u;
+  std::string current_request_id_;
 
   // Callback to set request_id in the window property.
-  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  base::RepeatingCallback<std::string()> generate_request_id_callback_;
   const Config config_;
   absl::optional<std::vector<int32_t>> supported_algorithms_;
   base::WeakPtrFactory<ChromeOSAuthenticator> weak_factory_;
