@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,6 +83,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that when Safe Browsing state is managed by policy, the enhanced
 // protection message does not appear on SSL blocking pages.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingStatePolicyManaged) {
@@ -383,5 +385,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
             mock_service.GetPasswordProtectionWarningTriggerPref(
                 ReusedPasswordAccountType()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

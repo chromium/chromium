@@ -169,6 +169,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestEnabled, Simple) {
   CheckExpectations(expectations, std::size(expectations));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// The policy is not supported on Android
 IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
   // Verify that the policy present at browser startup is correctly applied.
   Expectations expectations[] = {
@@ -203,6 +205,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
   };
   CheckIsolatedOriginExpectations(expectations2, std::size(expectations2));
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
   Expectations expectations[] = {
