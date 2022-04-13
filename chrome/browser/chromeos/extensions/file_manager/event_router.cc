@@ -1240,12 +1240,10 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
       event_status.remaining_seconds = status.remaining_seconds;
     }
 
-    if (status.destination_folder.is_valid()) {
+    GURL destination_folder_gurl(status.destination_folder.ToGURL());
+    if (destination_folder_gurl.is_valid()) {
       event_status.destination_name =
-          util::GetDisplayablePath(profile_, status.destination_folder)
-              .value_or(base::FilePath())
-              .BaseName()
-              .value();
+          util::GetDisplayableFileName(destination_folder_gurl);
     }
 
     size_t processed = 0;
@@ -1265,10 +1263,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
 
     if (status.sources.size() > 0) {
       event_status.source_name =
-          util::GetDisplayablePath(profile_, status.sources.front().url)
-              .value_or(base::FilePath())
-              .BaseName()
-              .value();
+          util::GetDisplayableFileName(status.sources.front().url);
     }
     event_status.bytes_transferred = status.bytes_transferred;
     event_status.total_bytes = status.total_bytes;
