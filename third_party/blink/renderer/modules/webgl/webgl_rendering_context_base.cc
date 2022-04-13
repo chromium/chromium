@@ -5542,21 +5542,21 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                  image, exception_state);
 }
 
-bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
-                                                     GLenum type) {
+bool WebGLRenderingContextBase::CanUseTexImageViaGPU(
+    const TexImageParams& params) {
 #if BUILDFLAG(IS_MAC)
   // RGB5_A1 is not color-renderable on NVIDIA Mac, see crbug.com/676209.
   // Though, glCopyTextureCHROMIUM can handle RGB5_A1 internalformat by doing a
   // fallback path, but it doesn't know the type info. So, we still cannot do
   // the fallback path in glCopyTextureCHROMIUM for
   // RGBA/RGBA/UNSIGNED_SHORT_5_5_5_1 format and type combination.
-  if (type == GL_UNSIGNED_SHORT_5_5_5_1)
+  if (params.type == GL_UNSIGNED_SHORT_5_5_5_1)
     return false;
 #endif
 
   // TODO(kbr): continued bugs are seen on Linux with AMD's drivers handling
   // uploads to R8UI textures. crbug.com/710673
-  if (format == GL_RED_INTEGER)
+  if (params.format == GL_RED_INTEGER)
     return false;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -5564,7 +5564,7 @@ bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
   // when copying hardware-accelerated video textures to
   // floating-point textures. Investigate the root cause of this and
   // fix it. crbug.com/710874
-  if (type == GL_FLOAT)
+  if (params.type == GL_FLOAT)
     return false;
 #endif
 
@@ -5572,46 +5572,53 @@ bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
   // CopyTexImage/CopyTexSubImage. And OES_texture_half_float doesn't require
   // HALF_FLOAT_OES type texture to be renderable. So, HALF_FLOAT_OES type
   // texture cannot be copied to or drawn to by glCopyTextureCHROMIUM.
-  if (type == GL_HALF_FLOAT_OES)
+  if (params.type == GL_HALF_FLOAT_OES)
+    return false;
+
+  // TODO(https://crbug.com/612542): Implement GPU-to-GPU copy path for more
+  // cases, like copying to layers of 3D textures, and elements of 2D texture
+  // arrays.
+  if (params.function_id != kTexImage2D && params.function_id != kTexSubImage2D)
     return false;
 
   return true;
 }
 
 void WebGLRenderingContextBase::TexImageViaGPU(
-    TexImageFunctionID function_id,
+    TexImageParams params,
     WebGLTexture* texture,
-    GLenum target,
-    GLint level,
-    GLint xoffset,
-    GLint yoffset,
-    GLint zoffset,
     AcceleratedStaticBitmapImage* source_image,
     WebGLRenderingContextBase* source_canvas_webgl_context,
-    const gfx::Rect& source_sub_rectangle,
-    bool premultiply_alpha,
-    bool flip_y) {
+    const gfx::Rect& source_sub_rectangle) {
+  DCHECK(source_image->IsTextureBacked());
   bool have_source_image = source_image;
   bool have_source_canvas_webgl_context = source_canvas_webgl_context;
   DCHECK(have_source_image ^ have_source_canvas_webgl_context);
 
+  const int width = source_sub_rectangle.width();
+  const int height = source_sub_rectangle.height();
+
+  if (params.function_id == kTexImage2D) {
+    TexImage2DBase(params.target, params.level, params.internalformat, width,
+                   height, params.border, params.format, params.type, nullptr);
+  }
+
   if (source_canvas_webgl_context &&
       source_canvas_webgl_context->isContextLost()) {
     SynthesizeGLError(GL_INVALID_OPERATION,
-                      GetTexImageFunctionName(function_id),
+                      GetTexImageFunctionName(params.function_id),
                       "Can't upload a texture from a lost WebGL context.");
     return;
   }
-
-  int width = source_sub_rectangle.width();
-  int height = source_sub_rectangle.height();
 
   ScopedTexture2DRestorer restorer(this);
 
   GLuint target_texture = texture->Object();
   bool possible_direct_copy = false;
-  if (function_id == kTexImage2D || function_id == kTexSubImage2D) {
-    possible_direct_copy = Extensions3DUtil::CanUseCopyTextureCHROMIUM(target);
+  if (params.function_id == kTexImage2D ||
+      params.function_id == kTexSubImage2D) {
+    possible_direct_copy =
+        Extensions3DUtil::CanUseCopyTextureCHROMIUM(params.target);
   }
 
   // if direct copy is not possible, create a temporary texture and then copy
@@ -5637,17 +5644,20 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     ScopedUnpackParametersResetRestore temporaryResetUnpack(this);
     if (source_image) {
       source_image->CopyToTexture(
-          ContextGL(), target, target_texture, level, premultiply_alpha, flip_y,
-          gfx::Point(xoffset, yoffset), source_sub_rectangle);
+          ContextGL(), params.target, target_texture, params.level,
+          params.unpack_premultiply_alpha, params.unpack_flip_y,
+          gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
+      bool flip_y = params.unpack_flip_y;
       if (gl->is_origin_top_left_ && !canvas()->LowLatencyEnabled())
         flip_y = !flip_y;
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
-              ContextGL(), target, target_texture, level,
-              unpack_premultiply_alpha_, !flip_y, gfx::Point(xoffset, yoffset),
-              source_sub_rectangle, kBackBuffer)) {
+              ContextGL(), params.target, target_texture, params.level,
+              params.unpack_premultiply_alpha, !flip_y,
+              gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle,
+              kBackBuffer)) {
         NOTREACHED();
       }
     }
@@ -5660,14 +5670,17 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     ContextGL()->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                       GL_TEXTURE_2D, target_texture, 0);
     ContextGL()->BindTexture(texture->GetTarget(), texture->Object());
-    if (function_id == kTexImage2D) {
-      ContextGL()->CopyTexSubImage2D(target, level, 0, 0, 0, 0, width, height);
-    } else if (function_id == kTexSubImage2D) {
-      ContextGL()->CopyTexSubImage2D(target, level, xoffset, yoffset, 0, 0,
+    if (params.function_id == kTexImage2D) {
+      ContextGL()->CopyTexSubImage2D(params.target, params.level, 0, 0, 0, 0,
                                      width, height);
-    } else if (function_id == kTexSubImage3D) {
-      ContextGL()->CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset,
-                                     0, 0, width, height);
+    } else if (params.function_id == kTexSubImage2D) {
+      ContextGL()->CopyTexSubImage2D(params.target, params.level,
+                                     params.xoffset, params.yoffset, 0, 0,
+                                     width, height);
+    } else if (params.function_id == kTexSubImage3D) {
+      ContextGL()->CopyTexSubImage3D(params.target, params.level,
+                                     params.xoffset, params.yoffset,
+                                     params.zoffset, 0, 0, width, height);
     }
     ContextGL()->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                       GL_TEXTURE_2D, 0, 0);
@@ -5722,9 +5735,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image;
 
-  bool upload_via_gpu = (params.function_id == kTexImage2D ||
-                         params.function_id == kTexSubImage2D) &&
-                        CanUseTexImageViaGPU(params.format, params.type);
+  bool upload_via_gpu = CanUseTexImageViaGPU(params);
 
   // The Image-based upload path may still be used for WebGL-rendered
   // canvases in the case of driver bug workarounds
@@ -5766,21 +5777,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
           adjusted_source_sub_rectangle.bottom());
     }
 
-    if (params.function_id == kTexImage2D) {
-      TexImage2DBase(params.target, params.level, params.internalformat,
-                     source_sub_rectangle.width(),
-                     source_sub_rectangle.height(), 0, params.format,
-                     params.type, nullptr);
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     0, 0, 0, accel_image, source_canvas_webgl_context,
-                     adjusted_source_sub_rectangle, unpack_premultiply_alpha_,
-                     unpack_flip_y_);
-    } else {
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     params.xoffset, params.yoffset, 0, accel_image,
-                     source_canvas_webgl_context, adjusted_source_sub_rectangle,
-                     unpack_premultiply_alpha_, unpack_flip_y_);
-    }
+    TexImageViaGPU(params, texture, accel_image, source_canvas_webgl_context,
+                   adjusted_source_sub_rectangle);
   } else {
     DCHECK(image);
     // TODO(crbug.com/612542): Implement GPU-to-GPU copy path for more
@@ -5949,8 +5947,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       params.function_id == kTexImage2D && source_image_rect_is_default &&
       params.depth.value_or(1) == 1 && GL_TEXTURE_2D == params.target &&
       (have_image_external_essl3 || !may_need_image_external_essl3) &&
-      CanUseTexImageViaGPU(params.format, params.type) &&
-      transform == media::kNoTransformation;
+      CanUseTexImageViaGPU(params) && transform == media::kNoTransformation;
 
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1227921): When OOP GPU rasterization is disabled, uploading
@@ -6077,8 +6074,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 #endif
 
   const bool can_upload_via_gpu =
-      function_supports_gpu_teximage &&
-      CanUseTexImageViaGPU(params.format, params.type) &&
+      function_supports_gpu_teximage && CanUseTexImageViaGPU(params) &&
       source_image_rect_is_default && !gpu_teximage_is_slow;
 
   // If we can upload via GPU, try to to use an accelerated resource provider
@@ -6108,20 +6104,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         source_image_rect.value_or(GetTextureSourceSize(image.get()));
 
     auto* accel_image = static_cast<AcceleratedStaticBitmapImage*>(image.get());
-    if (params.function_id == kTexImage2D) {
-      TexImage2DBase(params.target, params.level, params.internalformat,
-                     adjusted_source_image_rect.width(),
-                     adjusted_source_image_rect.height(), 0, params.format,
-                     params.type, nullptr);
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     0, 0, 0, accel_image, nullptr, adjusted_source_image_rect,
-                     unpack_premultiply_alpha_, unpack_flip_y_);
-    } else {
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     params.xoffset, params.yoffset, 0, accel_image, nullptr,
-                     adjusted_source_image_rect, unpack_premultiply_alpha_,
-                     unpack_flip_y_);
-    }
+    TexImageViaGPU(params, texture, accel_image, nullptr,
+                   adjusted_source_image_rect);
   } else {
     params.internalformat = adjusted_internalformat;
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
@@ -6221,28 +6205,18 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   }
 
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
-  if (params.function_id != kTexSubImage3D &&
-      params.function_id != kTexImage3D && image->IsTextureBacked() &&
-      CanUseTexImageViaGPU(params.format, params.type) &&
+  if (image->IsTextureBacked() && CanUseTexImageViaGPU(params) &&
       !selecting_sub_rectangle) {
     AcceleratedStaticBitmapImage* accel_image =
         static_cast<AcceleratedStaticBitmapImage*>(image.get());
     // We hard-code premultiply_alpha and flip_y values because these should
     // have already been manipulated during construction of the ImageBitmap.
-    bool premultiply_alpha = true;  // TODO(kbr): this looks wrong!
-    bool flip_y = false;
-    if (params.function_id == kTexImage2D) {
-      TexImage2DBase(params.target, params.level, params.internalformat,
-                     *params.width, *params.height, 0, params.format,
-                     params.type, nullptr);
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     0, 0, 0, accel_image, nullptr, source_sub_rect,
-                     premultiply_alpha, flip_y);
-    } else if (params.function_id == kTexSubImage2D) {
-      TexImageViaGPU(params.function_id, texture, params.target, params.level,
-                     params.xoffset, params.yoffset, 0, accel_image, nullptr,
-                     source_sub_rect, premultiply_alpha, flip_y);
-    }
+    // All AcceleratedStaticBitmapImages have premultiplied alpha, so setting
+    // `unpack_premultiply_alpha` ensures a no-op.
+    DCHECK_NE(accel_image->GetSkColorInfo().alphaType(), kUnpremul_SkAlphaType);
+    params.unpack_premultiply_alpha = true;
+    params.unpack_flip_y = false;
+    TexImageViaGPU(params, texture, accel_image, nullptr, source_sub_rect);
     return;
   }
 

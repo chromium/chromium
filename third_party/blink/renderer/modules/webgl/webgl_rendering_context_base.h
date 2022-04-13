@@ -1798,19 +1798,12 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Copy from the source directly to the texture via the gpu, without
   // a read-back to system memory. Source can be a texture-backed
   // Image, or another canvas's WebGLRenderingContext.
-  void TexImageViaGPU(TexImageFunctionID,
+  void TexImageViaGPU(TexImageParams,
                       WebGLTexture*,
-                      GLenum,
-                      GLint,
-                      GLint,
-                      GLint,
-                      GLint,
                       AcceleratedStaticBitmapImage*,
                       WebGLRenderingContextBase*,
-                      const gfx::Rect& source_sub_rectangle,
-                      bool premultiply_alpha,
-                      bool flip_y);
-  bool CanUseTexImageViaGPU(GLenum format, GLenum type);
+                      const gfx::Rect& source_sub_rectangle);
+  bool CanUseTexImageViaGPU(const TexImageParams&);
 
   const Platform::ContextType context_type_;
 
