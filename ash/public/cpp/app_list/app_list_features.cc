@@ -42,7 +42,7 @@ const base::Feature kForceShowContinueSection{
 const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDynamicSearchUpdateAnimation{
-    "DynamicSearchUpdateAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherLacrosIntegration{
     "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedbackOnContinueSectionRemove{
