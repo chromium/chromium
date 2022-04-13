@@ -14,7 +14,7 @@ namespace enterprise_reporting {
 
 ReportSchedulerAndroid::ReportSchedulerAndroid()
     : profile_(nullptr), prefs_(g_browser_process->local_state()) {}
-ReportSchedulerAndroid::ReportSchedulerAndroid(raw_ptr<Profile> profile)
+ReportSchedulerAndroid::ReportSchedulerAndroid(Profile* profile)
     : profile_(profile), prefs_(profile_->GetPrefs()) {}
 
 ReportSchedulerAndroid::~ReportSchedulerAndroid() = default;

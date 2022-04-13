@@ -50,7 +50,7 @@ PrefService* LocalState() {
 ReportSchedulerDesktop::ReportSchedulerDesktop()
     : ReportSchedulerDesktop(nullptr, false) {}
 
-ReportSchedulerDesktop::ReportSchedulerDesktop(raw_ptr<Profile> profile,
+ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile,
                                                bool profile_reporting) {
   if (profile_reporting) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

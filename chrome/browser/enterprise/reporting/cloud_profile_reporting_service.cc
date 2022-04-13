@@ -46,8 +46,8 @@ std::string GetProfileName(raw_ptr<Profile> profile) {
 }  // namespace
 
 CloudProfileReportingService::CloudProfileReportingService(
-    raw_ptr<Profile> profile,
-    raw_ptr<policy::DeviceManagementService> device_management_service,
+    Profile* profile,
+    policy::DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
       device_management_service, system_url_loader_factory,

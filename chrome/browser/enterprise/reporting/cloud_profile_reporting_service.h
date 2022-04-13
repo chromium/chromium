@@ -23,8 +23,8 @@ namespace enterprise_reporting {
 class CloudProfileReportingService : public KeyedService {
  public:
   CloudProfileReportingService(
-      raw_ptr<Profile> profile,
-      raw_ptr<policy::DeviceManagementService> device_management_service,
+      Profile* profile,
+      policy::DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   CloudProfileReportingService(const CloudProfileReportingService&) = delete;
   CloudProfileReportingService& operator=(const CloudProfileReportingService&) =

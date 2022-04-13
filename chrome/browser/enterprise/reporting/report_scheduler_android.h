@@ -15,7 +15,7 @@ namespace enterprise_reporting {
 class ReportSchedulerAndroid : public ReportScheduler::Delegate {
  public:
   ReportSchedulerAndroid();
-  explicit ReportSchedulerAndroid(raw_ptr<Profile> profile);
+  explicit ReportSchedulerAndroid(Profile* profile);
   ReportSchedulerAndroid(const ReportSchedulerAndroid&) = delete;
   ReportSchedulerAndroid& operator=(const ReportSchedulerAndroid&) = delete;
 

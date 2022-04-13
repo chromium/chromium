@@ -22,7 +22,7 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
   ReportSchedulerDesktop();
   /* `profile` is used for profile reporting or Chrome OS session.
    * `profile_reporting` should be set to false for Chrome OS only.*/
-  explicit ReportSchedulerDesktop(raw_ptr<Profile> profile,
+  explicit ReportSchedulerDesktop(Profile* profile,
                                   bool profile_reporting = false);
   ReportSchedulerDesktop(const ReportSchedulerDesktop&) = delete;
   ReportSchedulerDesktop& operator=(const ReportSchedulerDesktop&) = delete;
