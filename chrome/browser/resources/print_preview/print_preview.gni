@@ -12,7 +12,6 @@ web_component_files = [
   "ui/color_settings.ts",
   "ui/copies_settings.ts",
   "ui/destination_list.ts",
-  "ui/destination_list_item.ts",
   "ui/destination_settings.ts",
   "ui/dpi_settings.ts",
   "ui/duplex_settings.ts",
@@ -38,6 +37,7 @@ web_component_files = [
 if (is_chromeos) {
   web_component_files += [
     "ui/destination_dropdown_cros.ts",
+    "ui/destination_list_item_cros.ts",
     "ui/destination_select_cros.ts",
     "ui/pin_settings.ts",
     "ui/provisional_destination_resolver.ts",
@@ -48,6 +48,7 @@ if (is_chromeos) {
     "ui/destination_select.ts",
     "ui/link_container.ts",
     "ui/destination_dialog.ts",
+    "ui/destination_list_item.ts",
   ]
 }
 
@@ -100,6 +101,7 @@ if (is_chromeos) {
 
 css_wrapper_files = [
   "ui/destination_dialog_css.ts",
+  "ui/destination_list_item_css.ts",
   "ui/destination_select_css.ts",
   "ui/icons.ts",
   "ui/print_preview_shared_css.ts",

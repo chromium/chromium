@@ -48,7 +48,12 @@ export {PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_
 export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
 // </if>
 export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item.js';
+// </if>
+// <if expr="chromeos_ash or chromeos_lacros">
+export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item_cros.js';
+// </if>
 // <if expr="not chromeos_ash and not chromeos_lacros">
 export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
 // </if>
