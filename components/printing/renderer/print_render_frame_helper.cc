@@ -366,9 +366,9 @@ bool IsPrintingPdfFrame(blink::WebLocalFrame* frame,
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-bool IsPrintToPdfRequested(const base::DictionaryValue& job_settings) {
+bool IsPrintToPdfRequested(const base::Value::Dict& job_settings) {
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
-      job_settings.FindIntKey(kSettingPrinterType).value());
+      job_settings.FindInt(kSettingPrinterType).value());
   return type == mojom::PrinterType::kPdf;
 }
 
@@ -448,10 +448,9 @@ gfx::Size GetPdfPageSize(const gfx::Size& page_size, int dpi) {
                    ConvertUnit(page_size.height(), dpi, kPointsPerInch));
 }
 
-ScalingType ScalingTypeFromJobSettings(
-    const base::DictionaryValue& job_settings) {
-  int scaling_type = job_settings.FindIntKey(kSettingScalingType).value();
-  return static_cast<ScalingType>(scaling_type);
+ScalingType ScalingTypeFromJobSettings(const base::Value::Dict& job_settings) {
+  return static_cast<ScalingType>(
+      job_settings.FindInt(kSettingScalingType).value());
 }
 
 // Returns the print scaling option to retain/scale/crop the source page size
@@ -472,7 +471,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     bool source_is_html,
-    const base::DictionaryValue& job_settings,
+    const base::Value::Dict& job_settings,
     const mojom::PrintParams& params) {
   if (params.print_to_pdf)
     return mojom::PrintScalingOption::kSourceSize;
@@ -766,24 +765,24 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   // Load page with script to avoid async operations.
   ExecuteScript(frame, kPageLoadScriptFormat, html);
 
-  auto options = std::make_unique<base::DictionaryValue>();
-  options->SetDoubleKey(kSettingHeaderFooterDate, base::Time::Now().ToJsTime());
-  options->SetDoubleKey("width", page_size.width());
-  options->SetDoubleKey("height", page_size.height());
-  options->SetDoubleKey("topMargin", page_layout.margin_top);
-  options->SetDoubleKey("bottomMargin", page_layout.margin_bottom);
-  options->SetDoubleKey("leftMargin", page_layout.margin_left);
-  options->SetDoubleKey("rightMargin", page_layout.margin_right);
-  options->SetIntKey("pageNumber", base::checked_cast<int>(page_number));
-  options->SetIntKey("totalPages", base::checked_cast<int>(total_pages));
-  options->SetStringKey("url", params.url);
+  base::Value::Dict options;
+  options.Set(kSettingHeaderFooterDate, base::Time::Now().ToJsTime());
+  options.Set("width", static_cast<double>(page_size.width()));
+  options.Set("height", static_cast<double>(page_size.height()));
+  options.Set("topMargin", page_layout.margin_top);
+  options.Set("bottomMargin", page_layout.margin_bottom);
+  options.Set("leftMargin", page_layout.margin_left);
+  options.Set("rightMargin", page_layout.margin_right);
+  options.Set("pageNumber", base::checked_cast<int>(page_number));
+  options.Set("totalPages", base::checked_cast<int>(total_pages));
+  options.Set("url", params.url);
   std::u16string title = source_frame.GetDocument().Title().Utf16();
-  options->SetStringKey("title", title.empty() ? params.title : title);
-  options->SetStringKey("headerTemplate", params.header_template);
-  options->SetStringKey("footerTemplate", params.footer_template);
-  options->SetBoolKey("isRtl", base::i18n::IsRTL());
+  options.Set("title", title.empty() ? params.title : title);
+  options.Set("headerTemplate", params.header_template);
+  options.Set("footerTemplate", params.footer_template);
+  options.Set("isRtl", base::i18n::IsRTL());
 
-  ExecuteScript(frame, kPageSetupScriptFormat, *options);
+  ExecuteScript(frame, kPageSetupScriptFormat, base::Value(std::move(options)));
 
   blink::WebPrintParams webkit_params(page_size);
   webkit_params.printer_dpi = GetDPI(params);
@@ -1406,7 +1405,7 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
 
   if (!UpdatePrintSettings(print_preview_context_.source_frame(),
                            print_preview_context_.source_node(),
-                           base::Value::AsDictionaryValue(settings))) {
+                           settings.GetDict())) {
     DidFinishPrinting(INVALID_SETTINGS);
     return;
   }
@@ -1553,11 +1552,10 @@ void PrintRenderFrameHelper::GetPageSizeAndContentAreaFromPageLayout(
 }
 
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
-    const base::DictionaryValue& settings) {
-  absl::optional<int> margins_type = settings.FindIntKey(kSettingMarginsType);
-  ignore_css_margins_ = margins_type.value_or(static_cast<int>(
-                            mojom::MarginType::kDefaultMargins)) !=
-                        static_cast<int>(mojom::MarginType::kDefaultMargins);
+    const base::Value::Dict& settings) {
+  constexpr int kDefault = static_cast<int>(mojom::MarginType::kDefaultMargins);
+  int margins_type = settings.FindInt(kSettingMarginsType).value_or(kDefault);
+  ignore_css_margins_ = margins_type != kDefault;
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2293,19 +2291,19 @@ PrintRenderFrameHelper::SetOptionsFromPdfDocument() {
 bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
-    const base::DictionaryValue& passed_job_settings) {
-  CHECK(!passed_job_settings.DictEmpty());
+    const base::Value::Dict& passed_job_settings) {
+  CHECK(!passed_job_settings.empty());
 
-  base::DictionaryValue modified_job_settings;
-  const base::DictionaryValue* job_settings;
+  base::Value::Dict modified_job_settings;
+  const base::Value::Dict* job_settings;
   bool source_is_html = !IsPrintingPdfFrame(frame, node);
   if (source_is_html) {
     job_settings = &passed_job_settings;
   } else {
-    modified_job_settings.MergeDictionary(&passed_job_settings);
-    modified_job_settings.SetBoolKey(kSettingHeaderFooterEnabled, false);
-    modified_job_settings.SetIntKey(
-        kSettingMarginsType, static_cast<int>(mojom::MarginType::kNoMargins));
+    modified_job_settings.Merge(passed_job_settings);
+    modified_job_settings.Set(kSettingHeaderFooterEnabled, false);
+    modified_job_settings.Set(kSettingMarginsType,
+                              static_cast<int>(mojom::MarginType::kNoMargins));
     job_settings = &modified_job_settings;
   }
 
@@ -2315,8 +2313,8 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
       print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
   mojom::PrintPagesParamsPtr settings;
   bool canceled = false;
-  GetPrintManagerHost()->UpdatePrintSettings(
-      cookie, job_settings->GetDict().Clone(), &settings, &canceled);
+  GetPrintManagerHost()->UpdatePrintSettings(cookie, job_settings->Clone(),
+                                             &settings, &canceled);
 
   // If mojom::PrintManagerHost is disconnected in the browser after calling
   // UpdatePrintSettings(), |settings| could be null.
@@ -2330,14 +2328,13 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     return false;
   }
 
-  settings->params->preview_ui_id =
-      job_settings->FindIntKey(kPreviewUIID).value();
+  settings->params->preview_ui_id = job_settings->FindInt(kPreviewUIID).value();
 
   // Validate expected print preview settings.
   settings->params->is_first_request =
-      job_settings->FindBoolKey(kIsFirstRequest).value();
+      job_settings->FindBool(kIsFirstRequest).value();
   settings->params->preview_request_id =
-      job_settings->FindIntKey(kPreviewRequestID).value();
+      job_settings->FindInt(kPreviewRequestID).value();
 
   settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);
