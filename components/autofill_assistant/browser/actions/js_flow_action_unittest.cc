@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/actions/js_flow_action.h"
+#include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/values_test_util.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/js_flow_executor.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -16,6 +18,7 @@
 namespace autofill_assistant {
 namespace {
 
+using ::base::test::IsJson;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
@@ -31,6 +34,8 @@ std::unique_ptr<base::Value> UniqueValueFromJson(const std::string& json) {
   return std::make_unique<base::Value>(
       std::move(*base::JSONReader::Read(json)));
 }
+
+}  // namespace
 
 class MockJsFlowExecutor : public JsFlowExecutor {
  public:
@@ -55,6 +60,10 @@ class JsFlowActionTest : public testing::Test {
     std::unique_ptr<JsFlowAction> action = std::make_unique<JsFlowAction>(
         &mock_action_delegate_, action_proto, std::move(js_flow_executor));
     return action;
+  }
+
+  ProcessedActionProto* GetInnerProcessedAction(JsFlowAction& js_flow_action) {
+    return js_flow_action.current_native_action_->processed_action_proto_.get();
   }
 
   MockActionDelegate mock_action_delegate_;
@@ -273,5 +282,85 @@ TEST_F(JsFlowActionTest, RemovesOriginalProtoFromTheProcessedAction) {
   EXPECT_FALSE(processed_action_capture.action().js_flow().has_js_flow());
 }
 
-}  // namespace
+TEST_F(JsFlowActionTest, NativeActionReturnsNavigationStarted) {
+  auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
+  auto* mock_js_flow_executor_ptr = mock_js_flow_executor.get();
+  auto action = CreateAction(std::move(mock_js_flow_executor));
+
+  EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
+      .WillOnce(WithArg<1>([&](auto finished_callback) {
+        ActionProto native_action;
+        native_action.mutable_wait_for_dom()->mutable_wait_condition();
+
+        action->RunNativeAction(
+            /* action_id = */ static_cast<int>(
+                native_action.action_info_case()),
+            /* action = */
+            native_action.wait_for_dom().SerializeAsString(),
+            native_action_callback_.Get());
+
+        std::move(finished_callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      }));
+
+  EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning)
+      .WillOnce(WithArg<4>([&](auto dom_finished_callback) {
+        GetInnerProcessedAction(*action)
+            ->mutable_navigation_info()
+            ->set_started(true);
+
+        std::move(dom_finished_callback)
+            .Run(ClientStatus(ACTION_APPLIED), base::Seconds(0));
+      }));
+
+  EXPECT_CALL(native_action_callback_, Run(_, Pointee(IsJson(R"(
+        { "navigationStarted": true }
+  )"))));
+
+  action->ProcessAction(callback_.Get());
+}
+
+TEST_F(JsFlowActionTest, NativeActionReturnsActionResult) {
+  auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
+  auto* mock_js_flow_executor_ptr = mock_js_flow_executor.get();
+  auto action = CreateAction(std::move(mock_js_flow_executor));
+
+  EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
+      .WillOnce(WithArg<1>([&](auto finished_callback) {
+        ActionProto native_action;
+        native_action.mutable_wait_for_dom()->mutable_wait_condition();
+
+        action->RunNativeAction(
+            /* action_id = */ static_cast<int>(
+                native_action.action_info_case()),
+            /* action = */
+            native_action.wait_for_dom().SerializeAsString(),
+            native_action_callback_.Get());
+
+        std::move(finished_callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      }));
+
+  WaitForDomProto::Result wait_for_dom_result;
+  wait_for_dom_result.add_matching_condition_tags("1");
+  wait_for_dom_result.add_matching_condition_tags("2");
+  std::string wait_for_dom_result_base64;
+  base::Base64Encode(wait_for_dom_result.SerializeAsString(),
+                     &wait_for_dom_result_base64);
+
+  EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning)
+      .WillOnce(WithArg<4>([&](auto dom_finished_callback) {
+        *GetInnerProcessedAction(*action)->mutable_wait_for_dom_result() =
+            wait_for_dom_result;
+        std::move(dom_finished_callback)
+            .Run(ClientStatus(ACTION_APPLIED), base::Seconds(0));
+      }));
+
+  EXPECT_CALL(native_action_callback_, Run(_, Pointee(IsJson(R"(
+        {
+          "navigationStarted": false,
+          "actionSpecificResult": ")" + wait_for_dom_result_base64 +
+                                                             "\"}"))));
+
+  action->ProcessAction(callback_.Get());
+}
+
 }  // namespace autofill_assistant

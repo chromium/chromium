@@ -88,12 +88,12 @@ void JsFlowAction::OnNativeActionFinished(
   VLOG(2) << "Native action finished with status "
           << processed_action->status();
 
-  // TODO(arbesser): send a representation of the processed action back to JS.
-  current_native_action_ = nullptr;
+  current_native_action_.reset();
+
   std::move(finished_callback)
       .Run(ClientStatus(processed_action->status(),
                         processed_action->status_details()),
-           nullptr);
+           js_flow_util::NativeActionResultToResultValue(*processed_action));
 }
 
 void JsFlowAction::InternalProcessAction(ProcessActionCallback callback) {

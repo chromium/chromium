@@ -100,6 +100,9 @@ class Action {
   ActionStopwatch action_stopwatch_;
 
   base::WeakPtrFactory<Action> weak_ptr_factory_{this};
+
+ private:
+  friend class JsFlowActionTest;
 };
 
 // Intended for debugging. Writes a string representation of |action_case| to

@@ -60,6 +60,11 @@ ClientStatus ExtractJsFlowActionReturnValue(
     const base::Value& value,
     std::unique_ptr<base::Value>& out_result_value);
 
+// Converts the processed action result from runNativeAction to the Value that
+// will be returned to the JS sandbox.
+std::unique_ptr<base::Value> NativeActionResultToResultValue(
+    const ProcessedActionProto& processed_action);
+
 }  // namespace js_flow_util
 }  // namespace autofill_assistant
 

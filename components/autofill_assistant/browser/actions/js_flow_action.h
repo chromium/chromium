@@ -39,6 +39,8 @@ class JsFlowAction : public Action, public JsFlowExecutor::Delegate {
           finished_callback) override;
 
  private:
+  friend class JsFlowActionTest;
+
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 

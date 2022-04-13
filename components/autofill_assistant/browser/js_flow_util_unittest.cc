@@ -6,12 +6,17 @@
 
 #include <vector>
 
+#include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
 namespace js_flow_util {
 namespace {
+
+using ::base::test::IsJson;
 
 TEST(JsFlowUtilTest, SimpleValues) {
   std::string ignored_error_message;
@@ -225,6 +230,32 @@ TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueAllowsStatusWithResult) {
             OTHER_ACTION_STATUS);
   EXPECT_EQ(*out_result_value,
             *base::JSONReader::Read(R"([[1, 2], null, {"enum": 5}])"));
+}
+
+TEST(JsFlowUtilTest, NativeActionResultToResultValueHasSerializedActionResult) {
+  ProcessedActionProto processed_action;
+  WaitForDomProto::Result* wait_for_dom_result =
+      processed_action.mutable_wait_for_dom_result();
+  wait_for_dom_result->add_matching_condition_tags("1");
+  wait_for_dom_result->add_matching_condition_tags("2");
+  std::string wait_for_dom_result_base64;
+  base::Base64Encode(wait_for_dom_result->SerializeAsString(),
+                     &wait_for_dom_result_base64);
+
+  EXPECT_THAT(
+      NativeActionResultToResultValue(processed_action), Pointee(IsJson(R"(
+        {
+          "navigationStarted": false,
+          "actionSpecificResult": ")" + wait_for_dom_result_base64 + "\"}")));
+}
+
+TEST(JsFlowUtilTest, NativeActionResultToResultValueHasEmptyActionResult) {
+  ProcessedActionProto processed_action;
+
+  EXPECT_THAT(NativeActionResultToResultValue(processed_action),
+              Pointee(IsJson(R"(
+        { "navigationStarted": false }
+  )")));
 }
 
 }  // namespace
