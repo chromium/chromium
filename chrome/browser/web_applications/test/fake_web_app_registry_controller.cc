@@ -46,7 +46,6 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
       mutable_registrar_.get(), mock_processor_.CreateForwardingProcessor());
   sync_bridge_->SetSubsystems(database_factory_.get(), this,
                               command_manager_.get());
-  command_manager_->SetSubsystems(mutable_registrar_.get());
   os_integration_manager_->SetSubsystems(sync_bridge_.get(),
                                          mutable_registrar_.get(),
                                          /*ui_manager=*/nullptr,

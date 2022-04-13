@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -14,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +66,7 @@ std::vector<std::unique_ptr<WebAppCommand>> WrapWithVector(
 class WebAppCommandManagerTest : public ::testing::Test {
  public:
   static const constexpr char kTestAppId[] = "test_app_id";
+  static const constexpr char kTestAppId2[] = "test_app_id_2";
 
   WebAppCommandManagerTest() = default;
   ~WebAppCommandManagerTest() override = default;
@@ -542,6 +545,28 @@ TEST_F(WebAppCommandManagerTest, NotifySyncChainsCommands) {
     EXPECT_CALL(mock_closure, Run()).Times(1).WillOnce([&]() { loop.Quit(); });
   }
   manager.NotifyBeforeSyncUninstalls({kTestAppId});
+  loop.Run();
+  manager.Shutdown();
+}
+
+TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
+  WebAppCommandManager manager;
+  base::RunLoop loop;
+  // Queue multiple callbacks to app queues, and gather output.
+  auto barrier = base::BarrierCallback<std::string>(
+      2, base::BindLambdaForTesting([&](std::vector<std::string> result) {
+        EXPECT_EQ(result.size(), 2u);
+        loop.Quit();
+      }));
+  for (auto* app_id : {kTestAppId, kTestAppId2}) {
+    base::OnceClosure callback = base::BindOnce(
+        [](AppId app_id, base::RepeatingCallback<void(std::string)> barrier) {
+          barrier.Run(app_id);
+        },
+        app_id, barrier);
+    manager.EnqueueCommand(
+        std::make_unique<CallbackCommand>(app_id, std::move(callback)));
+  }
   loop.Run();
   manager.Shutdown();
 }

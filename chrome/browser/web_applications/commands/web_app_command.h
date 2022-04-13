@@ -1,8 +1,10 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
+
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -105,6 +107,8 @@ class WebAppCommand {
       CommandResult result,
       base::OnceClosure call_after_destruction,
       std::vector<std::unique_ptr<WebAppCommand>> chained_commands);
+
+  WebAppCommandManager* command_manager() { return command_manager_; }
 
   SEQUENCE_CHECKER(command_sequence_checker_);
 

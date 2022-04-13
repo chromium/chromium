@@ -23,39 +23,6 @@ namespace web_app {
 
 namespace {
 
-// Simple adapter to allow a user to specify two callbacks instead of a command
-// class.
-class CommandCallbackAdapter : public WebAppCommand {
- public:
-  CommandCallbackAdapter(absl::optional<AppId> app_id,
-                         WebAppCommandManager::CallbackCommand command,
-                         WebAppCommandManager::CommandResultCallback complete)
-      : WebAppCommand(app_id),
-        command_(std::move(command)),
-        complete_(std::move(complete)) {}
-  ~CommandCallbackAdapter() override = default;
-
-  void Start() override {
-    DCHECK(command_);
-    DCHECK(complete_);
-    CommandResult result = std::move(command_).Run();
-    SignalCompletionAndSelfDestruct(
-        result, base::BindOnce(std::move(complete_), result), {});
-  }
-
-  void OnBeforeForcedUninstallFromSync() override {}
-
-  void OnShutdown() override {}
-
-  base::Value ToDebugValue() const override {
-    return base::Value("CommandCallbackAdapter");
-  }
-
- private:
-  WebAppCommandManager::CallbackCommand command_;
-  WebAppCommandManager::CommandResultCallback complete_;
-};
-
 base::Value CreateLogValue(const WebAppCommand& command,
                            absl::optional<CommandResult> result) {
   base::Value::Dict dict;
@@ -104,10 +71,6 @@ WebAppCommandManager::~WebAppCommandManager() {
   DCHECK(is_in_shutdown_);
 }
 
-void WebAppCommandManager::SetSubsystems(WebAppRegistrar* registrar) {
-  registrar_ = registrar;
-}
-
 void WebAppCommandManager::EnqueueCommand(
     std::unique_ptr<WebAppCommand> command) {
   if (is_in_shutdown_) {
@@ -125,19 +88,6 @@ void WebAppCommandManager::EnqueueCommand(
   CommandQueueState& queue = queue_it->second;
   queue.queued_commands.push_back(std::move(command));
   MaybeRunNextCommand(queue_id);
-}
-
-void WebAppCommandManager::EnqueueCallback(
-    const absl::optional<AppId>& queue_id,
-    CallbackCommand command,
-    CommandResultCallback complete) {
-  auto command_adapter = std::make_unique<CommandCallbackAdapter>(
-      queue_id, std::move(command), std::move(complete));
-  if (is_in_shutdown_) {
-    AddValueToLog(CreateLogValue(*command_adapter, CommandResult::kShutdown));
-    return;
-  }
-  EnqueueCommand(std::move(command_adapter));
 }
 
 void WebAppCommandManager::Shutdown() {

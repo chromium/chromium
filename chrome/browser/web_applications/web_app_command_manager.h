@@ -25,9 +25,9 @@ class WebAppRegistrar;
 // The command manager is used to enqueue commands or callbacks to write & read
 // from the WebAppProvider system.
 // Commands are queued based on a `WebAppCommandQueueId`, and each queue is
-// independent. To use, simply call `EnqueueCommand` or `EnqueueCallback` to
-// enqueue the given command or callback on it's respective queue. The queue of
-// a command is determined by `WebAppCommand::queue_id()`.
+// independent. To use, simply call `EnqueueCommand` to enqueue the given
+// command or a CallbackCommand with given callback on it's respective queue.
+// The queue of a command is determined by `WebAppCommand::queue_id()`.
 //
 // Commands will be executed (`Start()` will be called) in-order, and the next
 // command will not execute until `SignalCompletionAndSelfDestruct()` was called
@@ -35,25 +35,12 @@ class WebAppRegistrar;
 // that can preempt already scheduled commands if they are in the same queue.
 class WebAppCommandManager {
  public:
-  using CallbackCommand = base::OnceCallback<CommandResult()>;
-  using CommandResultCallback = base::OnceCallback<void(CommandResult)>;
-
   WebAppCommandManager();
   virtual ~WebAppCommandManager();
-
-  // Called by WebAppProvider on system setup.
-  void SetSubsystems(WebAppRegistrar* registrar);
-  void Start();
 
   // Enqueues the given command in the queue corresponding to the command's
   // `queue_id()`. `Start()` will always be called asynchronously.
   void EnqueueCommand(std::unique_ptr<WebAppCommand> command);
-
-  // Enqueues the given callback in the `queue_id` queue. The `command` will
-  // always be called asynchronously.
-  void EnqueueCallback(const WebAppCommandQueueId& queue_id,
-                       CallbackCommand command,
-                       CommandResultCallback complete);
 
   // Called on system shutdown. This call is also forwarded to any commands that
   // have been `Start()`ed.
@@ -63,8 +50,6 @@ class WebAppCommandManager {
   // from the registry. Any commands that whose `queue_id()`s match an id in
   // `app_id` who have also been `Start()`ed will also be notified.
   void NotifyBeforeSyncUninstalls(const std::vector<AppId>& app_ids);
-
-  WebAppRegistrar* registrar() { return registrar_; }
 
   // Outputs a debug value of the state of the commands system, including
   // running and queued commands.

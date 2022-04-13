@@ -346,7 +346,6 @@ void WebAppProvider::ConnectSubsystems() {
                                          ui_manager_.get(),
                                          icon_manager_.get());
 
-  command_manager_->SetSubsystems(registrar_.get());
   connected_ = true;
 }
 

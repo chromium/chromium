@@ -15,6 +15,8 @@ group("web_app_test_group") {
 source_set("web_applications") {
   sources = [
     "app_registrar_observer.h",
+    "commands/callback_command.cc",
+    "commands/callback_command.h",
     "commands/clear_browsing_data_command.cc",
     "commands/clear_browsing_data_command.h",
     "commands/run_on_os_login_command.cc",
