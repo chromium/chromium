@@ -243,6 +243,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
+#include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -252,7 +253,6 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif
@@ -1477,7 +1477,7 @@ void RenderViewContextMenu::AppendOpenWithLinkItems() {
 }
 
 void RenderViewContextMenu::AppendQuickAnswersItems() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!quick_answers_menu_observer_) {
     quick_answers_menu_observer_ =
         std::make_unique<QuickAnswersMenuObserver>(this);

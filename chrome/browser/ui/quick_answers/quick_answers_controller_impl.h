@@ -70,9 +70,6 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   // Handle user consent result.
   void OnUserConsentResult(bool consented);
 
-  // Open Quick-Answers settings.
-  void OpenQuickAnswersSettings();
-
   QuickAnswersUiController* quick_answers_ui_controller() {
     return quick_answers_ui_controller_.get();
   }

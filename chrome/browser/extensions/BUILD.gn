@@ -1007,6 +1007,7 @@ static_library("extensions") {
     }
     deps += [
       "//chrome/browser/chromeos/extensions/login_screen",
+      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//remoting/host/it2me:chrome_os_host",
@@ -1141,7 +1142,6 @@ static_library("extensions") {
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/components/chromebox_for_meetings/buildflags",
-      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/dbus",
       "//chromeos/dbus/cryptohome",

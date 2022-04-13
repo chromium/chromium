@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
@@ -29,6 +30,9 @@
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/sync/base/features.h"
@@ -162,4 +166,14 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     sync_explicit_passphrase_client_ =
         MaybeCreateSyncExplicitPassphraseClient(profile);
   }
+
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
+
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
+  QuickAnswersController::Get()->SetClient(
+      std::make_unique<quick_answers::QuickAnswersClient>(
+          g_browser_process->shared_url_loader_factory(),
+          QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 }

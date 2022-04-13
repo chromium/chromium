@@ -2499,8 +2499,6 @@ static_library("browser") {
       "//chromeos/components/local_search_service/public/cpp:cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/onc",
-      "//chromeos/components/quick_answers/public/cpp:cpp",
-      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/dbus/attestation",
       "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cros_disks",
@@ -2522,9 +2520,6 @@ static_library("browser") {
       # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
       # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
       "//chrome/browser/ash/system_extensions/api/window_management",
-
-      # TODO(b/215757706): Find a way to avoid the circular include.
-      "//chrome/browser/ui/quick_answers",
     ]
     public_deps += [ "//ui/lottie" ]
     if (!is_official_build) {
@@ -2553,6 +2548,13 @@ static_library("browser") {
     deps += [
       "//chrome/browser/policy:onc",
       "//chromeos/components/onc:onc",
+      "//chromeos/components/quick_answers/public/cpp:cpp",
+      "//chromeos/components/quick_answers/public/cpp:prefs",
+    ]
+
+    allow_circular_includes_from += [
+      # TODO(b/215757706): Find a way to avoid the circular include.
+      "//chrome/browser/ui/quick_answers",
     ]
   }
   if (is_linux || is_chromeos) {
@@ -4888,8 +4890,6 @@ static_library("browser") {
       "platform_util_ash.cc",
       "policy/default_geolocation_policy_handler.cc",
       "policy/default_geolocation_policy_handler.h",
-      "renderer_context_menu/quick_answers_menu_observer.cc",
-      "renderer_context_menu/quick_answers_menu_observer.h",
       "resource_coordinator/tab_manager_delegate_chromeos.cc",
       "resource_coordinator/tab_manager_delegate_chromeos.h",
       "sharesheet/share_action/example_action.cc",
@@ -5395,13 +5395,18 @@ static_library("browser") {
       "platform_keys/extension_platform_keys_service_factory.h",
       "platform_keys/platform_keys.cc",
       "platform_keys/platform_keys.h",
+      "renderer_context_menu/quick_answers_menu_observer.cc",
+      "renderer_context_menu/quick_answers_menu_observer.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
     ]
     deps += [
       "//chrome/browser/metrics/structured",
+      "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+      "//chromeos/components/quick_answers:quick_answers",
+      "//chromeos/components/quick_answers/public/cpp:cpp",
       "//chromeos/components/webauthn",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",

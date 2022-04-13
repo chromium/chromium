@@ -10,40 +10,41 @@ source_set("quick_answers") {
   sources = [
     "quick_answers_access_token_fetcher.cc",
     "quick_answers_access_token_fetcher.h",
+    "quick_answers_controller_impl.cc",
+    "quick_answers_controller_impl.h",
+    "quick_answers_ui_controller.cc",
+    "quick_answers_ui_controller.h",
     "ui/quick_answers_focus_search.cc",
     "ui/quick_answers_focus_search.h",
     "ui/quick_answers_pre_target_handler.cc",
     "ui/quick_answers_pre_target_handler.h",
+    "ui/quick_answers_view.cc",
+    "ui/quick_answers_view.h",
+    "ui/user_consent_view.cc",
+    "ui/user_consent_view.h",
   ]
   deps = [
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/color:color_headers",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/strings:strings_grit",
+    "//components/account_id",
+    "//components/prefs",
     "//content/public/browser",
     "//ui/views/controls/webview",
+    "//ui/wm",
   ]
 
-  # TODO(b/208563257): Add lacros support for these sources.
   if (is_chromeos_ash) {
     sources += [
-      "quick_answers_controller_impl.cc",
-      "quick_answers_controller_impl.h",
       "quick_answers_state_ash.cc",
       "quick_answers_state_ash.h",
-      "quick_answers_ui_controller.cc",
-      "quick_answers_ui_controller.h",
-      "ui/quick_answers_view.cc",
-      "ui/quick_answers_view.h",
-      "ui/user_consent_view.cc",
-      "ui/user_consent_view.h",
     ]
     deps += [
       "//ash",
-      "//chrome/browser/ui/color:color_headers",
-      "//chromeos/strings:strings_grit",
       "//components/language/core/browser:browser",
-      "//components/prefs:prefs",
     ]
   }
 
@@ -51,6 +52,10 @@ source_set("quick_answers") {
     sources += [
       "lacros/quick_answers_state_lacros.cc",
       "lacros/quick_answers_state_lacros.h",
+    ]
+    deps += [
+      "//chrome/browser/ui",
+      "//chromeos/lacros:lacros",
     ]
   }
 }

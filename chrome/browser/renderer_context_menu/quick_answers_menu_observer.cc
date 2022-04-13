@@ -31,6 +31,10 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/feedback_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 using quick_answers::Context;
@@ -39,9 +43,13 @@ using quick_answers::QuickAnswersExitPoint;
 constexpr int kMaxSurroundingTextLength = 300;
 
 bool IsActiveUserInternal() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
-
   const std::string email = user->GetAccountId().GetUserEmail();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const std::string email = feedback_util::GetSignedInUserEmail();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   return gaia::IsGoogleInternalAccountEmail(email);
 }
 

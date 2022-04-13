@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -16,6 +16,19 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/new_window_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"          // nogncheck
+#include "chrome/browser/ui/browser_finder.h"            // nogncheck
+#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -25,6 +38,28 @@ using quick_answers::QuickAnswersExitPoint;
 constexpr char kGoogleSearchUrlPrefix[] = "https://www.google.com/search?q=";
 
 constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
+
+constexpr char kQuickAnswersSettingsUrl[] =
+    "chrome://os-settings/osSearch/search";
+
+// Open the specified URL in a new tab in the primary browser.
+void OpenUrl(const GURL& url) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+
+  NavigateParams navigate_params(
+      profile, url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_FROM_API));
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  Navigate(&navigate_params);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 }  // namespace
 
@@ -60,10 +95,8 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kGoogleSearchUrlPrefix +
-           net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+  OpenUrl(GURL(kGoogleSearchUrlPrefix +
+               net::EscapeUrlEncodedData(query_, /*use_plus=*/true)));
   controller_->OnQuickAnswerClick();
 }
 
@@ -134,16 +167,27 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
-  controller_->OpenQuickAnswersSettings();
+  OpenUrl(GURL(kQuickAnswersSettingsUrl));
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {
   controller_->DismissQuickAnswers(
       QuickAnswersExitPoint::kReportQueryButtonClick);
 
+  auto feedback_template =
+      base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str());
+
+  // TODO(b/229007013): Merge the logics after resolve the deps cycle with
+  // //c/b/ui in ash chrome build.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
       ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
-      base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));
+      feedback_template);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chrome::OpenFeedbackDialog(
+      chrome::FindBrowserWithActiveWindow(),
+      chrome::FeedbackSource::kFeedbackSourceQuickAnswers, feedback_template);
+#endif
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {
