@@ -46,7 +46,7 @@ const base::Feature kDynamicSearchUpdateAnimation{
 const base::Feature kLauncherLacrosIntegration{
     "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedbackOnContinueSectionRemove{
-    "FeedbackOnContinueSectionRemove", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FeedbackOnContinueSectionRemove", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
