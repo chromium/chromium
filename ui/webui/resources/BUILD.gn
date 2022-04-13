@@ -195,6 +195,17 @@ checked_in_dts_files = [
   "js/web_ui_listener_behavior.m.d.ts",
 ]
 
+if (is_chromeos_ash) {
+  checked_in_dts_files += [
+    "js/cr/ui/context_menu_handler.m.d.ts",
+    "js/cr/ui/dialogs.m.d.ts",
+    "js/cr/ui/grid.m.d.ts",
+    "js/cr/ui/list.m.d.ts",
+    "js/cr/ui/menu_button.m.d.ts",
+    "js/cr/ui/menu_item.m.d.ts",
+  ]
+}
+
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
 copy("copy_checked_in_dts_files") {
@@ -244,7 +255,19 @@ if (include_polymer) {
       "cr_elements/chromeos/cros_color_overrides.m.js",
       "cr_elements/chromeos/cr_picture/png.js",
       "cr_elements/chromeos/cr_picture/webcam_utils.js",
+      "js/cr/ui.m.js",
+      "js/cr/ui/array_data_model.m.js",
+      "js/cr/ui/command.m.js",
+      "js/cr/ui/list_item.m.js",
+      "js/cr/ui/list_selection_model.m.js",
+      "js/cr/ui/list_single_selection_model.m.js",
+      "js/cr/ui/list_selection_controller.m.js",
+      "js/cr/ui/menu.m.js",
+      "js/cr/ui/position_util.m.js",
+      "js/cr/ui/splitter.js",
       "js/cr/ui/store_client.js",
+      "js/cr/ui/tree.js",
+      "js/static_types.js",
     ]
   }
 }
