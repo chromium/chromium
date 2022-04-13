@@ -254,7 +254,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>
       keyboard_shortcut_container_tags_;     // Owned by views hierarchy.
-  views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
+  views::Label* result_text_separator_label_ =
+      nullptr;                                      // Owned by views hierarchy.
+  views::Label* rating_separator_label_ = nullptr;  // Owned by views hierarchy.
   views::Label* rating_ = nullptr;           // Owned by views hierarchy.
   views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
 
@@ -267,7 +269,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   bool confirm_remove_by_long_press_ = false;
 
   // Separator label is shown for `kDefault` when details text is not empty,
-  bool should_show_separator_label_ = false;
+  bool should_show_result_text_separator_label_ = false;
 
   // Used to override `title_and_details_container_` layout when
   // `keyboard_shortcut_container_` is populated.

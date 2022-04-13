@@ -367,13 +367,13 @@ SearchResultView::SearchResultView(
   title_container_->SetFlexAllocationOrder(
       views::FlexAllocationOrder::kReverse);
 
-  separator_label_ = SetupChildLabelView(
+  result_text_separator_label_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
       kSeparatorOrder, /*elidable=*/false, has_keyboard_shortcut_contents_,
       /*is_multi_line=*/false);
-  separator_label_->SetText(
+  result_text_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
-  separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  result_text_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   details_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -386,6 +386,14 @@ SearchResultView::SearchResultView(
                                /*adjust_height_for_width=*/true)
           .WithOrder(TitleDetailContainerOrder)
           .WithWeight(1));
+
+  rating_separator_label_ = SetupChildLabelView(
+      title_and_details_container_, view_type_, LabelType::kDetails,
+      kSeparatorOrder, /*elidable=*/false, has_keyboard_shortcut_contents_,
+      /*is_multi_line=*/false);
+  rating_separator_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
+  rating_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   rating_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
@@ -652,8 +660,9 @@ SearchResultView::SetupContainerViewForTextVector(
         if (label_type == LabelType::kDetails) {
           // We should only show a separator label when the details container
           // has valid contents.
-          should_show_separator_label_ =
-              should_show_separator_label_ || (!span.GetText().empty());
+          should_show_result_text_separator_label_ =
+              should_show_result_text_separator_label_ ||
+              (!span.GetText().empty());
         }
         label->SetText(span.GetText());
         label->SetVisible(true);
@@ -784,17 +793,16 @@ void SearchResultView::UpdateTitleContainer() {
 }
 
 void SearchResultView::UpdateDetailsContainer() {
-  should_show_separator_label_ = false;
+  should_show_result_text_separator_label_ = false;
   // Updating the details label should reset `multi_line_label_height_` and
   // `non_elided_details_label_width_`.
   multi_line_label_height_ = 0;
   non_elided_details_label_width_ = 0;
-
   details_container_->RemoveAllChildViews();
   details_label_tags_.clear();
   if (!result() || result()->details_text_vector().empty()) {
     details_container_->SetVisible(false);
-    separator_label_->SetVisible(false);
+    result_text_separator_label_->SetVisible(false);
   } else {
     // Create details labels from text vector metadata.
     details_label_tags_ = SetupContainerViewForTextVector(
@@ -807,17 +815,19 @@ void SearchResultView::UpdateDetailsContainer() {
       case SearchResultViewType::kDefault:
         // Show `separator_label_` when SetupContainerViewForTextVector gets
         // valid contents in `result()->details_text_vector()`.
-        separator_label_->SetVisible(should_show_separator_label_);
+        result_text_separator_label_->SetVisible(
+            should_show_result_text_separator_label_);
         break;
       case SearchResultViewType::kClassic:
-        separator_label_->SetVisible(false);
+        result_text_separator_label_->SetVisible(false);
         break;
       case SearchResultViewType::kAnswerCard:
         // Show `separator_label_` when SetupContainerViewForTextVector gets
         // valid contents in `result()->details_text_vector()` and
         // `has_keyboard_shortcut_contents_` is set.
-        separator_label_->SetVisible(should_show_separator_label_ &&
-                                     has_keyboard_shortcut_contents_);
+        result_text_separator_label_->SetVisible(
+            should_show_result_text_separator_label_ &&
+            has_keyboard_shortcut_contents_);
     }
   }
 }
@@ -860,12 +870,14 @@ void SearchResultView::UpdateKeyboardShortcutContainer() {
 
 void SearchResultView::UpdateRating() {
   if (!result() || !result()->rating() || result()->rating() < 0) {
+    rating_separator_label_->SetVisible(false);
     rating_->SetText(std::u16string());
     rating_->SetVisible(false);
     rating_star_->SetVisible(false);
     return;
   }
 
+  rating_separator_label_->SetVisible(true);
   rating_->SetText(base::FormatDouble(result()->rating(), 1));
   rating_->SetVisible(true);
   rating_star_->SetVisible(true);
@@ -1076,10 +1088,9 @@ void SearchResultView::Layout() {
 
         SetFlexBehaviorForTextContents(
             centered_text_bounds.width(),
-            separator_label_->GetPreferredSize().width(),
+            result_text_separator_label_->GetPreferredSize().width(),
             non_elided_details_label_width_, title_container_,
             details_container_);
-
         break;
       }
 
@@ -1202,7 +1213,11 @@ void SearchResultView::OnThemeChanged() {
   if (!keyboard_shortcut_container_tags_.empty())
     StyleKeyboardShortcutContainer();
 
-  separator_label_->SetEnabledColor(
+  result_text_separator_label_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDeprecatedSearchBoxTextDefaultColor));
+
+  rating_separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor));
   rating_->SetEnabledColor(
