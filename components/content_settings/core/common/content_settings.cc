@@ -187,7 +187,6 @@ bool RendererContentSettingRules::IsRendererContentSetting(
     ContentSettingsType content_type) {
   return content_type == ContentSettingsType::IMAGES ||
          content_type == ContentSettingsType::JAVASCRIPT ||
-         content_type == ContentSettingsType::CLIENT_HINTS ||
          content_type == ContentSettingsType::POPUPS ||
          content_type == ContentSettingsType::MIXEDSCRIPT ||
          content_type == ContentSettingsType::AUTO_DARK_WEB_CONTENT;
