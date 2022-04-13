@@ -92,9 +92,9 @@ class ArcInstanceThrottle : public KeyedService,
   ArcBootPhaseThrottleObserver* GetBootObserver();
 
   std::unique_ptr<Delegate> delegate_;
-  // True if CPU_RESTRICTION_BACKGROUND_WITH_CFS_QUOTA_ENFORCED has ever been
+  // True if CPU_RESTRICTION_BACKGROUND_WITH_CFS_QUOTA_ENFORCED should never be
   // used.
-  bool quota_ever_enforced_ = false;
+  bool never_enforce_quota_ = false;
 
   // Owned by ArcServiceManager.
   ArcBridgeService* const bridge_;

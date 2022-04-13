@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/throttle_observer.h"
@@ -145,10 +146,44 @@ class ArcInstanceThrottleTest : public testing::Test {
     return arc_instance_throttle_;
   }
 
+  // Returns an observer that will be classified as |kOther| in
+  // GetUnthrottlingReason().
   ash::ThrottleObserver* GetThrottleObserver() {
     const auto& observers = arc_instance_throttle()->observers_for_testing();
     DCHECK(!observers.empty());
-    return observers[0].get();
+    for (const auto& observer : observers) {
+      // This must be in sync with GetUnthrottlingReason().
+      if (observer->name() == kArcBootPhaseThrottleObserverName)
+        continue;
+      else if (observer->name() == kArcPowerThrottleObserverName)
+        continue;
+      else
+        return observer.get();
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+
+  ash::ThrottleObserver* GetArcBootPhaseThrottleObserver() {
+    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    DCHECK(!observers.empty());
+    for (const auto& observer : observers) {
+      if (observer->name() == kArcBootPhaseThrottleObserverName)
+        return observer.get();
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+
+  ash::ThrottleObserver* GetArcPowerThrottleObserver() {
+    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    DCHECK(!observers.empty());
+    for (const auto& observer : observers) {
+      if (observer->name() == kArcPowerThrottleObserverName)
+        return observer.get();
+    }
+    NOTREACHED();
+    return nullptr;
   }
 
   FakePowerInstance* power_instance() { return power_instance_.get(); }
@@ -235,16 +270,18 @@ TEST_F(ArcInstanceThrottleTest, TestThrottleInstance) {
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 }
 
-// Tests that ArcInstanceThrottle enforces quota only once after ARC
-// boot.
+// Tests that ArcInstanceThrottle enforces quota only until unthrottled via a
+// user action.
 TEST_F(ArcInstanceThrottleTest, TestThrottleInstanceQuotaEnforcement) {
   // While ARC is booting, quota shouldn't be enforced.
-  GetThrottleObserver()->SetActive(false);
+  GetArcBootPhaseThrottleObserver()->SetActive(false);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, use_quota_counter());
   EXPECT_EQ(0U, disable_cpu_restriction_counter());
 
-  GetThrottleObserver()->SetActive(true);
+  // Note: Use ArcBootPhaseThrottleObserver so that quota will still be
+  // applicable.
+  GetArcBootPhaseThrottleObserver()->SetActive(true);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, use_quota_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
@@ -254,12 +291,12 @@ TEST_F(ArcInstanceThrottleTest, TestThrottleInstanceQuotaEnforcement) {
 
   // Since 10 seconds haven't passed since the mojom connection, quota is
   // still not enforced.
-  GetThrottleObserver()->SetActive(false);
+  GetArcBootPhaseThrottleObserver()->SetActive(false);
   EXPECT_EQ(2U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, use_quota_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 
-  GetThrottleObserver()->SetActive(true);
+  GetArcBootPhaseThrottleObserver()->SetActive(true);
   EXPECT_EQ(2U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, use_quota_counter());
   EXPECT_EQ(2U, disable_cpu_restriction_counter());
@@ -269,21 +306,33 @@ TEST_F(ArcInstanceThrottleTest, TestThrottleInstanceQuotaEnforcement) {
       ArcBootPhaseThrottleObserver::GetThrottleDelayForTesting());
 
   // Now quota is enforced,
-  GetThrottleObserver()->SetActive(false);
+  GetArcBootPhaseThrottleObserver()->SetActive(false);
   EXPECT_EQ(3U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, use_quota_counter());
   EXPECT_EQ(2U, disable_cpu_restriction_counter());
 
-  // Quota is enforced only once.
-  GetThrottleObserver()->SetActive(true);
+  // Unthrottle the instance because of pre-ANR.
+  GetArcPowerThrottleObserver()->SetActive(true);
   EXPECT_EQ(3U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, use_quota_counter());
   EXPECT_EQ(3U, disable_cpu_restriction_counter());
 
-  GetThrottleObserver()->SetActive(false);
+  // Quota is enforced again once pre-ANR is handled.
+  GetArcPowerThrottleObserver()->SetActive(false);
   EXPECT_EQ(4U, enable_cpu_restriction_counter());
-  EXPECT_EQ(1U, use_quota_counter());
+  EXPECT_EQ(2U, use_quota_counter());
   EXPECT_EQ(3U, disable_cpu_restriction_counter());
+
+  // Quota is not enforced once unthrottled via a user action.
+  GetThrottleObserver()->SetActive(true);
+  EXPECT_EQ(4U, enable_cpu_restriction_counter());
+  EXPECT_EQ(2U, use_quota_counter());
+  EXPECT_EQ(4U, disable_cpu_restriction_counter());
+
+  GetThrottleObserver()->SetActive(false);
+  EXPECT_EQ(5U, enable_cpu_restriction_counter());
+  EXPECT_EQ(2U, use_quota_counter());
+  EXPECT_EQ(4U, disable_cpu_restriction_counter());
 }
 
 // Tests that power instance is correctly notified.

@@ -11,6 +11,8 @@
 
 namespace arc {
 
+constexpr char kArcPowerThrottleObserverName[] = "ArcPower";
+
 // Listens ARC power events and lifts CPU throttling when needed.
 class ArcPowerThrottleObserver : public chromeos::ThrottleObserver,
                                  public ArcPowerBridge::Observer {
