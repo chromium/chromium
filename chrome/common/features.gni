@@ -52,7 +52,7 @@ declare_args() {
   enable_hangout_services_extension = is_chrome_branded
 
   enable_one_click_signin = is_win || is_mac || is_fuchsia ||
-                            ((is_linux || is_chromeos_lacros) && !is_chromecast)
+                            ((is_linux && !is_chromecast) || is_chromeos_lacros)
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
