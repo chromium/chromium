@@ -887,6 +887,11 @@ IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("navigation-api.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
+                       AccessibilityEventsImmediateRefresh) {
+  RunEventTest(FILE_PATH_LITERAL("immediate-refresh.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsRemoveChild) {
   RunEventTest(FILE_PATH_LITERAL("remove-child.html"));

@@ -1,0 +1,3 @@
+# Empty expectations file because this is a regression test for a DCHECK failure
+# which occurs on a load-complete event which is fired before we start listening
+# for accessibility events.
