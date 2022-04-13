@@ -1,8 +1,16 @@
 Tests Page.setFontFamilies.
-.standard_font
+.inherited_font
 [
     [0] : {
         familyName : Ahem
+        glyphCount : 9
+        isCustomFont : true
+    }
+]
+.standard_font
+[
+    [0] : {
+        familyName : Cousine
         glyphCount : 8
         isCustomFont : false
     }
@@ -20,6 +28,14 @@ Tests Page.setFontFamilies.
     [0] : {
         familyName : Ahem
         glyphCount : 5
+        isCustomFont : false
+    }
+]
+.notgeneric_font
+[
+    [0] : {
+        familyName : Cousine
+        glyphCount : 10
         isCustomFont : false
     }
 ]

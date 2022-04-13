@@ -5,10 +5,26 @@ Tests Page.setFontFamilies for scripts.
     }
     sessionId : <string>
 }
+.inherited_font
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 9
+        isCustomFont : true
+    }
+]
+.inherited_font_ru
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 9
+        isCustomFont : true
+    }
+]
 .standard_font
 [
     [0] : {
-        familyName : Courier
+        familyName : Ahem
         glyphCount : 8
         isCustomFont : false
     }
@@ -32,7 +48,7 @@ Tests Page.setFontFamilies for scripts.
 .standard_font_ru
 [
     [0] : {
-        familyName : Ahem
+        familyName : Courier
         glyphCount : 8
         isCustomFont : false
     }
@@ -50,6 +66,22 @@ Tests Page.setFontFamilies for scripts.
     [0] : {
         familyName : Ahem
         glyphCount : 5
+        isCustomFont : false
+    }
+]
+.notgeneric_font
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 10
+        isCustomFont : false
+    }
+]
+.notgeneric_font_ru
+[
+    [0] : {
+        familyName : Courier
+        glyphCount : 10
         isCustomFont : false
     }
 ]
