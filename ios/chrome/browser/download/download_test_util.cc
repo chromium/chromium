@@ -11,6 +11,8 @@
 
 namespace testing {
 
+const char kCalendarFilePath[] =
+    "ios/testing/data/http_server_files/sample.ics";
 const char kMobileConfigFilePath[] =
     "ios/testing/data/http_server_files/sample.mobileconfig";
 const char kPkPassFilePath[] =

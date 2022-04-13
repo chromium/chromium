@@ -9,6 +9,7 @@
 
 namespace testing {
 
+extern const char kCalendarFilePath[];
 extern const char kMobileConfigFilePath[];
 extern const char kPkPassFilePath[];
 extern const char kUsdzFilePath[];
