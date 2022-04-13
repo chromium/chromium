@@ -95,6 +95,8 @@ cc_component("paint") {
     "skottie_text_property_value.h",
     "skottie_transfer_cache_entry.cc",
     "skottie_transfer_cache_entry.h",
+    "skottie_transform_property_value.cc",
+    "skottie_transform_property_value.h",
     "skottie_wrapper.cc",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",

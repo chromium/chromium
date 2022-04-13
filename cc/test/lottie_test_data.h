@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -295,6 +296,8 @@ constexpr base::StringPiece kLottieDataWith2TextNode1 = "text_node_1";
 constexpr base::StringPiece kLottieDataWith2TextNode1Text = "test_text_1";
 constexpr base::StringPiece kLottieDataWith2TextNode2 = "text_node_2";
 constexpr base::StringPiece kLottieDataWith2TextNode2Text = "test_text_2";
+constexpr gfx::PointF kLottieDataWith2TextNode1Position = gfx::PointF(100, 200);
+constexpr gfx::PointF kLottieDataWith2TextNode2Position = gfx::PointF(200, 400);
 
 // Returns an animation with the same structure as
 // |kLottieDataWith2TextFileName| except with text node names specified by the

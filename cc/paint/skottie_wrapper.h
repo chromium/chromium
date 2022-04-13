@@ -17,6 +17,7 @@
 #include "cc/paint/skottie_marker.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
+#include "cc/paint/skottie_transform_property_value.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 
@@ -66,6 +67,12 @@ class CC_PAINT_EXPORT SkottieWrapper
   // corresponding current values. The nodes' values can only be updated via
   // the |text_map| argument in Draw().
   virtual SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const = 0;
+
+  // Returns the set of all transform nodes in the animation, along with their
+  // corresponding current values. The nodes' values are not updateable via
+  // Draw() like other properties simply because there is no use case yet.
+  virtual SkottieTransformPropertyValueMap GetCurrentTransformPropertyValues()
+      const = 0;
 
   // Returns all markers present in the animation. The returned list is
   // immutable and does not change during SkottieWrapper's lifetime.

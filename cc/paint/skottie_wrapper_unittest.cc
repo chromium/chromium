@@ -32,6 +32,7 @@ using ::testing::Eq;
 using ::testing::FieldsAre;
 using ::testing::FloatNear;
 using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
 using ::testing::Key;
 using ::testing::Mock;
 using ::testing::Ne;
@@ -247,6 +248,22 @@ TEST(SkottieWrapperTest, Marker) {
               kLottieDataWith2MarkersMarker2,
               FloatNear(kLottieDataWith2MarkersMarker2Time, kMarkerEpsilon),
               FloatNear(kLottieDataWith2MarkersMarker2Time, kMarkerEpsilon))));
+}
+
+TEST(SkottieWrapperTest, LoadsTransformNodes) {
+  auto skottie = CreateSkottieFromTestDataDir(kLottieDataWith2TextFileName);
+  ASSERT_TRUE(skottie->is_valid());
+  EXPECT_THAT(skottie->GetTextNodeNames(),
+              UnorderedElementsAre(kLottieDataWith2TextNode1,
+                                   kLottieDataWith2TextNode2));
+  EXPECT_THAT(
+      skottie->GetCurrentTransformPropertyValues(),
+      IsSupersetOf({Pair(HashSkottieResourceId(kLottieDataWith2TextNode1),
+                         SkottieTransformPropertyValue(
+                             {kLottieDataWith2TextNode1Position})),
+                    Pair(HashSkottieResourceId(kLottieDataWith2TextNode2),
+                         SkottieTransformPropertyValue(
+                             {kLottieDataWith2TextNode2Position}))}));
 }
 
 }  // namespace
