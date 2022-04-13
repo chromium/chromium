@@ -25,11 +25,6 @@ def _DisassembleFunc(symbol, output_directory, elf_path):
   Returns:
     Array with the lines of disassembly for symbol.
   """
-  assert not symbol.IsGroup()
-  assert (symbol.address is not None
-          and symbol.section_name == models.SECTION_TEXT)
-  assert not symbol.IsDelta(), ('Cannot disasseble a Diff\'ed symbol. Try '
-                                'passing .before_symbol or .after_symbol.')
   # Running objdump from an output directory means that objdump can
   # interleave source file lines in the disassembly.
   objdump_cwd = output_directory or '.'
@@ -53,10 +48,10 @@ def _DisassembleFunc(symbol, output_directory, elf_path):
     args.append('--source')
 
   try:
-    return subprocess.check_output(args,
+    return subprocess.check_output(args, cwd=objdump_cwd,
                                    encoding='utf-8').splitlines(keepends=True)
   except Exception:
-    logging.warning('objdump failed on : %s', (' '.join(args)))
+    logging.warning('objdump failed: %s\ncwd=%s', ' '.join(args), objdump_cwd)
     return None
 
 
@@ -71,35 +66,55 @@ def _CreateUnifiedDiff(name, before, after):
   return ''.join(unified_diff)
 
 
-def _AddUnifiedDiff(top_changed_symbols, before_directory, after_directory,
-                    delta_size_info):
+def _ResolveElfPath(elf_path):
+  if os.path.exists(elf_path):
+    return elf_path
+
+  # See if it was a partitioned library and the __combined.so file exists.
+  if elf_path.endswith('_partition.so'):
+    parent, filename = os.path.split(elf_path)
+    filename = filename[:filename.index('_')] + '__combined.so'
+    combined_elf_path = os.path.join(parent, filename)
+  else:
+    combined_elf_path = elf_path[:-3] + '__combined.so'
+
+  if os.path.exists(combined_elf_path):
+    return combined_elf_path
+  logging.warning('%s does not exist (nor does %s).', elf_path,
+                  combined_elf_path)
+  return None
+
+
+def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
+                    after_path_resolver, delta_size_info):
   # Counter used to skip over symbols where we couldn't find the disassembly.
   counter = 10
   before = None
   after = None
   for symbol in top_changed_symbols:
     logging.debug('Symbols to go: %d', counter)
-    after_elf_name = symbol.after_symbol.container.metadata.get('elf_file_name')
-    after_elf_path = os.path.join(after_directory, after_elf_name)
-    if not os.path.exists(after_elf_path):
-      logging.warning('%s does not exist.', after_elf_path)
+    elf_name = symbol.after_symbol.container.metadata['elf_file_name']
+    elf_path = _ResolveElfPath(after_path_resolver(elf_name))
+    if elf_path is None:
+      # Do not continue trying symbols since we'll likely hit the same issue.
       break
-    after_out_directory = delta_size_info.after.build_config.get(
-        'out_directory')
-    after = _DisassembleFunc(symbol.after_symbol, after_out_directory,
-                             after_elf_path)
+
+    out_directory = delta_size_info.after.build_config.get('out_directory')
+    if out_directory and not os.path.exists(out_directory):
+      out_directory = None
+    after = _DisassembleFunc(symbol.after_symbol, out_directory, elf_path)
     if after is None:
       continue
+    before = None
     if symbol.before_symbol:
-      before_elf_name = symbol.before_symbol.container.metadata.get(
-          'elf_file_name')
-      before_elf_path = os.path.join(before_directory, before_elf_name)
-      before_out_directory = delta_size_info.before.build_config.get(
-          'out_directory')
-      before = _DisassembleFunc(symbol.before_symbol, before_out_directory,
-                                before_elf_path)
-    else:
-      before = None
+      elf_name = symbol.before_symbol.container.metadata['elf_file_name']
+      elf_path = _ResolveElfPath(before_path_resolver(elf_name))
+      if elf_path:
+        # The output directory will have changed due to building "after", so
+        # better to not include source lines than to include incorrect ones.
+        out_directory = None
+        before = _DisassembleFunc(symbol.before_symbol, out_directory, elf_path)
+
     logging.info('Adding disassembly for symbol: %s', symbol.full_name)
     symbol.after_symbol.disassembly = _CreateUnifiedDiff(
         symbol.full_name, before or [], after)
@@ -128,7 +143,7 @@ def _GetTopChangedSymbols(delta_size_info):
   return sorted_symbols
 
 
-def AddDisassembly(delta_size_info, before_directory, after_directory):
+def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
   """Adds disassembly diffs to top changed native symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
@@ -136,11 +151,11 @@ def AddDisassembly(delta_size_info, before_directory, after_directory):
 
     Args:
       delta_size_info: DeltaSizeInfo Object we are adding disassembly to.
-      before_directory: Directory of the "before" APK.
-      after_directory: Directory of the "after" APK.
+      before_path_resolver: Callable to compute paths for "before" artifacts.
+      after_path_resolver: Callable to compute paths for "after" artifacts.
   """
   logging.debug('Computing top changed symbols')
   top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
   logging.debug('Adding disassembly to top 10 changed native symbols')
-  _AddUnifiedDiff(top_changed_symbols, before_directory, after_directory,
-                  delta_size_info)
+  _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
+                  after_path_resolver, delta_size_info)

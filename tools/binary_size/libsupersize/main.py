@@ -124,11 +124,12 @@ class _SaveDiffAction:
       after_size_info.build_config[models.BUILD_CONFIG_URL] = args.url
     delta_size_info = diff.Diff(before_size_info, after_size_info)
     if args.save_disassembly:
-      dex_disassembly.AddDisassembly(delta_size_info,
-                                     _PathResolver(args.before_directory),
-                                     _PathResolver(args.after_directory))
-      native_disassembly.AddDisassembly(delta_size_info, args.before_directory,
-                                        args.after_directory)
+      before_path_resolver = _PathResolver(args.before_directory)
+      after_path_resolver = _PathResolver(args.after_directory)
+      dex_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
+                                     after_path_resolver)
+      native_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
+                                        after_path_resolver)
 
     file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
