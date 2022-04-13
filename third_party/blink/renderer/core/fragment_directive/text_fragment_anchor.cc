@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 
+#include "base/auto_reset.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"

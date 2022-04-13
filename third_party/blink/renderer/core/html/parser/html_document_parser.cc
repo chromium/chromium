@@ -28,7 +28,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"

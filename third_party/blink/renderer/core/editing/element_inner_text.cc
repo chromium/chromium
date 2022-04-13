@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"

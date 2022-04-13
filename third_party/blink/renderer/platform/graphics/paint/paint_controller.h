@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"

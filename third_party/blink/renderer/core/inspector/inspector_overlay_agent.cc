@@ -32,7 +32,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"

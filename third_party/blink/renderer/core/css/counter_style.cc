@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"

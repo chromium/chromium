@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h"

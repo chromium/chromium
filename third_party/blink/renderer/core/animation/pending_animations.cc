@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/dom/document.h"

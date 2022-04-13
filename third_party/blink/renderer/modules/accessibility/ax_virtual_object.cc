@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
+
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 

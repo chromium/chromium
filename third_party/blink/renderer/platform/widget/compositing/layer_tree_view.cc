@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"

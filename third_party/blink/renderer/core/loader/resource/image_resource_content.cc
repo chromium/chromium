@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"

@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"

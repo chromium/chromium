@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 
-#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"

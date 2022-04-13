@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"

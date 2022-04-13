@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"

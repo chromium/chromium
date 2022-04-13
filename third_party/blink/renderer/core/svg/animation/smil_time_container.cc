@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 
 #include <algorithm>
+
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"

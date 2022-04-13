@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 
+#include "base/auto_reset.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"

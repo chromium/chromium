@@ -29,11 +29,12 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 #include <math.h>
+
+#include <algorithm>
 #include <memory>
 #include <queue>
 
-#include <algorithm>
-
+#include "base/auto_reset.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"

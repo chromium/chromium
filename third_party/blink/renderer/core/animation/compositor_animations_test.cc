@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_host.h"

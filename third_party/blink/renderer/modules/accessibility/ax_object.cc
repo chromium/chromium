@@ -30,6 +30,8 @@
 
 #include <algorithm>
 #include <ostream>
+
+#include "base/auto_reset.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
