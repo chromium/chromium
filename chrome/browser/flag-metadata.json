@@ -4797,15 +4797,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "privacy-advisor",
-    "owners": [
-      "harrisonsean",
-      "sauski",
-      "msramek",
-      "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 94
-  },
-  {
     "name": "privacy-guide",
     "owners": [
       "rainhard",

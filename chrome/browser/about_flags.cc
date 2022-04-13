@@ -7179,10 +7179,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
 
-    {"privacy-advisor", flag_descriptions::kPrivacyAdvisorName,
-     flag_descriptions::kPrivacyAdvisorDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPrivacyAdvisor)},
-
     {"privacy-sandbox-v3-desktop", flag_descriptions::kPrivacySandboxV3Name,
      flag_descriptions::kPrivacySandboxV3Description, kOsDesktop,
      // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
