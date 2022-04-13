@@ -13,8 +13,13 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../common/styles.js';
 import './cros_button_style.js';
+
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {isNonEmptyArray} from '../common/utils.js';
 
@@ -38,6 +43,13 @@ export function stringToTopicSource(x: string): TopicSource|null {
     return num;
   }
   return null;
+}
+
+export interface PersonalizationBreadcrumb {
+  $: {
+    keys: IronA11yKeysElement,
+    selector: IronSelectorElement,
+  };
 }
 
 export class PersonalizationBreadcrumb extends WithPersonalizationStore {
@@ -88,6 +100,12 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeShowBackButton_(path)',
       },
+
+      /** The breadcrumb being highlighted by keyboard navigation. */
+      selectedBreadcrumb_: {
+        type: Object,
+        notify: true,
+      },
     };
   }
 
@@ -99,6 +117,12 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   private collections_: WallpaperCollection[]|null;
   private googlePhotosAlbums_: GooglePhotosAlbum[]|null;
   private showBackButton_: boolean;
+  private selectedBreadcrumb_: HTMLElement;
+
+  override ready() {
+    super.ready();
+    this.$.keys.target = this.$.selector;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -106,6 +130,45 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     this.watch(
         'googlePhotosAlbums_', state => state.wallpaper.googlePhotos.albums);
     this.updateFromStore();
+  }
+
+  /** Handle keyboard navigation. */
+  private onKeysPress_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    const selector = this.$.selector;
+    const prevBreadcrumb = this.selectedBreadcrumb_;
+    switch (e.detail.key) {
+      case 'left':
+        selector.selectPrevious();
+        break;
+      case 'right':
+        selector.selectNext();
+        break;
+      default:
+        return;
+    }
+    // Remove focus state of previous breadcrumb.
+    if (prevBreadcrumb) {
+      prevBreadcrumb.removeAttribute('tabindex');
+    }
+    // Add focus state for new breadcrumb.
+    if (this.selectedBreadcrumb_) {
+      this.selectedBreadcrumb_.setAttribute('tabindex', '0');
+      this.selectedBreadcrumb_.focus();
+    }
+    e.detail.keyboardEvent.preventDefault();
+  }
+
+  /**
+   * Returns the class of the breadcrumb. The last breadcrumb will not be
+   * selectable.
+   */
+  private computeBreadcrumbClass_(index: number, breadcrumbs: string[]):
+      string {
+    if (index < breadcrumbs.length - 1) {
+      return 'breadcrumb selectable';
+    }
+    return 'breadcrumb';
   }
 
   private computeBreadcrumbs_(): string[] {
@@ -187,6 +250,10 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       const pathElements = this.path.split('/');
       const newPath = pathElements.slice(0, index + 2).join('/');
       if (isPathValid(newPath)) {
+        // Unfocus the breadcrumb to focus on the page
+        // with new path.
+        const breadcrumb = e.target as HTMLElement;
+        breadcrumb.blur();
         PersonalizationRouter.instance().goToRoute(newPath as Paths);
       }
     }

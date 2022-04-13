@@ -21,6 +21,12 @@
       --disabled-border-color: var(--cros-button-stroke-color-secondary-disabled);
     }
 
+    cr-icon-button:focus-visible,
+    cr-button:focus-visible {
+      box-shadow: none;
+      outline: 2px solid var(--cros-focus-ring-color);
+    }
+
     cr-button[aria-pressed=true],
     cr-button[aria-selected=true] {
       background-color: var(--cros-button-background-color-primary) !important;

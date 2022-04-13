@@ -73,7 +73,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     let breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
@@ -85,7 +85,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     wallpaperBreadcrumb!.click();
 
     breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
@@ -156,7 +156,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!,
@@ -203,7 +203,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     });
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
@@ -242,7 +242,7 @@ suite('PersonalizationBreadcrumbTest', function() {
         PersonalizationBreadcrumb, {'path': Paths.GooglePhotosCollection});
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
@@ -282,7 +282,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
@@ -318,7 +318,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     let breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
@@ -330,7 +330,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     screensaverBreadcrumb!.click();
 
     breadcrumbContainer =
-        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
@@ -348,7 +348,7 @@ suite('PersonalizationBreadcrumbTest', function() {
         });
 
         const breadcrumbContainer =
-            breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+            breadcrumbElement.shadowRoot!.getElementById('selector');
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('screensaverLabel'),
@@ -390,7 +390,7 @@ suite('PersonalizationBreadcrumbTest', function() {
         });
 
         const breadcrumbContainer =
-            breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+            breadcrumbElement.shadowRoot!.getElementById('selector');
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('screensaverLabel'),
