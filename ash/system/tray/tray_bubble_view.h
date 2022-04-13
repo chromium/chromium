@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
@@ -102,7 +103,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool reroute_event_handler = false;
     // If not provided, the bg color will be derived from the NativeTheme.
     absl::optional<SkColor> bg_color;
-    absl::optional<int> corner_radius;
+    int corner_radius = kBubbleCornerRadius;
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;
     bool has_shadow = true;

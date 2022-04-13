@@ -48,7 +48,6 @@ void SwitchAccessMenuBubbleController::ShowMenu(
     init_params.is_anchored_to_status_area = false;
     init_params.insets =
         gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding);
-    init_params.corner_radius = kBubbleCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;
     bubble_view_ = new TrayBubbleView(init_params);

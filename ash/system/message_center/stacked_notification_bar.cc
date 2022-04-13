@@ -505,9 +505,14 @@ void StackedNotificationBar::UpdateStackedNotifications(
 }
 
 void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
+  // We don't need the custom border below in the new message center UI, since
+  // the clear all button does not interfere with the border anymore. Also, the
+  // message center bubble will have a highlight border that covers this view.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
+
   cc::PaintFlags flags;
-  if (!features::IsNotificationsRefreshEnabled())
-    flags.setColor(message_center_style::kNotificationBackgroundColor);
+  flags.setColor(message_center_style::kNotificationBackgroundColor);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
 

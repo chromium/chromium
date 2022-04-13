@@ -11,10 +11,12 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -266,10 +268,18 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   if (init_params.translucent) {
     // The following code will not work with bubble's shadow.
     DCHECK(!init_params.has_shadow);
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
-    layer()->SetFillsBoundsOpaquely(false);
+    if (features::IsDarkLightModeEnabled()) {
+      // TODO(crbug/1313073): Remove layer creation in children views of this
+      // view to improve performance.
+      SetPaintToLayer();
+    } else {
+      SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+      layer()->SetFillsBoundsOpaquely(false);
+    }
+
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -278,6 +288,12 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     // layer. Without it, the layer for FocusRing goes above the
     // NativeViewHost and may steal events.
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+
+    if (features::IsDarkLightModeEnabled()) {
+      SetPaintToLayer();
+      layer()->SetRoundedCornerRadius(
+          gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
+    }
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
@@ -418,7 +434,7 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
       params_.bg_color.value_or(gfx::kPlaceholderColor));
   bubble_border->set_use_theme_background_color(!params_.bg_color);
   if (params_.corner_radius)
-    bubble_border->SetCornerRadius(params_.corner_radius.value());
+    bubble_border->SetCornerRadius(params_.corner_radius);
   bubble_border->set_avoid_shadow_overlap(true);
   if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value())
     bubble_border->set_insets(params_.insets.value());
@@ -493,6 +509,18 @@ void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void TrayBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
+
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        params_.corner_radius, HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+    SetBackground(views::CreateRoundedRectBackground(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80),
+        params_.corner_radius));
+    return;
+  }
+
   DCHECK(layer());
   if (layer()->type() != ui::LAYER_SOLID_COLOR)
     return;

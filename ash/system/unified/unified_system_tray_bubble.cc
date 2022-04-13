@@ -47,7 +47,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
-  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
   init_params.reroute_event_handler = true;
@@ -70,7 +69,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   // Add a system shadow.
   shadow_ = SystemShadow::CreateShadowForWidget(
       bubble_widget_, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+  shadow_->SetRoundedCornerRadius(init_params.corner_radius);
 
   gfx::Rect shadow_bounds = gfx::Rect(GetBoundsInScreen().size());
   // Shift the shadow origin by the insets.
