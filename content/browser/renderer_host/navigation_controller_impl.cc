@@ -4416,7 +4416,8 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
   bool will_create_new_entry = false;
   if (!request ||
       NavigationTypeUtils::IsReload(request->common_params().navigation_type) ||
-      request->common_params().should_replace_current_entry) {
+      request->common_params().should_replace_current_entry ||
+      request->common_params().is_history_navigation_in_new_child_frame) {
     entry_index = GetLastCommittedEntryIndex();
   } else if (entry_index == -1) {
     will_create_new_entry = true;
