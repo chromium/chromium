@@ -273,6 +273,10 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
   // browser restart, which is fine in most cases.
   cdms_.push_back(info);
 
+  // Reset cached `key_system_capabilities_` to avoid notifying new observers
+  // with the old capabilities and then update them again with new ones.
+  // This could cause notifying observers with the same capabilities multiple
+  // times, which is okay.
   key_system_capabilities_.reset();
 
   // If there are `key_system_capabilities_update_callbacks_` registered,

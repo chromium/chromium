@@ -93,9 +93,12 @@ void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
     KeySystemCapabilities key_system_capabilities) {
   DVLOG(3) << __func__;
   DCHECK(IsValidKeySystemCapabilities(key_system_capabilities));
-  DCHECK(!key_system_capabilities_.has_value() ||
-         key_system_capabilities_.value() != key_system_capabilities)
-      << "Should not be updated with the same key system capabilities";
+
+  if (key_system_capabilities_.has_value() &&
+      key_system_capabilities_.value() == key_system_capabilities) {
+    DVLOG(1) << __func__ << ": Updated with the same key system capabilities";
+    return;
+  }
 
   key_system_capabilities_ = std::move(key_system_capabilities);
 
