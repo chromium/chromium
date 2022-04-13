@@ -642,6 +642,9 @@ bool AccessibilityNodeInfoDataWrapper::HasCoveringSpan(
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasText() const {
+  if (!IsImportantInAndroid())
+    return false;
+
   for (const auto it : text_properties_) {
     if (HasNonEmptyStringProperty(node_ptr_, it))
       return true;
@@ -683,12 +686,14 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   if (IsVirtualNode() || IsAccessibilityFocusableContainer())
     return;
 
-  std::string name;
-  for (const auto it : text_properties_) {
-    if (GetProperty(it, &name) && !name.empty()) {
-      // Stop when we get a name for this subtree.
-      names->push_back(name);
-      return;
+  if (IsImportantInAndroid()) {
+    std::string name;
+    for (const auto it : text_properties_) {
+      if (GetProperty(it, &name) && !name.empty()) {
+        // Stop when we get a name for this subtree.
+        names->push_back(name);
+        return;
+      }
     }
   }
 
