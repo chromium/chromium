@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -299,7 +297,7 @@ bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output);
 // Piece-by-piece canonicalizers ----------------------------------------------
 //
 // These individual canonicalizers append the canonicalized versions of the
-// corresponding URL component to the given std::string. The spec and the
+// corresponding URL component to the given CanonOutput. The spec and the
 // previously-identified range of that component are the input. The range of
 // the canonicalized component will be written to the output component.
 //
