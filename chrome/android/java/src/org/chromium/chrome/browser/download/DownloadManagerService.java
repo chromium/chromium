@@ -1337,7 +1337,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /**
      * Add an Intent extra for StateAtCancel UMA to know the state of a request prior to a
-     * user-initated cancel.
+     * user-initiated cancel.
      * @param intent The Intent associated with the download action.
      * @param downloadItem The download associated with download action.
      */

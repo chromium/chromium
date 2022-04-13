@@ -268,9 +268,9 @@ struct Navigator::NavigationMetricsData {
   bool is_browser_initiated_before_unload_;
 
   // Timestamps before_unload_(start|end)_ give the time it took to run
-  // beforeunloads dispatched from the browser process. For browser-initated
+  // beforeunloads dispatched from the browser process. For browser-initiated
   // navigations this includes all frames (all beforeunload handlers on a page).
-  // For renderer-initated navigations this just includes OOPIFs since local
+  // For renderer-initiated navigations this just includes OOPIFs since local
   // beforeunloads will have been run in the renderer before dispatching the
   // navigation IPC.
   absl::optional<base::TimeTicks> before_unload_start_;

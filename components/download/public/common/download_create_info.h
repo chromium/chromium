@@ -179,7 +179,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Source of the download, used in metrics.
   DownloadSource download_source = DownloadSource::UNKNOWN;
 
-  // Whether download is initated by the content on the page.
+  // Whether download is initiated by the content on the page.
   bool is_content_initiated;
 
   // The credentials mode for whether to expose the response headers to

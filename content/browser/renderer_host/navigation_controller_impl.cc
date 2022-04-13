@@ -2063,7 +2063,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       }
     }
   } else {
-    // This is renderer-initiated. The only kinds of renderer-initated
+    // This is renderer-initiated. The only kinds of renderer-initiated
     // navigations that are EXISTING_ENTRY are same-document navigations that
     // result in replacement (e.g. history.replaceState(), location.replace(),
     // forced replacements for trivial session history contexts). For these
