@@ -991,6 +991,12 @@ ScriptPromise RTCPeerConnection::CreateOffer(
 
     platform_transceivers = peer_handler_->CreateOffer(request, offer_options);
   } else {
+    if (rtc_offer_options.IsObject()) {
+      Deprecation::CountDeprecation(
+          context,
+          WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints);
+    }
+
     MediaErrorState media_error_state;
     MediaConstraints constraints = media_constraints_impl::Create(
         context, rtc_offer_options, media_error_state);
@@ -1094,6 +1100,11 @@ ScriptPromise RTCPeerConnection::CreateAnswer(
   if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
+  if (media_constraints.IsObject()) {
+    Deprecation::CountDeprecation(
+        context,
+        WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints);
+  }
   MediaErrorState media_error_state;
   MediaConstraints constraints = media_constraints_impl::Create(
       context, media_constraints, media_error_state);

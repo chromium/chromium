@@ -703,6 +703,13 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           DeprecationIssueType::kDeprecationExample);
 
+    case WebFeature::kRTCPeerConnectionLegacyCreateWithMediaConstraints:
+      return DeprecationInfo::WithDetails(
+          "RTCPeerConnectionLegacyCreateWithMediaConstraints", kM103,
+          "The mediaConstraints version of RTCOfferOptions/RTCAnswerOptions "
+          "are deprecated and will soon be removed, please migrate to the "
+          "promise-based createOffer/createAnswer instead.");
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return DeprecationInfo::WithDetails("NotDeprecated", kUnknown, String());
