@@ -528,8 +528,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     return !To<Text>(node)->ContainsOnlyWhitespaceOrEmpty();
   }
 
-  const Element* element = DynamicTo<Element>(node);
-  if (!element)
+  if (!node->IsElementNode())
     return false;  // Only documents, elements and text nodes get ax objects.
 
   if (IsA<HTMLAreaElement>(node) && !IsA<HTMLMapElement>(node->parentNode())) {
@@ -573,9 +572,8 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (IsA<HTMLScriptElement>(node))
     return false;
 
-  // Style elements in SVG are not display: none, unlike HTML style
-  // elements, but they are still hidden and thus treated as irrelevant for
-  // accessibility.
+  // Style elements in SVG are not display: none, unlike HTML style elements,
+  // but they are still hidden and thus treated as irrelevant for accessibility.
   if (IsA<SVGStyleElement>(node))
     return false;
 
@@ -589,26 +587,24 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (parent_ax_known)
     return true;  // No need to check inside if the parent exists.
 
-  for (const Element* ancestor = element; ancestor;
-       ancestor = ancestor->parentElement()) {
-    // Objects inside <head> are irrelevant.
-    if (IsA<HTMLHeadElement>(ancestor))
-      return false;
-    // Objects inside a <style> are irrelevant.
-    if (IsA<HTMLStyleElement>(ancestor))
-      return false;
-    // Objects inside a <script> are irrelevant.
-    if (IsA<HTMLScriptElement>(ancestor))
-      return false;
-    // Elements inside of a frame/iframe are irrelevant unless inside a document
-    // that is a child of the frame. In the case where descendants are allowed,
-    // they will be in a different document, and therefore this loop will not
-    // reach the frame/iframe.
+  // Objects inside <head> are irrelevant.
+  if (Traversal<HTMLHeadElement>::FirstAncestor(*node))
+    return false;
+  // Objects inside a <style> are irrelevant.
+  if (Traversal<HTMLStyleElement>::FirstAncestor(*node))
+    return false;
+  // Objects inside a <script> are irrelevant.
+  if (Traversal<HTMLScriptElement>::FirstAncestor(*node))
+    return false;
+  // Objects inside an SVG <style> are irrelevant.
+  if (Traversal<SVGStyleElement>::FirstAncestor(*node))
+    return false;
+  // Elements inside of a frame/iframe are irrelevant unless inside a document
+  // that is a child of the frame. In the case where descendants are allowed,
+  // they will be in a different document.
+  for (const Node* ancestor = node; ancestor;
+       ancestor = ancestor->parentNode()) {
     if (IsA<HTMLFrameElementBase>(ancestor))
-      return false;
-    // Objects inside an SVG <style> are irrelevant.
-    // However, when can this condition be reached?
-    if (IsA<SVGStyleElement>(ancestor))
       return false;
   }
 
