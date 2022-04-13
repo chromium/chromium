@@ -37,7 +37,7 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
   void EndWait();
 
-  const OobeScreenId target_screen_id_ = OobeScreen::SCREEN_UNKNOWN;
+  const OobeScreenId target_screen_id_ = ash::OOBE_SCREEN_UNKNOWN;
 
   State state_ = State::IDLE;
 

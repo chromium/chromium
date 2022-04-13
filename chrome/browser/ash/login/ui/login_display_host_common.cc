@@ -446,7 +446,7 @@ void LoginDisplayHostCommon::StartManagementTransition() {
 }
 
 void LoginDisplayHostCommon::ShowTosForExistingUser() {
-  SetScreenAfterManagedTos(OobeScreen::SCREEN_UNKNOWN);
+  SetScreenAfterManagedTos(ash::OOBE_SCREEN_UNKNOWN);
   StartUserOnboarding();
 }
 

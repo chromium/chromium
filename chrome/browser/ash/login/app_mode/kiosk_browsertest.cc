@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningCancel) {
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
 
   // Wait for the auto launch warning come up.
@@ -1195,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningConfirm) {
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
 
   // Wait for the auto launch warning come up.
@@ -1343,7 +1343,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, MAYBE_DoNotLaunchWhenUntrusted) {
 IN_PROC_BROWSER_TEST_F(KioskConsumerTest, NoConsumerAutoLaunchWhenUntrusted) {
   EnableConsumerKioskMode();
   ReloadAutolaunchKioskApps();
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
 
   WaitForAutoLaunchWarning(/*visibility=*/true);

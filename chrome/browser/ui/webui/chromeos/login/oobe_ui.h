@@ -197,10 +197,10 @@ class OobeUI : public ui::MojoWebUIController {
   std::unique_ptr<ErrorScreen> error_screen_;
 
   // Id of the current oobe/login screen.
-  OobeScreenId current_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId current_screen_ = ash::OOBE_SCREEN_UNKNOWN;
 
   // Id of the previous oobe/login screen.
-  OobeScreenId previous_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId previous_screen_ = ash::OOBE_SCREEN_UNKNOWN;
 
   // Flag that indicates whether JS part is fully loaded and ready to accept
   // calls.

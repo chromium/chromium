@@ -418,7 +418,7 @@ void UpdateRequiredScreen::OnConnectRequested() {
 }
 
 void UpdateRequiredScreen::OnErrorScreenHidden() {
-  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
   // Return to the default state.
   error_screen_->SetIsPersistentError(false /* is_persistent */);
   Show(context());

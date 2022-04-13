@@ -455,7 +455,7 @@ void WizardController::Init(OobeScreenId first_screen) {
       !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
   if (!device_is_owned && HIDDetectionScreen::CanShowScreen() &&
-      first_screen == OobeScreen::SCREEN_UNKNOWN) {
+      first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Temp logs for crbug/1274589
     VLOG(1) << "CheckIsScreenRequired";
     // TODO(https://crbug.com/1275960): Move logic into
@@ -478,7 +478,7 @@ void WizardController::OnDestroyingOobeUI() {
 void WizardController::AdvanceToScreenAfterHIDDetection(
     OobeScreenId first_screen) {
   OobeScreenId actual_first_screen = first_screen;
-  if (actual_first_screen == OobeScreen::SCREEN_UNKNOWN) {
+  if (actual_first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     if (!is_out_of_box_) {
       DeviceSettingsService::Get()->GetOwnershipStatusAsync(
           base::BindOnce(&WizardController::OnOwnershipStatusCheckDone,
@@ -499,7 +499,7 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
   AdvanceToScreen(actual_first_screen);
 
   if (!IsMachineHWIDCorrect() && !StartupUtils::IsDeviceRegistered() &&
-      first_screen == OobeScreen::SCREEN_UNKNOWN) {
+      first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     ShowWrongHWIDScreen();
   }
 
@@ -1313,7 +1313,7 @@ void WizardController::OnHidDetectionScreenExit(
     return;
   }
 
-  AdvanceToScreenAfterHIDDetection(OobeScreen::SCREEN_UNKNOWN);
+  AdvanceToScreenAfterHIDDetection(ash::OOBE_SCREEN_UNKNOWN);
 }
 
 void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
@@ -1639,7 +1639,7 @@ void WizardController::OnTermsOfServiceScreenExit(
     case TermsOfServiceScreen::Result::ACCEPTED:
     case TermsOfServiceScreen::Result::NOT_APPLICABLE:
       if (wizard_context_->screen_after_managed_tos ==
-          OobeScreen::SCREEN_UNKNOWN) {
+          ash::OOBE_SCREEN_UNKNOWN) {
         OnOobeFlowFinished();
         return;
       }
@@ -2009,7 +2009,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     } else if (IsResumablePostLoginScreen(current_screen_->screen_id()) &&
                !wizard_context_->is_cloud_ready_update_flow &&
                wizard_context_->screen_after_managed_tos !=
-                   OobeScreen::SCREEN_UNKNOWN) {
+                   ash::OOBE_SCREEN_UNKNOWN) {
       // If screen_after_managed_tos == SCREEN_UNKNOWN means that the onboarding
       // has already been finished by the user and we don't need to save the
       // state here.
@@ -2055,7 +2055,7 @@ void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
   if (screen_needed)
     ShowHIDDetectionScreen();
   else
-    AdvanceToScreenAfterHIDDetection(OobeScreen::SCREEN_UNKNOWN);
+    AdvanceToScreenAfterHIDDetection(ash::OOBE_SCREEN_UNKNOWN);
 }
 
 void WizardController::UpdateOobeConfiguration() {

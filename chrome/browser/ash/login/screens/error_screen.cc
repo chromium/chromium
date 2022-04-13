@@ -335,7 +335,7 @@ void ErrorScreen::PolicyLoadFailed() {
 }
 
 void ErrorScreen::DefaultHideCallback() {
-  if (parent_screen_ != OobeScreen::SCREEN_UNKNOWN && view_)
+  if (parent_screen_ != ash::OOBE_SCREEN_UNKNOWN && view_)
     view_->ShowOobeScreen(parent_screen_);
 
   // TODO(antrim): Due to potential race with GAIA reload and hiding network

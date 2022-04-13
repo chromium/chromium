@@ -142,7 +142,7 @@ class WizardController : public OobeUI::Observer {
 
   // Advances to screen defined by `screen` and shows it. Might show HID
   // detection screen in case HID connection is needed and screen_id ==
-  // OobeScreen::SCREEN_UNKNOWN.
+  // ash::OOBE_SCREEN_UNKNOWN.
   void AdvanceToScreen(OobeScreenId screen_id);
 
   // Advances to screen defined by `screen` and shows it.
@@ -471,7 +471,7 @@ class WizardController : public OobeUI::Observer {
   bool is_out_of_box_ = false;
 
   // Value of the screen name that WizardController was started with.
-  OobeScreenId first_screen_for_testing_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId first_screen_for_testing_ = ash::OOBE_SCREEN_UNKNOWN;
 
   // The prescribed enrollment configuration for the device.
   policy::EnrollmentConfig prescribed_enrollment_config_;

@@ -55,7 +55,7 @@ class ErrorScreen : public BaseScreen,
   NetworkError::ErrorState GetErrorState() const;
 
   // Returns id of the screen behind error screen ("caller" screen).
-  // Returns OobeScreen::SCREEN_UNKNOWN if error screen isn't the current
+  // Returns ash::OOBE_SCREEN_UNKNOWN if error screen isn't the current
   // screen.
   OobeScreenId GetParentScreen() const;
 
@@ -177,7 +177,7 @@ class ErrorScreen : public BaseScreen,
   NetworkError::UIState ui_state_ = NetworkError::UI_STATE_UNKNOWN;
   NetworkError::ErrorState error_state_ = NetworkError::ERROR_STATE_UNKNOWN;
 
-  OobeScreenId parent_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId parent_screen_ = ash::OOBE_SCREEN_UNKNOWN;
 
   // Optional callback that is called when NetworkError screen is hidden.
   base::OnceClosure on_hide_callback_;

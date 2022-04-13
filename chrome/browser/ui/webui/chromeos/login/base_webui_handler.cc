@@ -56,7 +56,7 @@ OobeUI* BaseWebUIHandler::GetOobeUI() {
 OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
   OobeUI* oobe_ui = GetOobeUI();
   if (!oobe_ui)
-    return OobeScreen::SCREEN_UNKNOWN;
+    return ash::OOBE_SCREEN_UNKNOWN;
   return oobe_ui->current_screen();
 }
 

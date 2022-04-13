@@ -183,7 +183,7 @@ bool IsOobeComplete() {
 
 // Returns true if signin (not oobe) should be displayed.
 bool ShouldShowSigninScreen(OobeScreenId first_screen) {
-  return (first_screen == OobeScreen::SCREEN_UNKNOWN && IsOobeComplete());
+  return (first_screen == ash::OOBE_SCREEN_UNKNOWN && IsOobeComplete());
 }
 
 void MaybeShowDeviceDisabledScreen() {
@@ -795,7 +795,7 @@ void LoginDisplayHostWebUI::OnUserSwitchAnimationFinished() {
 
 void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                    OobeScreenId new_screen) {
-  if (current_screen == OobeScreen::SCREEN_UNKNOWN) {
+  if (current_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // TODO(crbug.com/1305245) - Remove once the issue is fixed.
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
                     "NotifyLoginOrLockScreenVisible";
@@ -1195,7 +1195,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
           ->browser_policy_connector_ash()
           ->GetPrescribedEnrollmentConfig();
   if (enrollment_config.should_enroll() &&
-      first_screen == OobeScreen::SCREEN_UNKNOWN) {
+      first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI();
     // Shows networks screen instead of enrollment screen to resume the
@@ -1275,7 +1275,7 @@ void SwitchWebUItoMojo() {
             OobeUI::kOobeDisplay);
 
   // This replaces WebUI host with the Mojo (views) host.
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
 }
 
 }  // namespace ash

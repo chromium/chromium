@@ -56,16 +56,19 @@ struct StaticOobeScreenId {
 struct OobeScreen {
   constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
       "saml-confirm-password"};
-
-  constexpr static StaticOobeScreenId SCREEN_UNKNOWN{"unknown"};
 };
+
+/* Keep it as `inline constexpr` (do not add `static`) so it exists as `inline
+ * variable` and have the same address in every translation unit (more at
+ * https://en.cppreference.com/w/cpp/language/inline).
+ **/
+inline constexpr StaticOobeScreenId OOBE_SCREEN_UNKNOWN{"unknown"};
 
 }  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
-using ::ash::OobeScreen;
 using ::ash::OobeScreenId;
 using ::ash::StaticOobeScreenId;
 }  // namespace chromeos

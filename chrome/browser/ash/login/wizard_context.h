@@ -102,7 +102,7 @@ class WizardContext {
   // TermsOfServiceScreen to them first and then continue the flow with this
   // screen. If the user has already completed onboarding, but
   // TermsOfServiceScreen should be shown on login this will be set to
-  // OobeScreen::SCREEN_UNKNOWN.
+  // ash::OOBE_SCREEN_UNKNOWN.
   OobeScreenId screen_after_managed_tos;
 
   // If this is a first login after update from CloudReady to a new version.

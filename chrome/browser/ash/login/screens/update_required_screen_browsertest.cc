@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   // process should start.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  EXPECT_EQ(OobeScreen::SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
+  EXPECT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
 
   SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
   SetUpdateEngineStatus(update_engine::Operation::UPDATE_AVAILABLE);

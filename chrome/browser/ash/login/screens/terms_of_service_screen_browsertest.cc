@@ -497,7 +497,7 @@ enum class PendingScreen { kEmpty, kTermsOfService, kSyncConsent };
 OobeScreenId PendingScreenToId(PendingScreen pending_screen) {
   switch (pending_screen) {
     case PendingScreen::kEmpty:
-      return OobeScreen::SCREEN_UNKNOWN;
+      return ash::OOBE_SCREEN_UNKNOWN;
     case PendingScreen::kTermsOfService:
       return TermsOfServiceScreenView::kScreenId;
     case PendingScreen::kSyncConsent:
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(ManagedUserTosOnboardingResumeTest, ResumeOnboarding) {
       EnsurePendingScreenIsEmpty();
       EXPECT_EQ(WizardController::default_controller()
                     ->get_screen_after_managed_tos_for_testing(),
-                OobeScreen::SCREEN_UNKNOWN);
+                ash::OOBE_SCREEN_UNKNOWN);
       test::WaitForPrimaryUserSessionStart();
       break;
     case PendingScreen::kTermsOfService:

@@ -85,7 +85,7 @@ void StartKioskSession() {
 // Starts the login/oobe screen.
 void StartLoginOobeSession() {
   // State will be defined once out-of-box/login branching is complete.
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
   policy::BrowserPolicyConnectorAsh* connector =

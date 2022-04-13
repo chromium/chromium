@@ -505,7 +505,7 @@ void UpdateScreen::OnAccessibilityStatusChanged(
 }
 
 void UpdateScreen::OnErrorScreenHidden() {
-  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
   Show(context());
 }
 

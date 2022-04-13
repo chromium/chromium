@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
   EXPECT_EQ(nullptr, LoginDisplayHost::default_host());
   EXPECT_NE(nullptr,
             g_browser_process->platform_part()->device_disabling_manager());
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
 

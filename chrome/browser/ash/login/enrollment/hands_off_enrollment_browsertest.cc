@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest,
 
   SimulateNetworkConnected();
 
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, WaitForNetworkConnection) {
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   enrollment_helper_.DisableAttributePromptUpdate();
   enrollment_helper_.SetupClearAuth();
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, DISABLED_EnrollmentError) {
 
   SimulateNetworkConnected();
 
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 

@@ -23,7 +23,7 @@ constexpr char kUserActedCallback[] = ".userActed";
 
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
-  DCHECK_NE(oobe_screen_.name, OobeScreen::SCREEN_UNKNOWN.name);
+  DCHECK_NE(oobe_screen_.name, ash::OOBE_SCREEN_UNKNOWN.name);
   if (!oobe_screen_.external_api_prefix.empty()) {
     user_acted_method_path_ = base::StrCat(
         {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});

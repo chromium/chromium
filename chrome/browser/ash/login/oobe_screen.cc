@@ -49,6 +49,4 @@ OobeScreenId StaticOobeScreenId::AsId() const {
 
 // static
 constexpr StaticOobeScreenId OobeScreen::SCREEN_CONFIRM_PASSWORD;
-constexpr StaticOobeScreenId OobeScreen::SCREEN_UNKNOWN;
-
 }  // namespace ash
