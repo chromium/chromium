@@ -245,15 +245,7 @@ class MODULES_EXPORT RTCPeerConnection final
   MediaStream* getRemoteStreamById(const String&) const;
   bool IsRemoteStream(MediaStream* stream) const;
 
-  void addStream(ScriptState*,
-                 MediaStream*,
-                 const ScriptValue& media_constraints,
-                 ExceptionState&);
   void addStream(ScriptState*, MediaStream*, ExceptionState&);
-  void AddStream(ScriptState*,
-                 MediaStream*,
-                 const Dictionary& media_constraints,
-                 ExceptionState&);
 
   void removeStream(MediaStream*, ExceptionState&);
 

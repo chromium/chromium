@@ -2113,41 +2113,9 @@ void RTCPeerConnection::restartIce() {
 
 void RTCPeerConnection::addStream(ScriptState* script_state,
                                   MediaStream* stream,
-                                  const ScriptValue& media_constraints_value,
-                                  ExceptionState& exception_state) {
-  Dictionary media_constraints(script_state->GetIsolate(),
-                               media_constraints_value.V8Value(),
-                               exception_state);
-  if (exception_state.HadException())
-    return;
-  AddStream(script_state, stream, media_constraints, exception_state);
-}
-
-void RTCPeerConnection::addStream(ScriptState* script_state,
-                                  MediaStream* stream,
-                                  ExceptionState& exception_state) {
-  AddStream(script_state, stream, Dictionary(), exception_state);
-}
-
-void RTCPeerConnection::AddStream(ScriptState* script_state,
-                                  MediaStream* stream,
-                                  const Dictionary& media_constraints,
                                   ExceptionState& exception_state) {
   if (ThrowExceptionIfSignalingStateClosed(signaling_state_, &exception_state))
     return;
-  if (!media_constraints.IsUndefinedOrNull()) {
-    MediaErrorState media_error_state;
-    MediaConstraints constraints =
-        media_constraints_impl::Create(ExecutionContext::From(script_state),
-                                       media_constraints, media_error_state);
-    if (media_error_state.HadException()) {
-      media_error_state.RaiseException(exception_state);
-      return;
-    }
-    LOG(WARNING)
-        << "mediaConstraints is not a supported argument to addStream.";
-    LOG(WARNING) << "mediaConstraints was " << constraints.ToString().Utf8();
-  }
 
   MediaStreamVector streams;
   streams.push_back(stream);

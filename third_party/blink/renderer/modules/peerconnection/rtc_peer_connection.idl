@@ -170,8 +170,7 @@ enum RTCPeerConnectionState {
     // Non-standard or removed from the spec:
     [Measure] sequence<MediaStream> getLocalStreams();
     [Measure] sequence<MediaStream> getRemoteStreams();
-    // TODO(hbos): Remove |mediaConstraints|, they are no longer supported.
-    [Measure, CallWith=ScriptState, RaisesException] void addStream(MediaStream stream, optional any mediaConstraints);
+    [Measure, CallWith=ScriptState, RaisesException] void addStream(MediaStream stream);
     [Measure, RaisesException] void removeStream(MediaStream stream);
     [Measure, RaisesException] RTCDTMFSender createDTMFSender(MediaStreamTrack track);
     attribute EventHandler onaddstream;
