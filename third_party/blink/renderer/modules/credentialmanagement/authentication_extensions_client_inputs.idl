@@ -41,4 +41,8 @@ dictionary AuthenticationExtensionsClientInputs {
 
   // https://github.com/w3c/secure-payment-confirmation
   [RuntimeEnabled=SecurePaymentConfirmation] AuthenticationExtensionsPaymentInputs payment;
+
+  // Allows a remote desktop client to override the `origin` and
+  // `sameOriginWithAncestors` internal arguments for a request.
+  [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
 };

@@ -671,4 +671,10 @@ void WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(bool enable) {
   RuntimeEnabledFeatures::SetAndroidDownloadableFontsMatchingEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebAuthenticationRemoteDesktopSupport(
+    bool enable) {
+  RuntimeEnabledFeatures::SetWebAuthenticationRemoteDesktopSupportEnabled(
+      enable);
+}
+
 }  // namespace blink

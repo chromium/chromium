@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -63,6 +64,8 @@ using blink::mojom::blink::PublicKeyCredentialRpEntityPtr;
 using blink::mojom::blink::PublicKeyCredentialType;
 using blink::mojom::blink::PublicKeyCredentialUserEntity;
 using blink::mojom::blink::PublicKeyCredentialUserEntityPtr;
+using blink::mojom::blink::RemoteDesktopClientOverride;
+using blink::mojom::blink::RemoteDesktopClientOverridePtr;
 using blink::mojom::blink::ResidentKeyRequirement;
 using blink::mojom::blink::UserVerificationRequirement;
 
@@ -538,6 +541,11 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     if (extensions->hasMinPinLength() && extensions->minPinLength()) {
       mojo_options->min_pin_length_requested = true;
     }
+    if (extensions->hasRemoteDesktopClientOverride()) {
+      mojo_options->remote_desktop_client_override =
+          RemoteDesktopClientOverride::From(
+              *extensions->remoteDesktopClientOverride());
+    }
   }
 
   return mojo_options;
@@ -660,9 +668,24 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     if (extensions->hasGetCredBlob() && extensions->getCredBlob()) {
       mojo_options->get_cred_blob = true;
     }
+    if (extensions->hasRemoteDesktopClientOverride()) {
+      mojo_options->remote_desktop_client_override =
+          RemoteDesktopClientOverride::From(
+              *extensions->remoteDesktopClientOverride());
+    }
   }
 
   return mojo_options;
+}
+
+// static
+RemoteDesktopClientOverridePtr
+TypeConverter<RemoteDesktopClientOverridePtr,
+              blink::RemoteDesktopClientOverride>::
+    Convert(const blink::RemoteDesktopClientOverride& blink_value) {
+  return RemoteDesktopClientOverride::New(
+      blink::SecurityOrigin::CreateFromString(blink_value.origin()),
+      blink_value.sameOriginWithAncestors());
 }
 
 }  // namespace mojo

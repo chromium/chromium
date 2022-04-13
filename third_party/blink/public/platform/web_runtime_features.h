@@ -239,6 +239,8 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableDocumentTransition(bool);
   BLINK_PLATFORM_EXPORT static void EnableCLSScrollAnchoring(bool);
   BLINK_PLATFORM_EXPORT static void EnableAndroidDownloadableFontsMatching(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebAuthenticationRemoteDesktopSupport(
+      bool);
 
  private:
   WebRuntimeFeatures();

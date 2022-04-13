@@ -232,6 +232,7 @@ CONTENT_EXPORT extern const char kV8CacheOptions[];
 CONTENT_EXPORT extern const char kValidateInputEventStream[];
 CONTENT_EXPORT extern const char kWaitForDebuggerChildren[];
 CONTENT_EXPORT extern const char kWaitForDebuggerWebUI[];
+CONTENT_EXPORT extern const char kWebAuthRemoteDesktopSupport[];
 CONTENT_EXPORT extern const char kWebglAntialiasingMode[];
 CONTENT_EXPORT extern const char kWebglMSAASampleCount[];
 CONTENT_EXPORT extern const char kWebOtpBackend[];

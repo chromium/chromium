@@ -178,6 +178,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanagement/public_key_credential_request_options.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/public_key_credential_rp_entity.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/public_key_credential_user_entity.idl",
+          "//third_party/blink/renderer/modules/credentialmanagement/remote_desktop_client_override.idl",
           "//third_party/blink/renderer/modules/crypto/crypto.idl",
           "//third_party/blink/renderer/modules/crypto/crypto_key.idl",
           "//third_party/blink/renderer/modules/crypto/json_web_key.idl",

@@ -26,6 +26,7 @@ class PublicKeyCredentialParameters;
 class PublicKeyCredentialRequestOptions;
 class PublicKeyCredentialRpEntity;
 class PublicKeyCredentialUserEntity;
+class RemoteDesktopClientOverride;
 class UserVerificationRequirement;
 class V8UnionArrayBufferOrArrayBufferView;
 }  // namespace blink
@@ -178,6 +179,13 @@ struct TypeConverter<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr,
                      blink::PublicKeyCredentialRequestOptions> {
   static blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr Convert(
       const blink::PublicKeyCredentialRequestOptions&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::RemoteDesktopClientOverridePtr,
+                     blink::RemoteDesktopClientOverride> {
+  static blink::mojom::blink::RemoteDesktopClientOverridePtr Convert(
+      const blink::RemoteDesktopClientOverride&);
 };
 
 }  // namespace mojo

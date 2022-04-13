@@ -563,20 +563,12 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     parameters.push_back(param);
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
-    auto mojo_options = blink::mojom::PublicKeyCredentialCreationOptions::New(
-        rp, user, kTestChallenge, parameters, base::Seconds(30),
-        std::vector<device::PublicKeyCredentialDescriptor>(),
-        device::AuthenticatorSelectionCriteria(),
-        device::AttestationConveyancePreference::kNone,
-        /*cable_registration_data=*/nullptr,
-        /*hmac_create_secret=*/false, /*prf_enable=*/false,
-        blink::mojom::ProtectionPolicy::UNSPECIFIED,
-        /*enforce_protection_policy=*/false, /*appid_exclude=*/absl::nullopt,
-        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
-        /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt,
-        /*google_legacy_app_id_support=*/false,
-        /*min_pin_length_requested=*/false);
-
+    auto mojo_options = blink::mojom::PublicKeyCredentialCreationOptions::New();
+    mojo_options->relying_party = rp;
+    mojo_options->user = user;
+    mojo_options->challenge = kTestChallenge;
+    mojo_options->public_key_parameters = parameters;
+    mojo_options->timeout = base::Seconds(30);
     return mojo_options;
   }
 
@@ -593,13 +585,13 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     credentials.push_back(descriptor);
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
-    auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New(
-        /*is_conditional=*/false, kTestChallenge, base::Seconds(30), "acme.com",
-        std::move(credentials), device::UserVerificationRequirement::kPreferred,
-        absl::nullopt, std::vector<device::CableDiscoveryData>(), /*prf=*/false,
-        /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
-        /*large_blob_read=*/false, /*large_blob_write=*/absl::nullopt,
-        /*get_cred_blob=*/false);
+    auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New();
+    mojo_options->challenge = kTestChallenge;
+    mojo_options->timeout = base::Seconds(30);
+    mojo_options->relying_party_id = "acme.com";
+    mojo_options->allow_credentials = std::move(credentials);
+    mojo_options->user_verification =
+        device::UserVerificationRequirement::kPreferred;
     return mojo_options;
   }
 

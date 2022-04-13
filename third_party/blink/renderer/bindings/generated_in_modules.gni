@@ -783,6 +783,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_registration_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_related_application.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_related_application.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_request_device_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_request_device_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rsa_other_primes_info.cc",

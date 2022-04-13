@@ -37,6 +37,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "crypto/sha2.h"
 #include "device/base/features.h"
 #include "device/fido/attestation_statement.h"
@@ -632,6 +633,18 @@ void AuthenticatorCommon::MakeCredential(
 
   BeginRequestTimeout(options->timeout);
 
+  if (options->remote_desktop_client_override) {
+    // TODO(crbug.com/1314480): Implement remoteDesktopClientOverride
+    // browser-side.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebAuthRemoteDesktopSupport)) {
+      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
+    }
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   WebAuthRequestSecurityChecker::RequestType request_type =
       options->is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
@@ -920,6 +933,18 @@ void AuthenticatorCommon::GetAssertion(
 
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
+
+  if (options->remote_desktop_client_override) {
+    // TODO(crbug.com/1314480): Implement remoteDesktopClientOverride
+    // browser-side.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebAuthRemoteDesktopSupport)) {
+      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
+    }
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
