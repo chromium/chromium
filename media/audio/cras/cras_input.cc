@@ -9,12 +9,55 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 
 namespace media {
+
+namespace {
+
+// Used to log errors in `CrasInputStream::Open`.
+enum class StreamOpenResult {
+  kCallbackOpenSuccess = 0,
+  kCallbackOpenClientAlreadyOpen = 1,
+  kCallbackOpenUnsupportedAudioFrequency = 2,
+  kCallbackOpenUnsupportedAudioFormat = 3,
+  kCallbackOpenCrasClientCreationFailed = 4,
+  kCallbackOpenCannotConnectToCrasClient = 5,
+  kCallbackOpenCannotRunCrasClient = 6,
+  kCallbackOpenCannotSynchronizeData = 7,
+  kCallbackOpenCannotFindLoopbackDevice = 8,
+  kMaxValue = kCallbackOpenCannotFindLoopbackDevice
+};
+
+// Used to log errors in `CrasInputStream::Start`.
+enum class StreamStartResult {
+  kCallbackStartSuccess = 0,
+  kCallbackStartErrorCreatingStreamParameters = 1,
+  kCallbackStartErrorSettingUpStreamParameters = 2,
+  kCallbackStartErrorSettingUpChannelLayout = 3,
+  kCallbackStartFailedAddingStream = 4,
+  kMaxValue = kCallbackStartFailedAddingStream
+};
+
+void ReportStreamOpenResult(StreamOpenResult result) {
+  base::UmaHistogramEnumeration("Media.Audio.CrasInputStreamOpenSuccess",
+                                result);
+}
+
+void ReportStreamStartResult(StreamStartResult result) {
+  base::UmaHistogramEnumeration("Media.Audio.CrasInputStreamStartSuccess",
+                                result);
+}
+
+void ReportNotifyStreamErrors(int err) {
+  base::UmaHistogramSparse("Media.Audio.CrasInputStreamNotifyStreamError", err);
+}
+
+}  // namespace
 
 CrasInputStream::CrasInputStream(const AudioParameters& params,
                                  AudioManagerCrasBase* manager,
@@ -48,18 +91,23 @@ CrasInputStream::~CrasInputStream() {
 AudioInputStream::OpenOutcome CrasInputStream::Open() {
   if (client_) {
     NOTREACHED() << "CrasInputStream already open";
+    ReportStreamOpenResult(StreamOpenResult::kCallbackOpenClientAlreadyOpen);
     return OpenOutcome::kAlreadyOpen;
   }
 
   // Sanity check input values.
   if (params_.sample_rate() <= 0) {
     DLOG(WARNING) << "Unsupported audio frequency.";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenUnsupportedAudioFrequency);
     return OpenOutcome::kFailed;
   }
 
   if (AudioParameters::AUDIO_PCM_LINEAR != params_.format() &&
       AudioParameters::AUDIO_PCM_LOW_LATENCY != params_.format()) {
     DLOG(WARNING) << "Unsupported audio format.";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenUnsupportedAudioFormat);
     return OpenOutcome::kFailed;
   }
 
@@ -67,12 +115,16 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
   client_ = libcras_client_create();
   if (!client_) {
     DLOG(WARNING) << "Couldn't create CRAS client.\n";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenCrasClientCreationFailed);
     client_ = NULL;
     return OpenOutcome::kFailed;
   }
 
   if (libcras_client_connect(client_)) {
     DLOG(WARNING) << "Couldn't connect CRAS client.\n";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);
     libcras_client_destroy(client_);
     client_ = NULL;
     return OpenOutcome::kFailed;
@@ -81,6 +133,7 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
   // Then start running the client.
   if (libcras_client_run_thread(client_)) {
     DLOG(WARNING) << "Couldn't run CRAS client.\n";
+    ReportStreamOpenResult(StreamOpenResult::kCallbackOpenCannotRunCrasClient);
     libcras_client_destroy(client_);
     client_ = NULL;
     return OpenOutcome::kFailed;
@@ -91,6 +144,8 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
       DLOG(WARNING) << "Couldn't synchronize data.";
       // TODO(chinyue): Add a DestroyClientOnError method to de-duplicate the
       // cleanup code.
+      ReportStreamOpenResult(
+          StreamOpenResult::kCallbackOpenCannotSynchronizeData);
       libcras_client_destroy(client_);
       client_ = NULL;
       return OpenOutcome::kFailed;
@@ -99,12 +154,15 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     int rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
     if (rc < 0) {
       DLOG(WARNING) << "Couldn't find CRAS loopback device.";
+      ReportStreamOpenResult(
+          StreamOpenResult::kCallbackOpenCannotFindLoopbackDevice);
       libcras_client_destroy(client_);
       client_ = NULL;
       return OpenOutcome::kFailed;
     }
   }
 
+  ReportStreamOpenResult(StreamOpenResult::kCallbackOpenSuccess);
   return OpenOutcome::kSuccess;
 }
 
@@ -187,6 +245,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   struct libcras_stream_params* stream_params = libcras_stream_params_create();
   if (!stream_params) {
     DLOG(ERROR) << "Error creating stream params";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartErrorCreatingStreamParameters);
     callback_->OnError();
     callback_ = NULL;
     return;
@@ -200,6 +260,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   if (rc) {
     DLOG(WARNING) << "Error setting up stream parameters.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartErrorSettingUpStreamParameters);
     callback_->OnError();
     callback_ = NULL;
     libcras_stream_params_destroy(stream_params);
@@ -223,6 +285,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
                                                 layout);
   if (rc) {
     DLOG(WARNING) << "Error setting up the channel layout.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartErrorSettingUpChannelLayout);
     callback_->OnError();
     callback_ = NULL;
     libcras_stream_params_destroy(stream_params);
@@ -252,6 +316,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,
                                        stream_params)) {
     DLOG(WARNING) << "Failed to add the stream.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartFailedAddingStream);
     callback_->OnError();
     callback_ = NULL;
   }
@@ -269,6 +335,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   libcras_stream_params_destroy(stream_params);
 
   started_ = true;
+
+  ReportStreamStartResult(StreamStartResult::kCallbackStartSuccess);
 }
 
 void CrasInputStream::Stop() {
@@ -341,6 +409,7 @@ void CrasInputStream::ReadAudio(size_t frames,
 }
 
 void CrasInputStream::NotifyStreamError(int err) {
+  ReportNotifyStreamErrors(err);
   if (callback_)
     callback_->OnError();
 }

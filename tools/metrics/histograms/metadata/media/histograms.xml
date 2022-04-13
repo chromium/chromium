@@ -543,6 +543,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
+    units="errorcode" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Error codes reported by the NotifyStreamError function in CrasInputStream.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.CrasInputStreamOpenSuccess"
+    enum="CrasInputStreamOpenSuccess" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Logged at each call to CrasInputStream::Open to indicate any errors.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.CrasInputStreamStartSuccess"
+    enum="CrasInputStreamStartSuccess" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Logged at each call to CrasInputStream::Start to indicate any errors.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.CrasUnifiedStreamNotifyStreamError"
+    units="errorcode" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Error codes reported by the NotifyStreamError function in CrasUnifiedStream.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.CrasUnifiedStreamOpenSuccess"
+    enum="CrasUnifiedStreamOpenSuccess" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Logged at each call to CrasUnifiedStream::Open to indicate any errors.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.CrasUnifiedStreamStartSuccess"
+    enum="CrasUnifiedStreamStartSuccess" expires_after="2023-04-01">
+  <owner>peah@chromium.org</owner>
+  <owner>hychao@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Logged at each call to CrasUnifiedStream::Start to indicate any errors.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.InputBufferSizeWasChangedMac"
     enum="BooleanSuccess" expires_after="2020-04-05">
   <owner>henrika@chromium.org</owner>
