@@ -3338,12 +3338,13 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
 
 }  // namespace
 
-// TODO(crbug.com/994789): Flaky on MSan, Linux, and Chrome OS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/994789): Flaky on MSan, Linux, Chrome OS, and Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadCookieIsolation DISABLED_DownloadCookieIsolation
 #else
 #define MAYBE_DownloadCookieIsolation DownloadCookieIsolation
-#endif  // !defined(MEMORY_SANITIZER)
+#endif
 // Downloads initiated from isolated guest parititons should use their
 // respective cookie stores. In addition, if those downloads are resumed, they
 // should continue to use their respective cookie stores.
