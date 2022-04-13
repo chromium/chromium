@@ -490,6 +490,19 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             .c_str(),
         SerializeBoolHeader(true));
   }
+
+  if (ShouldSendClientHint(ClientHintsMode::kStandard, policy, resource_origin,
+                           is_1p_origin,
+                           network::mojom::blink::WebClientHintsType::kSaveData,
+                           hints_preferences)) {
+    if (GetNetworkStateNotifier().SaveDataEnabled()) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kSaveData)
+              .c_str(),
+          "on");
+    }
+  }
 }
 
 void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {

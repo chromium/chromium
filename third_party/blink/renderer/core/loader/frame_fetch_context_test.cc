@@ -1196,57 +1196,51 @@ TEST_F(FrameFetchContextTest, SubResourceCachePolicy) {
 }
 
 // Tests if "Save-Data" header is correctly added on the first load and reload.
-TEST_F(FrameFetchContextTest, EnableDataSaver) {
+TEST_F(FrameFetchContextHintsTest, EnableDataSaver) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
 
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   // Subsequent call to addAdditionalRequestHeaders should not append to the
   // save-data header.
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 }
 
 // Tests if "Save-Data" header is not added when the data saver is disabled.
-TEST_F(FrameFetchContextTest, DisabledDataSaver) {
+TEST_F(FrameFetchContextHintsTest, DisabledDataSaver) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
 
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 }
 
 // Tests if reload variants can reflect the current data saver setting.
-TEST_F(FrameFetchContextTest, ChangeDataSaverConfig) {
+TEST_F(FrameFetchContextHintsTest, ChangeDataSaverConfig) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
-  RecreateFetchContext();
-  document->Loader()->SetLoadType(WebFrameLoadType::kReload);
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
-  RecreateFetchContext();
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
-  RecreateFetchContext();
-  document->Loader()->SetLoadType(WebFrameLoadType::kReload);
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 }
 
 TEST_F(FrameFetchContextSubresourceFilterTest, Filter) {

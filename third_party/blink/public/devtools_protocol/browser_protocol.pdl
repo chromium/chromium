@@ -6951,8 +6951,10 @@ domain Page
       ch-device-memory
       ch-downlink
       ch-ect
+      ch-partitioned-cookies
       ch-prefers-color-scheme
       ch-rtt
+      ch-save-data
       ch-ua
       ch-ua-arch
       ch-ua-bitness
@@ -6968,7 +6970,6 @@ domain Page
       ch-viewport-height
       ch-viewport-width
       ch-width
-      ch-partitioned-cookies
       clipboard-read
       clipboard-write
       cross-origin-isolated

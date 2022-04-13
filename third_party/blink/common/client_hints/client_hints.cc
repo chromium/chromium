@@ -78,6 +78,8 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintUAWoW64},
       {network::mojom::WebClientHintsType::kPartitionedCookies,
        mojom::PermissionsPolicyFeature::kClientHintPartitionedCookies},
+      {network::mojom::WebClientHintsType::kSaveData,
+       mojom::PermissionsPolicyFeature::kClientHintSaveData},
   };
 }
 
@@ -117,6 +119,7 @@ const size_t kWebEffectiveConnectionTypeMappingCount =
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
   switch (type) {
+    case network::mojom::WebClientHintsType::kSaveData:
     case network::mojom::WebClientHintsType::kUA:
     case network::mojom::WebClientHintsType::kUAMobile:
       return true;

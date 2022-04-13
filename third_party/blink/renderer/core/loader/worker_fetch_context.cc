@@ -203,6 +203,12 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   if (!request.Url().IsEmpty() && !request.Url().ProtocolIsInHTTPFamily())
     return;
 
+  // TODO(crbug.com/1315612): WARNING: This bypasses the permissions policy.
+  // Unfortunately, workers lack a permissions policy and to derive proper hints
+  // https://github.com/w3c/webappsec-permissions-policy/issues/207.
+  // Save-Data was previously included in hints for workers, thus we cannot
+  // remove it for the time being. If you're reading this, consider building
+  // permissions policies for workers and/or deprecating this inclusion.
   if (save_data_enabled_)
     request.SetHttpHeaderField(http_names::kSaveData, "on");
 

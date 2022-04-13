@@ -37826,6 +37826,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4203" label="PrivateNetworkAccessNullIpAddress"/>
   <int value="4204" label="LegacyConstraintGoogScreencastMinBitrate"/>
   <int value="4205" label="RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
+  <int value="4206" label="ClientHintsSaveData"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -37944,7 +37945,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="96" label="ClientHintPartitionedCookies"/>
   <int value="97" label="BrowsingTopics"/>
   <int value="98" label="BrowsingTopicsBackwardCompatible"/>
-  <int value="99" label="LocalFonts"/>
+  <int value="99" label="ClientHintSaveData"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

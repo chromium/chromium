@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -261,6 +262,15 @@ void AddDPRHeader(net::HttpRequestHeaders* headers,
                     use_deprecated_version ? WebClientHintsType::kDpr_DEPRECATED
                                            : WebClientHintsType::kDpr,
                     device_scale_factor * zoom_factor);
+}
+
+void AddSaveDataHeader(net::HttpRequestHeaders* headers,
+                       BrowserContext* context) {
+  DCHECK(headers);
+  DCHECK(context);
+  // Unlike other client hints, this one is only sent when it has a value.
+  if (GetContentClient()->browser()->IsDataSaverEnabled(context))
+    SetHeaderToString(headers, WebClientHintsType::kSaveData, "on");
 }
 
 void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
@@ -940,12 +950,15 @@ void AddRequestClientHintsHeaders(
                       SerializeHeaderString(true));
   }
 
+  if (ShouldAddClientHint(data, WebClientHintsType::kSaveData))
+    AddSaveDataHeader(headers, context);
+
   // Static assert that triggers if a new client hint header is added. If a
   // new client hint header is added, the following assertion should be updated.
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kPartitionedCookies ==
+      network::mojom::WebClientHintsType::kSaveData ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

@@ -68,9 +68,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/test_content_browser_client.h"
@@ -395,6 +397,10 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
                                       ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
+    ShellContentBrowserClient::Get()
+        ->browser_context()
+        ->set_client_hints_controller_delegate(
+            &client_hints_controller_delegate_);
   }
 
   void TearDownOnMainThread() override {
@@ -445,6 +451,8 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+  MockClientHintsControllerDelegate client_hints_controller_delegate_{
+      content::GetShellUserAgentMetadata()};
 };
 
 class MockContentBrowserClient : public TestContentBrowserClient {

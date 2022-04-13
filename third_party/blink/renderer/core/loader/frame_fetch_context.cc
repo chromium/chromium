@@ -109,7 +109,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
-#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -263,8 +262,7 @@ FrameFetchContext::FrameFetchContext(
     const DetachableResourceFetcherProperties& properties)
     : BaseFetchContext(properties),
       document_loader_(document_loader),
-      document_(document),
-      save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()) {}
+      document_(document) {}
 
 net::SiteForCookies FrameFetchContext::GetSiteForCookies() const {
   if (GetResourceFetcherProperties().IsDetached())
@@ -300,14 +298,6 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
-
-  // Reload should reflect the current data saver setting.
-  if (IsReloadLoadType(document_loader_->LoadType()))
-    request.ClearHttpHeaderField(http_names::kSaveData);
-
-  if (save_data_enabled_ &&
-      base::FeatureList::IsEnabled(features::kClientHintsSaveData))
-    request.SetHttpHeaderField(http_names::kSaveData, "on");
 
   AddBackForwardCacheExperimentHTTPHeaderIfNeeded(request);
 }

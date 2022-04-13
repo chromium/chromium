@@ -54,6 +54,8 @@ enum WebClientHintsType {
   // A client hint which, if set, signifies to the origin that the client
   // supports the Partitioned cookie attribute.
   kPartitionedCookies = 26,
+  // Indicates the client wants to minimize data transfer if set to 'on'.
+  kSaveData = 27,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

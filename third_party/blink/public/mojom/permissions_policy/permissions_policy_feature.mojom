@@ -216,6 +216,9 @@ enum PermissionsPolicyFeature {
   // https://github.com/jkarlin/topics
   kBrowsingTopicsBackwardCompatible = 98,
 
+  // Client Hint for Save-Data.
+  kClientHintSaveData = 99,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

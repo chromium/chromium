@@ -57,6 +57,7 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
       {network::mojom::WebClientHintsType::kPartitionedCookies,
        "sec-ch-partitioned-cookies"},
+      {network::mojom::WebClientHintsType::kSaveData, "save-data"},
   };
 }
 

@@ -410,8 +410,9 @@ void AddAdditionalRequestHeaders(
           ->render_view_host()
           ->GetDelegate()
           ->GetRendererPrefs();
-  UpdateAdditionalHeadersForBrowserInitiatedRequest(headers, browser_context,
-                                                    is_reload, render_prefs);
+  UpdateAdditionalHeadersForBrowserInitiatedRequest(
+      headers, browser_context, is_reload, render_prefs,
+      /*is_for_worker_script*=*/false);
 
   // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
   // requests, as described in

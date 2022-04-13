@@ -109,7 +109,8 @@ void AddAdditionalRequestHeaders(network::ResourceRequest* resource_request,
       browser_context, &renderer_preferences);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       &resource_request->headers, browser_context,
-      /*should_update_existing_headers=*/false, renderer_preferences);
+      /*should_update_existing_headers=*/false, renderer_preferences,
+      /*is_for_worker_script=*/true);
 }
 
 void DidCreateScriptLoader(

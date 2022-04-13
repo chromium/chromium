@@ -89,6 +89,10 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies))
         return true;
       break;
+    case WebClientHintsType::kSaveData:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsSaveData))
+        return true;
+      break;
     default:
       break;
   }
