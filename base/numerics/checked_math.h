@@ -289,8 +289,8 @@ constexpr StrictNumeric<Dst> ValueOrDefaultForType(
   return value.template ValueOrDefault<Dst>(default_value);
 }
 
-// Convience wrapper to return a new CheckedNumeric from the provided arithmetic
-// or CheckedNumericType.
+// Convenience wrapper to return a new CheckedNumeric from the provided
+// arithmetic or CheckedNumericType.
 template <typename T>
 constexpr CheckedNumeric<typename UnderlyingType<T>::type> MakeCheckedNum(
     const T value) {

@@ -184,8 +184,8 @@ class ClampedNumeric {
   };
 };
 
-// Convience wrapper to return a new ClampedNumeric from the provided arithmetic
-// or ClampedNumericType.
+// Convenience wrapper to return a new ClampedNumeric from the provided
+// arithmetic or ClampedNumericType.
 template <typename T>
 constexpr ClampedNumeric<typename UnderlyingType<T>::type> MakeClampedNum(
     const T value) {
