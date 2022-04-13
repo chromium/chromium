@@ -227,16 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NativeFileSystemAPI.SensitiveDirectoryAccessResult"
-    enum="SensitiveDirectoryAccessResult" expires_after="2021-12-05">
-  <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    Records if the file or directory selected by the user through the Native
-    File System API is considered a sensitive directory, and thus was blocked.
-  </summary>
-</histogram>
-
 <histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"
     enum="NativeFileSystemPermissionRequestOutcome" expires_after="2022-02-06">
   <owner>mek@chromium.org</owner>

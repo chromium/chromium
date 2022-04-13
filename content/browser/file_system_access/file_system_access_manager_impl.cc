@@ -1165,9 +1165,6 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
     std::vector<FileSystemChooser::ResultEntry> entries,
     SensitiveDirectoryResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramEnumeration(
-      "NativeFileSystemAPI.SensitiveDirectoryAccessResult", result);
-
   if (result == SensitiveDirectoryResult::kAbort) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
