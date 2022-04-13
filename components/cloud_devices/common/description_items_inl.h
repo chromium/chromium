@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/numerics/safe_conversions.h"
 #include "base/values.h"
 #include "components/cloud_devices/common/description_items.h"
 
@@ -105,7 +104,7 @@ bool SelectionCapability<Option, Traits>::IsValid() const {
       return false;
   }
   // This type of capability does not need a default value.
-  return default_idx_ >= -1 && default_idx_ < base::checked_cast<int>(size());
+  return default_idx_.value_or(0) < size();
 }
 
 template <class Option, class Traits>
@@ -141,9 +140,9 @@ bool SelectionCapability<Option, Traits>::LoadFrom(const base::Value& dict) {
       return false;
     bool is_default =
         option_value.FindBoolKey(json::kKeyIsDefault).value_or(false);
-    if (is_default && default_idx_ >= 0) {
+    if (is_default && default_idx_.has_value())
       return false;  // Multiple defaults.
-    }
+
     AddDefaultOption(option, is_default);
   }
   return IsValid();
@@ -155,7 +154,7 @@ void SelectionCapability<Option, Traits>::SaveTo(base::Value* dict) const {
   base::Value options_list(base::Value::Type::LIST);
   for (size_t i = 0; i < options_.size(); ++i) {
     base::Value option_value(base::Value::Type::DICTIONARY);
-    if (base::checked_cast<int>(i) == default_idx_)
+    if (default_idx_.has_value() && default_idx_.value() == i)
       option_value.SetKey(json::kKeyIsDefault, base::Value(true));
     Traits::Save(options_[i], &option_value);
     options_list.Append(std::move(option_value));
