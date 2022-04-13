@@ -25,13 +25,6 @@ const base::Feature kAutomaticLazyFrameLoadingToAds{
 const base::Feature kAutomaticLazyFrameLoadingToEmbeds{
     "AutomaticLazyFrameLoadingToEmbeds", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Define the allowed websites to use LazyEmbeds. The allowed websites need to
-// be defined separately from kAutomaticLazyFrameLoadingToEmbeds because we want
-// to gather Blink.AutomaticLazyLoadFrame.LazyEmbedFrameCount UKM data even when
-// kAutomaticLazyFrameLoadingToEmbeds is disabled.
-const base::Feature kAutomaticLazyFrameLoadingToEmbedUrls{
-    "AutomaticLazyFrameLoadingToEmbedUrls", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Allows pages with DedicatedWorker to stay eligible for the back/forward
 // cache.
 const base::Feature kBackForwardCacheDedicatedWorker{
