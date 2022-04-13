@@ -65,6 +65,9 @@ class V4DatabaseTest : public PlatformTest {
  public:
   V4DatabaseTest()
       : task_runner_(new base::TestSimpleTaskRunner),
+        v4_database_(std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>(
+            nullptr,
+            base::OnTaskRunnerDeleter(nullptr))),
         linux_malware_id_(LINUX_PLATFORM, URL, MALWARE_THREAT),
         win_malware_id_(WINDOWS_PLATFORM, URL, MALWARE_THREAT) {}
 
@@ -91,6 +94,8 @@ class V4DatabaseTest : public PlatformTest {
 
   void TearDown() override {
     V4Database::RegisterStoreFactoryForTest(nullptr);
+    v4_database_.reset();
+    WaitForTasksOnTaskRunner();
     PlatformTest::TearDown();
   }
 
@@ -116,7 +121,7 @@ class V4DatabaseTest : public PlatformTest {
   void DatabaseUpdated() {}
 
   void NewDatabaseReadyWithExpectedStorePathsAndIds(
-      std::unique_ptr<V4Database> v4_database) {
+      std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database) {
     ASSERT_TRUE(v4_database);
     ASSERT_TRUE(v4_database->store_map_);
 
@@ -199,7 +204,7 @@ class V4DatabaseTest : public PlatformTest {
   }
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<V4Database> v4_database_;
+  std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database_;
   base::FilePath database_dirname_;
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -469,7 +474,7 @@ TEST_F(V4DatabaseTest, VerifyChecksumCancelled) {
       &V4DatabaseTest::VerifyChecksumCallback, base::Unretained(this)));
   EXPECT_FALSE(verify_checksum_called_back_);
   // Destroy database.
-  V4Database::Destroy(std::move(v4_database_));
+  v4_database_.reset();
   WaitForTasksOnTaskRunner();
   // Callback should not be called since database is destroyed.
   EXPECT_FALSE(verify_checksum_called_back_);
@@ -538,7 +543,7 @@ TEST_F(V4DatabaseTest, UsingWeakPtrDropsCallback) {
 
   // Step 3: Before V4Store::ApplyUpdate gets executed on the task runner,
   // destroy the database. This posts ~V4Database() on the task runner.
-  V4Database::Destroy(std::move(v4_database_));
+  v4_database_.reset();
 
   // Step 4: Wait for the task runner to go to completion. The test should
   // finish to completion and the |null_callback| should not get called.

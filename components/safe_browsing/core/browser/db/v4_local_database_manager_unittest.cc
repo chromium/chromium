@@ -166,9 +166,11 @@ class FakeV4Database : public V4Database {
       bool stores_available,
       int64_t store_file_size) {
     // Mimics the semantics of V4Database::CreateOnTaskRunner
-    std::unique_ptr<FakeV4Database> fake_v4_database(new FakeV4Database(
-        db_task_runner, std::move(store_map), store_and_hash_prefixes,
-        stores_available, store_file_size));
+    std::unique_ptr<FakeV4Database, base::OnTaskRunnerDeleter> fake_v4_database(
+        new FakeV4Database(db_task_runner, std::move(store_map),
+                           store_and_hash_prefixes, stores_available,
+                           store_file_size),
+        base::OnTaskRunnerDeleter(db_task_runner));
     callback_task_runner->PostTask(FROM_HERE,
                                    base::BindOnce(std::move(new_db_callback),
                                                   std::move(fake_v4_database)));
@@ -421,9 +423,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     StartLocalDatabaseManager();
   }
 
-  void ResetV4Database() {
-    V4Database::Destroy(std::move(v4_local_database_manager_->v4_database_));
-  }
+  void ResetV4Database() { v4_local_database_manager_->v4_database_.reset(); }
 
   void StartLocalDatabaseManager() {
     v4_local_database_manager_->StartOnIOThread(test_shared_loader_factory_,

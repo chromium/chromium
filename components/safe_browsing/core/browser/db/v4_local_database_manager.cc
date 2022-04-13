@@ -373,7 +373,10 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                        ? task_runner_for_tests
                        : base::ThreadPool::CreateSequencedTaskRunner(
                              {base::MayBlock(),
-                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      v4_database_(std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(nullptr))) {
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
 
   task_runner_->PostTask(
@@ -670,13 +673,15 @@ void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
   // Delete the V4Database. Any pending writes to disk are completed.
   // This operation happens on the task_runner on which v4_database_ operates
   // and doesn't block the IO thread.
-  V4Database::Destroy(std::move(v4_database_));
+  v4_database_.reset();
 
   // Delete the V4UpdateProtocolManager.
   // This cancels any in-flight update request.
   v4_update_protocol_manager_.reset();
 
   db_updated_callback_.Reset();
+
+  weak_factory_.InvalidateWeakPtrs();
 
   SafeBrowsingDatabaseManager::StopOnIOThread(shutdown);
 }
@@ -686,7 +691,7 @@ void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
 //
 
 void V4LocalDatabaseManager::DatabaseReadyForChecks(
-    std::unique_ptr<V4Database> v4_database) {
+    std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   v4_database->InitializeOnIOSequence();
@@ -694,7 +699,6 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
   // The following check is needed because it is possible that by the time the
   // database is ready, StopOnIOThread has been called.
   if (enabled_) {
-    V4Database::Destroy(std::move(v4_database_));
     v4_database_ = std::move(v4_database);
 
     v4_database_->RecordFileSizeHistograms();
@@ -712,7 +716,7 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     ProcessQueuedChecks();
   } else {
     // Schedule the deletion of v4_database off IO thread.
-    V4Database::Destroy(std::move(v4_database));
+    v4_database.reset();
   }
 }
 

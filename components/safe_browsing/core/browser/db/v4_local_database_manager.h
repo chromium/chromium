@@ -230,7 +230,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Called when all the stores managed by the database have been read from
   // disk after startup and the database is ready for checking resource
   // reputation.
-  void DatabaseReadyForChecks(std::unique_ptr<V4Database> v4_database);
+  void DatabaseReadyForChecks(
+      std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database);
 
   // Called when all the stores managed by the database have been verified for
   // checksum correctness after startup and the database is ready for applying
@@ -395,7 +396,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // The database that manages the stores containing the hash prefix updates.
   // All writes to this variable must happen on the IO thread only.
-  std::unique_ptr<V4Database> v4_database_;
+  std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database_;
 
   // The protocol manager that downloads the hash prefix updates.
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
