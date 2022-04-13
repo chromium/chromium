@@ -9,7 +9,9 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/metadata.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -17,6 +19,8 @@
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -27,14 +31,12 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/prerender/fake_prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "components/unified_consent/unified_consent_service.h"
+#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
-#import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -64,12 +66,6 @@ class TestUrlCheckerClient {
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(browser_state);
-    PrerenderServiceFactory::GetInstance()->SetTestingFactory(
-        browser_state,
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakePrerenderService>();
-            }));
   }
 
   ~TestUrlCheckerClient() = default;
@@ -144,7 +140,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
  public:
   SafeBrowsingServiceTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
-        browser_state_(TestChromeBrowserState::Builder().Build()) {
+        browser_state_(new web::FakeBrowserState()) {
     store_factory_ = new safe_browsing::TestV4StoreFactory();
     safe_browsing::V4Database::RegisterStoreFactoryForTest(
         base::WrapUnique(store_factory_));
@@ -158,17 +154,27 @@ class SafeBrowsingServiceTest : public PlatformTest {
     safe_browsing::V4GetHashProtocolManager::RegisterFactory(
         base::WrapUnique(v4_get_hash_factory_));
 
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    HostContentSettingsMap::RegisterProfilePrefs(pref_service_->registry());
+    safe_browsing::RegisterProfilePrefs(pref_service_->registry());
+    unified_consent::UnifiedConsentService::RegisterPrefs(
+        pref_service_->registry());
+
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
 
     CHECK(temp_dir_.CreateUniqueTempDir());
-    safe_browsing::SafeBrowsingMetricsCollector*
-        safe_browsing_metrics_collector =
-            SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-                browser_state_.get());
-    safe_browsing_service_->Initialize(browser_state_->GetPrefs(),
-                                       temp_dir_.GetPath(),
-                                       safe_browsing_metrics_collector);
+    safe_browsing_service_->Initialize(
+        pref_service_.get(), temp_dir_.GetPath(),
+        /*safe_browsing_metrics_collector=*/nullptr);
     base::RunLoop().RunUntilIdle();
+
+    // Set up the test safe browsing client factory.
+    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
+        browser_state_.get(),
+        base::BindRepeating(
+            &SafeBrowsingServiceTest::CreateFakeSafeBrowsingClient,
+            base::Unretained(this)));
   }
 
   SafeBrowsingServiceTest(const SafeBrowsingServiceTest&) = delete;
@@ -176,6 +182,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
 
   ~SafeBrowsingServiceTest() override {
     safe_browsing_service_->ShutDown();
+    if (host_content_settings_map_) {
+      host_content_settings_map_->ShutdownOnUIThread();
+    }
 
     safe_browsing::V4GetHashProtocolManager::RegisterFactory(nullptr);
     safe_browsing::V4Database::RegisterDatabaseFactoryForTest(nullptr);
@@ -211,14 +220,15 @@ class SafeBrowsingServiceTest : public PlatformTest {
     threat_info->set_cache_expression_using_match_type(bad_url.host() + "/");
     threat_info->set_cache_expression_match_type(
         safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
-    VerdictCacheManagerFactory::GetForBrowserState(browser_state_.get())
-        ->CacheRealTimeUrlVerdict(bad_url, response, base::Time::Now());
+    verdict_cache_manager_->CacheRealTimeUrlVerdict(bad_url, response,
+                                                    base::Time::Now());
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeBrowserState> browser_state_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 
  private:
   void MarkUrlAsMalwareOnIOThread(const GURL& bad_url) {
@@ -242,6 +252,35 @@ class SafeBrowsingServiceTest : public PlatformTest {
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }
 
+  // Creates a fake safe browsing client and injects other fakes needed to
+  // control lookup service.
+  std::unique_ptr<KeyedService> CreateFakeSafeBrowsingClient(
+      web::BrowserState* context) {
+    std::unique_ptr<FakeSafeBrowsingClient> client =
+        std::make_unique<FakeSafeBrowsingClient>();
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        pref_service_.get(), /*is_off_the_record=*/false,
+        /*store_last_modified=*/false, /*restore_session=*/false);
+    verdict_cache_manager_ =
+        std::make_unique<safe_browsing::VerdictCacheManager>(
+            /*history_service=*/nullptr, host_content_settings_map_.get(),
+            pref_service_.get(), /*sync_observer=*/nullptr);
+    lookup_service_ = std::make_unique<safe_browsing::RealTimeUrlLookupService>(
+        safe_browsing_service_->GetURLLoaderFactory(),
+        verdict_cache_manager_.get(), base::BindRepeating([] {
+          safe_browsing::ChromeUserPopulation population;
+          return population;
+        }),
+        pref_service_.get(),
+        /*token_fetcher=*/nullptr,
+        base::BindRepeating([](bool) { return false; }),
+        /*is_off_the_record=*/false,
+        /*variations_service=*/nullptr,
+        /*referrer_chain_provider=*/nullptr);
+    client->set_real_time_url_lookup_service(lookup_service_.get());
+    return client;
+  }
+
   base::ScopedTempDir temp_dir_;
 
   // Owned by V4Database.
@@ -250,6 +289,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
   safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
   // Owned by V4Database.
   safe_browsing::TestV4StoreFactory* store_factory_;
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
+  std::unique_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
@@ -273,7 +315,7 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
   EXPECT_TRUE(client.url_is_unsafe());
 
   // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
-  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   client.CheckUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
@@ -296,7 +338,7 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   client.WaitForResult();
 
   // Opt into real-time checks.
-  browser_state_->GetPrefs()->SetBoolean(
+  pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   MarkUrlAsRealTimeSafe(safe_url);
@@ -316,7 +358,7 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
 
   // Opt out of real-time checks, and ensure that unsafe URLs are no longer
   // flagged.
-  browser_state_->GetPrefs()->SetBoolean(
+  pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
@@ -341,7 +383,7 @@ TEST_F(SafeBrowsingServiceTest,
   client.WaitForResult();
 
   // Opt into real-time checks and also does real-time checks for subframe url.
-  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 
   MarkUrlAsRealTimeSafe(safe_url);
   client.CheckUrl(safe_url);
@@ -374,7 +416,7 @@ TEST_F(SafeBrowsingServiceTest,
 
   // Opt out of real-time checks, and ensure that unsafe URLs are no longer
   // flagged.
-  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   client.CheckUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
@@ -530,20 +572,20 @@ using SafeBrowsingServiceInitializationTest = PlatformTest;
 TEST_F(SafeBrowsingServiceInitializationTest, GetURLLoaderFactory) {
   web::WebTaskEnvironment task_environment;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<web::FakeBrowserState> browser_state =
+      std::make_unique<web::FakeBrowserState>();
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
+      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  safe_browsing::RegisterProfilePrefs(prefs->registry());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service =
       base::MakeRefCounted<SafeBrowsingServiceImpl>();
-  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-          browser_state.get());
-  safe_browsing_service->Initialize(browser_state->GetPrefs(),
-                                    temp_dir.GetPath(),
-                                    safe_browsing_metrics_collector);
+  safe_browsing_service->Initialize(
+      prefs.get(), temp_dir.GetPath(),
+      /*safe_browsing_metrics_collector=*/nullptr);
 
   EXPECT_TRUE(safe_browsing_service->GetURLLoaderFactory());
 

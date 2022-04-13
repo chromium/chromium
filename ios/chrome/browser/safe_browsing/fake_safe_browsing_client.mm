@@ -22,7 +22,7 @@ SafeBrowsingService* FakeSafeBrowsingClient::GetSafeBrowsingService() {
 
 safe_browsing::RealTimeUrlLookupService*
 FakeSafeBrowsingClient::GetRealTimeUrlLookupService() {
-  return nullptr;
+  return lookup_service_;
 }
 
 bool FakeSafeBrowsingClient::ShouldBlockUnsafeResource(

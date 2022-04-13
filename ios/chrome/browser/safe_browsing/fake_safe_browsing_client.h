@@ -21,6 +21,12 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     should_block_unsafe_resource_ = should_block_unsafe_resource;
   }
 
+  // Controls the return value of |GetRealTimeUrlLookupService|.
+  void set_real_time_url_lookup_service(
+      safe_browsing::RealTimeUrlLookupService* lookup_service) {
+    lookup_service_ = lookup_service;
+  }
+
  private:
   // SafeBrowsingClient implementation.
   SafeBrowsingService* GetSafeBrowsingService() override;
@@ -35,6 +41,7 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   bool should_block_unsafe_resource_ = false;
+  safe_browsing::RealTimeUrlLookupService* lookup_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
