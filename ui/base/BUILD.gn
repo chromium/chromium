@@ -466,7 +466,6 @@ component("base") {
     "//ui/events",
     "//ui/events/devices",
     "//ui/resources:webui_generated_resources_grd",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings",
     "//url",
   ]

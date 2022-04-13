@@ -71,7 +71,6 @@ template("ash_test_resources") {
       sources += [
         "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
         "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-        "$root_gen_dir/ui/resources/webui_resources.pak",
       ]
     }
 

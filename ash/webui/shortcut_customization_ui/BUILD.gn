@@ -20,7 +20,6 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/mojom",
     "//content/public/browser",
     "//ui/resources:webui_generated_resources_grd_grit",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
   ]
 }

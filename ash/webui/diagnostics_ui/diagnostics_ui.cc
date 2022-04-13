@@ -44,7 +44,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_resources.h"
 
 namespace ash {
 

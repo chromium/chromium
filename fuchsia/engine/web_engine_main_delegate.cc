@@ -33,7 +33,6 @@ WebEngineMainDelegate* g_current_web_engine_main_delegate = nullptr;
 void InitializeResources() {
   constexpr char kCommonResourcesPakPath[] = "web_engine_common_resources.pak";
 
-  constexpr char kWebUiResourcesPakPath[] = "ui/resources/webui_resources.pak";
   constexpr char kWebUiGeneratedResourcesPakPath[] =
       "ui/resources/webui_generated_resources.pak";
 
@@ -52,13 +51,6 @@ void InitializeResources() {
   VLOG(1) << "Loaded resources including locale: " << locale;
 
   // Conditionally load WebUI resource PAK if visible from namespace.
-  const base::FilePath webui_resources_path =
-      asset_root.Append(kWebUiResourcesPakPath);
-  if (base::PathExists(webui_resources_path)) {
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        webui_resources_path, ui::kScaleFactorNone);
-  }
-
   const base::FilePath webui_generated_resources_path =
       asset_root.Append(kWebUiGeneratedResourcesPakPath);
   if (base::PathExists(webui_generated_resources_path)) {
