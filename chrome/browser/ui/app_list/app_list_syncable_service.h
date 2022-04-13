@@ -77,6 +77,17 @@ class AppListSyncableService : public syncer::SyncableService,
     // synced. It reflects the associated ChromeAppListItem state.
     bool is_persistent_folder = false;
 
+    // Whether the `item_ordinal` should be fixed after initial sync data is
+    // received during a user session.
+    // This value is preserved in local prefs, but not synced. It helps identify
+    // app items added to persistent storage to set default shelf pin ordinal,
+    // which may happen before a default app gets installed.
+    // If initial data is received before the app is first installed,
+    // the item ordinal would be initialized without taking special cases like
+    // default item ordinals, or sort order into account - see
+    // https://crbug.com/1306913.
+    bool empty_item_ordinal_fixable = true;
+
     std::string ToString() const;
   };
 

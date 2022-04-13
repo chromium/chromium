@@ -79,6 +79,7 @@ constexpr char kPinPositionKey[] = "pin_position";
 constexpr char kTypeKey[] = "type";
 constexpr char kBackgroundColorKey[] = "background_color";
 constexpr char kHueKey[] = "hue";
+constexpr char kEmptyItemOrdinalFixable[] = "empty_item_ordinal_fixable";
 
 void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
                                   sync_pb::AppListSpecifics* specifics) {
@@ -203,6 +204,9 @@ void UpdateSyncItemInLocalStorage(
                       : std::string()));
   dict_item_dict.Set(kTypeKey,
                      base::Value(static_cast<int>(sync_item->item_type)));
+  dict_item_dict.Set(kEmptyItemOrdinalFixable,
+                     base::Value(sync_item->item_ordinal.IsValid() ||
+                                 sync_item->empty_item_ordinal_fixable));
 
   if (ash::features::IsLauncherItemColorSyncEnabled()) {
     // Handle the item color.
@@ -481,6 +485,9 @@ void AppListSyncableService::InitFromLocalStorage() {
       sync_item->item_ordinal = syncer::StringOrdinal(*position);
     if (pin_position && !pin_position->empty())
       sync_item->item_pin_ordinal = syncer::StringOrdinal(*pin_position);
+
+    sync_item->empty_item_ordinal_fixable =
+        item_dict.FindBool(kEmptyItemOrdinalFixable).value_or(true);
 
     // Fetch icon colors from `dict_item` if any.
     if (ash::features::IsLauncherItemColorSyncEnabled() &&
@@ -856,6 +863,11 @@ void AppListSyncableService::SetPinPosition(
   } else {
     sync_item = CreateSyncItem(app_id, sync_pb::AppListSpecifics::TYPE_APP);
     sync_change_type = SyncChange::ACTION_ADD;
+    // Prevent item ordinal from getting set by "fixing empty ordinals" until
+    // the app gets installed, and item ordinal gets set to its default value.
+    // At this point, sync item is added primarily to initialize default shelf
+    // pin order, and the associnated app may not be fully initialized.
+    sync_item->empty_item_ordinal_fixable = false;
   }
 
   sync_item->item_pin_ordinal = item_pin_ordinal;
@@ -1235,9 +1247,11 @@ AppListSyncableService::MergeDataAndStartSyncing(
   for (const auto& sync_pair : sync_items_) {
     SyncItem* sync_item = sync_pair.second.get();
     if (sync_item->item_type != sync_pb::AppListSpecifics::TYPE_APP ||
-        sync_item->item_ordinal.IsValid()) {
+        sync_item->item_ordinal.IsValid() ||
+        !sync_item->empty_item_ordinal_fixable) {
       continue;
     }
+
     const ChromeAppListItem* app_item =
         model_updater_->FindItem(sync_item->item_id);
     if (app_item) {

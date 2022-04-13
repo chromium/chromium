@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -22,21 +27,40 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_error_factory_mock.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 
 namespace {
 
 constexpr char kOemAppId[] = "emfkafnhnpcmabnnkckkchdilgeoekbo";
+
+// Gets list of item app IDs in order they appear in shelf model. Only items
+// contained in `filter` will be included.
+std::vector<std::string> GetOrderedShelfItems(
+    const std::set<std::string>& filter) {
+  std::vector<std::string> result;
+  for (const auto& item : ash::ShelfModel::Get()->items()) {
+    if (base::Contains(filter, item.id.app_id))
+      result.push_back(item.id.app_id);
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -481,6 +505,79 @@ IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest, UnmergeTwoItemFolder) {
     EXPECT_EQ(std::vector<std::string>({app1_id, app3_id, app2_id}),
               trailing_items);
   }
+}
+
+// Tests that session restart before a default pinned preinstalled app is
+// correctly positioned in the app list if the session restarts before the app
+// installation completes.
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       PRE_SessionRestartDoesntOverrideDefaultAppListPosition) {
+  // Simluate installation of an app pinned to shelf by default:
+  // App with web_app::kGmailAppId ID.
+  auto gmail_info = std::make_unique<WebAppInstallInfo>();
+  gmail_info->start_url =
+      GURL("https://mail.google.com/mail/?usp=installed_webapp");
+  gmail_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
+  web_app::test::InstallWebApp(profile(), std::move(gmail_info));
+  // Flush app service so app installation gets handled.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  std::set<std::string> app_filter({app_constants::kChromeAppId,
+                                    web_app::kGmailAppId,
+                                    web_app::kMessagesAppId});
+  EXPECT_EQ(std::vector<std::string>(
+                {app_constants::kChromeAppId, web_app::kGmailAppId}),
+            GetOrderedShelfItems(app_filter));
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       SessionRestartDoesntOverrideDefaultAppListPosition) {
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+  AppListModelUpdater* app_list_model_updater =
+      app_list_syncable_service->GetModelUpdater();
+  app_list_model_updater->SetActive(true);
+
+  app_list_syncable_service->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+
+  // Simluate installation of an app pinned to shelf by default after initial
+  // sync data is merged: app with web_app::kMessagesAppId ID.
+  auto messages_info = std::make_unique<WebAppInstallInfo>();
+  messages_info->start_url = GURL("https://messages.google.com/web/");
+  messages_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
+  web_app::test::InstallWebApp(profile(), std::move(messages_info));
+
+  // Flush app service so app installation gets handled.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  std::set<std::string> app_filter({app_constants::kChromeAppId,
+                                    web_app::kGmailAppId,
+                                    web_app::kMessagesAppId});
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId,
+                                web_app::kGmailAppId, web_app::kMessagesAppId}),
+      GetOrderedShelfItems(app_filter));
+
+  // Verify that order of apps in the app list respects default app ordinals
+  // (for test apps that have default app list ordinal set).
+  ShowAppList();
+  std::vector<std::string> top_level_id_list =
+      app_list_test_api_.GetTopLevelViewIdList();
+  std::vector<std::string> filtered_top_level_id_list;
+  for (const auto& item : top_level_id_list) {
+    if (base::Contains(app_filter, item))
+      filtered_top_level_id_list.push_back(item);
+  }
+
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId,
+                                web_app::kGmailAppId, web_app::kMessagesAppId}),
+      filtered_top_level_id_list);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
