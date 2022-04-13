@@ -667,12 +667,14 @@ public class TabModelImpl extends TabModelJniBridge {
         return incognito ? mIncognitoTabCreator : mRegularTabCreator;
     }
 
+    /**
+     * Used to restore tabs from native.
+     */
     @Override
     protected boolean createTabWithWebContents(
             Tab parent, Profile profile, WebContents webContents) {
         return getTabCreator(profile.isOffTheRecord())
-                .createTabWithWebContents(
-                        parent, webContents, TabLaunchType.FROM_LONGPRESS_BACKGROUND);
+                .createTabWithWebContents(parent, webContents, TabLaunchType.FROM_RECENT_TABS);
     }
 
     @Override
@@ -739,7 +741,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         // If there are no pending closures in the rewound list,
         // then try to restore the tab from the native tab restore service.
-        mRecentlyClosedBridge.openMostRecentlyClosedTab(this);
+        mRecentlyClosedBridge.openMostRecentlyClosedEntry(this);
         // If there is only one tab, select it.
         if (getCount() == 1) setIndex(0, TabSelectionType.FROM_NEW, false);
     }

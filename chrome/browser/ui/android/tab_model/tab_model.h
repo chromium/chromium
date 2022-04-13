@@ -98,6 +98,10 @@ class TabModel {
     FROM_APP_WIDGET,
     // Open from the long press context menu item 'Open in Incognito Tab'.
     FROM_LONGPRESS_INCOGNITO,
+    // Opened in background from Recent Tabs. This is a non-link launch with no
+    // parent/child relationship. The tab is added to the end of the TabModel.
+    // This does not include opening in the current tab.
+    FROM_RECENT_TABS,
     // Must be last.
     SIZE
   };

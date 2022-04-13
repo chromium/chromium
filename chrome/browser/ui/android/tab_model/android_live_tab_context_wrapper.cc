@@ -77,6 +77,13 @@ AndroidLiveTabContextRestoreWrapper::TabGroup&
 AndroidLiveTabContextRestoreWrapper::TabGroup::operator=(
     AndroidLiveTabContextRestoreWrapper::TabGroup&&) = default;
 
+void AndroidLiveTabContextRestoreWrapper::SetVisualDataForGroup(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  // This is recorded in AddRestoredTab calls instead. This information is
+  // available to the caller to use as needed via GetTabGroups().
+}
+
 sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     int tab_index,

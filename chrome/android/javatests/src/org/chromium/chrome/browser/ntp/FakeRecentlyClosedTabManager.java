@@ -16,12 +16,12 @@ import java.util.List;
  */
 public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     @Nullable
-    private Runnable mTabsUpdatedRunnable;
+    private Runnable mEntriesUpdatedRunnable;
     private List<RecentlyClosedTab> mTabs = new ArrayList<>();
 
     @Override
-    public void setTabsUpdatedRunnable(@Nullable Runnable runnable) {
-        mTabsUpdatedRunnable = runnable;
+    public void setEntriesUpdatedRunnable(@Nullable Runnable runnable) {
+        mEntriesUpdatedRunnable = runnable;
     }
 
     @Override
@@ -49,12 +49,17 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     }
 
     @Override
-    public void openMostRecentlyClosedTab(TabModel tabModel) {}
+    public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
+        return false;
+    }
+
+    @Override
+    public void openMostRecentlyClosedEntry(TabModel tabModel) {}
 
     @Override
     public void clearRecentlyClosedEntries() {
         mTabs.clear();
-        if (mTabsUpdatedRunnable != null) mTabsUpdatedRunnable.run();
+        if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
     }
 
     @Override
@@ -62,6 +67,6 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
 
     public void setRecentlyClosedTabs(List<RecentlyClosedTab> tabs) {
         mTabs = new ArrayList<>(tabs);
-        if (mTabsUpdatedRunnable != null) mTabsUpdatedRunnable.run();
+        if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
     }
 }
