@@ -33,6 +33,9 @@ TARGET_DEVICES = {
         'system_health.common_mobile': 3,
         'system_health.memory_mobile': 3,
         'startup.mobile': 10,
+        'speedometer2': {
+            'Speedometer2': 10,
+        },
     },
     'android-go-perf': {
         'system_health.common_mobile': {
@@ -41,6 +44,11 @@ TARGET_DEVICES = {
             # cputimeToFirstContentfulPaint
             'load:search:google:2018': 10
         }
+    },
+    'android-pixel4-perf': {
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
     },
     'android-pixel4a_power-perf': {
         'power.mobile': {
@@ -57,7 +65,10 @@ TARGET_DEVICES = {
             'browse:social:tumblr_infinite_scroll:2018': 10,
             'long_running:tools:gmail-background': 10,
             'browse:media:youtubetv:2019': 10
-        }
+        },
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
     },
     'win-10-perf': {
         'system_health.common_desktop': {
@@ -65,7 +76,10 @@ TARGET_DEVICES = {
             'browse:media:tumblr:2018': 10,
             'browse:social:tumblr_infinite_scroll:2018': 10,
             'load:search:google:2018': 10,
-        }
+        },
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
     },
     'linux-perf-calibration': {
         'speedometer2': {
