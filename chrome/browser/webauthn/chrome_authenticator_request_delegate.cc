@@ -69,8 +69,8 @@
 #include "device/fido/win/authenticator.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/webauthn_request_registrar.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -374,16 +374,17 @@ ChromeWebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 content::WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
 ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   aura::Window* window =
       render_frame_host->GetNativeView()->GetToplevelWindow();
-  return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
+  return chromeos::webauthn::WebAuthnRequestRegistrar::Get()
+      ->GetRegisterCallback(window);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // ---------------------------------------------------------------------
 // ChromeAuthenticatorRequestDelegate

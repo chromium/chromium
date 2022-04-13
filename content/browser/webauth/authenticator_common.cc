@@ -67,7 +67,7 @@
 #include "device/fido/mac/credential_metadata.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
 #endif
 
@@ -435,7 +435,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ignore the ChromeOS u2fd virtual U2F HID device for WebAuthn requests so
   // that it doesn't collide with the ChromeOS platform authenticator, also
   // implemented in u2fd.
@@ -447,7 +447,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
         GetWebAuthenticationDelegate()->GetGenerateRequestIdCallback(
             render_frame_host));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return discovery_factory;
 }
@@ -546,7 +546,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
   request_delegate_->ConfigureCable(caller_origin_,
                                     device::FidoRequestType::kGetAssertion,
                                     cable_pairings, discovery_factory());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *ctap_get_assertion_request_);
 #endif
@@ -1175,7 +1175,7 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
                                      std::move(uma_decorated_callback));
 #elif BUILDFLAG(IS_WIN)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
 #else
   std::move(uma_decorated_callback).Run(false);

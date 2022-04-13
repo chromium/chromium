@@ -2179,6 +2179,7 @@ component("ash") {
     "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors:sensors",
     "//chromeos/components/sensors/mojom",
+    "//chromeos/components/webauthn",
     "//chromeos/crosapi/cpp",
     "//chromeos/dbus",
     "//chromeos/dbus/audio",

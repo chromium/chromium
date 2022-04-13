@@ -40,11 +40,11 @@ extern const base::Feature kWebAuthCableExtensionAnywhere;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableDisco;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCrosPlatformAuthenticator;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kU2fPermissionPrompt;

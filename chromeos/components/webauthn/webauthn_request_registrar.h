@@ -1,24 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WEBAUTHN_REQUEST_REGISTRAR_H_
-#define ASH_PUBLIC_CPP_WEBAUTHN_REQUEST_REGISTRAR_H_
+#ifndef CHROMEOS_COMPONENTS_WEBAUTHN_WEBAUTHN_REQUEST_REGISTRAR_H_
+#define CHROMEOS_COMPONENTS_WEBAUTHN_WEBAUTHN_REQUEST_REGISTRAR_H_
 
 #include <stdint.h>
 #include <string>
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 
 namespace aura {
 class Window;
 }
 
-namespace ash {
+namespace chromeos {
+namespace webauthn {
 
 // Provides service to associate webauthn request ids with windows.
-class ASH_PUBLIC_EXPORT WebAuthnRequestRegistrar {
+class COMPONENT_EXPORT(CHROMEOS_WEBAUTHN) WebAuthnRequestRegistrar {
  public:
   // Returns the singleton instance.
   static WebAuthnRequestRegistrar* Get();
@@ -38,6 +39,7 @@ class ASH_PUBLIC_EXPORT WebAuthnRequestRegistrar {
   virtual ~WebAuthnRequestRegistrar();
 };
 
-}  // namespace ash
+}  // namespace webauthn
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_WEBAUTHN_REQUEST_REGISTRAR_H_
+#endif  // CHROMEOS_COMPONENTS_WEBAUTHN_WEBAUTHN_REQUEST_REGISTRAR_H_

@@ -264,7 +264,7 @@ TEST_F(FidoMakeCredentialHandlerTest, CrossPlatformAttachment) {
   // kCloudAssistedBluetoothLowEnergy not yet supported for MakeCredential.
   ExpectAllowedTransportsForRequestAre(request_handler.get(), {
     FidoTransportProtocol::kNearFieldCommunication,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // CrOS tries to instantiate a platform authenticator for cross-platform
         // requests if enabled via enterprise policy.
         FidoTransportProtocol::kInternal,
@@ -533,7 +533,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation(
       test_data::kTestGetInfoResponsePlatformDevice);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // CrOS will dispatch to a platform authenticator and one can be
   // instantiated in such cases if enabled via enterprise policy.
   device->ExpectCtap2CommandAndRespondWithError(
@@ -543,7 +543,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
   discovery()->AddDevice(std::move(device));
 
   task_environment_.FastForwardUntilNoTasksRemain();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(callback().was_called());
 #else
   EXPECT_FALSE(callback().was_called());

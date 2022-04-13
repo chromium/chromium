@@ -7,10 +7,10 @@
 #include <string>
 
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
-#include "ash/public/cpp/webauthn_request_registrar.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -93,7 +93,8 @@ void UserAuthenticationServiceProvider::ShowAuthDialogV2(
   }
 
   aura::Window* source_window =
-      WebAuthnRequestRegistrar::Get()->GetWindowForRequestId(request_id);
+      chromeos::webauthn::WebAuthnRequestRegistrar::Get()
+          ->GetWindowForRequestId(request_id);
   if (!source_window) {
     LOG(ERROR) << "Cannot find window with the given request id";
     OnAuthFlowComplete(method_call, std::move(response_sender), false);
@@ -133,8 +134,8 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
   }
 
   aura::Window* source_window =
-      WebAuthnRequestRegistrar::Get()->GetWindowForRequestId(
-          base::NumberToString(request_id));
+      chromeos::webauthn::WebAuthnRequestRegistrar::Get()
+          ->GetWindowForRequestId(base::NumberToString(request_id));
   if (!source_window) {
     LOG(ERROR) << "Cannot find window with the given request id";
     OnAuthFlowComplete(method_call, std::move(response_sender), false);

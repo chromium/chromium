@@ -98,7 +98,7 @@ WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
 WebAuthenticationDelegate::GetGenerateRequestIdCallback(
     RenderFrameHost* render_frame_host) {

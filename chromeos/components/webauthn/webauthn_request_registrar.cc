@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/webauthn_request_registrar.h"
+#include "chromeos/components/webauthn/webauthn_request_registrar.h"
 
 #include "base/check_op.h"
 
-namespace ash {
+namespace chromeos {
+namespace webauthn {
 
 namespace {
 
@@ -29,4 +30,5 @@ WebAuthnRequestRegistrar::~WebAuthnRequestRegistrar() {
   g_instance = nullptr;
 }
 
-}  // namespace ash
+}  // namespace webauthn
+}  // namespace chromeos

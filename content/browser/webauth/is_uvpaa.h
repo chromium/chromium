@@ -29,7 +29,7 @@ CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
 #elif BUILDFLAG(IS_WIN)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback);
 #endif

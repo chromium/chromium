@@ -31,7 +31,7 @@
 #include "third_party/microsoft_webauthn/webauthn.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
 #endif
 
@@ -135,7 +135,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kSuccess;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow dispatch of UP-only cross-platform requests to the platform
   // authenticator to ensure backwards compatibility with the legacy
   // DeviceSecondFactorAuthentication enterprise policy.
@@ -382,7 +382,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   base::flat_set<FidoTransportProtocol> allowed_transports =
       GetTransportsAllowedByRP(options.authenticator_attachment);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Attempt to instantiate the ChromeOS platform authenticator for
   // power-button-only requests for compatibility with the legacy
   // DeviceSecondFactorAuthentication policy, if that policy is enabled.
@@ -933,7 +933,7 @@ void MakeCredentialRequestHandler::DispatchRequestWithToken(
 void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     CtapMakeCredentialRequest* request,
     const FidoAuthenticator* authenticator) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (authenticator->AuthenticatorTransport() ==
           FidoTransportProtocol::kInternal &&
       options_.authenticator_attachment ==

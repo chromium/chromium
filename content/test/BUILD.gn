@@ -2841,7 +2841,7 @@ test("content_unittests") {
       "//services/device/hid:test_support",
       "//services/device/public/cpp/hid:test_support",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [
         "//chromeos/dbus/tpm_manager",
         "//chromeos/dbus/u2f",

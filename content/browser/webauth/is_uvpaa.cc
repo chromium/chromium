@@ -21,7 +21,7 @@
 #include "device/fido/win/authenticator.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
 #endif
 
@@ -53,7 +53,7 @@ void IsUVPlatformAuthenticatorAvailable(
           std::move(callback));
 }
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   if (!base::FeatureList::IsEnabled(

@@ -69,6 +69,12 @@ void FidoChromeOSDiscovery::CheckUVPlatformAuthenticatorAvailable(
 
 void FidoChromeOSDiscovery::MaybeAddAuthenticator(bool power_button_enabled,
                                                   bool uv_available) {
+// TODO(http://crbug/1269528): Activate UV platform authenticator on lacros only
+// after the feature is complete.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  uv_available = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (require_power_button_mode_) {
     uv_available = false;
   }

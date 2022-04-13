@@ -32,11 +32,11 @@ extern const base::Feature kWebAuthCableExtensionAnywhere{
     "WebAuthenticationCableExtensionAnywhere",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kWebAuthCrosPlatformAuthenticator{
     "WebAuthenticationCrosPlatformAuthenticator",
     base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const base::Feature kU2fPermissionPrompt{
     "U2fPermissionPrompt", base::FEATURE_ENABLED_BY_DEFAULT};

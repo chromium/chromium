@@ -13,6 +13,8 @@ source_set("dbus") {
     "//chromeos/dbus/init",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/u2f",
     "//dbus",
     "//device/bluetooth",
   ]

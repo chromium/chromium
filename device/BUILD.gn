@@ -416,7 +416,7 @@ test("device_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/dbus/u2f" ]
   }
 }

@@ -8,6 +8,8 @@
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -28,6 +30,10 @@ void LacrosInitializeDBus() {
   InitializeDBusClient<PermissionBrokerClient>(bus);
 
   InitializeDBusClient<MissiveClient>(bus);
+
+  InitializeDBusClient<TpmManagerClient>(bus);
+
+  InitializeDBusClient<U2FClient>(bus);
 }
 
 void LacrosInitializeFeatureListDependentDBus() {

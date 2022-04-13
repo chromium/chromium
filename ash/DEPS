@@ -61,6 +61,7 @@ include_rules = [
   "+chromeos/components/hps",
   "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
+  "+chromeos/components/webauthn",
   "+chromeos/constants",
   # crosapi is an API to support lacros.
   "+chromeos/crosapi",

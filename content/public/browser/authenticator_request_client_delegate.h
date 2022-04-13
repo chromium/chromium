@@ -136,7 +136,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback that should generate and return a unique request id.
   using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
 
@@ -147,7 +147,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // asking ChromeOS platform to cancel the request.
   virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
       RenderFrameHost* render_frame_host);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // GetIntentSender returns a Java object that implements

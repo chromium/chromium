@@ -20,7 +20,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/u2f/u2f_client.h"
+#include "chromeos/dbus/u2f/u2f_client.h"  // nogncheck
 #endif
 
 namespace {

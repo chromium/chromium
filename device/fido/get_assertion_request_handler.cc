@@ -40,7 +40,7 @@
 #include "device/fido/win/type_conversions.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
 #endif
 
@@ -435,7 +435,7 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     creds = touch_id_authenticator->GetResidentCredentialsForRequest(request_);
   }
   OnHavePlatformCredentialStatus(std::move(creds), has_credential);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
       request_, base::BindOnce(
                     &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,

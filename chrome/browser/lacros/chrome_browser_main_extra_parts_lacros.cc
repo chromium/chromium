@@ -26,6 +26,7 @@
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
+#include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -147,6 +148,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   force_installed_tracker_ = std::make_unique<ForceInstalledTrackerLacros>();
   force_installed_tracker_->Start();
+
+  webauthn_request_registrar_lacros_ =
+      std::make_unique<WebAuthnRequestRegistrarLacros>();
 
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 }

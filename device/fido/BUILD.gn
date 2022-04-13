@@ -258,7 +258,7 @@ component("fido") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
