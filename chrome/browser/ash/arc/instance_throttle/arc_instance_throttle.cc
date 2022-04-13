@@ -38,6 +38,25 @@ void OnSetArcVmCpuRestriction(
     LOG(ERROR) << "SetVmCpuRestriction for ARCVM failed";
 }
 
+void SetArcVmCpuRestrictionImpl(
+    vm_tools::concierge::SetVmCpuRestrictionRequest request,
+    bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR)
+        << "vm_concierge is not available. ArcInstanceThrottle won't work.";
+    return;
+  }
+
+  auto* const client = chromeos::ConciergeClient::Get();
+  if (!client) {
+    LOG(ERROR) << "ConciergeClient is not available";
+    return;
+  }
+
+  client->SetVmCpuRestriction(request,
+                              base::BindOnce(&OnSetArcVmCpuRestriction));
+}
+
 void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
                             bool use_quota) {
   auto* const client = chromeos::ConciergeClient::Get();
@@ -62,8 +81,12 @@ void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
       break;
   }
 
-  client->SetVmCpuRestriction(request,
-                              base::BindOnce(&OnSetArcVmCpuRestriction));
+  // Unlike the ARC container code where the counterpart (session_manager) is
+  // always available, this ARCVM function might be called before vm_concierge
+  // is ready. To handle that case, send the D-Bus message via the callback
+  // passed to the WaitForServiceToBeAvailable function.
+  client->WaitForServiceToBeAvailable(
+      base::BindOnce(&SetArcVmCpuRestrictionImpl, std::move(request)));
 }
 
 void SetArcCpuRestrictionCallback(
@@ -176,6 +199,10 @@ ArcInstanceThrottle* ArcInstanceThrottle::GetForBrowserContextForTesting(
   return ArcInstanceThrottleFactory::GetForBrowserContextForTesting(context);
 }
 
+// Note: This function (especially the AddObserver and StartObservers part) must
+// be called right after Chrome browser starts, without waiting for vm_concierge
+// to be ready. Otherwise, some of the observers might miss events and fail to
+// throttle the instance correctly.
 ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
                                          ArcBridgeService* bridge)
     : ThrottleService(context),
