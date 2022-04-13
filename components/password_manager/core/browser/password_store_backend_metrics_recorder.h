@@ -18,7 +18,7 @@ using ErrorFromPasswordStoreOrAndroidBackend =
     absl::variant<PasswordStoreBackendError, AndroidBackendError>;
 
 using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
-using ClassInfix = base::StrongAlias<struct ClassNameTag, std::string>;
+using BackendInfix = base::StrongAlias<struct BackendNameTag, std::string>;
 
 // Records metrics for an asynchronous job or a series of jobs. The job is
 // expected to have started when the PasswordStoreBackendMetricsRecorder
@@ -27,7 +27,7 @@ using ClassInfix = base::StrongAlias<struct ClassNameTag, std::string>;
 class PasswordStoreBackendMetricsRecorder {
  public:
   PasswordStoreBackendMetricsRecorder();
-  explicit PasswordStoreBackendMetricsRecorder(ClassInfix class_name,
+  explicit PasswordStoreBackendMetricsRecorder(BackendInfix backend_name,
                                                MetricInfix metric_name);
   PasswordStoreBackendMetricsRecorder(PasswordStoreBackendMetricsRecorder&&);
   PasswordStoreBackendMetricsRecorder& operator=(
@@ -35,20 +35,22 @@ class PasswordStoreBackendMetricsRecorder {
   ~PasswordStoreBackendMetricsRecorder();
 
   // Records the following metrics:
-  // - "PasswordManager.<class_infix_>.<metric_infix_>.Latency"
-  // - "PasswordManager.<class_infix_>.<metric_infix_>.Success"
-  // When |error| is specified, the following metrcis are recorded in
-  // addition:
-  // - "PasswordManager.<class_infix_>.APIError"
-  // - "PasswordManager.<class_infix_>.ErrorCode"
-  // - "PasswordManager.<class_infix_>.<metric_infix_>.APIError"
-  // - "PasswordManager.<class_infix_>.<metric_infix_>.ErrorCode"
+  // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>.Latency"
+  // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>.Success"
+  // - "PasswordManager.PasswordStoreBackend.<metric_infix_>.Latency"
+  // - "PasswordManager.PasswordStoreBackend.<metric_infix_>.Success"
+  // In case of Android backend, when |error| is specified, the following
+  // metrcis are recorded in addition:
+  // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
+  // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
+  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.APIError"
+  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.ErrorCode"
   void RecordMetrics(
       bool success,
       absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const;
 
  private:
-  ClassInfix class_infix_;
+  BackendInfix backend_infix_;
   MetricInfix metric_infix_;
   base::Time start_ = base::Time::Now();
 };

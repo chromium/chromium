@@ -2076,78 +2076,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.Latency"
-    units="ms" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Real-time duration of the asynchronous call to {Function} the PasswordStore
-    Android backend. Recorded when the asynchronous job has returned.
-  </summary>
-  <token key="Function">
-    <variant name="AddLoginAsync" summary="add a login to"/>
-    <variant name="ClearAllLocalPasswords"
-        summary="clear all local passwords from"/>
-    <variant name="DisableAutoSignInForOriginsAsync"
-        summary="disable autosignin for matching logins in"/>
-    <variant name="FillMatchingLoginsAsync"
-        summary="fill matching logins from"/>
-    <variant name="GetAllLoginsAsync" summary="retrieve all logins from"/>
-    <variant name="GetAutofillableLoginsAsync"
-        summary="retrieve autofillable logins from"/>
-    <variant name="GetLoginsAsync"
-        summary="retrieve logins filtered by signon realm from"/>
-    <variant name="RemoveLoginAsync" summary="remove a login from"/>
-    <variant name="RemoveLoginsByURLAndTimeAsync"
-        summary="remove logins filtered by URL and creation time from"/>
-    <variant name="RemoveLoginsCreatedBetweenAsync"
-        summary="remove logins filtered by creation time from"/>
-    <variant name="UpdateLoginAsync" summary="update a login in"/>
-  </token>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.Success"
-    enum="BooleanSuccess" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records whether {Function} the PasswordStore Android backend. Recorded when
-    the asynchronous job has returned. False is emitted if an error occurs;
-    otherwise true is emitted.
-  </summary>
-  <token key="Function">
-    <variant name="AddLoginAsync"
-        summary="AddLoginAsync() succeeded to add a login to"/>
-    <variant name="ClearAllLocalPasswords"
-        summary="ClearAllLocalPasswords() successfully obtained a list of all
-                 logins from"/>
-    <variant name="DisableAutoSignInForOriginsAsync"
-        summary="DisableAutoSignInForOriginsAsync() succeeded in disabling
-                 autosignin for matching logins in"/>
-    <variant name="FillMatchingLoginsAsync"
-        summary="succeeded in filling matching logins from"/>
-    <variant name="GetAllLoginsAsync"
-        summary="GetAllLoginsAsync() succeeded in retrieving all logins from"/>
-    <variant name="GetAutofillableLoginsAsync"
-        summary="GetAutofillableLoginsAsync() succeeded in retrieving
-                 autofillable logins from"/>
-    <variant name="GetLoginsAsync"
-        summary="succeeded in retrieving logins filtered by signon realm from"/>
-    <variant name="RemoveLoginAsync"
-        summary="RemoveLoginAsync() succeeded in removing a login from"/>
-    <variant name="RemoveLoginsByURLAndTimeAsync"
-        summary="RemoveLoginsByURLAndTimeAsync() succeeded in removing logins
-                 filtered by URL and creation time from"/>
-    <variant name="RemoveLoginsCreatedBetweenAsync"
-        summary="RemoveLoginsCreatedBetweenAsync() succeeded in removing
-                 logins filtered by creation time from"/>
-    <variant name="UpdateLoginAsync"
-        summary="UpdateLoginAsync() succeeded in updating a login in"/>
-  </token>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
@@ -2275,6 +2203,86 @@ chromium-metrics-reviews@google.com.
         summary=", divided by the total number of password store changes, as
                  a percentage rounded up to the next integer. If the
                  denominator is zero, no value is emitted."/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStore{Backend}{Function}.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to {Function} the PasswordStore
+    {Backend}. Recorded when the asynchronous job has returned.
+  </summary>
+  <token key="Backend">
+    <variant name="AndroidBackend" summary="Android backend"/>
+    <variant name="Backend" summary="backend"/>
+    <variant name="BuiltInBackend" summary="built-in backend"/>
+  </token>
+  <token key="Function">
+    <variant name=".AddLoginAsync" summary="add a login to"/>
+    <variant name=".ClearAllLocalPasswords"
+        summary="clear all local passwords from"/>
+    <variant name=".DisableAutoSignInForOriginsAsync"
+        summary="disable autosignin for matching logins in"/>
+    <variant name=".FillMatchingLoginsAsync"
+        summary="fill matching logins from"/>
+    <variant name=".GetAllLoginsAsync" summary="retrieve all logins from"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="retrieve autofillable logins from"/>
+    <variant name=".GetLoginsAsync"
+        summary="retrieve logins filtered by signon realm from"/>
+    <variant name=".RemoveLoginAsync" summary="remove a login from"/>
+    <variant name=".RemoveLoginsByURLAndTimeAsync"
+        summary="remove logins filtered by URL and creation time from"/>
+    <variant name=".RemoveLoginsCreatedBetweenAsync"
+        summary="remove logins filtered by creation time from"/>
+    <variant name=".UpdateLoginAsync" summary="update a login in"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStore{Backend}{Function}.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether {Function} the PasswordStore {Backend}. Recorded when the
+    asynchronous job has returned. False is emitted if an error occurs;
+    otherwise true is emitted.
+  </summary>
+  <token key="Backend">
+    <variant name="AndroidBackend" summary="Android backend"/>
+    <variant name="Backend" summary="backend"/>
+    <variant name="BuiltInBackend" summary="built-in backend"/>
+  </token>
+  <token key="Function">
+    <variant name=".AddLoginAsync"
+        summary="AddLoginAsync() succeeded to add a login to"/>
+    <variant name=".ClearAllLocalPasswords"
+        summary="ClearAllLocalPasswords() successfully obtained a list of all
+                 logins from"/>
+    <variant name=".DisableAutoSignInForOriginsAsync"
+        summary="DisableAutoSignInForOriginsAsync() succeeded in disabling
+                 autosignin for matching logins in"/>
+    <variant name=".FillMatchingLoginsAsync"
+        summary="succeeded in filling matching logins from"/>
+    <variant name=".GetAllLoginsAsync"
+        summary="GetAllLoginsAsync() succeeded in retrieving all logins from"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="GetAutofillableLoginsAsync() succeeded in retrieving
+                 autofillable logins from"/>
+    <variant name=".GetLoginsAsync"
+        summary="succeeded in retrieving logins filtered by signon realm from"/>
+    <variant name=".RemoveLoginAsync"
+        summary="RemoveLoginAsync() succeeded in removing a login from"/>
+    <variant name=".RemoveLoginsByURLAndTimeAsync"
+        summary="RemoveLoginsByURLAndTimeAsync() succeeded in removing logins
+                 filtered by URL and creation time from"/>
+    <variant name=".RemoveLoginsCreatedBetweenAsync"
+        summary="RemoveLoginsCreatedBetweenAsync() succeeded in removing
+                 logins filtered by creation time from"/>
+    <variant name=".UpdateLoginAsync"
+        summary="UpdateLoginAsync() succeeded in updating a login in"/>
   </token>
 </histogram>
 

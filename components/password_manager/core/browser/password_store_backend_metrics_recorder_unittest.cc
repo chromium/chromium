@@ -34,22 +34,36 @@ class PasswordStoreBackendMetricsRecorderTest : public testing::Test {
 };
 
 TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics) {
-  const char kDurationMetric[] = "PasswordManager.SomeClass.MethodName.Latency";
-  const char kSuccessMetric[] = "PasswordManager.SomeClass.MethodName.Success";
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreSomeBackend.MethodName.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreSomeBackend.MethodName.Success";
+  const char kDurationOverallMetric[] =
+      "PasswordManager.PasswordStoreBackend.MethodName.Latency";
+  const char kSuccessOverallMetric[] =
+      "PasswordManager.PasswordStoreBackend.MethodName.Success";
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
-      PasswordStoreBackendMetricsRecorder(ClassInfix("SomeClass"),
+      PasswordStoreBackendMetricsRecorder(BackendInfix("SomeBackend"),
                                           MetricInfix("MethodName"));
 
   AdvanceClock(kLatencyDelta);
 
   metrics_recorder.RecordMetrics(/*success=*/true, /*error=*/absl::nullopt);
 
+  // Checking records in the backend-specific histogram
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
   histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
   histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+
+  // Checking records in the overall histogram
+  histogram_tester.ExpectTotalCount(kDurationOverallMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationOverallMetric, kLatencyDelta,
+                                         1);
+  histogram_tester.ExpectTotalCount(kSuccessOverallMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessOverallMetric, true, 1);
 }
 
 }  // namespace password_manager

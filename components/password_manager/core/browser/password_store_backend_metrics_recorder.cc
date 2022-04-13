@@ -10,9 +10,9 @@ PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder() =
     default;
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder(
-    ClassInfix class_infix,
+    BackendInfix backend_infix,
     MetricInfix metric_infix)
-    : class_infix_(std::move(class_infix)),
+    : backend_infix_(std::move(backend_infix)),
       metric_infix_(std::move(metric_infix)) {}
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder(
@@ -29,12 +29,18 @@ void PasswordStoreBackendMetricsRecorder::RecordMetrics(
     bool success,
     absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const {
   auto BuildMetricName = [this](base::StringPiece suffix) {
+    return base::StrCat({"PasswordManager.PasswordStore", *backend_infix_, ".",
+                         *metric_infix_, ".", suffix});
+  };
+  auto BuildOverallMetricName = [this](base::StringPiece suffix) {
     return base::StrCat(
-        {"PasswordManager.", *class_infix_, ".", *metric_infix_, ".", suffix});
+        {"PasswordManager.PasswordStoreBackend.", *metric_infix_, ".", suffix});
   };
   base::TimeDelta duration = base::Time::Now() - start_;
   base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
   base::UmaHistogramBoolean(BuildMetricName("Success"), success);
+  base::UmaHistogramMediumTimes(BuildOverallMetricName("Latency"), duration);
+  base::UmaHistogramBoolean(BuildOverallMetricName("Success"), success);
   if (!error.has_value())
     return;
 

@@ -60,9 +60,8 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
-          MetricInfix("GetAllLoginsAsync"));
+      PasswordStoreBackendMetricsRecorder(BackendInfix("BuiltInBackend"),
+                                          MetricInfix("GetAllLoginsAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::GetAllLogins,
@@ -77,7 +76,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
+          BackendInfix("BuiltInBackend"),
           MetricInfix("GetAutofillableLoginsAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -101,7 +100,7 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
+          BackendInfix("BuiltInBackend"),
           MetricInfix("FillMatchingLoginsAsync"));
   if (forms.empty()) {
     std::move(callback).Run({});
@@ -123,9 +122,8 @@ void PasswordStoreBuiltInBackend::AddLoginAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
-          MetricInfix("AddLoginAsync"));
+      PasswordStoreBackendMetricsRecorder(BackendInfix("BuiltInBackend"),
+                                          MetricInfix("AddLoginAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::AddLogin,
@@ -140,9 +138,8 @@ void PasswordStoreBuiltInBackend::UpdateLoginAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
-          MetricInfix("UpdateLoginAsync"));
+      PasswordStoreBackendMetricsRecorder(BackendInfix("BuiltInBackend"),
+                                          MetricInfix("UpdateLoginAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::UpdateLogin,
@@ -157,9 +154,8 @@ void PasswordStoreBuiltInBackend::RemoveLoginAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
-          MetricInfix("RemoveLoginAsync"));
+      PasswordStoreBackendMetricsRecorder(BackendInfix("BuiltInBackend"),
+                                          MetricInfix("RemoveLoginAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -177,7 +173,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
+          BackendInfix("BuiltInBackend"),
           MetricInfix("RemoveLoginsCreatedBetweenAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -198,7 +194,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsByURLAndTimeAsync(
   DCHECK(helper_);
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreBuiltInBackend"),
+          BackendInfix("BuiltInBackend"),
           MetricInfix("RemoveLoginsByURLAndTimeAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,

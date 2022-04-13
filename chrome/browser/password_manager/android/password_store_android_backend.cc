@@ -428,7 +428,7 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
             std::move(completion).Run();
           },
           PasswordStoreBackendMetricsRecorder(
-              ClassInfix("PasswordStoreAndroidBackend"),
+              BackendInfix("AndroidBackend"),
               MetricInfix("DisableAutoSignInForOriginsAsync")),
           std::move(completion));
 
@@ -492,7 +492,7 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
       },
       weak_ptr_factory_.GetWeakPtr(),
       PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreAndroidBackend"),
+          BackendInfix("AndroidBackend"),
           MetricInfix("ClearAllLocalPasswords")));
 
   GetAllLoginsForAccount(PasswordStoreOperationTarget::kLocalStorage,
@@ -555,10 +555,10 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               MetricInfix metric_infix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
-      job_id, JobReturnHandler(std::move(callback),
-                               PasswordStoreBackendMetricsRecorder(
-                                   ClassInfix("PasswordStoreAndroidBackend"),
-                                   std::move(metric_infix))));
+      job_id,
+      JobReturnHandler(std::move(callback), PasswordStoreBackendMetricsRecorder(
+                                                BackendInfix("AndroidBackend"),
+                                                std::move(metric_infix))));
 }
 
 PasswordStoreAndroidBackend::JobReturnHandler
@@ -635,8 +635,8 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
         std::move(callback).Run(
             GetLoginsOrEmptyListOnFailure(std::move(results)));
       },
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreAndroidBackend"), metric_infix),
+      PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
+                                          metric_infix),
       std::move(callback));
 }
 
@@ -658,8 +658,8 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
                                        /*error=*/absl::nullopt);
         std::move(callback).Run(std::move(results));
       },
-      PasswordStoreBackendMetricsRecorder(
-          ClassInfix("PasswordStoreAndroidBackend"), metric_infix),
+      PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
+                                          metric_infix),
       std::move(callback));
 }
 
