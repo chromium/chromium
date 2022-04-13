@@ -3771,7 +3771,7 @@
 
     'gpu_fyi_tests': {
       'gn_args': 'is_gpu_fyi_bot=true',
-      'mixins': ['gpu_tests', 'internal_gles_conform_tests'],
+      'mixins': ['gpu_tests'],
     },
 
     'gpu_tests': {
@@ -3793,10 +3793,6 @@
 
     'include_unwind_tables': {
       'gn_args': 'exclude_unwind_tables=false',
-    },
-
-    'internal_gles_conform_tests': {
-      'gn_args': 'internal_gles2_conform_tests=true',
     },
 
     'invert_fieldtrials': {
