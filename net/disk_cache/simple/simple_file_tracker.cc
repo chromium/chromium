@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
-#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 
@@ -82,7 +81,6 @@ void SimpleFileTracker::Register(const SimpleSynchronousEntry* owner,
 }
 
 SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
-    BackendFileOperations* file_operations,
     const SimpleSynchronousEntry* owner,
     SubFile subfile) {
   std::vector<std::unique_ptr<base::File>> files_to_close;
@@ -100,7 +98,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
     // fd limit.  CloseFilesIfTooManyOpen will not close anything in
     // |*owners_files| since it's already in the the TF_ACQUIRED state.
     if (owners_files->files[file_index] == nullptr) {
-      ReopenFile(file_operations, owners_files, subfile);
+      ReopenFile(owners_files, subfile);
       CloseFilesIfTooManyOpen(&files_to_close);
     }
 
@@ -283,8 +281,7 @@ void SimpleFileTracker::CloseFilesIfTooManyOpen(
   }
 }
 
-void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
-                                   TrackedFiles* owners_files,
+void SimpleFileTracker::ReopenFile(TrackedFiles* owners_files,
                                    SubFile subfile) {
   int file_index = static_cast<int>(subfile);
   DCHECK(owners_files->files[file_index] == nullptr);
@@ -293,7 +290,7 @@ void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
   base::FilePath file_path =
       owners_files->owner->GetFilenameForSubfile(subfile);
   owners_files->files[file_index] =
-      std::make_unique<base::File>(file_operations->OpenFile(file_path, flags));
+      std::make_unique<base::File>(file_path, flags);
   if (owners_files->files[file_index]->IsValid()) {
     RecordFileDescripterLimiterOp(FD_LIMIT_REOPEN_FILE);
 

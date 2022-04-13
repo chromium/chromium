@@ -558,12 +558,9 @@ struct NET_EXPORT RangeResult {
 // available.
 constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
 
-class UnboundBackendFileOperations;
-
 // An interface to provide file operations so that the HTTP cache works on
 // a sandboxed process.
 // All the paths must be absolute paths.
-// A BackendFileOperations object is bound to a sequence.
 class BackendFileOperations {
  public:
   struct FileEnumerationEntry {
@@ -606,10 +603,6 @@ class BackendFileOperations {
   // Returns true if the given path exists on the local filesystem.
   virtual bool PathExists(const base::FilePath& path) = 0;
 
-  // Returns true if the given path exists on the local filesystem and it's a
-  // directory.
-  virtual bool DirectoryExists(const base::FilePath& path) = 0;
-
   // Opens a file with the given path and flags. Returns the opened file.
   virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
 
@@ -629,22 +622,6 @@ class BackendFileOperations {
   // directory.
   virtual std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) = 0;
-
-  // Unbind this object from the sequence, and returns an
-  // UnboundBackendFileOperations which can be bound to any sequence. Once
-  // this method is called, no methods (except for the destructor) on this
-  // object must not be called.
-  virtual std::unique_ptr<UnboundBackendFileOperations> Unbind() = 0;
-};
-
-// BackendFileOperations which is not yet bound to a sequence.
-class UnboundBackendFileOperations {
- public:
-  virtual ~UnboundBackendFileOperations() = default;
-
-  // This can be called at most once.
-  virtual std::unique_ptr<BackendFileOperations> Bind(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
 };
 
 // A factory interface that creates BackendFileOperations.
@@ -654,9 +631,6 @@ class BackendFileOperationsFactory
   // Creates a BackendFileOperations which is bound to `task_runner`.
   virtual std::unique_ptr<BackendFileOperations> Create(
       scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
-
-  // Creates an "unbound" BackendFileOperations.
-  virtual std::unique_ptr<UnboundBackendFileOperations> CreateUnbound() = 0;
 
  protected:
   friend class base::RefCounted<BackendFileOperationsFactory>;
@@ -673,7 +647,6 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   // BackendFileOperations implementation:
   bool CreateDirectory(const base::FilePath& path) override;
   bool PathExists(const base::FilePath& path) override;
-  bool DirectoryExists(const base::FilePath& path) override;
   base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
   bool DeleteFile(const base::FilePath& path) override;
   bool ReplaceFile(const base::FilePath& from_path,
@@ -683,28 +656,8 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
       const base::FilePath& path) override;
   std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) override;
-  std::unique_ptr<UnboundBackendFileOperations> Unbind() override;
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-#if DCHECK_IS_ON()
-  bool bound_ = true;
-#endif
-};
-
-class NET_EXPORT TrivialFileOperationsFactory
-    : public BackendFileOperationsFactory {
- public:
-  TrivialFileOperationsFactory();
-
-  // BackendFileOperationsFactory implementation:
-  std::unique_ptr<BackendFileOperations> Create(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
-  std::unique_ptr<UnboundBackendFileOperations> CreateUnbound() override;
-
- private:
-  ~TrivialFileOperationsFactory() override;
-
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

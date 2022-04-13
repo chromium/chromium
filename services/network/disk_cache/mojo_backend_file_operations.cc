@@ -74,12 +74,6 @@ bool MojoBackendFileOperations::PathExists(const base::FilePath& path) {
   return result;
 }
 
-bool MojoBackendFileOperations::DirectoryExists(const base::FilePath& path) {
-  bool result = false;
-  remote_->DirectoryExists(path, &result);
-  return result;
-}
-
 base::File MojoBackendFileOperations::OpenFile(const base::FilePath& path,
                                                uint32_t flags) {
   base::File file;
@@ -122,24 +116,6 @@ MojoBackendFileOperations::EnumerateFiles(const base::FilePath& path) {
   mojo::PendingRemote<mojom::FileEnumerator> remote;
   remote_->EnumerateFiles(path, remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<FileEnumeratorImpl>(std::move(remote));
-}
-
-std::unique_ptr<disk_cache::UnboundBackendFileOperations>
-MojoBackendFileOperations::Unbind() {
-  return std::make_unique<UnboundMojoBackendFileOperations>(remote_.Unbind());
-}
-
-UnboundMojoBackendFileOperations::UnboundMojoBackendFileOperations(
-    mojo::PendingRemote<mojom::HttpCacheBackendFileOperations> pending_remote)
-    : pending_remote_(std::move(pending_remote)) {}
-
-UnboundMojoBackendFileOperations::~UnboundMojoBackendFileOperations() = default;
-
-std::unique_ptr<disk_cache::BackendFileOperations>
-UnboundMojoBackendFileOperations::Bind(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  return std::make_unique<MojoBackendFileOperations>(std::move(pending_remote_),
-                                                     std::move(task_runner));
 }
 
 }  // namespace network

@@ -15,6 +15,7 @@
 
 namespace base {
 class FilePath;
+class Time;
 }
 
 namespace disk_cache {
@@ -72,6 +73,11 @@ NET_EXPORT_PRIVATE int64_t GetFileSizeFromDataSize(size_t key_length,
 // Given the stream index, returns the number of the file the stream is stored
 // in.
 NET_EXPORT_PRIVATE int GetFileIndexFromStreamIndex(int stream_index);
+
+// Fills |out_time| with the time the file last modified time. Unlike the
+// functions in file.h, the time resolution is milliseconds.
+NET_EXPORT_PRIVATE bool GetMTime(const base::FilePath& path,
+                                 base::Time* out_mtime);
 
 // Deletes a file, insuring POSIX semantics. Provided that all open handles to
 // this file were opened with File::FLAG_WIN_SHARE_DELETE, it is possible to
