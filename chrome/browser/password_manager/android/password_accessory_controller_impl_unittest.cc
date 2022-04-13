@@ -178,12 +178,7 @@ std::u16string no_user_str() {
 
 std::u16string show_other_passwords_str() {
   return l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD);
-}
-
-std::u16string show_other_username_str() {
-  return l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_USERNAME);
+      IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD);
 }
 
 std::u16string manage_passwords_str() {
@@ -1058,7 +1053,8 @@ class PasswordAccessoryControllerWithTestStoreTest
   scoped_refptr<TestPasswordStore> test_store_;
 };
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherPasswords) {
+TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+       AddsShowOtherPasswordsForPasswordField) {
   test_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController();
@@ -1083,7 +1079,8 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherPasswords) {
           .Build());
 }
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherUsername) {
+TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+       AddsShowOtherPasswordsForUsernameField) {
   test_store().AddLogin(MakeSavedPassword());
   task_environment()->RunUntilIdle();
   CreateSheetController();
@@ -1101,7 +1098,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherUsername) {
       last_sheet,
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
-          .AppendFooterCommand(show_other_username_str(),
+          .AppendFooterCommand(show_other_passwords_str(),
                                autofill::AccessoryAction::USE_OTHER_PASSWORD)
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)

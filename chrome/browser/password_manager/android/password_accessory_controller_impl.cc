@@ -164,15 +164,10 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   if (all_passwords_helper_.available_credentials().has_value() &&
       IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
       all_passwords_helper_.available_credentials().value() > 0) {
-    std::u16string button_title =
-        is_password_field
-            ? l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD)
-            : l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_USERNAME);
-
-    footer_commands_to_add.push_back(FooterCommand(
-        button_title, autofill::AccessoryAction::USE_OTHER_PASSWORD));
+    footer_commands_to_add.push_back(
+        FooterCommand(l10n_util::GetStringUTF16(
+                          IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD),
+                      autofill::AccessoryAction::USE_OTHER_PASSWORD));
   }
 
   if (is_password_field &&
