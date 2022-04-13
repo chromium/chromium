@@ -104,7 +104,10 @@ class PagedAppsGridViewTestBase : public AshTestBase {
 class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
  public:
   PagedAppsGridViewTest() {
-    scoped_features_.InitAndEnableFeature(ash::features::kProductivityLauncher);
+    scoped_features_.InitWithFeatures(
+        {features::kProductivityLauncher,
+         features::kLauncherDismissButtonsOnSortNudgeAndToast},
+        {});
   }
 
   // Sorts app list with the specified order. If `wait` is true, wait for the
@@ -609,6 +612,38 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
   // The undo toast should be within the apps container's view port.
   EXPECT_TRUE(apps_container_screen_bounds.Contains(
       reorder_undo_toast_container->GetBoundsInScreen()));
+}
+
+// Test tapping on the close button to dismiss the reorder toast.
+TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+  helper->AddRecentApps(5);
+  helper->GetAppsContainerView()->ResetForShowApps();
+
+  AppsContainerView* container_view = helper->GetAppsContainerView();
+
+  // Trigger a sort to show the reorder toast.
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
+
+  EXPECT_TRUE(
+      container_view->toast_container_for_test()->GetToastButton()->HasFocus());
+  EXPECT_TRUE(container_view->toast_container_for_test()->is_toast_visible());
+  EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+
+  // Tap on the close button to remove the toast.
+  gfx::Point close_button_point = container_view->toast_container_for_test()
+                                      ->GetCloseButton()
+                                      ->GetBoundsInScreen()
+                                      .CenterPoint();
+  GetEventGenerator()->GestureTapAt(close_button_point);
+
+  // Verify that another row appears once the toast is closed.
+  EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_FALSE(container_view->toast_container_for_test()->is_toast_visible());
 }
 
 }  // namespace

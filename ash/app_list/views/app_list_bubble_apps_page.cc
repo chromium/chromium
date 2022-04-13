@@ -544,12 +544,27 @@ void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
   HandleMovingFocusToAppsGrid(column);
 }
 
-void AppListBubbleAppsPage::MoveFocusUpFromToast(int column) {
-  HandleMovingFocusToRecents(column);
+bool AppListBubbleAppsPage::MoveFocusUpFromToast(int column) {
+  return HandleMovingFocusToRecents(column);
 }
 
-void AppListBubbleAppsPage::MoveFocusDownFromToast(int column) {
-  HandleMovingFocusToAppsGrid(column);
+bool AppListBubbleAppsPage::MoveFocusDownFromToast(int column) {
+  return HandleMovingFocusToAppsGrid(column);
+}
+
+void AppListBubbleAppsPage::OnNudgeRemoved() {
+  const gfx::Rect current_grid_bounds = scrollable_apps_grid_view_->bounds();
+
+  if (needs_layout())
+    Layout();
+
+  const gfx::Rect target_grid_bounds = scrollable_apps_grid_view_->bounds();
+  const int offset = current_grid_bounds.y() - target_grid_bounds.y();
+
+  // With the nudge gone, animate the apps grid up to its new target location.
+  StartSlideInAnimation(scrollable_apps_grid_view_, offset,
+                        base::Milliseconds(300),
+                        gfx::Tween::ACCEL_40_DECEL_100_3, base::DoNothing());
 }
 
 bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
@@ -577,11 +592,11 @@ bool AppListBubbleAppsPage::HandleMovingFocusToRecents(int column) {
   return true;
 }
 
-void AppListBubbleAppsPage::HandleMovingFocusToAppsGrid(int column) {
+bool AppListBubbleAppsPage::HandleMovingFocusToAppsGrid(int column) {
   int top_level_item_count =
       scrollable_apps_grid_view_->view_model()->view_size();
   if (top_level_item_count <= 0)
-    return;
+    return false;
 
   // Attempt to focus the item at `column` in the first row, or the last item if
   // there aren't enough items. This could happen if the user's apps are in a
@@ -590,6 +605,7 @@ void AppListBubbleAppsPage::HandleMovingFocusToAppsGrid(int column) {
   AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
   DCHECK(item);
   item->RequestFocus();
+  return true;
 }
 
 ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {

@@ -37,6 +37,13 @@ namespace {
 
 class AppListBubbleAppsPageTest : public AshTestBase {
  public:
+  AppListBubbleAppsPageTest() {
+    features_.InitWithFeatures(
+        {features::kProductivityLauncher,
+         features::kLauncherDismissButtonsOnSortNudgeAndToast},
+        {});
+  }
+
   void OnReorderAnimationDone(base::OnceClosure closure,
                               bool aborted,
                               AppListReorderAnimationStatus status) {
@@ -66,7 +73,7 @@ class AppListBubbleAppsPageTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList features_{features::kProductivityLauncher};
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
@@ -392,6 +399,30 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
   EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
   EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(
       toast_container_bounds_in_scroll_view));
+}
+
+// Test clicking on close button to dismiss the reorder toast.
+TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  AppListToastContainerView* reorder_undo_toast_container =
+      helper->GetBubbleAppsPage()->toast_container_for_test();
+  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+
+  // Sort app list and expect undo toast to be shown with close button.
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
+  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->GetCloseButton());
+
+  // Click on close button to dismiss the toast.
+  LeftClickOn(reorder_undo_toast_container->GetCloseButton());
+
+  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
 }
 
 }  // namespace

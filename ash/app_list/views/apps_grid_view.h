@@ -536,6 +536,9 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   void BeginHideCurrentGhostImageView();
 
+  // Ensures layer for all app items before animations are started.
+  void PrepareItemsForBoundsAnimation();
+
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
   views::View* items_container() { return items_container_; }

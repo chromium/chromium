@@ -275,7 +275,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
       toast_container_ = scrollable_container_->AddChildView(
           std::make_unique<AppListToastContainerView>(
               app_list_nudge_controller_.get(), a11y_announcer,
-              /*delegate=*/nullptr, /*tablet_mode=*/true));
+              /*delegate=*/this, /*tablet_mode=*/true));
       toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
   } else {
@@ -699,6 +699,9 @@ void AppsContainerView::MoveFocusUpFromRecents() {
 }
 
 void AppsContainerView::MoveFocusDownFromRecents(int column) {
+  if (toast_container_ && toast_container_->HandleFocus(column))
+    return;
+
   int top_level_item_count = apps_grid_view_->view_model()->view_size();
   if (top_level_item_count <= 0)
     return;
@@ -709,6 +712,28 @@ void AppsContainerView::MoveFocusDownFromRecents(int column) {
   AppListItemView* item = apps_grid_view_->GetItemViewAt(index);
   DCHECK(item);
   item->RequestFocus();
+}
+
+bool AppsContainerView::MoveFocusUpFromToast(int column) {
+  return false;
+}
+
+bool AppsContainerView::MoveFocusDownFromToast(int column) {
+  return false;
+}
+
+void AppsContainerView::OnNudgeRemoved() {
+  const int continue_container_height =
+      continue_container_->GetPreferredSize().height();
+  const int toast_container_height =
+      toast_container_ ? toast_container_->GetPreferredSize().height() : 0;
+
+  apps_grid_view_->ConfigureFirstPagePadding(
+      continue_container_height + toast_container_height + GetSeparatorHeight(),
+      continue_container_->HasRecentApps());
+  UpdateTopLevelGridDimensions();
+
+  apps_grid_view_->AnimateOnNudgeRemoved();
 }
 
 void AppsContainerView::UpdateForNewSortingOrder(

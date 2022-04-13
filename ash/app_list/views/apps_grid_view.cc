@@ -566,8 +566,7 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 
-  for (const auto& entry : view_model_.entries())
-    static_cast<AppListItemView*>(entry.view)->EnsureLayer();
+  PrepareItemsForBoundsAnimation();
   drag_view_ = view;
   drag_item_ = view->item();
 
@@ -864,8 +863,7 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   // entire apps grid.
   reorder_placeholder_ = view_structure_.GetLastTargetIndex();
 
-  for (const auto& entry : view_model_.entries())
-    static_cast<AppListItemView*>(entry.view)->EnsureLayer();
+  PrepareItemsForBoundsAnimation();
 
   drag_pointer_ = pointer;
   drag_item_ = original_drag_view->item();
@@ -954,8 +952,7 @@ void AppsGridView::FolderHidden(const std::string& item_id) {
   // When folder animates out, remaining items will animate to their ideal
   // bounds - ensure their layers are created (and marked not to fill bounds
   // opaquely).
-  for (int i = 0; i < view_model_.view_size(); ++i)
-    view_model_.view_at(i)->EnsureLayer();
+  PrepareItemsForBoundsAnimation();
 
   // Animate the folder item view out from its original location.
   reordering_folder_view_ = item_view;
@@ -3180,6 +3177,11 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 
   if (current_ghost_view_)
     current_ghost_view_->FadeOut();
+}
+
+void AppsGridView::PrepareItemsForBoundsAnimation() {
+  for (int i = 0; i < view_model_.view_size(); ++i)
+    view_model_.view_at(i)->EnsureLayer();
 }
 
 void AppsGridView::OnAppListItemViewActivated(

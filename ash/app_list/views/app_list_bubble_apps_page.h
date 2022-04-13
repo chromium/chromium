@@ -127,15 +127,16 @@ class ASH_EXPORT AppListBubbleAppsPage
   void MoveFocusDownFromRecents(int column) override;
 
   // AppListToastContainerView::Delegate:
-  void MoveFocusUpFromToast(int column) override;
-  void MoveFocusDownFromToast(int column) override;
+  bool MoveFocusUpFromToast(int column) override;
+  bool MoveFocusDownFromToast(int column) override;
+  void OnNudgeRemoved() override;
 
   // AppsGridViewFocusDelegate:
   bool MoveFocusUpFromAppsGrid(int column) override;
 
   // Helper functions to move the focus to RecentAppsView/AppsGridView.
   bool HandleMovingFocusToRecents(int column);
-  void HandleMovingFocusToAppsGrid(int column);
+  bool HandleMovingFocusToAppsGrid(int column);
 
   views::ScrollView* scroll_view() { return scroll_view_; }
   ScrollableAppsGridView* scrollable_apps_grid_view() {

@@ -14,6 +14,7 @@
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_page.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
@@ -29,7 +30,6 @@ class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListNudgeController;
-class AppListToastContainerView;
 class ContentsView;
 class ContinueSectionView;
 class FolderBackgroundView;
@@ -47,7 +47,8 @@ class ASH_EXPORT AppsContainerView
       public AppListFolderController,
       public PaginationModelObserver,
       public PagedAppsGridView::ContainerDelegate,
-      public RecentAppsView::Delegate {
+      public RecentAppsView::Delegate,
+      public AppListToastContainerView::Delegate {
  public:
   explicit AppsContainerView(ContentsView* contents_view);
 
@@ -173,6 +174,11 @@ class ASH_EXPORT AppsContainerView
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
+
+  // AppListToastContainerView::Delegate:
+  bool MoveFocusUpFromToast(int column) override;
+  bool MoveFocusDownFromToast(int column) override;
+  void OnNudgeRemoved() override;
 
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list container.

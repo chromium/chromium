@@ -59,13 +59,16 @@ class AppListToastContainerView : public views::View {
     // `column` is the column of the item (could be from the recent apps or apps
     // grid) that was focused before moving focus on this toast container. The
     // delegate should choose an appropriate item to focus.
-    virtual void MoveFocusUpFromToast(int column) = 0;
+    virtual bool MoveFocusUpFromToast(int column) = 0;
 
     // Requests that focus move down and out (usually to the apps grid).
     // `column` is the column of the item (could be from the recent apps or apps
     // grid) that was focused before moving focus on this toast container. The
     // delegate should choose an appropriate item to focus.
-    virtual void MoveFocusDownFromToast(int column) = 0;
+    virtual bool MoveFocusDownFromToast(int column) = 0;
+
+    // Called when the nudge gets removed by the close or dismiss buttons.
+    virtual void OnNudgeRemoved() = 0;
   };
 
   AppListToastContainerView(AppListNudgeController* nudge_controller_,

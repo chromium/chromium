@@ -204,6 +204,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
     return unscaled_first_page_vertical_tile_padding_;
   }
 
+  // Animates items to their ideal bounds when the reorder nudge gets removed.
+  void AnimateOnNudgeRemoved();
+
  private:
   friend class test::AppsGridViewTest;
 

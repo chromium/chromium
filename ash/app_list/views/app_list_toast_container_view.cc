@@ -79,15 +79,12 @@ bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
   if (!delegate_)
     return false;
 
-  if (event.key_code() == ui::VKEY_UP) {
-    delegate_->MoveFocusUpFromToast(focused_app_column_);
-    return true;
-  }
+  if (event.key_code() == ui::VKEY_UP)
+    return delegate_->MoveFocusUpFromToast(focused_app_column_);
 
-  if (event.key_code() == ui::VKEY_DOWN) {
-    delegate_->MoveFocusDownFromToast(focused_app_column_);
-    return true;
-  }
+  if (event.key_code() == ui::VKEY_DOWN)
+    return delegate_->MoveFocusDownFromToast(focused_app_column_);
+
   return false;
 }
 
@@ -156,9 +153,9 @@ void AppListToastContainerView::CreateReorderNudgeView() {
 }
 
 void AppListToastContainerView::DismissReorderNudgeView() {
-  // TODO(mmourgos): Add animations for the nudge being dismissed.
   RemoveReorderNudgeView();
   nudge_controller_->OnReorderNudgeConfirmed();
+  delegate_->OnNudgeRemoved();
 }
 
 void AppListToastContainerView::RemoveReorderNudgeView() {
@@ -299,8 +296,8 @@ void AppListToastContainerView::OnReorderUndoButtonClicked() {
 }
 
 void AppListToastContainerView::OnReorderCloseButtonClicked() {
-  // TODO(mmourgos): Add animations for removing undo toast.
   RemoveCurrentView();
+  delegate_->OnNudgeRemoved();
 }
 
 std::u16string AppListToastContainerView::CalculateToastTextFromOrder(

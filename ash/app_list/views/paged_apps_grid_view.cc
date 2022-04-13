@@ -1538,6 +1538,26 @@ int PagedAppsGridView::CalculateMaxRows(int available_height,
   return std::max(final_row_count, 1);
 }
 
+void PagedAppsGridView::AnimateOnNudgeRemoved() {
+  UpdateTilePadding();
+
+  if (GetWidget()) {
+    // Normally Layout() cancels any animations. At this point there may be a
+    // pending Layout(), force it now so that one isn't triggered part way
+    // through the animation. Further, ignore this layout so that the position
+    // isn't reset.
+    base::AutoReset<bool> auto_reset(&ignore_layout_, true);
+    GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  PrepareItemsForBoundsAnimation();
+
+  // Set the tween type to be used specifically for this ideal bounds animation.
+  bounds_animator()->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
+  AnimateToIdealBounds();
+  bounds_animator()->set_tween_type(gfx::Tween::EASE_OUT);
+}
+
 int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {
   // Add the page offset that accommodates continue section content, and if
   // shown under recent apps, additional tile padding above the first row of
