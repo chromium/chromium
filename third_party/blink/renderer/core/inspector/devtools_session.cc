@@ -38,7 +38,7 @@ const char kSessionId[] = "sessionId";
 bool ShouldInterruptForMethod(const String& method) {
   return method != "Debugger.evaluateOnCallFrame" &&
          method != "Runtime.evaluate" && method != "Runtime.callFunctionOn" &&
-         method != "Runtime.runScript";
+         method != "Runtime.getProperties" && method != "Runtime.runScript";
 }
 
 std::vector<uint8_t> Get8BitStringFrom(v8_inspector::StringBuffer* msg) {
