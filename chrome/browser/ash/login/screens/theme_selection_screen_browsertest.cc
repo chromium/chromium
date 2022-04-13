@@ -6,6 +6,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -40,7 +42,9 @@ class ThemeSelectionScreenTest
       public ::testing::WithParamInterface<test::UIPath> {
  public:
   ThemeSelectionScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kEnableOobeThemeSelection);
+    feature_list_.InitWithFeatures({features::kEnableOobeThemeSelection,
+                                    chromeos::features::kDarkLightMode},
+                                   {});
   }
 
   void SetUpOnMainThread() override {
@@ -93,6 +97,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ProceedWithDefaultTheme) {
 IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   ShowThemeSelectionScreen();
   Profile* profile = ProfileManager::GetActiveUserProfile();
+
   EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), false);
   EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
 
@@ -103,9 +108,13 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   if (selectedOption == kDarkThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), true);
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
+    EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+
   } else if (selectedOption == kLightThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), false);
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
+    EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+
   } else if (selectedOption == kAutoThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 1);
   }

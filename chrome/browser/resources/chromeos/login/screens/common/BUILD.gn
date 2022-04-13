@@ -360,6 +360,7 @@ js_library("managed_terms_of_service.m") {
 js_library("marketing_opt_in.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.m.js" ]
   deps = [
+    "../../components:display_manager_types.m",
     "../../components:oobe_a11y_option.m",
     "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -586,6 +587,7 @@ js_library("sync_consent.m") {
 js_library("theme_selection.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.m.js" ]
   deps = [
+    "../../components:display_manager_types.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

@@ -157,9 +157,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // DarkLightMode feature.
   bool override_light_mode_as_default_ = false;
 
-  // True if we're in the OOBE state or OOBE WebUI dialog is open (e.g. for the
-  // "Add person" flow).
-  bool is_oobe_webui_shown_ = false;
+  // True if we're in the OOBE state, or OOBE WebUI dialog is open (e.g. for the
+  // "Add person" flow), except for the last two screens. In those two screens
+  // the theme is based on user's preferences.
+  bool force_oobe_light_mode_ = false;
+
   // absl::nullopt in case no user pod is focused.
   absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;
 

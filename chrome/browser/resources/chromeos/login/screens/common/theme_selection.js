@@ -73,6 +73,10 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     });
   }
 
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.THEME_SELECTION;
+  }
+
   onNextClicked_() {
     this.userActed(UserAction.NEXT);
   }

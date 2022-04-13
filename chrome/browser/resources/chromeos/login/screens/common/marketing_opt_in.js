@@ -88,6 +88,10 @@ class MarketingOptIn extends MarketingScreenElementBase {
     return MarketingOptInStep.OVERVIEW;
   }
 
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.MARKETING_OPT_IN;
+  }
+
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {

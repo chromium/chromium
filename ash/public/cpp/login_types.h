@@ -76,6 +76,11 @@ enum class OobeDialogState {
 
   // Showing enrollment success step.
   ENROLLMENT_SUCCESS = 17,
+  // Showing theme selection screen.
+  THEME_SELECTION = 18,
+
+  // Showing marketing opt-in screen.
+  MARKETING_OPT_IN = 19,
 };
 
 // Supported multi-profile user behavior values.
