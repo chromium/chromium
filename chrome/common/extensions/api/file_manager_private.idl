@@ -1652,6 +1652,9 @@ interface Functions {
   // Starts and mounts the target Guest OS.
   // |callback|
   static void mountGuest(long id, SimpleCallback callback);
+
+  // Tells DriveFS to update its cached pin states of hosted files (once).
+  static void pollDriveHostedFilePinStates();
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

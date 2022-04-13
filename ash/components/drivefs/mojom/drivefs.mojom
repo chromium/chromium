@@ -118,6 +118,9 @@ interface DriveFs {
 
   // Retrieves a list of paths being synced.
   GetSyncingPaths() => (FileError error, array<mojo_base.mojom.FilePath> paths);
+
+  // Tells DriveFS to update its cached pin states of hosted files (once).
+  PollHostedFilePinStates();
 };
 
 // Implemented by Chrome, used from DriveFS.

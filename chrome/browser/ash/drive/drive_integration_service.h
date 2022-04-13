@@ -255,6 +255,9 @@ class DriveIntegrationService : public KeyedService,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
 
+  // Tells DriveFS to update its cached pin states of hosted files (once).
+  void PollHostedFilePinStates();
+
   // Returns whether mirroring is enabled.
   bool IsMirroringEnabled();
 

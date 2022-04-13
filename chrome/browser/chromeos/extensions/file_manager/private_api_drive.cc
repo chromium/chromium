@@ -950,4 +950,18 @@ FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
+  if (base::FeatureList::IsEnabled(
+          ash::features::kDriveFsBidirectionalNativeMessaging)) {
+    Profile* const profile = Profile::FromBrowserContext(browser_context());
+    drive::DriveIntegrationService* integration_service =
+        drive::util::GetIntegrationServiceByProfile(profile);
+    if (integration_service) {
+      integration_service->PollHostedFilePinStates();
+    }
+  }
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

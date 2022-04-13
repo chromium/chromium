@@ -32228,6 +32228,7 @@ Called by update_extension_histograms.py.-->
   <int value="1643" label="LOGIN_LOCKCURRENTSESSION"/>
   <int value="1644" label="LOGIN_UNLOCKCURRENTSESSION"/>
   <int value="1645" label="OS_TELEMETRY_GETBATTERYINFO"/>
+  <int value="1646" label="FILEMANAGERPRIVATE_POLLDRIVEHOSTEDFILEPINSTATES"/>
 </enum>
 
 <enum name="ExtensionIconState">

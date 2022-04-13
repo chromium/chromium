@@ -1366,6 +1366,12 @@ void DriveIntegrationService::GetSyncingPaths(
   }
 }
 
+void DriveIntegrationService::PollHostedFilePinStates() {
+  if (GetDriveFsInterface()) {
+    GetDriveFsInterface()->PollHostedFilePinStates();
+  }
+}
+
 //===================== DriveIntegrationServiceFactory =======================
 
 DriveIntegrationServiceFactory::FactoryCallback*

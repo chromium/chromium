@@ -157,6 +157,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) override;
 
+  void PollHostedFilePinStates() override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

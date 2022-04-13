@@ -544,4 +544,6 @@ void FakeDriveFs::GetSyncingPaths(
   std::move(callback).Run(drive::FILE_ERROR_OK, syncing_paths_);
 }
 
+void FakeDriveFs::PollHostedFilePinStates() {}
+
 }  // namespace drivefs

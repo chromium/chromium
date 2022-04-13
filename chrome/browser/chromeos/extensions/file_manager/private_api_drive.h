@@ -192,6 +192,19 @@ class FileManagerPrivateNotifyDriveDialogResultFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.pollDriveHostedFilePinStates method.
+class FileManagerPrivatePollDriveHostedFilePinStatesFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.pollDriveHostedFilePinStates",
+                             FILEMANAGERPRIVATE_POLLDRIVEHOSTEDFILEPINSTATES)
+
+ protected:
+  ~FileManagerPrivatePollDriveHostedFilePinStatesFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_DRIVE_H_

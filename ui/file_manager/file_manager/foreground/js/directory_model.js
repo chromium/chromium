@@ -664,6 +664,10 @@ export class DirectoryModel extends EventTarget {
 
     // Retrieve metadata information for the newly selected directory.
     const currentEntry = this.currentDirContents_.getDirectoryEntry();
+    if (this.volumeManager_.getLocationInfo(assert(currentEntry))
+            .isDriveBased) {
+      chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
+    }
     if (currentEntry && !util.isFakeEntry(assert(currentEntry))) {
       this.metadataModel_.get(
           [currentEntry],
