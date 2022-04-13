@@ -15,9 +15,6 @@ body {
 /** Typography -------------------------------------------------------------- */
 
 .content {
-  /* This is identical to the default background color. It's necessary to set it
-     for the case when a theme with a background image is installed. */
-  background-color: rgb(53, 54, 58);
   color: rgb(232, 234, 237);  /* --google-grey-200 */
   font-size: calc(100% - 2px);
   line-height: calc(100% + 6px);
