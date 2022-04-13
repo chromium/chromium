@@ -15,25 +15,13 @@
 #include "ash/system/time/calendar_utils.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace {
-
-// Absolute minimum number of months to cache, which includes the
-// current/previous/next on-screen months and current/prev/next months including
-// today's date.
-constexpr int kMinNumberOfMonthsCached = 6;
-
-// Number of additional months to cache, to be adjusted as needed for optimal
-// UX.
-constexpr int kAdditionalNumberOfMonthsCached = 4;
-
-// Maximum number of months to cache.
-constexpr int kMaxNumberOfMonthsCached =
-    kMinNumberOfMonthsCached + kAdditionalNumberOfMonthsCached;
 
 // Methods for debugging and gathering of metrics.
 
@@ -132,7 +120,12 @@ void CalendarModel::PromoteMonth(base::Time start_of_month) {
 }
 
 void CalendarModel::AddNonPrunableMonth(const base::Time& month) {
-  non_prunable_months_.emplace(month);
+  // Early-return if `month` is present, to avoid the limits-check below.
+  if (base::Contains(non_prunable_months_, month))
+    return;
+
+  if (non_prunable_months_.size() < calendar_utils::kMaxNumNonPrunableMonths)
+    non_prunable_months_.emplace(month);
 }
 
 void CalendarModel::AddNonPrunableMonths(const std::set<base::Time>& months) {
@@ -236,9 +229,6 @@ void CalendarModel::OnEventsFetched(
   for (auto& observer : observers_)
     observer.OnEventsFetched(events);
 
-  // Month is now the most-recently-used.
-  PromoteMonth(start_of_month);
-
   // Month has officially been fetched.
   months_fetched_.emplace(start_of_month);
 
@@ -277,6 +267,9 @@ void CalendarModel::InsertEvent(
     SingleMonthEventMap& month = it->second;
     InsertEventInMonth(month, event);
   }
+
+  // Month is now the most-recently-used.
+  PromoteMonth(start_of_month);
 }
 
 void CalendarModel::InsertEventInMonth(
@@ -394,10 +387,9 @@ void CalendarModel::RedistributeEvents(int time_difference_minutes) {
 }
 
 void CalendarModel::PruneEventCache() {
-  while (event_months_.size() >= kMaxNumberOfMonthsCached &&
-         !mru_months_.empty()) {
+  while (!mru_months_.empty() &&
+         mru_months_.size() > calendar_utils::kMaxNumPrunableMonths) {
     base::Time lru_month = mru_months_.back();
-    LOG(WARNING) << __FUNCTION__ << " pruning lru_month " << lru_month;
     pending_fetches_.erase(lru_month);
     event_months_.erase(lru_month);
     months_fetched_.erase(lru_month);

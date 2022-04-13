@@ -50,7 +50,19 @@ constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 
 // Event fetch will terminate if we don't receive a response sooner than this.
-constexpr base::TimeDelta kEventFetchTimeout = base::Milliseconds(1000);
+constexpr base::TimeDelta kEventFetchTimeout = base::Seconds(10);
+
+// Number of months, before and after the month currently on-display, that we
+// cache-ahead.
+constexpr int kNumSurroundingMonthsCached = 2;
+
+// Maximum number of non-prunable months allowed, which is a function of
+// kNumSurroundingMonthsCached.
+constexpr int kMaxNumNonPrunableMonths = 2 * kNumSurroundingMonthsCached + 1;
+
+// Maximum number of prunable months to cache. Note that this plus
+// kMaxNumNonPrunableMonths is the total maximum number of cached months.
+constexpr int kMaxNumPrunableMonths = 20;
 
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
@@ -119,7 +131,7 @@ SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();
 
 // Get the first day of the month that includes |date|.
-base::Time GetFirstDayOfMonth(const base::Time& date);
+ASH_EXPORT base::Time GetFirstDayOfMonth(const base::Time& date);
 
 // Get the first day of the month before the one that includes |date|.
 base::Time GetStartOfPreviousMonthLocal(base::Time date);

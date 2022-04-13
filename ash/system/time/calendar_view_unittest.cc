@@ -53,7 +53,6 @@ class CalendarViewTest : public AshTestBase {
         base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
-    controller_ = std::make_unique<CalendarViewController>();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -62,7 +61,6 @@ class CalendarViewTest : public AshTestBase {
     widget_.reset();
     delegate_.reset();
     tray_controller_.reset();
-    controller_.reset();
     tray_model_.reset();
 
     AshTestBase::TearDown();
@@ -218,7 +216,6 @@ class CalendarViewTest : public AshTestBase {
   std::unique_ptr<DetailedViewDelegate> delegate_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
-  std::unique_ptr<CalendarViewController> controller_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
