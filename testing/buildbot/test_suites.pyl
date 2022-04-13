@@ -3262,11 +3262,6 @@
       },
     },
 
-    'gpu_swiftshader_gtests': {
-      'swiftshader_unittests': {
-      },
-    },
-
     'gpu_validating_telemetry_tests': {
       'context_lost_validating': {
         'name': 'context_lost_validating_tests',
@@ -6366,10 +6361,6 @@
       # TODO(crbug.com/1087563): Enable once tab_capture_end2end_tests passes
       # on CrOS.
       # 'gpu_desktop_specific_gtests',
-      # CrOS should always have GL, and thus not fall back to SwiftShader. It's
-      # currently unclear if we want to bother running any SwiftShader tests on
-      # CrOS since it should never actually get used.
-      # 'gpu_swiftshader_gtests',
     ],
 
     # TODO(crbug.com/1080424): Merge with an existing set of tests such as
@@ -6394,7 +6385,6 @@
     'gpu_fyi_linux_debug_gtests': [
       'gpu_common_gtests_passthrough',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_linux_debug_telemetry_tests': [
@@ -6405,7 +6395,6 @@
 
     'gpu_fyi_linux_optional_gtests': [
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_linux_release_gtests': [
@@ -6413,7 +6402,6 @@
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_linux_release_telemetry_tests': [
@@ -6444,7 +6432,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_mac_debug_telemetry_tests': [
@@ -6459,7 +6446,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_mac_pro_release_telemetry_tests': [
@@ -6478,7 +6464,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_mac_release_telemetry_tests': [
@@ -6543,7 +6528,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_win7_gtests': [
@@ -6553,7 +6537,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_win7_nvidia_amd_release_telemetry_tests': [
@@ -6593,7 +6576,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
       'gpu_vulkan_gtests',
     ],
 
@@ -6620,7 +6602,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_win_optional_isolated_scripts': [

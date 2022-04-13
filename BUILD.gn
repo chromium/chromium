@@ -527,7 +527,10 @@ group("gn_all") {
 
   if ((is_win || is_mac || is_linux || is_chromeos || is_fuchsia) &&
       (target_cpu == "x86" || target_cpu == "x64")) {
-    deps += [ "//third_party/swiftshader" ]
+    deps += [
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+    ]
   }
 
   # TODO(GYP): Figure out which of these should (and can) build

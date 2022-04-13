@@ -190,7 +190,10 @@ component("gl") {
 
   data_deps = []
   if (enable_swiftshader) {
-    data_deps += [ "//third_party/swiftshader" ]
+    data_deps += [
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+    ]
   }
   if (use_egl) {
     sources += [
@@ -375,7 +378,8 @@ component("gl") {
     data_deps += [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
-      "//third_party/swiftshader",
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]
     if (angle_shared_libvulkan && !is_chromeos) {
       data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
@@ -414,7 +418,10 @@ component("gl") {
         "//third_party/mesa_headers",
       ]
       if (enable_swiftshader) {
-        data_deps += [ "//third_party/swiftshader" ]
+        data_deps += [
+          "//third_party/swiftshader/src/Vulkan:icd_file",
+          "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+        ]
       }
     }
   }

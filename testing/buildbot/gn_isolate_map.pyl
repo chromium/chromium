@@ -1670,10 +1670,6 @@
     "label": "//storage:storage_unittests",
     "type": "console_test_launcher",
   },
-  "swiftshader_unittests": {
-    "label": "//third_party/swiftshader/tests/GLESUnitTests:swiftshader_unittests",
-    "type": "console_test_launcher",
-  },
   "symupload": {
     "label": "//third_party/breakpad:symupload",
     "type": "additional_compile_target",

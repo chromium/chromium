@@ -67,7 +67,6 @@ skia_unittests
 snapshot_unittests
 sql_unittests
 storage_unittests
-swiftshader_unittests
 sync_integration_tests
 traffic_annotation_auditor_unittests
 ui_base_unittests

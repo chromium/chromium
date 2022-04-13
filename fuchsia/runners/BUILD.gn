@@ -143,8 +143,6 @@ _web_instance_host_deps_files_to_exclude = [
   # TODO(crbug.com/1022542): SwiftShader is not used in cast_runner.
   # This list should match the list of SwiftShader files excluded from the
   # web_engine package (see fuchsia/engine/BUILD.gn).
-  "lib/libswiftshader_libEGL.so",
-  "lib/libswiftshader_libGLESv2.so",
   "lib/libvk_swiftshader.so",
   "vk_swiftshader_icd.json",
 ]
