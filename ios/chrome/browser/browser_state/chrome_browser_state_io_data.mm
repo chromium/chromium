@@ -38,6 +38,7 @@
 #include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
+#include "ios/chrome/browser/net/accept_language_pref_watcher.h"
 #include "ios/chrome/browser/net/ios_chrome_http_user_agent_settings.h"
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
@@ -106,10 +107,11 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
   IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
                                                       pref_service);
 
-  accept_language_pref_watcher_.Init(pref_service);
+  accept_language_pref_watcher_ =
+      std::make_unique<AcceptLanguagePrefWatcher>(pref_service);
   chrome_http_user_agent_settings_ =
       std::make_unique<IOSChromeHttpUserAgentSettings>(
-          accept_language_pref_watcher_.GetHandle());
+          accept_language_pref_watcher_->GetHandle());
 }
 
 ChromeBrowserStateIOData::ProfileParams::ProfileParams()
@@ -274,7 +276,7 @@ void ChromeBrowserStateIOData::ShutdownOnUIThread(
   enable_referrers_.Destroy();
   enable_do_not_track_.Destroy();
   enable_metrics_.Destroy();
-  accept_language_pref_watcher_.Destroy();
+  accept_language_pref_watcher_.reset();
 
   if (!context_getters->empty()) {
     if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {

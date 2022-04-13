@@ -17,7 +17,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_member.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
-#include "ios/chrome/browser/net/accept_language_pref_watcher.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
@@ -26,6 +25,7 @@
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_job_factory.h"
 
+class AcceptLanguagePrefWatcher;
 class ChromeBrowserState;
 enum class ChromeBrowserStateType;
 class HostContentSettingsMap;
@@ -170,7 +170,7 @@ class ChromeBrowserStateIOData {
   mutable BooleanPrefMember enable_do_not_track_;
 
   BooleanPrefMember enable_metrics_;
-  AcceptLanguagePrefWatcher accept_language_pref_watcher_;
+  std::unique_ptr<AcceptLanguagePrefWatcher> accept_language_pref_watcher_;
 
   mutable std::unique_ptr<net::ReportSender> certificate_report_sender_;
 

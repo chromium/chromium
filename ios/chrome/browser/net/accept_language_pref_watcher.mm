@@ -37,18 +37,10 @@ std::string AcceptLanguagePrefWatcher::Handle::GetAcceptLanguageHeader() const {
   return result;
 }
 
-AcceptLanguagePrefWatcher::AcceptLanguagePrefWatcher() = default;
+AcceptLanguagePrefWatcher::AcceptLanguagePrefWatcher(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  DCHECK(pref_service_);
 
-AcceptLanguagePrefWatcher::~AcceptLanguagePrefWatcher() {
-  DCHECK(!pref_service_)
-      << "Destroy must be called before AcceptLanguagePrefWatcher destructor.";
-}
-
-void AcceptLanguagePrefWatcher::Init(PrefService* pref_service) {
-  DCHECK(pref_service);
-  DCHECK(!pref_service_);
-
-  pref_service_ = pref_service;
   handle_ = base::MakeRefCounted<Handle>(
       pref_service_->GetString(language::prefs::kAcceptLanguages));
 
@@ -61,7 +53,7 @@ void AcceptLanguagePrefWatcher::Init(PrefService* pref_service) {
                           base::Unretained(this)));
 }
 
-void AcceptLanguagePrefWatcher::Destroy() {
+AcceptLanguagePrefWatcher::~AcceptLanguagePrefWatcher() {
   DCHECK(pref_service_);
   accept_language_pref_.Destroy();
   pref_service_ = nullptr;

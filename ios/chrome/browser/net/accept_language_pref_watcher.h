@@ -40,19 +40,15 @@ class AcceptLanguagePrefWatcher {
     std::string accept_language_header_ GUARDED_BY(lock_);
   };
 
-  AcceptLanguagePrefWatcher();
+  // Initializes the instance with `pref_service` which must be valid and
+  // whose lifetime must exceed that of the AcceptLanguagePrefWatcher
+  explicit AcceptLanguagePrefWatcher(PrefService* pref_service);
 
   AcceptLanguagePrefWatcher(const AcceptLanguagePrefWatcher&) = delete;
   const AcceptLanguagePrefWatcher& operator=(const AcceptLanguagePrefWatcher&) =
       delete;
 
   ~AcceptLanguagePrefWatcher();
-
-  // Starts watching for change to the AcceptLanguage preference.
-  void Init(PrefService* pref_service);
-
-  // Stops watching for change to the AcceptLanguage preference.
-  void Destroy();
 
   // Returns a pointer to the handle. This can be used on any thread to read
   // the last value of the AcceptLanguage preference in a format usable as an
