@@ -179,11 +179,6 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_FUCHSIA)
-    // Always create GMP to workaround https://crbug.com/1293616.
-    CreateGpuMemoryBufferPoolIfNecessary();
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
     if (!gpu_memory_buffer_pool_) {
       int original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
@@ -203,11 +198,6 @@ class WebMediaPlayerMS::FrameDeliverer {
         frame->visible_rect().height() <
             kUseGpuMemoryBufferVideoFramesMinResolution.height();
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_FUCHSIA)
-    // Always create GMP to workaround https://crbug.com/1293616.
-    skip_creating_gpu_memory_buffer = false;
-#endif  // BUILDFLAG(IS_FUCHSIA)
 
     if (skip_creating_gpu_memory_buffer) {
       int original_frame_id = frame->unique_id();
