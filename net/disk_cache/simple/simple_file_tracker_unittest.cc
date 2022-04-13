@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/cache_type.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/simple/simple_file_tracker.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
@@ -50,10 +51,13 @@ class SimpleFileTrackerTest : public DiskCacheTest {
       std::unique_ptr<SimpleSynchronousEntry, SyncEntryDeleter>;
 
   SyncEntryPointer MakeSyncEntry(uint64_t hash) {
-    return SyncEntryPointer(new SimpleSynchronousEntry(
-                                net::DISK_CACHE, cache_path_, "dummy", hash,
-                                &file_tracker_, /*trailer_prefetch_size=*/-1),
-                            SyncEntryDeleter(this));
+    return SyncEntryPointer(
+        new SimpleSynchronousEntry(
+            net::DISK_CACHE, cache_path_, "dummy", hash, &file_tracker_,
+            base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>()
+                ->CreateUnbound(),
+            /*stream_0_size=*/-1),
+        SyncEntryDeleter(this));
   }
 
   void UpdateEntryFileKey(SimpleSynchronousEntry* sync_entry,
@@ -66,6 +70,7 @@ class SimpleFileTrackerTest : public DiskCacheTest {
 
 TEST_F(SimpleFileTrackerTest, Basic) {
   SyncEntryPointer entry = MakeSyncEntry(1);
+  TrivialFileOperations ops;
 
   // Just transfer some files to the tracker, and then do some I/O on getting
   // them back.
@@ -88,10 +93,10 @@ TEST_F(SimpleFileTrackerTest, Basic) {
   base::StringPiece msg_1 = "Worldish Place";
 
   {
-    SimpleFileTracker::FileHandle borrow_0 =
-        file_tracker_.Acquire(entry.get(), SimpleFileTracker::SubFile::FILE_0);
-    SimpleFileTracker::FileHandle borrow_1 =
-        file_tracker_.Acquire(entry.get(), SimpleFileTracker::SubFile::FILE_1);
+    SimpleFileTracker::FileHandle borrow_0 = file_tracker_.Acquire(
+        &ops, entry.get(), SimpleFileTracker::SubFile::FILE_0);
+    SimpleFileTracker::FileHandle borrow_1 = file_tracker_.Acquire(
+        &ops, entry.get(), SimpleFileTracker::SubFile::FILE_1);
 
     EXPECT_EQ(static_cast<int>(msg_0.size()),
               borrow_0->Write(0, msg_0.data(), msg_0.size()));
@@ -117,6 +122,7 @@ TEST_F(SimpleFileTrackerTest, Collision) {
   // Two entries with same key.
   SyncEntryPointer entry = MakeSyncEntry(1);
   SyncEntryPointer entry2 = MakeSyncEntry(1);
+  TrivialFileOperations ops;
 
   base::FilePath path = cache_path_.AppendASCII("file");
   base::FilePath path2 = cache_path_.AppendASCII("file2");
@@ -137,10 +143,10 @@ TEST_F(SimpleFileTrackerTest, Collision) {
   base::StringPiece msg2 = "Beta";
 
   {
-    SimpleFileTracker::FileHandle borrow =
-        file_tracker_.Acquire(entry.get(), SimpleFileTracker::SubFile::FILE_0);
-    SimpleFileTracker::FileHandle borrow2 =
-        file_tracker_.Acquire(entry2.get(), SimpleFileTracker::SubFile::FILE_0);
+    SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
+        &ops, entry.get(), SimpleFileTracker::SubFile::FILE_0);
+    SimpleFileTracker::FileHandle borrow2 = file_tracker_.Acquire(
+        &ops, entry2.get(), SimpleFileTracker::SubFile::FILE_0);
 
     EXPECT_EQ(static_cast<int>(msg.size()),
               borrow->Write(0, msg.data(), msg.size()));
@@ -198,6 +204,7 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
       MakeSyncEntry(1), MakeSyncEntry(1), MakeSyncEntry(1), MakeSyncEntry(1),
       MakeSyncEntry(1), MakeSyncEntry(1), MakeSyncEntry(1), MakeSyncEntry(1),
   };
+  TrivialFileOperations ops;
   std::unique_ptr<base::File> file_0 = std::make_unique<base::File>(
       cache_path_.AppendASCII("0"),
       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
@@ -208,7 +215,7 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
   base::StringPiece msg = "Message to write";
   {
     SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
-        entries[0].get(), SimpleFileTracker::SubFile::FILE_0);
+        &ops, entries[0].get(), SimpleFileTracker::SubFile::FILE_0);
     for (int i = 1; i < kEntries; ++i) {
       std::unique_ptr<base::File> file_n = std::make_unique<base::File>(
           cache_path_.AppendASCII(base::NumberToString(i)),
@@ -270,6 +277,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
   const int kEntries = 10;  // want more than FD limit in fixture.
   std::vector<SyncEntryPointer> entries;
   std::vector<base::FilePath> names;
+  TrivialFileOperations ops;
   for (int i = 0; i < kEntries; ++i) {
     SyncEntryPointer entry = MakeSyncEntry(i);
     base::FilePath name =
@@ -295,7 +303,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
   // Grab the last one; we will hold it open till the end of the test. It's
   // still open, so no change in stats after.
   SimpleFileTracker::FileHandle borrow_last = file_tracker_.Acquire(
-      entries[kEntries - 1].get(), SimpleFileTracker::SubFile::FILE_0);
+      &ops, entries[kEntries - 1].get(), SimpleFileTracker::SubFile::FILE_0);
   EXPECT_EQ(1, borrow_last->Write(0, "L", 1));
 
   histogram_tester.ExpectBucketCount("SimpleCache.FileDescriptorLimiterAction",
@@ -312,7 +320,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
   // Reacquire all the other files.
   for (int i = 0; i < kEntries - 1; ++i) {
     SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
-        entries[i].get(), SimpleFileTracker::SubFile::FILE_0);
+        &ops, entries[i].get(), SimpleFileTracker::SubFile::FILE_0);
     if (i != 2) {
       EXPECT_TRUE(borrow.IsOK());
       char c = static_cast<char>(i);
@@ -345,7 +353,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
   // Now re-acquire everything again; this time reading.
   for (int i = 0; i < kEntries - 1; ++i) {
     SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
-        entries[i].get(), SimpleFileTracker::SubFile::FILE_0);
+        &ops, entries[i].get(), SimpleFileTracker::SubFile::FILE_0);
     char read;
     char expected = static_cast<char>(i);
     if (i != 2) {

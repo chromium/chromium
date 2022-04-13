@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 #include "net/disk_cache/simple/simple_index_file.h"
 #include "net/disk_cache/simple/simple_test_util.h"
@@ -63,7 +64,10 @@ class MockSimpleIndexFile : public SimpleIndexFile,
                             public base::SupportsWeakPtr<MockSimpleIndexFile> {
  public:
   explicit MockSimpleIndexFile(net::CacheType cache_type)
-      : SimpleIndexFile(nullptr, cache_type, base::FilePath()) {}
+      : SimpleIndexFile(nullptr,
+                        base::MakeRefCounted<TrivialFileOperationsFactory>(),
+                        cache_type,
+                        base::FilePath()) {}
 
   void LoadIndexEntries(base::Time cache_last_modified,
                         base::OnceClosure callback,

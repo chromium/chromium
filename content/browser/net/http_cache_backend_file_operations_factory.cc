@@ -21,6 +21,21 @@ static_assert(static_cast<uint32_t>(OpenFileFlags::kOpenAndRead) ==
 static_assert(static_cast<uint32_t>(OpenFileFlags::kCreateAndWrite) ==
                   (base::File::FLAG_CREATE | base::File::FLAG_WRITE),
               "kCreateAndWrite");
+static_assert(
+    static_cast<uint32_t>(OpenFileFlags::kOpenReadWriteWinShareDelete) ==
+        (base::File::FLAG_OPEN | base::File::FLAG_READ |
+         base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE),
+    "kOpenReadWriteWinShareDelete");
+static_assert(
+    static_cast<uint32_t>(OpenFileFlags::kCreateReadWriteWinShareDelete) ==
+        (base::File::FLAG_CREATE | base::File::FLAG_READ |
+         base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE),
+    "kCreateReadWriteWinShareDelete");
+static_assert(
+    static_cast<uint32_t>(OpenFileFlags::kCreateAlwaysWriteWinShareDelete) ==
+        (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
+         base::File::FLAG_WIN_SHARE_DELETE),
+    "kCreateReadWriteWinShareDelete");
 
 class FileEnumerator final : public network::mojom::FileEnumerator {
  public:
@@ -80,6 +95,18 @@ class HttpCacheBackendFileOperations final
     std::move(callback).Run(result);
   }
 
+  void DirectoryExists(const base::FilePath& path,
+                       DirectoryExistsCallback callback) override {
+    if (!IsValid(path, "DirectoryExists")) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    bool result = base::DirectoryExists(path);
+    DVLOG(1) << "DirectoryExists: path = " << path << " => " << result;
+    std::move(callback).Run(result);
+  }
+
   void OpenFile(const base::FilePath& path,
                 network::mojom::HttpCacheBackendOpenFileFlags flags,
                 OpenFileCallback callback) override {
@@ -122,7 +149,7 @@ class HttpCacheBackendFileOperations final
       return;
     }
 
-    base::File::Error error;
+    base::File::Error error = base::File::FILE_OK;
     base::ReplaceFile(from_path, to_path, &error);
     DVLOG(1) << "DeleteFile: from_path = " << from_path
              << ", to_path = " << to_path << " => " << error;
