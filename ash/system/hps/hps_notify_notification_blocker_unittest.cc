@@ -280,7 +280,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
-TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
+TEST_F(HpsNotifyNotificationBlockerTest, Pref) {
   SetBlockerPref(false);
 
   // Start with one notification that shouldn't be hidden.
@@ -294,21 +294,23 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
 
   // Notifications should be visible up until the user enables the feature.
   EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 1u);
   SetBlockerPref(true);
 
-  // The only popup now visible should be our info popup. Note that, since
-  // notification-1 has been previously shown, it won't be shown again.
-  EXPECT_EQ(VisiblePopupCount(), 1u);
-  EXPECT_TRUE(InfoPopupVisible());
+  // Since notification 1 has been shown, we aren't blocking any popups and our
+  // info popup need not be shown.
+  EXPECT_EQ(VisiblePopupCount(), 0u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
-  // Add a notification while the feature is disabled.
+  // Add notifications while the feature is disabled. This should cause our info
+  // popup and no other popups to be shown.
   AddNotification("notification-2", u"notifier-2");
   AddNotification("notification-3", u"notifier-3");
   EXPECT_EQ(VisiblePopupCount(), 1u);
   EXPECT_TRUE(InfoPopupVisible());
-  EXPECT_EQ(VisibleNotificationCount(), 3u);
+  EXPECT_EQ(VisibleNotificationCount(), 4u);
 
   // Notifications should be shown if *either* the whole setting or the
   // subfeature is enabled.
