@@ -42,8 +42,7 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
 
     @Override
     public AssistantDependencies createDependencies(Activity activity) {
-        // TODO(b/222671580): Implement
-        return null;
+        return new WebLayerAssistantDependencies(activity);
     }
 
     @Override
