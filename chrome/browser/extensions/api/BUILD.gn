@@ -28,6 +28,7 @@ function_registration("api_registration") {
     # Different APIs include headers from these targets.
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//components/autofill/core/common/mojom:mojo_types",
     "//components/omnibox/browser",
     "//components/translate/core/browser",
     "//components/zoom",
