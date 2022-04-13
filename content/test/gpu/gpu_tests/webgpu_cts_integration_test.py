@@ -23,6 +23,7 @@ LIST_SCRIPT = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                            'dawn', 'webgpu-cts', 'scripts', 'list.py')
 TYPESCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, '.webgpu_typescript')
 
+MULTI_PAYLOAD_TIMEOUT = 0.5
 TEST_RUNS_BETWEEN_CLEANUP = 1000
 WEBSOCKET_PORT_TIMEOUT_SECONDS = 10
 WEBSOCKET_SETUP_TIMEOUT_SECONDS = 5
@@ -261,12 +262,30 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           WebGpuCtsIntegrationTest.event_loop)
       response = future.result()
       response = json.loads(response)
+
       status = response['s']
-      logs = response['l']
-      if isinstance(logs, list):
-        log_str = '\n'.join(logs)
-      else:
-        log_str = logs
+      logs_pieces = [response['l']]
+      # Default value is currently necessary until the Dawn code is updated to
+      # include it.
+      is_final_payload = response.get('final', True)
+      # Get multiple log pieces if necessary, e.g. if a monolithic log would
+      # have gone over the max payload size.
+      while not is_final_payload:
+        future = asyncio.run_coroutine_threadsafe(
+            asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
+                             MULTI_PAYLOAD_TIMEOUT),
+            WebGpuCtsIntegrationTest.event_loop)
+        response = future.result()
+        response = json.loads(response)
+        logs_pieces.append(response['l'])
+        is_final_payload = response.get('final', True)
+
+      log_str = ''
+      for piece in logs_pieces:
+        if isinstance(piece, list):
+          log_str += '\n'.join(piece)
+        else:
+          log_str += piece
       if status == 'skip':
         self.skipTest('WebGPU CTS JavaScript reported test skip with logs ' +
                       log_str)
