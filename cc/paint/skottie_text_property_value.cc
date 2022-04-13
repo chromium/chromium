@@ -10,7 +10,9 @@
 
 namespace cc {
 
-SkottieTextPropertyValue::SkottieTextPropertyValue(std::string text) {
+SkottieTextPropertyValue::SkottieTextPropertyValue(std::string text,
+                                                   gfx::RectF box)
+    : box_(std::move(box)) {
   SetText(std::move(text));
 }
 
@@ -24,7 +26,7 @@ SkottieTextPropertyValue::~SkottieTextPropertyValue() = default;
 
 bool SkottieTextPropertyValue::operator==(
     const SkottieTextPropertyValue& other) const {
-  return text_hash_ == other.text_hash_;
+  return text_hash_ == other.text_hash_ && box_ == other.box_;
 }
 
 bool SkottieTextPropertyValue::operator!=(

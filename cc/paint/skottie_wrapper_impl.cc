@@ -130,13 +130,15 @@ class PropertyHandler final : public skottie::PropertyObserver {
   static SkottieTextPropertyValue ConvertTextValueToChromium(
       const skottie::TextPropertyValue& value_in) {
     std::string text(value_in.fText.c_str());
-    return SkottieTextPropertyValue(std::move(text));
+    return SkottieTextPropertyValue(std::move(text),
+                                    gfx::SkRectToRectF(value_in.fBox));
   }
 
   static void ConvertTextValueToSkottie(
       const SkottieTextPropertyValue& value_in,
       skottie::TextPropertyValue& value_out) {
     value_out.fText.set(value_in.text().c_str());
+    value_out.fBox = gfx::RectFToSkRect(value_in.box());
   }
 
   static SkottieTransformPropertyValue ConvertTransformValueToChromium(

@@ -1581,10 +1581,12 @@ void PushDrawSkottieOps(PaintOpBuffer* buffer) {
         {},
         {{HashSkottieResourceId(kLottieDataWith2TextNode1),
           SkottieTextPropertyValue(
-              std::string(kLottieDataWith2TextNode1Text.data()))},
+              std::string(kLottieDataWith2TextNode1Text.data()),
+              kLottieDataWith2TextNode1Box)},
          {HashSkottieResourceId(kLottieDataWith2TextNode2),
           SkottieTextPropertyValue(
-              std::string(kLottieDataWith2TextNode2Text.data()))}}};
+              std::string(kLottieDataWith2TextNode2Text.data()),
+              kLottieDataWith2TextNode2Box)}}};
   }
 
   size_t len = std::min(test_skotties.size(), test_flags.size());

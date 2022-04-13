@@ -15,6 +15,7 @@
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -93,33 +94,45 @@ TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameText) {
   auto skottie = CreateSkottie(gfx::Size(10, 10), 1);
 
   SkottieTextPropertyValueMap text_map = {
-      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_1a")},
-      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_1b")},
+      {HashSkottieResourceId("node_a"),
+       SkottieTextPropertyValue("test_1a", gfx::RectF(1, 1, 1, 1))},
+      {HashSkottieResourceId("node_b"),
+       SkottieTextPropertyValue("test_1b", gfx::RectF(2, 2, 2, 2))},
   };
   history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
-  EXPECT_THAT(text_map,
-              UnorderedElementsAre(Pair(HashSkottieResourceId("node_a"),
-                                        SkottieTextPropertyValue("test_1a")),
-                                   Pair(HashSkottieResourceId("node_b"),
-                                        SkottieTextPropertyValue("test_1b"))));
+  EXPECT_THAT(
+      text_map,
+      UnorderedElementsAre(
+          Pair(HashSkottieResourceId("node_a"),
+               SkottieTextPropertyValue("test_1a", gfx::RectF(1, 1, 1, 1))),
+          Pair(HashSkottieResourceId("node_b"),
+               SkottieTextPropertyValue("test_1b", gfx::RectF(2, 2, 2, 2)))));
 
   text_map = {
-      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_2a")},
-      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_1b")},
+      {HashSkottieResourceId("node_a"),
+       SkottieTextPropertyValue("test_2a", gfx::RectF(1, 1, 1, 1))},
+      {HashSkottieResourceId("node_b"),
+       SkottieTextPropertyValue("test_1b", gfx::RectF(2, 2, 2, 2))},
   };
   history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
-  EXPECT_THAT(text_map,
-              UnorderedElementsAre(Pair(HashSkottieResourceId("node_a"),
-                                        SkottieTextPropertyValue("test_2a"))));
+  EXPECT_THAT(
+      text_map,
+      UnorderedElementsAre(
+          Pair(HashSkottieResourceId("node_a"),
+               SkottieTextPropertyValue("test_2a", gfx::RectF(1, 1, 1, 1)))));
 
   text_map = {
-      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_2a")},
-      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_2b")},
+      {HashSkottieResourceId("node_a"),
+       SkottieTextPropertyValue("test_2a", gfx::RectF(3, 3, 3, 3))},
+      {HashSkottieResourceId("node_b"),
+       SkottieTextPropertyValue("test_1b", gfx::RectF(2, 2, 2, 2))},
   };
   history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
-  EXPECT_THAT(text_map,
-              UnorderedElementsAre(Pair(HashSkottieResourceId("node_b"),
-                                        SkottieTextPropertyValue("test_2b"))));
+  EXPECT_THAT(
+      text_map,
+      UnorderedElementsAre(
+          Pair(HashSkottieResourceId("node_a"),
+               SkottieTextPropertyValue("test_2a", gfx::RectF(3, 3, 3, 3)))));
 
   history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
   EXPECT_THAT(text_map, IsEmpty());

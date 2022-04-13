@@ -32,10 +32,15 @@
 #include "ui/lottie/animation.h"
 
 namespace ash {
+namespace {
 
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 using ImageAsset = ::cc::SkottieFrameDataProvider::ImageAsset;
+
+MATCHER_P(HasText, text, "") {
+  return arg.text() == text;
+}
 
 // Has 2 assets and 2 text nodes.
 class AmbientAnimationAttributionProviderTest : public ::testing::Test {
@@ -155,19 +160,19 @@ class AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
        SetsTextInAnimation) {
   RefreshDynamicImageAssets("attribution_text_0_a", "attribution_text_1_a");
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue("attribution_text_0_a")),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue("attribution_text_1_a"))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                HasText("attribution_text_0_a")),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                HasText("attribution_text_1_a"))));
   RefreshDynamicImageAssets("attribution_text_0_b", "attribution_text_1_b");
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue("attribution_text_0_b")),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue("attribution_text_1_b"))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                HasText("attribution_text_0_b")),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                HasText("attribution_text_1_b"))));
 }
 
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
@@ -175,24 +180,23 @@ TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
   RefreshDynamicImageAssets("", "");
   EXPECT_THAT(
       animation_.text_map(),
-      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                                cc::SkottieTextPropertyValue("")),
-                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                                cc::SkottieTextPropertyValue(""))));
+      UnorderedElementsAre(
+          Pair(cc::HashSkottieResourceId(attribution_node_0_), HasText("")),
+          Pair(cc::HashSkottieResourceId(attribution_node_1_), HasText(""))));
   RefreshDynamicImageAssets("", "attribution_text_1_a");
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue("")),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue("attribution_text_1_a"))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(
+          Pair(cc::HashSkottieResourceId(attribution_node_0_), HasText("")),
+          Pair(cc::HashSkottieResourceId(attribution_node_1_),
+               HasText("attribution_text_1_a"))));
   RefreshDynamicImageAssets("attribution_text_0_b", "");
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue("attribution_text_0_b")),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue(""))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(
+          Pair(cc::HashSkottieResourceId(attribution_node_0_),
+               HasText("attribution_text_0_b")),
+          Pair(cc::HashSkottieResourceId(attribution_node_1_), HasText(""))));
 }
 
 TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,
@@ -200,13 +204,12 @@ TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,
   RefreshDynamicImageAssets(absl::nullopt, "attribution_text_1");
   // The static text node should the value that's baked into the lottie file
   // (|kLottieDataWith2TextNode1Text|).
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue(
-                           std::string(cc::kLottieDataWith2TextNode1Text))),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue("attribution_text_1"))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                HasText(cc::kLottieDataWith2TextNode1Text)),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                HasText("attribution_text_1"))));
 }
 
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution,
@@ -219,13 +222,12 @@ TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution,
   // which is "attribution_text_0" in this case. The second asset's text
   // ("attribution_text_1") should be unused because there are fewer text
   // nodes than assets here.
-  EXPECT_THAT(animation_.text_map(),
-              UnorderedElementsAre(
-                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                       cc::SkottieTextPropertyValue(
-                           std::string(cc::kLottieDataWith2TextNode1Text))),
-                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                       cc::SkottieTextPropertyValue("attribution_text_0"))));
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                HasText(cc::kLottieDataWith2TextNode1Text)),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                HasText("attribution_text_0"))));
 }
 
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
@@ -235,10 +237,10 @@ TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
                             ::ambient::kPersonal);
   EXPECT_THAT(
       animation_.text_map(),
-      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
-                                cc::SkottieTextPropertyValue("")),
-                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
-                                cc::SkottieTextPropertyValue(""))));
+      UnorderedElementsAre(
+          Pair(cc::HashSkottieResourceId(attribution_node_0_), HasText("")),
+          Pair(cc::HashSkottieResourceId(attribution_node_1_), HasText(""))));
 }
 
+}  // namespace
 }  // namespace ash

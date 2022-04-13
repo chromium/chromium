@@ -6,12 +6,14 @@
 #define CC_PAINT_SKOTTIE_TEXT_PROPERTY_VALUE_H_
 
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace cc {
 
@@ -25,7 +27,7 @@ namespace cc {
 // This class is intentionally cheap to copy.
 class CC_PAINT_EXPORT SkottieTextPropertyValue {
  public:
-  explicit SkottieTextPropertyValue(std::string text);
+  SkottieTextPropertyValue(std::string text, gfx::RectF box);
   SkottieTextPropertyValue(const SkottieTextPropertyValue& other);
   SkottieTextPropertyValue& operator=(const SkottieTextPropertyValue& other);
   ~SkottieTextPropertyValue();
@@ -36,6 +38,9 @@ class CC_PAINT_EXPORT SkottieTextPropertyValue {
   void SetText(std::string text);
   const std::string& text() const { return text_->data(); }
 
+  void set_box(gfx::RectF box) { box_ = std::move(box); }
+  const gfx::RectF& box() const { return box_; }
+
  private:
   // Make the text ref-counted to eliminate as many deep copies as possible when
   // this class is passed through the rendering pipeline. Note the text's string
@@ -44,6 +49,7 @@ class CC_PAINT_EXPORT SkottieTextPropertyValue {
   scoped_refptr<base::RefCountedString> text_;
   // For fast comparison operator.
   size_t text_hash_ = 0;
+  gfx::RectF box_;
 };
 
 // Node name in the Lottie file (hashed) to corresponding

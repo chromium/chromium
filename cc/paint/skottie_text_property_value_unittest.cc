@@ -16,20 +16,30 @@ using ::testing::Eq;
 using ::testing::Ne;
 
 TEST(SkottieTextPropertyValueTest, SetsText) {
-  SkottieTextPropertyValue val("test-1");
+  SkottieTextPropertyValue val("test-1", /*box=*/gfx::RectF());
   EXPECT_THAT(val.text(), Eq("test-1"));
   val.SetText("test-2");
   EXPECT_THAT(val.text(), Eq("test-2"));
 }
 
-TEST(SkottieTextPropertyValueTest, ComparisonOperatorComparesText) {
-  SkottieTextPropertyValue val("test-1");
-  SkottieTextPropertyValue val_2("test-1");
+TEST(SkottieTextPropertyValueTest, ComparisonOperator) {
+  SkottieTextPropertyValue val("test-1", gfx::RectF(10, 20, 100, 200));
+  SkottieTextPropertyValue val_2("test-1", gfx::RectF(10, 20, 100, 200));
   EXPECT_THAT(val, Eq(val_2));
-  val_2.SetText("test-2");
-  EXPECT_THAT(val, Ne(val_2));
-  SkottieTextPropertyValue copy(val);
-  EXPECT_THAT(copy, Eq(val));
+
+  SkottieTextPropertyValue val_copy(val);
+  ASSERT_THAT(val_copy, Eq(val));
+
+  {
+    SkottieTextPropertyValue tmp(val);
+    tmp.SetText("test-2");
+    EXPECT_THAT(val, Ne(tmp));
+  }
+  {
+    SkottieTextPropertyValue tmp(val);
+    tmp.set_box(gfx::RectF(20, 10, 200, 100));
+    EXPECT_THAT(val, Ne(tmp));
+  }
 }
 
 }  // namespace

@@ -766,6 +766,7 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
         // text).
         helper.WriteData(text_property_val.text().size(),
                          text_property_val.text().c_str());
+        helper.Write(gfx::RectFToSkRect(text_property_val.box()));
       }));
   return helper.size();
 }
@@ -1303,7 +1304,9 @@ absl::optional<SkottieTextPropertyValue> DeserializeSkottieTextPropertyValue(
   deserializer.ReadSize(&text_size);
   std::string text(text_size, char());
   deserializer.ReadData(text_size, const_cast<char*>(text.c_str()));
-  return SkottieTextPropertyValue(std::move(text));
+  SkRect box;
+  deserializer.Read(&box);
+  return SkottieTextPropertyValue(std::move(text), gfx::SkRectToRectF(box));
 }
 
 }  // namespace
