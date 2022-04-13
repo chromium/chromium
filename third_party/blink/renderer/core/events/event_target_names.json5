@@ -51,5 +51,6 @@
     "Worker",
     "XMLHttpRequest",
     "XMLHttpRequestUpload",
+    "CloseWatcher",
   ],
 }

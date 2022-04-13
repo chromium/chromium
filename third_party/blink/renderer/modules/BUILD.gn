@@ -72,7 +72,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/cache_storage",
     "//third_party/blink/renderer/modules/canvas",
     "//third_party/blink/renderer/modules/clipboard",
-    "//third_party/blink/renderer/modules/closewatcher",
     "//third_party/blink/renderer/modules/compute_pressure",
     "//third_party/blink/renderer/modules/contacts_picker",
     "//third_party/blink/renderer/modules/content_index",

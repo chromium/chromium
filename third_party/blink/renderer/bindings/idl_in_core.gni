@@ -10,6 +10,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/animation/animation.idl",
           "//third_party/blink/renderer/core/animation/animation_effect.idl",
           "//third_party/blink/renderer/core/animation/animation_timeline.idl",
+          "//third_party/blink/renderer/core/html/closewatcher/close_watcher.idl",
+          "//third_party/blink/renderer/core/html/closewatcher/close_watcher_options.idl",
           "//third_party/blink/renderer/core/animation/base_keyframe.idl",
           "//third_party/blink/renderer/core/animation/base_property_indexed_keyframe.idl",
           "//third_party/blink/renderer/core/animation/computed_effect_timing.idl",

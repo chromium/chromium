@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/closewatcher/close_watcher.h"
+#include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_close_watcher_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
@@ -37,30 +37,16 @@ class DestroyOnAbortAlgorithm final : public AbortSignal::Algorithm {
 
 }  // namespace
 
-const char CloseWatcher::WatcherStack::kSupplementName[] =
-    "CloseWatcher::WatcherStack";
-
-CloseWatcher::WatcherStack& CloseWatcher::WatcherStack::From(
-    LocalDOMWindow& window) {
-  auto* stack = Supplement<LocalDOMWindow>::From<WatcherStack>(window);
-
-  // Must have been installed by InstallUserActivationObserver.
-  DCHECK(stack);
-  return *stack;
-}
-
-CloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {
-  window.RegisterUserActivationObserver(this);
-}
+CloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow* window)
+    : receiver_(this, window), window_(window) {}
 
 void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
   if (watchers_.IsEmpty()) {
-    GetSupplementable()->addEventListener(event_type_names::kKeyup, this,
-                                          /*use_capture=*/false);
-    auto& host = GetSupplementable()->GetFrame()->GetLocalFrameHostRemote();
+    window_->addEventListener(event_type_names::kKeyup, this,
+                              /*use_capture=*/false);
+    auto& host = window_->GetFrame()->GetLocalFrameHostRemote();
     host.SetCloseListener(receiver_.BindNewPipeAndPassRemote(
-        GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+        window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   watchers_.insert(watcher);
 }
@@ -68,17 +54,17 @@ void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
 void CloseWatcher::WatcherStack::Remove(CloseWatcher* watcher) {
   watchers_.erase(watcher);
   if (watchers_.IsEmpty()) {
-    GetSupplementable()->removeEventListener(event_type_names::kKeyup, this,
-                                             /*use_capture=*/false);
+    window_->removeEventListener(event_type_names::kKeyup, this,
+                                 /*use_capture=*/false);
     receiver_.reset();
   }
 }
 
 void CloseWatcher::WatcherStack::Trace(Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(watchers_);
   visitor->Trace(receiver_);
+  visitor->Trace(window_);
 }
 
 void CloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {
@@ -89,8 +75,8 @@ void CloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {
 }
 
 bool CloseWatcher::WatcherStack::CheckForCreation() {
-  if (HasActiveWatcher() && !LocalFrame::ConsumeTransientUserActivation(
-                                GetSupplementable()->GetFrame())) {
+  if (HasActiveWatcher() &&
+      !LocalFrame::ConsumeTransientUserActivation(window_->GetFrame())) {
     return false;
   }
 
@@ -109,7 +95,7 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  WatcherStack& stack = WatcherStack::From(*window);
+  WatcherStack& stack = *window->closewatcher_stack();
 
   if (!stack.CheckForCreation()) {
     exception_state.ThrowDOMException(
@@ -142,7 +128,7 @@ void CloseWatcher::close() {
   if (IsClosed() || dispatching_cancel_ || !DomWindow())
     return;
 
-  WatcherStack& stack = WatcherStack::From(*DomWindow());
+  WatcherStack& stack = *DomWindow()->closewatcher_stack();
 
   if (stack.CanCloseWatcherFireCancel()) {
     stack.ConsumeCloseWatcherCancelability();
@@ -159,7 +145,7 @@ void CloseWatcher::close() {
   if (IsClosed())
     return;
   if (DomWindow())
-    WatcherStack::From(*DomWindow()).Remove(this);
+    DomWindow()->closewatcher_stack()->Remove(this);
 
   state_ = State::kClosed;
   DispatchEvent(*Event::Create(event_type_names::kClose));
@@ -168,14 +154,8 @@ void CloseWatcher::destroy() {
   if (IsClosed())
     return;
   if (DomWindow())
-    WatcherStack::From(*DomWindow()).Remove(this);
+    DomWindow()->closewatcher_stack()->Remove(this);
   state_ = State::kClosed;
-}
-
-// static
-void CloseWatcher::InstallUserActivationObserver(LocalDOMWindow& window) {
-  Supplement<LocalDOMWindow>::ProvideTo(
-      window, MakeGarbageCollected<WatcherStack>(window));
 }
 
 const AtomicString& CloseWatcher::InterfaceName() const {

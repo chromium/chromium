@@ -7,6 +7,10 @@
 generated_callback_function_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_blob_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_close_watcher.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_close_watcher.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_script_callback.cc",

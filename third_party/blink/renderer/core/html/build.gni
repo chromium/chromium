@@ -42,6 +42,8 @@ blink_core_sources_html = [
   "canvas/ukm_parameters.h",
   "client_hints_util.cc",
   "client_hints_util.h",
+  "closewatcher/close_watcher.cc",
+  "closewatcher/close_watcher.h",
   "collection_items_cache.h",
   "collection_type.h",
   "conversion_measurement_parsing.cc",
