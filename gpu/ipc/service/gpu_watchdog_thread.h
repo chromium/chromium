@@ -75,6 +75,13 @@ constexpr int kMaxCountOfMoreGpuThreadTimeAllowed = 3;
 #endif
 constexpr int kMaxExtraCyclesBeforeKill = 0;
 
+// If the scheduled timeout function is delayed by more than
+// kUnreasonableTimeoutDelay, we assume the system is in a unexpected state and
+// the GPU watchdog will NOT terminate the GPU process if no progress is made in
+// the GPU main thread or in the GPU display compositor thread. This is used in
+// determining SlowWatchdogThread.
+constexpr base::TimeDelta kUnreasonableTimeoutDelay = base::Seconds(5);
+
 // A thread that intermitently sends tasks to a group of watched message loops
 // and deliberately crashes if one of them does not respond after a timeout.
 class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread

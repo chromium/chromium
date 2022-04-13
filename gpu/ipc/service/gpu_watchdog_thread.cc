@@ -511,7 +511,8 @@ bool GpuWatchdogThread::SlowWatchdogThread() {
   // OnWatchdogTimeout() calls, the system is considered slow and it's not a GPU
   // hang.
   bool slow_watchdog_thread =
-      (base::Time::Now() - next_on_watchdog_timeout_time_) >= base::Seconds(15);
+      (base::Time::Now() - next_on_watchdog_timeout_time_) >=
+      kUnreasonableTimeoutDelay;
 
   // Record this case only when a GPU hang is detected and the thread is slow.
   if (slow_watchdog_thread)
