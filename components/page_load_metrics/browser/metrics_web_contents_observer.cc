@@ -904,16 +904,22 @@ void MetricsWebContentsObserver::PrimaryMainFrameRenderProcessGone(
   // currently committed load. We don't know if the pending navs or aborted
   // pending navs are associated w/ the render process that died, so we can't be
   // sure the info should propagate to them.
+  const auto now = base::TimeTicks::Now();
   if (primary_page_) {
     primary_page_->NotifyPageEnd(END_RENDER_PROCESS_GONE,
-                                 UserInitiatedInfo::NotUserInitiated(),
-                                 base::TimeTicks::Now(), true);
+                                 UserInitiatedInfo::NotUserInitiated(), now,
+                                 true);
+  }
+  for (const auto& kv : active_pages_) {
+    kv.second->NotifyPageEnd(END_RENDER_PROCESS_GONE,
+                             UserInitiatedInfo::NotUserInitiated(), now, true);
   }
 
   // If this is a crash, eagerly log the aborted provisional loads and the
   // committed load. `provisional_loads_` don't need to be destroyed here
   // because their lifetime is tied to the NavigationHandle.
   primary_page_.reset();
+  active_pages_.clear();
   aborted_provisional_loads_.clear();
 }
 
