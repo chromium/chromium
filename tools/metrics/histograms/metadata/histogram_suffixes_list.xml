@@ -4310,13 +4310,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ModuleIntegrityVerification.Difference"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NativeFileSystemAPIHandleType" separator=".">
-  <suffix name="Directory" label=""/>
-  <suffix name="File" label=""/>
-  <affected-histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"/>
-  <affected-histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NavigationCharacteristic" separator="_">
   <suffix name="ExistingRenderer_BeforeUnloadDiscounted"
       label="Navigation reused an existing renderer process. Time spent in

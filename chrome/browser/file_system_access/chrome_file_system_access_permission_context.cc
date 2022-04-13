@@ -699,25 +699,27 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       PermissionRequestOutcome outcome) {
     if (type_ == GrantType::kWrite) {
       base::UmaHistogramEnumeration(
-          "NativeFileSystemAPI.WritePermissionRequestOutcome", outcome);
+          "Storage.FileSystemAccess.WritePermissionRequestOutcome", outcome);
       if (handle_type_ == HandleType::kDirectory) {
         base::UmaHistogramEnumeration(
-            "NativeFileSystemAPI.WritePermissionRequestOutcome.Directory",
+            "Storage.FileSystemAccess.WritePermissionRequestOutcome.Directory",
             outcome);
       } else {
         base::UmaHistogramEnumeration(
-            "NativeFileSystemAPI.WritePermissionRequestOutcome.File", outcome);
+            "Storage.FileSystemAccess.WritePermissionRequestOutcome.File",
+            outcome);
       }
     } else {
       base::UmaHistogramEnumeration(
-          "NativeFileSystemAPI.ReadPermissionRequestOutcome", outcome);
+          "Storage.FileSystemAccess.ReadPermissionRequestOutcome", outcome);
       if (handle_type_ == HandleType::kDirectory) {
         base::UmaHistogramEnumeration(
-            "NativeFileSystemAPI.ReadPermissionRequestOutcome.Directory",
+            "Storage.FileSystemAccess.ReadPermissionRequestOutcome.Directory",
             outcome);
       } else {
         base::UmaHistogramEnumeration(
-            "NativeFileSystemAPI.ReadPermissionRequestOutcome.File", outcome);
+            "Storage.FileSystemAccess.ReadPermissionRequestOutcome.File",
+            outcome);
       }
     }
 

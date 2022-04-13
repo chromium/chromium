@@ -207,26 +207,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"
-    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2022-05-01">
-  <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    The result of an attempt to request write permission to a file or directory
-    via the Native File System API.
-  </summary>
-</histogram>
-
-<histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"
-    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2022-02-06">
-  <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    The result of an attempt to request write permission to a file or directory
-    via the Native File System API.
-  </summary>
-</histogram>
-
 <histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
     expires_after="M77">
   <owner>costan@google.com</owner>
@@ -538,6 +518,25 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="All" summary="Update all persisted permissions"/>
     <variant name="Origin" summary="Update one origin's persisted permissions"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
+    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2023-05-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of an attempt to request permission to a file or directory via
+    the File System Access API.
+  </summary>
+  <token key="OpType">
+    <variant name="Read" summary="Read permission requested"/>
+    <variant name="Write" summary="Write permission requested"/>
+  </token>
+  <token key="EntryType">
+    <variant name="Directory" summary="Requested permission to a directory"/>
+    <variant name="File" summary="Requested permission to a file"/>
   </token>
 </histogram>
 
