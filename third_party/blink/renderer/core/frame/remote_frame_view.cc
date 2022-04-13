@@ -199,7 +199,7 @@ void RemoteFrameView::UpdateCompositingRect() {
   // child frame as its compositing rect.
   if (auto frozen_size = owner_layout_object->FrozenFrameSize()) {
     compositing_rect_ =
-        gfx::Rect(frozen_size->width.ToInt(), frozen_size->height.ToInt());
+        gfx::Rect(frozen_size->width.Ceil(), frozen_size->height.Ceil());
   } else {
     compositing_rect_ = ComputeCompositingRect();
   }
@@ -290,7 +290,7 @@ void RemoteFrameView::PropagateFrameRects() {
   if (auto* layout_object = GetLayoutEmbeddedContent()) {
     if (auto frozen_size = layout_object->FrozenFrameSize()) {
       frame_size =
-          gfx::Size(frozen_size->width.ToInt(), frozen_size->height.ToInt());
+          gfx::Size(frozen_size->width.Ceil(), frozen_size->height.Ceil());
     }
   }
   remote_frame_->FrameRectsChanged(frame_size, screen_space_rect);

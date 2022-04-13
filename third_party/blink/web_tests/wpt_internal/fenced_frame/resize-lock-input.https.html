@@ -91,14 +91,7 @@
                      .send();
             result = await nextValueFromServer(resize_lock_report_click_location_key_after_resize_2);
             assert_equals(result, "300,150", "fenced frame event before resize");
-      }, 1000);
-
-        /*let result =
-          await nextValueFromServer(resize_lock_report_inner_dimensions_key);
-        assert_equals(result, "300x150",
-                      "fenced frame dimensions should not be updated by " +
-                      "parent page");*/
-
+        }, 1000);
       }, "Test Resize Lock");
     </script>
 
