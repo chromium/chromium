@@ -299,8 +299,9 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
     account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
     primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
-    return {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
-            account, primary_account};
+    return DiceWebSigninInterceptor::Delegate::BubbleParameters(
+        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
+        primary_account);
   }
 
   absl::optional<SigninInterceptionResult> callback_result_;

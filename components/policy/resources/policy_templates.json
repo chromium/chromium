@@ -29075,6 +29075,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           'primary_account_strict',
           'affiliated_device',
           'none',
+          'primary_account_keep_existing_data',
+          'primary_account_strict_keep_existing_data',
         ]
       },
       'supported_on': [
@@ -29089,17 +29091,27 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         {
           'name': 'PrimaryAccount',
           'value': 'primary_account',
-          'caption': 'A Managed account must be a primary account',
+          'caption': 'A Managed account must be a primary account and importing existing browsing data is allowed at the time of profile creation',
         },
         {
           'name': 'PrimaryAccountStrict',
           'value': 'primary_account_strict',
-          'caption': 'A Managed account must be a primary account and have no secondary accounts',
+          'caption': 'A Managed account must be a primary account and have no secondary accounts and importing existing browsing data is allowed at the time of profile creation',
         },
         {
           'name': 'None',
           'value': 'none',
           'caption': 'No restrictions on managed accounts',
+        },
+        {
+          'name': 'PrimaryAccountKeepExistingData',
+          'value': 'primary_account_keep_existing_data',
+          'caption': 'A Managed account must be a primary account and the user can import existing data at the time of its creation',
+        },
+        {
+          'name': 'PrimaryAccountStrictKeepExistingData',
+          'value': 'primary_account_strict_keep_existing_data',
+          'caption': 'A Managed account must be a primary account and have no secondary accounts and the user can import existing data at the time of its creation',
         },
       ],
       'default': 'none',
@@ -29108,13 +29120,16 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'caption': '''Add restrictions on managed accounts''',
       'tags': [],
       'desc': '''
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph> at the machine level, all managed accounts will be forced to be primary.
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph> on an account, that account will always be a primary account, but may have secondary accounts in its profile.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA">'primary_account_keep_existing_data'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data.
 
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT">'primary_account_strict'</ph> at the machine level, all managed accounts will be forced to be primary.
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT">'primary_account_strict'</ph> on an account, that account will always be a primary account and will not have any secondary accounts in its profile.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT">'primary_account_strict'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account. This profile will not allow any secondary accounts.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA">'primary_account_strict_keep_existing_data'</ph> after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data. This profile will not allow any secondary accounts.
 
       If this policy is set to <ph name="POLICY_VALUE_NONE">'none'</ph> or not set, managed accounts have no restrictions. This may result in a managed account being a secondary account, which disables its ability to receive policies set on the account by the admin.
+
+      If this policy is set at the device level, all accounts in the browser are subjected to the policy.
+      If this policy is set at an account level, only that account is affected in the browser.
     ''',
     },
     {

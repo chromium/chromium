@@ -71,7 +71,11 @@ MatchBubbleParameters(
       testing::Field("primary_account",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          primary_account,
-                     parameters.primary_account));
+                     parameters.primary_account),
+      testing::Field("show_link_data_option",
+                     &DiceWebSigninInterceptor::Delegate::BubbleParameters::
+                         show_link_data_option,
+                     parameters.show_link_data_option));
 }
 
 // If the account info is valid, does nothing. Otherwise fills the extended
@@ -427,9 +431,9 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
                                    "primary_account");
 
   // Check that interception works otherwise, as a sanity check.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, account_info, SkColor()};
+      account_info, account_info);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -451,9 +455,57 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
                                    "primary_account_strict");
 
   // Check that interception works otherwise, as a sanity check.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestSynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+TEST_P(DiceWebSigninInterceptorManagedAccountTest,
+       EnforceManagedAccountAsPrimaryManagedLinkData) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  interceptor()->SetAccountLevelSigninRestrictionFetchResultForTesting(
+      "primary_account_keep_existing_data");
+
+  // Check that interception works otherwise, as a sanity check.
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
+      /*show_link_data_option=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestAsynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+TEST_P(DiceWebSigninInterceptorManagedAccountTest,
+       EnforceManagedAccountAsPrimaryManagedStrictLinkData) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict_keep_existing_data");
+
+  // Check that interception works otherwise, as a sanity check.
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
+      /*show_link_data_option=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -484,9 +536,9 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(account_info.email),
                      /*is_consented_primary_account=*/false);
   // Check that interception works otherwise, as a sanity check.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -577,9 +629,9 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterception) {
       SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
 
   // Check that interception works otherwise, as a sanity check.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -686,9 +738,9 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
                      /*is_consented_primary_account=*/false);
 
   // Start an interception.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
   base::OnceCallback<void(SigninInterceptionResult)> delegate_callback;
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
@@ -736,9 +788,9 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
 
   const int kMaxProfileCreationDeclinedCount = 2;
   // Decline the interception kMaxProfileCreationDeclinedCount times.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+      account_info, primary_account_info);
   for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
@@ -767,9 +819,7 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
   // Another account can still be intercepted.
   account_info.email = "oscar@example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  expected_parameters = {
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+  expected_parameters.intercepted_account = account_info;
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -798,9 +848,9 @@ TEST_F(DiceWebSigninInterceptorTest,
 
   const int kMaxProfileCreationDeclinedCount = 2;
   // Decline the interception kMaxProfileCreationDeclinedCount times.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+      account_info, primary_account_info);
   for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
@@ -829,9 +879,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   // Another account can still be intercepted.
   account_info.email = "oscar@example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  expected_parameters = {
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+  expected_parameters.intercepted_account = account_info;
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -860,9 +908,9 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineSwitchRepeatedly_NoLimit) {
                      /*is_consented_primary_account=*/false);
 
   // Test that the profile switch can be declined multiple times.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
   for (int i = 0; i < 10; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
@@ -942,9 +990,9 @@ TEST_F(DiceWebSigninInterceptorTest, ProfileCreationDisallowed) {
       SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed);
 
   // Profile switch interception still works.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
+      account_info, AccountInfo());
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -970,9 +1018,9 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoAvailable) {
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
   // Account info becomes available, interception happens.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+      account_info, primary_account_info);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -994,9 +1042,9 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoAlreadyAvailable) {
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Account info is already available, interception happens immediately.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
-      account_info, primary_account_info, SkColor()};
+      account_info, primary_account_info);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1020,9 +1068,9 @@ TEST_F(DiceWebSigninInterceptorTest, MultiUserInterception) {
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Account info is already available, interception happens immediately.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
-      account_info, primary_account_info, SkColor()};
+      account_info, primary_account_info);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),

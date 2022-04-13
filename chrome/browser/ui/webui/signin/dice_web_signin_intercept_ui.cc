@@ -50,8 +50,9 @@ CreateSampleBubbleParameters() {
   primary_account.picture_url = small_png;
   primary_account.hosted_domain = kNoHostedDomainFound;
 
-  return {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
-          intercepted_account, primary_account, SK_ColorMAGENTA};
+  return DiceWebSigninInterceptor::Delegate::BubbleParameters(
+      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+      intercepted_account, primary_account, SK_ColorMAGENTA);
 }
 
 }  // namespace

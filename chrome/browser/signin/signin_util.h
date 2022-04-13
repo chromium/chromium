@@ -91,6 +91,10 @@ bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
     const std::string& intercepted_account_level_policy_value);
 
+bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+    Profile* profile,
+    const std::string& intercepted_account_level_policy_value);
+
 // Records a UMA metric if the user accepts or not to create an enterprise
 // profile.
 void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,

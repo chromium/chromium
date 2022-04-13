@@ -166,11 +166,23 @@ class DiceWebSigninInterceptor : public KeyedService,
    public:
     // Parameters for interception bubble UIs.
     struct BubbleParameters {
+      BubbleParameters(SigninInterceptionType interception_type,
+                       AccountInfo intercepted_account,
+                       AccountInfo primary_account,
+                       SkColor profile_highlight_color = SkColor(),
+                       bool show_guest_option = false,
+                       bool show_link_data_option = false);
+
+      BubbleParameters(const BubbleParameters& copy);
+      BubbleParameters& operator=(const BubbleParameters&);
+      ~BubbleParameters();
+
       SigninInterceptionType interception_type;
       AccountInfo intercepted_account;
       AccountInfo primary_account;
       SkColor profile_highlight_color;
       bool show_guest_option;
+      bool show_link_data_option;
     };
 
     virtual ~Delegate() = default;

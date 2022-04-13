@@ -62,8 +62,8 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
 
   base::HistogramTester histogram_tester;
 
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
-      type, enterprise_account_, personal_account_};
+  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      type, enterprise_account_, personal_account_);
 
   DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
       bubble_parameters, profile(), result);
@@ -125,9 +125,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   SigninInterceptionResult result = SigninInterceptionResult::kAccepted;
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       SigninInterceptionType::kEnterprise, enterprise_account_,
-      personal_account_};
+      personal_account_);
 
   // Not Syncing.
   {
@@ -160,9 +160,9 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
   // New account is Enterprise.
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, enterprise_account_,
-        personal_account_};
+        personal_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
         bubble_parameters, profile(), result);
     histogram_tester.ExpectTotalCount(
@@ -176,9 +176,9 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
                                          signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, personal_account_,
-        enterprise_account_};
+        enterprise_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
         bubble_parameters, profile(), result);
     histogram_tester.ExpectTotalCount(
