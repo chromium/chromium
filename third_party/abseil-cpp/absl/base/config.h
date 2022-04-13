@@ -797,9 +797,26 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // ABSL_HAVE_LEAK_SANITIZER
 //
 // LeakSanitizer (or lsan) is a detector of memory leaks.
+// https://clang.llvm.org/docs/LeakSanitizer.html
+// https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer
+//
+// The macro ABSL_HAVE_LEAK_SANITIZER can be used to detect at compile-time
+// whether the LeakSanitizer is potentially available. However, just because the
+// LeakSanitizer is available does not mean it is active. Use the
+// always-available run-time interface in //absl/debugging/leak_check.h for
+// interacting with LeakSanitizer.
 #ifdef ABSL_HAVE_LEAK_SANITIZER
 #error "ABSL_HAVE_LEAK_SANITIZER cannot be directly set."
+#elif defined(LEAK_SANITIZER)
+// GCC provides no method for detecting the presense of the standalone
+// LeakSanitizer (-fsanitize=leak), so GCC users of -fsanitize=leak should also
+// use -DLEAK_SANITIZER.
+#define ABSL_HAVE_LEAK_SANITIZER 1
+// Clang standalone LeakSanitizer (-fsanitize=leak)
 #elif ABSL_HAVE_FEATURE(leak_sanitizer)
+#define ABSL_HAVE_LEAK_SANITIZER 1
+#elif defined(ABSL_HAVE_ADDRESS_SANITIZER)
+// GCC or Clang using the LeakSanitizer integrated into AddressSanitizer.
 #define ABSL_HAVE_LEAK_SANITIZER 1
 #endif
 

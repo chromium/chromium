@@ -97,8 +97,8 @@ cc_library(
     deps = [
         ":graphcycles_internal",
         ":kernel_timeout_internal",
-        "//absl/base",
         "//absl/base:atomic_hook",
+        "//absl/base",
         "//absl/base:base_internal",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -108,7 +108,9 @@ cc_library(
         "//absl/debugging:stacktrace",
         "//absl/debugging:symbolize",
         "//absl/time",
-    ],
+    ] + select({
+        "//conditions:default": [],
+    }),
 )
 
 cc_test(

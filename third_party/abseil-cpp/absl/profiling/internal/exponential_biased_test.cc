@@ -29,6 +29,7 @@ using ::testing::Ge;
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace profiling_internal {
+namespace {
 
 MATCHER_P2(IsBetween, a, b,
            absl::StrCat(std::string(negation ? "isn't" : "is"), " between ", a,
@@ -194,6 +195,7 @@ TEST(ExponentialBiasedTest, InitializationModes) {
   EXPECT_THAT(eb_stack.GetSkipCount(2), Ge(0));
 }
 
+}  // namespace
 }  // namespace profiling_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -56,7 +56,7 @@ static const unsigned char *GetKernelRtSigreturnAddress() {
     absl::debugging_internal::VDSOSupport::SymbolInfo symbol_info;
     // Symbol versioning pulled from arch/riscv/kernel/vdso/vdso.lds at v5.10.
     auto lookup = [&](int type) {
-      return vdso.LookupSymbol("__kernel_rt_sigreturn", "LINUX_4.15", type,
+      return vdso.LookupSymbol("__vdso_rt_sigreturn", "LINUX_4.15", type,
                                &symbol_info);
     };
     if ((!lookup(STT_FUNC) && !lookup(STT_NOTYPE)) ||

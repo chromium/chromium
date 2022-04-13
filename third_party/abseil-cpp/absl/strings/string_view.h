@@ -55,8 +55,9 @@ ABSL_NAMESPACE_END
 
 #else  // ABSL_USES_STD_STRING_VIEW
 
-#if ABSL_HAVE_BUILTIN(__builtin_memcmp) || \
-    (defined(__GNUC__) && !defined(__clang__))
+#if ABSL_HAVE_BUILTIN(__builtin_memcmp) ||        \
+    (defined(__GNUC__) && !defined(__clang__)) || \
+    (defined(_MSC_VER) && _MSC_VER >= 1928)
 #define ABSL_INTERNAL_STRING_VIEW_MEMCMP __builtin_memcmp
 #else  // ABSL_HAVE_BUILTIN(__builtin_memcmp)
 #define ABSL_INTERNAL_STRING_VIEW_MEMCMP memcmp

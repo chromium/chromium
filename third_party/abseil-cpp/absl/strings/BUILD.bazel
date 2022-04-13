@@ -1191,6 +1191,7 @@ cc_test(
     deps = [
         ":str_format_internal",
         ":strings",
+        "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/types:optional",
         "@com_google_googletest//:gtest_main",
