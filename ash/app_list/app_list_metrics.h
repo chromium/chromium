@@ -286,6 +286,15 @@ void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness);
 
 void RecordAppListSortAction(AppListSortOrder new_order, bool in_tablet);
 
+// Invoked when the app list session ends, records metrics of interest during
+// the session.
+void RecordMetricsOnSessionEnd();
+
+// Records the number of files that have been removed from the Launcher Continue
+// Section in the session. This also increments the internal counter to keep
+// track of the number of files that have been removed.
+void RecordCumulativeContinueSectionResultRemovedNumber();
+
 }  // namespace ash
 
 #endif  // ASH_APP_LIST_APP_LIST_METRICS_H_

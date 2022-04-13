@@ -42,6 +42,9 @@
 
 namespace ash {
 namespace {
+// Whether the files section has been shown.
+bool g_continue_section_files_shown = false;
+
 // Header paddings in dips.
 constexpr auto kHeaderPadding = gfx::Insets::TLBR(0, 12, 4, 12);
 
@@ -143,6 +146,11 @@ ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(
   DCHECK_GT(GetTasksSuggestionsCount(), index);
   return static_cast<ContinueTaskView*>(
       suggestions_container_->children()[index]);
+}
+
+// static
+bool ContinueSectionView::EnableContinueSectionFileRemovalMetrics() {
+  return g_continue_section_files_shown;
 }
 
 void ContinueSectionView::UpdateSuggestionTasks() {
@@ -396,6 +404,9 @@ void ContinueSectionView::UpdateElementsVisibility() {
   const bool show_privacy_notice = ShouldShowPrivacyNotice();
 
   SetVisible(show_files_section || show_privacy_notice);
+
+  if (show_files_section)
+    g_continue_section_files_shown = true;
 
   const bool suggestions_visibility_changed =
       show_files_section != suggestions_container_->GetVisible();

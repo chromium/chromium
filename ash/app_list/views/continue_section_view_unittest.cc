@@ -36,6 +36,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +56,9 @@ namespace ash {
 namespace {
 
 using test::AppListTestViewDelegate;
+
+constexpr char kFilesRemovedHistogramName[] =
+    "Apps.AppList.Search.ContinueSectionFilesRemovedPerSession";
 
 std::unique_ptr<TestSearchResult> CreateTestResult(const std::string& id,
                                                    AppListSearchResultType type,
@@ -1007,6 +1011,45 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       client->GetAndClearInvokedResultActions();
   EXPECT_EQ(expected_actions, invoked_actions);
+}
+
+TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
+  base::HistogramTester histogram_tester;
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+
+  // Remove two results.
+  EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
+  RemoveSearchResultWithContextMenuAt(0);
+
+  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
+  ASSERT_TRUE(dialog);
+  GestureTapOn(dialog->all_suggestions_option_for_test());
+  GestureTapOn(dialog->remove_button_for_test());
+
+  EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
+  RemoveSearchResultWithContextMenuAt(1);
+
+  ASSERT_FALSE(GetSearchViewAnchoredDialog());
+
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
+      {"id1", SearchResultActionType::kRemove},
+      {"id2", SearchResultActionType::kRemove}};
+  std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
+      client->GetAndClearInvokedResultActions();
+  EXPECT_EQ(expected_actions, invoked_actions);
+
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(kFilesRemovedHistogramName, 1));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(kFilesRemovedHistogramName, 2));
+  histogram_tester.ExpectTotalCount(kFilesRemovedHistogramName, 2);
 }
 
 TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {

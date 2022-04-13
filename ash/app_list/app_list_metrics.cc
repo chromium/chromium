@@ -13,6 +13,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/shell.h"
@@ -22,6 +23,9 @@
 #include "ui/compositor/compositor.h"
 
 namespace ash {
+
+// The number of files removed from the continue section during this session.
+int g_continue_file_removals_in_session = 0;
 
 const char kAppListPeekingToFullscreenHistogram[] =
     "Apps.AppListPeekingToFullscreenSource";
@@ -127,6 +131,9 @@ constexpr char kTabletReorderActionHistogram[] =
 // The prefix for all the variants that track how long the app list is kept
 // open by open method. Suffix is decided in `GetAppListOpenMethod`
 constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
+
+constexpr char kContinueSectionFilesRemovedInSessionHistogram[] =
+    "Apps.AppList.Search.ContinueSectionFilesRemovedPerSession";
 
 // The different sources from which a search result is displayed. These values
 // are written to logs.  New enum values can be added, but existing enums must
@@ -503,6 +510,19 @@ void RecordAppListSortAction(AppListSortOrder new_order, bool in_tablet) {
     base::UmaHistogramEnumeration(kTabletReorderActionHistogram, new_order);
   else
     base::UmaHistogramEnumeration(kClamshellReorderActionHistogram, new_order);
+}
+
+void RecordMetricsOnSessionEnd() {
+  if (ContinueSectionView::EnableContinueSectionFileRemovalMetrics() &&
+      g_continue_file_removals_in_session == 0) {
+    base::UmaHistogramCounts100(kContinueSectionFilesRemovedInSessionHistogram,
+                                0);
+  }
+}
+
+void RecordCumulativeContinueSectionResultRemovedNumber() {
+  base::UmaHistogramCounts100(kContinueSectionFilesRemovedInSessionHistogram,
+                              ++g_continue_file_removals_in_session);
 }
 
 }  // namespace ash

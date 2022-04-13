@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
@@ -387,6 +388,8 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
 }
 
 void ContinueTaskView::LogMetricsOnResultRemoved() {
+  RecordCumulativeContinueSectionResultRemovedNumber();
+
   base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
                                 GetTaskResultType(), TaskResultType::kMaxValue);
 }

@@ -751,6 +751,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Search.ContinueSectionFilesRemovedPerSession"
+    units="files" expires_after="2023-04-07">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Represents the number of file suggestions removed per user per session in
+    the in ChromeOS launcher UI. Recorded every time the user removes a
+    suggestion. Each bucket represents the total number of suggestions removed
+    within the user session at the time the histogram is recorded. If the user
+    removes total of n files, histogram will have recorded all of 1, 2, 3, ...,
+    n values. We also record 0 count during session end if no suggestions have
+    been removed.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Search.DriveContinueResultsShown"
     enum="BooleanShown" expires_after="2023-02-14">
   <owner>amandadeacon@chromium.org</owner>

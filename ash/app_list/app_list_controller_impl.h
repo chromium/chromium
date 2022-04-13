@@ -537,6 +537,9 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // Whether we're currently in a window dragging process.
   bool in_window_dragging_ = false;
 
+  // Whether a session was ever set ACTIVE for the app list.
+  bool has_session_started_ = false;
+
   // The last overview mode exit type - cached when the overview exit starts, so
   // it can be used to decide how to update home screen when overview mode exit
   // animations are finished (at which point this information will not be

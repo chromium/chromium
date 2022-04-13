@@ -43,6 +43,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
 
+  // Returns true if the continue section removal metrics should be logged.
+  static bool EnableContinueSectionFileRemovalMetrics();
+
   // Called when the `suggestion_container_` finishes updating the tasks.
   void OnSearchResultContainerResultsChanged();
 
