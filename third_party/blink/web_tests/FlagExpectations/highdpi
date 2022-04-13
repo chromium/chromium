@@ -1311,6 +1311,7 @@ virtual/text-antialias/whitespace/024.html [ Pass ]
 virtual/text-antialias/whitespace/025.html [ Pass ]
 virtual/text-antialias/whitespace/nowrap-clear-float.html [ Pass ]
 virtual/text-antialias/whitespace/pre-newline-box-test.html [ Pass ]
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/table-cell-expansion-003.html [ Pass ]
 
 # Layout tests significatly differ from non scale baseline
 crbug.com/1105168 fast/sub-pixel/sub-pixel-accumulates-to-layers.html [ Failure ]
@@ -1787,11 +1788,27 @@ crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mappin
 crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
 crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
 
+# Existing failures. Mark these as [ Pass ] when these tests are fixed.
+crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
+crbug.com/599828 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-fallback-align-content-001.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-001.html [ Failure ]
+crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-001.html [ Crash Failure Timeout ]
+crbug.com/694218 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html [ Failure ]
+crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-011.html [ Failure ]
+crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
+crbug.com/970200 external/wpt/css/css-text/text-indent/text-indent-tab-positions-001.html [ Failure ]
+crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
+crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-005.html [ Failure ]
+crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/regions/basic.html [ Failure ]
+
 #
 # Need to file proper bugs for each of the following failures.
 #
-# Acid3 fails with highdpi.
-crbug.com/1315309 external/wpt/acid/acid3/test.html [ Failure ]
 # Background attachment not clipped.
 crbug.com/1315309 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html [ Failure ]
 # Background-size incorrect.
@@ -1799,20 +1816,8 @@ crbug.com/1315309 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/1315309 external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height-viewbox.html [ Failure ]
 # Minor pixel snapping.
 crbug.com/1315309 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html [ Failure ]
-# Table cell not expanded.
-crbug.com/1315309 external/wpt/css/css-break/table/table-cell-expansion-003.html [ Failure ]
 # Extra glyphs in expectation.
 crbug.com/1315309 external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Failure ]
-# Stroke scaled wrong.
-crbug.com/1315309 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
-# Flexbox alignment seems off.
-crbug.com/1315309 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-fallback-align-content-001.html [ Failure ]
-# Flexbox intrinsic size is wrong.
-crbug.com/1315309 external/wpt/css/css-flexbox/intrinsic-size/row-001.html [ Failure ]
-# Grid highdpi bugs
-crbug.com/1315309 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
-crbug.com/1315309 external/wpt/css/css-grid/masonry/tentative/masonry-justify-content-001.html [ Failure ]
-crbug.com/1315309 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-001.html [ Crash Failure ]
 # LayoutAPI sizing seems wrong.
 crbug.com/1315309 external/wpt/css/css-layout-api/auto-block-size/absolute.https.html [ Failure ]
 crbug.com/1315309 external/wpt/css/css-layout-api/baseline/no-baseline.https.html [ Failure ]
@@ -1822,29 +1827,11 @@ crbug.com/1315309 external/wpt/css/css-layout-api/edges/border-vrl.https.html [ 
 crbug.com/1315309 external/wpt/css/css-layout-api/intrinsic-sizes/child-replaced-percentage-01.https.html [ Failure ]
 crbug.com/1315309 external/wpt/css/css-layout-api/layout-child/before-after.https.html [ Failure ]
 crbug.com/1315309 external/wpt/css/css-layout-api/position-fragment/vrl-ltr.https.html [ Failure ]
-# Incorrect clip path.
-crbug.com/1315309 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html [ Failure ]
-# CSS Shape bug?
-crbug.com/1315309 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-011.html [ Failure ]
-# Hyphenation is different.
-crbug.com/1315309 external/wpt/css/css-text/hyphens/hyphenate-character-004.html [ Failure ]
 # Letter spacing is different.
 crbug.com/1315309 external/wpt/css/css-text/letter-spacing/letter-spacing-201.html [ Failure ]
 crbug.com/1315309 external/wpt/css/css-text/word-boundary/word-boundary-009.html [ Failure ]
-# Text joining bug.
-crbug.com/1315309 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
-# Text indentation bug.
-crbug.com/1315309 external/wpt/css/css-text/text-indent/text-indent-tab-positions-001.html [ Failure ]
-# Word break difference.
-crbug.com/1315309 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
 # Perspective scaling issue.
 crbug.com/1315309 external/wpt/css/css-transforms/animation/transform-interpolation-perspective.html [ Failure ]
-# Containing block positioning bug.
-crbug.com/1315309 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-# Filter doesn't show up.
-crbug.com/1315309 external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
-# Offset path scaling issue.
-crbug.com/1315309 external/wpt/css/motion/offset-path-ray-005.html [ Failure ]
 # Missing backplate.
 crbug.com/1315309 external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html [ Failure ]
 # IsInputPending event issue?
@@ -1853,8 +1840,6 @@ crbug.com/1315309 external/wpt/is-input-pending/tentative/same-origin-subframe.s
 crbug.com/1315309 external/wpt/resize-observer/scrollbars-2.html [ Failure ]
 # WebXR overlay event issue?
 crbug.com/1315309 external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Failure ]
-# WebVTT background is larger than expected
-crbug.com/1315309 external/wpt/webvtt/rendering/cues-with-video/processing-model/regions/basic.html [ Failure ]
 
 crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
 
