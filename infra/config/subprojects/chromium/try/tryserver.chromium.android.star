@@ -334,6 +334,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-11-x86-fyi-rel",
+)
+
+try_.builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
 )
 
