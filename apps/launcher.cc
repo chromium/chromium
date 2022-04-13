@@ -61,21 +61,20 @@ namespace app_runtime = extensions::api::app_runtime;
 
 using content::BrowserThread;
 using extensions::AppRuntimeEventRouter;
+using extensions::EventRouter;
+using extensions::Extension;
+using extensions::ExtensionHost;
+using extensions::GrantedFileEntry;
+using extensions::app_file_handler_util::CreateEntryInfos;
 using extensions::app_file_handler_util::CreateFileEntry;
 using extensions::app_file_handler_util::FileHandlerCanHandleEntry;
 using extensions::app_file_handler_util::FileHandlerForId;
 using extensions::app_file_handler_util::HasFileSystemWritePermission;
 using extensions::app_file_handler_util::PrepareFilesForWritableApp;
-using extensions::EventRouter;
-using extensions::Extension;
-using extensions::ExtensionHost;
-using extensions::GrantedFileEntry;
 
 namespace apps {
 
 namespace {
-
-const char kFallbackMimeType[] = "application/octet-stream";
 
 bool DoMakePathAbsolute(const base::FilePath& current_directory,
                         base::FilePath* file_path) {
@@ -244,16 +243,8 @@ class PlatformAppPathLauncher
   void OnAreDirectoriesAndMimeTypesCollected(
       std::unique_ptr<std::set<base::FilePath>> directory_paths,
       std::unique_ptr<std::vector<std::string>> mime_types) {
-    DCHECK(entry_paths_.size() == mime_types->size());
-    // If fetching a mime type failed, then use a fallback one.
-    for (size_t i = 0; i < entry_paths_.size(); ++i) {
-      const std::string mime_type =
-          !(*mime_types)[i].empty() ? (*mime_types)[i] : kFallbackMimeType;
-      bool is_directory =
-          directory_paths->find(entry_paths_[i]) != directory_paths->end();
-      entries_.push_back(
-          extensions::EntryInfo(entry_paths_[i], mime_type, is_directory));
-    }
+    // If mime type fetch fails then the following provides a fallback.
+    entries_ = CreateEntryInfos(entry_paths_, *mime_types, *directory_paths);
 
     const Extension* app = GetExtension();
     if (!app)

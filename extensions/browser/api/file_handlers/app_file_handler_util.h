@@ -121,6 +121,16 @@ bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
                                  base::FilePath* file_path,
                                  std::string* error);
 
+// Returns a vector of EntryInfo with:
+// * |path| fields populated by |entry_paths|.
+// * |mime_type| fields populated by |mime_types| (must have same size as
+//   |entry_paths|), with empty elements replaced by a fallback.
+// * |is_directory| fields decided by whether |path| is in |directory_paths|.
+std::vector<extensions::EntryInfo> CreateEntryInfos(
+    const std::vector<base::FilePath>& entry_paths,
+    const std::vector<std::string>& mime_types,
+    const std::set<base::FilePath>& directory_paths);
+
 }  // namespace app_file_handler_util
 
 }  // namespace extensions

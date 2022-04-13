@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 
+#include "base/files/file_path.h"
+#include "base/test/gtest_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/browser/entry_info.h"
@@ -202,6 +204,65 @@ TEST(FileHandlersAppFileHandlerUtilTest, WebAppFileHandlerCanHandleEntry) {
       CreateWebAppFileHandlerFromFileExtension(".gz"),
       EntryInfo(base::FilePath(FILE_PATH_LITERAL("foo.gz")),
                 "application/octet-stream", true)));
+}
+
+TEST(FileHandlersAppFileHandlerUtilTest, CreateEntryInfos) {
+  const auto is_same_entry_info = [](const EntryInfo& info1,
+                                     const EntryInfo& info2) -> bool {
+    return info1.path == info2.path && info1.mime_type == info2.mime_type &&
+           info1.is_directory == info2.is_directory;
+  };
+
+  // Empty case.
+  {
+    std::vector<extensions::EntryInfo> entry_infos =
+        CreateEntryInfos({}, {}, {});
+    EXPECT_TRUE(entry_infos.empty());
+  }
+
+  // Mix of data, including MIME fallbacks and a directory.
+  {
+    std::vector<extensions::EntryInfo> entry_infos =
+        CreateEntryInfos({base::FilePath(FILE_PATH_LITERAL("foo.html")),
+                          base::FilePath(FILE_PATH_LITERAL("/x/bar.jpg")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/c")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/bez.rat"))},
+                         {"text/html", "image/jpeg", "", ""},
+                         {base::FilePath(FILE_PATH_LITERAL("a")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/c"))});
+    EXPECT_EQ(4U, entry_infos.size());
+    EXPECT_TRUE(is_same_entry_info(
+        EntryInfo(base::FilePath(FILE_PATH_LITERAL("foo.html")), "text/html",
+                  false),
+        entry_infos[0]));
+    EXPECT_TRUE(is_same_entry_info(
+        EntryInfo(base::FilePath(FILE_PATH_LITERAL("/x/bar.jpg")), "image/jpeg",
+                  false),
+        entry_infos[1]));
+    EXPECT_TRUE(
+        is_same_entry_info(EntryInfo(base::FilePath(FILE_PATH_LITERAL("a/b/c")),
+                                     "application/octet-stream", true),
+                           entry_infos[2]));
+    EXPECT_TRUE(is_same_entry_info(
+        EntryInfo(base::FilePath(FILE_PATH_LITERAL("a/b/bez.rat")),
+                  "application/octet-stream", false),
+        entry_infos[3]));
+  }
+
+  // Param size mismatch (missing |mime_types| entry).
+  {
+    EXPECT_CHECK_DEATH(
+        std::vector<extensions::EntryInfo> entry_infos =
+            CreateEntryInfos({base::FilePath(FILE_PATH_LITERAL("foo.html")),
+                              base::FilePath(FILE_PATH_LITERAL("/x/bar.jpg")),
+                              base::FilePath(FILE_PATH_LITERAL("a/b/c")),
+                              base::FilePath(FILE_PATH_LITERAL("a/b/bez.rat"))},
+                             {"text/html", "image/jpeg", ""},
+                             {base::FilePath(FILE_PATH_LITERAL("a")),
+                              base::FilePath(FILE_PATH_LITERAL("a/b")),
+                              base::FilePath(FILE_PATH_LITERAL("a/b/c"))}));
+  }
 }
 
 }  // namespace app_file_handler_util
