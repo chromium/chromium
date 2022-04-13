@@ -109,6 +109,14 @@ generate_grd("build_trusted_grd") {
     "selfie_cam/selfie_cam.html",
     "selfie_cam/selfie_cam.css",
     "selfie_cam/selfie_cam.js",
+    "assets/icon_16.png",
+    "assets/icon_32.png",
+    "assets/icon_48.png",
+    "assets/icon_64.png",
+    "assets/icon_96.png",
+    "assets/icon_128.png",
+    "assets/icon_192.png",
+    "assets/icon_256.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
   grd_prefix = "ash_projector_app_trusted"
