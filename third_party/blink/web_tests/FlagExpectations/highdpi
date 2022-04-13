@@ -1806,16 +1806,25 @@ crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-functio
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-005.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/regions/basic.html [ Failure ]
 
+# Background attachment not clipped.
+crbug.com/1316079 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html [ Failure ]
+# Background-size incorrect.
+crbug.com/1316080 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
+crbug.com/1316080 external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height-viewbox.html [ Failure ]
+# Minor pixel snapping.
+crbug.com/1316081 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html [ Failure ]
+# Perspective scaling issue.
+crbug.com/1316082 external/wpt/css/css-transforms/animation/transform-interpolation-perspective.html [ Failure ]
+# Missing backplate.
+crbug.com/1316085 external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html [ Failure ]
+# IsInputPending event issue?
+crbug.com/1316086 external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Failure ]
+# WebXR overlay event issue?
+crbug.com/1316087 external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Failure ]
+
 #
 # Need to file proper bugs for each of the following failures.
 #
-# Background attachment not clipped.
-crbug.com/1315309 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html [ Failure ]
-# Background-size incorrect.
-crbug.com/1315309 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
-crbug.com/1315309 external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height-viewbox.html [ Failure ]
-# Minor pixel snapping.
-crbug.com/1315309 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html [ Failure ]
 # Extra glyphs in expectation.
 crbug.com/1315309 external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Failure ]
 # LayoutAPI sizing seems wrong.
@@ -1830,16 +1839,8 @@ crbug.com/1315309 external/wpt/css/css-layout-api/position-fragment/vrl-ltr.http
 # Letter spacing is different.
 crbug.com/1315309 external/wpt/css/css-text/letter-spacing/letter-spacing-201.html [ Failure ]
 crbug.com/1315309 external/wpt/css/css-text/word-boundary/word-boundary-009.html [ Failure ]
-# Perspective scaling issue.
-crbug.com/1315309 external/wpt/css/css-transforms/animation/transform-interpolation-perspective.html [ Failure ]
-# Missing backplate.
-crbug.com/1315309 external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html [ Failure ]
-# IsInputPending event issue?
-crbug.com/1315309 external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Failure ]
 # Resize observer scrollbar size slightly off.
 crbug.com/1315309 external/wpt/resize-observer/scrollbars-2.html [ Failure ]
-# WebXR overlay event issue?
-crbug.com/1315309 external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Failure ]
 
 crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
 
