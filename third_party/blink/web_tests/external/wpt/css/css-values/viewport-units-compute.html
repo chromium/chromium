@@ -22,8 +22,10 @@ function test_computed_value(value, expected) {
   test((t) => {
     t.add_cleanup(() => { doc.body.innerHTML = ''; });
     doc.body.innerHTML = `
+      <!doctype html>
       <style>
         * { margin: 0; }
+        body { height: 100%; }
         div { height: ${value}; }
       </style>
       <div></div>

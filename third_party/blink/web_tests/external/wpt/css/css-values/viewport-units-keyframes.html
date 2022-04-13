@@ -36,6 +36,10 @@ function test_interpolated_value(from, to, expected) {
   }, `Interpolation from ${from} to ${to} is ${expected} at 50%`);
 }
 
+// Flush the iframe styles before starting tests to avoid the animation in the
+// iframe starts before the iframe's document gets sized as expected.
+iframe.getBoundingClientRect();
+
 test_interpolated_value('0px', '100vw', '100px');
 test_interpolated_value('0px', '100vi', '100px');
 test_interpolated_value('0px', '100vmax', '100px');
