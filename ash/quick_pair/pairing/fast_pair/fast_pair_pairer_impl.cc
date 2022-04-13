@@ -404,6 +404,7 @@ void FastPairPairerImpl::OnCheckOptInStatus(
   if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
     QP_LOG(INFO) << __func__
                  << ": User is not opted in to save devices to their account";
+    std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
 

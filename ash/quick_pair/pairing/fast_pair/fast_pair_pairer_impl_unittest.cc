@@ -1400,7 +1400,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut) {
   NotifyConfirmPasskey();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
+  EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   RunWritePasskeyCallback(kResponseBytes);
@@ -1428,7 +1428,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown) {
   NotifyConfirmPasskey();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
+  EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   RunWritePasskeyCallback(kResponseBytes);
