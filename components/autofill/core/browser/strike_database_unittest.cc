@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -296,6 +297,22 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForKeys) {
   expected_keys.emplace_back(key3);
   EXPECT_EQ(strike_database_->GetAllStrikeKeysForProject("otherproject"),
             expected_keys);
+  ClearAllProtoStrikes();
+}
+
+// Test to ensure that the timestamp of strike being added is logged and
+// retrieved correctly.
+TEST_F(StrikeDatabaseTest, LastUpdateTimestamp) {
+  strike_database_->AddStrikes(1, "fake key");
+  base::Time strike_added_timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          strike_database_->GetLastUpdatedTimestamp("fake key")));
+  EXPECT_FALSE(strike_added_timestamp.is_null());
+
+  strike_database_->AddStrikes(1, "fake key");
+  EXPECT_LT(strike_added_timestamp,
+            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                strike_database_->GetLastUpdatedTimestamp("fake key"))));
   ClearAllProtoStrikes();
 }
 

@@ -427,4 +427,26 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   }
 }
 
+// Test to ensure that |HasDelayPassedSinceLastStrike()| function works
+// correctly.
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+       HasDelayPassedSinceLastStrike) {
+  autofill::TestAutofillClock test_clock{AutofillClock::Now()};
+  strike_database_->SetUniqueIdsRequired(true);
+  strike_database_->SetRequiredDelaySinceLastStrike(base::Days(7));
+
+  strike_database_->AddStrike("fake key");
+  ASSERT_EQ(1U, strike_database_->CountEntries());
+  EXPECT_FALSE(strike_database_->HasDelayPassedSinceLastStrike("fake key"));
+
+  test_clock.Advance(base::Days(1));
+  EXPECT_FALSE(strike_database_->HasDelayPassedSinceLastStrike("fake key"));
+
+  test_clock.Advance(base::Days(7));
+  EXPECT_TRUE(strike_database_->HasDelayPassedSinceLastStrike("fake key"));
+
+  strike_database_->AddStrike("fake key");
+  EXPECT_FALSE(strike_database_->HasDelayPassedSinceLastStrike("fake key"));
+}
+
 }  // namespace autofill

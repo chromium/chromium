@@ -98,4 +98,12 @@ void TestInMemoryStrikeDatabase::SetStrikeData(const std::string& key,
   strike_map_cache_[key] = data;
 }
 
+int64_t TestInMemoryStrikeDatabase::GetLastUpdatedTimestamp(
+    const std::string& key) {
+  auto iter = strike_map_cache_.find(key);
+  return (iter != strike_map_cache_.end())
+             ? iter->second.last_update_timestamp()
+             : 0;
+}
+
 }  // namespace autofill

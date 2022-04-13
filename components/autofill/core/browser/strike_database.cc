@@ -92,6 +92,13 @@ void StrikeDatabase::SetStrikeData(const std::string& key, int num_strikes) {
   SetProtoStrikeData(key, data, base::DoNothing());
 }
 
+int64_t StrikeDatabase::GetLastUpdatedTimestamp(const std::string& key) {
+  auto iter = strike_map_cache_.find(key);
+  return (iter != strike_map_cache_.end())
+             ? iter->second.last_update_timestamp()
+             : 0;
+}
+
 std::vector<std::string> StrikeDatabase::GetAllStrikeKeysForProject(
     const std::string& project_prefix) {
   std::vector<std::string> project_keys;

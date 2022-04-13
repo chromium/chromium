@@ -30,9 +30,15 @@ class StrikeDatabaseIntegratorBase {
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
+  // TODO(crbug.com/1304328): Rename this to ShouldBlockFeature...() since this
+  // takes both strikes and time delays.
   // Returns whether or not strike count for |id| has reached the strike limit
   // set by GetMaxStrikesLimit().
   bool IsMaxStrikesLimitReached(const std::string& id = kSharedId) const;
+
+  // Returns whether or not |GetOfferDelayTimeDelta()| has passed since last
+  // strike was logged for candidate with |id|.
+  bool HasDelayPassedSinceLastStrike(const std::string& id = kSharedId) const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
   int AddStrike(const std::string& id = kSharedId);
@@ -152,6 +158,12 @@ class StrikeDatabaseIntegratorBase {
   // Returns whether or not a unique string identifier is required for every
   // strike in this project.
   virtual bool UniqueIdsRequired() const = 0;
+
+  // Returns the time delta to wait for before prompting the feature again. If
+  // the Optional is empty, then there is no required delay during which the
+  // feature is blocked.
+  virtual absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const;
 };
 
 }  // namespace autofill

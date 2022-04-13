@@ -67,6 +67,9 @@ class StrikeDatabaseBase : public KeyedService {
   // |num_strikes|, and the current time as timestamp.
   virtual void SetStrikeData(const std::string& key, int num_strikes) = 0;
 
+  // Returns the timestamp when the records for |key| were last updated.
+  virtual int64_t GetLastUpdatedTimestamp(const std::string& key) = 0;
+
  protected:
   friend class StrikeDatabaseIntegratorBase;
 

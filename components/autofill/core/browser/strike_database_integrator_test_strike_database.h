@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/strike_database_integrator_base.h"
 
@@ -38,8 +39,12 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
   int GetMaxStrikesLimit() const override;
   absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
+  absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const override;
 
   void SetUniqueIdsRequired(bool unique_ids_required);
+  void SetRequiredDelaySinceLastStrike(
+      base::TimeDelta required_delay_since_last_strike);
 
  private:
   bool unique_ids_required_ = false;
@@ -48,6 +53,8 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
   absl::optional<size_t> maximum_entries_ = 10;
   absl::optional<size_t> maximum_entries_after_cleanup_ = 5;
   std::string project_prefix_ = "StrikeDatabaseIntegratorTest";
+  absl::optional<base::TimeDelta> required_delay_since_last_strike_ =
+      absl::nullopt;
 };
 
 }  // namespace autofill

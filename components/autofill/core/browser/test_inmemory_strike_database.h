@@ -36,6 +36,7 @@ class TestInMemoryStrikeDatabase : public StrikeDatabaseBase {
   void ClearAllStrikes() override;
   std::string GetPrefixFromKey(const std::string& key) const override;
   void SetStrikeData(const std::string& key, int num_strikes) override;
+  int64_t GetLastUpdatedTimestamp(const std::string& key) override;
 
  protected:
   friend class StrikeDatabaseIntegratorBase;

@@ -31,6 +31,18 @@ bool StrikeDatabaseIntegratorBase::IsMaxStrikesLimitReached(
   return GetStrikes(id) >= GetMaxStrikesLimit();
 }
 
+bool StrikeDatabaseIntegratorBase::HasDelayPassedSinceLastStrike(
+    const std::string& id) const {
+  CheckIdUniqueness(id);
+  if (!GetRequiredDelaySinceLastStrike().has_value())
+    return true;
+
+  return (AutofillClock::Now() -
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+              strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) >=
+         GetRequiredDelaySinceLastStrike();
+}
+
 int StrikeDatabaseIntegratorBase::AddStrike(const std::string& id) {
   CheckIdUniqueness(id);
   return AddStrikes(1, id);
@@ -195,6 +207,11 @@ absl::optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {
 
 absl::optional<size_t>
 StrikeDatabaseIntegratorBase::GetMaximumEntriesAfterCleanup() const {
+  return absl::nullopt;
+}
+
+absl::optional<base::TimeDelta>
+StrikeDatabaseIntegratorBase::GetRequiredDelaySinceLastStrike() const {
   return absl::nullopt;
 }
 
