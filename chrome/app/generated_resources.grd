@@ -6981,6 +6981,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_INTENT_CHIP_LABEL" desc="The label of a button to open the current webpage in an installed app.">
           Open in app
         </message>
+        <message name="IDS_INTENT_CHIP_IPH" desc="The text for the In-Product Help bubble for the Intent Chip.">
+          Open websites in apps installed on your device
+        </message>
 
         <if expr="chromeos_ash or chromeos_lacros">
           <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_MESSAGE" desc="The text of an infobar asking if the user wants to open web links supported by a particular app (e.g. https://www.youtube.com) in that app.">

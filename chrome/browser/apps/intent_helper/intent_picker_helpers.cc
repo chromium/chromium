@@ -13,11 +13,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -67,10 +72,13 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
 #if BUILDFLAG(IS_CHROMEOS)
   LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name, app_type);
 #else
+
   if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
+    chrome::FindBrowserWithWebContents(web_contents)->window()
+        ->NotifyFeatureEngagementEvent(kIntentChipOpensAppEvent);
   }
 
   switch (app_type) {

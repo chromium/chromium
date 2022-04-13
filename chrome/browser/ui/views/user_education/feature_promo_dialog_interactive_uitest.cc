@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,9 +19,11 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -278,3 +281,49 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogWebUITabStripTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
+// Need a separate fixture to override the feature flag.
+class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
+ public:
+  FeaturePromoDialogIntentChipTest() {
+    feature_list_.InitAndEnableFeature(apps::features::kLinkCapturingUiUpdate);
+  }
+
+  ~FeaturePromoDialogIntentChipTest() override = default;
+
+  std::string InstallWebApp(const std::string& app_name, const GURL& url) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->title = base::UTF8ToUTF16(app_name);
+    web_app_info->start_url = url;
+    web_app_info->scope = url;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    auto app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                               std::move(web_app_info));
+    return app_id;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoDialogIntentChipTest,
+                       InvokeUi_IPH_IntentChip) {
+  set_baseline("3564824");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  std::string app_name = "test";
+  GURL test_url(
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+  InstallWebApp(app_name, test_url);
+
+  IntentChipButton* intent_chip =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar_button_provider()
+          ->GetIntentChipButton();
+
+  ASSERT_TRUE(intent_chip);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  ASSERT_TRUE(intent_chip->GetVisible());
+
+  ShowAndVerifyUi();
+}

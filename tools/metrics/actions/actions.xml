@@ -32993,6 +32993,9 @@ should be able to be added at any place in this file.
   <suffix name="IdentityDisc" label="For IdentityDisc feature."/>
   <suffix name="IncognitoWindow" label="For IncognitoWindow feature."/>
   <suffix name="InstanceSwitcher" label="For Instance switcher feature."/>
+  <suffix name="IntentChip"
+      label="In product help for opening a webpage in an app using the intent
+             chip."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>

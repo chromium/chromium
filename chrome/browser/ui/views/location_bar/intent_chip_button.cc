@@ -7,15 +7,20 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 IntentChipButton::IntentChipButton(Browser* browser,
                                    PageActionIconView::Delegate* delegate)
@@ -29,6 +34,7 @@ IntentChipButton::IntentChipButton(Browser* browser,
       delegate_(delegate) {
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_LABEL));
+  SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
 }
 
 IntentChipButton::~IntentChipButton() = default;
@@ -44,9 +50,16 @@ void IntentChipButton::Update() {
     SetTheme(collapsed ? Theme::kIconStyle : Theme::kLowVisibility);
     UpdateIconAndColors();
   }
-
-  if (was_visible && !is_visible)
-    IntentPickerBubbleView::CloseCurrentBubble();
+  if (browser_->window()) {
+    if (is_visible && !was_visible) {
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHIntentChipFeature);
+    } else if (was_visible && !is_visible) {
+      IntentPickerBubbleView::CloseCurrentBubble();
+      browser_->window()->CloseFeaturePromo(
+          feature_engagement::kIPHIntentChipFeature);
+    }
+  }
 }
 
 ui::ImageModel IntentChipButton::GetIconImageModel() const {
@@ -76,6 +89,8 @@ ui::ImageModel IntentChipButton::GetAppIcon() const {
 }
 
 void IntentChipButton::HandlePressed() {
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHIntentChipFeature);
   content::WebContents* web_contents =
       delegate_->GetWebContentsForPageActionIconView();
   const GURL& url = web_contents->GetURL();

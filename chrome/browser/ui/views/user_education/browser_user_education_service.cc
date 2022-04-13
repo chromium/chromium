@@ -173,6 +173,12 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
       feature_engagement::kIPHReadingListEntryPointFeature,
       kBookmarkStarViewElementId, IDS_READING_LIST_ENTRY_POINT_PROMO));
 
+  // kIPHIntentChipFeature
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
+      feature_engagement::kIPHIntentChipFeature, kIntentChipElementId,
+      IDS_INTENT_CHIP_IPH, IDS_INTENT_CHIP_IPH,
+      FeaturePromoSpecification::AcceleratorInfo()));
+
   // kIPHReadingListInSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListInSidePanelFeature,

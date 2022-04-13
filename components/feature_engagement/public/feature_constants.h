@@ -40,6 +40,7 @@ extern const base::Feature kIPHTabAudioMutingFeature;
 extern const base::Feature kIPHPasswordsAccountStorageFeature;
 extern const base::Feature kIPHReadingListDiscoveryFeature;
 extern const base::Feature kIPHReadingListEntryPointFeature;
+extern const base::Feature kIPHIntentChipFeature;
 extern const base::Feature kIPHReadingListInSidePanelFeature;
 extern const base::Feature kIPHReopenTabFeature;
 extern const base::Feature kIPHSideSearchFeature;
