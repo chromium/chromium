@@ -348,6 +348,10 @@ template("test") {
           deps += [ ":${_unwind_table_asset_name}" ]
         }
 
+        if (defined(_unwind_table_asset_v2_name)) {
+          deps += [ ":${_unwind_table_asset_v2_name}" ]
+        }
+
         if (use_rts) {
           data_deps = [ ":${invoker.target_name}__rts_filters" ]
         }
