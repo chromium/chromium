@@ -260,8 +260,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
       &access_code_sink2);
   // Expect that there is a pending attempt to examine the sink to see if it
   // should be expired.
-  EXPECT_EQ(1u, mock_time_task_runner()->GetPendingTaskCount());
-
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(access_code_sink2));
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -418,10 +416,20 @@ TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedFailure) {
 
 TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
   // Ensure that the StoreSinkInPrefs() function returns if no sink exists in
-  // the media router and no tasks are posted.
+  // the media router and prefs are changed.
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
   access_code_cast_sink_service_->StoreSinkInPrefs(nullptr);
-  EXPECT_FALSE(mock_time_task_runner()->GetPendingTaskCount());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDiscoveredNetworksDict()
+          ->GetDict()
+          .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAdditionTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                  ->GetDict()
+                  .empty());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
