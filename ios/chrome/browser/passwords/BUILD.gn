@@ -227,7 +227,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/test",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/testing:ocmock_support",
     "//ios/web",

@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/activity_services/requirements",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/common:user_agent",
