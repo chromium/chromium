@@ -296,6 +296,7 @@ using flags_ui::kOsAndroid;
 using flags_ui::kOsCrOS;
 using flags_ui::kOsCrOSOwnerOnly;
 using flags_ui::kOsFuchsia;
+using flags_ui::kOsLacros;
 using flags_ui::kOsLinux;
 using flags_ui::kOsMac;
 using flags_ui::kOsWin;
@@ -305,11 +306,12 @@ namespace about_flags {
 namespace {
 
 const unsigned kOsAll =
-    kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia;
-const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsFuchsia;
+    kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia | kOsLacros;
+const unsigned kOsDesktop =
+    kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsFuchsia | kOsLacros;
 
 #if defined(USE_AURA)
-const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS | kOsFuchsia;
+const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS | kOsFuchsia | kOsLacros;
 #endif  // USE_AURA
 
 #if defined(USE_AURA)
@@ -3042,7 +3044,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(WEBRTC_USE_PIPEWIRE)
     {"enable-webrtc-pipewire-capturer",
      flag_descriptions::kWebrtcPipeWireCapturerName,
-     flag_descriptions::kWebrtcPipeWireCapturerDescription, kOsLinux,
+     flag_descriptions::kWebrtcPipeWireCapturerDescription,
+     kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3215,7 +3218,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"smooth-scrolling", flag_descriptions::kSmoothScrollingName,
      flag_descriptions::kSmoothScrollingDescription,
      // Mac has a separate implementation with its own setting to disable.
-     kOsLinux | kOsCrOS | kOsWin | kOsAndroid | kOsFuchsia,
+     kOsLinux | kOsLacros | kOsCrOS | kOsWin | kOsAndroid | kOsFuchsia,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableSmoothScrolling,
                                switches::kDisableSmoothScrolling)},
     {"fractional-scroll-offsets",
@@ -3550,11 +3553,13 @@ const FeatureEntry kFeatureEntries[] = {
     // kOsCrOS.
     {"deprecate-low-usage-codecs",
      flag_descriptions::kDeprecateLowUsageCodecsName,
-     flag_descriptions::kDeprecateLowUsageCodecsDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kDeprecateLowUsageCodecsDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
     {"enable-tts-lacros-support",
      flag_descriptions::kEnableTtsLacrosSupportName,
-     flag_descriptions::kEnableTtsLacrosSupportDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kEnableTtsLacrosSupportDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::kLacrosTtsSupport)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3563,7 +3568,7 @@ const FeatureEntry kFeatureEntries[] = {
         "enable-accelerated-video-decode",
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
-        kOsLinux,
+        kOsLinux | kOsLacros,
         FEATURE_VALUE_TYPE(media::kVaapiVideoDecodeLinux),
     },
 #else
@@ -3573,7 +3578,8 @@ const FeatureEntry kFeatureEntries[] = {
         "disable-accelerated-video-decode",
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
-        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux | kOsFuchsia,
+        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux | kOsLacros |
+            kOsFuchsia,
         SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAcceleratedVideoDecode),
     },
 #endif  // BUILDFLAG(IS_LINUX)
@@ -3676,7 +3682,7 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::switches::kWalletServiceUseSandbox,
          "0")},
     {"enable-web-bluetooth", flag_descriptions::kWebBluetoothName,
-     flag_descriptions::kWebBluetoothDescription, kOsLinux,
+     flag_descriptions::kWebBluetoothDescription, kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kWebBluetooth)},
     {"enable-web-bluetooth-new-permissions-backend",
      flag_descriptions::kWebBluetoothNewPermissionsBackendName,
@@ -3731,7 +3737,8 @@ const FeatureEntry kFeatureEntries[] = {
                                blink::switches::kDisableZeroCopy)},
     {"enable-vulkan", flag_descriptions::kEnableVulkanName,
      flag_descriptions::kEnableVulkanDescription,
-     kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
+     kOsWin | kOsLinux | kOsLacros | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kVulkan)},
 #if BUILDFLAG(IS_ANDROID)
     {"translate-force-trigger-on-english",
      flag_descriptions::kTranslateForceTriggerOnEnglishName,
@@ -3787,7 +3794,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-system-notifications",
      flag_descriptions::kNotificationsSystemFlagName,
      flag_descriptions::kNotificationsSystemFlagDescription,
-     kOsMac | kOsLinux | kOsWin,
+     kOsMac | kOsLinux | kOsLacros | kOsWin,
      FEATURE_VALUE_TYPE(features::kSystemNotifications)},
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
@@ -3946,7 +3953,7 @@ const FeatureEntry kFeatureEntries[] = {
     !BUILDFLAG(IS_NACL)
     {"mojo-linux-sharedmem", flag_descriptions::kMojoLinuxChannelSharedMemName,
      flag_descriptions::kMojoLinuxChannelSharedMemDescription,
-     kOsCrOS | kOsLinux | kOsAndroid,
+     kOsCrOS | kOsLinux | kOsLacros | kOsAndroid,
      FEATURE_VALUE_TYPE(mojo::core::kMojoLinuxChannelSharedMem)},
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -4048,22 +4055,22 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableManifestId)},
     {"enable-desktop-pwas-sub-apps", flag_descriptions::kDesktopPWAsSubAppsName,
      flag_descriptions::kDesktopPWAsSubAppsDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
+     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(blink::features::kDesktopPWAsSubApps)},
     {"enable-desktop-pwas-url-handling",
      flag_descriptions::kDesktopPWAsUrlHandlingName,
      flag_descriptions::kDesktopPWAsUrlHandlingDescription,
-     kOsWin | kOsLinux | kOsMac | kOsFuchsia,
+     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableUrlHandlers)},
     {"enable-desktop-pwas-window-controls-overlay",
      flag_descriptions::kDesktopPWAsWindowControlsOverlayName,
      flag_descriptions::kDesktopPWAsWindowControlsOverlayDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
+     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kWebAppWindowControlsOverlay)},
     {"enable-desktop-pwas-additional-windowing-controls",
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsName,
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
+     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAdditionalWindowingControls)},
     {"enable-desktop-pwas-web-bundles",
      flag_descriptions::kDesktopPWAsWebBundlesName,
@@ -4161,19 +4168,20 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX)
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
-     flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
+     flag_descriptions::kOzonePlatformHintDescription, kOsLinux | kOsLacros,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
 
     {"clean-undecryptable-passwords",
      flag_descriptions::kCleanUndecryptablePasswordsLinuxName,
-     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription, kOsLinux,
+     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription,
+     kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSyncUndecryptablePasswordsLinux)},
 
     {"force-password-initial-sync-when-decryption-fails",
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsName,
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsDescription,
-     kOsLinux,
+     kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(
          password_manager::features::kForceInitialSyncWhenDecryptionFails)},
 #endif  // BUILDFLAG(IS_LINUX)
@@ -4182,7 +4190,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"skip-undecryptable-passwords",
      flag_descriptions::kSkipUndecryptablePasswordsName,
      flag_descriptions::kSkipUndecryptablePasswordsDescription,
-     kOsLinux | kOsMac,
+     kOsLinux | kOsLacros | kOsMac,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSkipUndecryptablePasswords)},
 
@@ -5389,7 +5397,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-wide-echo-cancellation",
      flag_descriptions::kChromeWideEchoCancellationName,
      flag_descriptions::kChromeWideEchoCancellationDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kChromeWideEchoCancellation)},
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
@@ -5670,7 +5678,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-enable-toolbar-status-chip",
      flag_descriptions::kAutofillEnableToolbarStatusChipName,
      flag_descriptions::kAutofillEnableToolbarStatusChipDescription,
-     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
+     kOsMac | kOsWin | kOsLinux | kOsLacros | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableToolbarStatusChip)},
 
     {"unsafely-treat-insecure-origin-as-secure",
@@ -5736,27 +5744,33 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
-     flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSDspBasedAecAllowedDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAecAllowed)},
     {"allow-dsp-based-ns", flag_descriptions::kCrOSDspBasedNsAllowedName,
-     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSDspBasedNsAllowedDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedNsAllowed)},
     {"allow-dsp-based-agc", flag_descriptions::kCrOSDspBasedAgcAllowedName,
-     flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSDspBasedAgcAllowedDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAgcAllowed)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
-     flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSEnforceSystemAecDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAec)},
     {"enforce-system-aec-agc", flag_descriptions::kCrOSEnforceSystemAecAgcName,
-     flag_descriptions::kCrOSEnforceSystemAecAgcDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSEnforceSystemAecAgcDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecAgc)},
     {"enforce-system-aec-ns-agc",
      flag_descriptions::kCrOSEnforceSystemAecNsAgcName,
      flag_descriptions::kCrOSEnforceSystemAecNsAgcDescription,
-     kOsCrOS | kOsLinux,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNsAgc)},
     {"enforce-system-aec-ns", flag_descriptions::kCrOSEnforceSystemAecNsName,
-     flag_descriptions::kCrOSEnforceSystemAecNsDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kCrOSEnforceSystemAecNsDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNs)},
 #endif
 
@@ -5846,12 +5860,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"destroy-profile-on-browser-close",
      flag_descriptions::kDestroyProfileOnBrowserCloseName,
      flag_descriptions::kDestroyProfileOnBrowserCloseDescription,
-     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
+     kOsMac | kOsWin | kOsLinux | kOsLacros | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDestroyProfileOnBrowserClose)},
 
     {"destroy-system-profiles", flag_descriptions::kDestroySystemProfilesName,
      flag_descriptions::kDestroySystemProfilesDescription,
-     kOsCrOS | kOsMac | kOsWin | kOsLinux | kOsFuchsia,
+     kOsCrOS | kOsMac | kOsWin | kOsLinux | kOsLacros | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDestroySystemProfiles)},
 
 #if BUILDFLAG(IS_WIN)
@@ -5994,18 +6008,18 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
+    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches
+    // to kOsCrOS.
     {"chromeos-direct-video-decoder",
      flag_descriptions::kChromeOSDirectVideoDecoderName,
      flag_descriptions::kChromeOSDirectVideoDecoderDescription,
-     kOsCrOS | kOsLinux,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kUseChromeOSDirectVideoDecoder)},
 #if defined(ARCH_CPU_ARM_FAMILY)
     {"prefer-libyuv-image-processor",
      flag_descriptions::kPreferLibYuvImageProcessorName,
      flag_descriptions::kPreferLibYuvImageProcessorDescription,
-     kOsCrOS | kOsLinux,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kPreferLibYuvImageProcessor)},
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -6221,7 +6235,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription,
-     kOsMac | kOsLinux | kOsWin | kOsFuchsia,
+     kOsMac | kOsLinux | kOsLacros | kOsWin | kOsFuchsia,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
 #if BUILDFLAG(IS_ANDROID)
@@ -6263,7 +6277,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-autofill-credit-card-upload-feedback",
      flag_descriptions::kEnableAutofillCreditCardUploadFeedbackName,
      flag_descriptions::kEnableAutofillCreditCardUploadFeedbackDescription,
-     kOsWin | kOsMac | kOsLinux | kOsFuchsia,
+     kOsWin | kOsMac | kOsLinux | kOsLacros | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardUploadFeedback)},
 
     {"font-access", flag_descriptions::kFontAccessAPIName,
@@ -6280,7 +6294,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"global-media-controls-modern-ui",
      flag_descriptions::kGlobalMediaControlsModernUIName,
      flag_descriptions::kGlobalMediaControlsModernUIDescription,
-     kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsFuchsia,
+     kOsWin | kOsMac | kOsLinux | kOsLacros | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsModernUI)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -7390,7 +7404,8 @@ const FeatureEntry kFeatureEntries[] = {
     // kOsCrOS.
     {"enable-vaapi-av1-decode-acceleration",
      flag_descriptions::kVaapiAV1DecoderName,
-     flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kVaapiAV1DecoderDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
 
     {"default-chrome-apps-migration",
@@ -7410,12 +7425,14 @@ const FeatureEntry kFeatureEntries[] = {
     // kOsCrOS.
     {"enable-vaapi-vp9-kSVC-encode-acceleration",
      flag_descriptions::kVaapiVP9kSVCEncoderName,
-     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kVaapiVP9kSVCEncoderDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,
-     flag_descriptions::kGlobalVaapiLockDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kGlobalVaapiLockDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
 
     {"enable-vp9-kSVC-decode-acceleration",
@@ -7430,20 +7447,20 @@ const FeatureEntry kFeatureEntries[] = {
         "ui-debug-tools",
         flag_descriptions::kUIDebugToolsName,
         flag_descriptions::kUIDebugToolsDescription,
-        kOsWin | kOsLinux | kOsMac | kOsFuchsia,
+        kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
         FEATURE_VALUE_TYPE(features::kUIDebugTools),
     },
 #endif
     {"http-cache-partitioning",
      flag_descriptions::kSplitCacheByNetworkIsolationKeyName,
      flag_descriptions::kSplitCacheByNetworkIsolationKeyDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsAndroid | kOsFuchsia,
+     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
 
     {"autofill-address-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptName,
      flag_descriptions::kEnableAutofillAddressSavePromptDescription,
-     kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia,
+     kOsWin | kOsMac | kOsLinux | kOsLacros | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7659,7 +7676,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-passthrough-command-decoder",
      flag_descriptions::kUsePassthroughCommandDecoderName,
      flag_descriptions::kUsePassthroughCommandDecoderDescription,
-     kOsMac | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia,
+     kOsMac | kOsLinux | kOsLacros | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7984,7 +8001,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"bluetooth-bond-on-demand",
      flag_descriptions::kWebBluetoothBondOnDemandName,
-     flag_descriptions::kWebBluetoothBondOnDemandDescription, kOsWin | kOsLinux,
+     flag_descriptions::kWebBluetoothBondOnDemandDescription,
+     kOsWin | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kWebBluetoothBondOnDemand)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -8105,7 +8123,8 @@ const FeatureEntry kFeatureEntries[] = {
     // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
     // Capturing/Intent Chip flags.
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
-     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kLinkCapturingUiUpdateDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingUiUpdate)},
 #endif
 
@@ -8128,14 +8147,16 @@ const FeatureEntry kFeatureEntries[] = {
     // kOsCrOS.
     {"enable-desktop-capture-lacros-v2",
      flag_descriptions::kDesktopCaptureLacrosV2Name,
-     flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLinux,
+     flag_descriptions::kDesktopCaptureLacrosV2Description,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
 
     // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
     // kOsCrOS.
     {"lacros-merge-icu-data-file",
      flag_descriptions::kLacrosMergeIcuDataFileName,
-     flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kLacrosMergeIcuDataFileDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
 
     {"lacros-non-syncing-profiles",
@@ -8151,7 +8172,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"lacros-screen-coordinates-enabled",
      flag_descriptions::kLacrosScreenCoordinatesEnabledName,
      flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,
-     kOsCrOS | kOsLinux,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(features::kWaylandScreenCoordinatesEnabled)},
 #endif
 
@@ -8259,7 +8280,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
     {"download-bubble", flag_descriptions::kDownloadBubbleName,
-     flag_descriptions::kDownloadBubbleDescription, kOsLinux | kOsMac | kOsWin,
+     flag_descriptions::kDownloadBubbleDescription,
+     kOsLinux | kOsLacros | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubble)},
 
     {"unthrottled-nested-timeout",
@@ -8312,16 +8334,19 @@ const FeatureEntry kFeatureEntries[] = {
     // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
     // Capturing/Intent Chip flags.
     {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,
-     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kLinkCapturingInfoBarDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingInfoBar)},
 
     {"intent-chip-skips-intent-picker",
      flag_descriptions::kIntentChipSkipsPickerName,
-     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kIntentChipSkipsPickerDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
 
     {"intent-chip-app-icon", flag_descriptions::kIntentChipAppIconName,
-     flag_descriptions::kIntentChipAppIconDescription, kOsCrOS | kOsLinux,
+     flag_descriptions::kIntentChipAppIconDescription,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
 
     // TODO(crbug.com/1313512): Replace kOsLinux with Lacros for sync custom
@@ -8329,7 +8354,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"sync-chromeos-explicit-passphrase-sharing",
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,
-     kOsCrOS | kOsLinux,
+     kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
 #endif
 

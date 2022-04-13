@@ -54,6 +54,7 @@ const struct {
     {kOsLinux, "Linux"},     {kOsCrOS, "Chrome OS"},
     {kOsAndroid, "Android"}, {kOsCrOSOwnerOnly, "Chrome OS (owner only)"},
     {kOsIos, "iOS"},         {kOsFuchsia, "Fuchsia"},
+    {kOsLacros, "Lacros"},
 };
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
