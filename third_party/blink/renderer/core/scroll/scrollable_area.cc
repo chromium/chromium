@@ -1055,6 +1055,10 @@ void ScrollableArea::InjectGestureScrollEvent(
   // it is not hit-testable.
   DCHECK(GetLayoutBox());
 
+  // Speculative fix for crash reports (crbug.com/1307510).
+  if (!GetLayoutBox() || !GetLayoutBox()->GetFrame())
+    return;
+
   if (granularity == ui::ScrollGranularity::kScrollByPrecisePixel ||
       granularity == ui::ScrollGranularity::kScrollByPixel) {
     // Pixel-based deltas need to be scaled up by the input event scale factor,
