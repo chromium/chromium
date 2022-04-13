@@ -2764,7 +2764,7 @@
       'webgpu_cts_with_validation': {
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
-          '--is-backend-validation',
+          '--enable-dawn-backend-validation',
           '--override-timeout=30',
           '--retry-limit=3',
         ],
@@ -2785,7 +2785,7 @@
       'webgpu_cts_with_validation': {
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
-          '--is-backend-validation',
+          '--enable-dawn-backend-validation',
           '--override-timeout=30',
           '--retry-limit=3',
         ],

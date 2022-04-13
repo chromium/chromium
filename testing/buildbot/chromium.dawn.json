@@ -661,7 +661,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -1351,7 +1351,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -1742,7 +1742,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -2110,7 +2110,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -2511,7 +2511,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -2940,7 +2940,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -3308,7 +3308,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -4285,7 +4285,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -4959,7 +4959,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -5604,7 +5604,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],
@@ -6247,7 +6247,7 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--is-backend-validation",
+          "--enable-dawn-backend-validation",
           "--override-timeout=30",
           "--retry-limit=3"
         ],

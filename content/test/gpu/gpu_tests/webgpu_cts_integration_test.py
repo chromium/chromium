@@ -94,7 +94,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _page_loaded = False
 
   _test_timeout = DEFAULT_TEST_TIMEOUT
-  _is_backend_validation = False
+  _enable_dawn_backend_validation = False
+  _use_webgpu_adapter = None  # use the default
 
   _build_dir = None
 
@@ -134,11 +135,16 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     parser.add_option('--override-timeout',
                       type=float,
                       help='Override the test timeout in seconds')
-    parser.add_option('--is-backend-validation',
-                      action='store_true',
-                      default=False,
-                      help=('Signals that the tests are being run with backend '
-                            'validation enabled'))
+    parser.add_option(
+        '--enable-dawn-backend-validation',
+        action='store_true',
+        default=False,
+        help=('Runs the browser with Dawn backend validation enabled'))
+    parser.add_option(
+        '--use-webgpu-adapter',
+        type=str,
+        default=None,
+        help=('Runs the browser with a particular WebGPU adapter'))
 
   @classmethod
   def StartBrowser(cls):
@@ -167,7 +173,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--enable-unsafe-webgpu',
         '--disable-dawn-features=disallow_unsafe_apis',
     ]
-    if cls._is_backend_validation:
+    if cls._enable_dawn_backend_validation:
       if sys.platform == 'win32':
         browser_args.append('--enable-dawn-backend-validation=partial')
       else:
@@ -215,7 +221,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options):
     if options.override_timeout:
       cls._test_timeout = options.override_timeout
-    cls._is_backend_validation = options.is_backend_validation
+    cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
+    cls._use_webgpu_adapter = options.use_webgpu_adapter
     if cls._test_list is None:
       p = subprocess.run(
           [sys.executable, LIST_SCRIPT, '--js-out-dir', TYPESCRIPT_DIR],
@@ -309,10 +316,14 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GetPlatformTags(cls, browser):
     tags = super(WebGpuCtsIntegrationTest, cls).GetPlatformTags(browser)
-    if cls._is_backend_validation:
+    if cls._enable_dawn_backend_validation:
       tags.append('dawn-backend-validation')
     else:
       tags.append('dawn-no-backend-validation')
+    if cls._use_webgpu_adapter:
+      tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
+    else:
+      tags.append('webgpu-adapter-default')
     return tags
 
   @classmethod
