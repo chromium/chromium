@@ -1151,7 +1151,7 @@ const base::Feature kProjectorExcludeTranscript{
 // Controls whether Projector's tutorial videos are displayed.
 const base::Feature kProjectorTutorialVideoView(
     "ProjectorTutorialVideoView",
-    base::FEATURE_DISABLED_BY_DEFAULT);
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Projector use custom thumbnail in gallery page.
 const base::Feature kProjectorCustomThumbnail("kProjectorCustomThumbnail",
