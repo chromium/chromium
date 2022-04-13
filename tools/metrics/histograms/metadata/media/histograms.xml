@@ -2248,6 +2248,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.Widevine.HardwareSecure.CdmInfoStatus"
+    enum="CdmInfoStatus" expires_after="2023-04-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The CdmInfo::Status of Widevine hardware secure CDM capability. Reported at
+    most once per browser session when EME query is triggered by a website, and
+    when Widevine hardware secure CDM was registered.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.Widevine.HardwareSecure.Pref" enum="BooleanEnabled"
     expires_after="2022-09-11">
   <owner>xhwang@chromium.org</owner>

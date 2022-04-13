@@ -12285,6 +12285,18 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Init Verification Failed"/>
 </enum>
 
+<enum name="CdmInfoStatus">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="CommandLineOverridden"/>
+  <int value="3" label="HardwareSecureDecryptionDisabled"/>
+  <int value="4" label="AcceleratedVideoDecodeDisabled"/>
+  <int value="5" label="GpuFeatureDisabled"/>
+  <int value="6" label="GpuCompositionDisabled"/>
+  <int value="7" label="DisabledByPref"/>
+  <int value="8" label="DisabledOnError"/>
+</enum>
+
 <enum name="CdmLoadResult">
   <int value="0" label="Success"/>
   <int value="1" label="CDM file missing"/>

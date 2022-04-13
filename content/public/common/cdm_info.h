@@ -38,7 +38,8 @@ struct CONTENT_EXPORT CdmInfo {
     kSoftwareSecure,
   };
 
-  // Status of the `capability`.
+  // Status of the `capability`. These values are persisted to logs. Entries
+  // should not be renumbered and numeric values should never be reused.
   enum class Status {
     kUninitialized,  // Uninitialized; `capability` must be nullopt.
     kEnabled,  // Initialized and enabled; if `capability` is nullopt, then no
@@ -50,6 +51,7 @@ struct CONTENT_EXPORT CdmInfo {
     kGpuCompositionDisabled,  // GPU (direct) composition disabled
     kDisabledByPref,  // Disabled due to previous errors (stored in Local State)
     kDisabledOnError,  // Disabled after errors or crashes
+    kMaxValue = kDisabledOnError,
   };
 
   // If `capability` is nullopt, the `capability` will be lazy initialized.
