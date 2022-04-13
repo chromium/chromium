@@ -456,6 +456,24 @@ public class MainSettingsFragmentTest {
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordsItemTitleUpdatedWithUPM() throws InterruptedException {
+        launchSettingsActivity();
+        Assert.assertEquals(mMainSettings.getString(R.string.password_settings_title_gpm),
+                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordsItemTitleNotUpdatedWithoutUPM() throws InterruptedException {
+        launchSettingsActivity();
+        Assert.assertEquals(mMainSettings.getString(R.string.password_settings_title),
+                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
+    }
+
     private void launchSettingsActivity() {
         mSettingsActivityTestRule.startSettingsActivity();
         mMainSettings = mSettingsActivityTestRule.getFragment();

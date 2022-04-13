@@ -322,6 +322,10 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private void updatePasswordsPreference() {
         Preference passwordsPreference = findPreference(PREF_PASSWORDS);
+        if (usesUnifiedPasswordManagerUI()) {
+            // TODO(crbug.com/1217070): Move this to the layout xml once the feature is rolled out
+            passwordsPreference.setTitle(R.string.password_settings_title_gpm);
+        }
         passwordsPreference.setOnPreferenceClickListener(preference -> {
             PasswordManagerLauncher.showPasswordSettings(
                     getActivity(), ManagePasswordsReferrer.CHROME_SETTINGS);
