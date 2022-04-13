@@ -802,6 +802,28 @@
             ]
         }
     ],
+    "AutofillEnableSendingBcnInGetUploadDetails": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableSendingBcnInGetUploadDetails"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSupportForMoreStructureInAddresses": [
         {
             "platforms": [
@@ -1030,6 +1052,28 @@
                         "AutofillTypeSpecificPopupWidth",
                         "AutofillUseConsistentPopupSettingsIcons",
                         "AutofillVisualImprovementsForSuggestionUi"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillParseMerchantPromoCodeFields": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillParseMerchantPromoCodeFields"
                     ]
                 }
             ]
