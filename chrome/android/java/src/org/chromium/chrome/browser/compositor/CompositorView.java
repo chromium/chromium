@@ -83,6 +83,8 @@ public class CompositorView
 
     private boolean mRenderHostNeedsDidSwapBuffersCallback;
 
+    private boolean mHaveSwappedFramesSinceSurfaceCreated;
+
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
     // be working, see crbug.com/931195.
@@ -398,8 +400,29 @@ public class CompositorView
     public void surfaceRedrawNeededAsync(Runnable drawingFinished) {
         // Do not hold onto more than one draw callback, to prevent deadlock.
         // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
+        //
+        // `drawingFinished` can, and often will, be run before this returns, since we cannot hold
+        // onto more than one (android) callback without risking a deadlock in the framework.
+        //
+        // DO NOT ADD any more callbacks from inside chrome!  This is intended to implement
+        // (indirectly) the android SurfaceHolder callback.  It is not intended as a general-purpose
+        // mechanism for chromium to wait for a swap to occur.  In particular, we have workarounds
+        // for android framework behavior here, that would be unexpected to other callers.  Also,
+        // these behaviors can change without notice as new android versions show up.
+        //
+        // If you want to find out about a swap, please add a separate mechanism to this class to do
+        // so, with more predictable semantics.
         runDrawFinishedCallback();
         mDrawingFinishedCallback = drawingFinished;
+        if (mHaveSwappedFramesSinceSurfaceCreated) {
+            // Don't hold onto the draw callback, since it can deadlock with ViewRootImpl performing
+            // traversals in some cases.  Only wait if the surface is newly created.  Android allows
+            // us to run the callback before returning; the default implementation of this method
+            // does exactly that.  While there are a few calls into this method that are not from
+            // the android framework, these are currently okay with this behavior.  Please do not
+            // add any more, as described above.
+            runDrawFinishedCallback();
+        }
         updateNeedsDidSwapBuffersCallback();
         if (mNativeCompositorView != 0) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
@@ -420,6 +443,7 @@ public class CompositorView
         if (mNativeCompositorView == 0) return;
 
         mFramesUntilHideBackground = 2;
+        mHaveSwappedFramesSinceSurfaceCreated = false;
         updateNeedsDidSwapBuffersCallback();
         CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
         mRenderHost.onSurfaceCreated();
@@ -579,6 +603,7 @@ public class CompositorView
         if (swappedCurrentSize) {
             runDrawFinishedCallback();
         }
+        mHaveSwappedFramesSinceSurfaceCreated = true;
 
         mRenderHost.didSwapBuffers(swappedCurrentSize);
 
