@@ -19,9 +19,21 @@ Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
     : VideoDecoder::VideoDecoder(std::move(ivf_parser),
                                  std::move(v4l2_ioctl),
                                  std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)) {}
+                                 std::move(CAPTURE_queue)),
+      buffer_pool_(std::make_unique<libgav1::BufferPool>(
+          /*on_frame_buffer_size_changed=*/nullptr,
+          /*get_frame_buffer=*/nullptr,
+          /*release_frame_buffer=*/nullptr,
+          /*callback_private_data=*/nullptr)),
+      state_(std::make_unique<libgav1::DecoderState>()) {}
 
-Av1Decoder::~Av1Decoder() = default;
+Av1Decoder::~Av1Decoder() {
+  // We destroy the state explicitly to ensure it's destroyed before the
+  // |buffer_pool_|. The |buffer_pool_| checks that all the allocated frames
+  // are released in its destructor.
+  state_.reset();
+  DCHECK(buffer_pool_);
+}
 
 // static
 std::unique_ptr<Av1Decoder> Av1Decoder::Create(
@@ -66,11 +78,57 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
 }
 
+Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
+    libgav1::RefCountedBufferPtr& current_frame) {
+  if (!obu_parser_ || !obu_parser_->HasData()) {
+    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_))
+      return ParsingResult::kEOStream;
+
+    // The ObuParser has run out of data or did not exist in the first place. It
+    // has no "replace the current buffer with a new buffer of a different size"
+    // method; we must make a new parser.
+    // (std::nothrow) is required for the base class Allocable of
+    // libgav1::ObuParser
+    obu_parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+        ivf_frame_data_, ivf_frame_header_.frame_size, /*operating_point=*/0,
+        buffer_pool_.get(), state_.get()));
+    if (current_sequence_header_)
+      obu_parser_->set_sequence_header(*current_sequence_header_);
+  }
+
+  const libgav1::StatusCode code = obu_parser_->ParseOneFrame(&current_frame);
+  if (code != libgav1::kStatusOk) {
+    LOG(ERROR) << "Error parsing OBU stream: " << libgav1::GetErrorString(code);
+    return ParsingResult::kFailed;
+  }
+  return ParsingResult::kOk;
+}
+
 VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                                                  std::vector<char>& u_plane,
                                                  std::vector<char>& v_plane,
                                                  gfx::Size& size,
                                                  const int frame_number) {
+  libgav1::RefCountedBufferPtr current_frame;
+  const ParsingResult parser_res = ReadNextFrame(current_frame);
+
+  if (parser_res != ParsingResult::kOk) {
+    LOG_ASSERT(parser_res == ParsingResult::kEOStream)
+        << "Failed to parse next frame.";
+    return VideoDecoder::kEOStream;
+  }
+
+  if (obu_parser_->sequence_header_changed())
+    current_sequence_header_.emplace(obu_parser_->sequence_header());
+
+  LOG_ASSERT(current_sequence_header_)
+      << "Sequence header missing for decoding.";
+
+  // TODO(b/228534725): add changes to support reference frames management
+
+  // TODO(b/228534730): add changes to prepare parameters for V4L2 AV1 stateless
+  // decoding
+
   return VideoDecoder::kOk;
 }
 

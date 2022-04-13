@@ -176,5 +176,6 @@ executable("v4l2_stateless_decoder") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
+    "//third_party/libgav1:libgav1",
   ]
 }
