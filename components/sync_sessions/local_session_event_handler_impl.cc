@@ -161,7 +161,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
              << " windows from previous session.";
   }
 
-  for (auto& [unused, window_delegate] : window_delegates) {
+  for (auto& [window_id, window_delegate] : window_delegates) {
     // Make sure the window is viewable and is not about to be closed. The
     // viewable window check is necessary because, for example, when a browser
     // is closed the destructor is not necessarily run immediately. This means
@@ -176,8 +176,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       continue;
     }
 
-    // TODO(crbug.com/1286934): Can we use the `unused` variable above instead?
-    SessionID window_id = window_delegate->GetSessionId();
+    DCHECK_EQ(window_id, window_delegate->GetSessionId());
     DVLOG(1) << "Associating window " << window_id.id() << " with "
              << window_delegate->GetTabCount() << " tabs.";
 
