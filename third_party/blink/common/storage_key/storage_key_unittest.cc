@@ -290,102 +290,60 @@ TEST(StorageKeyTest, SerializeNonce) {
 
 // Test that deserialized StorageKeys are valid/opaque as expected.
 TEST(StorageKeyTest, Deserialize) {
-  std::string example = "https://example.com/";
-  // Localstorage serialization doesn't have a trailing slash
-  std::string example_local_storage = "https://example.com";
-  std::string test = "https://test.example/";
-  std::string wrong = "I'm not a valid URL.";
+  const struct {
+    std::string serialized_string;
+    bool expected_has_value;
+    bool expected_opaque = false;
+  } kTestCases[] = {
+      // Correct usage of origin.
+      {"https://example.com/", true, false},
+      // Correct: localstorage serialization doesn't have a trailing slash.
+      {"https://example.com", true, false},
+      // Correct usage of test.example origin.
+      {"https://test.example/", true, false},
+      // Invalid origin URL.
+      {"I'm not a valid URL.", false},
+      // Empty string origin URL.
+      {std::string(), false},
+      // Correct usage of origin and top-level site.
+      {"https://example.com/^0https://test.example^31", true, false},
+      // Incorrect separator value used for top-level site.
+      {"https://example.com/^1https://test.example^31", false},
+      // Correct usage of origin and top-level site with test.example.
+      {"https://test.example/^0https://example.com^31", true, false},
+      // Invalid top-level site.
+      {"https://example.com/^0I'm not a valid URL.^31", false},
+      // Invalid origin with top-level site scheme.
+      {"I'm not a valid URL.^0https://example.com^31", false},
+      // Correct usage of origin and nonce.
+      {"https://example.com/^112345^267890", true, false},
+      // Nonce high not followed by nonce low.
+      {"https://example.com/^112345^167890", false},
+      // Nonce high not followed by nonce low; invalid separator value.
+      {"https://example.com/^112345^967890", false},
+      // Values encoded with nonce separator not a valid nonce.
+      {"https://example.com/^1nota^2nonce", false},
+      // Invalid origin with nonce scheme.
+      {"I'm not a valid URL.^112345^267890", false},
+      // Nonce low was incorrectly encoded before nonce high.
+      {"https://example.com/^212345^167890", false},
+      // Malformed usage of three separator carets.
+      {"https://example.com/^112345^267890^", false},
+      // Incorrect: Separator not followed by data.
+      {"https://example.com/^1^267890", false},
+      // Malformed first party serialization.
+      {"https://www.example.com/^0https://example.com^30", false},
+      // Malformed ancestor chain bit value - outside range.
+      {"https://example.com^0https://test.example^35", false},
+  };
 
-  // TODO(https://crbug.com/1199077): Refactor this test to use a for loop
-  // across an array of structs. See SerializeNonce for an example.
-  absl::optional<StorageKey> key1 = StorageKey::Deserialize(example);
-  absl::optional<StorageKey> key1a =
-      StorageKey::Deserialize(example_local_storage);
-  absl::optional<StorageKey> key2 = StorageKey::Deserialize(test);
-  absl::optional<StorageKey> key3 = StorageKey::Deserialize(wrong);
-  absl::optional<StorageKey> key4 = StorageKey::Deserialize(std::string());
-
-  ASSERT_TRUE(key1.has_value());
-  EXPECT_FALSE(IsOpaque(*key1));
-  ASSERT_TRUE(key1a.has_value());
-  EXPECT_FALSE(IsOpaque(*key1a));
-  ASSERT_TRUE(key2.has_value());
-  EXPECT_FALSE(IsOpaque(*key2));
-  EXPECT_FALSE(key3.has_value());
-  EXPECT_FALSE(key4.has_value());
-
-  std::string example_with_test =
-      "https://example.com/^0https://test.example^31";
-  std::string example_with_wrong_seperator_site =
-      "https://example.com/^1https://test.example^31";
-  std::string test_with_example =
-      "https://test.example/^0https://example.com^31";
-  std::string example_with_wrong =
-      "https://example.com/^0I'm not a valid URL.^31";
-  std::string wrong_with_example =
-      "I'm not a valid URL.^0https://example.com^31";
-
-  absl::optional<StorageKey> key5 = StorageKey::Deserialize(example_with_test);
-  absl::optional<StorageKey> key5b =
-      StorageKey::Deserialize(example_with_wrong_seperator_site);
-  absl::optional<StorageKey> key6 = StorageKey::Deserialize(test_with_example);
-  absl::optional<StorageKey> key7 = StorageKey::Deserialize(example_with_wrong);
-  absl::optional<StorageKey> key8 = StorageKey::Deserialize(wrong_with_example);
-
-  ASSERT_TRUE(key5.has_value());
-  EXPECT_FALSE(IsOpaque(*key5));
-  EXPECT_FALSE(key5b.has_value());
-  ASSERT_TRUE(key6.has_value());
-  EXPECT_FALSE(IsOpaque(*key6));
-  EXPECT_FALSE(key7.has_value());
-  EXPECT_FALSE(key8.has_value());
-
-  std::string example_with_nonce = "https://example.com/^112345^267890";
-  std::string example_with_wrong_seperator_nonce_1 =
-      "https://example.com/^112345^167890";
-  std::string example_with_wrong_seperator_nonce_2 =
-      "https://example.com/^112345^967890";
-  std::string example_with_wrong_nonce = "https://example.com/^1nota^2nonce";
-  std::string wrong_with_nonce = "I'm not a valid URL.^112345^267890";
-
-  absl::optional<StorageKey> key9 = StorageKey::Deserialize(example_with_nonce);
-  absl::optional<StorageKey> key9b =
-      StorageKey::Deserialize(example_with_wrong_seperator_nonce_1);
-  absl::optional<StorageKey> key9c =
-      StorageKey::Deserialize(example_with_wrong_seperator_nonce_2);
-  absl::optional<StorageKey> key10 =
-      StorageKey::Deserialize(example_with_wrong_nonce);
-  absl::optional<StorageKey> key11 = StorageKey::Deserialize(wrong_with_nonce);
-
-  ASSERT_TRUE(key9.has_value());
-  EXPECT_FALSE(IsOpaque(*key9));
-  EXPECT_FALSE(key9b.has_value());
-  EXPECT_FALSE(key9c.has_value());
-  EXPECT_FALSE(key10.has_value());
-  EXPECT_FALSE(key11.has_value());
-
-  std::string nonce_low_first = "https://example.com/^212345^167890";
-  std::string malformed_3_carets = "https://example.com/^112345^267890^";
-  std::string malformed_separators_too_close = "https://example.com/^1^267890";
-  std::string malformed_first_party =
-      "https://www.example.com/^0https://example.com^30";
-  std::string malformed_ancestor_chain_bit =
-      "https://example.com^0https://test.example^35";
-
-  absl::optional<StorageKey> key12 = StorageKey::Deserialize(nonce_low_first);
-  absl::optional<StorageKey> key13 =
-      StorageKey::Deserialize(malformed_3_carets);
-  absl::optional<StorageKey> key14 =
-      StorageKey::Deserialize(malformed_separators_too_close);
-  absl::optional<StorageKey> key15 =
-      StorageKey::Deserialize(malformed_first_party);
-  absl::optional<StorageKey> key16 =
-      StorageKey::Deserialize(malformed_ancestor_chain_bit);
-
-  EXPECT_FALSE(key12.has_value());
-  EXPECT_FALSE(key13.has_value());
-  EXPECT_FALSE(key14.has_value());
-  EXPECT_FALSE(key15.has_value());
+  for (const auto& test_case : kTestCases) {
+    absl::optional<StorageKey> key =
+        StorageKey::Deserialize(test_case.serialized_string);
+    ASSERT_EQ(key.has_value(), test_case.expected_has_value);
+    if (key.has_value())
+      EXPECT_EQ(IsOpaque(*key), test_case.expected_opaque);
+  }
 }
 
 // Test that string -> StorageKey test function performs as expected.
