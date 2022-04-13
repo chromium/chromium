@@ -79,6 +79,7 @@ ios_web_view_public_headers = [
   "public/cwv_trusted_vault_provider.h",
   "public/cwv_trusted_vault_utils.h",
   "public/cwv_ui_delegate.h",
+  "public/cwv_unsafe_url_handler.h",
   "public/cwv_user_content_controller.h",
   "public/cwv_user_script.h",
   "public/cwv_web_view.h",
