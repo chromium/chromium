@@ -2112,7 +2112,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   }
 
   if (host_) {
-    if (nav_request.frame_tree_node()->IsMainFrame()) {
+    if (nav_request.frame_tree_node()->IsOutermostMainFrame()) {
       request->SetIsSameSite(true);
     } else {
       request->SetIsSameSite(

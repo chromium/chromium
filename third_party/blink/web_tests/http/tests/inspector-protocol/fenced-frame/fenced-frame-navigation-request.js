@@ -26,6 +26,8 @@
     requestId = requestWillBeSentParams.requestId;
   }
 
+  testRunner.log('FF navigation request isSameSite: ' + requestWillBeSentParams.request.isSameSite);
+
   const responseReceivedParams = (await responseReceivedPromise).params;
   if (responseReceivedParams.requestId == requestId) {
     testRunner.log('Response received for FF navigation request: ' + responseReceivedParams.response.status);
