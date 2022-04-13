@@ -122,7 +122,7 @@ HungAfterHeadersHttpResponse::~HungAfterHeadersHttpResponse() = default;
 
 void HungAfterHeadersHttpResponse::SendResponse(
     base::WeakPtr<HttpResponseDelegate> delegate) {
-  delegate->SendResponseHeaders(HTTP_OK, "OK", {});
+  delegate->SendResponseHeaders(HTTP_OK, "OK", headers_);
 }
 
 }  // namespace test_server

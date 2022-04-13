@@ -451,7 +451,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
       return nullptr;
 
     if (hang_requests_after_start_) {
-      base::StringPairs headers = {{"Content-Length", "100"}};
+      base::StringPairs headers = {{"Content-Length", "100"},
+                                   {"content-type", "text/html"}};
       return std::make_unique<net::test_server::HungAfterHeadersHttpResponse>(
           headers);
     }

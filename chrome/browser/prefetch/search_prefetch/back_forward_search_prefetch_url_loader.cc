@@ -102,7 +102,10 @@ void BackForwardSearchPrefetchURLLoader::RestartDirect() {
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
-      network::mojom::kURLLoadOptionNone, *resource_request_,
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+          network::mojom::kURLLoadOptionSniffMimeType |
+          network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
+      *resource_request_,
       url_loader_receiver_.BindNewPipeAndPassRemote(
           base::ThreadTaskRunnerHandle::Get()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
