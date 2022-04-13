@@ -34,11 +34,11 @@ using extensions::mojom::ManifestLocation;
 constexpr char kChromeOSSystemExtensionId[] =
     "gogonhoemckpdpadfnjnpgbjpbjnodgc";
 const std::u16string kDiagnosticsPermissionMessage =
-    u"Run Chrome OS diagnostic tests.";
+    u"Run ChromeOS diagnostic tests.";
 const std::u16string kTelemetryPermissionMessage =
-    u"Read Chrome OS device information and device data.";
+    u"Read ChromeOS device information and device data.";
 const std::u16string kTelemetrySerialNumberPermissionMessage =
-    u"Read Chrome OS device and component serial numbers.";
+    u"Read ChromeOS device and component serial numbers.";
 
 }  // namespace
 

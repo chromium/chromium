@@ -81,10 +81,10 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME" desc="Title of the line item on the about page that allows the user to edit the device hostname.">
     Device name
   </message>
-  <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or Chrome OS.">
+  <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or ChromeOS.">
     <ph name="MANAGER">$1<ex>google.com</ex></ph> is putting this device on a previous version (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
   </message>
-  <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_SUCCESS" desc="Status label: Successfully rolled back Chrome OS. All data on the device will be deleted during the next reboot.">
+  <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_SUCCESS" desc="Status label: Successfully rolled back ChromeOS. All data on the device will be deleted during the next reboot.">
     <ph name="MANAGER">$1<ex>google.com</ex></ph> has put this device on a previous version. Please save important files, then restart. All data on the device will be deleted.
   </message>
   <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_CHANNEL_SWITCH" desc="Status label: Channel was successfully switched on ChromiumOS/ChromeOS">
@@ -103,7 +103,7 @@
     Change channel and Powerwash
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DELAYED_WARNING_MESSAGE" desc="Message that notifies user that channel change will be applied later.">
-    You are changing to a channel with an older version of <ph name="PRODUCT_NAME">$1<ex>Chrome OS</ex></ph>. The channel change will be applied when the channel version matches the version currently installed on your device.
+    You are changing to a channel with an older version of <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph>. The channel change will be applied when the channel version matches the version currently installed on your device.
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DELAYED_WARNING_TITLE" desc="Title for the message that the channel change will be applied later.">
     Channel change will be applied later
@@ -115,7 +115,7 @@
     Powerwash required on next reboot
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_UNSTABLE_WARNING_MESSAGE" desc="Warning about switching to developer (unstable) channel.">
-    You are updating to an unstable version of <ph name="PRODUCT_NAME">$1<ex>Chrome OS</ex></ph> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.
+    You are updating to an unstable version of <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_UNSTABLE_WARNING_TITLE" desc="The title of the warning about switching to developer (unstable) channel.">
     Warning: you are switching to developer channel
@@ -162,7 +162,7 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO" desc="Label describing the section that shows detailed information about the current Chrome build.">
     Additional details
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES" desc="Warning that internet connection is required to display Chrome OS release notes.">
+  <message name="IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES" desc="Warning that internet connection is required to display ChromeOS release notes.">
       Internet connection required
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES" desc="Text of the button which shows user the release notes.">
@@ -171,7 +171,7 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME" desc="The title of the dialog that allows the user to edit the device hostname.">
     Edit device name
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO" desc="Label describing which areas of the Chrome OS system broadcast the device hostname to external networks.">
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO" desc="Label describing which areas of the ChromeOS system broadcast the device hostname to external networks.">
     This name is visible to other devices for Bluetooth and network connections
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS" desc="Label describing the requirements for the text of the device hostname.">
@@ -235,10 +235,10 @@
      =1 {1 Google Account}
      other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across Chrome OS devices.">
+  <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across ChromeOS devices.">
     Turn on
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_TURN_OFF" desc="Button label for turning off synchronization of settings across Chrome OS devices.">
+  <message name="IDS_OS_SETTINGS_SYNC_TURN_OFF" desc="Button label for turning off synchronization of settings across ChromeOS devices.">
     Turn off
   </message>
   <if expr="reven">
@@ -248,7 +248,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
-      Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+      Your apps and settings will sync across all ChromeOS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
     </message>
   </if>
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
@@ -845,7 +845,7 @@
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_BUTTON_LABEL" desc="Label in OS settings for the button to configure search engine behavior.">
     Configure
   </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION" desc="Description in the search engine dialog in OS settings explaining that search engine is used in both the Chrome browser and the Chrome OS app launcher.">
+  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION" desc="Description in the search engine dialog in OS settings explaining that search engine is used in both the Chrome browser and the ChromeOS app launcher.">
     Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> Launcher
   </message>
   <message name="IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT" desc="Label for the Google Assistant button.">
@@ -863,7 +863,7 @@
   <message name="IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF" desc="Row label in Google Assistant settings." meaning="Google Assistant is off.">
     Off
   </message>
-   <message name="IDS_SETTINGS_SEARCH_AND_ASSISTANT" desc="Name of the settings page which displays search engine and assistant preferences on Chrome OS.">
+   <message name="IDS_SETTINGS_SEARCH_AND_ASSISTANT" desc="Name of the settings page which displays search engine and assistant preferences on ChromeOS.">
     Search and Assistant
   </message>
 
@@ -941,10 +941,10 @@
   </message>
 
   <!-- Accessibility -->
-  <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL" desc="The name of a setting within accessibility settings that controls whether Chrome OS system shelf navigation buttons (for going back, home, or to overview) should be shown when the device is in tablet mode.">
+  <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL" desc="The name of a setting within accessibility settings that controls whether ChromeOS system shelf navigation buttons (for going back, home, or to overview) should be shown when the device is in tablet mode.">
     Show navigation buttons
   </message>
-  <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION" desc="The description for the setting within accessibility settings that controls whether Chrome OS system shelf navigation buttons should be shown when the device is in tablet mode. The buttons whose visibility the setting controls are the button to go home (to launcher), the button to go back, and the button to go to overview.">
+  <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION" desc="The description for the setting within accessibility settings that controls whether ChromeOS system shelf navigation buttons should be shown when the device is in tablet mode. The buttons whose visibility the setting controls are the button to go home (to launcher), the button to go back, and the button to go to overview.">
     Navigate home, back, and switch apps with buttons in tablet mode. Turned on when ChromeVox or Automatic clicks is enabled.
   </message>
 
@@ -1495,7 +1495,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOICES" desc="Heading describing a collection of listboxes on the text-to-speech settings page. Each listbox is associated with a language, and contains all possible voices for that language">
     Preferred Voices
   </message>
-  <message name="IDS_SETTINGS_TEXT_TO_SPEECH_NO_VOICES_MESSAGE" desc="Message when no text-to-speech voices are found on the Chrome OS device.">
+  <message name="IDS_SETTINGS_TEXT_TO_SPEECH_NO_VOICES_MESSAGE" desc="Message when no text-to-speech voices are found on the ChromeOS device.">
     No voices found
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_MORE_LANGUAGES" desc="Label for a toggle button letting users know they can pick default voices for more languages which are not shown by default">
@@ -1831,7 +1831,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_SHOW_MORE_ACTIONS_ARIA_LABEL" desc="The aria label for the button that displays more actions to the user for an individual port i.e. the text that screen readers will read out for the button.">
     Show more actions for this port
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL" desc="Label for managing extra Linux containers in Chrome OS.">
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL" desc="Label for managing extra Linux containers in ChromeOS.">
     Manage extra containers
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DESCRIPTION" desc="Description for managing extra Linux containers.">
@@ -3117,22 +3117,22 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll, Notifications and Apps combined section on the settings page.">
     Recent photos, notifications, and messaging apps
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on ChromeOS by ensuring that their phones' apps, content, and connectivity are available on their ChromeOS device.">
     Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to Chrome OS devices.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to ChromeOS devices.">
     View your phone's recent photos and media on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to ChromeOS devices.">
     View, dismiss, and reply to your phone’s notifications
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from ChromeOS devices.">
     View recent Chrome tabs from your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to Chrome OS device.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to ChromeOS device.">
     Stream your phone’s messaging apps
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to Chrome OS device.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to ChromeOS device.">
     View, dismiss, and reply to your phone’s notifications. Stream your phone’s messaging apps.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll and Notifications' combined setting.">
@@ -3144,10 +3144,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll, Notifications and Apps' combined setting.">
     View your phone's recent photos, media, and notifications. Stream your phone’s messaging apps.
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting when Chrome sync is not enabled. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting when Chrome sync is not enabled. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from ChromeOS devices.">
     Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to view recent Chrome tabs. <ph name="LINK2_BEGIN">&lt;a target="_blank" id="learnMoreLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="LINK2_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Phone Hub Task Continuation' feature to be enabled. This feature lets users resume chrome tabs that are open on a connected Android phone from Chrome OS devices.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Phone Hub Task Continuation' feature to be enabled. This feature lets users resume chrome tabs that are open on a connected Android phone from ChromeOS devices.">
     Turn on Chrome Sync to view recent Chrome tabs from your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
@@ -3213,19 +3213,19 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the first attempt to enable feature fails. Clicking the button will allow the user to try enabling the feature again.">
     Try again
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE"  desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE"  desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between ChromeOS devices and a connected Android phone.">
     Wi-Fi Sync
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY"  desc="Description for the 'Wifi Sync' section on the settings page. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone">
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY"  desc="Description for the 'Wifi Sync' section on the settings page. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone">
     Sync Wi-Fi networks with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY" desc="Description for the 'Wifi Sync' section on the settings page when the prerequisite 'Chrome Sync' setting is not activated. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone. The description contains a link that leads to the toggle where the prerequisite 'Chrome Sync' feature can be turned on and a 'Learn More' link to learn more about the 'Wifi Sync' feature.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY" desc="Description for the 'Wifi Sync' section on the settings page when the prerequisite 'Chrome Sync' setting is not activated. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone. The description contains a link that leads to the toggle where the prerequisite 'Chrome Sync' feature can be turned on and a 'Learn More' link to learn more about the 'Wifi Sync' feature.">
     Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to use Wi-Fi Sync. <ph name="LINK2_BEGIN">&lt;a id="learnMoreLink" target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK2_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Wifi Sync' feature to be enabled. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Wifi Sync' feature to be enabled. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone.">
     Turn on Chrome Sync to use Wi-Fi Sync
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Wifi Sync' feature. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Wifi Sync' feature. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone.">
     Wi-Fi Sync, Learn More
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
@@ -4037,7 +4037,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Notifications
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of Chrome OS apps installed.">
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of ChromeOS apps installed.">
     <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
@@ -4111,10 +4111,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_STORAGE_TITLE" desc="In Device Settings, the title for storage management.">
     Storage management
   </message>
-  <message name="IDS_SETTINGS_STORAGE_ITEM_IN_USE" desc="In Device Settings > Storage, label for the used storage size of Chrome OS internal storage.">
+  <message name="IDS_SETTINGS_STORAGE_ITEM_IN_USE" desc="In Device Settings > Storage, label for the used storage size of ChromeOS internal storage.">
     In use
   </message>
-  <message name="IDS_SETTINGS_STORAGE_ITEM_AVAILABLE" desc="In Device Settings > Storage, label for the available storage size of Chrome OS internal storage.">
+  <message name="IDS_SETTINGS_STORAGE_ITEM_AVAILABLE" desc="In Device Settings > Storage, label for the available storage size of ChromeOS internal storage.">
     Available
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_MY_FILES" desc="In Device Settings > Storage, label for the size of My files root.">
@@ -4182,20 +4182,20 @@ Press an assigned switch or key to remove assignment.
     </message>
   </if>
   <if expr="not reven">
-    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
-      Help improve Chrome OS features and performance
+    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in ChromeOS.">
+      Help improve ChromeOS features and performance
     </message>
   </if>
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in Chrome OS for the owner of the device.">
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in ChromeOS for the owner of the device.">
     Automatically sends crash reports as well as diagnostic and usage data to Google
   </message>
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC" desc="The description of the checkbox to enable/disable user metrics logging in Chrome OS for non-owners of the device.">
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC" desc="The description of the checkbox to enable/disable user metrics logging in ChromeOS for non-owners of the device.">
     Automatically sends diagnostic and usage data to Google
   </message>
-  <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE" desc="The label of the checkbox to enable/disable Suggested Content in Chrome OS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
+  <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE" desc="The label of the checkbox to enable/disable Suggested Content in ChromeOS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
     Suggest new content to explore
   </message>
-  <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC" desc="The description of the checkbox to enable/disable Suggested Content in Chrome OS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
+  <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC" desc="The description of the checkbox to enable/disable Suggested Content in ChromeOS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
     Includes apps, webpages, and more. Sends statistics to improve suggestions only if you’ve chosen to share usage data.
   </message>
   <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">

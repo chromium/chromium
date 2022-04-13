@@ -1326,8 +1326,8 @@
       </message>
     </if>
     <if expr="not reven">
-      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
-        Manage languages in Chrome OS settings
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in ChromeOS.">
+        Manage languages in ChromeOS settings
       </message>
     </if>
     <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
@@ -1352,8 +1352,8 @@
       </message>
     </if>
     <if expr="not reven">
-      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
-        Manage secure DNS in Chrome OS settings
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in ChromeOS.">
+        Manage secure DNS in ChromeOS settings
       </message>
     </if>
   </if>
@@ -3570,10 +3570,10 @@
   </if>
   <if expr="chromeos_lacros">
     <message name="IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL" desc="Label for the checkbox that enables using the ash proxy for the Lacros browser.">
-      Use Chrome OS proxy settings for this profile.
+      Use ChromeOS proxy settings for this profile.
     </message>
     <message name="IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL" desc="Non-interactive label that describes that the primary profile uses the computer's proxy settings.">
-      This profile uses Chrome OS proxy settings.
+      This profile uses ChromeOS proxy settings.
     </message>
   </if>
 

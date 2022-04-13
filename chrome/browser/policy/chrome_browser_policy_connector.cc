@@ -139,7 +139,7 @@ bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
   auto* lacros_service = chromeos::LacrosService::Get();
   return lacros_service->init_params()->is_device_enterprised_managed;
 #else
-  NOTREACHED() << "This method is only defined for Chrome OS";
+  NOTREACHED() << "This method is only defined for ChromeOS";
   return false;
 #endif
 }

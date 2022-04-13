@@ -1852,10 +1852,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_GOOGLE_TERMS_OF_SERVICE_URL" desc="URL for Google terms of service" translateable="false">
         https://policies.google.com/terms/embedded
       </message>
-      <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_TITLE" desc="Title for Chrome and Chrome OS addtional terms of service">
-        Chrome &amp; Chrome OS Additional Terms of Service
+      <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_TITLE" desc="Title for Chrome and ChromeOS addtional terms of service">
+        Chrome &amp; ChromeOS Additional Terms of Service
       </message>
-      <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_URL" desc="URL for Chrome and Chrome OS additional terms of service" translateable="false">
+      <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_URL" desc="URL for Chrome and ChromeOS additional terms of service" translateable="false">
         https://www.google.com/chrome/terms/
       </message>
       <message name="IDS_PRIVACY_POLICY_TITLE" desc="Title for the Google privacy policy">
@@ -2732,16 +2732,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Chrome First Run Experience
       </message>
       <message name="IDS_FRE_TOS" desc="Message explaining that use of Chrome is governed by terms of service.">
-        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>.
+        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>.
       </message>
       <message name="IDS_FRE_TOS_AND_PRIVACY_CHILD_ACCOUNT" desc="Message explaining that use of Chrome is governed by Chrome's terms of service, and the Google Privacy Policy.">
-        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>. The <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph> also applies.
+        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>. The <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph> also applies.
       </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
-        <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
+        <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS_AND_PRIVACY_CHILD_ACCOUNT" desc="Message explaining that use of Chrome is governed by Chrome's terms of service, and the Google Privacy Policy.">
-        <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>. The <ph name="BEGIN_LINK3">&lt;LINK3&gt;</ph>Privacy Policy<ph name="END_LINK3">&lt;/LINK3&gt;</ph> also applies.
+        <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>. The <ph name="BEGIN_LINK3">&lt;LINK3&gt;</ph>Privacy Policy<ph name="END_LINK3">&lt;/LINK3&gt;</ph> also applies.
       </message>
       <message name="IDS_FRE_SEND_REPORT_CHECK" desc="Text for asking the user to allow sending stats and crash reports">
         Help make Chrome better by sending usage statistics and crash reports to Google.

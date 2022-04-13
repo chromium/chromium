@@ -550,7 +550,7 @@
     Are you sure you want to permanently keep this device in kiosk mode?
   </message>
   <message name="IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY" desc="Warning text of disabling kiosk application launch bail out shortcut.">
-    The only way to undo this is to re-install <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph>
+    The only way to undo this is to re-install <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph>
   </message>
 </if>
 </grit-part>

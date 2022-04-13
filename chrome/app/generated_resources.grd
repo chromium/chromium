@@ -2518,13 +2518,13 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
       <if expr="not is_macosx">
-        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_INCOGNITO_MESSAGE" desc="Message on a dialog shown when the user closes the last Incognito window while one or more downloads are in progress. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
+        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_INCOGNITO_MESSAGE" desc="Message on a dialog shown when the user closes the last Incognito window while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
           Exit Incognito mode anyway?
         </message>
-        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_GUEST_MESSAGE" desc="Message on a dialog shown when the user closes the last guest window while one or more downloads are in progress. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
+        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_GUEST_MESSAGE" desc="Message on a dialog shown when the user closes the last guest window while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
           Exit guest mode anyway?
         </message>
-        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_EXIT_BUTTON" desc="Button text on a dialog shown when the user closes the browser or the last Incognito window while one or more downloads are in progress. When clicked, the button will abandon the download and exit. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
+        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_EXIT_BUTTON" desc="Button text on a dialog shown when the user closes the browser or the last Incognito window while one or more downloads are in progress. When clicked, the button will abandon the download and exit. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
           Exit
         </message>
       </if>
@@ -4151,8 +4151,8 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing Chrome OS system images.">
-            Chrome OS System Image Writer
+          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing ChromeOS system images.">
+            ChromeOS System Image Writer
           </message>
         </if>
       </if>
@@ -4715,13 +4715,13 @@ are declared in tools/grit/grit_rule.gni.
         </if>
         <if expr="not reven">
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
-            Run Chrome OS diagnostic tests.
+            Run ChromeOS diagnostic tests.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read Chrome OS device information and device data.
+            Read ChromeOS device information and device data.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
-            Read Chrome OS device and component serial numbers.
+            Read ChromeOS device and component serial numbers.
           </message>
         </if>
       </if>
@@ -4780,8 +4780,8 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
       <if expr="not reven">
-        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in Chrome OS kiosk mode.">
-          App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode
+        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in ChromeOS kiosk mode.">
+          App with 'kiosk_only' manifest attribute must be installed in ChromeOS kiosk mode
         </message>
       </if>
       <message name="IDS_EXTENSION_OVERLAPPING_WEB_EXTENT" desc="Error message when a user tries to install an app with a web extent that overlaps another installed app.">
@@ -4826,7 +4826,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <if expr="chromeos_ash">
-          <message name="IDS_EXTENSION_INSTALLED_MANAGE_INFO" desc="Text displayed in the InfoBubble with instructions on how to find the chrome://extensions/ management page on Chrome OS">
+          <message name="IDS_EXTENSION_INSTALLED_MANAGE_INFO" desc="Text displayed in the InfoBubble with instructions on how to find the chrome://extensions/ management page on ChromeOS">
             Manage your extensions by clicking Extensions in the "More tools" menu.
           </message>
         </if>
@@ -7659,7 +7659,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.
         </message>
         <message name="IDS_FEEDBACK_BLUETOOTH_LOGS_MESSAGE" desc="Message shown after user clicks on the bluetooth logs hyperlink">
-          To better diagnose Bluetooth issues, Googlers can include additional Bluetooth logs with their feedback reports. When this option is checked, your report will include btsnoop and HCI logs from your current session, sanitized to remove as much PII as possible. Access to these logs will be restricted to managers of the Chrome OS product group in Listnr. Logs will be purged after 90 days.
+          To better diagnose Bluetooth issues, Googlers can include additional Bluetooth logs with their feedback reports. When this option is checked, your report will include btsnoop and HCI logs from your current session, sanitized to remove as much PII as possible. Access to these logs will be restricted to managers of the ChromeOS product group in Listnr. Logs will be purged after 90 days.
         </message>
         <message name="IDS_FEEDBACK_OFFLINE_DIALOG_TITLE" desc="The title of the message box displayed when the user attempts to send a report while offline">
           Feedback Report
@@ -9924,10 +9924,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
           OK...
         </message>
         <if expr="chromeos_ash">
-          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view/notification when the user needs to sign out and sign in again to Chrome OS.">
+          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view/notification when the user needs to sign out and sign in again to ChromeOS.">
             Sign out then sign in again...
           </message>
-          <message name="IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM" desc="The sync error wrench menu item when the user needs to sign out and sign in again to Chrome OS.">
+          <message name="IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM" desc="The sync error wrench menu item when the user needs to sign out and sign in again to ChromeOS.">
             Sign out then sign in again...
           </message>
         </if>
@@ -9978,7 +9978,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
           Sync isn't working. Try signing in again.
         </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in Chrome OS as well as for managed accounts.">
+        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
           Sync isn't working. Try signing out and back in again.
         </message>
         <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
@@ -10000,7 +10000,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
         </if>
         <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on Chrome OS.">
+          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
             Sign out then sign in again to start sync
           </message>
         </if>
@@ -10010,7 +10010,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
         </if>
         <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on Chrome OS.">
+          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
             Sign out
           </message>
           <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
@@ -10197,12 +10197,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Send message
       </message>
       <if expr="not chromeos_ash">
-        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="Not on Chrome OS.">
+        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="Not on ChromeOS.">
           Details are hidden while you share your screen
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="On Chrome OS only.">
+        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="On ChromeOS only.">
           Details are hidden while you share your screen
         </message>
       </if>
@@ -11204,13 +11204,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_APP_LIST_CONTEXT_MENU_PIN_ENFORCED_BY_POLICY" desc="Short text for the pin/unpin context menu to tell user the setting is enforced by policy of an app list item">
           Pinned by administrator
         </message>
-        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items in the app list. Clicking the option opens a submenu in which the user can choose how the items in the app list should be ordered (e.g. by name or the icon color).">
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE" desc="Text for an option shown in a context menu for app items in the ChromeOS app list that allows users to reorder items in the app list. Clicking the option opens a submenu in which the user can choose how the items in the app list should be ordered (e.g. by name or the icon color).">
           Sort by
         </message>
-        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items by their names in the app list. This option is under the 'Reorder by' submenu">
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME" desc="Text for an option shown in a context menu for app items in the ChromeOS app list that allows users to reorder items by their names in the app list. This option is under the 'Reorder by' submenu">
           Name
         </message>
-        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR" desc="Text for an option shown in a context menu for app items in the Chrome OS app list that allows users to reorder items by their icon colors in the app list. This option is under the 'Reorder by' submenu">
+        <message name="IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR" desc="Text for an option shown in a context menu for app items in the ChromeOS app list that allows users to reorder items by their icon colors in the app list. This option is under the 'Reorder by' submenu">
           Color
         </message>
         <message name="IDS_APP_LIST_UNINSTALL_ITEM"

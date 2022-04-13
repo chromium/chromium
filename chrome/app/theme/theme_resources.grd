@@ -258,7 +258,7 @@
         <structure type="chrome_scaled_image" name="IDR_SWIPE_BACK" file="mac/back_large.png" />
         <structure type="chrome_scaled_image" name="IDR_SWIPE_FORWARD" file="mac/forward_large.png" />
       </if>
-      <!-- Used by Chrome OS login page. -->
+      <!-- Used by ChromeOS login page. -->
       <if expr="chromeos_ash">
         <structure type="chrome_scaled_image" name="IDR_TAB_RECORDING_INDICATOR" file="cros/tab_recording_indicator.png" />
       </if>

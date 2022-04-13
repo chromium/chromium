@@ -244,7 +244,7 @@ cr.define('cr.ui.login.debug', function() {
           id: 'error',
           trigger: (screen) => {
             screen.setError(
-                'Chrome OS was unable to connect to Public Wifi. ' +
+                'ChromeOS was unable to connect to Public Wifi. ' +
                 'Please select another network or try again.');
           }
         },

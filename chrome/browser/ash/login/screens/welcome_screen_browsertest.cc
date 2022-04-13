@@ -82,14 +82,14 @@ const test::UIPath kActivateChromeVoxButton = {"connect", "welcomeScreen",
 const char kSetAvailableVoices[] = R"(
       chrome.tts.getVoices = function(callback) {
         callback([
-          {'lang': 'en-US', 'voiceName': 'Chrome OS US English'},
-          {'lang': 'fr-FR', 'voiceName': 'Chrome OS français'}
+          {'lang': 'en-US', 'voiceName': 'ChromeOS US English'},
+          {'lang': 'fr-FR', 'voiceName': 'ChromeOS français'}
         ]);
       };)";
 
 const char kChromeVoxHintLaptopSpokenString[] =
-    "Do you want to activate ChromeVox, the built-in screen reader for Chrome "
-    "OS? If so, press the space bar.";
+    "Do you want to activate ChromeVox, the built-in screen reader for "
+    "ChromeOS? If so, press the space bar.";
 
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(
       "Do you want to activate ChromeVox, the built-in screen reader for "
-      "Chrome OS? If so, press and hold both volume keys for five seconds.");
+      "ChromeOS? If so, press and hold both volume keys for five seconds.");
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   const std::string set_no_english_voice = R"(
     chrome.tts.getVoices = function(callback) {
-      callback([{'lang': 'fr-FR', 'voiceName': 'Chrome OS français'}]);
+      callback([{'lang': 'fr-FR', 'voiceName': 'ChromeOS français'}]);
     };)";
   test::ExecuteOobeJS(set_no_english_voice);
   test::SpeechMonitor monitor;
@@ -774,8 +774,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
   const std::string load_english_voice = R"(
     chrome.tts.getVoices = function(callback) {
       callback([
-        {'lang': 'fr-FR', 'voiceName': 'Chrome OS français'},
-        {'lang': 'en-US', 'voiceName': 'Chrome OS US English'},
+        {'lang': 'fr-FR', 'voiceName': 'ChromeOS français'},
+        {'lang': 'en-US', 'voiceName': 'ChromeOS US English'},
       ]);
     };
     window.speechSynthesis.dispatchEvent(new Event('voiceschanged'));
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   // Also set the timeout for the fallback hint to 0 MS.
   const std::string set_no_french_voice = R"(
     chrome.tts.getVoices = function(callback) {
-      callback([{'lang': 'en-US', 'voiceName': 'Chrome OS US English'}]);
+      callback([{'lang': 'en-US', 'voiceName': 'ChromeOS US English'}]);
     };)";
   const std::string set_default_hint_timeout_ms = R"(
     document.getElementById('connect').DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_ = 0;

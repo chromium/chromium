@@ -726,7 +726,7 @@ This file contains the strings for ash.
         Swipe left with four fingers to switch to the previous desk
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to notify that the user should restart to get system updates. This notification body links to the info page on the update.">
-        Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>Chromium OS</ex></ph> update
+        Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>ChromiumOS</ex></ph> update
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="The label used as the button to restart system and update. Displayed as the action button of the notification for system update.">
         Restart to update
@@ -735,7 +735,7 @@ This file contains the strings for ash.
         Reset
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_POWERWASH" desc="The notification message used in the system notification update when user need to powerwash the device in order to update the system.">
-        This update requires powerwashing your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME">$2<ex>Chromium OS</ex></ph> update.
+        This update requires powerwashing your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME">$2<ex>ChromiumOS</ex></ph> update.
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK" desc="The notification message used in the system notification update when the device is rolled back and data will be deleted. MANAGER can be a domain or an email address.">
         <ph name="MANAGER">$1<ex>google.com</ex></ph> is rolling back your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>. Your device will reset and all data will be deleted.
@@ -744,7 +744,7 @@ This file contains the strings for ash.
         <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to roll back your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>. Your device will reset and all data will be deleted.
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_SLOW_BOOT" desc="The additional body of the notification to notify the user that the next reboot is slow.">
-        <ph name="UPDATE_TEXT">$1<ex>Learn more about the latest Chromium OS update</ex></ph>. This Chromebook needs to restart to apply an update. This can take up to 1 minute.
+        <ph name="UPDATE_TEXT">$1<ex>Learn more about the latest ChromiumOS update</ex></ph>. This Chromebook needs to restart to apply an update. This can take up to 1 minute.
       </message>
       <message name="IDS_DIALOG_TITLE_SLOW_BOOT" desc="The title of the Slow Boot Shutdown Confirmation Dialog.">
         Restart may take awhile
@@ -801,7 +801,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED" desc="The accessible text used when the mic gain button is in the muted state.">
         Mic is muted.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED_BY_HW_SWITCH" desc="The text used as a tooltip for microphone mute button in Chrome OS quick settings when the mic gain button is muted because the device microphone mute switch is turned on. Used as a status text for IDS_ASH_STATUS_TRAY_MIC_GAIN.">
+      <message name="IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED_BY_HW_SWITCH" desc="The text used as a tooltip for microphone mute button in ChromeOS quick settings when the mic gain button is muted because the device microphone mute switch is turned on. Used as a status text for IDS_ASH_STATUS_TRAY_MIC_GAIN.">
         Device's microphone button is turned off.
       </message>
       <message name="IDS_ASH_STATUS_AREA_TOAST_KBL_OFF" desc="The text in the toast that shows up when the keyboard backlight is toggled off using a physical key or shortcut.">
@@ -1531,7 +1531,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CONTINUE_BROWSING_TAB_LABEL" desc="Label inside a Phone Hub continue browsing card that describes the index of the card, title of the webpage, and webpage url.">
         Browser tab <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="TOTAL_COUNT">$2<ex>2</ex></ph>. <ph name="SITE_TITLE">$3<ex>Google</ex></ph>, <ph name="SITE_URL">$4<ex>https://google.com</ex></ph>
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL" desc="Label for the settings button in the Phone Hub UI that lets users know that the button routes to the Chrome OS Settings app page for connected devices (e.g. to disable Phone Hub features, enable/disable Smartlock, etc)">
+      <message name="IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL" desc="Label for the settings button in the Phone Hub UI that lets users know that the button routes to the ChromeOS Settings app page for connected devices (e.g. to disable Phone Hub features, enable/disable Smartlock, etc)">
         Connected devices settings
       </message>
       <message name="IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that the Silence Phone feature is disabled because their phone is on a work profile.">
@@ -2014,7 +2014,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_UNAVAILABLE_SIM_NETWORK" desc="Accessibility label used in quick settings to indicate for a SIM network that is not available to be setup. [CHAR_LIMIT=29]">
        <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph> is not activated.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked and clicking on it will open unlock dialog in chrome OS settings. [CHAR_LIMIT=29]">
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked and clicking on it will open unlock dialog in ChromeOS settings. [CHAR_LIMIT=29]">
         Click to unlock
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGN_IN_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked, after signing in the user can unlock the network. [CHAR_LIMIT=29]">
@@ -3334,12 +3334,12 @@ This file contains the strings for ash.
       </message>
       <if expr="is_chrome_branded">
         <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME" desc="The source of a system-generated notification, as displayed to the user.">
-          Chrome OS
+          ChromeOS
         </message>
       </if>
       <if expr="not is_chrome_branded">
         <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME" desc="The source of a system-generated notification, as displayed to the user.">
-          Chromium OS
+          ChromiumOS
         </message>
       </if>
 
@@ -3763,13 +3763,13 @@ Here are some things you can try to get started.
         Your microphone is off. Turn on your device’s microphone button.
       </message>
 
-      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION" desc="The short message to encourage user to unlock the device so that Chrome OS can perform the notification action selected by user after unlocking.">
+      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION" desc="The short message to encourage user to unlock the device so that ChromeOS can perform the notification action selected by user after unlocking.">
         Unlock device to perform the notification action
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION_WITH_USER_ID" desc="The short message to encourage user to unlock the device so that Chrome OS can perform the notification action selected by user after unlocking.">
+      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION_WITH_USER_ID" desc="The short message to encourage user to unlock the device so that ChromeOS can perform the notification action selected by user after unlocking.">
         Unlock device as <ph name="login_id">$1<ex>example@gmail.com</ex></ph> to perform the notification action
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING" desc="The short message to encourage user to unlock the device to change the lock screen notification setting, so that Chrome OS can show the setting window after unlocking.">
+      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING" desc="The short message to encourage user to unlock the device to change the lock screen notification setting, so that ChromeOS can show the setting window after unlocking.">
         To see notifications on your lock screen, unlock to change the setting
       </message>
 
@@ -4567,16 +4567,16 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CLOSE_SORT_TOAST_BUTTON_SPOKEN_TEXT" desc="Accessibility text read by chromevox when focusing on the close button shown in a toast that gets shown in the launcher UI after user sorts apps in the launcher.">
         Close sort toast
       </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE" desc="Title of a nudge shown in the Chrome OS launcher UI above the list of apps that informs users that they can sort their apps by name or color.">
+      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE" desc="Title of a nudge shown in the ChromeOS launcher UI above the list of apps that informs users that they can sort their apps by name or color.">
         Sort your apps by name or color
       </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON" desc="Text for the button used to dismiss a nudge shown in the Chrome OS launcher UI. The nudge is located above the list of apps and informs users that they can sort their apps by name or color.">
+      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON" desc="Text for the button used to dismiss a nudge shown in the ChromeOS launcher UI. The nudge is located above the list of apps and informs users that they can sort their apps by name or color.">
         OK
       </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_CLAMSHELL_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the Chrome OS launcher UI in clamshell mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
+      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_CLAMSHELL_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the ChromeOS launcher UI in clamshell mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
         Right-click anywhere to reorder your apps
       </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TABLET_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the Chrome OS launcher UI in tablet mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
+      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TABLET_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the ChromeOS launcher UI in tablet mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
         Touch &amp; hold anywhere to reorder your apps
       </message>
       <message name="IDS_SUGGESTED_APPS_INDICATOR" desc="Indicator text in the launcher on top of suggested apps.">
@@ -4742,7 +4742,7 @@ New install
         Manage settings
       </message>
       <message name="IDS_APP_LIST_SUGGESTED_CONTENT_INFO" desc="Text shown in launcher to notify users about Suggested Content. Suggested Content includes app search recommendations and website recommendations which can show up in places such as launcher search and suggestion chips.">
-          Chrome OS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS">$1<ex>Manage settings</ex></ph>
+          ChromeOS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS">$1<ex>Manage settings</ex></ph>
       </message>
       <message name="IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC" desc="Accessibility text for a Play Store app with star rating.">
         <ph name="APP_NAME_TYPE">$1<ex>Snapchat, Playstore App</ex></ph>, Star rating <ph name="RATING_SCORE">$2<ex>5.0</ex></ph>
@@ -4778,23 +4778,23 @@ New install
         All Apps, navigate with left or down arrow to access all apps
       </message>
 
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE" desc="The template for rotating placeholder text for the search box shown within the Chrome OS launcher. Placeholders always list files and apps provider as well as a rotating first item.">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE" desc="The template for rotating placeholder text for the search box shown within the ChromeOS launcher. Placeholders always list files and apps provider as well as a rotating first item.">
         Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more...
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET" desc="A11Y text for placeholder texts for the search box shown within the Chrome OS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET" desc="A11Y text for placeholder texts for the search box shown within the ChromeOS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
         Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more.
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL" desc="A11Y text for placeholder texts for the search box shown within the Chrome OS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL" desc="A11Y text for placeholder texts for the search box shown within the ChromeOS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
         Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more. Use the arrow keys to navigate your apps.
       </message>
 
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         shortcuts
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         tabs
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         settings
       </message>
 

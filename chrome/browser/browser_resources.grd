@@ -148,7 +148,7 @@
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_template.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_css.js" use_base_dir="false" type="BINDATA" />
 
-        <!-- Chrome OS Account Manager resources -->
+        <!-- ChromeOS Account Manager resources -->
         <include name="IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\components\error_screen.js" use_base_dir="false" type ="BINDATA"/>
         <include name="IDR_ACCOUNT_MANAGER_SHARED_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_shared_css.js" use_base_dir="false" type ="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_WELCOME_HTML" file="resources\chromeos\account_manager\account_manager_welcome.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>

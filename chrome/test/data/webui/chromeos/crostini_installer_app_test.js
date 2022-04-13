@@ -373,11 +373,11 @@ suite('<crostini-installer-app>', () => {
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kNeedUpdate);
     await flushTasks();
 
-    assertEquals(app.$$('#title').innerText, 'Chrome OS update required');
+    assertEquals(app.$$('#title').innerText, 'ChromeOS update required');
     assertFalse(app.$$('#error-message').hidden);
     assertEquals(
         app.$$('#error-message').innerText,
-        'To finish setting up Linux, update Chrome OS and try again.');
+        'To finish setting up Linux, update ChromeOS and try again.');
     assertFalse(app.$$('#settings').hidden);
     assertEquals(app.$$('#settings').innerText, 'Open Settings');
   });

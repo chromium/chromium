@@ -2153,7 +2153,7 @@
     Learn More
   </message>
   <message desc="Part of the ChromeVox tutorial, explaining that this is the end of the tutorial and that there are links to more information." name="IDS_CHROMEVOX_TUTORIAL_LEARN_MORE">
-    Congratulations! You’ve learned the essentials to use ChromeVox successfully. Remember that you can open the ChromeVox command menu at any time by pressing Search+Period. To learn even more about ChromeVox and Chrome OS, visit the following articles.
+    Congratulations! You’ve learned the essentials to use ChromeVox successfully. Remember that you can open the ChromeVox command menu at any time by pressing Search+Period. To learn even more about ChromeVox and ChromeOS, visit the following articles.
     If you're done with the tutorial, use ChromeVox to navigate to the Close button and click it.
   </message>
   <message desc="Part of the ChromeVox update notes for m63, title." name="IDS_CHROMEVOX_UPDATE_63_TITLE">
@@ -3325,7 +3325,7 @@
     You can also swipe one finger from right to left to move to the previous item. Try it now.
   </message>
   <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_CONTINUE_TEXT">
-    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue. 
+    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue.
   </message>
   <message desc="Title for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TITLE">
     Explore by touch

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Chrome OS-specific strings (included from generated_resources.grd).
+<!-- ChromeOS-specific strings (included from generated_resources.grd).
      Everything in this file is wrapped in <if expr="chromeos_ash">. -->
 <grit-part>
   <message name="IDS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required.">
@@ -152,7 +152,7 @@
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for welcome page.">
     Connect to your phone
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their Chrome OS device; includes details on specific features that can be used and a link to an information page">
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their ChromeOS device; includes details on specific features that can be used and a link to an information page">
     You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that the exact set of features available to users differs according to the device model used.">
@@ -177,7 +177,7 @@
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS" desc="Tell the user that Better Together can automatically mirror notifications from their phone to their Chromebook.">
     Mirror notifications from your phone
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between Chrome OS devices and a connected Android phone">
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between ChromeOS devices and a connected Android phone">
     Sync Wi-Fi networks with your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL" desc="Description of a feature that allows user to download most recent items in camera roll on the connected Android phone">
@@ -194,7 +194,7 @@
   <message name="IDS_CHECKING_FOR_UPDATES" desc="Notification for checking for update">
     Checking for updates
   </message>
-  <message name="IDS_QUICK_FIX_RELEASE_BUILD" desc="Quick Fix build which is Chrome OS release build displayed string instead of canary/dev/beta.">
+  <message name="IDS_QUICK_FIX_RELEASE_BUILD" desc="Quick Fix build which is ChromeOS release build displayed string instead of canary/dev/beta.">
     QuickFix
   </message>
   <message name="IDS_UPDATE_VERIFYING" desc="Message that the system is verifying an update">
@@ -229,13 +229,13 @@
   <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_TITLE" desc="Title for first screen of cellular setup during which ChromeOS is preparing the cellular device for setup.">
     Preparing to setup your cellular device...
   </message>
-  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE" desc="Title for cellular setup when Chrome OS encounters an error preparing the cellular device for setup.">
+  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE" desc="Title for cellular setup when ChromeOS encounters an error preparing the cellular device for setup.">
     No network found
   </message>
-  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when Chrome OS encounters an error preparing the cellular device for setup and has retry attempts left. Prompts user to insert SIM and try again.">
+  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when ChromeOS encounters an error preparing the cellular device for setup and has retry attempts left. Prompts user to insert SIM and try again.">
     No network found. Please insert your SIM and try again.
   </message>
-  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_FINAL_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when Chrome OS encounters an error preparing the cellular device for setup and has no retry attempts left. Prompts user to insert SIM, reboot and try again.">
+  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_FINAL_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when ChromeOS encounters an error preparing the cellular device for setup and has no retry attempts left. Prompts user to insert SIM, reboot and try again.">
     No network found. Please insert your SIM and reboot your device before trying again.
   </message>
   <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_LOADING_TITLE" desc="Title for cellular setup step which indicates that a connection is in progress to the user's mobile data provider (e.g., Verizon).">
@@ -353,9 +353,9 @@
     Verifying confirmation code...
   </message>
 
-  <!-- Chrome OS Strings -->
+  <!-- ChromeOS Strings -->
   <message name="IDS_ECHO_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is asked to give consent to proceed with redeeming an ECHO offer.">
-    <ph name="SERVICE_NAME">$1<ex>Google Drive</ex></ph> wants to check if you are using an eligible Chrome OS device.
+    <ph name="SERVICE_NAME">$1<ex>Google Drive</ex></ph> wants to check if you are using an eligible ChromeOS device.
   </message>
   <message name="IDS_ECHO_DISABLED_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is informed that redeeming offers is disabled for the device.">
     Your IT administrator has disabled Chrome Goodies for your device.
@@ -471,10 +471,10 @@
   <message name="IDS_UPDATE_CANCELLED" desc="Message shown when the update has been cancelled by user">
     Cancelling update...
   </message>
-  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE" desc="Title for the dialog shown to the user in Chrome OS OOBE before forced auto-update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
+  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE" desc="Title for the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> needs an update
   </message>
-  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in Chrome OS OOBE before forced auto-update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
+  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
     If you download the update over your mobile network, it could result in overage charges.
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
@@ -492,19 +492,19 @@
   <message name="IDS_WELCOME_SCREEN_GREETING_SUBTITLE" desc="Greeting message on the OOBE welcome screen">
     Fast. Secure. Effortless.
   </message>
-  <message name="IDS_OOBE_ADVANCED_OPTIONS_SCREEN_TITLE" desc="Screen title on the Chrome OS OOBE (first run) Advanced options screen">
+  <message name="IDS_OOBE_ADVANCED_OPTIONS_SCREEN_TITLE" desc="Screen title on the ChromeOS OOBE (first run) Advanced options screen">
     Advanced options
   </message>
-  <message name="IDS_OOBE_ADVANCED_OPTIONS_CFM_SETUP_TITLE" desc="Title of the button that triggers Chromebox for Meetings device mode on the Chrome OS OOBE (first run UI) Advanced options screen">
+  <message name="IDS_OOBE_ADVANCED_OPTIONS_CFM_SETUP_TITLE" desc="Title of the button that triggers Chromebox for Meetings device mode on the ChromeOS OOBE (first run UI) Advanced options screen">
     Set up as Chromebox for meetings
   </message>
-  <message name="IDS_OOBE_ADVANCED_OPTIONS_CFM_SETUP_SUBTITLE" desc="Subtitle of the button that trigers Chromebox for Meetings device mode on the Chrome OS OOBE (first run UI) Advanced options screen">
+  <message name="IDS_OOBE_ADVANCED_OPTIONS_CFM_SETUP_SUBTITLE" desc="Subtitle of the button that trigers Chromebox for Meetings device mode on the ChromeOS OOBE (first run UI) Advanced options screen">
     Enroll device for video conferencing
   </message>
-  <message name="IDS_OOBE_ADVANCED_OPTIONS_DEVICE_REQUISITION_TITLE" desc="Title of the button that triggers Device requisition device setup mode on the Chrome OS OOBE (first run UI) Advanced options screen">
+  <message name="IDS_OOBE_ADVANCED_OPTIONS_DEVICE_REQUISITION_TITLE" desc="Title of the button that triggers Device requisition device setup mode on the ChromeOS OOBE (first run UI) Advanced options screen">
     Device requisition
   </message>
-  <message name="IDS_OOBE_ADVANCED_OPTIONS_DEVICE_REQUISITION_SUBTITLE" desc="Subtitle of the button that trigers Device requisition device setup mode on the Chrome OS OOBE (first run UI) Advanced options screen">
+  <message name="IDS_OOBE_ADVANCED_OPTIONS_DEVICE_REQUISITION_SUBTITLE" desc="Subtitle of the button that trigers Device requisition device setup mode on the ChromeOS OOBE (first run UI) Advanced options screen">
     Add requisition ID to this device
   </message>
   <message name="IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens proxy settings dialog">
@@ -558,7 +558,7 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_WORKING_MESSAGE" desc="Message to show while enrollment is in progress">
     Enrolling device...
   </message>
-  <message name="IDS_OOBE_ASSET_ID_LABEL" desc="Chrome OS OOBE: label for asset identifier.">
+  <message name="IDS_OOBE_ASSET_ID_LABEL" desc="ChromeOS OOBE: label for asset identifier.">
     Asset ID: <ph name="ASSET_ID">$1<ex>None specified</ex></ph>
   </message>
   <message name="IDS_OOBE_PLAY_ANIMATION_MESSAGE" desc="Accessibility label for the button to play/continue animation">
@@ -636,22 +636,22 @@
   <message name="IDS_COUNTRY_DROPDOWN_TITLE" desc="Title of country selection dropdown menu" meaning="Small title near country dropdown menu suggesting that this is a country selector.">
     Country
   </message>
-  <message name="IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT" desc="Text on 'Start to use Chrome OS' button" meaning="This is the text label displayed on the 'Next' button for the first Chrome OS initial device setup screen ('Welcome screen').">
+  <message name="IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT" desc="Text on 'Start to use ChromeOS' button" meaning="This is the text label displayed on the 'Next' button for the first ChromeOS initial device setup screen ('Welcome screen').">
     Let's go
   </message>
-  <message name="IDS_OOBE_OK_BUTTON_TEXT" desc="Text on 'OK' button" meaning="This is 'OK' text for all 'OK' buttons on Chrome OS initial device setup screens.">
+  <message name="IDS_OOBE_OK_BUTTON_TEXT" desc="Text on 'OK' button" meaning="This is 'OK' text for all 'OK' buttons on ChromeOS initial device setup screens.">
     OK
   </message>
-  <message name="IDS_LANGUAGE_BUTTON_LABEL" desc="Navigation label attached to the 'Select Language' button on Chrome OS initial device setup screen" meaning="The button itself displays only current language name. But for accessibility mode we need full description of this button. So this label suggests that pressing on a button will allow to change current language and input method. And it should also include the name of currently selected language.">
+  <message name="IDS_LANGUAGE_BUTTON_LABEL" desc="Navigation label attached to the 'Select Language' button on ChromeOS initial device setup screen" meaning="The button itself displays only current language name. But for accessibility mode we need full description of this button. So this label suggests that pressing on a button will allow to change current language and input method. And it should also include the name of currently selected language.">
     Select language and keyboard button. Currently selected language is <ph name="LANGUAGE">$1<ex>English (United States)</ex></ph>.
   </message>
-  <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select Chrome OS UI language and default keyboard layout during initial device setup.">
+  <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select ChromeOS UI language and default keyboard layout during initial device setup.">
     Choose your language &amp; keyboard
   </message>
   <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
     Language files are shared among users to save disk space.
   </message>
-  <message name="IDS_ACCESSIBILITY_SECTION_TITLE" desc="Title of accessibility options screen" meaning="A title of the dialog where user can control Chrome OS UI accessibility (like large cursor or screen reader) options during initial device setup.">
+  <message name="IDS_ACCESSIBILITY_SECTION_TITLE" desc="Title of accessibility options screen" meaning="A title of the dialog where user can control ChromeOS UI accessibility (like large cursor or screen reader) options during initial device setup.">
     Accessibility settings
   </message>
   <message name="IDS_ACCESSIBILITY_SECTION_HINT" desc="Under-title line on the accessibility options screen" meaning="A hint to the user what these settings do and how to update them later.">
@@ -664,7 +664,7 @@
     To restore your data, connect to the internet
   </message>
   <message name="IDS_NETWORK_SELECTION_ERROR" desc="Error shown when connection to network failed or timed out.">
-    <ph name="PRODUCT_NAME">$1<ex>Chrome OS</ex></ph> was unable to connect to <ph name="NETWORK_ID">$2<ex>Public Wifi</ex></ph>. Please select another network or try again.
+    <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> was unable to connect to <ph name="NETWORK_ID">$2<ex>Public Wifi</ex></ph>. Please select another network or try again.
   </message>
   <message name="IDS_OOBE_ACCESSIBILITY_LINK" desc="Link shown on OOBE screens that opens accessibility options menu.">
     Accessibility
@@ -705,13 +705,13 @@
   <message name="IDS_OOBE_CLOSE_ACCESSIBILITY_MENU" desc="Text to be spoken when focus is set to the close button of accessibility options menu.">
     Close accessibility menu
   </message>
-  <message name="IDS_LANGUAGE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of languages' dropdown menu on Chrome OS Language and keyboard initial device setup screen" meaning="The menu itself displays only current language name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current language.">
+  <message name="IDS_LANGUAGE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of languages' dropdown menu on ChromeOS Language and keyboard initial device setup screen" meaning="The menu itself displays only current language name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current language.">
     Select language
   </message>
-  <message name="IDS_KEYBOARD_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of keyboards' dropdown menu on Chrome OS Language and keyboard initial device setup screen" meaning="The menu itself displays only current keyboard layout name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current input method.">
+  <message name="IDS_KEYBOARD_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of keyboards' dropdown menu on ChromeOS Language and keyboard initial device setup screen" meaning="The menu itself displays only current keyboard layout name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current input method.">
     Select keyboard
   </message>
-  <message name="IDS_COUNTRY_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of countries' dropdown menu on Chrome OS Demo Mode setup screen" meaning="The menu itself displays only current country name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current country.">
+  <message name="IDS_COUNTRY_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of countries' dropdown menu on ChromeOS Demo Mode setup screen" meaning="The menu itself displays only current country name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current country.">
     Select country
   </message>
   <message name="IDS_OOBE_OTHER_LANGUAGES" desc="Option group name dividing vendor-configured languages from other available languages in out-of-box 'Select language' select control.">
@@ -729,26 +729,26 @@
   <message name="IDS_TIMEZONE_DROPDOWN_TITLE" desc="Title of timezone selection dropdown menu" meaning="Small title near timezone dropdown menu suggesting that this is a timezone selector.">
     Timezone
   </message>
-  <message name="IDS_TIMEZONE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of timezones' dropdown menu on Chrome OS Timezone initial device setup screen" meaning="The menu itself displays only current timezone name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current timezone.">
+  <message name="IDS_TIMEZONE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of timezones' dropdown menu on ChromeOS Timezone initial device setup screen" meaning="The menu itself displays only current timezone name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current timezone.">
     Select timezone
   </message>
   <message name="IDS_OOBE_EULA_SECTION_TITLE" desc="Title of Terms of Service screen">
     Google terms of service
   </message>
   <if expr="reven">
-    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full Chrome OS Terms text">
+    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full ChromeOS Terms text">
       Google ChromeOS Flex Terms contents
     </message>
-    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and Chrome OS additional terms">
+    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and ChromeOS additional terms">
       Google Chrome and ChromeOS Flex Additional Terms
     </message>
   </if>
   <if expr="not reven">
-    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full Chrome OS Terms text">
-      Google Chrome OS Terms contents
+    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full ChromeOS Terms text">
+      Google ChromeOS Terms contents
     </message>
-    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and Chrome OS additional terms">
-      Google Chrome and Chrome OS Additional Terms
+    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and ChromeOS additional terms">
+      Google Chrome and ChromeOS Additional Terms
     </message>
   </if>
   <message name="IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the Title of Terms of Service OOBE screen to accept EULA and continue.">
@@ -1245,7 +1245,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
-      Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
+      Your saved preferences and activity will be ready on any ChromeOS device when you sign in with your Google Account. You can choose what to sync in Settings.
     </message>
   </if>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED" desc="Alternate description of the sync confirmation dialog that is displayed on the first user log in.">
@@ -1304,7 +1304,7 @@
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT" desc="The label on the button that continues the setup flow.">
     Next
   </message>
-  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_TITLE" desc="The title of the last dialog in the set of screens that are always displayed to the user on the first login to the Chrome OS device.">
+  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_TITLE" desc="The title of the last dialog in the set of screens that are always displayed to the user on the first login to the ChromeOS device.">
     You are all set!
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE" desc="The sub-title of the dialog that allows user to opt-in into several Google marketing options.">
@@ -1328,13 +1328,13 @@
   <message name="IDS_LOGIN_GET_STARTED" desc="A label on the button. Used on the welcome screen (the first one on OOBE) and on the marketing optin screen (the last one in OOBE).">
     Get started
   </message>
-  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in Chrome OS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the Chrome OS device. The label informs the user that swiping up from the shelf will start the session.">
+  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started
   </message>
   <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_BUTTON_LABEL" desc="The label of the button which appears at the bottom left of the last OOBE dialog shown to the user on the first login. Clicking the button will show a screen that allows the user to change certain accessibility settings.">
     Accessibility
   </message>
-  <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_TITLE" desc="The title of the accessibility page that is part of the the marketing opt in dialog screen, the last OOBE screen shown to the user on their first login to the Chrome OS device. The accessibility page will allow the user to change certain accessibility settings.">
+  <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_TITLE" desc="The title of the accessibility page that is part of the the marketing opt in dialog screen, the last OOBE screen shown to the user on their first login to the ChromeOS device. The accessibility page will allow the user to change certain accessibility settings.">
     Accessibility settings
   </message>
   <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_NAV_BUTTON_SETTING_TITLE" desc="The title of the of the accessibility option that forces shelf navigation buttons (button to go home, back, or the active apps overview) to be always shown. These buttons are hidden by default when the device is in tablet mode.">
@@ -1343,7 +1343,7 @@
   <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_NAV_BUTTON_SETTING_DESCRIPTION" desc="The descripton of the accessibility option that forces shelf navigation buttons (button to go home, back, or the active apps overview) to be always shown. These buttons are hidden by default when the device is in tablet mode.">
     Navigate home, back, and switch apps with buttons in tablet mode.
   </message>
-  <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_DONE_BUTTON" desc="The label for the button on the accessibility page that is part of the the marketing opt in dialog screen, the last OOBE screen shown to the user on their first login to the Chrome OS device. The button closes the screen, and ends the OOBE (which will start the user session).">
+  <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_DONE_BUTTON" desc="The label for the button on the accessibility page that is part of the the marketing opt in dialog screen, the last OOBE screen shown to the user on their first login to the ChromeOS device. The button closes the screen, and ends the OOBE (which will start the user session).">
     Done
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE1" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their pin.">
@@ -1421,7 +1421,7 @@
     Network configure UI requested, please wait...
   </message>
   <message name="IDS_APP_START_BAILOUT_SHORTCUT_FORMAT" desc="Message displayed at the bottom of app launch splash screen to show user the shortcut key to bailout the launch.">
-    Press Ctrl + Alt + S to switch to <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph>
+    Press Ctrl + Alt + S to switch to <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph>
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_OLD_PASSWORD_HINT" desc="Old password field hint on the password changed dialog.">
     Enter old password
@@ -1632,16 +1632,16 @@
   </message>
 
   <!-- Sync/sign-in error messages -->
-  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification for Chrome OS Secondary Accounts.">
+  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification for ChromeOS Secondary Accounts.">
     Sign-in again
   </message>
-  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view for Chrome OS Secondary Accounts.">
+  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view for ChromeOS Secondary Accounts.">
     Your Google Account(s) need attention
   </message>
-  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification for Chrome OS Secondary Accounts that have not been migrated to Chrome OS Account Manager.">
+  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification for ChromeOS Secondary Accounts that have not been migrated to ChromeOS Account Manager.">
     Sign-in has changed
   </message>
-  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view for Chrome OS Secondary Accounts that have not been migrated to Chrome OS Account Manager.">
+  <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view for ChromeOS Secondary Accounts that have not been migrated to ChromeOS Account Manager.">
     Account update required
   </message>
   <message name="IDS_CHALLENGE_RESPONSE_AUTH_MULTIPLE_CLIENT_CERTS_ERROR" desc="Error message shown when multiple client certificates were used during the challenge-response based authentication.">
@@ -1769,14 +1769,14 @@
   </if>
   <if expr="not reven">
     <message name="IDS_EULA_TPM_DESCRIPTION" desc="Dialog box text">
-      Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=tpm
+      Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in ChromeOS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=tpm
     </message>
   </if>
   <message name="IDS_EULA_RLZ_DESCRIPTION" desc="Dialog box text">
     Your computer also comes with <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph>'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME">$2<ex>Google Chrome</ex></ph>.
   </message>
   <message name="IDS_EULA_RLZ_ENABLE" desc="Check box text for enabling RLZ tracking on TPM/RLZ info dialog.">
-    Enable RLZ tracking on <ph name="SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph>.
+    Enable RLZ tracking on <ph name="SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph>.
   </message>
   <if expr="reven">
     <message name="IDS_EULA_SECURE_MODULE_DESCRIPTION" desc="Description of what a secure module does in the eula page.">
@@ -1785,7 +1785,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_EULA_SECURE_MODULE_DESCRIPTION" desc="Description of what a secure module does in the eula page.">
-      Your computer contains a secure module, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=sm
+      Your computer contains a secure module, which is used to implement many critical security features in ChromeOS. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=sm
     </message>
   </if>
   <message name="IDS_ENABLE_DEBUGGING_SCREEN_TITLE" desc="Title of the enable debugging features screen">
@@ -1813,7 +1813,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_ENABLE_DEBUGGING_SETUP_MESSAGE" desc="Setup message in dialog for enabling debugging features.">
-      You are enabling Chrome OS debugging features which will set up sshd daemon and enable booting from USB drives.
+      You are enabling ChromeOS debugging features which will set up sshd daemon and enable booting from USB drives.
     </message>
   </if>
   <message name="IDS_ENABLE_DEBUGGING_DONE_MESSAGE" desc="Completion message in dialog for enabling debugging features.">
@@ -1849,7 +1849,7 @@
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Set both the dev and the system root login password to a custom value so you can manually SSH into the device
       <ph name="END_LIST">&lt;/ul&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
-      Once enabled, most of the debugging features will remain enabled even after performing a powerwash or wiping the data on an enterprise managed device.  To fully disable all debugging features, complete the Chrome OS recovery process (https://support.google.com/chromebook/answer/1080595).
+      Once enabled, most of the debugging features will remain enabled even after performing a powerwash or wiping the data on an enterprise managed device.  To fully disable all debugging features, complete the ChromeOS recovery process (https://support.google.com/chromebook/answer/1080595).
       <ph name="BR">&lt;br&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
       For more information about the debugging features see:<ph name="BR">&lt;br&gt;</ph>
@@ -1863,7 +1863,7 @@
     <message name="IDS_ENABLE_DEBUGGING_HELP" desc="Help content of the enable debugging features dialog.">
       <ph name="BEGIN_H3">&lt;h3&gt;</ph>Debugging Features<ph name="END_H3">&lt;/h3&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
-      You can enable the debugging features on your Chrome OS Device in order to install and test custom code on your device.  This will allow you to:<ph name="BR">&lt;br&gt;</ph>
+      You can enable the debugging features on your ChromeOS Device in order to install and test custom code on your device.  This will allow you to:<ph name="BR">&lt;br&gt;</ph>
       <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Remove rootfs verification so you can modify OS files
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Enable SSH access to the device using the standard test keys so you can use tools such as <ph name="BEGIN_CODE">&lt;span style=&quot;color:grey;font-family:monospace&quot;&gt;</ph>&apos;cros flash&apos;<ph name="END_CODE">&lt;/span&gt;</ph> to access the device
@@ -1871,7 +1871,7 @@
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Set both the dev and the system root login password to a custom value so you can manually SSH into the device
       <ph name="END_LIST">&lt;/ul&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
-      Once enabled, most of the debugging features will remain enabled even after performing a powerwash or wiping the data on an enterprise managed device.  To fully disable all debugging features, complete the Chrome OS recovery process (https://support.google.com/chromebook/answer/1080595).
+      Once enabled, most of the debugging features will remain enabled even after performing a powerwash or wiping the data on an enterprise managed device.  To fully disable all debugging features, complete the ChromeOS recovery process (https://support.google.com/chromebook/answer/1080595).
       <ph name="BR">&lt;br&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
       For more information about the debugging features see:<ph name="BR">&lt;br&gt;</ph>
@@ -1967,7 +1967,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_WRONG_HWID_SCREEN_MESSAGE_FIRST_PART" desc="Warning message shown on screen notifying about malformed hardware ID. First paragraph.">
-      Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD">&lt;b&gt;</ph>may be vulnerable to malicious attacks<ph name="END_BOLD">&lt;/b&gt;</ph>.
+      Unfortunately, your computer is configured with a malformed hardware ID. This prevents ChromeOS from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD">&lt;b&gt;</ph>may be vulnerable to malicious attacks<ph name="END_BOLD">&lt;/b&gt;</ph>.
     </message>
   </if>
   <message name="IDS_WRONG_HWID_SCREEN_MESSAGE_SECOND_PART" desc="Warning message shown on screen notifying about malformed hardware ID. Second paragraph.">
@@ -2564,13 +2564,13 @@
   <message name="IDS_UPDATE_REQUIRED_SCREEN_EOL_MESSAGE" desc="The message on login screen to inform the user that policy prevents the device from being used as it has reached its end of life.">
     The deadline to return this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has passed.
   </message>
-  <message name="IDS_UPDATE_REQUIRED_SCREEN_METERED_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding on a metered network can cause overage charges. MANAGER can be a domain or an email address.">
+  <message name="IDS_UPDATE_REQUIRED_SCREEN_METERED_MESSAGE" desc="The message on the dialog shown to the user in ChromeOS before forced update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding on a metered network can cause overage charges. MANAGER can be a domain or an email address.">
     <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).
   </message>
   <message name="IDS_UPDATE_REQUIRED_SCREEN_ALLOW_METERED" desc="Label for button to allow downloading update over a metered connection.">
     Use metered connection
   </message>
-  <message name="IDS_UPDATE_REQUIRED_SCREEN_NO_NETWORK_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is not connected to a network. MANAGER can be a domain or an email address.">
+  <message name="IDS_UPDATE_REQUIRED_SCREEN_NO_NETWORK_MESSAGE" desc="The message on the dialog shown to the user in ChromeOS before forced update is attempted if the ChromeOS device is not connected to a network. MANAGER can be a domain or an email address.">
     <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update.
   </message>
   <message name="IDS_UPDATE_REQUIRED_SCREEN_OPEN_NETWORK_SETTINGS" desc="Label for network configuration button on the update required dialog on the login screen to open network settings so that the user can connect to a network.">
@@ -2655,7 +2655,7 @@
   </if>
   <if expr="not reven">
     <message name="IDS_FILEMANAGER_APP_DESCRIPTION" desc="Description for the File Manager app.">
-      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your Chrome OS device.
+      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your ChromeOS device.
     </message>
   </if>
 
@@ -3232,10 +3232,10 @@
   <message name="IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT" desc="Text displayed when the cellular activation UI cannot be opened because no cellular network exists.">
     No cellular network exists
   </message>
-  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_LABEL" desc="Label for section of the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in Chrome OS.">
+  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_LABEL" desc="Label for section of the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in ChromeOS.">
     Reset eSIM profiles
   </message>
-  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT" desc="Text for button in the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in Chrome OS. After this button is clicked, Chrome needs to request that the hardware re-scan for installed profiles.">
+  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT" desc="Text for button in the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in ChromeOS. After this button is clicked, Chrome needs to request that the hardware re-scan for installed profiles.">
     Reset eSIM profile cache
   </message>
   <message name="IDS_NETWORK_UI_DISABLE_ESIM_PROFILES_LABEL" desc="Label for section of the debug networking page which allows developers and QA testers to disable eSIM profiles.">
@@ -3659,7 +3659,7 @@
   <message name="IDS_ARC_SERVER_COMMUNICATION_ERROR" desc="Android sign-in error because of server communication error">
     Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.
   </message>
-  <message name="IDS_ARC_ANDROID_MANAGEMENT_REQUIRED_ERROR" desc="Error message shown when Android management is required for an unmanaged Chrome OS user.">
+  <message name="IDS_ARC_ANDROID_MANAGEMENT_REQUIRED_ERROR" desc="Error message shown when Android management is required for an unmanaged ChromeOS user.">
     Your organization has not enabled Google Play Store for your account. Contact your administrator for more information.
   </message>
   <message name="IDS_ARC_NETWORK_UNAVAILABLE_ERROR" desc="Error message shown when Android cannot set up network connection.">
@@ -4119,7 +4119,7 @@
   <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
     Google terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
+  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and ChromeOS additional terms screen">
     Google Chrome and ChromeOS additional terms of service
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_ARC_TITLE" desc="Title of Goolge Play terms of service in opt-in screen">
@@ -4151,7 +4151,7 @@
   <message name="IDS_GUEST_TOS_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
     Google terms of service
   </message>
-  <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
+  <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and ChromeOS additional terms screen">
     Google Chrome and ChromeOS Additional Terms
   </message>
   <message name="IDS_GUEST_TOS_USAGE_OPT_IN_TITLE" desc="Title for the message in the guest terms of service screen to opt-in for metrics during the guest session.">
@@ -4398,7 +4398,7 @@
     Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME">$1<ex>Lock Screen Enabled App</ex></ph>. Your most recent note will remain on the lock screen.
   </message>
 
-  <!-- Launcher Searchable Chrome OS internal apps -->
+  <!-- Launcher Searchable ChromeOS internal apps -->
   <message name="IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER" desc="The name of keyboard shortcut viewer app.">
     Shortcuts
   </message>
@@ -4538,10 +4538,10 @@
   </if>
   <if expr="not reven">
     <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE" desc="Title shown in the Crostini installer dialog when the VM fails to install because the device must be updated">
-      Chrome OS update required
+      ChromeOS update required
     </message>
     <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
-      To finish setting up Linux, update Chrome OS and try again.
+      To finish setting up Linux, update ChromeOS and try again.
     </message>
   </if>
   <message name="IDS_CROSTINI_INSTALLER_START_CONCIERGE_ERROR" desc="Text shown in the Crostini installer dialog when the VM service fails to start">
@@ -5200,13 +5200,13 @@
   </if>
   <if expr="not reven">
     <message name="IDS_OOBE_CHROMEVOX_HINT_TEXT" desc="Text content in the ChromeVox hint dialog, asking the user if they would like to activate ChromeVox.">
-      Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS?
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP" desc="The string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
-      Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press the space bar.
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS? If so, press the space bar.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET" desc="The string spoken when the ChromeVox hint is activated when the device is in tablet mode." is_accessibility_with_no_ui="true">
-      Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press and hold both volume keys for five seconds.
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS? If so, press and hold both volume keys for five seconds.
     </message>
   </if>
 
@@ -5555,8 +5555,8 @@
     </message>
   </if>
   <if expr="not reven">
-    <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a Chrome OS notification">
-      Chrome OS
+    <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a ChromeOS notification">
+      ChromeOS
     </message>
   </if>
   <message name="IDS_APP_USING_CAMERA_NOTIFICATION_MESSAGE" desc="Message shown in notification when an app is using the camera">
@@ -5587,56 +5587,56 @@
   </message>
 
   <!-- Strings for Account Manager error screen -->
-  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the Chrome OS Account Manager error screen when addition of secondary Google Accounts is disabled.">
+  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the ChromeOS Account Manager error screen when addition of secondary Google Accounts is disabled.">
     Addition of more Google Accounts is disabled
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text body for the Chrome OS Account Manager error screen when addition of secondary Google Accounts is disabled.">
+  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text body for the ChromeOS Account Manager error screen when addition of secondary Google Accounts is disabled.">
     Your administrator has disabled the addition of more Google Accounts
   </message>
 
   <!-- Strings for Account Manager screens -->
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TITLE" desc="Title for the Chrome OS Account Manager Welcome screen.">
+  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TITLE" desc="Title for the ChromeOS Account Manager Welcome screen.">
     Sign-in has changed
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TEXT" desc="Text body for the Chrome OS Account Manager Welcome screen.">
+  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TEXT" desc="Text body for the ChromeOS Account Manager Welcome screen.">
     You can now manage all of your Google Accounts in one place. Access and permissions you've granted to apps, websites, and extensions in Chrome and Google Play may now apply to all of your signed-in accounts. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://support.google.com/chromebook/?p=google_accounts</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_BUTTON" desc="Label for the button to view accounts on the Chrome OS Account Manager Welcome screen.">
+  <message name="IDS_ACCOUNT_MANAGER_WELCOME_BUTTON" desc="Label for the button to view accounts on the ChromeOS Account Manager Welcome screen.">
     View accounts
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_TITLE" desc="Title for the Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_TITLE" desc="Title for the ChromeOS 'Add account' dialog.">
     Sign in to add a Google account
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON" desc="Label for the 'Continue' button which takes user to the next screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON" desc="Label for the 'Continue' button which takes user to the next screen in ChromeOS 'Add account' dialog.">
     Continue
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE" desc="Title for the Welcome screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE" desc="Title for the Welcome screen in ChromeOS 'Add account' dialog.">
     Add another Google Account for <ph name="USER_NAME">$1<ex>John</ex></ph>
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog.">
     You can manage signed-in Google Accounts from <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph>. Permissions you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign into your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> as a guest or browse the web in an <ph name="LINK_2_BEGIN">&lt;a id="incognitoLink" href="#"&gt;</ph>Incognito window<ph name="LINK_2_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog without Incognito link.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog without Incognito link.">
     You can manage signed-in Google Accounts from <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph>. Permissions you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign into your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> as a guest.
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog.">
 You can use this account with Android apps. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> instead.
 
 Permissions you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN">&lt;a id="appsSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="APPS_LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in Chrome OS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in ChromeOS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from.">
     Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN">&lt;a id="appsSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="Title for the Account picker screen in Chrome OS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="Title for the Account picker screen in ChromeOS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
     Accounts available for Android apps
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="Text body for the Account picker screen in Chrome OS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="Text body for the Account picker screen in ChromeOS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
     These accounts aren't being used with Android apps right now. If you select an account to use with this Android app, the account can also be used with other Android apps. You can change Android app access in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings > Accounts<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
     Add Google Account
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in Chrome OS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in ChromeOS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
     Don't remind me next time
   </message>
   <message name="IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE" desc="Title for the network error screen.">
@@ -5656,13 +5656,13 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY" desc="Text body for the error screen which tells user to try again later.">
     Please try again later.
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE" desc="Title for the sign-in blocked by policy screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE" desc="Title for the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
     Sign-in blocked by your admin
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY" desc="Text body for the sign-in blocked by policy screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY" desc="Text body for the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
     <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph> and your admin has blocked sign-in as a secondary account
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT" desc="Alternate text for image on the sign-in blocked by policy screen in Chrome OS 'Add account' dialog.">
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT" desc="Alternate text for image on the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
    Restriction image
   </message>
 
@@ -5783,7 +5783,7 @@ Permissions you've already given to apps may apply to this account. You can cont
     Steam does not have permission to run
   </message>
   <message name="IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE" desc="Body for Steam (noun, name of app) installer when it does not have permission to install. Error code is an integer.">
-    Steam isn't allowed on this device. Contact your administrator to get permission 
+    Steam isn't allowed on this device. Contact your administrator to get permission
     Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_BOREALIS_INSTALLER_OFFLINE_MESSAGE" desc="Body for Steam (noun, name of app)  installer when installation fails due to being offline.">
@@ -5808,7 +5808,7 @@ Permissions you've already given to apps may apply to this account. You can cont
     To increase free space, delete files from device
   </message>
   <message name="IDS_BOREALIS_GENERIC_ERROR_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails. Error code is an integer.">
-    If the problem persists, try restarting your device 
+    If the problem persists, try restarting your device
     Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE" desc="Body for Steam (noun, name of app) when installation fails due to another process already running.">
@@ -5845,7 +5845,7 @@ Permissions you've already given to apps may apply to this account. You can cont
   </message>
 
   <!-- Strings for Release Notes notification -->
-  <message name="IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE" desc="Text for the notification title informing the user that the device has been updated and patch notes are available. Will specify the user's Chrome OS device. [CHAR_LIMIT=40]">
+  <message name="IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE" desc="Text for the notification title informing the user that the device has been updated and patch notes are available. Will specify the user's ChromeOS device. [CHAR_LIMIT=40]">
     Explore what's new on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_RELEASE_NOTES_NOTIFICATION_MESSAGE" desc="Text for the notification message informing the user that the device has been updated and patch notes are available.">
@@ -5867,7 +5867,7 @@ Permissions you've already given to apps may apply to this account. You can cont
   </message>
 
   <!-- Strings for Add Supervision screen -->
-  <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the Chrome OS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
+  <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the ChromeOS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
     Set Up Parental Controls
   </message>
   <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_HEADING" desc="Heading string shown in the Add Supervision page when the network is not available.">
@@ -5897,7 +5897,7 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
 
   <!-- Strings for Parent Access screen -->
-  <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the Chrome OS Parent Access screen.">
+  <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the ChromeOS Parent Access screen.">
     Parent Access
   </message>
   <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE" desc="Title for the local web approvals dialog.">

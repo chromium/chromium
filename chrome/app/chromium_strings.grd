@@ -302,14 +302,14 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
-          Chromium OS
+        <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
+          ChromiumOS
         </message>
-        <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
-          Chromium OS
+        <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS application short name">
+          ChromiumOS
         </message>
         <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-          Chromium OS
+          ChromiumOS
         </message>
       </if>
       <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chromium Enterprise logo image." formatter_data="android_java">
@@ -364,7 +364,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         </message>
       </if>
       <!-- Accessible window title format - includes the channel, and the same
-           on all browser platforms rather than different on Chrome OS. -->
+           on all browser platforms rather than different on ChromeOS. -->
       <message name="IDS_ACCESSIBLE_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window">
         <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium
       </message>
@@ -384,11 +384,11 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Chromium Authors. All rights reserved.
       </message>
       <if expr="chromeos_ash">
-        <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS.">
-          Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+        <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
+          ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS when Crostini is installed.">
-          Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+        <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS when Crostini is installed.">
+          ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
         </message>
         <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box." translateable="false">
           Not used in Chromium. Placeholder to keep resource maps in sync.
@@ -458,7 +458,7 @@ Chromium cannot read and write to its data directory:
       </message>
       <if expr="chromeos_ash">
         <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging">
-          Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.
+          Optional: Help improve ChromiumOS features and performance by automatically sending diagnostic and usage data to Google.
         </message>
       </if>
       <message name="IDS_PROFILE_TOO_NEW_ERROR" desc="Error displayed on startup when the profile is from a newer version of the product and can not be read">
@@ -478,12 +478,12 @@ Chromium is unable to recover your settings.
       </message>
       <!-- Add account dialog -->
       <if expr="chromeos_ash">
-        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in Chromium OS 'Add account' dialog.">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
 If you want to use this account one-time only, you can use Guest mode in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
 Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in Chromium OS 'Add account' dialog.">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
 If you want to use this account one-time only, you can use <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>Guest mode<ph name="GUEST_LINK_END">&lt;/a&gt;</ph> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
 Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
@@ -683,7 +683,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- Abandon in-progress downloads confirmation dialog -->
       <if expr="not is_macosx">
-        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
+        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
           Exit Chromium anyway?
         </message>
       </if>
@@ -782,8 +782,8 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
-          Relaunch to update &amp;Chromium OS
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update ChromeOS menu item">
+          Relaunch to update &amp;ChromiumOS
         </message>
       </if>
 
@@ -924,17 +924,17 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chromium OS Secondary Accounts.">
-          Chromium OS System
+        <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromiumOS Secondary Accounts.">
+          ChromiumOS System
         </message>
         <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-          Chromium OS could not sync your data because your account sign-in details are out of date.
+          ChromiumOS could not sync your data because your account sign-in details are out of date.
         </message>
         <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
-          Chromium OS could not sync your data because Sync is not available for your domain.
+          ChromiumOS could not sync your data because Sync is not available for your domain.
         </message>
         <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
-          Chromium OS could not sync your data due to an error signing in.
+          ChromiumOS could not sync your data due to an error signing in.
         </message>
       </if>
 
@@ -959,10 +959,10 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <!-- Chrome OS OOBE Terms of Service screen-->
+      <!-- ChromeOS OOBE Terms of Service screen-->
       <if expr="chromeos_ash">
         <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
+          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the ChromiumOS Terms.
         </message>
       </if>
 
@@ -1114,12 +1114,12 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <if expr="chromeos_ash">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
-          Restart Chromium OS
+          Restart ChromiumOS
         </message>
         <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
-          Chromium OS needs to be restarted to apply the update.
+          ChromiumOS needs to be restarted to apply the update.
         </message>
-        <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts Chrome OS.">
+        <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts ChromeOS.">
           Restart
         </message>
       </if>
@@ -1249,7 +1249,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Please wait while Chromium installs the latest system updates.
         </message>
         <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-          Chromium OS terms
+          ChromiumOS terms
         </message>
       </if>
 
@@ -1399,7 +1399,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <!-- Strings for full restore notifications -->
       <if expr="chromeos_ash">
         <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-          Chromium OS system
+          ChromiumOS system
         </message>
       </if>
 

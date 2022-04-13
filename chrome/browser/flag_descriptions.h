@@ -2287,7 +2287,7 @@ extern const char kUseAngleGL[];
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-// Chrome OS ------------------------------------------------------------------
+// ChromeOS -------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

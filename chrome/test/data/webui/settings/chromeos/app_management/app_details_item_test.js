@@ -212,7 +212,7 @@ suite('<app-management-app-details-item>', () => {
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type-and-source')
             .textContent.trim(),
-        'Chrome OS System App');
+        'ChromeOS System App');
   });
 
   test('Chrome app version', async function() {

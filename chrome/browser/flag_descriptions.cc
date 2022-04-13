@@ -1619,7 +1619,7 @@ const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[] =
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =
-    "Enabling this flag will allow Chrome OS system service which require "
+    "Enabling this flag will allow ChromeOS system service which require "
     "network connectivity to use the system-proxy daemon for authentication to "
     "remote HTTP web proxies.";
 
@@ -3991,7 +3991,7 @@ const char kUseAngleGL[] = "OpenGL";
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-// Chrome OS -------------------------------------------------------------------
+// ChromeOS -------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -4071,12 +4071,12 @@ const char kArcDocumentsProviderUnknownSizeDescription[] =
 const char kArcFilePickerExperimentName[] =
     "Enable file picker experiment for ARC";
 const char kArcFilePickerExperimentDescription[] =
-    "Enables using Chrome OS file picker in ARC.";
+    "Enables using ChromeOS file picker in ARC.";
 
 const char kArcKeyboardShortcutHelperIntegrationName[] =
     "Enable keyboard shortcut helper integration for ARC";
 const char kArcKeyboardShortcutHelperIntegrationDescription[] =
-    "Shows keyboard shortcuts from Android apps in Chrome OS Shortcut Viewer";
+    "Shows keyboard shortcuts from Android apps in ChromeOS Shortcut Viewer";
 
 const char kArcNativeBridgeToggleName[] =
     "Toggle between native bridge implementations for ARC";
@@ -4150,7 +4150,7 @@ const char kAutoFramingOverrideDescription[] =
 
 const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
-    "Enables params tuning experiment for autocorrect on Chrome OS.";
+    "Enables params tuning experiment for autocorrect on ChromeOS.";
 
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
@@ -4159,14 +4159,14 @@ const char kBluetoothFixA2dpPacketSizeDescription[] =
 
 const char kBluetoothRevampName[] = "Bluetooth Revamp";
 const char kBluetoothRevampDescription[] =
-    "Enables the Chrome OS Bluetooth Revamp, which updates Bluetooth system UI "
+    "Enables the ChromeOS Bluetooth Revamp, which updates Bluetooth system UI "
     "and related infrastructure.";
 
 const char kBluetoothWbsDogfoodName[] = "Bluetooth WBS dogfood";
 const char kBluetoothWbsDogfoodDescription[] =
     "Enables Bluetooth wideband speech mic as default audio option. "
     "Note that flipping this flag makes no difference on most of the "
-    "Chrome OS models, because Bluetooth WBS is either unsupported "
+    "ChromeOS models, because Bluetooth WBS is either unsupported "
     "or fully launched. Only on the few models that Bluetooth WBS is "
     "still stablizing this flag will take effect.";
 
@@ -4265,7 +4265,7 @@ const char kContextualNudgesDescription[] =
 
 const char kCroshSWAName[] = "Crosh System Web App";
 const char kCroshSWADescription[] =
-    "When enabled, crosh (Chrome OS Shell) will run as a tabbed System Web App "
+    "When enabled, crosh (ChromeOS Shell) will run as a tabbed System Web App "
     "rather than a normal browser tab.";
 
 const char kCrosLanguageSettingsUpdate2Name[] = "Language Settings Update 2";
@@ -4277,9 +4277,9 @@ const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";
 
-const char kSystemExtensionsName[] = "Chrome OS System Extensions";
+const char kSystemExtensionsName[] = "ChromeOS System Extensions";
 const char kSystemExtensionsDescription[] =
-    "Enable the Chrome OS System Extension platform.";
+    "Enable the ChromeOS System Extension platform.";
 
 const char kEnableServiceWorkersForChromeUntrustedName[] =
     "Enable chrome-untrusted:// Service Workers";
@@ -4481,7 +4481,7 @@ const char kDnsProxyEnableDOHName[] =
     "Enable DNS-over-HTTPS in the DNS proxy service";
 const char kDnsProxyEnableDOHDescription[] =
     "When enabled, the DNS proxy will perform DNS-over-HTTPS in accordance "
-    "with the Chrome OS SecureDNS settings.";
+    "with the ChromeOS SecureDNS settings.";
 
 const char kEnableExternalKeyboardsInDiagnosticsAppName[] =
     "Enable external keyboards in the Diagnostics App";
@@ -4491,7 +4491,7 @@ const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =
 
 const char kEnableHostnameSettingName[] = "Enable setting the device hostname";
 const char kEnableHostnameSettingDescription[] =
-    "Enables the ability to set the Chrome OS hostname, the name of the device "
+    "Enables the ability to set the ChromeOS hostname, the name of the device "
     "that is exposed to the local network";
 
 const char kEnableGesturePropertiesDBusServiceName[] =
@@ -4835,7 +4835,7 @@ const char kFrameThrottleFps30[] = "30 fps";
 
 const char kFullRestoreForLacrosName[] = "Full restore lacros support";
 const char kFullRestoreForLacrosDescription[] =
-    "Chrome OS full restore lacros support";
+    "ChromeOS full restore lacros support";
 
 const char kFuseBoxName[] = "Enable ChromeOS FuseBox service";
 const char kFuseBoxDescription[] = "ChromeOS FuseBox service.";
@@ -4950,12 +4950,12 @@ const char kLacrosAvailabilityIgnoreDescription[] =
 
 const char kLacrosOnlyName[] = "Lacros is the only browser";
 const char kLacrosOnlyDescription[] =
-    "Use Lacros-chrome as the only web browser on Chrome OS. "
+    "Use Lacros-chrome as the only web browser on ChromeOS. "
     "This flag is ignored if Lacros support or primary is disabled.";
 
 const char kLacrosPrimaryName[] = "Lacros as the primary browser";
 const char kLacrosPrimaryDescription[] =
-    "Use Lacros-chrome as the primary web browser on Chrome OS. "
+    "Use Lacros-chrome as the primary web browser on ChromeOS. "
     "This flag is ignored if Lacros support is disabled.";
 
 const char kLacrosStabilityName[] = "Lacros stability";
@@ -5011,7 +5011,7 @@ const char kListAllDisplayModesDescription[] =
 
 const char kLocalWebApprovalsName[] = "Local web approvals";
 const char kLocalWebApprovalsDescription[] =
-    "Enable local web approvals for Family Link users on Chrome OS. Web filter "
+    "Enable local web approvals for Family Link users on ChromeOS. Web filter "
     "interstitial refresh needs to also be enabled.";
 
 const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
@@ -5050,7 +5050,7 @@ const char kMicrophoneMuteSwitchDeviceDescription[] =
 
 const char kMultilingualTypingName[] = "Multilingual typing on CrOS";
 const char kMultilingualTypingDescription[] =
-    "Enables support for multilingual assistive typing on Chrome OS.";
+    "Enables support for multilingual assistive typing on ChromeOS.";
 
 const char kNearbySharingArcName[] = "ARC Nearby Sharing";
 const char kNearbySharingArcDescription[] =
@@ -5096,7 +5096,7 @@ const char kNearbySharingWifiLanDescription[] =
 
 const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
 const char kOobeHidDetectionRevampDescription[] =
-    "Enables the Chrome OS HID Detection Revamp, which updates OOBE HID "
+    "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
@@ -5146,7 +5146,7 @@ const char kForceShowContinueSectionDescription[] =
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =
-    "Enables the release notes notification for all Chrome OS channels";
+    "Enables the release notes notification for all ChromeOS channels";
 
 const char kArcGhostWindowName[] = "Enable ARC ghost window";
 const char kArcGhostWindowDescription[] =
@@ -5166,10 +5166,10 @@ const char kSecondaryGoogleAccountUsageName[] =
     "Enable Secondary Google account usage policy.";
 const char kSecondaryGoogleAccountUsageDescription[] =
     "Add restrictions on a managed account's usage as a secondary account on "
-    "Chrome OS.";
+    "ChromeOS.";
 
 const char kSharesheetCopyToClipboardName[] =
-    "Enable copy to clipboard in the Chrome OS Sharesheet.";
+    "Enable copy to clipboard in the ChromeOS Sharesheet.";
 const char kSharesheetCopyToClipboardDescription[] =
     "Enables a share action in the sharesheet that copies the selected data to "
     "the clipboard.";
@@ -5310,7 +5310,7 @@ const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 const char kUsbNotificationControllerName[] =
     "Enable USB Notification Controller";
 const char kUsbNotificationControllerDescription[] =
-    "Enables USB related notifications from the Chrome OS type-c daemon.";
+    "Enables USB related notifications from the ChromeOS type-c daemon.";
 
 const char kVaapiJpegImageDecodeAccelerationName[] =
     "VA-API JPEG decode acceleration for images";
@@ -5358,13 +5358,13 @@ const char kWifiConnectMacAddressRandomizationDescription[] =
 const char kWifiSyncAllowDeletesName[] =
     "Sync removal of Wi-Fi network configurations";
 const char kWifiSyncAllowDeletesDescription[] =
-    "Enables the option to sync deletions of Wi-Fi networks to other Chrome OS "
+    "Enables the option to sync deletions of Wi-Fi networks to other ChromeOS "
     "devices when Wi-Fi Sync is enabled.";
 
 const char kWifiSyncAndroidName[] =
     "Sync Wi-Fi network configurations with Android";
 const char kWifiSyncAndroidDescription[] =
-    "Enables the option to sync Wi-Fi network configurations between Chrome OS "
+    "Enables the option to sync Wi-Fi network configurations between ChromeOS "
     "devices and a connected Android phone";
 
 const char kWindowControlMenu[] = "Float current active window";
@@ -5445,12 +5445,12 @@ extern const char kLacrosScreenCoordinatesDescription[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[] =
-    "Allow default web app migration for Chrome OS managed users";
+    "Allow default web app migration for ChromeOS managed users";
 const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
     "The web app migration flags "
     "(chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-gsuite and "
     "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
-    "are ignored for managed Chrome OS users unless this feature is enabled.";
+    "are ignored for managed ChromeOS users unless this feature is enabled.";
 
 const char kBluetoothAdvertisementMonitoringName[] =
     "Bluetooth Advertisement Monitoring";
@@ -5563,7 +5563,7 @@ const char kChromeOSDirectVideoDecoderDescription[] =
     "--platform-disallows-chromeos-direct-video-decoder command line switch "
     "which is added for platforms where said direct VideoDecoder does not work "
     "or is not well tested (see the disable_cros_video_decoder USE flag in "
-    "Chrome OS)";
+    "ChromeOS)";
 #if defined(ARCH_CPU_ARM_FAMILY)
 const char kPreferLibYuvImageProcessorName[] = "Prefer libYUV image processor";
 const char kPreferLibYuvImageProcessorDescription[] =
@@ -5797,13 +5797,13 @@ const char kChromeKioskEnableLacrosName[] =
     "Enables Lacros in the chrome app Kiosk";
 const char kChromeKioskEnableLacrosDescription[] =
     "Uses Lacros-chrome as the web browser in the chrome app Kiosk session on "
-    "Chrome OS. When disabled, the Ash-chrome will be used";
+    "ChromeOS. When disabled, the Ash-chrome will be used";
 
 const char kWebKioskEnableLacrosName[] =
     "Enables Lacros in the web (PWA) Kiosk";
 const char kWebKioskEnableLacrosDescription[] =
     "Uses Lacros-chrome as the web browser in the web (PWA) Kiosk session on "
-    "Chrome OS. When disabled, the Ash-chrome will be used";
+    "ChromeOS. When disabled, the Ash-chrome will be used";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ============================================================================

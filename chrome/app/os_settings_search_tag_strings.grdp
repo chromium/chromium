@@ -294,7 +294,7 @@
   <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION_ON" desc="Text for search result item which, when clicked, navigates the user to Nearby Device is trying to share notification toggle.">
     Turn off notification when devices are nearby
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the ChromeOS UI.">
     Phone Hub
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL" desc="Text for search result item which, when clicked, navigates the user to Phone Hub photo settings, with a toggle to enable/disable the feature. Phone hub populates the 4 most recently updated photos/videos thumbnail in connected phone's camera roll on Chromebook, and give options to intereact with them.">
@@ -303,13 +303,13 @@
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
     Phone Hub notifications
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and ChromeOS">
     Phone Hub task continuation
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Apps settings, with a toggle to enable/disable the feature. Phone Hub Aapps allows user to app streaming from connected phone device.">
     Phone Hub apps
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between ChromeOS devices and a connected Android phone">
     Wi-Fi Sync
   </message>
 
@@ -1326,7 +1326,7 @@
     Factory reset
   </message>
 
-  <!-- About Chrome OS section. -->
+  <!-- About ChromeOS section. -->
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_DETAILED_BUILD" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings.">
     Detailed build information
   </message>
@@ -1336,25 +1336,25 @@
     <message name="IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_COPY_DETAILED_BUILD" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to copy the build details (e.g., OS version number) to the clipboard.">
     Copy build details
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a section to check for the latest OS update.">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a section to check for the latest OS update.">
     Check for update
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'Release notes'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'Release notes'">
     See what's new
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'See what's new'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'See what's new'">
     Release notes
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_HELP" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link which opens the 'Help' app.">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_HELP" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Help' app.">
     Help
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report a bug'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report a bug'">
     Report an issue
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report an issue'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report an issue'">
     Report a bug
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link to the Terms of Service.">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link to the Terms of Service.">
     Terms of Service
   </message>
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change the device name.">

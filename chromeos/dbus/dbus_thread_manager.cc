@@ -203,7 +203,7 @@ void DBusThreadManager::InitializeClients() {
     clients_browser_->Initialize(GetSystemBus());
 
   if (use_real_clients_)
-    VLOG(1) << "DBusThreadManager initialized for Chrome OS";
+    VLOG(1) << "DBusThreadManager initialized for ChromeOS";
   else
     VLOG(1) << "DBusThreadManager created for testing";
 }

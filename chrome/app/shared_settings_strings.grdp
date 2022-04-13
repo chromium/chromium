@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Settings-specific strings shared by Browser and Chrome OS settings -->
+<!-- Settings-specific strings shared by Browser and ChromeOS settings -->
 <grit-part>
   <!-- All subpages -->
   <message name="IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button. If the back button is activated, it will navigate to the previous page. This text will only be announced by ChromeVox and will not be visible in the UI.">
@@ -376,7 +376,7 @@
 
   <if expr="chromeos_ash or chromeos_lacros">
     <message name="IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the browser sync feature.">
-      Your data will be synced across all Chrome browsers where you have turned on sync for this account. For Chrome OS sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome OS settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+      Your data will be synced across all Chrome browsers where you have turned on sync for this account. For ChromeOS sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>ChromeOS settings<ph name="LINK_END">&lt;/a&gt;</ph>.
     </message>
   </if>
 

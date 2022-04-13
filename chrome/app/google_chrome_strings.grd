@@ -319,11 +319,11 @@ chromium_strings.grd. -->
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
-            Google Chrome OS
+          <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
+            Google ChromeOS
           </message>
-          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
-            Chrome OS
+          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS application short name">
+            ChromeOS
           </message>
           <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
             ChromeOS Flex
@@ -382,7 +382,7 @@ chromium_strings.grd. -->
         </message>
       </if>
       <!-- Accessible window title format - includes the channel, and the same
-           on all browser platforms rather than different on Chrome OS. -->
+           on all browser platforms rather than different on ChromeOS. -->
       <message name="IDS_ACCESSIBLE_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window">
         <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Google Chrome
       </message>
@@ -411,11 +411,11 @@ chromium_strings.grd. -->
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS.">
-            Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
+            ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
           </message>
-          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS when Crostini is installed.">
-            Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS when Crostini is installed.">
+            ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
           </message>
         </if>
         <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box.">
@@ -492,7 +492,7 @@ Google Chrome cannot read and write to its data directory:
         </if>
         <if expr="not reven">
           <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
-            Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.
+            Optional: Help improve ChromeOS features and performance by automatically sending diagnostic and usage data to Google.
           </message>
         </if>
       </if>
@@ -513,12 +513,12 @@ Google Chrome is unable to recover your settings.
       </message>
       <!-- Add account dialog -->
       <if expr="chromeos_ash">
-        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog.">
 If you want to use this account one-time only, you can use Guest mode in Chrome browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
 Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in Chrome OS 'Add account' dialog.">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog.">
 If you want to use this account one-time only, you can use <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>Guest mode<ph name="GUEST_LINK_END">&lt;/a&gt;</ph> in Chrome browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
 Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
@@ -719,7 +719,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- Abandon in-progress downloads confirmation dialog -->
       <if expr="not is_macosx">
-        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
+        <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
           Exit Chrome anyway?
         </message>
       </if>
@@ -825,8 +825,8 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
-            Relaunch to update &amp;Chrome OS
+          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update ChromeOS menu item">
+            Relaunch to update &amp;ChromeOS
           </message>
         </if>
       </if>
@@ -981,17 +981,17 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chrome OS Secondary Accounts.">
-            Chrome OS System
+          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromeOS Secondary Accounts.">
+            ChromeOS System
           </message>
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-            Chrome OS could not sync your data because your account sign-in details are out of date.
+            ChromeOS could not sync your data because your account sign-in details are out of date.
           </message>
           <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
-            Chrome OS could not sync your data because Sync is not available for your domain.
+            ChromeOS could not sync your data because Sync is not available for your domain.
           </message>
           <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
-            Chrome OS could not sync your data due to an error signing in.
+            ChromeOS could not sync your data due to an error signing in.
           </message>
         </if>
       </if>
@@ -1019,7 +1019,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <!-- Chrome OS OOBE Terms of Service screen-->
+      <!-- ChromeOS OOBE Terms of Service screen-->
       <if expr="chromeos_ash">
         <if expr="reven">
           <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
@@ -1028,7 +1028,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <if expr="not reven">
           <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Terms.
+            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google ChromeOS Terms.
           </message>
         </if>
       </if>
@@ -1197,13 +1197,13 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <if expr="not reven">
           <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
-            Restart Chrome OS
+            Restart ChromeOS
           </message>
           <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
-            Chrome OS needs to be restarted to apply the update.
+            ChromeOS needs to be restarted to apply the update.
           </message>
         </if>
-        <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts Chrome OS.">
+        <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts ChromeOS.">
           Restart
         </message>
       </if>
@@ -1339,7 +1339,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <if expr="not reven">
           <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-            Chrome OS terms
+            ChromeOS terms
           </message>
         </if>
       </if>
@@ -1500,7 +1500,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <if expr="not reven">
           <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            Chrome OS system
+            ChromeOS system
           </message>
         </if>
       </if>
