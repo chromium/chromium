@@ -43,11 +43,17 @@ void LogVirtualCardEnrollmentBubbleShownMetric(
 void LogVirtualCardEnrollmentBubbleResultMetric(
     VirtualCardEnrollmentBubbleResult result,
     VirtualCardEnrollmentBubbleSource source,
-    bool is_reshow) {
-  base::UmaHistogramEnumeration(
+    bool is_reshow,
+    bool previously_declined) {
+  std::string base_histogram_name =
       "Autofill.VirtualCardEnrollBubble.Result." +
-          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) +
-          (is_reshow ? ".Reshows" : ".FirstShow"),
+      VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) +
+      (is_reshow ? ".Reshows" : ".FirstShow");
+  base::UmaHistogramEnumeration(base_histogram_name, result);
+
+  base::UmaHistogramEnumeration(
+      base_histogram_name + (previously_declined ? ".WithPreviousStrikes"
+                                                 : ".WithNoPreviousStrike"),
       result);
 }
 

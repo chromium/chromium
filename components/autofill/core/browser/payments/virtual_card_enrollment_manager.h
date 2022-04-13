@@ -56,6 +56,9 @@ struct VirtualCardEnrollmentFields {
   // this offer, until strikes eventually expire.  Determined by the number of
   // existing strikes.
   bool last_show = false;
+  // A boolean value indicating if such enrollment offer for the card has been
+  // declined before.
+  bool previously_declined = false;
 };
 
 // This struct is used to track the state of the virtual card enrollment

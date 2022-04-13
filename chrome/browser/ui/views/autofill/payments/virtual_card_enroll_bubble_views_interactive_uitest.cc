@@ -224,6 +224,15 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         expected_result, 1);
   }
 
+  void CloseBubbleForReasonAndWaitTillDestroyed(
+      views::Widget::ClosedReason reason) {
+    ASSERT_TRUE(GetBubbleViews());
+    views::test::WidgetDestroyedWaiter destroyed_waiter(
+        GetBubbleViews()->GetWidget());
+    GetBubbleViews()->GetWidget()->CloseWithReason(reason);
+    destroyed_waiter.Wait();
+  }
+
  private:
   VirtualCardEnrollmentFields downstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields upstream_virtual_card_enrollment_fields_;
@@ -337,14 +346,11 @@ IN_PROC_BROWSER_TEST_P(
               virtual_card_enrollment_source),
       false, 1);
 
-  // Mock deactivation due to clicking the close button.
-  views::test::WidgetDestroyedWaiter destroyed_waiter1(
-      GetBubbleViews()->GetWidget());
-  GetBubbleViews()->GetWidget()->CloseWithReason(
+  // Simulates deactivation due to clicking the close button.
+  CloseBubbleForReasonAndWaitTillDestroyed(
       views::Widget::ClosedReason::kCloseButtonClicked);
-  destroyed_waiter1.Wait();
 
-  // Confirm .FirstShow metrics.
+  // Confirms .FirstShow metrics.
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardEnrollBubble.Result." +
           VirtualCardEnrollmentSourceToMetricSuffix(
@@ -362,14 +368,11 @@ IN_PROC_BROWSER_TEST_P(
               virtual_card_enrollment_source),
       true, 1);
 
-  // Mock deactivation due to clicking the close button.
-  views::test::WidgetDestroyedWaiter destroyed_waiter2(
-      GetBubbleViews()->GetWidget());
-  GetBubbleViews()->GetWidget()->CloseWithReason(
+  // Simulates deactivation due to clicking the close button.
+  CloseBubbleForReasonAndWaitTillDestroyed(
       views::Widget::ClosedReason::kCloseButtonClicked);
-  destroyed_waiter2.Wait();
 
-  // Confirm .Reshows metrics.
+  // Confirms .Reshows metrics.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result." +
           VirtualCardEnrollmentSourceToMetricSuffix(
@@ -484,6 +487,53 @@ IN_PROC_BROWSER_TEST_P(
           VirtualCardEnrollmentSourceToMetricSuffix(
               virtual_card_enrollment_source),
       false, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    PreviouslyDeclinedTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  VirtualCardEnrollmentFields fields =
+      GetFieldsForSource(virtual_card_enrollment_source);
+
+  // Simulates that the enroll bubble is shown for the first time for the card,
+  // and verifies the logging.
+  fields.previously_declined = false;
+
+  ShowBubbleAndWaitUntilShown(fields, base::DoNothing(), base::DoNothing());
+  ASSERT_TRUE(GetBubbleViews());
+
+  CloseBubbleForReasonAndWaitTillDestroyed(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnrollBubble.Result." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".FirstShow.WithNoPreviousStrike",
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
+      1);
+
+  // Simulates that the bubble has been declined before, and verifies the
+  // logging.
+  fields.previously_declined = true;
+
+  ShowBubbleAndWaitUntilShown(fields, base::DoNothing(), base::DoNothing());
+  ASSERT_TRUE(GetBubbleViews());
+
+  CloseBubbleForReasonAndWaitTillDestroyed(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnrollBubble.Result." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".FirstShow.WithPreviousStrikes",
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
+      1);
 }
 
 }  // namespace autofill

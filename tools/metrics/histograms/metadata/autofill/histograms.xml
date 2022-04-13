@@ -60,6 +60,15 @@ chromium-metrics-reviews@google.com.
       summary="A temporary error has been shown in the dialog"/>
 </variants>
 
+<variants name="Autofill.FeaturePreviousStrikes">
+  <variant name="" summary="previous strikes are not considered"/>
+  <variant name=".WithNoPreviousStrike"
+      summary="no strike has been logged under the key used for the feature"/>
+  <variant name=".WithPreviousStrikes"
+      summary="at least one strike has been logged under the key for the
+               feature"/>
+</variants>
+
 <variants name="Autofill.OfferNotification.Type">
   <variant name="CardLinkedOffer"
       summary="The bubble/infobar for an offer that is linked to a credit
@@ -74,8 +83,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentBubble.Show">
-  <variant name="FirstShow" summary="The bubble is shown for the first time."/>
-  <variant name="Reshows" summary="The bubble is re-shown."/>
+  <variant name="FirstShow" summary="first-shows"/>
+  <variant name="Reshows" summary="re-shows"/>
 </variants>
 
 <variants name="Autofill.PaymentsRpcCardType">
@@ -137,8 +146,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Autofill.VirtualCardEnrollmentSource">
   <variant name="Downstream" summary="credit card unmasking enrollment flow"/>
-  <variant name="SettingsPage" summary="the settings page"/>
-  <variant name="Unknown" summary="unknown source"/>
+  <variant name="SettingsPage" summary="settings page enrollment flow"/>
+  <variant name="Unknown" summary="uncategorized enrollment source"/>
   <variant name="Upstream" summary="credit card uploading enrollment flow"/>
 </variants>
 
@@ -3613,7 +3622,7 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     This metric emits true if the card art image is available for use in the
-    virtual card enroll bubble for {EnrollmentSource} and false if it is not
+    virtual card enroll bubble for the {EnrollmentSource} and false if it is not
     available. Recorded when bubble is shown.
   </summary>
   <token key="EnrollmentSource"
@@ -3627,7 +3636,7 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     This metric emits true when a user clicks on virtual card enrollment link
-    from flows that start from {EnrollmentSource}.
+    from flows that start from the {EnrollmentSource}.
   </summary>
   <token key="EnrollmentSource"
       variants="Autofill.VirtualCardEnrollmentSource"/>
@@ -3665,18 +3674,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}"
+    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}{PreviousStrikes}"
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2023-04-01">
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for closing the virtual card enroll bubble for flows that
-    start from {EnrollmentSource}. Recorded when the bubble is closed.
+    start from the {EnrollmentSource}. ShowType ({ShowType}) indicates whether
+    the bubble is a first time show or a reshow triggered by the user. A
+    subcategory indicating ({PreviousStrikes}) is also logged. Recorded when the
+    bubble is closed.
   </summary>
   <token key="EnrollmentSource"
       variants="Autofill.VirtualCardEnrollmentSource"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="PreviousStrikes" variants="Autofill.FeaturePreviousStrikes"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCardEnrollBubble.Shown.{EnrollmentSource}"

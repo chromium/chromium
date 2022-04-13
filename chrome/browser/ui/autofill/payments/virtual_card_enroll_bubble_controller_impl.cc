@@ -186,7 +186,8 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
   }
 
   LogVirtualCardEnrollmentBubbleResultMetric(
-      result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
+      result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
+      virtual_card_enrollment_fields_.previously_declined);
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {

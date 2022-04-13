@@ -79,7 +79,8 @@ void LogVirtualCardEnrollmentBubbleShownMetric(
 void LogVirtualCardEnrollmentBubbleResultMetric(
     VirtualCardEnrollmentBubbleResult result,
     VirtualCardEnrollmentBubbleSource source,
-    bool is_reshow);
+    bool is_reshow,
+    bool previous_declined);
 
 // Metrics to measure strikes logged or cleared in strike database.
 enum class VirtualCardEnrollmentStrikeDatabaseEvent {

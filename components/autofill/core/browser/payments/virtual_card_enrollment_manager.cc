@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include <string>
 
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -277,13 +278,21 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   }
 
   // Check in StrikeDatabase whether enrollment has been offered for this card
-  // before.
+  // and got declined before and whether this is the last time this offer is
+  // shown before previous records expire.
+  state_.virtual_card_enrollment_fields.previously_declined = false;
   state_.virtual_card_enrollment_fields.last_show = false;
-  if (GetVirtualCardEnrollmentStrikeDatabase() &&
-      GetVirtualCardEnrollmentStrikeDatabase()->IsLastOffer(
-          base::NumberToString(state_.virtual_card_enrollment_fields.credit_card
-                                   .instrument_id()))) {
-    state_.virtual_card_enrollment_fields.last_show = true;
+  if (GetVirtualCardEnrollmentStrikeDatabase()) {
+    std::string card_instrument_id = base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id());
+    if (GetVirtualCardEnrollmentStrikeDatabase()->GetStrikes(
+            card_instrument_id) > 0) {
+      state_.virtual_card_enrollment_fields.previously_declined = true;
+    }
+    if (GetVirtualCardEnrollmentStrikeDatabase()->IsLastOffer(
+            card_instrument_id)) {
+      state_.virtual_card_enrollment_fields.last_show = true;
+    }
   }
 
   autofill_client_->ShowVirtualCardEnrollDialog(
