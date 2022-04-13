@@ -83,9 +83,7 @@ TestBraille.assertContent = function(text, opt_start, opt_end) {
   assertEquals(opt_end, c.endIndex);
 };
 
-/**
- * Test fixture.
- */
+/** Test fixture. */
 ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {

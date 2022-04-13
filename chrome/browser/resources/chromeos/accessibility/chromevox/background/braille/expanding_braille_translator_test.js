@@ -8,15 +8,21 @@ GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
  * Test fixture.
  */
 ChromeVoxExpandingBrailleTranslatorUnitTest =
-    class extends AccessibilityTestBase {};
-
+    class extends AccessibilityTestBase {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ExpandingBrailleTranslator',
+        '/chromevox/background/braille/expanding_braille_translator.js');
+  }
+};
 
 /** @override */
 ChromeVoxExpandingBrailleTranslatorUnitTest.prototype.extraLibraries = [
   '../../../common/testing/assert_additions.js',
   '../../testing/fake_dom.js',
   '../../common/spannable.js',
-  'expanding_braille_translator.js',
   'liblouis.js',
   'spans.js',
 ];

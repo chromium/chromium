@@ -8,6 +8,7 @@
  * that is built into Chrome OS to do the actual text editing.
  */
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
+import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 
 export class BrailleInputHandler {
   /**

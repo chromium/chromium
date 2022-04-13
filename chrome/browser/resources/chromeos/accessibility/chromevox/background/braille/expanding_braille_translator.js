@@ -7,15 +7,6 @@
  * uncontracted.
  */
 
-goog.provide('ExpandingBrailleTranslator');
-
-goog.require('Spannable');
-goog.require('ExtraCellsSpan');
-goog.require('LibLouis');
-goog.require('ValueSelectionSpan');
-goog.require('ValueSpan');
-
-
 /**
  * A wrapper around one or two braille translators that uses contracted
  * braille or not based on the selection start- and end-points (if any) in the
@@ -28,7 +19,7 @@ goog.require('ValueSpan');
  * containing either only whitespace characters or only non-whitespace
  * characters is used.
  */
-ExpandingBrailleTranslator = class {
+export class ExpandingBrailleTranslator {
   /**
    * @param {!LibLouis.Translator} defaultTranslator The translator for all
    *     text when the uncontracted translator is not used.
@@ -309,7 +300,7 @@ ExpandingBrailleTranslator = class {
       callback(cells || new ArrayBuffer(0), textToBraille, brailleToText || []);
     };
   }
-};
+}
 
 
 /**

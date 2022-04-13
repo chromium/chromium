@@ -26,6 +26,9 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/background/braille/braille_translator_manager.js');
     await importModule(
         'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js');
+    await importModule(
+        'ExpandingBrailleTranslator',
+        '/chromevox/background/braille/expanding_braille_translator.js');
 
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});

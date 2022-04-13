@@ -5,6 +5,7 @@
 /**
  * @fileoverview Keeps track of the current braille translators.
  */
+import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 
 export class BrailleTranslatorManager {
   /**
