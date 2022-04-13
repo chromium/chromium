@@ -17,9 +17,7 @@ static_library("common") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//google_apis",
-    "//net",
-    "//url",
+    "//ui/gfx/geometry",
   ]
 }
 

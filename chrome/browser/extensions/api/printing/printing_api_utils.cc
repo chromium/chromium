@@ -196,12 +196,11 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(base::Value ticket) {
     return nullptr;
   cloud_devices::printer::Media media_value = media.value();
   printing::PrintSettings::RequestedMedia requested_media;
-  if (media_value.width_um <= 0 || media_value.height_um <= 0 ||
+  if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0 ||
       media_value.vendor_id.empty()) {
     return nullptr;
   }
-  requested_media.size_microns =
-      gfx::Size(media_value.width_um, media_value.height_um);
+  requested_media.size_microns = media_value.size_um;
   requested_media.vendor_id = media_value.vendor_id;
   settings->set_requested_media(requested_media);
 

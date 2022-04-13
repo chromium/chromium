@@ -132,8 +132,7 @@ base::Value GetPdfCapabilities(
       MediaType::NA_LEGAL, MediaType::NA_LETTER, MediaType::NA_LEDGER};
   const gfx::Size default_media_size = GetDefaultPdfMediaSizeMicrons();
   cloud_devices::printer::Media default_media(std::string(), std::string(),
-                                              default_media_size.width(),
-                                              default_media_size.height());
+                                              default_media_size);
   if (!default_media.MatchBySize() ||
       !base::Contains(kPdfMedia, default_media.type)) {
     default_media = cloud_devices::printer::Media(
@@ -146,9 +145,8 @@ base::Value GetPdfCapabilities(
                            default_media.type == media_option.type);
   }
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : custom_papers) {
-    cloud_devices::printer::Media media_option(
-        paper.display_name, paper.vendor_id, paper.size_um.width(),
-        paper.size_um.height());
+    cloud_devices::printer::Media media_option(paper.display_name,
+                                               paper.vendor_id, paper.size_um);
     media.AddOption(media_option);
   }
   media.SaveTo(&description);

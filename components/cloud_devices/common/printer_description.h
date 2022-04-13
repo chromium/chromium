@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/description_items.h"
+#include "ui/gfx/geometry/size.h"
 
 // Defines printer options, CDD and CJT items.
 // https://developers.google.com/cloud-print/docs/cdd
@@ -463,12 +464,11 @@ struct Media {
 
   explicit Media(MediaType type);
 
-  Media(MediaType type, int32_t width_um, int32_t height_um);
+  Media(MediaType type, const gfx::Size& size_um);
 
   Media(const std::string& custom_display_name,
         const std::string& vendor_id,
-        int32_t width_um,
-        int32_t height_um);
+        const gfx::Size& size_um);
 
   Media(const Media& other);
   Media& operator=(const Media& other);
@@ -480,8 +480,7 @@ struct Media {
   bool operator!=(const Media& other) const { return !(*this == other); }
 
   MediaType type;
-  int32_t width_um;
-  int32_t height_um;
+  gfx::Size size_um;
   bool is_continuous_feed;
   std::string custom_display_name;
   std::string vendor_id;

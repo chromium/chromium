@@ -718,10 +718,11 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   fit_to_page.AddOption(FitToPageType::SHRINK_TO_PAGE);
   fit_to_page.AddOption(FitToPageType::FILL_PAGE);
 
-  media.AddDefaultOption(Media(MediaType::NA_LETTER, 2222, 3333), true);
-  media.AddOption(Media(MediaType::ISO_A6, 4444, 5555));
-  media.AddOption(Media(MediaType::JPN_YOU4, 6666, 7777));
-  media.AddOption(Media("Feed", "FEED", 1111, 0));
+  media.AddDefaultOption(Media(MediaType::NA_LETTER, gfx::Size(2222, 3333)),
+                         true);
+  media.AddOption(Media(MediaType::ISO_A6, gfx::Size(4444, 5555)));
+  media.AddOption(Media(MediaType::JPN_YOU4, gfx::Size(6666, 7777)));
+  media.AddOption(Media("Feed", "FEED", gfx::Size(1111, 0)));
 
   collate.set_default_value(false);
   reverse.set_default_value(true);
@@ -1210,11 +1211,14 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_TRUE(fit_to_page.Contains(FitToPageType::FILL_PAGE));
   EXPECT_EQ(FitToPageType::NO_FITTING, fit_to_page.GetDefault());
 
-  EXPECT_TRUE(media.Contains(Media(MediaType::NA_LETTER, 2222, 3333)));
-  EXPECT_TRUE(media.Contains(Media(MediaType::ISO_A6, 4444, 5555)));
-  EXPECT_TRUE(media.Contains(Media(MediaType::JPN_YOU4, 6666, 7777)));
-  EXPECT_TRUE(media.Contains(Media("Feed", "FEED", 1111, 0)));
-  EXPECT_EQ(Media(MediaType::NA_LETTER, 2222, 3333), media.GetDefault());
+  EXPECT_TRUE(
+      media.Contains(Media(MediaType::NA_LETTER, gfx::Size(2222, 3333))));
+  EXPECT_TRUE(media.Contains(Media(MediaType::ISO_A6, gfx::Size(4444, 5555))));
+  EXPECT_TRUE(
+      media.Contains(Media(MediaType::JPN_YOU4, gfx::Size(6666, 7777))));
+  EXPECT_TRUE(media.Contains(Media("Feed", "FEED", gfx::Size(1111, 0))));
+  EXPECT_EQ(Media(MediaType::NA_LETTER, gfx::Size(2222, 3333)),
+            media.GetDefault());
 
   EXPECT_FALSE(collate.default_value());
   EXPECT_TRUE(reverse.default_value());
@@ -1291,7 +1295,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
   page_range.set_value(page_ranges);
-  media.set_value(Media(MediaType::ISO_C7C6, 4261, 334));
+  media.set_value(Media(MediaType::ISO_C7C6, gfx::Size(4261, 334)));
   collate.set_value(false);
   reverse.set_value(true);
 
@@ -1357,7 +1361,7 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
   EXPECT_EQ(page_range.value(), page_ranges);
-  EXPECT_EQ(media.value(), Media(MediaType::ISO_C7C6, 4261, 334));
+  EXPECT_EQ(media.value(), Media(MediaType::ISO_C7C6, gfx::Size(4261, 334)));
   EXPECT_FALSE(collate.value());
   EXPECT_TRUE(reverse.value());
 

@@ -63,8 +63,7 @@ printer::Media ConvertPaperToMedia(
   gfx::Size paper_size = paper.size_um;
   if (paper_size.width() > paper_size.height())
     paper_size.SetSize(paper_size.height(), paper_size.width());
-  printer::Media new_media(paper.display_name, paper.vendor_id,
-                           paper_size.width(), paper_size.height());
+  printer::Media new_media(paper.display_name, paper.vendor_id, paper_size);
   new_media.MatchBySize();
   return new_media;
 }
@@ -76,8 +75,7 @@ printer::MediaCapability GetMediaCapabilities(
 
   printer::Media default_media(semantic_info.default_paper.display_name,
                                semantic_info.default_paper.vendor_id,
-                               semantic_info.default_paper.size_um.width(),
-                               semantic_info.default_paper.size_um.height());
+                               semantic_info.default_paper.size_um);
   default_media.MatchBySize();
 
   for (const auto& paper : semantic_info.papers) {
