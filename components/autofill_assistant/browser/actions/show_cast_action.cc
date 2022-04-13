@@ -90,7 +90,7 @@ void ShowCastAction::OnFindContainer(
     const Selector& selector,
     const TopPadding& top_padding,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinderResult> container) {
+    std::unique_ptr<ElementFinder::Result> container) {
   if (!element_status.ok()) {
     VLOG(1) << __func__ << " Failed to find container.";
     EndAction(element_status);
@@ -103,7 +103,7 @@ void ShowCastAction::OnFindContainer(
 void ShowCastAction::ScrollToElement(
     const Selector& selector,
     const TopPadding& top_padding,
-    std::unique_ptr<ElementFinderResult> container) {
+    std::unique_ptr<ElementFinder::Result> container) {
   auto actions = std::make_unique<element_action_util::ElementActionVector>();
   actions->emplace_back(base::BindOnce(
       &ShowCastAction::RunAndIncreaseWaitTimer, weak_ptr_factory_.GetWeakPtr(),
@@ -150,9 +150,9 @@ void ShowCastAction::ScrollToElement(
 
 void ShowCastAction::RunAndIncreaseWaitTimer(
     base::OnceCallback<void(
-        const ElementFinderResult&,
+        const ElementFinder::Result&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> action,
-    const ElementFinderResult& element,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(action).Run(
       element, base::BindOnce(&ShowCastAction::OnWaitForElementTimed,

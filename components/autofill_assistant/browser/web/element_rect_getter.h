@@ -44,18 +44,18 @@ class ElementRectGetter : public WebControllerWorker {
   using ElementRectCallback =
       base::OnceCallback<void(const ClientStatus&, const RectF&)>;
 
-  void Start(std::unique_ptr<ElementFinderResult> element,
+  void Start(std::unique_ptr<ElementFinder::Result> element,
              ElementRectCallback callback);
 
  private:
-  void GetBoundingClientRect(std::unique_ptr<ElementFinderResult> element,
+  void GetBoundingClientRect(std::unique_ptr<ElementFinder::Result> element,
                              size_t index,
                              const RectF& stacked_rect,
                              ElementRectCallback callback);
 
   void OnGetClientRectResult(
       ElementRectCallback callback,
-      std::unique_ptr<ElementFinderResult> element,
+      std::unique_ptr<ElementFinder::Result> element,
       size_t index,
       const RectF& stacked_rect,
       const DevtoolsClient::ReplyStatus& reply_status,

@@ -48,7 +48,7 @@ class ControllerObserver : public base::CheckedObserver {
 
   // Report that a field in |user_data| has changed.
   virtual void OnUserDataChanged(const UserData& user_data,
-                                 UserDataFieldChange field_change) = 0;
+                                 UserData::FieldChange field_change) = 0;
 
   // Updates the area of the visible viewport that is accessible when the
   // overlay state is OverlayState::PARTIAL.

@@ -15,7 +15,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_settings.h"
-#include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_action.h"
@@ -105,7 +104,7 @@ class MockActionDelegate : public ActionDelegate {
                                    const autofill::FormData&,
                                    const autofill::FormFieldData&)> callback));
   MOCK_METHOD1(StoreScrolledToElement,
-               void(const ElementFinderResult& element));
+               void(const ElementFinder::Result& element));
   MOCK_METHOD1(SetTouchableElementArea,
                void(const ElementAreaProto& touchable_element_area));
   MOCK_METHOD1(CollectUserData,
@@ -115,8 +114,9 @@ class MockActionDelegate : public ActionDelegate {
       void(std::unique_ptr<CollectUserDataOptions> collect_user_data_options));
   MOCK_CONST_METHOD0(GetLastSuccessfulUserDataOptions,
                      CollectUserDataOptions*());
-  MOCK_METHOD1(WriteUserData,
-               void(base::OnceCallback<void(UserData*, UserDataFieldChange*)>));
+  MOCK_METHOD1(
+      WriteUserData,
+      void(base::OnceCallback<void(UserData*, UserData::FieldChange*)>));
   MOCK_METHOD2(GetFullCard,
                void(const autofill::CreditCard* credit_card,
                     ActionDelegate::GetFullCardCallback callback));
@@ -174,7 +174,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD4(WaitForDocumentReadyState,
                void(base::TimeDelta max_wait_time,
                     DocumentReadyState min_ready_state,
-                    const ElementFinderResult& optional_frame_element,
+                    const ElementFinder::Result& optional_frame_element,
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
                                             base::TimeDelta)> callback));
@@ -182,7 +182,7 @@ class MockActionDelegate : public ActionDelegate {
       WaitUntilDocumentIsInReadyState,
       void(base::TimeDelta,
            DocumentReadyState,
-           const ElementFinderResult&,
+           const ElementFinder::Result&,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>));
   MOCK_METHOD0(RequireUI, void());
   MOCK_METHOD0(SetExpandSheetForPromptAction, bool());

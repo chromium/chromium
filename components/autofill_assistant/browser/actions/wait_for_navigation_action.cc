@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 
 namespace autofill_assistant {

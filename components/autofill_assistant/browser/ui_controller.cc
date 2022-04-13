@@ -808,7 +808,7 @@ void UiController::SetAdditionalValue(const std::string& client_memory_key,
   GetUserData()->SetAdditionalValue(client_memory_key, value);
 
   execution_delegate_->NotifyUserDataChange(
-      UserDataFieldChange::ADDITIONAL_VALUES);
+      UserData::FieldChange::ADDITIONAL_VALUES);
 }
 
 void UiController::HandleShippingAddressChange(
@@ -826,7 +826,7 @@ void UiController::HandleShippingAddressChange(
       SHIPPING_EVENT, event_type);
   DCHECK(!collect_user_data_options_->shipping_address_name.empty());
   SetProfile(collect_user_data_options_->shipping_address_name,
-             UserDataFieldChange::SHIPPING_ADDRESS, std::move(address));
+             UserData::FieldChange::SHIPPING_ADDRESS, std::move(address));
 }
 
 void UiController::HandleContactInfoChange(
@@ -844,7 +844,7 @@ void UiController::HandleContactInfoChange(
       CONTACT_EVENT, event_type);
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
   SetProfile(collect_user_data_options_->contact_details_name,
-             UserDataFieldChange::CONTACT_PROFILE, std::move(profile));
+             UserData::FieldChange::CONTACT_PROFILE, std::move(profile));
 }
 
 void UiController::HandlePhoneNumberChange(
@@ -862,7 +862,8 @@ void UiController::HandlePhoneNumberChange(
   // metrics for the phone number.
 
   GetUserData()->SetSelectedPhoneNumber(std::move(profile));
-  execution_delegate_->NotifyUserDataChange(UserDataFieldChange::PHONE_NUMBER);
+  execution_delegate_->NotifyUserDataChange(
+      UserData::FieldChange::PHONE_NUMBER);
 }
 
 void UiController::HandleCreditCardChange(
@@ -881,14 +882,15 @@ void UiController::HandleCreditCardChange(
       CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
   SetProfile(collect_user_data_options_->billing_address_name,
-             UserDataFieldChange::BILLING_ADDRESS, std::move(billing_profile));
+             UserData::FieldChange::BILLING_ADDRESS,
+             std::move(billing_profile));
   GetUserModel()->SetSelectedCreditCard(std::move(card), GetUserData());
-  execution_delegate_->NotifyUserDataChange(UserDataFieldChange::CARD);
+  execution_delegate_->NotifyUserDataChange(UserData::FieldChange::CARD);
 }
 
 void UiController::SetProfile(
     const std::string& key,
-    UserDataFieldChange field_change,
+    UserData::FieldChange field_change,
     std::unique_ptr<autofill::AutofillProfile> profile) {
   GetUserModel()->SetSelectedAutofillProfile(key, std::move(profile),
                                              GetUserData());
@@ -913,7 +915,7 @@ void UiController::SetTermsAndConditions(
     TermsAndConditionsState terms_and_conditions) {
   GetUserData()->terms_and_conditions_ = terms_and_conditions;
   execution_delegate_->NotifyUserDataChange(
-      UserDataFieldChange::TERMS_AND_CONDITIONS);
+      UserData::FieldChange::TERMS_AND_CONDITIONS);
 }
 
 void UiController::SetLoginOption(const std::string& identifier) {
@@ -923,7 +925,8 @@ void UiController::SetLoginOption(const std::string& identifier) {
   GetUserModel()->SetSelectedLoginChoiceByIdentifier(
       identifier, *collect_user_data_options_, GetUserData());
 
-  execution_delegate_->NotifyUserDataChange(UserDataFieldChange::LOGIN_CHOICE);
+  execution_delegate_->NotifyUserDataChange(
+      UserData::FieldChange::LOGIN_CHOICE);
 }
 
 void UiController::UpdateCollectUserDataActions() {
@@ -984,7 +987,7 @@ void UiController::SetCollectUserDataOptions(CollectUserDataOptions* options) {
   for (UiControllerObserver& observer : observers_) {
     observer.OnCollectUserDataOptionsChanged(collect_user_data_options_);
   }
-  execution_delegate_->NotifyUserDataChange(UserDataFieldChange::ALL);
+  execution_delegate_->NotifyUserDataChange(UserData::FieldChange::ALL);
 }
 
 void UiController::SetLastSuccessfulUserDataOptions(
@@ -1030,7 +1033,7 @@ void UiController::OnError(const std::string& error_message,
 }
 
 void UiController::OnUserDataChanged(const UserData& user_data,
-                                     UserDataFieldChange field_change) {
+                                     UserData::FieldChange field_change) {
   UpdateCollectUserDataActions();
 }
 void UiController::OnTouchableAreaChanged(

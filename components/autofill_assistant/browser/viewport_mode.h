@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_VIEWPORT_MODE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_VIEWPORT_MODE_H_
 
+#include "base/callback.h"
+
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (

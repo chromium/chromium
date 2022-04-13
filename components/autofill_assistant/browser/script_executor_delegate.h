@@ -80,7 +80,7 @@ class ScriptExecutorDelegate {
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
 
   virtual void WriteUserData(
-      base::OnceCallback<void(UserData*, UserDataFieldChange*)>
+      base::OnceCallback<void(UserData*, UserData::FieldChange*)>
           write_callback) = 0;
   virtual ViewportMode GetViewportMode() = 0;
   virtual void SetViewportMode(ViewportMode mode) = 0;

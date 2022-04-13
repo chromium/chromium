@@ -340,11 +340,11 @@ TEST_F(UiControllerTest, UserDataFormEmpty) {
   // Request nothing, expect continue button to be enabled.
   EXPECT_CALL(mock_observer_, OnCollectUserDataOptionsChanged(Not(nullptr)));
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 }
 
 TEST_F(UiControllerTest, UserDataFormContactInfo) {
@@ -360,14 +360,14 @@ TEST_F(UiControllerTest, UserDataFormContactInfo) {
 
   testing::InSequence seq;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::CONTACT_PROFILE));
+              NotifyUserDataChange(UserData::FieldChange::CONTACT_PROFILE));
   autofill::AutofillProfile contact_profile;
   contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
                              u"joedoe@example.com");
@@ -380,7 +380,7 @@ TEST_F(UiControllerTest, UserDataFormContactInfo) {
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
   ui_controller_->OnUserDataChanged(user_data_,
-                                    UserDataFieldChange::CONTACT_PROFILE);
+                                    UserData::FieldChange::CONTACT_PROFILE);
   EXPECT_THAT(
       user_data_.selected_address("selected_profile")->Compare(contact_profile),
       Eq(0));
@@ -394,11 +394,11 @@ TEST_F(UiControllerTest, UserDataFormCreditCard) {
   options->billing_address_name = "billing_address";
 
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   // Credit card with valid billing address is ok.
   auto billing_address = std::make_unique<autofill::AutofillProfile>(
@@ -413,16 +413,16 @@ TEST_F(UiControllerTest, UserDataFormCreditCard) {
                                     "4111 1111 1111 1111", "01", "2020",
                                     billing_address->guid());
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::BILLING_ADDRESS));
+              NotifyUserDataChange(UserData::FieldChange::BILLING_ADDRESS));
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::CARD));
+              NotifyUserDataChange(UserData::FieldChange::CARD));
   ui_controller_->HandleCreditCardChange(
       std::make_unique<autofill::CreditCard>(*credit_card),
       std::make_unique<autofill::AutofillProfile>(*billing_address), UNKNOWN);
 
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::CARD);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::CARD);
 
   EXPECT_THAT(user_data_.selected_card()->Compare(*credit_card), Eq(0));
   EXPECT_THAT(
@@ -432,15 +432,15 @@ TEST_F(UiControllerTest, UserDataFormCreditCard) {
   // Credit card without billing address is invalid.
   credit_card->set_billing_address_id("");
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::BILLING_ADDRESS));
+              NotifyUserDataChange(UserData::FieldChange::BILLING_ADDRESS));
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::CARD));
+              NotifyUserDataChange(UserData::FieldChange::CARD));
   ui_controller_->HandleCreditCardChange(
       std::make_unique<autofill::CreditCard>(*credit_card),
       /* billing_profile= */ nullptr, UNKNOWN);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::CARD);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::CARD);
 
   EXPECT_THAT(user_data_.selected_card()->Compare(*credit_card), Eq(0));
   EXPECT_THAT(user_data_.selected_address("billing_address"), Eq(nullptr));
@@ -460,14 +460,14 @@ TEST_F(UiControllerTest, UserDataChangesByOutOfLoopWrite) {
 
   testing::InSequence sequence;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::CONTACT_PROFILE));
+              NotifyUserDataChange(UserData::FieldChange::CONTACT_PROFILE));
   autofill::AutofillProfile contact_profile;
   contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
                              u"joedoe@example.com");
@@ -479,7 +479,7 @@ TEST_F(UiControllerTest, UserDataChangesByOutOfLoopWrite) {
 
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   EXPECT_THAT(
       user_data_.selected_address("selected_profile")->Compare(contact_profile),
@@ -491,7 +491,7 @@ TEST_F(UiControllerTest, UserDataChangesByOutOfLoopWrite) {
   user_model_.SetSelectedAutofillProfile("selected_profile", nullptr,
                                          &user_data_);
   ui_controller_->OnUserDataChanged(user_data_,
-                                    UserDataFieldChange::CONTACT_PROFILE);
+                                    UserData::FieldChange::CONTACT_PROFILE);
 }
 
 TEST_F(UiControllerTest, UserDataFormReloadFromContactChange) {
@@ -576,19 +576,20 @@ TEST_F(UiControllerTest, SetTermsAndConditions) {
   options->accept_terms_and_conditions_text.assign("Accept T&C");
   testing::InSequence seq;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
-  EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::TERMS_AND_CONDITIONS));
+  EXPECT_CALL(
+      mock_execution_delegate_,
+      NotifyUserDataChange(UserData::FieldChange::TERMS_AND_CONDITIONS));
   ui_controller_->SetTermsAndConditions(TermsAndConditionsState::ACCEPTED);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_,
-                                    UserDataFieldChange::TERMS_AND_CONDITIONS);
+  ui_controller_->OnUserDataChanged(
+      user_data_, UserData::FieldChange::TERMS_AND_CONDITIONS);
 
   EXPECT_THAT(user_data_.terms_and_conditions_,
               Eq(TermsAndConditionsState::ACCEPTED));
@@ -603,19 +604,19 @@ TEST_F(UiControllerTest, SetLoginOption) {
 
   testing::InSequence seq;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::LOGIN_CHOICE));
+              NotifyUserDataChange(UserData::FieldChange::LOGIN_CHOICE));
   ui_controller_->SetLoginOption("guest");
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
   ui_controller_->OnUserDataChanged(user_data_,
-                                    UserDataFieldChange::LOGIN_CHOICE);
+                                    UserData::FieldChange::LOGIN_CHOICE);
 
   EXPECT_THAT(user_data_.selected_login_choice()->identifier, Eq("guest"));
 }
@@ -627,11 +628,11 @@ TEST_F(UiControllerTest, SetShippingAddress) {
   options->shipping_address_name = "shipping_address";
   testing::InSequence seq;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   auto shipping_address = std::make_unique<autofill::AutofillProfile>(
       base::GenerateGUID(), "https://www.example.com");
@@ -640,13 +641,13 @@ TEST_F(UiControllerTest, SetShippingAddress) {
                                  "123 Zoo St.", "unit 5", "Hollywood", "CA",
                                  "91601", "US", "16505678910");
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::SHIPPING_ADDRESS));
+              NotifyUserDataChange(UserData::FieldChange::SHIPPING_ADDRESS));
   ui_controller_->HandleShippingAddressChange(
       std::make_unique<autofill::AutofillProfile>(*shipping_address), UNKNOWN);
 
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   EXPECT_THAT(user_data_.selected_address("shipping_address")
                   ->Compare(*shipping_address),
@@ -667,19 +668,19 @@ TEST_F(UiControllerTest, SetAdditionalValues) {
   user_data_.SetAdditionalValue("key3", value3);
 
   ui_controller_->OnUserDataChanged(user_data_,
-                                    UserDataFieldChange::ADDITIONAL_VALUES);
+                                    UserData::FieldChange::ADDITIONAL_VALUES);
 
   testing::InSequence seq;
   EXPECT_CALL(mock_execution_delegate_,
-              NotifyUserDataChange(UserDataFieldChange::ALL));
+              NotifyUserDataChange(UserData::FieldChange::ALL));
   ui_controller_->SetCollectUserDataOptions(options.get());
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 
   for (int i = 0; i < 2; ++i) {
     EXPECT_CALL(mock_execution_delegate_,
-                NotifyUserDataChange(UserDataFieldChange::ADDITIONAL_VALUES));
+                NotifyUserDataChange(UserData::FieldChange::ADDITIONAL_VALUES));
   }
   ValueProto value4;
   value4.mutable_strings()->add_values("value2");
@@ -1081,7 +1082,7 @@ TEST_F(UiControllerTest, UpdateUserActionsOnUserDataChanged) {
 
   // If no CollectUserDataOptions are specified, the user actions are cleared.
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(0)));
-  ui_controller_->OnUserDataChanged(user_data_, UserDataFieldChange::ALL);
+  ui_controller_->OnUserDataChanged(user_data_, UserData::FieldChange::ALL);
 }
 
 TEST_F(UiControllerTest, OnExecuteScriptSetMessageAndClearUserActions) {

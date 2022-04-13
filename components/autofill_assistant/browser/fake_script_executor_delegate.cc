@@ -88,7 +88,8 @@ void FakeScriptExecutorDelegate::SetTouchableElementArea(
 }
 
 void FakeScriptExecutorDelegate::WriteUserData(
-    base::OnceCallback<void(UserData*, UserDataFieldChange*)> write_callback) {}
+    base::OnceCallback<void(UserData*, UserData::FieldChange*)>
+        write_callback) {}
 
 void FakeScriptExecutorDelegate::SetViewportMode(ViewportMode mode) {
   viewport_mode_ = mode;

@@ -33,7 +33,7 @@ class CheckElementTagAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinderResult element_;
+  ElementFinder::Result element_;
   ProcessActionCallback callback_;
 
   base::WeakPtrFactory<CheckElementTagAction> weak_ptr_factory_{this};

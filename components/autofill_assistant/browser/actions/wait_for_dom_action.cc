@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_store.h"

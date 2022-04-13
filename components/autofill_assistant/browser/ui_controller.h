@@ -174,7 +174,7 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnError(const std::string& error_message,
                Metrics::DropOutReason reason) override;
   void OnUserDataChanged(const UserData& user_data,
-                         UserDataFieldChange field_change) override;
+                         UserData::FieldChange field_change) override;
   void OnTouchableAreaChanged(
       const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,
@@ -235,7 +235,7 @@ class UiController : public ScriptExecutorUiDelegate,
                       const ValueProto& new_value) override;
 
   void SetProfile(const std::string& key,
-                  UserDataFieldChange field_change,
+                  UserData::FieldChange field_change,
                   std::unique_ptr<autofill::AutofillProfile> profile);
 
   void ReloadUserData(UserDataEventField event_field,

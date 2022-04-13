@@ -1208,16 +1208,17 @@ void Controller::OnTouchableAreaChanged(
 }
 
 void Controller::WriteUserData(
-    base::OnceCallback<void(UserData*, UserDataFieldChange*)> write_callback) {
-  UserDataFieldChange field_change = UserDataFieldChange::NONE;
+    base::OnceCallback<void(UserData*, UserData::FieldChange*)>
+        write_callback) {
+  UserData::FieldChange field_change = UserData::FieldChange::NONE;
   std::move(write_callback).Run(&user_data_, &field_change);
-  if (field_change == UserDataFieldChange::NONE) {
+  if (field_change == UserData::FieldChange::NONE) {
     return;
   }
   NotifyUserDataChange(field_change);
 }
 
-void Controller::NotifyUserDataChange(UserDataFieldChange field_change) {
+void Controller::NotifyUserDataChange(UserData::FieldChange field_change) {
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_, field_change);
   }

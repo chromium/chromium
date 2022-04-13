@@ -31,7 +31,7 @@ class MockControllerObserver : public ControllerObserver {
                     Metrics::DropOutReason reason));
   MOCK_METHOD2(OnUserDataChanged,
                void(const UserData& user_data,
-                    UserDataFieldChange field_change));
+                    UserData::FieldChange field_change));
   MOCK_METHOD3(OnTouchableAreaChanged,
                void(const RectF& visual_viewport,
                     const std::vector<RectF>& touchable_areas,

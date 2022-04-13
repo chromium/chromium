@@ -31,9 +31,9 @@ void MockFindAnyElement(MockActionDelegate& delegate);
 
 // Expect |ActionDelegate::FindElement| being called a specified amount of
 // times for the given |Selector|.
-ElementFinderResult MockFindElement(MockActionDelegate& delegate,
-                                    const Selector& selector,
-                                    int times = 1);
+ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
+                                      const Selector& selector,
+                                      int times = 1);
 
 // Mock |WebController::FindElement| an unspecified amount of times for any
 // selector.
@@ -41,9 +41,9 @@ void MockFindAnyElement(MockWebController& web_controller);
 
 // Expect |WebController::FindElement| being called a specified amount of times
 // for the given |Selector|.
-ElementFinderResult MockFindElement(MockWebController& web_controller,
-                                    const Selector& selector,
-                                    int times = 1);
+ElementFinder::Result MockFindElement(MockWebController& web_controller,
+                                      const Selector& selector,
+                                      int times = 1);
 
 struct ValueExpressionBuilder {
  public:

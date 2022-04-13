@@ -106,14 +106,14 @@ NodeDataStatusToSemanticInferenceStatus(
 
 }  // namespace
 
-ElementFinderResult::ElementFinderResult() = default;
+ElementFinder::Result::Result() = default;
 
-ElementFinderResult::~ElementFinderResult() = default;
+ElementFinder::Result::~Result() = default;
 
-ElementFinderResult::ElementFinderResult(const ElementFinderResult&) = default;
+ElementFinder::Result::Result(const Result&) = default;
 
-ElementFinderResult ElementFinderResult::EmptyResult() {
-  return ElementFinderResult();
+ElementFinder::Result ElementFinder::Result::EmptyResult() {
+  return ElementFinder::Result();
 }
 
 ElementFinder::ElementFinder(
@@ -134,14 +134,12 @@ ElementFinder::ElementFinder(
 
 ElementFinder::~ElementFinder() = default;
 
-void ElementFinder::Start(const ElementFinderResult& start_element,
-                          Callback callback) {
+void ElementFinder::Start(const Result& start_element, Callback callback) {
   callback_ = std::move(callback);
 
   if (selector_.empty()) {
     SendResult(ClientStatus(INVALID_SELECTOR),
-               std::make_unique<ElementFinderResult>(
-                   ElementFinderResult::EmptyResult()));
+               std::make_unique<Result>(Result::EmptyResult()));
     return;
   }
 
@@ -151,8 +149,7 @@ void ElementFinder::Start(const ElementFinderResult& start_element,
   if (selector_.proto.has_semantic_information()) {
     if (!annotate_dom_model_service_) {
       SendResult(ClientStatus(PRECONDITION_FAILED),
-                 std::make_unique<ElementFinderResult>(
-                     ElementFinderResult::EmptyResult()));
+                 std::make_unique<Result>(Result::EmptyResult()));
       return;
     }
 
@@ -177,7 +174,7 @@ void ElementFinder::Start(const ElementFinderResult& start_element,
 }
 
 void ElementFinder::AddAndStartRunner(
-    const ElementFinderResult& start_element,
+    const Result& start_element,
     std::unique_ptr<ElementFinderBase> runner) {
   auto* runner_ptr = runner.get();
   runners_.emplace_back(std::move(runner));
@@ -217,7 +214,7 @@ void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
 }
 
 void ElementFinder::SendResult(const ClientStatus& status,
-                               std::unique_ptr<ElementFinderResult> result) {
+                               std::unique_ptr<Result> result) {
   UpdateLogInfo(status);
   DCHECK(callback_);
   std::move(callback_).Run(
@@ -226,7 +223,7 @@ void ElementFinder::SendResult(const ClientStatus& status,
 
 void ElementFinder::OnResult(size_t index,
                              const ClientStatus& status,
-                             std::unique_ptr<ElementFinderResult> result) {
+                             std::unique_ptr<Result> result) {
   results_[index] = std::make_pair(status, std::move(result));
   ++num_results_;
 
@@ -261,7 +258,7 @@ void ElementFinder::SemanticElementFinder::GiveUpWithError(
     return;
   }
 
-  SendResult(status, ElementFinderResult::EmptyResult());
+  SendResult(status, Result::EmptyResult());
 }
 
 void ElementFinder::SemanticElementFinder::ResultFound(
@@ -271,7 +268,7 @@ void ElementFinder::SemanticElementFinder::ResultFound(
     return;
   }
 
-  ElementFinderResult result;
+  Result result;
   result.SetRenderFrameHost(render_frame_host);
   result.SetObjectId(object_id);
 
@@ -280,15 +277,13 @@ void ElementFinder::SemanticElementFinder::ResultFound(
 
 void ElementFinder::SemanticElementFinder::SendResult(
     const ClientStatus& status,
-    const ElementFinderResult& result) {
+    const Result& result) {
   DCHECK(callback_);
-  std::move(callback_).Run(status,
-                           std::make_unique<ElementFinderResult>(result));
+  std::move(callback_).Run(status, std::make_unique<Result>(result));
 }
 
-void ElementFinder::SemanticElementFinder::Start(
-    const ElementFinderResult& start_element,
-    Callback callback) {
+void ElementFinder::SemanticElementFinder::Start(const Result& start_element,
+                                                 Callback callback) {
   callback_ = std::move(callback);
 
   auto* start_frame = start_element.render_frame_host();
@@ -431,8 +426,7 @@ void ElementFinder::SemanticElementFinder::OnResolveNodeForAnnotateDom(
                 result->GetObject()->GetObjectId());
     return;
   }
-  SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-             ElementFinderResult::EmptyResult());
+  SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED), Result::EmptyResult());
 }
 
 ElementFinder::CssElementFinder::CssElementFinder(
@@ -448,16 +442,15 @@ ElementFinder::CssElementFinder::CssElementFinder(
       selector_(selector) {}
 ElementFinder::CssElementFinder::~CssElementFinder() = default;
 
-void ElementFinder::CssElementFinder::Start(
-    const ElementFinderResult& start_element,
-    Callback callback) {
+void ElementFinder::CssElementFinder::Start(const Result& start_element,
+                                            Callback callback) {
   callback_ = std::move(callback);
 
   selector_proto_ = selector_.proto;
   ClientStatus resolve_status =
       user_data::ResolveSelectorUserData(&selector_proto_, user_data_);
   if (!resolve_status.ok()) {
-    SendResult(resolve_status, ElementFinderResult::EmptyResult());
+    SendResult(resolve_status, Result::EmptyResult());
     return;
   }
 
@@ -500,7 +493,7 @@ void ElementFinder::CssElementFinder::GiveUpWithError(
     return;
   }
 
-  SendResult(status, ElementFinderResult::EmptyResult());
+  SendResult(status, Result::EmptyResult());
 }
 
 void ElementFinder::CssElementFinder::ResultFound(
@@ -533,7 +526,7 @@ void ElementFinder::CssElementFinder::OnDescribeNodeForId(
 
 void ElementFinder::CssElementFinder::BuildAndSendResult(
     const std::string& object_id) {
-  ElementFinderResult result;
+  Result result;
   result.SetRenderFrameHost(current_frame_);
   result.SetObjectId(object_id);
   result.SetNodeFrameId(current_frame_id_);
@@ -542,13 +535,11 @@ void ElementFinder::CssElementFinder::BuildAndSendResult(
   SendResult(OkClientStatus(), result);
 }
 
-void ElementFinder::CssElementFinder::SendResult(
-    const ClientStatus& status,
-    const ElementFinderResult& result) {
+void ElementFinder::CssElementFinder::SendResult(const ClientStatus& status,
+                                                 const Result& result) {
   client_status_ = status;
   DCHECK(callback_);
-  std::move(callback_).Run(status,
-                           std::make_unique<ElementFinderResult>(result));
+  std::move(callback_).Run(status, std::make_unique<Result>(result));
 }
 
 void ElementFinder::CssElementFinder::ExecuteNextTask() {

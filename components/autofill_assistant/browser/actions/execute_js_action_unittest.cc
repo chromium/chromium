@@ -75,7 +75,7 @@ TEST_F(ExecuteJsActionTest, FailsIfElementDoesNotExist) {
 }
 
 TEST_F(ExecuteJsActionTest, ExecutesSnippetAndReturns) {
-  ElementFinderResult element;
+  ElementFinder::Result element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());
@@ -93,7 +93,7 @@ TEST_F(ExecuteJsActionTest, ExecutesSnippetAndReturns) {
 }
 
 TEST_F(ExecuteJsActionTest, TimesOut) {
-  ElementFinderResult element;
+  ElementFinder::Result element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());
@@ -104,7 +104,7 @@ TEST_F(ExecuteJsActionTest, TimesOut) {
               ExecuteJS(kSnippet, EqualsElement(element), _))
       .WillOnce([&captured_callback](
                     const std::string& snippet,
-                    const ElementFinderResult& element,
+                    const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback) {
         captured_callback = std::move(callback);
       });
@@ -124,7 +124,7 @@ TEST_F(ExecuteJsActionTest, TimesOut) {
 }
 
 TEST_F(ExecuteJsActionTest, DoesNotTimeOut) {
-  ElementFinderResult element;
+  ElementFinder::Result element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());

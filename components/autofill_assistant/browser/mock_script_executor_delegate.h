@@ -66,7 +66,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               (override));
   MOCK_METHOD(void,
               WriteUserData,
-              (base::OnceCallback<void(UserData*, UserDataFieldChange*)>
+              (base::OnceCallback<void(UserData*, UserData::FieldChange*)>
                    write_callback),
               (override));
   MOCK_METHOD(ViewportMode, GetViewportMode, (), (override));
