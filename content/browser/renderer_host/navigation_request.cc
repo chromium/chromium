@@ -7510,9 +7510,11 @@ bool NavigationRequest::
   if (!blink::features::IsInitialNavigationEntryEnabled()) {
     // History replacement behaves a bit differently when we don't have initial
     // NavigationEntries.
-    if (IsInMainFrame()) {
-      // Currently we only handle subframe initial empty document replacements.
-      // TODO(https://crbug.com/1215096): Handle main frame navigations too.
+    if (!frame_tree_node_->GetParentOrOuterDocument()) {
+      // Currently we only handle subframe and non-outermost main frames (fenced
+      // frames and portals) initial empty document replacements.
+      // TODO(https://crbug.com/1215096): Handle the outermost main frame
+      // navigations too.
       return false;
     }
 
@@ -7543,13 +7545,14 @@ bool NavigationRequest::
   }
 
   // For non-initial NavigationEntries, the initial empty document should also
-  // be replaced in subframes. For main frames, the initial empty document will
-  // usually only exist when on the initial NavigationEntry, but it can also
-  // exist in a restored or cloned NavigationController before the first commit.
-  // It is important not to replace one of the restored entries in that case.
-  // See https://crbug.com/1284566 and https://crbug.com/1295723.
+  // be replaced in subframes and non-outermost main frames (fenced frames).
+  // For outermost main frames, the initial empty document will usually only
+  // exist when on the initial NavigationEntry, but it can also exist in a
+  // restored or cloned NavigationController before the first commit. It is
+  // important not to replace one of the restored entries in that case. See
+  // https://crbug.com/1284566 and https://crbug.com/1295723.
   return frame_tree_node_->is_on_initial_empty_document() &&
-         !frame_tree_node_->IsMainFrame();
+         frame_tree_node_->GetParentOrOuterDocument();
 }
 
 bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
