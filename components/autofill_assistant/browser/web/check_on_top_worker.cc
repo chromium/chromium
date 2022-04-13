@@ -16,7 +16,7 @@ CheckOnTopWorker::CheckOnTopWorker(DevtoolsClient* devtools_client)
 
 CheckOnTopWorker::~CheckOnTopWorker() {}
 
-void CheckOnTopWorker::Start(const ElementFinder::Result& element,
+void CheckOnTopWorker::Start(const ElementFinderResult& element,
                              Callback callback) {
   callback_ = std::move(callback);
 

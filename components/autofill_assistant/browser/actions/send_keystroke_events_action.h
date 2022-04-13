@@ -36,7 +36,7 @@ class SendKeystrokeEventsAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
   ProcessActionCallback callback_;
 
   base::WeakPtrFactory<SendKeystrokeEventsAction> weak_ptr_factory_{this};

@@ -45,7 +45,7 @@ class ReleaseElementsActionTest : public testing::Test {
 };
 
 TEST_F(ReleaseElementsActionTest, ReleasesSingleElement) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());
@@ -66,7 +66,7 @@ TEST_F(ReleaseElementsActionTest, ReleasesMultipleElements) {
   client_id_2.set_identifier(kOtherClientId);
   *proto_.add_client_ids() = client_id_2;
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());

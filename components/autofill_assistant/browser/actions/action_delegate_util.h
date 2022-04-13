@@ -32,10 +32,10 @@ void PerformWithTextValue(
     const ActionDelegate* delegate,
     const TextValue& text_value,
     base::OnceCallback<void(const std::string&,
-                            const ElementFinder::Result&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
 // Resolve the |client_id| and run the |perform| callback. Run the |done|
@@ -44,11 +44,11 @@ void PerformWithTextValue(
 void PerformWithElementValue(
     const ActionDelegate* delegate,
     const ClientIdProto& client_id,
-    base::OnceCallback<void(const ElementFinder::Result&,
-                            const ElementFinder::Result&,
+    base::OnceCallback<void(const ElementFinderResult&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
 // Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
@@ -61,19 +61,19 @@ void AddOptionalStep(OptionalStep optional_step,
 // Adds a step to the |actions| and ignores its timing results.
 void AddStepIgnoreTiming(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
     element_action_util::ElementActionVector* actions);
 
 // Adds a step to the |actions| that does not have a callback.
 void AddStepWithoutCallback(
-    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    base::OnceCallback<void(const ElementFinderResult&)> step,
     element_action_util::ElementActionVector* actions);
 
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 void PerformSetFieldValue(
@@ -81,7 +81,7 @@ void PerformSetFieldValue(
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 }  // namespace action_delegate_util

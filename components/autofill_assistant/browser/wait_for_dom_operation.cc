@@ -306,7 +306,7 @@ void WaitForDomOperation::RestorePreInterruptScroll() {
   if (!main_script_->last_focused_element_.has_value())
     return;
 
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   if (!main_script_->GetElementStore()
            ->RestoreElement(*main_script_->last_focused_element_, element.get())
            .ok()) {

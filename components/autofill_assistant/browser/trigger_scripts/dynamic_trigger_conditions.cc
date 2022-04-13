@@ -160,7 +160,7 @@ void DynamicTriggerConditions::Update(WebController* web_controller,
   for (const auto& selector : dom_ready_state_selectors_) {
     if (selector.empty()) {
       web_controller->GetDocumentReadyState(
-          ElementFinder::Result(),
+          ElementFinderResult(),
           base::BindOnce(&DynamicTriggerConditions::OnGetDocumentReadyState,
                          weak_ptr_factory_.GetWeakPtr(), selector));
     } else {
@@ -185,7 +185,7 @@ bool DynamicTriggerConditions::HasResults() const {
 void DynamicTriggerConditions::OnFindElement(
     const Selector& selector,
     const ClientStatus& client_status,
-    std::unique_ptr<ElementFinder::Result> element) {
+    std::unique_ptr<ElementFinderResult> element) {
   temporary_selector_matches_.emplace(
       std::make_pair(selector, client_status.ok()));
 

@@ -113,8 +113,8 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
       DocumentReadyState::DOCUMENT_COMPLETE);
   *frame_dom_ready_state_condition->mutable_frame() = ToSelectorProto("frame");
 
-  std::unique_ptr<ElementFinder::Result> frame_fake_element =
-      std::make_unique<ElementFinder::Result>();
+  std::unique_ptr<ElementFinderResult> frame_fake_element =
+      std::make_unique<ElementFinderResult>();
   auto* frame_fake_element_ptr = frame_fake_element.get();
 
   EXPECT_CALL(mock_web_controller_,

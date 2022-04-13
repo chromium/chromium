@@ -22,7 +22,7 @@ class FakeElementStore : public ElementStore {
   FakeElementStore& operator=(const FakeElementStore&) = delete;
 
   ClientStatus GetElement(const std::string& client_id,
-                          ElementFinder::Result* out_element) const override;
+                          ElementFinderResult* out_element) const override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;

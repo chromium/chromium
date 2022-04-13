@@ -151,7 +151,7 @@ TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForSelector) {
 }
 
 TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForClientId) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   mock_action_delegate_.GetElementStore()->AddElement("element",
                                                       element.dom_object());
   proto_.mutable_client_id()->set_identifier("element");
@@ -702,8 +702,8 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
 
   EXPECT_CALL(mock_action_delegate_, FindElement(_, _))
       .WillOnce(WithArgs<1>([this](auto&& callback) {
-        std::unique_ptr<ElementFinder::Result> element =
-            std::make_unique<ElementFinder::Result>();
+        std::unique_ptr<ElementFinderResult> element =
+            std::make_unique<ElementFinderResult>();
         element->SetRenderFrameHost(web_contents_->GetMainFrame());
         std::move(callback).Run(OkClientStatus(), std::move(element));
       }));

@@ -1,7 +1,6 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 
 #include "base/callback.h"
@@ -24,7 +23,7 @@ namespace action_delegate_util {
 namespace {
 
 void RetainElementAndExecuteCallback(
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status) {
   DCHECK(element != nullptr);
@@ -51,17 +50,17 @@ void IgnoreTimingResult(base::OnceCallback<void(const ClientStatus&)> done,
 // Execute |action| and ignore the timing result.
 void RunAndIgnoreTiming(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> action,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(action).Run(element,
                         base::BindOnce(&IgnoreTimingResult, std::move(done)));
 }
 
 void RunAndCallSuccessCallback(
-    base::OnceCallback<void(const ElementFinder::Result&)> step,
-    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ElementFinderResult&)> step,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(step).Run(element);
   std::move(done).Run(OkClientStatus());
@@ -84,7 +83,7 @@ void IgnoreErrorStatus(base::OnceCallback<void(const ClientStatus&)> done,
 //
 // Note that the status details filled by the failed action are conserved.
 void SkipIfFail(element_action_util::ElementActionCallback action,
-                const ElementFinder::Result& element,
+                const ElementFinderResult& element,
                 base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(action).Run(element,
                         base::BindOnce(&IgnoreErrorStatus, std::move(done)));
@@ -124,10 +123,10 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
 
 void OnResolveTextValue(
     base::OnceCallback<void(const std::string&,
-                            const ElementFinder::Result&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done,
     const ClientStatus& status,
     const std::string& value) {
@@ -144,10 +143,10 @@ void PerformWithTextValue(
     const ActionDelegate* delegate,
     const TextValue& text_value,
     base::OnceCallback<void(const std::string&,
-                            const ElementFinder::Result&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   user_data::ResolveTextValue(
       text_value, element, delegate,
@@ -158,15 +157,15 @@ void PerformWithTextValue(
 void PerformWithElementValue(
     const ActionDelegate* delegate,
     const ClientIdProto& client_id,
-    base::OnceCallback<void(const ElementFinder::Result&,
-                            const ElementFinder::Result&,
+    base::OnceCallback<void(const ElementFinderResult&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
-  std::unique_ptr<ElementFinder::Result> element_result =
-      std::make_unique<ElementFinder::Result>();
-  ElementFinder::Result* element_result_ptr = element_result.get();
+  std::unique_ptr<ElementFinderResult> element_result =
+      std::make_unique<ElementFinderResult>();
+  ElementFinderResult* element_result_ptr = element_result.get();
   ClientStatus element_status = delegate->GetElementStore()->GetElement(
       client_id.identifier(), element_result_ptr);
   if (!element_status.ok()) {
@@ -203,14 +202,14 @@ void AddOptionalStep(OptionalStep optional_step,
 
 void AddStepIgnoreTiming(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
     element_action_util::ElementActionVector* actions) {
   actions->emplace_back(base::BindOnce(&RunAndIgnoreTiming, std::move(step)));
 }
 
 void AddStepWithoutCallback(
-    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    base::OnceCallback<void(const ElementFinderResult&)> step,
     element_action_util::ElementActionVector* actions) {
   actions->emplace_back(
       base::BindOnce(&RunAndCallSuccessCallback, std::move(step)));
@@ -227,7 +226,7 @@ void FindElementAndPerform(const ActionDelegate* delegate,
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   VLOG(3) << __func__ << " click_type=" << click_type;
 
@@ -240,7 +239,7 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
                           const std::string& value,
                           KeyboardValueFillStrategy fill_strategy,
                           int key_press_delay_in_millisecond,
-                          const ElementFinder::Result& element,
+                          const ElementFinderResult& element,
                           base::OnceCallback<void(const ClientStatus&)> done) {
 #ifdef NDEBUG
   VLOG(3) << __func__ << " value=(redacted)"

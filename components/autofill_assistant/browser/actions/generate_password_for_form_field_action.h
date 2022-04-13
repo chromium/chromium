@@ -49,7 +49,7 @@ class GeneratePasswordForFormFieldAction : public Action {
                                         const std::string& generated_password,
                                         const autofill::FormData& form_data,
                                         UserData* user_data,
-                                        UserData::FieldChange* field_change);
+                                        UserDataFieldChange* field_change);
 
   Selector selector_;
   ProcessActionCallback callback_;

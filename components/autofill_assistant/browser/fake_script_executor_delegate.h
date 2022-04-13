@@ -51,7 +51,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   AutofillAssistantState GetState() const override;
   void SetTouchableElementArea(const ElementAreaProto& element) override;
   void WriteUserData(
-      base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
+      base::OnceCallback<void(UserData*, UserDataFieldChange*)>) override;
   void SetViewportMode(ViewportMode mode) override;
   ViewportMode GetViewportMode() override;
   void SetClientSettings(const ClientSettingsProto& client_settings) override;

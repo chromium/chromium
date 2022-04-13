@@ -643,7 +643,7 @@ void UiControllerAndroid::RestoreUi() {
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
   OnUserDataChanged(*execution_delegate_->GetUserData(),
-                    UserData::FieldChange::ALL);
+                    UserDataFieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
       ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
@@ -1323,9 +1323,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
   Java_AssistantCollectUserDataModel_setVisible(env, jmodel, true);
 }
 
-void UiControllerAndroid::OnUserDataChanged(
-    const UserData& user_data,
-    UserData::FieldChange field_change) {
+void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
+                                            UserDataFieldChange field_change) {
   DCHECK(execution_delegate_ != nullptr);
   DCHECK(ui_delegate_ != nullptr);
   const CollectUserDataOptions* collect_user_data_options =
@@ -1340,14 +1339,14 @@ void UiControllerAndroid::OnUserDataChanged(
   JNIEnv* env = AttachCurrentThread();
   auto jmodel = GetCollectUserDataModel();
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::TERMS_AND_CONDITIONS) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::TERMS_AND_CONDITIONS) {
     Java_AssistantCollectUserDataModel_setTermsStatus(
         env, jmodel, user_data.terms_and_conditions_);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PROFILES) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PROFILES) {
     // Contacts.
     auto jcontactlist =
         Java_AssistantCollectUserDataModel_createContactList(env);
@@ -1429,9 +1428,9 @@ void UiControllerAndroid::OnUserDataChanged(
         env, jmodel, jshippinglist);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PROFILES ||
-      field_change == UserData::FieldChange::CONTACT_PROFILE) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PROFILES ||
+      field_change == UserDataFieldChange::CONTACT_PROFILE) {
     const autofill::AutofillProfile* selected_contact_profile =
         user_data.selected_address(
             collect_user_data_options->contact_details_name);
@@ -1444,7 +1443,7 @@ void UiControllerAndroid::OnUserDataChanged(
     const auto& selected_contact_errors = user_data::GetContactValidationErrors(
         selected_contact_profile, *collect_user_data_options);
 
-    // In the UserData::FieldChange::CONTACT_PROFILE case the selection is
+    // In the UserDataFieldChange::CONTACT_PROFILE case the selection is
     // already known in Java, but it has no errors. The PDM off case does not
     // set updated contacts.
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
@@ -1453,9 +1452,9 @@ void UiControllerAndroid::OnUserDataChanged(
         collect_user_data_options->can_edit_contacts);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PROFILES ||
-      field_change == UserData::FieldChange::PHONE_NUMBER) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PROFILES ||
+      field_change == UserDataFieldChange::PHONE_NUMBER) {
     const autofill::AutofillProfile* selected_phone_number =
         user_data.selected_phone_number();
     auto jselected_phone_number =
@@ -1468,7 +1467,7 @@ void UiControllerAndroid::OnUserDataChanged(
         user_data::GetPhoneNumberValidationErrors(selected_phone_number,
                                                   *collect_user_data_options);
 
-    // In the UserData::FieldChange::PHONE_NUMBER case the selection is already
+    // In the UserDataFieldChange::PHONE_NUMBER case the selection is already
     // known in Java, but it has no errors. The PDM off case does not set
     // updated phone numbers.
     Java_AssistantCollectUserDataModel_setSelectedPhoneNumber(
@@ -1477,9 +1476,9 @@ void UiControllerAndroid::OnUserDataChanged(
         /* canEdit = */ false);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PROFILES ||
-      field_change == UserData::FieldChange::SHIPPING_ADDRESS) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PROFILES ||
+      field_change == UserDataFieldChange::SHIPPING_ADDRESS) {
     const autofill::AutofillProfile* selected_shipping_address =
         user_data.selected_address(
             collect_user_data_options->shipping_address_name);
@@ -1513,7 +1512,7 @@ void UiControllerAndroid::OnUserDataChanged(
       }
     }
 
-    // In the UserData::FieldChange::SHIPPING_ADDRESS case the selection is
+    // In the UserDataFieldChange::SHIPPING_ADDRESS case the selection is
     // already known in Java, but it has no errors. The PDM off case does not
     // set updated shipping addresses.
     Java_AssistantCollectUserDataModel_setSelectedShippingAddress(
@@ -1527,8 +1526,8 @@ void UiControllerAndroid::OnUserDataChanged(
         jselected_shipping_address_edit_token);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PAYMENT_INSTRUMENTS) {
     auto jlist =
         Java_AssistantCollectUserDataModel_createAutofillPaymentInstrumentList(
             env);
@@ -1566,9 +1565,9 @@ void UiControllerAndroid::OnUserDataChanged(
         env, jmodel, jlist);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS ||
-      field_change == UserData::FieldChange::CARD) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::AVAILABLE_PAYMENT_INSTRUMENTS ||
+      field_change == UserDataFieldChange::CARD) {
     const autofill::CreditCard* selected_card = user_data.selected_card();
     const autofill::AutofillProfile* selected_billing_address =
         user_data.selected_address(
@@ -1609,9 +1608,9 @@ void UiControllerAndroid::OnUserDataChanged(
       }
     }
 
-    // Note: Ignore UserData::FieldChange::BILLING_ADDRESS, they are sent in
+    // Note: Ignore UserDataFieldChange::BILLING_ADDRESS, they are sent in
     // tandem.
-    // In the UserData::FieldChange::CARD case the selection is already known
+    // In the UserDataFieldChange::CARD case the selection is already known
     // in Java, but it has no errors. The PDM off case does not set updated
     // payment instruments.
     Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(
@@ -1621,8 +1620,8 @@ void UiControllerAndroid::OnUserDataChanged(
         jselected_payment_instrument_edit_token);
   }
 
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::LOGIN_CHOICE) {
+  if (field_change == UserDataFieldChange::ALL ||
+      field_change == UserDataFieldChange::LOGIN_CHOICE) {
     ScopedJavaLocalRef<jobject> jselected_login_choice =
         user_data.selected_login_choice() == nullptr
             ? nullptr

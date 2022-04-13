@@ -1262,7 +1262,7 @@ TEST_F(UserDataUtilTextValueTest, GetUsername) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   PasswordManagerValue password_manager_value;
@@ -1280,7 +1280,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPassword) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   PasswordManagerValue password_manager_value;
@@ -1300,7 +1300,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
@@ -1383,7 +1383,7 @@ TEST_F(UserDataUtilTextValueTest, TextValueText) {
 
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "text"));
 
-  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+  ResolveTextValue(text_value, ElementFinderResult(), &mock_action_delegate_,
                    base::BindOnce(&UserDataUtilTextValueTest::OnResult,
                                   base::Unretained(this)));
 }
@@ -1407,7 +1407,7 @@ TEST_F(UserDataUtilTextValueTest, TextValueAutofillValue) {
 
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "John"));
 
-  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+  ResolveTextValue(text_value, ElementFinderResult(), &mock_action_delegate_,
                    base::BindOnce(&UserDataUtilTextValueTest::OnResult,
                                   base::Unretained(this)));
 }
@@ -1416,7 +1416,7 @@ TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
@@ -1442,7 +1442,7 @@ TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
 
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "Hello World"));
 
-  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+  ResolveTextValue(text_value, ElementFinderResult(), &mock_action_delegate_,
                    base::BindOnce(&UserDataUtilTextValueTest::OnResult,
                                   base::Unretained(this)));
 }

@@ -39,7 +39,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
     ON_CALL(mock_web_controller_, FindElement(Selector({"exists"}), _, _))
         .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
-                                  std::make_unique<ElementFinder::Result>());
+                                  std::make_unique<ElementFinderResult>());
         }));
     ON_CALL(mock_web_controller_,
             FindElement(Selector({"does_not_exist"}), _, _))
@@ -260,7 +260,7 @@ TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
               FindElement(Selector({"maybe_exists"}), _, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   tracker_.CheckScripts();
   // The script can now run

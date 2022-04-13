@@ -29,18 +29,18 @@ class ElementActionUtilTest : public testing::Test {
   void SetUp() override { element_.SetObjectId("element"); }
 
   MOCK_METHOD2(MockAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD3(MockIndexedAction,
                void(int index,
-                    const ElementFinder::Result&,
+                    const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD1(MockDone, void(const ClientStatus& status));
 
   MOCK_METHOD2(MockGetAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> done));
 
@@ -49,7 +49,7 @@ class ElementActionUtilTest : public testing::Test {
 
  protected:
   MockWebController mock_web_controller_;
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
 };
 
 TEST_F(ElementActionUtilTest, ExecuteSingleAction) {
@@ -113,7 +113,7 @@ TEST_F(ElementActionUtilTest, ExecuteActionsAbortOnError) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndPerform) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockAction(EqualsElement(*expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
@@ -127,7 +127,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndPerform) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndPerformWithFailedStatus) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockAction(_, _)).Times(0);
   EXPECT_CALL(*this,
@@ -141,7 +141,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndPerformWithFailedStatus) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockGetAction(EqualsElement(*expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
@@ -157,7 +157,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndGetPropertyWithFailedStatus) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockGetAction(_, _)).Times(0);
   EXPECT_CALL(*this,

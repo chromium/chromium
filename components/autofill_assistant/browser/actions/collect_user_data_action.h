@@ -86,7 +86,7 @@ class CollectUserDataAction : public Action,
   void OnGetLogins(const LoginDetailsProto::LoginOptionProto& login_option,
                    std::vector<WebsiteLoginManager::Login> logins);
   void ShowToUser();
-  void OnShowToUser(UserData* user_data, UserData::FieldChange* field_change);
+  void OnShowToUser(UserData* user_data, UserDataFieldChange* field_change);
   void UpdateUserData(UserData* user_data);
   void OnRequestUserData(UserData* user_data,
                          bool success,
@@ -115,10 +115,10 @@ class CollectUserDataAction : public Action,
   // Update user data with the new state from personal data manager.
   void UpdatePersonalDataManagerProfiles(
       UserData* user_data,
-      UserData::FieldChange* field_change = nullptr);
+      UserDataFieldChange* field_change = nullptr);
   void UpdatePersonalDataManagerCards(
       UserData* user_data,
-      UserData::FieldChange* field_change = nullptr);
+      UserDataFieldChange* field_change = nullptr);
   void UpdateSelectedContact(UserData* user_data);
   void UpdateSelectedPhoneNumber(UserData* user_data);
   void UpdateSelectedShippingAddress(UserData* user_data);

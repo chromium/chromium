@@ -53,7 +53,7 @@ void WaitForDocumentAction::OnShortWaitForElement(
 
 void WaitForDocumentAction::OnFindElement(
     const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element) {
+    std::unique_ptr<ElementFinderResult> element) {
   if (!status.ok()) {
     SendResult(status, DOCUMENT_UNKNOWN_READY_STATE);
     return;
@@ -66,7 +66,7 @@ void WaitForDocumentAction::OnFindElement(
 void WaitForDocumentAction::WaitForReadyState() {
   delegate_->GetWebController()->GetDocumentReadyState(
       optional_frame_element_ ? *optional_frame_element_
-                              : ElementFinder::Result(),
+                              : ElementFinderResult(),
       base::BindOnce(&WaitForDocumentAction::OnGetStartState,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -96,7 +96,7 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
   delegate_->WaitForDocumentReadyState(
       timeout, proto_.wait_for_document().min_ready_state(),
       optional_frame_element_ ? *optional_frame_element_
-                              : ElementFinder::Result(),
+                              : ElementFinderResult(),
       base::BindOnce(&WaitForDocumentAction::OnWaitForStartState,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -110,7 +110,7 @@ void WaitForDocumentAction::OnWaitForStartState(
   if (status.proto_status() == TIMED_OUT) {
     delegate_->GetWebController()->GetDocumentReadyState(
         optional_frame_element_ ? *optional_frame_element_
-                                : ElementFinder::Result(),
+                                : ElementFinderResult(),
         base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,
                        weak_ptr_factory_.GetWeakPtr(), status));
     return;

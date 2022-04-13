@@ -165,7 +165,7 @@ class ScriptExecutor : public ActionDelegate,
   const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
       const override;
   void WriteUserData(
-      base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
+      base::OnceCallback<void(UserData*, UserDataFieldChange*)>) override;
   void GetFullCard(const autofill::CreditCard* credit_card,
                    GetFullCardCallback callback) override;
   void Prompt(std::unique_ptr<std::vector<UserAction>> user_actions,
@@ -181,7 +181,7 @@ class ScriptExecutor : public ActionDelegate,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback) override;
-  void StoreScrolledToElement(const ElementFinder::Result& element) override;
+  void StoreScrolledToElement(const ElementFinderResult& element) override;
   void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) override;
   void ExpectNavigation() override;
@@ -190,14 +190,14 @@ class ScriptExecutor : public ActionDelegate,
   void WaitForDocumentReadyState(
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
-      const ElementFinder::Result& optional_frame_element,
+      const ElementFinderResult& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) override;
   void WaitUntilDocumentIsInReadyState(
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
-      const ElementFinder::Result& optional_frame_element,
+      const ElementFinderResult& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
       override;
 

@@ -61,7 +61,7 @@ TEST_F(CheckOptionElementActionTest, UnknownSelectElementFails) {
 }
 
 TEST_F(CheckOptionElementActionTest, UnknownOptionElementFails) {
-  ElementFinder::Result select;
+  ElementFinderResult select;
   mock_action_delegate_.GetElementStore()->AddElement(kSelectId,
                                                       select.dom_object());
 
@@ -71,11 +71,11 @@ TEST_F(CheckOptionElementActionTest, UnknownOptionElementFails) {
 }
 
 TEST_F(CheckOptionElementActionTest, SucceedsForMatchingOption) {
-  ElementFinder::Result select;
+  ElementFinderResult select;
   select.SetObjectId("select");
   mock_action_delegate_.GetElementStore()->AddElement(kSelectId,
                                                       select.dom_object());
-  ElementFinder::Result option;
+  ElementFinderResult option;
   option.SetObjectId("option");
   mock_action_delegate_.GetElementStore()->AddElement(kOptionId,
                                                       option.dom_object());
@@ -96,11 +96,11 @@ TEST_F(CheckOptionElementActionTest, SucceedsForMatchingOption) {
 }
 
 TEST_F(CheckOptionElementActionTest, DoesNotFailForMismatch) {
-  ElementFinder::Result select;
+  ElementFinderResult select;
   select.SetObjectId("select");
   mock_action_delegate_.GetElementStore()->AddElement(kSelectId,
                                                       select.dom_object());
-  ElementFinder::Result option;
+  ElementFinderResult option;
   option.SetObjectId("option");
   mock_action_delegate_.GetElementStore()->AddElement(kOptionId,
                                                       option.dom_object());
@@ -123,11 +123,11 @@ TEST_F(CheckOptionElementActionTest, DoesNotFailForMismatch) {
 }
 
 TEST_F(CheckOptionElementActionTest, FailsForMismatchIfSpecified) {
-  ElementFinder::Result select;
+  ElementFinderResult select;
   select.SetObjectId("select");
   mock_action_delegate_.GetElementStore()->AddElement(kSelectId,
                                                       select.dom_object());
-  ElementFinder::Result option;
+  ElementFinderResult option;
   option.SetObjectId("option");
   mock_action_delegate_.GetElementStore()->AddElement(kOptionId,
                                                       option.dom_object());

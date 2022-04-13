@@ -21,10 +21,10 @@ namespace autofill_assistant {
 class PerformOnSingleElementAction : public Action {
  public:
   using PerformAction =
-      base::OnceCallback<void(const ElementFinder::Result&,
+      base::OnceCallback<void(const ElementFinderResult&,
                               base::OnceCallback<void(const ClientStatus&)>)>;
   using PerformTimedAction = base::OnceCallback<void(
-      const ElementFinder::Result&,
+      const ElementFinderResult&,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)>;
 
   ~PerformOnSingleElementAction() override;
@@ -67,7 +67,7 @@ class PerformOnSingleElementAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
   ProcessActionCallback callback_;
 
   std::string client_id_;

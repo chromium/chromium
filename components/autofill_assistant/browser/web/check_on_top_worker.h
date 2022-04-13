@@ -29,7 +29,7 @@ class CheckOnTopWorker : public WebControllerWorker {
   using Callback = base::OnceCallback<void(const ClientStatus&)>;
 
   // Have the worker check |element| and report the result to |callback|.
-  void Start(const ElementFinder::Result& element, Callback callback);
+  void Start(const ElementFinderResult& element, Callback callback);
 
  private:
   void CallFunctionOn(const std::string& function,

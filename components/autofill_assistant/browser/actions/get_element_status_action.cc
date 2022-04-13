@@ -155,7 +155,7 @@ void GetElementStatusAction::OnWaitForElement(
 
 void GetElementStatusAction::GetElementByClientId(
     const ClientIdProto& client_id) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   auto* element_ptr = element.get();
   OnGetElement(delegate_->GetElementStore()->GetElement(client_id.identifier(),
                                                         element_ptr),
@@ -164,7 +164,7 @@ void GetElementStatusAction::GetElementByClientId(
 
 void GetElementStatusAction::OnGetElement(
     const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element) {
+    std::unique_ptr<ElementFinderResult> element) {
   if (!status.ok()) {
     EndAction(status);
     return;

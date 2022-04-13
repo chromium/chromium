@@ -29,7 +29,7 @@ class WaitForDocumentAction : public Action {
   void OnShortWaitForElement(const Selector& frame_selector,
                              const ClientStatus& status);
   void OnFindElement(const ClientStatus& status,
-                     std::unique_ptr<ElementFinder::Result> element);
+                     std::unique_ptr<ElementFinderResult> element);
   void WaitForReadyState();
 
   void OnGetStartState(const ClientStatus& status,
@@ -43,7 +43,7 @@ class WaitForDocumentAction : public Action {
   void SendResult(const ClientStatus& status, DocumentReadyState end_state);
 
   ProcessActionCallback callback_;
-  std::unique_ptr<ElementFinder::Result> optional_frame_element_;
+  std::unique_ptr<ElementFinderResult> optional_frame_element_;
   base::WeakPtrFactory<WaitForDocumentAction> weak_ptr_factory_{this};
 };
 

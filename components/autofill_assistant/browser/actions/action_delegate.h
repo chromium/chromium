@@ -9,31 +9,26 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/time/time.h"
-#include "components/autofill_assistant/browser/batch_element_checker.h"
-#include "components/autofill_assistant/browser/details.h"
-#include "components/autofill_assistant/browser/info_box.h"
-#include "components/autofill_assistant/browser/selector.h"
-#include "components/autofill_assistant/browser/state.h"
-#include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
-#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
-#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/icu/source/common/unicode/umachine.h"
 
 class GURL;
 
 namespace autofill {
+class ClientStatus;
 class CreditCard;
 struct FormData;
 struct FormFieldData;
 class PersonalDataManager;
 }  // namespace autofill
+
+namespace base {
+class TimeDelta;
+template <typename T>
+class WeakPtr;
+}  // namespace base
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
@@ -43,14 +38,39 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ukm {
+class UkmRecorder;
+}
+
 namespace autofill_assistant {
+class BatchElementChecker;
+class ClientSettingsProto;
 class ClientStatus;
-struct ClientSettings;
-struct CollectUserDataOptions;
+class Details;
+class ElementFinderResult;
+struct Selector;
+class WaitForDomObserver;
 class ElementStore;
+class GenericUserInterfaceProto;
+class FormProto;
+class FormProto_Result;
+class InfoBox;
 class UserAction;
+class UserData;
+class UserModel;
 class WebController;
 class WebsiteLoginManager;
+struct ClientSettings;
+struct CollectUserDataOptions;
+class ShowProgressBarProto_StepProgressBarConfiguration;
+class ProcessedActionStatusDetailsProto;
+class GetUserDataResponseProto;
+class ElementAreaProto;
+
+enum ConfigureBottomSheetProto_PeekMode : int;
+enum ConfigureUiStateProto_OverlayBehavior : int;
+enum DocumentReadyState : int;
+enum class UserDataFieldChange;
 
 // Action delegate called when processing actions.
 class ActionDelegate {
@@ -142,13 +162,19 @@ class ActionDelegate {
           callback) = 0;
 
   // Find an element specified by |selector| on the web page.
-  virtual void FindElement(const Selector&,
-                           ElementFinder::Callback callback) const = 0;
+  virtual void FindElement(
+      const Selector&,
+      base::OnceCallback<void(const ClientStatus&,
+                              std::unique_ptr<ElementFinderResult>)> callback)
+      const = 0;
 
   // Find all elements matching |selector|. If there are no matches, the status
   // will be ELEMENT_RESOLUTION_FAILED.
-  virtual void FindAllElements(const Selector& selector,
-                               ElementFinder::Callback callback) const = 0;
+  virtual void FindAllElements(
+      const Selector& selector,
+      base::OnceCallback<void(const ClientStatus&,
+                              std::unique_ptr<ElementFinderResult>)> callback)
+      const = 0;
 
   // Have the UI enter the prompt mode and make the given actions available.
   //
@@ -191,7 +217,7 @@ class ActionDelegate {
   // Executes |write_callback| on the currently stored user_data and
   // user_data_options.
   virtual void WriteUserData(
-      base::OnceCallback<void(UserData*, UserData::FieldChange*)>
+      base::OnceCallback<void(UserData*, UserDataFieldChange*)>
           write_callback) = 0;
 
   using GetFullCardCallback =
@@ -214,7 +240,7 @@ class ActionDelegate {
 
   // Store the element that is being scrolled to, such that it can be restored
   // after an interrupt.
-  virtual void StoreScrolledToElement(const ElementFinder::Result& element) = 0;
+  virtual void StoreScrolledToElement(const ElementFinderResult& element) = 0;
 
   // Sets selector of areas that can be manipulated:
   // - after the end of the script and before the beginning of the next script.
@@ -248,7 +274,7 @@ class ActionDelegate {
   virtual void WaitForDocumentReadyState(
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
-      const ElementFinder::Result& optional_frame_element,
+      const ElementFinderResult& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) = 0;
@@ -259,7 +285,7 @@ class ActionDelegate {
   virtual void WaitUntilDocumentIsInReadyState(
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
-      const ElementFinder::Result& optional_frame_element,
+      const ElementFinderResult& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
           callback) = 0;
 
@@ -331,7 +357,7 @@ class ActionDelegate {
 
   // Sets a new step progress bar configuration.
   virtual void SetStepProgressBarConfiguration(
-      const ShowProgressBarProto::StepProgressBarConfiguration&
+      const ShowProgressBarProto_StepProgressBarConfiguration&
           configuration) = 0;
 
   // Set the viewport mode.
@@ -341,10 +367,10 @@ class ActionDelegate {
   virtual ViewportMode GetViewportMode() const = 0;
 
   // Set the peek mode.
-  virtual void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) = 0;
+  virtual void SetPeekMode(ConfigureBottomSheetProto_PeekMode peek_mode) = 0;
 
   // Checks the current peek mode.
-  virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() const = 0;
+  virtual ConfigureBottomSheetProto_PeekMode GetPeekMode() const = 0;
 
   // Expands the bottom sheet. This is the same as the user swiping up.
   virtual void ExpandBottomSheet() = 0;
@@ -371,7 +397,7 @@ class ActionDelegate {
   // form contains unsupported or invalid inputs.
   virtual bool SetForm(
       std::unique_ptr<FormProto> form,
-      base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
+      base::RepeatingCallback<void(const FormProto_Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) = 0;
 
   // Force showing the UI if no UI is shown. This is useful when executing a
@@ -416,7 +442,7 @@ class ActionDelegate {
 
   // Sets the OverlayBehavior.
   virtual void SetOverlayBehavior(
-      ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
+      ConfigureUiStateProto_OverlayBehavior overlay_behavior) = 0;
 
   // Maybe shows a warning letting the user know that the website is unusually
   // slow, depending on the current settings.

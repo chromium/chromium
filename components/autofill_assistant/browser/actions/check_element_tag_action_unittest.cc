@@ -59,7 +59,7 @@ TEST_F(CheckElementTagActionTest, UnknownElementFails) {
 }
 
 TEST_F(CheckElementTagActionTest, SucceedsForMatchingTagCaseInsensitive) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("e");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());
@@ -77,7 +77,7 @@ TEST_F(CheckElementTagActionTest, SucceedsForMatchingTagCaseInsensitive) {
 }
 
 TEST_F(CheckElementTagActionTest, FailsForNoMatchingTags) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("e");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());

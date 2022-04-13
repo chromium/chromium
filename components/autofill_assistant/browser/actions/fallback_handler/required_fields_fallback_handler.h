@@ -76,14 +76,14 @@ class RequiredFieldsFallbackHandler {
                      const RequiredField& required_field,
                      base::OnceCallback<void()> set_next_field,
                      const ClientStatus& element_status,
-                     std::unique_ptr<ElementFinder::Result> element_result);
+                     std::unique_ptr<ElementFinderResult> element_result);
 
   // Called after retrieving tag name from a field.
   void OnGetFallbackFieldElementTag(
       const std::string& value,
       const RequiredField& required_field,
       base::OnceCallback<void()> set_next_field,
-      std::unique_ptr<ElementFinder::Result> element,
+      std::unique_ptr<ElementFinderResult> element,
       const ClientStatus& element_tag_status,
       const std::string& element_tag);
 
@@ -109,7 +109,7 @@ class RequiredFieldsFallbackHandler {
   // fallback after failed validation.
   void OnSetFallbackFieldValue(const RequiredField& required_field,
                                base::OnceCallback<void()> set_next_field,
-                               std::unique_ptr<ElementFinder::Result> element,
+                               std::unique_ptr<ElementFinderResult> element,
                                const ClientStatus& status);
 
   ClientStatus client_status_;

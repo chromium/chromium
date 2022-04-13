@@ -31,7 +31,7 @@ class ExecuteJsAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
   ProcessActionCallback callback_;
   base::OneShotTimer timer_;
 
