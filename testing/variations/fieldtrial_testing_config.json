@@ -2471,22 +2471,13 @@
             ],
             "experiments": [
                 {
-                    "name": "ContentSuggestionsHeaderMigration",
+                    "name": "Enabled_Header_Control_UIViewController_20220412",
                     "enable_features": [
                         "ContentSuggestionsHeaderMigration"
                     ]
-                }
-            ]
-        }
-    ],
-    "ContentSuggestionsUIViewControllerMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Header_UIViewController_20220412",
                     "enable_features": [
                         "ContentSuggestionsHeaderMigration",
                         "ContentSuggestionsUIViewControllerMigration"
