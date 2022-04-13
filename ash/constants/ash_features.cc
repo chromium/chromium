@@ -1028,6 +1028,7 @@ const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether the device supports on-device speech recognition.
+// Forwarded to LaCrOS as BrowserInitParams::is_ondevice_speech_supported.
 const base::Feature kOnDeviceSpeechRecognition{
     "OnDeviceSpeechRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 

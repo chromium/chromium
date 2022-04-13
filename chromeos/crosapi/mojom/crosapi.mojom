@@ -702,8 +702,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 40
-// Next id: 40
+// Next version: 41
+// Next id: 41
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -958,6 +958,11 @@ struct BrowserInitParams {
   // The form factor of the device.
   [MinVersion=37]
   DeviceType device_type@37;
+
+  // Whether on-device speech recognition is supported on the platform.
+  // Forwarded from ash flag OnDeviceSpeechRecognition.
+  [MinVersion=40]
+  bool is_ondevice_speech_supported@40;
 };
 
 // Parameters to specify OpenUrl behavior.

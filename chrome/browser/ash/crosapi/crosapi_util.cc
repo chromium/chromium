@@ -436,6 +436,9 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
 
+  params->is_ondevice_speech_supported =
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
+
   return params;
 }
 

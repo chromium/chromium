@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "+base",
+  "+chromeos/lacros",
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/pref_registry",

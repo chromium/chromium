@@ -24,6 +24,10 @@
 #include "ash/constants/ash_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 // Returns whether the style is default or not. If the user has changed any of
@@ -127,9 +131,14 @@ bool IsLiveCaptionFeatureSupported() {
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return false;
 
+// Some Chrome OS devices do not support on-device speech.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Some Chrome OS devices do not support on-device speech.
   if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
+    return false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::LacrosService::Get()
+           ->init_params()
+           ->is_ondevice_speech_supported)
     return false;
 #endif
 
