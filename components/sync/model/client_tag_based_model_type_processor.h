@@ -42,8 +42,9 @@ class CommitQueue;
 // model type threads. All changes in flight (either incoming from the server
 // or local changes reported by the bridge) must specify a client tag.
 //
-// See //docs/sync/uss/client_tag_based_model_type_processor.md for a more
-// thorough description.
+// See
+// //docs/website/site/developers/design-documents/sync/client-tag-based-model-type-processor/index.md
+// for a more thorough description.
 class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                                          public ModelTypeChangeProcessor,
                                          public ModelTypeControllerDelegate {
