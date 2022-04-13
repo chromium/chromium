@@ -605,7 +605,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Unfocus the omnibox.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tapAtPoint(CGPointMake(0, offsetAfterTap.y + 100))];
+      performAction:grey_tapAtPoint(CGPointMake(10, offsetAfterTap.y + 100))];
 
   // Check the fake omnibox is displayed again at the same position.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
