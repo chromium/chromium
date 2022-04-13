@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択中</translation>
 <translation id="2695514675076754339">8 文字の解除コードを入力</translation>
 <translation id="2712812801627182647">TLS 認証鍵</translation>
+<translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
 <translation id="2783010256799387990">合格</translation>
@@ -376,6 +377,7 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5252456968953390977">ローミング</translation>
+<translation id="5257811368506016604">ライトカラー モードを有効にする</translation>
 <translation id="5264277876637023664">CPU テストを実行</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ルーティンを再実行</translation>
@@ -486,6 +488,7 @@
 <translation id="641081527798843608">件名の一致</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
+<translation id="6447630859861661624">アカウント設定に移動</translation>
 <translation id="6456394469623773452">中程度</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ページを再スキャンしますか？}=1{ページ {PAGE_NUMBER} を再スキャンしますか？}other{ページ {PAGE_NUMBER} を再スキャンしますか？}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +572,7 @@
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">スクリーンセーバーを変更</translation>
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7665800271478495366">アバターを変更</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@
 <translation id="7994702968232966508">EAP 方式</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>

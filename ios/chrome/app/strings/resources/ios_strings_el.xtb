@@ -116,6 +116,7 @@
 <translation id="1923342640370224680">Τελευταία ώρα</translation>
 <translation id="1930989359703290198">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς. Οι λογαριασμοί που δεν επιτρέπονται δεν εμφανίζονται. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
+<translation id="1943478190258551035">Μενού → Ρυθμίσεις</translation>
 <translation id="1952172573699511566">Οι ιστότοποι θα εμφανίζουν κείμενο στην προτιμώμενη γλώσσα σας όταν υπάρχει αυτή η δυνατότητα.</translation>
 <translation id="1965935827552890526">Ολοκληρώστε την εργασία σας στο άλλο ανοικτό παράθυρο του Chrome.</translation>
 <translation id="196896377990863006">Εμφάνιση προεπισκόπησης συνδέσμου</translation>
@@ -143,6 +144,7 @@
 <translation id="2218443599109088993">Σμίκρυνση</translation>
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
+<translation id="2251686759395008410">Μενού → Ιστορικό</translation>
 <translation id="2256933947031277845">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς.</translation>
 <translation id="225943865679747347">Κωδικός σφάλματος: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Προσθήκη λογαριασμού</translation>
@@ -198,10 +200,12 @@
 <translation id="2712127207578915686">Αδύνατο άνοιγμα αρχείου</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
+<translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">μόλις τώρα</translation>
 <translation id="2773292004659987824">Ανώνυμη αναζήτηση</translation>
 <translation id="277771892408211951">Επιλογή γλώσσας</translation>
 <translation id="2780046210906776326">Κανένας Λογαρ. Email</translation>
+<translation id="2781325423985810933">ΑΝΑΙΡΕΣΗ</translation>
 <translation id="2781331604911854368">Ενεργό</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Δεν είναι δυνατή η δημιουργία συνδέσμου</translation>
@@ -239,6 +243,7 @@
 <translation id="298306318844797842">Προσθήκη τρόπου πληρωμής…</translation>
 <translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
+<translation id="3039722182465315531">Να μην γίνει σύνδεση</translation>
 <translation id="3076846064362030967">Δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google. <ph name="BEGIN_LINK" />Άλλες μορφές δραστηριότητας<ph name="END_LINK" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google όταν είστε συνδεδεμένοι. Μπορείτε να τις διαγράψετε ανά πάσα στιγμή.
 
 
@@ -340,6 +345,7 @@
 <translation id="3928666092801078803">Συνδυασμός των δεδομένων μου</translation>
 <translation id="3929457972718048006">Διευθύνσεις</translation>
 <translation id="3943492037546055397">Κωδικοί πρόσβασης</translation>
+<translation id="3959736869653157332">Μενού → Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3968505803272650567">Διαχείριση Ενδιαφερόντων</translation>
 <translation id="3989635538409502728">Έξοδος</translation>
@@ -604,6 +610,7 @@
 <translation id="6254066287920239840">Άνοιγμα συνδέσμων στην εφαρμογή αντί για το πρόγραμμα περιήγησης.</translation>
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6284652193729350524">Πρόταση για μετάφραση <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Καταργήθηκε η παρακολούθηση του καναλιού <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Για να ενεργοποιήσετε την Ασφαλή περιήγηση, ανοίξτε τις <ph name="BEGIN_LINK" />υπηρεσίες Google<ph name="END_LINK" /> και πατήστε Ασφαλής περιήγηση.</translation>
 <translation id="6321526113093607004">Προσθήκη στους σελιδοδείκτες</translation>
 <translation id="6324669097367352121">Ρυθμίσεις σύνδεσης</translation>
@@ -775,6 +782,7 @@
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Διαγραφή κωδικού πρόσβασης</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
+<translation id="7646263789464975852">Μενού → Ρυθμίσεις → Έλεγχος ασφαλείας</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
@@ -783,6 +791,7 @@
 <translation id="7720410380936703141">ΔΟΚΙΜΑΣΤΕ ΞΑΝΑ</translation>
 <translation id="7726702057919861819">Μενού → Ιστορικό → Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="7741325291586284254">Νέα σελίδα καρτέλας ανώνυμης περιήγησης</translation>
+<translation id="7756478488453921771">Μενού → Ρυθμίσεις → Τρόποι πληρωμής</translation>
 <translation id="7765158879357617694">Μεταφορά</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7781011649027948662">Μετάφραση σελίδας;</translation>
@@ -790,6 +799,7 @@
 <translation id="7781829728241885113">Χθες</translation>
 <translation id="778855399387580014">Ξεκινήστε μια αναζήτηση σε μια νέα καρτέλα Chrome.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
+<translation id="7807060072011926525">Παρέχεται από την Google</translation>
 <translation id="7839985698273989086">Σελίδα εκτός σύνδεσης</translation>
 <translation id="7840771868269352570">Τα στοιχεία που επιλέξατε θα καταργηθούν.</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>
@@ -803,6 +813,7 @@
 <translation id="7939128259257418052">Εξαγωγή κωδικών πρόσβασης…</translation>
 <translation id="794799177247607889">Διακοπή καταγραφής</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
+<translation id="7959441099968534758">ΜΕΤΑΒΑΣΗ ΣΤΗ ΡΟΗ</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
 <translation id="7966516440812255683">Οι ιστότοποι μπορούν να χρησιμοποιούν cookie για να βελτιώσουν την εμπειρία περιήγησής σας, για παράδειγμα, για να παραμείνετε συνδεδεμένοι ή να διατηρηθούν τα προϊόντα στο καλάθι αγορών σας.
 
@@ -926,6 +937,7 @@
 <translation id="9037965129289936994">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9039373489628511875">Εύρος ζώνης</translation>
 <translation id="9055772144595778347">Σύνδεση αδύνατη</translation>
+<translation id="9057972802061533987">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9079935439869366234">Επισήμανση όλων ως μη αναγνωσμένων</translation>
 <translation id="9081058212938299310">Ενημέρωση κωδικού πρόσβασης για <ph name="USERNAME" />;</translation>
@@ -933,6 +945,7 @@
 <translation id="9083838294503912307">Για να κάνετε συγχρονισμό και εξατομίκευση σε διάφορες συσκευές, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="9087108903408689779">Προτεινόμενος κωδικός πρόσβασης Chrome:</translation>
 <translation id="9094033019050270033">Ενημέρωση κωδικού πρόσβασης</translation>
+<translation id="9097506547406246598">Δεν είναι δυνατή η κατάργηση παρακολούθησης. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="9100610230175265781">Απαιτείται φράση πρόσβασης</translation>
 <translation id="9107664647686727385">Έλεγχος για παραβιασμένους κωδικούς πρόσβασης</translation>
 <translation id="9124387962554796433">Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης και άλλων υπηρεσιών Google.</translation>

@@ -140,6 +140,7 @@
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
+<translation id="2491955442992294626">ሌላ መስኮት ሲጠቀሙ ቁልፎች አይሞከሩም</translation>
 <translation id="2493126929778606526">የእርስዎ ምርጥ ፎቶዎች፣ በራስ-ሰር የተመረጡ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">የአሁኑን የልጣፍ ምስል አድስ</translation>
@@ -154,6 +155,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> አልበም ተመርጧል</translation>
 <translation id="2695514675076754339">ባለ 8-ቁምፊ መክፈቻ ኮድ ያስገቡ</translation>
 <translation id="2712812801627182647">የTLS ማረጋገጫ ቁልፍ</translation>
+<translation id="2717139507051041123">የጨለማ ቀለም ሁነታን አንቃ</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
 <translation id="2783010256799387990">አልፏል</translation>
@@ -376,6 +378,7 @@
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
+<translation id="5257811368506016604">የብርሃን ቀለም ሁነታን አንቃ</translation>
 <translation id="5264277876637023664">የሲፒዩ ሙከራን አሂድ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">የዕለት ተዕለት ተግባራትን እንደገና ያሂዱ</translation>
@@ -486,6 +489,7 @@
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">ወደ የመለያ ቅንብሮች ሂድ</translation>
 <translation id="6456394469623773452">ጥሩ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ገጽ ዳግም ይቃኝ?}=1{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}one{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}other{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}}</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
@@ -569,6 +573,7 @@
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">የገጸ ማያ አሳራፊን ቀይር</translation>
 <translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +596,7 @@
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7656388927906093505">መሣሪያ መዳፊት ነው።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7665800271478495366">አምሳያን ቀይር</translation>
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
@@ -618,6 +624,7 @@
 <translation id="7994702968232966508">የEAP ስልት</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ራስ-ሰር ቀለም ሁነታን አንቃ</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>

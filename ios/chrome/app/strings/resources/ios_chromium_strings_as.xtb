@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Chromium বিটাত সমৰ্থিত নহয়</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4654936625574199632">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromiumএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium স্কেনাৰ অন কৰক</translation>
 <translation id="4736424910885271643">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromiumৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব</translation>
 <translation id="4806326830773390517">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ'ৰ্ট পঠিয়াই Chromiumক উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4828317641996116749">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4985291216379576555">অফলাইন হৈ থাকিলে Chromiumএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰে</translation>
+<translation id="4996471330284142407">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Chromiumৰ জৰিয়তে অধিক কাম কৰক।</translation>
 <translation id="4999538639245140991">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chromium ডেটা এই ডিভাইচটোৰ পৰা মচা যাব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব যাব।</translation>
 <translation id="5171868502429358653">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="5224391634244552924">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
@@ -111,6 +113,13 @@
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="865600487977764604">আপোনাক Chromiumত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="8663480472502753423">Chromium আপ টু ডে’ট কৰি ৰাখক</translation>
+<translation id="8747378496147986285">অন হৈ থাকিলে:
+<ph name="BEGIN_INDENT" />  • আপোনাৰ দৰে একেধৰণে Chromium ব্যৱহাৰ কৰা লোকসকলৰ বাবে ইয়াক উন্নত কৰাত সহায় কৰক।<ph name="END_INDENT" />
+
+বিবেচনা কৰিবলগীয়া কথা:
+<ph name="BEGIN_INDENT" />  • আপোনাৰ Chromiumৰ ব্যৱহাৰৰ তথ্য Googleলৈ পঠিওৱা হয়, কিন্তু সেয়া আপোনাৰ সৈতে জড়িত কৰা নহয়।
+  • যদি Chromium ক্ৰেশ্ব হয়, ক্ৰেশ্বটোৰ সবিশেষত কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।
+  • যদি আপুনি ছিংক অন কৰে, মেট্ৰিক্সত আপুনি চোৱা URLৰ তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা Chromiumৰ পৰা আঁতৰোৱা হ’ব।</translation>
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Taj račun i svi nespremljeni podaci uklonit će se iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1968388653333775699">Budite produktivniji uz Chrome</translation>
 <translation id="2009224836393115614">Chrome nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
+<translation id="2056123005618757196">Veća učinkovitost uz Google Chrome, jednostavniji, sigurniji i brži nego ikad.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da je <ph name="ISSUER" /> izdao certifikat web-lokacije.</translation>
 <translation id="2199719347983604670">Podaci s Chrome sinkronizacije</translation>
 <translation id="2313070403598893276">Google Chrome jednostavniji je, sigurniji i brži nego ikad</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
 <translation id="4698415050768537821">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovno sutra ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u beta verziji Chromea</translation>
 <translation id="5030102366287574140">Chrome vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
 <translation id="5108659628347594808">Poboljšavanje Chromea</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
 <translation id="8772179140489533211">Prikazuje obavijesti za prijavu u Chrome.</translation>
 <translation id="8788269841521769222">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki za <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Kada je uključeno:
+<ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chrome za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
+
+Važne napomene:
+<ph name="BEGIN_INDENT" />  • Podaci o upotrebi Chromea šalju se Googleu, no nisu povezani s vama.
+
+  • Ako se Chrome sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
+
+  • Ako uključite sinkronizaciju, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Želite li postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtijevati web-lokaciju za računalo.</translation>
 </translationbundle>

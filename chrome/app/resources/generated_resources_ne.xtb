@@ -2323,6 +2323,7 @@
 <translation id="3254516606912442756">प्रामाणिक समय स्वत: पत्ता लगाउने सुविधालाई असक्षम पारिएको छ</translation>
 <translation id="3254715652085014625">आफ्नो Android फोनमा Chrome खोल्नुहोस् र "सेटिङ &gt; पासवर्डहरू &gt; फोनलाई सुरक्षा साँचोका रूपमा प्रयोग गर्नुहोस्" मा जानुहोस् अनि त्यहाँ दिइएका निर्देशनहरू पालना गर्नुहोस्।</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> र यसभित्रका जुनसुकै साइटहरूले भण्डारण गरेको सबै डेटा मेटाइने छ। यसअन्तर्गत कुकीहरू समावेश हुन्छन्। तपाईं खुल्ला ट्याबहरूका साथै यी साइटहरूबाट साइन आउट हुनु हुने छ।</translation>
+<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> लाई अनुमति दिने हो?</translation>
 <translation id="3259723213051400722">कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3261268979727295785">ठुला बालबालिकाहरूका हकमा, तपाईंले सेटअप पूरा गरिसकेपछि तपाईं अभिभावकीय नियन्त्रणहरू थप्न सक्नुहुन्छ। तपाईं एक्स्प्लोर एपमा अभिभावकीय नियन्त्रणसम्बन्धी जानकारी फेला पार्न सक्नुहुन्छ।</translation>
 <translation id="3262986719682892278">धेरै ठुलो</translation>
@@ -3324,6 +3325,7 @@
 <translation id="4211904048067111541">Android एप चलाउन प्रयोग गर्न छाड्नुहोस्</translation>
 <translation id="42126664696688958">निर्यात गर्नुहोस्</translation>
 <translation id="42137655013211669">सर्भरद्वारा यो संसाधनमा पहुँच गर्न निषेध गरिएको थियो।</translation>
+<translation id="4217558091331485702">खोल्नुअघि स्क्यान गर्नुहोस्</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4218081191298393750">यो ट्याब म्युट गर्न स्पिकर जनाउने आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="4219558185499589032">बक्स</translation>
@@ -4697,6 +4699,7 @@
 <translation id="5585912436068747822">फर्म्याटिङ असफल भयो</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">एपहरू लोड गर्दै...</translation>
+<translation id="5591644692203457362">Any Extended Key Usage</translation>
 <translation id="5592595402373377407">अझै पर्याप्त डाटा उपलब्ध छैन।</translation>
 <translation id="5593564924968945303">Chrome ब्राउजर</translation>
 <translation id="5595485650161345191">ठेगाना सम्पादन गर्नुहोस्</translation>

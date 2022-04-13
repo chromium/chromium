@@ -139,6 +139,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="132390688737681464">Guardar e preencher endereços</translation>
 <translation id="1330449323196174374">Dobra simétrica à esquerda</translation>
+<translation id="1333745675627230582">Jogar Chrome Dino</translation>
 <translation id="1333989956347591814">A sua atividade <ph name="BEGIN_EMPHASIS" />poderá continuar visível<ph name="END_EMPHASIS" /> para:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Os Sites que visita
@@ -746,6 +747,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2972581237482394796">&amp;Repetir</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selecionado atualmente. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
+<translation id="2983666748527428214">Abrir separador de navegação anónima</translation>
 <translation id="2985306909656435243">Se ativada, o Chromium armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="2985398929374701810">Introduza um endereço válido</translation>
 <translation id="2986368408720340940">Este método de recolha não está disponível. Experimente um método diferente.</translation>
@@ -1512,6 +1514,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5097099694988056070">Estatísticas do dispositivo, como utilização da CPU/RAM.</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">O site não é seguro</translation>
+<translation id="5109892411553231226">Gerir métodos de pagamento</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Tabuleiro 18</translation>
 <translation id="5114987907971894280">realidade virtual</translation>
@@ -1759,6 +1762,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Pretende preencher o seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
+<translation id="5808435672482059465">Ver Histórico do Chrome</translation>
 <translation id="5808542072418270309">Jogos de simulação</translation>
 <translation id="5810442152076338065">A sua ligação a <ph name="DOMAIN" /> está encriptada através de um conjunto de cifras obsoleto.</translation>
 <translation id="5812947184178430888">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os metadados ou os nomes de ficheiros e o nome de utilizador que utiliza para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>

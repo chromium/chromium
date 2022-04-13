@@ -447,6 +447,7 @@
 <translation id="142758023928848008">고정키 사용(연속으로 입력하여 단축키 사용)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> 라이선스 만료됨</translation>
 <translation id="1428373049397869723">Finder 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
+<translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1429300045468813835">모두 삭제됨</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1431188203598586230">마지막 소프트웨어 업데이트</translation>
@@ -905,6 +906,7 @@
 <translation id="1834503245783133039">다운로드 실패: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux 업그레이드 중</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
+<translation id="1839021455997460752">이메일 주소</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" />에서 표시</translation>
 <translation id="1841616161104323629">기기 기록이 누락되었습니다.</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" />이(가) 사용 중지됨</translation>
@@ -1545,6 +1547,7 @@
 <translation id="2454264884354864965">카메라 꺼짐</translation>
 <translation id="2454524890947537054">웹 요청을 승인할까요?</translation>
 <translation id="245650153866130664">티켓을 자동으로 새로고침하려면 '비밀번호 저장' 체크박스를 선택하세요. 비밀번호는 기기에만 저장됩니다.</translation>
+<translation id="2456827790665612305">사이트 팔로우 해제</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 있는 파일을 복사하려고 합니다.</translation>
 <translation id="2457842160081795172"><ph name="CHANNEL_NAME" /> 채널 사용 중</translation>
 <translation id="2458379781610688953">계정 업데이트, <ph name="EMAIL" /></translation>
@@ -4475,6 +4478,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5353252989841766347">Chrome에서 비밀번호 내보내기</translation>
 <translation id="5355099869024327351">어시스턴트에서 알림을 표시할 수 있도록 허용</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
+<translation id="5355501370336370394">회사 기기 등록</translation>
 <translation id="5355926466126177564">검색주소창에서 검색하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="5356155057455921522">관리자가 요청한 업데이트를 적용하면 조직의 앱이 더 빨리 열립니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5359910752122114278">검색결과 1개</translation>
@@ -4511,9 +4515,11 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
 <translation id="5396325212236512832">저장된 사용자 인증 정보를 사용하여 자동으로 사이트 및 앱에 로그인합니다. 이 기능이 사용 중지되어 있는 경우에는 사이트 또는 앱에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
+<translation id="5397378439569041789">키오스크 또는 사이니지 기기 등록</translation>
 <translation id="5397794290049113714">나</translation>
 <translation id="5398497406011404839">숨겨진 북마크</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
+<translation id="5401426944298678474">사이트 팔로우 해제</translation>
 <translation id="5402815541704507626">모바일 데이터를 사용하여 업데이트 다운로드</translation>
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
 <translation id="5404740137318486384">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.
@@ -5475,6 +5481,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6357305427698525450">지원되는 링크 일부는 <ph name="APP_NAME" /> 또는 <ph name="APP_NAME_2" />에서 계속 열 수 있습니다.</translation>
 <translation id="6358884629796491903">용</translation>
 <translation id="6359706544163531585">밝은 테마 사용 중지</translation>
+<translation id="6361470537267923629">어느 기기에서든 저장된 비밀번호를 사용할 수 있습니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="6361850914223837199">오류 세부정보:</translation>
 <translation id="6362853299801475928">문제 신고하기(&amp;R)...</translation>
 <translation id="6363786367719063276">로그 보기</translation>
@@ -5839,6 +5846,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="671619610707606484">사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="6716798148881908873">네트워크 연결이 끊어졌습니다. 네트워크 연결을 확인하거나 다른 Wi-Fi 네트워크를 사용해 보세요.</translation>
 <translation id="671928215901716392">화면 잠금</translation>
+<translation id="6721744718589119342">이메일로 추가 정보나 새로운 소식을 전송하도록 허용</translation>
 <translation id="6721972322305477112">파일(&amp;F)</translation>
 <translation id="672208878794563299">사이트에서 나중에 다시 요청합니다.</translation>
 <translation id="6723661294526996303">북마크 및 설정 가져오기...</translation>
@@ -6280,6 +6288,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7163202347044721291">활성화 코드 확인 중…</translation>
 <translation id="716640248772308851">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽을 수 있습니다.</translation>
 <translation id="7167486101654761064">해당 유형의 파일 항상 열기(&amp;A)</translation>
+<translation id="716775164025088943">북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> 다운로드 중</translation>
 <translation id="7168109975831002660">최소 글꼴 크기</translation>
 <translation id="7169122689956315694">기기가 주변에 있을 때 알림 켜기</translation>
@@ -7065,6 +7074,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7930294771522048157">저장한 결제 수단이 여기에 표시됩니다.</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" />에서 내 화면과 오디오를 공유하는 중입니다.</translation>
+<translation id="7932741659804096942">비밀번호는 이 기기의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="793293630927785390">새 Wi-Fi 네트워크 대화상자</translation>
 <translation id="7932969338829957666"><ph name="BASE_DIR" />에서 Linux의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>
@@ -8093,6 +8103,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8953476467359856141">충전 시</translation>
 <translation id="895347679606913382">다운로드 시작...</translation>
 <translation id="8953654039337655940">Google Family Link 앱 및 families.google.com에서 부모님에게 승인 요청이 전송되었습니다. 부모님이 요청을 승인하면 알림이 전송됩니다.</translation>
+<translation id="8956230710625245889">Reader에서 열기</translation>
 <translation id="8957757410289731985">프로필 맞춤설정</translation>
 <translation id="895944840846194039">자바스크립트 메모리</translation>
 <translation id="8960208913905765425">빠른 답변 단위 변환</translation>

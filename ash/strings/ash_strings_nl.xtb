@@ -22,6 +22,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1081015718268701546">Linux-apps worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="108486256082349153">Mobiel: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Goedemiddag <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps… Gebruik de pijltoetsen om door je apps te navigeren.</translation>
 <translation id="109942774857561566">Ik verveel me</translation>
 <translation id="1104084341931202936">Toegankelijkheidsinstellingen bekijken</translation>
 <translation id="1104621072296271835">Je apparaten werken samen nog beter</translation>
@@ -176,6 +177,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
 <translation id="1993072747612765854">Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Huidig bureau</translation>
+<translation id="2001444736072756133">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2016340657076538683">Typ een bericht</translation>
 <translation id="2018630726571919839">Vertel me een grap</translation>
 <translation id="2021864487439853900">Klik om te ontgrendelen</translation>
@@ -261,6 +263,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2595239820337756193">5 km in mijl</translation>
 <translation id="2596078834055697711">Een screenshot van het venster maken</translation>
 <translation id="2607678425161541573">Online inloggen vereist</translation>
+<translation id="2620016719323068571">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
 <translation id="263399434338050016">'Alles selecteren'</translation>
@@ -618,6 +621,9 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4633185660152240791">{0,plural, =1{Zet het apparaat binnen een dag terug naar een oudere versie}other{Zet het apparaat binnen # dagen terug naar een oudere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
+<translation id="4657775630156561295">De volgende suggestie wordt definitief uit de suggestiegeschiedenis van je account verwijderd:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox staat aan</translation>
 <translation id="4665114317261903604">Niet storen aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> downloaden</translation>
@@ -940,6 +946,7 @@ Nieuwe installatie</translation>
 <translation id="6751052314767925245">Afgedwongen door je beheerder</translation>
 <translation id="6751826523481687655">Bijhouden van prestaties staat aan</translation>
 <translation id="6752912906630585008">Bureaublad <ph name="REMOVED_DESK" /> verwijderd en samengevoegd met bureaublad <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">tabbladen</translation>
 <translation id="6754441615189976839">Z</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
@@ -1045,6 +1052,7 @@ Nieuwe installatie</translation>
 <translation id="743058460480092004">Camera en microfoon zijn in gebruik.</translation>
 <translation id="7434543979546293336">Gemarkeerd als sleutelidee</translation>
 <translation id="7452560014878697800">Een app gebruikt je camera</translation>
+<translation id="7453330308669753048">Zoekgeschiedenisresultaat verwijderd</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
@@ -1100,6 +1108,7 @@ Nieuwe installatie</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749640678855296659">Je microfoon staat momenteel uit</translation>
 <translation id="776344839111254542">Klik om updategegevens te bekijken</translation>
+<translation id="7780094051999721182">snelkoppelingen</translation>
 <translation id="7780159184141939021">Scherm draaien</translation>
 <translation id="7796353162336583443">Tik op de stylusknop op de plank om een notitie of screenshot te maken of de Google Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="7796735576426975947">Nieuwe melding verborgen</translation>
@@ -1162,6 +1171,7 @@ Nieuwe installatie</translation>
 <translation id="8120151603115102514">Je telefoon heeft geen vergrendelscherm. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
+<translation id="8131994907636310308">Sorteertoast sluiten</translation>
 <translation id="8132487352815776550">Ondertiteling stoppen</translation>
 <translation id="8132793192354020517">Verbonden met <ph name="NAME" /></translation>
 <translation id="813913629614996137">Starten...</translation>

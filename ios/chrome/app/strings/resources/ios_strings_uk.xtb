@@ -115,6 +115,7 @@
 <translation id="1923342640370224680">Остання година</translation>
 <translation id="1930989359703290198">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
+<translation id="1943478190258551035">Меню → Налаштування</translation>
 <translation id="1952172573699511566">Якщо можливо, текст на веб-сайтах відображатиметься вибраною мовою.</translation>
 <translation id="1965935827552890526">Завершіть те, що ви робили в іншому відкритому вікні Chrome.</translation>
 <translation id="196896377990863006">Показати попередній перегляд посилання</translation>
@@ -142,6 +143,7 @@
 <translation id="2218443599109088993">Віддалити</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
+<translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2256933947031277845">Ваша організація дозволяє входити лише в певні облікові записи.</translation>
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додати обліковий запис</translation>
@@ -197,10 +199,12 @@
 <translation id="2712127207578915686">Не вдалося відкрити файл</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
+<translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">щойно</translation>
 <translation id="2773292004659987824">Пошук у режимі інкогніто</translation>
 <translation id="277771892408211951">Виберіть мову</translation>
 <translation id="2780046210906776326">Немає облік. записів</translation>
+<translation id="2781325423985810933">ВІДМІНИТИ</translation>
 <translation id="2781331604911854368">Увімк.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Не вдалося створити посилання</translation>
@@ -238,6 +242,7 @@
 <translation id="298306318844797842">Додати спосіб оплати…</translation>
 <translation id="2989805286512600854">Відкрити в новій вкладці</translation>
 <translation id="3037605927509011580">От халепа!</translation>
+<translation id="3039722182465315531">Не входити</translation>
 <translation id="3076846064362030967">Ви не вийдете з облікового запису Google. Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" />. Ви можете будь-коли видалити їх.
 
 
@@ -339,6 +344,7 @@
 <translation id="3928666092801078803">Об’єднати мої дані</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Паролі</translation>
+<translation id="3959736869653157332">Меню → Нова анонімна вкладка</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968505803272650567">Керувати інтересами</translation>
 <translation id="3989635538409502728">Вийти</translation>
@@ -603,6 +609,7 @@
 <translation id="6254066287920239840">Відкривайте посилання в додатку, а не у веб-переглядачі.</translation>
 <translation id="6255097610484507482">Редагувати дані кредитної картки</translation>
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
@@ -773,6 +780,7 @@
 <translation id="7603852183842204213">Сплив.вікна блок. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Видалити пароль</translation>
 <translation id="7638584964844754484">Неправильна парольна фраза</translation>
+<translation id="7646263789464975852">Меню → Налаштування → Перевірка безпеки</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
@@ -781,6 +789,7 @@
 <translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7726702057919861819">Меню → Історія → Очистити історію</translation>
 <translation id="7741325291586284254">Сторінка нової анонімної вкладки</translation>
+<translation id="7756478488453921771">Меню → Налаштування → Способи оплати</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7781011649027948662">Перекласти сторінку?</translation>
@@ -788,6 +797,7 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="778855399387580014">Пошук у новій вкладці Chrome.</translation>
 <translation id="7791543448312431591">Додати</translation>
+<translation id="7807060072011926525">Надано компанією Google</translation>
 <translation id="7839985698273989086">Офлайн-сторінка</translation>
 <translation id="7840771868269352570">Вибраний елемент буде видалено.</translation>
 <translation id="7853202427316060426">Активність</translation>
@@ -801,6 +811,7 @@
 <translation id="7939128259257418052">Експортувати паролі…</translation>
 <translation id="794799177247607889">Припинити запис у журналі</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
+<translation id="7959441099968534758">ПЕРЕЙТИ ДО СТРІЧКИ</translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7966516440812255683">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок.
 
@@ -924,6 +935,7 @@
 <translation id="9037965129289936994">Показати оригінал</translation>
 <translation id="9039373489628511875">Трафік</translation>
 <translation id="9055772144595778347">Не вдається ввійти</translation>
+<translation id="9057972802061533987">Не вдалося підписатися.</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9079935439869366234">Позначити всі як непрочитані</translation>
 <translation id="9081058212938299310">Оновити пароль для <ph name="USERNAME" />?</translation>
@@ -931,6 +943,7 @@
 <translation id="9083838294503912307">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="9087108903408689779">Запропонований пароль від Chrome:</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
+<translation id="9097506547406246598">Не вдалося скасувати підписку.</translation>
 <translation id="9100610230175265781">Потрібно вказати парольну фразу</translation>
 <translation id="9107664647686727385">Перевіряйте, чи були ваші паролі зламані</translation>
 <translation id="9124387962554796433">Google може використовувати вашу історію для персоналізації Пошуку й інших сервісів Google.</translation>

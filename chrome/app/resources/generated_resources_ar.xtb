@@ -449,6 +449,7 @@
 <translation id="142758023928848008">تفعيل مفاتيح الثبات (تنفيذ اختصارات لوحة مفاتيح من خلال كتابتها بالتعاقب)</translation>
 <translation id="142765311413773645">انتهت صلاحية ترخيص <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">‏يمكنك فتح الملفات المتوافقة وتعديلها باستخدام هذا التطبيق من تطبيق Finder أو من تطبيقات أخرى. للتحكّم في الملفات التي تفتح هذا التطبيق تلقائيًا، <ph name="BEGIN_LINK" />تعرَّف على كيفية تحديد التطبيقات التلقائية على جهازك<ph name="END_LINK" />.</translation>
+<translation id="1428770807407000502">هل تريد إيقاف المزامنة؟</translation>
 <translation id="1429300045468813835">تم محو الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1431188203598586230">التحديث الأخير للبرنامج</translation>
@@ -896,6 +897,7 @@
 <translation id="1834503245783133039">تعذّر التنزيل: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏جارٍ ترقية نظام التشغيل Linux</translation>
 <translation id="1838374766361614909">محو البحث</translation>
+<translation id="1839021455997460752">عنوان بريدك الإلكتروني</translation>
 <translation id="1839540115464516994">العرض في <ph name="LOCATION" /></translation>
 <translation id="1841616161104323629">سجِلّ الجهاز مفقود.</translation>
 <translation id="1841705068325380214">تم إيقاف <ph name="EXTENSION_NAME" /></translation>
@@ -1532,6 +1534,7 @@
 <translation id="2454264884354864965">الكاميرا متوقِّفة</translation>
 <translation id="2454524890947537054">هل تريد الموافقة على طلب الوصول إلى صفحة الويب هذه؟</translation>
 <translation id="245650153866130664">لإعادة تحميل تذكرة تلقائيًا، ضع علامة في المربع "تذكُّر كلمة المرور". وسيتم تخزين كلمة مرورك على جهازك فقط.</translation>
+<translation id="2456827790665612305">إلغاء متابعة موقع إلكتروني</translation>
 <translation id="2457246892030921239">يريد <ph name="APP_NAME" /> نسخ الملفات من <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">حاليًا على قناة <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">تحديث الحساب، <ph name="EMAIL" /></translation>
@@ -4463,6 +4466,7 @@
 <translation id="5353252989841766347">‏تصدير كلمات المرور من Chrome</translation>
 <translation id="5355099869024327351">‏السماح "لمساعد Google" بعرض الإشعارات</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
+<translation id="5355501370336370394">تسجيل أجهزة المؤسسة</translation>
 <translation id="5355926466126177564">غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند البحث في المربع متعدد الاستخدامات.</translation>
 <translation id="5356155057455921522">هذا التحديث الذي أعدّه المشرف سيساعد في فتح تطبيقات المؤسسة بشكل أسرع. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="5359910752122114278">نتيجة واحدة</translation>
@@ -4499,9 +4503,11 @@
 <translation id="5392192690789334093">المواقع الإلكترونية التي يُسمح لها بإرسال الإشعارات</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{رابط واحد}zero{# رابط}two{رابطان}few{# روابط}many{# رابطًا}other{# رابط}}</translation>
 <translation id="5396325212236512832">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية والتطبيقات باستخدام بيانات الاعتماد المخزَّنة. وعندما تكون هذه الوظيفة غير مفعّلة، سيُطلَب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني أو تطبيق.</translation>
+<translation id="5397378439569041789">‏تسجيل جهاز Kiosk أو جهاز إشارات رقمية</translation>
 <translation id="5397794290049113714">أنت</translation>
 <translation id="5398497406011404839">إشارات مرجعية مخفية</translation>
 <translation id="5398572795982417028">مرجع صفحة خارج الحدود المفروضة، الحد الأقصى هو <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5401426944298678474">إلغاء متابعة موقع إلكتروني</translation>
 <translation id="5402815541704507626">تنزيل التحديث باستخدام بيانات الجوّال</translation>
 <translation id="540296380408672091">حظر ملفات تعريف الارتباط على <ph name="HOST" /> دومًا</translation>
 <translation id="5404740137318486384">اضغط على مفتاح تحكّم معيَّن أو مفتاح على لوحة المفاتيح لتخصيصه للإجراء "<ph name="ACTION" />".
@@ -5464,6 +5470,7 @@
 <translation id="6357305427698525450">ستظل بعض الروابط المتوافقة مفتوحة في تطبيق <ph name="APP_NAME" /> أو <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">تنين</translation>
 <translation id="6359706544163531585">إيقاف المظهر الفاتح</translation>
+<translation id="6361470537267923629">يمكنك استخدام كلمات المرور المحفوظة على أي جهاز، حيث تُحفظ كلمات المرور هذه في <ph name="GOOGLE_PASSWORD_MANAGER" /> لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="6361850914223837199">تفاصيل الخطأ:</translation>
 <translation id="6362853299801475928">&amp;الإبلاغ عن مشكلة...</translation>
 <translation id="6363786367719063276">عرض السجلّات</translation>
@@ -5828,6 +5835,7 @@
 <translation id="671619610707606484">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات المُخزّنة من خلال المواقع الإلكترونية.</translation>
 <translation id="6716798148881908873">‏تم فقد اتصال الشبكة، يُرجى التحقّق من اتصالك بالشبكة أو تجربة شبكة Wi-Fi أخرى.</translation>
 <translation id="671928215901716392">قفل الشاشة</translation>
+<translation id="6721744718589119342">قد نرسل إليك رسالة إلكترونية للحصول على مزيد من المعلومات أو لإطلاعك على آخر التعديلات.</translation>
 <translation id="6721972322305477112">&amp;ملف</translation>
 <translation id="672208878794563299">سيطلب هذا الموقع الإلكتروني الإذن في المرة القادمة.</translation>
 <translation id="6723661294526996303">استيراد الإشارات والإعدادات...</translation>
@@ -6270,6 +6278,7 @@
 <translation id="7163202347044721291">جارٍ التحقّق من رمز التفعيل...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت في المواقع المحددة.</translation>
 <translation id="7167486101654761064">فت&amp;ح هذا النوع من الملفّات دائمًا</translation>
+<translation id="716775164025088943">لن تتم مزامنة الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بعد الآن.</translation>
 <translation id="716810439572026343">جارٍ تنزيل <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">الحد الأدنى لحجم الخط</translation>
 <translation id="7169122689956315694">تفعيل الإشعارات عندما تكون الأجهزة قريبة</translation>
@@ -7054,6 +7063,7 @@
 <translation id="7928175190925744466">هل سبق وغيرت كلمة المرور هذه؟</translation>
 <translation id="7930294771522048157">ستظهر هنا طرق الدفع المحفوظة</translation>
 <translation id="79312157130859720">يشارك <ph name="APP_NAME" /> الشاشة والصوت.</translation>
+<translation id="7932741659804096942">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" /> على هذا الجهاز.</translation>
 <translation id="793293630927785390">‏مربع الحوار "شبكة Wi-Fi جديدة"</translation>
 <translation id="7932969338829957666">‏تتوفَّر المجلدات المشتركة في Linux على <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{إعادة صوت موقع إلكتروني واحد}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت موقعيِّ الويب}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
@@ -8087,6 +8097,7 @@
 <translation id="8953476467359856141">أثناء الشحن</translation>
 <translation id="895347679606913382">بدء التحميل...</translation>
 <translation id="8953654039337655940">‏تم إرسال طلب الموافقة إلى أحد والدَيك في تطبيق Family Link من Google والموقع الإلكتروني families.google.com. وستتلقّى إشعارًا عند موافقة أحد والدَيك على الطلب.</translation>
+<translation id="8956230710625245889">فتح الصفحة في "قارئ الشاشة"</translation>
 <translation id="8957757410289731985">تخصيص الملف الشخصي</translation>
 <translation id="895944840846194039">‏ذاكرة JavaScript</translation>
 <translation id="8960208913905765425">تحويل الوحدات باستخدام ميزة "معلومات سريعة"</translation>

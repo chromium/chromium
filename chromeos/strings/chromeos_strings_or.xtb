@@ -154,6 +154,7 @@
 <translation id="2640549051766135490">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="2695514675076754339">8-ଅକ୍ଷର ବିଶିଷ୍ଟ ଅନଲକ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="2712812801627182647">TLS ପ୍ରମାଣୀକରଣ କୀ</translation>
+<translation id="2717139507051041123">ଡାର୍କ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
@@ -376,6 +377,7 @@
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="5252456968953390977">ରୋମିଂ</translation>
+<translation id="5257811368506016604">ଲାଇଟ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5264277876637023664">CPU ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ରୁଟିନଗୁଡ଼ିକୁ ପୁଣି ଚଲାନ୍ତୁ</translation>
@@ -486,6 +488,7 @@
 <translation id="641081527798843608">ବିଷୟ ମେଳ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6456394469623773452">ଉତ୍କୃଷ୍ଟ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -569,6 +572,7 @@
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">ସ୍କ୍ରିନସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +595,7 @@
 <translation id="7648838807254605802">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7656388927906093505">ଡିଭାଇସଟି ଏକ ମାଉସ ଅଟେ।</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
+<translation id="7665800271478495366">ଅବତାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +623,7 @@
 <translation id="7994702968232966508">EAP ପଦ୍ଧତି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>

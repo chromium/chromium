@@ -494,6 +494,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="5386314158584363703">フォローしたサイトがここに表示されます</translation>
 <translation id="5388358297987318779">画像を開く</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
 <translation id="5416022985862681400">過去 7 日間</translation>
@@ -611,6 +612,7 @@
 <translation id="6344783595350022745">テキストを消去</translation>
 <translation id="6346549652287021269">新たにダウンロードを開始しますか？</translation>
 <translation id="634878792104344809">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
+<translation id="6361848730467328243">「<ph name="DOMAIN_NAME" />」をフォロー</translation>
 <translation id="6362362396625799311">シークレット タブはありません</translation>
 <translation id="6363526231572697780">ユーザー名が指定されていません</translation>
 <translation id="6366190659675876144">標準保護機能</translation>
@@ -648,6 +650,7 @@
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
 <translation id="6530992499366869131">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">サイトにアクセスして、Chrome メニューで [フォロー] をクリックします</translation>
 <translation id="6561262006871132942">拡大</translation>
 <translation id="6583087784430677195">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードを自動入力] に移動します。</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>

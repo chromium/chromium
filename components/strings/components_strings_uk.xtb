@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">Показати більше</translation>
 <translation id="132390688737681464">Зберігати й заповнювати адреси</translation>
 <translation id="1330449323196174374">Зігнути за типом "ворота ліворуч"</translation>
+<translation id="1333745675627230582">Грати в гру Chrome Dino</translation>
 <translation id="1333989956347591814">Дані про ваші дії <ph name="BEGIN_EMPHASIS" />можуть бачити<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />адміністратори веб-сайтів, які ви відвідуєте
@@ -746,6 +747,7 @@
 <translation id="2972581237482394796">&amp;Повторити</translation>
 <translation id="2977665033722899841">Зараз вибрано: <ph name="ROW_NAME" /> (<ph name="ROW_CONTENT" />)</translation>
 <translation id="2978824962390592855">Опера</translation>
+<translation id="2983666748527428214">Відкрити анонімну вкладку</translation>
 <translation id="2985306909656435243">Якщо цю функцію ввімкнено, Chromium зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="2985398929374701810">Введіть дійсну адресу</translation>
 <translation id="2986368408720340940">Цей спосіб отримання недоступний. Виберіть інший спосіб.</translation>
@@ -1512,6 +1514,7 @@
 <translation id="5097099694988056070">Статистика пристрою, як-от використання ЦП чи оперативної пам’яті</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайт не захищений</translation>
+<translation id="5109892411553231226">Керувати способами оплати</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Лоток 18</translation>
 <translation id="5114987907971894280">віртуальна реальність</translation>
@@ -1759,6 +1762,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Ввести дані кредитної картки <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
+<translation id="5808435672482059465">Переглянути історію Chrome</translation>
 <translation id="5808542072418270309">Ігри-симулятори</translation>
 <translation id="5810442152076338065">З’єднання з доменом <ph name="DOMAIN" /> шифрується за допомогою застарілого набору шифрів.</translation>
 <translation id="5812947184178430888">Коли Chrome позначає події системи безпеки, ваш адміністратор отримує відповідні дані про ці події. Наприклад URL-адреси відвіданих у Chrome сторінок, назви або метадані файлів, а також ім’я користувача, під яким ви входите в облікові записи веб-додатків на пристрої або в Chrome.</translation>

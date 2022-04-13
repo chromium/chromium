@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">尚不支持 Linux 应用。其他应用会被保存。</translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，下午好！</translation>
+<translation id="1088231044944504242">搜索您的<ph name="CATEGORY" />、文件、应用等内容。使用箭头键可浏览各个应用。</translation>
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
@@ -176,6 +177,7 @@
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
 <translation id="1998100899771863792">当前桌面</translation>
+<translation id="2001444736072756133">搜索您的<ph name="CATEGORY" />、文件、应用等内容。</translation>
 <translation id="2016340657076538683">请输入消息</translation>
 <translation id="2018630726571919839">给我讲个笑话</translation>
 <translation id="2021864487439853900">点击即可解锁</translation>
@@ -221,6 +223,7 @@
 <translation id="2302092602801625023">该帐号由 Family Link 管理</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
 <translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060">“<ph name="CATEGORY" />”，搜索结果类别</translation>
 <translation id="2322173485024759474">后退一个字母</translation>
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
@@ -260,6 +263,7 @@
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
+<translation id="2620016719323068571">搜索您的<ph name="CATEGORY" />、文件、应用等内容…</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="263399434338050016">“全选”</translation>
@@ -617,6 +621,9 @@
 <translation id="4633185660152240791">{0,plural, =1{请在 1 天内将设备回滚到上一个版本}other{请在 # 天内将设备回滚到上一个版本}}</translation>
 <translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>
+<translation id="4657775630156561295">以下建议将会从您帐号的建议历史记录中永久移除：
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已启用 ChromeVox</translation>
 <translation id="4665114317261903604">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">正在下载 <ph name="FILENAME" /></translation>
@@ -918,6 +925,7 @@
 <translation id="6629480180092995136">“<ph name="APP_NAME" />”想使用麦克风</translation>
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">撤消按名称排序</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="6650933572246256093">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密码</translation>
@@ -938,6 +946,7 @@
 <translation id="6751052314767925245">由您的管理员强制执行</translation>
 <translation id="6751826523481687655">已启用性能跟踪</translation>
 <translation id="6752912906630585008">桌面“<ph name="REMOVED_DESK" />”已移除并与桌面“<ph name="RECEIVE_DESK" />”合并</translation>
+<translation id="6753390234084146956">标签页</translation>
 <translation id="6754441615189976839">六</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
@@ -1043,6 +1052,7 @@
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
 <translation id="7434543979546293336">已标记为核心观点</translation>
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
+<translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
@@ -1098,6 +1108,7 @@
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749640678855296659">您的麦克风目前处于关闭状态</translation>
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
+<translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796353162336583443">点按任务栏中的触控笔按钮可开始记事、截取屏幕截图，以及使用 Google 助理、激光笔或放大镜。</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
@@ -1160,6 +1171,7 @@
 <translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">确认</translation>
+<translation id="8131994907636310308">关闭排序消息框</translation>
 <translation id="8132487352815776550">停用字幕</translation>
 <translation id="8132793192354020517">已连接到 <ph name="NAME" /></translation>
 <translation id="813913629614996137">正在初始化…</translation>
@@ -1223,6 +1235,8 @@
 <translation id="8513108775083588393">自动旋转屏幕</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
+<translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="8546059259582788728">已成功撤消排序</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553395910833293175">此前就已分配至所有桌面。</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> 建议您更新 <ph name="DEVICE_TYPE" /></translation>

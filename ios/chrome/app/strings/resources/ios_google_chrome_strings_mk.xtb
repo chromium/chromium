@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Сметкава и сите незачувани податоци ќе се отстранат од Chrome и другите апликации на Google на уредов.</translation>
 <translation id="1968388653333775699">Зголемете ја продуктивноста со Chrome</translation>
 <translation id="2009224836393115614">Chrome не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
+<translation id="2056123005618757196">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Google Chrome.</translation>
 <translation id="2147651015520127414">Chrome потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="2199719347983604670">Податоци од „Синхронизација на Chrome“</translation>
 <translation id="2313070403598893276">Google Chrome е едноставен, безбеден и побрз од кога било</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Некои додатоци предизвикуваат пад на Chrome. Деинсталирајте:</translation>
 <translation id="4633328489441962921">Chrome не може да провери дали има ажурирања</translation>
 <translation id="4698415050768537821">Chrome не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не е поддржана на Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>
 <translation id="5108659628347594808">Подобрете го Chrome</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">Останете безбедни со Google Chrome</translation>
 <translation id="8772179140489533211">Прикажува prompt за најава на Chrome.</translation>
 <translation id="8788269841521769222">Не треба да ја помните лозинкава. Ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Кога е вклучено:
+<ph name="BEGIN_INDENT" />  • Помага да се подобри Chrome за луѓето што го користат исто како и вие.<ph name="END_INDENT" />
+
+Земете предвид:
+<ph name="BEGIN_INDENT" />  • Податоци за вашето користење на Chrome се испраќаат во Google, но тие не се поврзани со вас.
+  • Ако Chrome падне, податоците за падот може да вклучуваат некои лични податоци.
+  • Ако вклучите синхронизација, метриката може да вклучува податоци и за URL-адресите што ги посетувате.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Да се постави Chrome како стандарден?</translation>
 <translation id="9122931302567044771">Ова значи дека Chrome ќе го бара сајтот за компјутер секој пат.</translation>
 </translationbundle>

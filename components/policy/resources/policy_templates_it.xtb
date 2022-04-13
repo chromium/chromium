@@ -99,6 +99,7 @@
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
 </translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
+<translation id="1107538157073168076">Disattiva estensione Insights</translation>
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111781754511998498">Proiettore</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
@@ -382,6 +383,17 @@
       Se il criterio viene impostato su Fast, se possibile <ph name="PRODUCT_NAME" /> eviterà la rasterizzazione: ridurre la quantità di rasterizzazione può contribuire a diminuire le dimensioni dei processi di stampa e ad aumentare la velocità di stampa.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> sarà in modalità Full.</translation>
+<translation id="1455351936334569779">Per le stampanti dei tipi inseriti nell'elenco di tipi non consentiti verranno disattivati il rilevamento o il recupero delle relative funzionalità.
+
+      L'inserimento di tutti i tipi di stampanti nell'elenco di tipi non consentiti comporta essenzialmente la disattivazione della stampa, perché non ci sarebbero destinazioni disponibili a cui inviare un documento da stampare.
+
+      Nelle versioni precedenti alla 102, l'inserimento di <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> nell'elenco di tipi non consentiti equivale all'impostazione del valore False per il criterio <ph name="POLICY_CLOUDPRINTSUBMITENABLED" />. Per mantenere rilevabili le destinazioni <ph name="CLOUD_PRINT_NAME" />, il criterio <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> deve essere impostato su True e il valore <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> non deve essere nell'elenco di tipi non consentiti. A partire dalla versione 102, le destinazioni <ph name="CLOUD_PRINT_NAME" /> non sono supportate e non verranno visualizzate a prescindere dai valori del criterio.
+
+      Se il criterio non viene configurato o se viene impostato su un elenco vuoto, potranno essere rilevati tutti i tipi di stampanti.
+
+      Le stampanti estensione sono note anche come destinazioni dei provider di stampa e includono le eventuali destinazioni appartenenti a un'estensione di <ph name="PRODUCT_NAME" />.
+
+      Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di macchine locali e quelle di rete condivise.</translation>
 <translation id="1456822151187621582">Windows (client <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Consente di controllare il comportamento degli utenti in una sessione multiprofilo su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
@@ -1294,6 +1306,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Se il criterio non viene impostato, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
+<translation id="2387469539700985783">Questo criterio non influisce sui report generati da Android.</translation>
 <translation id="238885588439957890">L'ora in cui il dispositivo userà la corrente alternata per ricaricare la batteria, nel fuso orario locale del dispositivo.</translation>
 <translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
 <translation id="2394674739523870144">Se per questo criterio viene impostato un elenco di stringhe, queste ultime vengono unite usando degli spazi e passate da <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> sotto forma di parametri della riga di comando. Se un parametro contiene <ph name="URL_PLACEHOLDER" />, il valore <ph name="URL_PLACEHOLDER" /> viene sostituito con l'URL della pagina da aprire. Se nessun parametro contiene <ph name="URL_PLACEHOLDER" />, l'URL viene aggiunto alla fine della riga di comando.
@@ -1615,6 +1628,11 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2722076884688932437">Se il criterio viene impostato su Vero, i dispositivi registrati segnalano informazioni relative alle periferiche collegate al dispositivo.
 
       Se il criterio viene impostato su Falso o non viene impostato, i dispositivi registrati non segnalano informazioni relative alle periferiche.</translation>
+<translation id="2723281094174141470">L'estensione Insights segnala velocità di caricamento e download tramite Internet e tempo di inattività degli utenti, nonché informazioni relative alle applicazioni.
+
+      Se il criterio viene impostato su Enabled, l'estensione Insights verrà installata e segnalerà le metriche.
+
+      Se non viene configurato o se viene impostato su Disabled, l'estensione Insights non verrà installata e non segnalerà le metriche.</translation>
 <translation id="2723692978495226412">Se il criterio viene impostato su Attivato, vengono visualizzati dei consigli per le app precedentemente installate dall'utente su altri dispositivi. Questi consigli vengono visualizzati in Avvio app in seguito ai consigli sulle app locali, se non viene inserito alcun testo di ricerca.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, questi consigli non vengono visualizzati.
@@ -2228,6 +2246,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
+<translation id="3301698868852716692">Attiva estensione Insights</translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
@@ -3370,6 +3389,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
+<translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
 <translation id="4752880493649142945">Certificato client per la connessione a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Se il criterio è impostato su <ph name="ASK_FILE_HANDLING" />, le app web possono richiedere l'accesso ai tipi di file tramite l'API File Handling. Se è impostato su <ph name="BLOCK_FILE_HANDLING" />, viene negato l'accesso ai di file.
 
@@ -6330,6 +6350,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       </translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
+<translation id="8044720778481009876">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive" (deprecate)</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Consenti l'uso del debug remoto</translation>
 <translation id="8049769137921877885">Questo criterio consente di stabilire se segnalare o meno i dati del criterio e data e ora del relativo recupero.

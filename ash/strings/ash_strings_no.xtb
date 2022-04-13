@@ -22,6 +22,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1081015718268701546">Linux-apper støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">God ettermiddag, <ph name="GIVEN_NAME" /></translation>
+<translation id="1088231044944504242">Søk i <ph name="CATEGORY" />, filer, apper med mer. Bruk piltastene til å navigere i appene dine.</translation>
 <translation id="109942774857561566">Jeg kjeder meg</translation>
 <translation id="1104084341931202936">Vis innstillinger for tilgjengelighet</translation>
 <translation id="1104621072296271835">Enhetene fungerer enda bedre sammen</translation>
@@ -179,6 +180,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
 <translation id="1998100899771863792">Gjeldende skrivebord</translation>
+<translation id="2001444736072756133">Søk i <ph name="CATEGORY" />, filer, apper med mer.</translation>
 <translation id="2016340657076538683">Skriv inn en melding</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
@@ -263,6 +265,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
+<translation id="2620016719323068571">Søk i <ph name="CATEGORY" />, filer, apper med mer …</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
@@ -620,6 +623,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en dag}other{Nedgrader enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" /> – appanbefaling</translation>
+<translation id="4657775630156561295">Dette forslaget blir fjernet permanent fra kontoens forslagslogg:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
 <translation id="4665114317261903604">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
@@ -941,6 +947,7 @@ Nylig installert</translation>
 <translation id="6751052314767925245">Påkreves av administratoren din</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> ble fjernet og slått sammen med skrivebord <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">faner</translation>
 <translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
@@ -1046,6 +1053,7 @@ Nylig installert</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
 <translation id="7434543979546293336">Merket som nøkkelidé</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
+<translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
@@ -1102,6 +1110,7 @@ Nylig installert</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749640678855296659">Mikrofonen din er av</translation>
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
+<translation id="7780094051999721182">snarveier</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
 <translation id="7796735576426975947">Et nytt varsel er skjult</translation>
@@ -1164,6 +1173,7 @@ Nylig installert</translation>
 <translation id="8120151603115102514">Telefonen har ingen låseskjerm. For å låse opp Chromebooken, skriv inn passordet.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekreft</translation>
+<translation id="8131994907636310308">Lukk brukervarsel om sortering</translation>
 <translation id="8132487352815776550">Stopp teksting</translation>
 <translation id="8132793192354020517">Koblet til <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialiserer …</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chrome-ból és az eszközön lévő többi Google-alkalmazásból.</translation>
 <translation id="1968388653333775699">Hatékonyabb lehet a Chrome-mal</translation>
 <translation id="2009224836393115614">A Chrome nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
+<translation id="2056123005618757196">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Google Chrome segítségével.</translation>
 <translation id="2147651015520127414">A Chrome ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="2199719347983604670">A Chrome-szinkronizálás adatai</translation>
 <translation id="2313070403598893276">A Google Chrome egyszerű, biztonságos és minden eddiginél gyorsabb</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4698415050768537821">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Az alkalmazás továbbfejlesztése érdekében a Chrome elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="5030102366287574140">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="5108659628347594808">A Chrome fejlesztése</translation>
@@ -118,6 +120,14 @@
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
+<translation id="8969290730818637510">Ha be van kapcsolva:
+<ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
+
+Fontos tudnivalók:
+<ph name="BEGIN_INDENT" />  • A rendszer az Ön Chrome-használatáról küld információt a Google-nak, ez az információ azonban nem köthető Önhöz.
+  • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
+
+  • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-ekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>
 <translation id="9122931302567044771">Ez azt jelenti, hogy a Chrome mindig az asztali webhelyet kéri majd.</translation>
 </translationbundle>

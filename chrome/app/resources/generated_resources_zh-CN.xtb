@@ -445,6 +445,7 @@
 <translation id="142758023928848008">启用粘滞键（只需依序输入按键即可执行键盘快捷方式）</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> 的许可已过期</translation>
 <translation id="1428373049397869723">您可以在“Finder”或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
+<translation id="1428770807407000502">关闭同步功能？</translation>
 <translation id="1429300045468813835">已全部清除</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
@@ -889,6 +890,7 @@
 <translation id="1834503245783133039">未能成功下载“<ph name="FILE_NAME" />”</translation>
 <translation id="1835261175655098052">正在升级 Linux</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
+<translation id="1839021455997460752">您的电子邮件地址</translation>
 <translation id="1839540115464516994">在“<ph name="LOCATION" />”中显示</translation>
 <translation id="1841616161104323629">找不到设备记录。</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> 已被禁用</translation>
@@ -1523,6 +1525,7 @@
 <translation id="2454264884354864965">摄像头未开启</translation>
 <translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
+<translation id="2456827790665612305">取消关注网站</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2457842160081795172">目前位于<ph name="CHANNEL_NAME" />渠道</translation>
 <translation id="2458379781610688953">更新帐号，<ph name="EMAIL" /></translation>
@@ -2316,6 +2319,7 @@
 <translation id="3254516606912442756">已停用自动检测时区的功能</translation>
 <translation id="3254715652085014625">在 Android 手机上打开 Chrome，并依次转到“设置”&gt;“密码”&gt;“使用手机作为安全密钥”，然后按照屏幕上显示的说明操作。</translation>
 <translation id="3255355328033513170">即将删除 <ph name="SITE_GROUP_NAME" /> 存储的所有数据及其名下的所有网站。包括 Cookie。您将会退出这些网站（包括打开的标签页）。</translation>
+<translation id="3257733480216378006">允许 <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 款扩展程序访问此网站？</translation>
 <translation id="3259723213051400722">请重试。</translation>
 <translation id="3261268979727295785">对于年龄较大的孩子，您只需完成设置，便可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3262986719682892278">太大</translation>
@@ -3317,6 +3321,7 @@
 <translation id="4211904048067111541">停止使用此帐号登录 Android 应用</translation>
 <translation id="42126664696688958">导出</translation>
 <translation id="42137655013211669">服务器禁止访问此资源。</translation>
+<translation id="4217558091331485702">打开前先扫描</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4218081191298393750">点击扬声器图标即可将此标签页静音</translation>
 <translation id="4219558185499589032">Box</translation>
@@ -4448,6 +4453,7 @@
 <translation id="5353252989841766347">从 Chrome 中导出密码</translation>
 <translation id="5355099869024327351">允许 Google 助理向您显示通知</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
+<translation id="5355501370336370394">注册企业设备</translation>
 <translation id="5355926466126177564">“<ph name="EXTENSION_NAME" />”扩展程序更改了您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5356155057455921522">此更新由您的管理员提供，可加快贵单位的应用的打开速度。这可能需要几分钟的时间。</translation>
 <translation id="5359910752122114278">1 条结果</translation>
@@ -4484,9 +4490,11 @@
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="5396325212236512832">使用存储的凭据自动登录网站和应用。如果关闭了该功能，在您每次登录网站或应用之前，系统都会要求您确认。</translation>
+<translation id="5397378439569041789">注册自助服务终端或数字标牌设备</translation>
 <translation id="5397794290049113714">您</translation>
 <translation id="5398497406011404839">隐藏的书签</translation>
 <translation id="5398572795982417028">页面引用超出范围，上限为 <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5401426944298678474">取消关注网站</translation>
 <translation id="5402815541704507626">使用移动数据网络下载更新</translation>
 <translation id="540296380408672091">始终禁止在 <ph name="HOST" /> 上设置 Cookie</translation>
 <translation id="5404740137318486384">按某个开关键或键盘按键即可将其分配给“<ph name="ACTION" />”操作。
@@ -4688,6 +4696,7 @@
 <translation id="5585912436068747822">格式化失败</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
+<translation id="5591644692203457362">任一种扩展密钥用法</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5593564924968945303">Chrome 浏览器</translation>
 <translation id="5595485650161345191">修改地址</translation>
@@ -5445,6 +5454,7 @@
 <translation id="6357305427698525450">部分受支持的链接仍会在“<ph name="APP_NAME" />”或“<ph name="APP_NAME_2" />”中打开。</translation>
 <translation id="6358884629796491903">龙</translation>
 <translation id="6359706544163531585">停用浅色主题</translation>
+<translation id="6361470537267923629">您可在任意设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中</translation>
 <translation id="6361850914223837199">错误详情：</translation>
 <translation id="6362853299801475928">报告问题(&amp;R)...</translation>
 <translation id="6363786367719063276">查看日志</translation>
@@ -5809,6 +5819,7 @@
 <translation id="671619610707606484">此操作会清除网站存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
+<translation id="6721744718589119342">如果需要您提供更多信息或想向您提供最新信息，我们可能会向您发送电子邮件</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="6723661294526996303">导入书签和设置...</translation>
@@ -6250,6 +6261,7 @@
 <translation id="7163202347044721291">正在验证激活码…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取权限。</translation>
 <translation id="7167486101654761064">总是打开此类文件(&amp;A)</translation>
+<translation id="716775164025088943">您的书签、历史记录、密码和其他设置将不再保持同步。</translation>
 <translation id="716810439572026343">正在下载 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字号</translation>
 <translation id="7169122689956315694">附近有其他设备时开启通知</translation>
@@ -7033,6 +7045,7 @@
 <translation id="7928175190925744466">已经更改了此密码？</translation>
 <translation id="7930294771522048157">已保存的付款方式会显示在这里</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共享您的屏幕和音频。</translation>
+<translation id="7932741659804096942">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中</translation>
 <translation id="793293630927785390">“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="7932969338829957666">共享的文件夹位于 Linux 中的 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
@@ -8061,6 +8074,7 @@
 <translation id="8953476467359856141">充电时</translation>
 <translation id="895347679606913382">即将开始下载...</translation>
 <translation id="8953654039337655940">系统已通过 Google Family Link 应用和 families.google.com 向您的一位家长发送了审批请求。如果这位家长批准了此请求，您会收到通知。</translation>
+<translation id="8956230710625245889">在阅读器中打开</translation>
 <translation id="8957757410289731985">自定义个人资料</translation>
 <translation id="895944840846194039">JavaScript 使用的内存</translation>
 <translation id="8960208913905765425">快速解答单位换算</translation>

@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">আরও দেখুন</translation>
 <translation id="132390688737681464">অ্যাড্রেসগুলি পূরণ করে সেভ করুন</translation>
 <translation id="1330449323196174374">বাঁদিকে গেট ফোল্ড</translation>
+<translation id="1333745675627230582">Chrome ডাইনো গেম খেলুন</translation>
 <translation id="1333989956347591814">এগুলিতে আপনার অ্যাক্টিভিটি <ph name="BEGIN_EMPHASIS" />এখনও দেখা যেতে পারে<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />যে ওয়েবসাইট আপনি দেখেছেন
@@ -747,6 +748,7 @@
 <translation id="2972581237482394796">&amp;পুনরায় করুন</translation>
 <translation id="2977665033722899841">এখন <ph name="ROW_NAME" /> বেছে নিয়েছেন। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">অপেরা</translation>
+<translation id="2983666748527428214">ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="2985306909656435243">চালু করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chromium এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
 <translation id="2985398929374701810">একটি সঠিক ঠিকানা লিখুন</translation>
 <translation id="2986368408720340940">এই পদ্ধতিতে পিক-আপ করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
@@ -1513,6 +1515,7 @@
 <translation id="5097099694988056070">CPU/RAM ব্যবহারের মতো ডিভাইসের পরিসংখ্যান</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">সাইটটি সুরক্ষিত নয়</translation>
+<translation id="5109892411553231226">পেমেন্ট পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">ট্রে ১৮</translation>
 <translation id="5114987907971894280">ভার্চুয়াল রিয়ালিটি</translation>
@@ -1760,6 +1763,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">আপনি কি আপনার <ph name="CARD_DETAIL" /> এর তথ্য পূরণ করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
+<translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="5808542072418270309">সিমুলেশন গেম</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />-এ আপনার সংযোগ একটি অপ্রচলিত সাইফার স্যুট ব্যবহার করে এনক্রিপ্ট করা হয়েছে৷</translation>
 <translation id="5812947184178430888">Chrome নিরাপত্তা সংক্রান্ত কোনও ইভেন্টের ব্যাপারে ফ্ল্যাগ করে জানালে, সেই ইভেন্টের সাথে সম্পর্কিত প্রাসঙ্গিক ডেটা আপনার অ্যাডমিনিস্ট্রেটরকে পাঠিয়ে দেওয়া হয়। এর মধ্যে Chrome-এ আপনার ব্রাউজ করা পৃষ্ঠার URL, ফাইলের নাম বা মেটাডেটা এবং ওয়েব ভিত্তিক অ্যাপ্লিকেশন, আপনার ডিভাইস ও Chrome-এ সাইন-ইন করার সময় আপনার ব্যবহার করা ইউজারনেম থাকতে পারে।</translation>

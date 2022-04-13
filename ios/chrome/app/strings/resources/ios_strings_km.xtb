@@ -115,6 +115,7 @@
 <translation id="1923342640370224680">ម៉ោងមុន</translation>
 <translation id="1930989359703290198">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។ គណនីដែលមិនមាន​ការអនុញ្ញាត​ត្រូវបានលាក់។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">ប៉ះពីរដងដើម្បីចម្លង</translation>
+<translation id="1943478190258551035">ម៉ឺនុយ → ការកំណត់</translation>
 <translation id="1952172573699511566">គេហទំព័រ​នឹង​បង្ហាញ​អក្សរ​ជា​ភាសា​ដែលអ្នកចង់ប្រើ​ នៅពេល​ដែល​មាន។</translation>
 <translation id="1965935827552890526">បញ្ចប់អ្វីដែលអ្នក​កំពុងធ្វើនៅក្នុង​វិនដូ Chrome ដែលបើក​ផ្សេងទៀតរបស់អ្នក។</translation>
 <translation id="196896377990863006">បង្ហាញការមើល​តំណ​សាកល្បង</translation>
@@ -142,6 +143,7 @@
 <translation id="2218443599109088993">បង្រួម</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>
 <translation id="2239626343334228536">កំពុង​សម្អាតទិន្នន័យរុករក...</translation>
+<translation id="2251686759395008410">ម៉ឺនុយ → ប្រវត្តិ</translation>
 <translation id="2256933947031277845">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។</translation>
 <translation id="225943865679747347">កំហុសឆ្គងលេខកូដ៖ <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">បន្ថែមគណនី</translation>
@@ -197,10 +199,12 @@
 <translation id="2712127207578915686">មិនអាចបើកឯកសារបានទេ</translation>
 <translation id="2718352093833049315">នៅលើ Wi-Fi តែប៉ុណ្ណោះ</translation>
 <translation id="2747003861858887689">ប្រអប់បំពេញពីមុន</translation>
+<translation id="2749231692441336879">កំពុងតាមដាន <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">អម្បាញ់មិញ</translation>
 <translation id="2773292004659987824">ការ​ស្វែងរក​លក្ខណៈឯកជន</translation>
 <translation id="277771892408211951">ជ្រើសរើស​ភាសា</translation>
 <translation id="2780046210906776326">គ្មានគណនីអ៊ីម៉ែលទេ</translation>
+<translation id="2781325423985810933">ត្រឡប់វិញ</translation>
 <translation id="2781331604911854368">បើក</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">មិនអាចបង្កើត​តំណបានទេ</translation>
@@ -238,6 +242,7 @@
 <translation id="298306318844797842">បញ្ចូលវិធីបង់ប្រាក់...</translation>
 <translation id="2989805286512600854">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
+<translation id="3039722182465315531">កុំចូល</translation>
 <translation id="3076846064362030967">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។ <ph name="BEGIN_LINK" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី។ អ្នកអាច​លុបវា​បានគ្រប់ពេល។
 
 
@@ -339,6 +344,7 @@
 <translation id="3928666092801078803">រួមបញ្ចូលទិន្នន័យរបស់ខ្ញុំ</translation>
 <translation id="3929457972718048006">អាសយដ្ឋាន</translation>
 <translation id="3943492037546055397">ពាក្យ​សម្ងាត់</translation>
+<translation id="3959736869653157332">ម៉ឺនុយ → ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
 <translation id="3968505803272650567">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
 <translation id="3989635538409502728">ចេញ</translation>
@@ -602,6 +608,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6254066287920239840">បើកតំណនៅក្នុងកម្មវិធីនេះ ជំនួយឲ្យការបើកនៅក្នុងកម្មវិធីរុករក។</translation>
 <translation id="6255097610484507482">កែប្រែកាតឥណទាន</translation>
 <translation id="6284652193729350524">ផ្ដល់​ការបកប្រែ<ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">បាន​ឈប់តាមដាន <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">ដើម្បីបើក "ការរុករកដោយសុវត្ថិភាព" សូមបើក​<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" /> រួចចុច "ការរុករកដោយសុវត្ថិភាព"។</translation>
 <translation id="6321526113093607004">បញ្ចូល​ទៅ​ក្នុង​ចំណាំ</translation>
 <translation id="6324669097367352121">ការកំណត់ការចូល</translation>
@@ -770,6 +777,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7603852183842204213">ការលេចឡើងត្រូវបានរារាំង (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">លុបពាក្យសម្ងាត់</translation>
 <translation id="7638584964844754484">ឃ្លាសម្ងាត់មិនត្រឹមត្រូវ</translation>
+<translation id="7646263789464975852">ម៉ឺនុយ → ការកំណត់ → ការពិនិត្យសុវត្ថិភាព</translation>
 <translation id="7646772052135772216">សមកាល​កម្ម​ពាក្យសម្ងាត់​មិន​ដំណើរការ​ទេ</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
@@ -778,6 +786,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7720410380936703141">ព្យាយាមម្ដងទៀត</translation>
 <translation id="7726702057919861819">ម៉ឺនុយ → ប្រវត្តិ → សម្អាតទិន្នន័យរុករក</translation>
 <translation id="7741325291586284254">ទំព័រផ្ទាំងឯកជនថ្មី</translation>
+<translation id="7756478488453921771">ម៉ឺនុយ → ការកំណត់ → វិធីបង់ប្រាក់</translation>
 <translation id="7765158879357617694">ផ្លាស់ទី</translation>
 <translation id="7772032839648071052">អះអាងឃ្លាសម្ងាត់</translation>
 <translation id="7781011649027948662">បកប្រែទំព័រ​ឬ?</translation>
@@ -785,6 +794,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="778855399387580014">ចាប់ផ្ដើមការស្វែងរកនៅក្នុងផ្ទាំង Chrome ថ្មី។</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
+<translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
 <translation id="7839985698273989086">ទំព័រ​គ្មានអ៊ីនធឺណិត</translation>
 <translation id="7840771868269352570">ធាតុ​ដែលអ្នក​បាន​ជ្រើសរើស​នឹង​ត្រូវ​បាន​លុបចេញ។</translation>
 <translation id="7853202427316060426">សកម្មភាព</translation>
@@ -798,6 +808,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7939128259257418052">នាំចេញ​ពាក្យ​សម្ងាត់...</translation>
 <translation id="794799177247607889">បញ្ឈប់​ការធ្វើកំណត់​ហេតុ</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{គ្មានពាក្យសម្ងាត់​ដែលរងការលុកលុយទេ}=1{ពាក្យសម្ងាត់ដែល​រងការលុកលុយ {COUNT}}other{ពាក្យសម្ងាត់ដែល​រងការលុកលុយ {COUNT}}}</translation>
+<translation id="7959441099968534758">ចូលទៅកាន់​ព័ត៌មាន</translation>
 <translation id="7961015016161918242">មិនដែល</translation>
 <translation id="7966516440812255683">គេហទំព័រ​អាចប្រើខូគី ដើម្បី​កែលម្អ​បទពិសោធន៍​រុករក​របស់អ្នក ឧទាហរណ៍ ដើម្បីឱ្យអ្នក​បន្តចូលគណនី ឬចងចាំទំនិញ​នៅក្នុង​រទេះទិញទំនិញ​របស់អ្នក​។
 
@@ -921,6 +932,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9037965129289936994">បង្ហាញប្រភពដើម</translation>
 <translation id="9039373489628511875">កម្រិតបញ្ជូន</translation>
 <translation id="9055772144595778347">មិនអាចចូលបានទេ</translation>
+<translation id="9057972802061533987">មិនអាច​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9079935439869366234">សម្គាល់ថាមិនទាន់អានទាំងអស់</translation>
 <translation id="9081058212938299310">ធ្វើបច្ចុប្បន្នភាព​ពាក្យសម្ងាត់​សម្រាប់ <ph name="USERNAME" />?</translation>
@@ -928,6 +940,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9083838294503912307">ដើម្បី​ធ្វើ​សមកាលកម្ម និង​កំណត់ផ្ទាល់ខ្លួន​នៅលើ​ឧបករណ៍នានា សូម​បើក​សមកាលកម្ម។</translation>
 <translation id="9087108903408689779">ពាក្យសម្ងាត់​ដែល Chrome បានណែនាំ៖</translation>
 <translation id="9094033019050270033">ធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់</translation>
+<translation id="9097506547406246598">មិនអាចឈប់​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
 <translation id="9100610230175265781">តម្រូវឲ្យមានឃ្លាសម្ងាត់</translation>
 <translation id="9107664647686727385">ពិនិត្យរកពាក្យសម្ងាត់ដែល​រងការលុកលុយ</translation>
 <translation id="9124387962554796433">Google អាចនឹងប្រើ​ប្រវត្តិរបស់អ្នក ដើម្បី​កំណត់ឱ្យកម្មវិធីស្វែងរក និងសេវាកម្ម​ Google ផ្សេងទៀតស្របនឹងអ្នក។</translation>

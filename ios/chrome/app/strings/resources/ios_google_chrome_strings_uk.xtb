@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Цей обліковий запис і всі незбережені дані буде вилучено з Chrome та інших додатків Google на цьому пристрої.</translation>
 <translation id="1968388653333775699">Отримуйте більше можливостей із Chrome</translation>
 <translation id="2009224836393115614">Chrome не вдалося перевірити паролі. Переконайтеся, що є інтернет-з'єднання.</translation>
+<translation id="2056123005618757196">Більше можливостей у простому, безпечному та швидкому веб-переглядачі Google Chrome.</translation>
 <translation id="2147651015520127414">Chrome підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Дані Синхронізації Chrome</translation>
 <translation id="2313070403598893276">Google Chrome – простий, безпечний і швидкий веб-переглядач</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Деякі додатки спричиняють аварійне завершення роботи Chrome. Видаліть такі додатки:</translation>
 <translation id="4633328489441962921">Chrome не може перевірити наявність оновлень</translation>
 <translation id="4698415050768537821">Chrome не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Щоб покращити додаток, Chrome надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не підтримується в бета-версії Chrome</translation>
 <translation id="5030102366287574140">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо.</translation>
 <translation id="5108659628347594808">Покращте Chrome</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Google Chrome дбає про безпеку ваших даних</translation>
 <translation id="8772179140489533211">Показувати сповіщення для входу в Chrome.</translation>
 <translation id="8788269841521769222">Пароль не потрібно запам’ятовувати. Його буде збережено в Менеджері паролів Google облікового запису <ph name="EMAIL" />.</translation>
+<translation id="8969290730818637510">Якщо правило ввімкнено
+<ph name="BEGIN_INDENT" />  • Ви допомагаєте покращувати Chrome для інших користувачів.<ph name="END_INDENT" />
+
+Важливо
+<ph name="BEGIN_INDENT" />  • Інформація про те, як ви використовуєте Chrome, надсилається в Google, але не пов’язується з вами.
+
+  • Якщо в Chrome виникає збій, відомості про нього можуть містити особисту інформацію.
+
+  • Якщо ви ввімкнете синхронізацію, показники також можуть містити дані про відвідані URL-адреси.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Зробити Chrome веб-переглядач за умовчанням?</translation>
 <translation id="9122931302567044771">Це означає, що Chrome щоразу буде запитувати версію сайту для комп’ютера.</translation>
 </translationbundle>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">এই ডিভাইচত থকা Chrome আৰু অন্য Google এপ্‌সমূহৰ পৰা এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা আঁতৰোৱা হ’ব।</translation>
 <translation id="1968388653333775699">Chromeৰ জৰিয়তে অধিক কাম কৰক</translation>
 <translation id="2009224836393115614">Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰিলে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
+<translation id="2056123005618757196">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Google Chromeৰ জৰিয়তে অধিক কাম কৰক।</translation>
 <translation id="2147651015520127414">Chromiumএ সত্যাপন কৰিছে যে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰিছে।</translation>
 <translation id="2199719347983604670">Chrome ছিংকৰ ডেটা</translation>
 <translation id="2313070403598893276">Google Chrome সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="4633328489441962921">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="4698415050768537821">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome বিটাত সমৰ্থিত নহয়</translation>
 <translation id="5030102366287574140">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
 <translation id="5108659628347594808">Chromeক উন্নত কৰক</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">Google Chromeৰ জৰিয়তে সুৰক্ষিত হৈ থাকক</translation>
 <translation id="8772179140489533211">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে।</translation>
 <translation id="8788269841521769222">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নাই। এইটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব</translation>
+<translation id="8969290730818637510">অন হৈ থাকিলে:
+<ph name="BEGIN_INDENT" />  • আপোনাৰ দৰে একেধৰণে Chrome ব্যৱহাৰ কৰা লোকসকলৰ বাবে ইয়াক উন্নত কৰাত সহায় কৰক।<ph name="END_INDENT" />
+
+বিবেচনা কৰিবলগীয়া কথা:
+<ph name="BEGIN_INDENT" />  • আপোনাৰ Chromeৰ ব্যৱহাৰৰ তথ্য Googleলৈ পঠিওৱা হয়, কিন্তু সেয়া আপোনাৰ সৈতে জড়িত কৰা নহয়।
+  • যদি Chrome ক্ৰেশ্ব হয়, ক্ৰেশ্বটোৰ সবিশেষত কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।
+  • যদি আপুনি ছিংক অন কৰে, মেট্ৰিক্সত আপুনি চোৱা URLৰ তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰিবনে?</translation>
 <translation id="9122931302567044771">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ডেস্কটপ ছাইটৰ অনুৰোধ কৰিব।</translation>
 </translationbundle>

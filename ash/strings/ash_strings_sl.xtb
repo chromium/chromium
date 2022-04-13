@@ -22,6 +22,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1081015718268701546">Aplikacije za Linux trenutno niso podprte. Druge aplikacije bodo shranjene.</translation>
 <translation id="108486256082349153">Mobilna naprava: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dober dan, <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem. S puščičnimi tipkami se pomikajte po aplikacijah.</translation>
 <translation id="109942774857561566">Dolgočasim se</translation>
 <translation id="1104084341931202936">Prikaz nastavitev funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="1104621072296271835">Naprave delujejo še bolje skupaj</translation>
@@ -179,6 +180,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1990046457226896323">Datoteke za govor so bile prenesene.</translation>
 <translation id="1993072747612765854">Več informacij o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Trenutno namizje</translation>
+<translation id="2001444736072756133">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem.</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
 <translation id="2021864487439853900">Kliknite za odklepanje</translation>
@@ -264,6 +266,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
+<translation id="2620016719323068571">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem …</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="263399434338050016">»Izberi vse«</translation>
@@ -621,6 +624,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Spremenite napravo na prejšnjo različico v enem dnevu}one{Spremenite napravo na prejšnjo različico v # dnevu}two{Spremenite napravo na prejšnjo različico v # dnevih}few{Spremenite napravo na prejšnjo različico v # dnevih}other{Spremenite napravo na prejšnjo različico v # dnevih}}</translation>
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, priporočilo aplikacije</translation>
+<translation id="4657775630156561295">Ta predlog bo trajno odstranjen iz zgodovine predlogov v računu:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
 <translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
@@ -943,6 +949,7 @@ Nova namestitev</translation>
 <translation id="6751052314767925245">Uveljavil vaš skrbnik</translation>
 <translation id="6751826523481687655">Sledenje učinkovitosti delovanja je vklopljeno</translation>
 <translation id="6752912906630585008">Namizje <ph name="REMOVED_DESK" /> je bilo odstranjeno in združeno z namizjem <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">zavihkih</translation>
 <translation id="6754441615189976839">N</translation>
 <translation id="6757237461819837179">Predstavnost se ne predvaja</translation>
 <translation id="6777216307882431711">Napajanje povezanih naprav USB-C</translation>
@@ -1048,6 +1055,7 @@ Nova namestitev</translation>
 <translation id="743058460480092004">Kamera in mikrofon sta v uporabi.</translation>
 <translation id="7434543979546293336">Označeno kot ključna zamisel</translation>
 <translation id="7452560014878697800">Aplikacija uporablja vašo kamero.</translation>
+<translation id="7453330308669753048">Rezultat iz zgodovine iskanja je odstranjen.</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
@@ -1104,6 +1112,7 @@ Nova namestitev</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno izklopljen.</translation>
 <translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
+<translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7796353162336583443">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti Pomočnika Google, laserski kazalnik ali povečevalno steklo.</translation>
 <translation id="7796735576426975947">Novo obvestilo je skrito</translation>
@@ -1166,6 +1175,7 @@ Nova namestitev</translation>
 <translation id="8120151603115102514">Telefon nima zaklepanja zaslona. Če želite odkleniti Chromebook, vnesite geslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potrdi</translation>
+<translation id="8131994907636310308">Zapiranje obvestila za razvrščanje</translation>
 <translation id="8132487352815776550">Ustavi podnapise</translation>
 <translation id="8132793192354020517">Povezava z <ph name="NAME" /> je vzpostavljena </translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>

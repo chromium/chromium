@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux 앱은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="108486256082349153">셀룰러: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">즐거운 오후 보내세요, <ph name="GIVEN_NAME" />님</translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />, 파일, 앱 등을 검색합니다. 앱을 탐색하려면 화살표 키를 사용하세요.</translation>
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
 <translation id="1993072747612765854">최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="1998100899771863792">현재 데스크</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />, 파일, 앱 등을 검색합니다.</translation>
 <translation id="2016340657076538683">메시지 입력</translation>
 <translation id="2018630726571919839">재미있는 이야기 듣기</translation>
 <translation id="2021864487439853900">잠금 해제하려면 클릭</translation>
@@ -263,6 +265,7 @@
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />, 파일, 앱 등 검색</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2621713457727696555">보안</translation>
 <translation id="263399434338050016">"모두 선택"</translation>
@@ -620,6 +623,9 @@
 <translation id="4633185660152240791">{0,plural, =1{하루 안에 기기를 이전 버전으로 되돌리세요}other{#일 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, 앱 추천</translation>
+<translation id="4657775630156561295">계정의 추천 기록에서 다음 추천 검색어가 완전히 삭제됩니다.
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox가 사용 설정됨</translation>
 <translation id="4665114317261903604">방해 금지 모드를 켜고 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> 파일을 다운로드하는 중입니다</translation>
@@ -941,6 +947,7 @@
 <translation id="6751052314767925245">관리자가 시행함</translation>
 <translation id="6751826523481687655">성능 추적이 사용 설정되어 있습니다.</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> 데스크가 삭제되고 <ph name="RECEIVE_DESK" /> 데스크와 병합되었습니다.</translation>
+<translation id="6753390234084146956">탭</translation>
 <translation id="6754441615189976839">토</translation>
 <translation id="6757237461819837179">재생 중인 미디어 없음</translation>
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
@@ -1046,6 +1053,7 @@
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
 <translation id="7434543979546293336">핵심 아이디어로 표시됨</translation>
 <translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
+<translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
@@ -1102,6 +1110,7 @@
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749640678855296659">현재 마이크가 꺼져 있습니다.</translation>
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
+<translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7796353162336583443">실행기에서 스타일러스 버튼을 탭하여 메모를 작성하거나, 스크린샷을 찍거나, Google 어시스턴트, 레이저 포인터, 돋보기를 활용할 수 있습니다.</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
@@ -1164,6 +1173,7 @@
 <translation id="8120151603115102514">휴대전화에 잠금 화면이 없습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8131994907636310308">정렬 닫기 토스트</translation>
 <translation id="8132487352815776550">자막 중지</translation>
 <translation id="8132793192354020517"><ph name="NAME" />에 연결됨</translation>
 <translation id="813913629614996137">초기화 중...</translation>
