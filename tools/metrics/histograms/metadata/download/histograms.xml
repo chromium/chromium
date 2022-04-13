@@ -325,6 +325,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.IOSDownloadCalendarFileUI"
+    enum="DownloadCalendarFileUI" expires_after="2022-10-20">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Result when the warning alert is presented before downloading a .ics file on
+    iOS. Values indicate if the user has continued the download workflow after
+    the presentation of the warning alert.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
     expires_after="2022-08-07">
   <owner>sdefresne@chromium.org</owner>

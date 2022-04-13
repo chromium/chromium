@@ -7,17 +7,20 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+// Key of the UMA Download.IOSDownloadCalendarFileUI histogram.
+extern const char kUmaDownloadCalendarFileUI[];
 // Key of the UMA Download.IOSDownloadMobileConfigFileUI histogram.
 extern const char kUmaDownloadMobileConfigFileUI[];
 
-// Values of the UMA Download.IOSDownloadMobileConfigFileUI histogram. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
-enum class DownloadMobileConfigFileUI {
+// Values of the UMA Download.IOSDownloadMobileConfigFileUI and
+// Download.IOSDownloadCalendarFileUI histograms. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class SafariDownloadFileUI {
   // The Warning alert was presented.
-  KWarningAlertIsPresented = 0,
+  kWarningAlertIsPresented = 0,
   // The user chose to abort the download process.
-  KWarningAlertIsDismissed = 1,
+  kWarningAlertIsDismissed = 1,
   // The user chose to continue the download process.
   kSFSafariViewIsPresented = 2,
   kMaxValue = kSFSafariViewIsPresented

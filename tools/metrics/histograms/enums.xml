@@ -24545,6 +24545,14 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="MP3"/>
 </enum>
 
+<enum name="DownloadCalendarFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
+</enum>
+
 <enum name="DownloadCancelReason">
   <int value="0" label="Existing download path"/>
   <int value="1" label="Target confirmation result"/>

@@ -34,12 +34,21 @@ using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
-// Returns the absolute path for the test file in the test data directory.
-base::FilePath GetTestFilePath() {
+// Returns the absolute path for the .mobileconfig file in the test data
+// directory.
+base::FilePath GetMobileConfigFilePath() {
   base::FilePath file_path;
   base::PathService::Get(base::DIR_MODULE, &file_path);
   file_path =
       file_path.Append(FILE_PATH_LITERAL(testing::kMobileConfigFilePath));
+  return file_path;
+}
+
+// Returns the absolute path for the .ics file in the test data directory.
+base::FilePath GetCalendarFilePath() {
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_MODULE, &file_path);
+  file_path = file_path.Append(FILE_PATH_LITERAL(testing::kCalendarFilePath));
   return file_path;
 }
 
@@ -112,7 +121,7 @@ TEST_F(SafariDownloadCoordinatorTest, InstallDelegates) {
 
 // Tests presenting an UI alert before downloading a valid .mobileconfig file.
 TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
-  base::FilePath path = GetTestFilePath();
+  base::FilePath path = GetMobileConfigFilePath();
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
 
@@ -126,11 +135,11 @@ TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
       static_cast<base::HistogramBase::Sample>(
-          DownloadMobileConfigFileUI::KWarningAlertIsPresented),
+          SafariDownloadFileUI::kWarningAlertIsPresented),
       1);
 }
 
-// Tests attempting to download an invalid .mobileconfig file
+// Tests attempting to download an invalid .mobileconfig file.
 TEST_F(SafariDownloadCoordinatorTest, InvalidMobileConfigFile) {
   [tab_helper()->delegate() presentMobileConfigAlertFromURL:nil];
 
@@ -142,7 +151,43 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidMobileConfigFile) {
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
       static_cast<base::HistogramBase::Sample>(
-          DownloadMobileConfigFileUI::KWarningAlertIsPresented),
+          SafariDownloadFileUI::kWarningAlertIsPresented),
+      0);
+}
+
+// Tests presenting an UI alert before downloading a valid .ics file.
+TEST_F(SafariDownloadCoordinatorTest, ValidCalendarFile) {
+  base::FilePath path = GetCalendarFilePath();
+  NSURL* fileURL =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+
+  [tab_helper()->delegate() presentCalendarAlertFromURL:fileURL];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadCalendarFileUI,
+      static_cast<base::HistogramBase::Sample>(
+          SafariDownloadFileUI::kWarningAlertIsPresented),
+      1);
+}
+
+// Tests attempting to download an invalid .ics file.
+TEST_F(SafariDownloadCoordinatorTest, InvalidCalendarFile) {
+  [tab_helper()->delegate() presentCalendarAlertFromURL:nil];
+
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadCalendarFileUI,
+      static_cast<base::HistogramBase::Sample>(
+          SafariDownloadFileUI::kWarningAlertIsPresented),
       0);
 }
 
