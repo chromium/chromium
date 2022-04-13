@@ -267,13 +267,13 @@ TEST_F(BatchElementCheckerTest, DeduplicateElementExists) {
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_selector_3, /* strict= */ true, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
-        auto element_result = std::make_unique<ElementFinder::Result>();
+        auto element_result = std::make_unique<ElementFinderResult>();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_selector_3, /* strict= */ false, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
-        auto element_result = std::make_unique<ElementFinder::Result>();
+        auto element_result = std::make_unique<ElementFinderResult>();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 

@@ -60,7 +60,7 @@ class ScriptPreconditionTest : public testing::Test {
             FindElement(Selector({"exists"}), /* strict= */ false, _))
         .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
-                                  std::make_unique<ElementFinder::Result>());
+                                  std::make_unique<ElementFinderResult>());
         }));
     ON_CALL(mock_web_controller_,
             FindElement(Selector({"does_not_exist"}), /* strict= */ false, _))

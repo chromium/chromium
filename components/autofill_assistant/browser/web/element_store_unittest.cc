@@ -27,9 +27,9 @@ class ElementStoreTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<ElementFinder::Result> CreateElement(
+  std::unique_ptr<ElementFinderResult> CreateElement(
       const std::string& object_id) {
-    auto element = std::make_unique<ElementFinder::Result>();
+    auto element = std::make_unique<ElementFinderResult>();
     element->SetObjectId(object_id);
     element->SetNodeFrameId(
         web_contents_->GetMainFrame()->GetDevToolsFrameToken().ToString());
@@ -39,7 +39,7 @@ class ElementStoreTest : public testing::Test {
   // This consumes the element while adding it to simulate the way of the
   // result going out of life.
   void AddElement(const std::string& client_id,
-                  std::unique_ptr<ElementFinder::Result> element) {
+                  std::unique_ptr<ElementFinderResult> element) {
     element_store_->AddElement(client_id, element->dom_object());
   }
 
@@ -62,29 +62,29 @@ TEST_F(ElementStoreTest, GetElementFromStore) {
   auto element = CreateElement("1");
   AddElement("1", std::move(element));
 
-  ElementFinder::Result result;
+  ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
   EXPECT_EQ("1", result.object_id());
 }
 
 TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   element->SetObjectId("1");
   element->SetNodeFrameId("unknown");
   AddElement("1", std::move(element));
 
-  ElementFinder::Result result;
+  ElementFinderResult result;
   EXPECT_EQ(CLIENT_ID_RESOLUTION_FAILED,
             element_store_->GetElement("1", &result).proto_status());
 }
 
 TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   element->SetObjectId("1");
   AddElement("1", std::move(element));
 
-  ElementFinder::Result result;
+  ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
   EXPECT_EQ(web_contents_->GetMainFrame(), result.render_frame_host());
@@ -97,14 +97,14 @@ TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {
   AddElement("e", std::move(element_1));
   AddElement("e", std::move(element_2));
 
-  ElementFinder::Result result;
+  ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("e", &result).proto_status());
   EXPECT_EQ("2", result.object_id());
 }
 
 TEST_F(ElementStoreTest, GetUnknownElementFromStore) {
-  ElementFinder::Result result;
+  ElementFinderResult result;
   EXPECT_EQ(CLIENT_ID_RESOLUTION_FAILED,
             element_store_->GetElement("1", &result).proto_status());
 }

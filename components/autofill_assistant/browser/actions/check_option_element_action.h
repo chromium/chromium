@@ -33,8 +33,8 @@ class CheckOptionElementAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result select_;
-  ElementFinder::Result option_;
+  ElementFinderResult select_;
+  ElementFinderResult option_;
   ProcessActionCallback callback_;
 
   base::WeakPtrFactory<CheckOptionElementAction> weak_ptr_factory_{this};

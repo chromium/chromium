@@ -152,7 +152,7 @@ class BatchElementChecker {
       std::vector<std::pair</* element_condition_index */ size_t,
                             /* result_index */ size_t>>* results,
       const ClientStatus& element_status,
-      std::unique_ptr<ElementFinder::Result> element_result);
+      std::unique_ptr<ElementFinderResult> element_result);
 
   void OnElementPreconditionChecked(
       std::vector<ElementConditionCheckCallback>* callbacks,

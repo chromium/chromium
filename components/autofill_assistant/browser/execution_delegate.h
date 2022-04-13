@@ -101,7 +101,7 @@ class ExecutionDelegate {
   virtual void ShutdownIfNecessary() = 0;
 
   // Notifies the execution delegate about a change to the UserData.
-  virtual void NotifyUserDataChange(UserData::FieldChange field_change) = 0;
+  virtual void NotifyUserDataChange(UserDataFieldChange field_change) = 0;
 
   // Register an observer. Observers get told about changes to the
   // controller.

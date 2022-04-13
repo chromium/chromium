@@ -22,9 +22,8 @@ void ElementStore::AddElement(const std::string& client_id,
   object_map_[client_id] = object;
 }
 
-ClientStatus ElementStore::GetElement(
-    const std::string& client_id,
-    ElementFinder::Result* out_element) const {
+ClientStatus ElementStore::GetElement(const std::string& client_id,
+                                      ElementFinderResult* out_element) const {
   DCHECK(out_element != nullptr);
   auto it = object_map_.find(client_id);
   if (it == object_map_.end()) {
@@ -36,7 +35,7 @@ ClientStatus ElementStore::GetElement(
 
 ClientStatus ElementStore::RestoreElement(
     const DomObjectFrameStack& object,
-    ElementFinder::Result* out_element) const {
+    ElementFinderResult* out_element) const {
   out_element->SetObjectId(object.object_data.object_id);
   out_element->SetNodeFrameId(object.object_data.node_frame_id);
   out_element->SetFrameStack(object.frame_stack);

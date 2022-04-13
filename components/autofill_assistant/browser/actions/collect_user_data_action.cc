@@ -515,8 +515,8 @@ void CollectUserDataAction::ShowToUser() {
 }
 
 void CollectUserDataAction::OnShowToUser(UserData* user_data,
-                                         UserData::FieldChange* field_change) {
-  *field_change = UserData::FieldChange::ALL;
+                                         UserDataFieldChange* field_change) {
+  *field_change = UserDataFieldChange::ALL;
   // merge the new proto_ into the existing user_data. the proto_ always takes
   // precedence over the existing user_data.
   auto collect_user_data = proto_.collect_user_data();
@@ -1607,7 +1607,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 
 void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     UserData* user_data,
-    UserData::FieldChange* field_change) {
+    UserDataFieldChange* field_change) {
   bool requires_contact = RequiresContact(*collect_user_data_options_);
   bool requires_address = RequiresAddress(*collect_user_data_options_);
   if (!requires_contact && !requires_address) {
@@ -1634,13 +1634,13 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   UpdateSelectedShippingAddress(user_data);
 
   if (field_change != nullptr) {
-    *field_change = UserData::FieldChange::AVAILABLE_PROFILES;
+    *field_change = UserDataFieldChange::AVAILABLE_PROFILES;
   }
 }
 
 void CollectUserDataAction::UpdatePersonalDataManagerCards(
     UserData* user_data,
-    UserData::FieldChange* field_change) {
+    UserDataFieldChange* field_change) {
   if (!RequiresPaymentMethod(*collect_user_data_options_)) {
     return;
   }
@@ -1679,7 +1679,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
   UpdateSelectedCreditCard(user_data);
 
   if (field_change != nullptr) {
-    *field_change = UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS;
+    *field_change = UserDataFieldChange::AVAILABLE_PAYMENT_INSTRUMENTS;
   }
 }
 

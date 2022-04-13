@@ -34,7 +34,7 @@ class WaitForDocumentOperationTest : public testing::Test {
 
     wait_for_document_operation_ = std::make_unique<WaitForDocumentOperation>(
         &fake_script_executor_delegate_, base::Seconds(1), DOCUMENT_COMPLETE,
-        ElementFinder::Result(), mock_callback_.Get());
+        ElementFinderResult(), mock_callback_.Get());
   }
 
  protected:
@@ -77,7 +77,7 @@ TEST_F(WaitForDocumentOperationTest, TimesOutAfterWaiting) {
   EXPECT_CALL(mock_web_controller_,
               WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(Invoke([&captured_callback](
-                           const ElementFinder::Result& optional_frame_element,
+                           const ElementFinderResult& optional_frame_element,
                            DocumentReadyState min_ready_state,
                            WaitForDocumentOperation::Callback callback) {
         captured_callback = std::move(callback);

@@ -127,7 +127,7 @@ ClientStatus GetFormattedClientValue(
 // credentials, fails with |PASSWORD_ORIGIN_MISMATCH|.
 void GetPasswordManagerValue(
     const PasswordManagerValue& password_manager_value,
-    const ElementFinder::Result& target_element,
+    const ElementFinderResult& target_element,
     const UserData* user_data,
     WebsiteLoginManager* website_login_manager,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
@@ -144,7 +144,7 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
 // through the |callback|.
 void ResolveTextValue(
     const TextValue& text_value,
-    const ElementFinder::Result& target_element,
+    const ElementFinderResult& target_element,
     const ActionDelegate* action_delegate,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
 

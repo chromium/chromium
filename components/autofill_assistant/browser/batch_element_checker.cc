@@ -279,7 +279,7 @@ void BatchElementChecker::OnSelectorChecked(
     std::vector<std::pair</* element_condition_index */ size_t,
                           /* result_index */ size_t>>* results,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
+    std::unique_ptr<ElementFinderResult> element_result) {
   for (auto& pair : *results) {
     size_t condition_index = pair.first;
     size_t result_index = pair.second;

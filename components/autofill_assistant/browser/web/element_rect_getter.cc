@@ -34,13 +34,13 @@ ElementRectGetter::ElementRectGetter(DevtoolsClient* devtools_client)
 
 ElementRectGetter::~ElementRectGetter() = default;
 
-void ElementRectGetter::Start(std::unique_ptr<ElementFinder::Result> element,
+void ElementRectGetter::Start(std::unique_ptr<ElementFinderResult> element,
                               ElementRectCallback callback) {
   GetBoundingClientRect(std::move(element), 0, RectF(), std::move(callback));
 }
 
 void ElementRectGetter::GetBoundingClientRect(
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     size_t index,
     const RectF& stacked_rect,
     ElementRectCallback callback) {
@@ -75,7 +75,7 @@ void ElementRectGetter::GetBoundingClientRect(
 
 void ElementRectGetter::OnGetClientRectResult(
     ElementRectCallback callback,
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     size_t index,
     const RectF& stacked_rect,
     const DevtoolsClient::ReplyStatus& reply_status,

@@ -37,6 +37,70 @@ namespace autofill_assistant {
 class DevtoolsClient;
 class UserData;
 
+// ElementFinderResult is the fully resolved element that can be used without
+// limitations. This means that |render_frame_host()| has been found and is not
+// nullptr.
+class ElementFinderResult {
+ public:
+  ElementFinderResult();
+  ~ElementFinderResult();
+  ElementFinderResult(const ElementFinderResult&);
+
+  // Create an instance that is deemed to be empty. This can be used for
+  // optional Elements (e.g. optional an frame).
+  static ElementFinderResult EmptyResult();
+
+  const DomObjectFrameStack& dom_object() const { return dom_object_; }
+
+  content::RenderFrameHost* render_frame_host() const {
+    if (!render_frame_id_) {
+      return nullptr;
+    }
+    return content::RenderFrameHost::FromID(*render_frame_id_);
+  }
+
+  const std::string& object_id() const {
+    return dom_object_.object_data.object_id;
+  }
+
+  const std::string& node_frame_id() const {
+    return dom_object_.object_data.node_frame_id;
+  }
+
+  const std::vector<JsObjectIdentifier>& frame_stack() const {
+    return dom_object_.frame_stack;
+  }
+
+  bool IsEmpty() const {
+    return object_id().empty() && node_frame_id().empty();
+  }
+
+  void SetRenderFrameHost(content::RenderFrameHost* render_frame_host) {
+    if (!render_frame_host) {
+      return;
+    }
+    render_frame_id_ = render_frame_host->GetGlobalId();
+  }
+
+  void SetObjectId(const std::string& object_id) {
+    dom_object_.object_data.object_id = object_id;
+  }
+
+  void SetNodeFrameId(const std::string& node_frame_id) {
+    dom_object_.object_data.node_frame_id = node_frame_id;
+  }
+
+  void SetFrameStack(const std::vector<JsObjectIdentifier>& frame_stack) {
+    dom_object_.frame_stack = frame_stack;
+  }
+
+ private:
+  DomObjectFrameStack dom_object_;
+
+  // The id of the render frame host that contains the element.
+  absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
+};
+
 // Worker class to find element(s) matching a selector. This will keep entering
 // iFrames until the element is found in the last frame, then returns the
 // element together with the owning frame. All subsequent operations should
@@ -44,83 +108,23 @@ class UserData;
 class ElementFinder : public WebControllerWorker {
  public:
   enum ResultType {
-    // Result.object_id contains the object ID of the single node that matched.
+    // ElementFinderResult.object_id contains the object ID of the single node
+    // that matched.
     // If there are no matches, status is ELEMENT_RESOLUTION_FAILED. If there
     // are more than one matches, status is TOO_MANY_ELEMENTS.
     kExactlyOneMatch = 0,
 
-    // Result.object_id contains the object ID of one of the nodes that matched.
+    // ElementFinderResult.object_id contains the object ID of one of the nodes
+    // that matched.
     // If there are no matches, status is ELEMENT_RESOLUTION_FAILED.
     kAnyMatch,
 
-    // Result.object_id contains the object ID of an array containing all the
+    // ElementFinderResult.object_id contains the object ID of an array
+    // containing all the
     // nodes
     // that matched. If there are no matches, status is
     // ELEMENT_RESOLUTION_FAILED.
     kMatchArray,
-  };
-
-  // Result is the fully resolved element that can be used without limitations.
-  // This means that |render_frame_host()| has been found and is not nullptr.
-  class Result {
-   public:
-    Result();
-    ~Result();
-    Result(const Result&);
-
-    // Create an instance that is deemed to be empty. This can be used for
-    // optional Elements (e.g. optional an frame).
-    static Result EmptyResult();
-
-    const DomObjectFrameStack& dom_object() const { return dom_object_; }
-
-    content::RenderFrameHost* render_frame_host() const {
-      if (!render_frame_id_) {
-        return nullptr;
-      }
-      return content::RenderFrameHost::FromID(*render_frame_id_);
-    }
-
-    const std::string& object_id() const {
-      return dom_object_.object_data.object_id;
-    }
-
-    const std::string& node_frame_id() const {
-      return dom_object_.object_data.node_frame_id;
-    }
-
-    const std::vector<JsObjectIdentifier>& frame_stack() const {
-      return dom_object_.frame_stack;
-    }
-
-    bool IsEmpty() const {
-      return object_id().empty() && node_frame_id().empty();
-    }
-
-    void SetRenderFrameHost(content::RenderFrameHost* render_frame_host) {
-      if (!render_frame_host) {
-        return;
-      }
-      render_frame_id_ = render_frame_host->GetGlobalId();
-    }
-
-    void SetObjectId(const std::string& object_id) {
-      dom_object_.object_data.object_id = object_id;
-    }
-
-    void SetNodeFrameId(const std::string& node_frame_id) {
-      dom_object_.object_data.node_frame_id = node_frame_id;
-    }
-
-    void SetFrameStack(const std::vector<JsObjectIdentifier>& frame_stack) {
-      dom_object_.frame_stack = frame_stack;
-    }
-
-   private:
-    DomObjectFrameStack dom_object_;
-
-    // The id of the render frame host that contains the element.
-    absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
@@ -136,11 +140,12 @@ class ElementFinder : public WebControllerWorker {
   ~ElementFinder() override;
 
   using Callback =
-      base::OnceCallback<void(const ClientStatus&, std::unique_ptr<Result>)>;
+      base::OnceCallback<void(const ClientStatus&,
+                              std::unique_ptr<ElementFinderResult>)>;
 
   // Finds the element and calls the callback starting from the |start_element|.
   // If it is empty, it will start looking for the Document of the main frame.
-  void Start(const Result& start_element, Callback callback);
+  void Start(const ElementFinderResult& start_element, Callback callback);
 
  private:
   class ElementFinderBase {
@@ -150,7 +155,8 @@ class ElementFinder : public WebControllerWorker {
     // Start looking for the element and return it through |callback| with
     // a status. If |start_element| is not empty, use it as a starting point
     // instead of starting from the main frame.
-    virtual void Start(const Result& start_element, Callback callback) = 0;
+    virtual void Start(const ElementFinderResult& start_element,
+                       Callback callback) = 0;
 
     // Get the log information for the last run. Should only be run after the
     // run has completed (i.e. |callback_| has been called).
@@ -171,7 +177,8 @@ class ElementFinder : public WebControllerWorker {
     SemanticElementFinder(const SemanticElementFinder&) = delete;
     SemanticElementFinder& operator=(const SemanticElementFinder&) = delete;
 
-    void Start(const Result& start_element, Callback callback) override;
+    void Start(const ElementFinderResult& start_element,
+               Callback callback) override;
 
     ElementFinderInfoProto GetLogInfo() const override;
 
@@ -188,7 +195,8 @@ class ElementFinder : public WebControllerWorker {
                      const std::string& object_id);
 
     // Call |callback_| with the |status| and |result|.
-    void SendResult(const ClientStatus& status, const Result& result);
+    void SendResult(const ClientStatus& status,
+                    const ElementFinderResult& result);
 
     // Run the model annotation on all frames for the current |start_frame|.
     void RunAnnotateDomModel(content::RenderFrameHost* start_frame);
@@ -238,7 +246,8 @@ class ElementFinder : public WebControllerWorker {
     CssElementFinder(const CssElementFinder&) = delete;
     CssElementFinder& operator=(const CssElementFinder&) = delete;
 
-    void Start(const Result& start_element, Callback callback) override;
+    void Start(const ElementFinderResult& start_element,
+               Callback callback) override;
 
     ElementFinderInfoProto GetLogInfo() const override;
 
@@ -258,7 +267,8 @@ class ElementFinder : public WebControllerWorker {
     void BuildAndSendResult(const std::string& object_id);
 
     // Call |callback_| with the |status| and |result|.
-    void SendResult(const ClientStatus& status, const Result& result);
+    void SendResult(const ClientStatus& status,
+                    const ElementFinderResult& result);
 
     // Figures out what to do next given the current state.
     //
@@ -461,16 +471,17 @@ class ElementFinder : public WebControllerWorker {
   };
 
   // Updates |log_info_| and calls |callback_| with the |status| and |result|.
-  void SendResult(const ClientStatus& status, std::unique_ptr<Result> result);
+  void SendResult(const ClientStatus& status,
+                  std::unique_ptr<ElementFinderResult> result);
 
   void UpdateLogInfo(const ClientStatus& status);
 
   // Adds a runner to the list and starts it from the |start_element|.
-  void AddAndStartRunner(const Result& start_element,
+  void AddAndStartRunner(const ElementFinderResult& start_element,
                          std::unique_ptr<ElementFinderBase> runner);
   void OnResult(size_t index,
                 const ClientStatus& status,
-                std::unique_ptr<Result> result);
+                std::unique_ptr<ElementFinderResult> result);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
@@ -482,7 +493,8 @@ class ElementFinder : public WebControllerWorker {
   Callback callback_;
 
   std::vector<std::unique_ptr<ElementFinderBase>> runners_;
-  std::vector<std::pair<ClientStatus, std::unique_ptr<Result>>> results_;
+  std::vector<std::pair<ClientStatus, std::unique_ptr<ElementFinderResult>>>
+      results_;
   size_t num_results_ = 0;
 
   base::WeakPtrFactory<ElementFinder> weak_ptr_factory_{this};

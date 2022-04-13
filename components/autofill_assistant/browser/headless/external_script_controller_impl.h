@@ -45,7 +45,7 @@ class ExternalScriptControllerImpl : public ExternalScriptController,
   void OnError(const std::string& error_message,
                Metrics::DropOutReason reason) override;
   void OnUserDataChanged(const UserData& user_data,
-                         UserData::FieldChange field_change) override;
+                         UserDataFieldChange field_change) override;
   void OnTouchableAreaChanged(
       const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,

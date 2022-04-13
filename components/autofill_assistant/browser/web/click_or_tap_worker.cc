@@ -15,7 +15,7 @@ ClickOrTapWorker::ClickOrTapWorker(DevtoolsClient* devtools_client)
     : devtools_client_(devtools_client) {}
 ClickOrTapWorker::~ClickOrTapWorker() = default;
 
-void ClickOrTapWorker::Start(const ElementFinder::Result& element,
+void ClickOrTapWorker::Start(const ElementFinderResult& element,
                              ClickType click_type,
                              Callback callback) {
   DCHECK(click_type == ClickType::CLICK || click_type == ClickType::TAP);

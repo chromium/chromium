@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
+#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -37,7 +38,7 @@ class WaitForDomActionTest : public testing::Test {
     ON_CALL(mock_web_controller_, FindElement(_, _, _))
         .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                  std::make_unique<ElementFinder::Result>());
+                                  std::make_unique<ElementFinderResult>());
         }));
 
     EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning(_, _, _, _, _))
@@ -113,7 +114,7 @@ TEST_F(WaitForDomActionTest, ConditionMet) {
               FindElement(Selector({"#element"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   *proto_.mutable_wait_condition()->mutable_match() =
@@ -129,7 +130,7 @@ TEST_F(WaitForDomActionTest, TimingStatsConditionMet) {
               FindElement(Selector({"#element"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   fake_wait_time_ = 500;
@@ -156,25 +157,25 @@ TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
               FindElement(Selector({"#element1"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element2"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element3"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element4"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   auto* any_of = proto_.mutable_wait_condition()->mutable_any_of();
@@ -217,7 +218,7 @@ TEST_F(WaitForDomActionTest, StoreMatchForLater) {
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_selector, /* strict= */ false, _))
       .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
-        auto element_result = std::make_unique<ElementFinder::Result>();
+        auto element_result = std::make_unique<ElementFinderResult>();
         element_result->SetObjectId(
             expected_selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
@@ -239,7 +240,7 @@ TEST_F(WaitForDomActionTest, StoreStrictMatchForLater) {
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_selector, /* strict= */ true, _))
       .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
-        auto element_result = std::make_unique<ElementFinder::Result>();
+        auto element_result = std::make_unique<ElementFinderResult>();
         element_result->SetObjectId(
             expected_selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
@@ -263,7 +264,7 @@ TEST_F(WaitForDomActionTest, StrictMatchFailsForMultipleElements) {
               FindElement(expected_selector, /* strict= */ true, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(TOO_MANY_ELEMENTS),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   auto* condition = proto_.mutable_wait_condition();
@@ -286,7 +287,7 @@ TEST_F(WaitForDomActionTest, RemoveElementsNoLongerFound) {
               FindElement(expected_not_found_selector, _, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   // A previous run found this element.
@@ -320,7 +321,7 @@ TEST_F(WaitForDomActionTest, ReturnsRolledUpErrorInformation) {
   EXPECT_CALL(mock_web_controller_, FindElement(selector_1, _, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   Selector selector_2({"#element-2"});
   ElementFinderInfoProto* info_2 = log_info.add_element_finder_info();
@@ -332,7 +333,7 @@ TEST_F(WaitForDomActionTest, ReturnsRolledUpErrorInformation) {
   EXPECT_CALL(mock_web_controller_, FindElement(selector_2, _, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   Selector selector_3({"#element-3"});
   ElementFinderInfoProto* info_3 = log_info.add_element_finder_info();
@@ -341,7 +342,7 @@ TEST_F(WaitForDomActionTest, ReturnsRolledUpErrorInformation) {
   EXPECT_CALL(mock_web_controller_, FindElement(selector_3, _, _))
       .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ACTION_APPLIED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   ProcessedActionStatusDetailsProto clear_log_info;
   EXPECT_CALL(mock_action_delegate_, GetLogInfo)

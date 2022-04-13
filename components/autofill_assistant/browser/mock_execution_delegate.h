@@ -41,7 +41,7 @@ class MockExecutionDelegate : public ExecutionDelegate {
   MOCK_CONST_METHOD0(ShouldSuppressKeyboard, bool());
   MOCK_METHOD1(SuppressKeyboard, void(bool suppress));
   MOCK_METHOD0(ShutdownIfNecessary, void());
-  MOCK_METHOD1(NotifyUserDataChange, void(UserData::FieldChange field_change));
+  MOCK_METHOD1(NotifyUserDataChange, void(UserDataFieldChange field_change));
   MOCK_METHOD1(AddObserver, void(ControllerObserver* observer));
   MOCK_METHOD1(RemoveObserver, void(const ControllerObserver* observer));
   MOCK_CONST_METHOD0(NeedsUI, bool());

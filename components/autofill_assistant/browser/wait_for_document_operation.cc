@@ -19,7 +19,7 @@ WaitForDocumentOperation::WaitForDocumentOperation(
     ScriptExecutorDelegate* script_executor_delegate,
     base::TimeDelta max_wait_time,
     DocumentReadyState min_ready_state,
-    const ElementFinder::Result& optional_frame_element,
+    const ElementFinderResult& optional_frame_element,
     WaitForDocumentOperation::Callback callback)
     : script_executor_delegate_(script_executor_delegate),
       max_wait_time_(max_wait_time),

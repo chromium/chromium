@@ -152,7 +152,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void WriteUserData(
-      base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
+      base::OnceCallback<void(UserData*, UserDataFieldChange*)>) override;
   void OnScriptError(const std::string& error_message,
                      Metrics::DropOutReason reason);
   void OnNavigationShutdownOrError(const GURL& url,
@@ -172,7 +172,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowOverlay() const override;
   const ClientSettings& GetClientSettings() const override;
   void ShutdownIfNecessary() override;
-  void NotifyUserDataChange(UserData::FieldChange field_change) override;
+  void NotifyUserDataChange(UserDataFieldChange field_change) override;
   void GetTouchableArea(std::vector<RectF>* area) const override;
   void GetRestrictedArea(std::vector<RectF>* area) const override;
   void OnFatalError(const std::string& error_message,
@@ -265,7 +265,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetOverlayColors(std::unique_ptr<OverlayColors> colors);
   void ReportNavigationStateChanged();
   void SetProfile(const std::string& key,
-                  UserData::FieldChange field_change,
+                  UserDataFieldChange field_change,
                   std::unique_ptr<autofill::AutofillProfile> profile);
 
   // Show the first "Opening..." message and enter START state.

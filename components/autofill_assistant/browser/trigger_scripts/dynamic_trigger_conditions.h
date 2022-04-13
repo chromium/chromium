@@ -78,7 +78,7 @@ class DynamicTriggerConditions {
   // When all selectors have been evaluated invokes |MaybeRunCallback|.
   void OnFindElement(const Selector& selector,
                      const ClientStatus& client_status,
-                     std::unique_ptr<ElementFinder::Result> element);
+                     std::unique_ptr<ElementFinderResult> element);
 
   // Writes the result of the operation to |temporary_dom_ready_states_|. When
   // all dom ready states are evaluated, invokes |MaybeRunCallback|.

@@ -32,7 +32,7 @@ class ClickOrTapWorker : public WebControllerWorker {
   using Callback = base::OnceCallback<void(const ClientStatus&)>;
 
   // Send a click or tap event to the the |elemsent|.
-  void Start(const ElementFinder::Result& element,
+  void Start(const ElementFinderResult& element,
              ClickType click_type,
              Callback callback);
 

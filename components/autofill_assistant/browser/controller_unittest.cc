@@ -686,7 +686,7 @@ TEST_F(ControllerTest, KeepCheckingForElement) {
   EXPECT_CALL(*mock_web_controller_, FindElement(_, _, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -1980,14 +1980,13 @@ TEST_F(ControllerTest, AddParametersToUserData) {
 }
 
 TEST_F(ControllerTest, WriteUserData) {
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(_, UserData::FieldChange::TERMS_AND_CONDITIONS));
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserDataFieldChange::TERMS_AND_CONDITIONS));
 
-  base::OnceCallback<void(UserData*, UserData::FieldChange*)> callback =
-      base::BindOnce([](UserData* data, UserData::FieldChange* change) {
+  base::OnceCallback<void(UserData*, UserDataFieldChange*)> callback =
+      base::BindOnce([](UserData* data, UserDataFieldChange* change) {
         data->terms_and_conditions_ = TermsAndConditionsState::ACCEPTED;
-        *change = UserData::FieldChange::TERMS_AND_CONDITIONS;
+        *change = UserDataFieldChange::TERMS_AND_CONDITIONS;
       });
 
   controller_->WriteUserData(std::move(callback));

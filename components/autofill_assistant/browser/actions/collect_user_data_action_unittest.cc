@@ -163,9 +163,9 @@ class CollectUserDataActionTest : public testing::Test {
         .WillByDefault(Return(&user_model_));
     ON_CALL(mock_action_delegate_, WriteUserData(_))
         .WillByDefault(Invoke(
-            [this](base::OnceCallback<void(UserData*, UserData::FieldChange*)>
+            [this](base::OnceCallback<void(UserData*, UserDataFieldChange*)>
                        write_callback) {
-              UserData::FieldChange field_change = UserData::FieldChange::NONE;
+              UserDataFieldChange field_change = UserDataFieldChange::NONE;
               std::move(write_callback).Run(&user_data_, &field_change);
             }));
     ON_CALL(mock_action_delegate_, CollectUserData(_))

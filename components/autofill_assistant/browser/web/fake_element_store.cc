@@ -17,7 +17,7 @@ FakeElementStore::~FakeElementStore() = default;
 
 ClientStatus FakeElementStore::GetElement(
     const std::string& client_id,
-    ElementFinder::Result* out_element) const {
+    ElementFinderResult* out_element) const {
   auto it = object_map_.find(client_id);
   if (it == object_map_.end()) {
     return ClientStatus(CLIENT_ID_RESOLUTION_FAILED);

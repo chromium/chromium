@@ -94,7 +94,7 @@ TEST_F(PerformOnSingleElementActionTest, FailsIfElementDoesNotExist) {
 }
 
 TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());
@@ -111,7 +111,7 @@ TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
 }
 
 TEST_F(PerformOnSingleElementActionTest, PerformsTimedAndEnds) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
                                                       element.dom_object());

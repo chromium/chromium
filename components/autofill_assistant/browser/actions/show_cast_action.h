@@ -35,20 +35,20 @@ class ShowCastAction : public Action {
                         const ClientStatus& element_status);
   void RunAndIncreaseWaitTimer(
       base::OnceCallback<
-          void(const ElementFinder::Result&,
+          void(const ElementFinderResult&,
                base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)>
           action,
-      const ElementFinder::Result& element,
+      const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> done);
 
   void OnFindContainer(const Selector& selector,
                        const TopPadding& top_padding,
                        const ClientStatus& element_status,
-                       std::unique_ptr<ElementFinder::Result> container);
+                       std::unique_ptr<ElementFinderResult> container);
 
   void ScrollToElement(const Selector& selector,
                        const TopPadding& top_padding,
-                       std::unique_ptr<ElementFinder::Result> container);
+                       std::unique_ptr<ElementFinderResult> container);
 
   void OnScrollToElementPosition(const ClientStatus& status);
 

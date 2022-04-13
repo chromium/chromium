@@ -82,7 +82,7 @@ void ExternalScriptControllerImpl::OnError(const std::string& error_message,
                                            Metrics::DropOutReason reason) {}
 void ExternalScriptControllerImpl::OnUserDataChanged(
     const UserData& user_data,
-    UserData::FieldChange field_change) {}
+    UserDataFieldChange field_change) {}
 void ExternalScriptControllerImpl::OnTouchableAreaChanged(
     const RectF& visual_viewport,
     const std::vector<RectF>& touchable_areas,
