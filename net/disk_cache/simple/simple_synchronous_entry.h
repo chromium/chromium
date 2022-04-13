@@ -425,7 +425,7 @@ class SimpleSynchronousEntry {
                               int32_t* out_sparse_data_size);
 
   // Creates and initializes the sparse data file.
-  bool CreateSparseFile();
+  bool CreateSparseFile(BackendFileOperations* file_operations);
 
   // Closes the sparse data file.
   void CloseSparseFile();

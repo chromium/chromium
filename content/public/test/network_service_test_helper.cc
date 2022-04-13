@@ -132,6 +132,53 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
     OnDataRead(std::move(buffer), std::move(callback_holder), rv);
   }
 
+  void WriteSparseData(int32_t offset,
+                       const std::vector<uint8_t>& data,
+                       WriteDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(net::ERR_FAILED);
+      return;
+    }
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    memcpy(data_to_pass->data(), data.data(), data.size());
+    int rv =
+        entry_->WriteSparseData(offset, data_to_pass.get(), data.size(),
+                                base::BindOnce(&SimpleCacheEntry::OnDataWritten,
+                                               weak_factory_.GetWeakPtr(),
+                                               data_to_pass, callback_holder));
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataWritten(std::move(data_to_pass), std::move(callback_holder), rv);
+  }
+
+  void ReadSparseData(int32_t offset,
+                      uint32_t length,
+                      ReadDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(/*data=*/{}, net::ERR_FAILED);
+      return;
+    }
+
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    int rv = entry_->ReadSparseData(
+        offset, buffer.get(), length,
+        base::BindOnce(&SimpleCacheEntry::OnDataRead,
+                       weak_factory_.GetWeakPtr(), buffer, callback_holder));
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataRead(std::move(buffer), std::move(callback_holder), rv);
+  }
+
   void Close(CloseCallback callback) override {
     entry_.reset();
     std::move(callback).Run();
