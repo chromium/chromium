@@ -578,7 +578,7 @@ URLLoader::URLLoader(
     url_request_->SetSecureDnsPolicy(net::SecureDnsPolicy::kDisable);
   }
 
-  // |cors_excempt_headers| must be merged here to avoid breaking CORS checks.
+  // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
   // They are non-empty when the values are given by the UA code, therefore
   // they should be ignored by CORS checks.
   net::HttpRequestHeaders merged_headers = request.headers;
