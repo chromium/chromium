@@ -70,6 +70,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'cancelDataCollection',
       'startDataExport',
       'showExportedDataInFolder',
+      'getAllDataCollectors',
     ]);
   }
 
@@ -80,6 +81,14 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   getDataCollectors() {
     this.methodCalled('getDataCollectors');
+    return Promise.resolve(DATA_COLLECTORS);
+  }
+
+  getAllDataCollectors() {
+    this.methodCalled('getAllDataCollectors');
+    // TODO(b/217931906): For now, we return the same list of DATA_COLLECTORS.
+    // Add a proper return value when we add test cases about
+    // UrlGeneratorElement.
     return Promise.resolve(DATA_COLLECTORS);
   }
 

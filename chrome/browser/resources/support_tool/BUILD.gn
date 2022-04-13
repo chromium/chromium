@@ -16,7 +16,10 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 generate_grd("build_grd") {
   grd_prefix = "support_tool"
   out_grd = resources_grd_file
-  input_files = html_files + [ "support_tool_container.html" ]
+  input_files = html_files + [
+                  "support_tool_container.html",
+                  "url_generator_container.html",
+                ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]

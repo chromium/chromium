@@ -33,6 +33,8 @@ export interface BrowserProxy {
 
   getDataCollectors(): Promise<DataCollectorItem[]>;
 
+  getAllDataCollectors(): Promise<DataCollectorItem[]>;
+
   startDataCollection(
       issueDetails: IssueDetails,
       selectedDataCollectors: DataCollectorItem[]): void;
@@ -51,6 +53,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getDataCollectors() {
     return sendWithPromise('getDataCollectors');
+  }
+
+  getAllDataCollectors() {
+    return sendWithPromise('getAllDataCollectors');
   }
 
   startDataCollection(

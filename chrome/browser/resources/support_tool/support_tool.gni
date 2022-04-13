@@ -10,6 +10,7 @@ web_component_files = [
   "spinner_page.ts",
   "pii_selection.ts",
   "data_export_done.ts",
+  "url_generator.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().

@@ -3,11 +3,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
 <style include="md-select cr-input-style support-tool-shared">
-  #support-case-id {
-    height: 32px;
-    width: 248px;
-  }
-
   .md-select {
     height: 32px;
     margin-bottom: 30px;
@@ -37,7 +32,7 @@ found in the LICENSE file. -->
 
 <h2>Collect diagnostics data for support</h2>
 <div class="support-tool-title">Support Case ID</div>
-<cr-input id="support-case-id" value="{{caseId_}}"
+<cr-input class="support-case-id" value="{{caseId_}}"
   spellcheck="false" maxlength="20">
 </cr-input>
 <div class="support-tool-title">Email</div>
@@ -48,7 +43,7 @@ found in the LICENSE file. -->
   </template>
 </select>
 <div class="support-tool-title">Describe the issue</div>
-<textarea id="description" value="{{issueDescription_::input}}"
+<textarea id="description" class="support-tool-text" value="{{issueDescription_::input}}"
   spellcheck="true"
   placeholder="Provide a clear desciption of the issue and steps to reproduce the issue (if possible)">
 </textarea>
