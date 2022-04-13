@@ -81,6 +81,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // Notification sent when the adapter address has changed.
     virtual void AdapterAddressChanged(const std::string& address) {}
 
+    // Notification sent when the adapter address has changed.
+    virtual void DiscoverableChanged(bool discoverable) {}
+
     // Notification sent when the discovering state has changed.
     virtual void AdapterDiscoveringChanged(bool state) {}
 
@@ -136,6 +139,20 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Get the address of this adapter.
   const std::string& GetAddress() const { return adapter_address_; }
+
+  // Get the name of this adapter.
+  const std::string& GetName() const { return adapter_name_; }
+
+  // Set the name of this adapter.
+  virtual void SetName(ResponseCallback<Void> callback,
+                       const std::string& name);
+
+  // Get whether adapter is discoverable.
+  bool GetDiscoverable() const { return adapter_discoverable_; }
+
+  // Set whether adapter is discoverable.
+  virtual void SetDiscoverable(ResponseCallback<Void> callback,
+                               bool discoverable);
 
   // Start a discovery session.
   virtual void StartDiscovery(ResponseCallback<Void> callback);
@@ -210,6 +227,23 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void OnAddressChanged(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
 
+  // Handle response to |GetName| DBus method call.
+  void HandleGetName(dbus::Response* response,
+                     dbus::ErrorResponse* error_response);
+
+  // Handle callback |OnNameChanged| on exported object path.
+  void OnNameChanged(dbus::MethodCall* method_call,
+                     dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle response to |GetDiscoverable| DBus method call.
+  void HandleGetDiscoverable(dbus::Response* response,
+                             dbus::ErrorResponse* error_response);
+
+  // Handle callback |OnDiscoverableChanged| on exported object path.
+  void OnDiscoverableChanged(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
   // Handle callback |OnDiscoveringChanged| on exported object path.
   void OnDiscoveringChanged(
       dbus::MethodCall* method_call,
@@ -250,6 +284,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Address of adapter.
   std::string adapter_address_;
+
+  // Name of adapter.
+  std::string adapter_name_;
+
+  // Whether adapter is discoverable.
+  bool adapter_discoverable_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FlossAdapterClientTest, CallAdapterMethods);

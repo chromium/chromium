@@ -32,6 +32,10 @@ extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 
 namespace adapter {
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetName[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetName[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetDiscoverable[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetDiscoverable[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
@@ -50,6 +54,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnNameChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoverableChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];

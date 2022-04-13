@@ -65,6 +65,11 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
     address_ = address;
   }
 
+  void DiscoverableChanged(bool discoverable) override {
+    discoverable_changed_count_++;
+    discoverable_ = discoverable;
+  }
+
   void AdapterDiscoveringChanged(bool state) override {
     discovering_changed_count_++;
     discovering_state_ = state;
@@ -88,6 +93,7 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   }
 
   std::string address_;
+  bool discoverable_;
   bool discovering_state_ = false;
   FlossDeviceId found_device_;
 
@@ -98,6 +104,7 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   uint32_t passkey_ = 0;
 
   int address_changed_count_ = 0;
+  int discoverable_changed_count_ = 0;
   int discovering_changed_count_ = 0;
   int found_device_count_ = 0;
   int ssp_request_count_ = 0;
@@ -127,13 +134,21 @@ class FlossAdapterClientTest : public testing::Test {
 
     // Make sure we export all callbacks. This will need to be updated once new
     // callbacks are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(7);
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(9);
 
     // Handle method calls on the object proxy
     ON_CALL(
         *adapter_object_proxy_.get(),
         DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetAddress), _, _))
         .WillByDefault(Invoke(this, &FlossAdapterClientTest::HandleGetAddress));
+    ON_CALL(*adapter_object_proxy_.get(),
+            DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetName), _, _))
+        .WillByDefault(Invoke(this, &FlossAdapterClientTest::HandleGetName));
+    ON_CALL(*adapter_object_proxy_.get(),
+            DoCallMethodWithErrorResponse(
+                HasMemberOf(adapter::kGetDiscoverable), _, _))
+        .WillByDefault(
+            Invoke(this, &FlossAdapterClientTest::HandleGetDiscoverable));
   }
 
   void SetUp() override {
@@ -167,6 +182,26 @@ class FlossAdapterClientTest : public testing::Test {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
     msg.AppendString(adapter_address_);
+
+    std::move(*cb).Run(response.get(), nullptr);
+  }
+
+  void HandleGetName(::dbus::MethodCall* method_call,
+                     int timeout_ms,
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    auto response = ::dbus::Response::CreateEmpty();
+    ::dbus::MessageWriter msg(response.get());
+    msg.AppendString(adapter_name_);
+
+    std::move(*cb).Run(response.get(), nullptr);
+  }
+
+  void HandleGetDiscoverable(::dbus::MethodCall* method_call,
+                             int timeout_ms,
+                             ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    auto response = ::dbus::Response::CreateEmpty();
+    ::dbus::MessageWriter msg(response.get());
+    msg.AppendBool(adapter_discoverable_);
 
     std::move(*cb).Run(response.get(), nullptr);
   }
@@ -213,6 +248,35 @@ class FlossAdapterClientTest : public testing::Test {
     }
 
     client_->OnAddressChanged(&method_call, std::move(response));
+  }
+
+  void SendNameChangeCallback(bool error,
+                              const std::string& name,
+                              dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(adapter::kCallbackInterface,
+                                 adapter::kOnNameChanged);
+    method_call.SetSerial(serial_++);
+    if (!error) {
+      dbus::MessageWriter writer(&method_call);
+      writer.AppendString(name);
+    }
+
+    client_->OnNameChanged(&method_call, std::move(response));
+  }
+
+  void SendDiscoverableChangeCallback(
+      bool error,
+      bool discoverable,
+      dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(adapter::kCallbackInterface,
+                                 adapter::kOnDiscoverableChanged);
+    method_call.SetSerial(serial_++);
+    if (!error) {
+      dbus::MessageWriter writer(&method_call);
+      writer.AppendBool(discoverable);
+    }
+
+    client_->OnDiscoverableChanged(&method_call, std::move(response));
   }
 
   void SendDiscoveringChangeCallback(
@@ -308,6 +372,8 @@ class FlossAdapterClientTest : public testing::Test {
   int adapter_index_ = 5;
   dbus::ObjectPath adapter_path_;
   std::string adapter_address_ = "00:11:22:33:44:55";
+  std::string adapter_name_ = "floss";
+  bool adapter_discoverable_ = false;
 
   scoped_refptr<::dbus::MockBus> bus_;
   scoped_refptr<::dbus::MockExportedObject> exported_callbacks_;
@@ -333,6 +399,14 @@ TEST_F(FlossAdapterClientTest, InitializesCorrectly) {
       *adapter_object_proxy_.get(),
       DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetAddress), _, _))
       .Times(1);
+  EXPECT_CALL(
+      *adapter_object_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetName), _, _))
+      .Times(1);
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kGetDiscoverable), _, _))
+      .Times(1);
   EXPECT_CALL(*adapter_object_proxy_.get(),
               DoCallMethodWithErrorResponse(
                   HasMemberOf(adapter::kRegisterCallback), _, _))
@@ -342,6 +416,13 @@ TEST_F(FlossAdapterClientTest, InitializesCorrectly) {
   // Make sure the address is initialized correctly
   EXPECT_EQ(test_observer.address_changed_count_, 1);
   EXPECT_EQ(client_->GetAddress(), adapter_address_);
+
+  // Make sure name is initialized correctly
+  EXPECT_EQ(client_->GetName(), adapter_name_);
+
+  // Make sure discoverable is initialized correctly
+  EXPECT_EQ(test_observer.discoverable_changed_count_, 1);
+  EXPECT_EQ(client_->GetDiscoverable(), adapter_discoverable_);
 }
 
 TEST_F(FlossAdapterClientTest, HandlesAddressChanges) {
@@ -365,6 +446,43 @@ TEST_F(FlossAdapterClientTest, HandlesAddressChanges) {
   EXPECT_EQ(test_observer.address_changed_count_, 2);
   EXPECT_EQ(test_observer.address_, test_address);
   EXPECT_EQ(client_->GetAddress(), test_address);
+}
+
+TEST_F(FlossAdapterClientTest, HandlesNameChanges) {
+  TestAdapterObserver test_observer(client_.get());
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  std::string test_name("floss_test_name");
+  SendNameChangeCallback(
+      /*error=*/false, test_name,
+      base::BindOnce(&FlossAdapterClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(client_->GetName(), test_name);
+}
+
+TEST_F(FlossAdapterClientTest, HandlesDiscoverableChanges) {
+  TestAdapterObserver test_observer(client_.get());
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+  EXPECT_EQ(test_observer.discoverable_changed_count_, 1);
+
+  SendDiscoverableChangeCallback(
+      /*error=*/true, /*discoverable=*/true,
+      base::BindOnce(&FlossAdapterClientTest::ExpectErrorResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(test_observer.discoverable_changed_count_, 1);
+  EXPECT_EQ(test_observer.discoverable_, false);
+  EXPECT_EQ(client_->GetDiscoverable(), false);
+
+  SendDiscoverableChangeCallback(
+      /*error=*/false, /*discoverable=*/true,
+      base::BindOnce(&FlossAdapterClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(test_observer.discoverable_changed_count_, 2);
+  EXPECT_EQ(test_observer.discoverable_, true);
+  EXPECT_EQ(client_->GetDiscoverable(), true);
 }
 
 TEST_F(FlossAdapterClientTest, HandlesDiscoveryChanges) {

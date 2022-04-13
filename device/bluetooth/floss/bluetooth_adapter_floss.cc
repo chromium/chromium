@@ -182,7 +182,10 @@ std::string BluetoothAdapterFloss::GetAddress() const {
 }
 
 std::string BluetoothAdapterFloss::GetName() const {
-  return std::string();
+  if (!IsPresent())
+    return std::string();
+
+  return FlossDBusManager::Get()->GetAdapterClient()->GetName();
 }
 
 std::string BluetoothAdapterFloss::GetSystemName() const {
@@ -192,7 +195,17 @@ std::string BluetoothAdapterFloss::GetSystemName() const {
 void BluetoothAdapterFloss::SetName(const std::string& name,
                                     base::OnceClosure callback,
                                     ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  if (!IsPresent()) {
+    BLUETOOTH_LOG(ERROR) << "SetName: " << name << ". Not Present!";
+    std::move(error_callback).Run();
+    return;
+  }
+
+  FlossDBusManager::Get()->GetAdapterClient()->SetName(
+      base::BindOnce(&BluetoothAdapterFloss::OnMethodResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      name);
 }
 
 bool BluetoothAdapterFloss::IsInitialized() const {
@@ -240,13 +253,27 @@ void BluetoothAdapterFloss::SetPowered(bool powered,
 }
 
 bool BluetoothAdapterFloss::IsDiscoverable() const {
-  return false;
+  if (!IsPresent())
+    return false;
+
+  return FlossDBusManager::Get()->GetAdapterClient()->GetDiscoverable();
 }
 
 void BluetoothAdapterFloss::SetDiscoverable(bool discoverable,
                                             base::OnceClosure callback,
                                             ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  if (!IsPresent()) {
+    BLUETOOTH_LOG(ERROR) << "SetDiscoverable: " << discoverable
+                         << ". Not Present!";
+    std::move(error_callback).Run();
+    return;
+  }
+
+  FlossDBusManager::Get()->GetAdapterClient()->SetDiscoverable(
+      base::BindOnce(&BluetoothAdapterFloss::OnMethodResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      discoverable);
 }
 
 bool BluetoothAdapterFloss::IsDiscovering() const {
@@ -381,7 +408,9 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
 
 // Announce to observers a change in the adapter state.
 void BluetoothAdapterFloss::DiscoverableChanged(bool discoverable) {
-  NOTIMPLEMENTED();
+  for (auto& observer : observers_) {
+    observer.AdapterDiscoverableChanged(this, discoverable);
+  }
 }
 
 void BluetoothAdapterFloss::DiscoveringChanged(bool discovering) {

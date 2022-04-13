@@ -77,6 +77,10 @@ const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 
 namespace adapter {
 const char kGetAddress[] = "GetAddress";
+const char kGetName[] = "GetName";
+const char kSetName[] = "SetName";
+const char kGetDiscoverable[] = "GetDiscoverable";
+const char kSetDiscoverable[] = "SetDiscoverable";
 const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
@@ -97,7 +101,9 @@ const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
 const char kConnectionCallbackInterface[] =
     "org.chromium.bluetooth.BluetoothConnectionCallback";
 
-const char kOnAddressChanged[] = "OnBluetoothAddressChanged";
+const char kOnAddressChanged[] = "OnAddressChanged";
+const char kOnNameChanged[] = "OnNameChanged";
+const char kOnDiscoverableChanged[] = "OnDiscoverableChanged";
 const char kOnDeviceFound[] = "OnDeviceFound";
 const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
