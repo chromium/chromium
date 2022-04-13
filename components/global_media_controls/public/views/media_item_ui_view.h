@@ -80,7 +80,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       const base::flat_set<media_session::mojom::MediaSessionAction>& actions)
       override;
   void OnMediaArtworkChanged(const gfx::ImageSkia& image) override;
-  void OnColorsChanged(SkColor foreground, SkColor background) override;
+  void OnColorsChanged(SkColor foreground,
+                       SkColor foreground_disabled,
+                       SkColor background) override;
   void OnHeaderClicked() override;
 
   // views::SlideOutControllerDelegate:
@@ -146,8 +148,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
 
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
 
-  SkColor foreground_color_;
-  SkColor background_color_;
+  SkColor foreground_color_ = kDefaultForegroundColor;
+  SkColor foreground_disabled_color_ = kDefaultForegroundColor;
+  SkColor background_color_ = kDefaultBackgroundColor;
 
   bool has_artwork_ = false;
   bool has_many_actions_ = false;

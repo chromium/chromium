@@ -457,13 +457,18 @@ void FindBarView::OnThemeChanged() {
       color_provider->GetColor(kColorFindBarMatchCount));
   separator_->SetColor(color_provider->GetColor(kColorFindBarSeparator));
 
-  const SkColor fg_color = color_provider->GetColor(kColorFindBarForeground);
-  views::SetImageFromVectorIcon(find_previous_button_,
-                                vector_icons::kCaretUpIcon, fg_color);
-  views::SetImageFromVectorIcon(find_next_button_, vector_icons::kCaretDownIcon,
-                                fg_color);
-  views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                                fg_color);
+  const SkColor fg_color = color_provider->GetColor(kColorFindBarButtonIcon);
+  const SkColor fg_disabled_color =
+      color_provider->GetColor(kColorFindBarButtonIconDisabled);
+  views::SetImageFromVectorIconWithColor(find_previous_button_,
+                                         vector_icons::kCaretUpIcon, fg_color,
+                                         fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(find_next_button_,
+                                         vector_icons::kCaretDownIcon, fg_color,
+                                         fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(close_button_,
+                                         vector_icons::kCloseRoundedIcon,
+                                         fg_color, fg_disabled_color);
 }
 
 BEGIN_METADATA(FindBarView, views::View)

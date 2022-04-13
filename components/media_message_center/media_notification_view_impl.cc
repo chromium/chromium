@@ -767,7 +767,8 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   views::SetImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPlay),
-      kMediaButtonIconSize, theme.enabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPause),
@@ -777,7 +778,8 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   views::SetImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kEnterPictureInPicture),
-      kMediaButtonIconSize, theme.enabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kExitPictureInPicture),
@@ -794,12 +796,14 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
 
     views::SetImageFromVectorIconWithColor(
         button, *GetVectorIconForMediaAction(GetActionFromButtonTag(*button)),
-        kMediaButtonIconSize, theme.enabled_icon_color);
+        kMediaButtonIconSize, theme.enabled_icon_color,
+        theme.disabled_icon_color);
 
     button->SchedulePaint();
   }
 
-  container_->OnColorsChanged(theme.enabled_icon_color, background);
+  container_->OnColorsChanged(theme.enabled_icon_color,
+                              theme.disabled_icon_color, background);
 }
 
 void MediaNotificationViewImpl::ButtonPressed(views::Button* button) {

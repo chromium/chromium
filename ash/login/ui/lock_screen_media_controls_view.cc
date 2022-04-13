@@ -206,12 +206,14 @@ class MediaActionButton : public views::ImageButton {
 
  private:
   void UpdateIcon() {
-    views::SetImageFromVectorIcon(
+    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    SkColor icon_disabled_color =
+        SkColorSetA(icon_color, gfx::kDisabledControlAlpha);
+    views::SetImageFromVectorIconWithColor(
         this,
         GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
-        icon_size_,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
+        icon_size_, icon_color, icon_disabled_color);
   }
 
   int const icon_size_;

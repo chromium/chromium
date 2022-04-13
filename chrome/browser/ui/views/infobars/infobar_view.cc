@@ -10,6 +10,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -105,9 +106,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         &InfoBarView::CloseButtonPressed, base::Unretained(this)));
     // This is the wrong color, but allows the button's size to be computed
     // correctly.  We'll reset this with the correct color in OnThemeChanged().
-    views::SetImageFromVectorIcon(close_button.get(),
-                                  vector_icons::kCloseRoundedIcon,
-                                  gfx::kPlaceholderColor);
+    views::SetImageFromVectorIconWithColor(
+        close_button.get(), vector_icons::kCloseRoundedIcon,
+        gfx::kPlaceholderColor, gfx::kPlaceholderColor);
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
     close_button->SetProperty(
@@ -211,14 +212,18 @@ void InfoBarView::OnPaint(gfx::Canvas* canvas) {
 
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const auto* tp = GetThemeProvider();
-  const SkColor background_color = tp->GetColor(ThemeProperties::COLOR_INFOBAR);
+  const auto* cp = GetColorProvider();
+  const SkColor background_color = cp->GetColor(kColorInfoBarBackground);
   SetBackground(views::CreateSolidBackground(background_color));
 
-  const SkColor text_color = tp->GetColor(ThemeProperties::COLOR_INFOBAR_TEXT);
+  const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
+  const SkColor icon_color = cp->GetColor(kColorInfoBarButtonIcon);
+  const SkColor icon_disabled_color =
+      cp->GetColor(kColorInfoBarButtonIconDisabled);
   if (close_button_) {
-    views::SetImageFromVectorIcon(close_button_,
-                                  vector_icons::kCloseRoundedIcon, text_color);
+    views::SetImageFromVectorIconWithColor(close_button_,
+                                           vector_icons::kCloseRoundedIcon,
+                                           icon_color, icon_disabled_color);
   }
 
   for (views::View* child : children()) {

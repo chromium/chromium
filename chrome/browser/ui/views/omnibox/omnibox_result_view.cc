@@ -277,7 +277,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
       GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      GetColor(OmniboxPart::RESULTS_ICON));
+      GetColor(OmniboxPart::RESULTS_ICON),
+      /* omnibox buttons are never disabled */
+      gfx::kPlaceholderColor);
 
   SetBackground(GetPopupCellBackground(this, GetThemeState()));
 

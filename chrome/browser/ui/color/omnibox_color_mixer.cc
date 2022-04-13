@@ -38,6 +38,12 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
                                        ? ui::ContrastInvert(kColorOmniboxText)
                                        : kColorOmniboxText;
 
+  // Location bar colors.
+  mixer[kColorLocationBarClearAllButtonIcon] =
+      ui::DeriveDefaultIconColor(kColorOmniboxText);
+  mixer[kColorLocationBarClearAllButtonIconDisabled] = ui::SetAlpha(
+      kColorLocationBarClearAllButtonIcon, gfx::kDisabledControlAlpha);
+
   // Omnibox background colors.
   mixer[kColorOmniboxBackground] =
       ui::GetResultingPaintColor(ui::FromTransformInput(), kColorToolbar);
