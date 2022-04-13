@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 
 #include <iostream>
 #include "base/run_loop.h"
@@ -43,12 +43,14 @@ class TestObserver : public GarbageCollected<TestObserver>,
 
 }  // namespace
 
-class MediaStreamTrackTest : public testing::Test {
+class MediaStreamTrackImplTest : public testing::Test {
  public:
-  ~MediaStreamTrackTest() override { WebHeap::CollectAllGarbageForTesting(); }
+  ~MediaStreamTrackImplTest() override {
+    WebHeap::CollectAllGarbageForTesting();
+  }
 };
 
-TEST_F(MediaStreamTrackTest, StopTrackTriggersObservers) {
+TEST_F(MediaStreamTrackImplTest, StopTrackTriggersObservers) {
   V8TestingScope v8_scope;
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
@@ -56,7 +58,7 @@ TEST_F(MediaStreamTrackTest, StopTrackTriggersObservers) {
       false /* remote */);
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponent>(source);
-  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrack>(
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
   TestObserver* testObserver = MakeGarbageCollected<TestObserver>();
@@ -69,7 +71,7 @@ TEST_F(MediaStreamTrackTest, StopTrackTriggersObservers) {
   EXPECT_EQ(testObserver->ObservationCount(), 2);
 }
 
-TEST_F(MediaStreamTrackTest, LabelSanitizer) {
+TEST_F(MediaStreamTrackImplTest, LabelSanitizer) {
   V8TestingScope v8_scope;
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
@@ -77,7 +79,7 @@ TEST_F(MediaStreamTrackTest, LabelSanitizer) {
       false /* remote */);
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponent>(source);
-  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrack>(
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
   EXPECT_EQ(track->label(), "AirPods");
 }

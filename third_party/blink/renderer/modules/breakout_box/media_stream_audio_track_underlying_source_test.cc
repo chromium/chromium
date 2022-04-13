@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -55,7 +56,8 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
             String::FromUTF8("audio_track"), media_stream_source);
     pushable_audio_source_ptr->ConnectToTrack(component);
 
-    return MakeGarbageCollected<MediaStreamTrack>(execution_context, component);
+    return MakeGarbageCollected<MediaStreamTrackImpl>(execution_context,
+                                                      component);
   }
 
   MediaStreamAudioTrackUnderlyingSource* CreateSource(ScriptState* script_state,

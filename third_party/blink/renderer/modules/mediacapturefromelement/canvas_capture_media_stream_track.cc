@@ -34,13 +34,14 @@ CanvasCaptureMediaStreamTrack* CanvasCaptureMediaStreamTrack::clone(
 void CanvasCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(canvas_element_);
   visitor->Trace(draw_listener_);
-  MediaStreamTrack::Trace(visitor);
+  MediaStreamTrackImpl::Trace(visitor);
 }
 
 CanvasCaptureMediaStreamTrack::CanvasCaptureMediaStreamTrack(
     const CanvasCaptureMediaStreamTrack& track,
     MediaStreamComponent* component)
-    : MediaStreamTrack(track.canvas_element_->GetExecutionContext(), component),
+    : MediaStreamTrackImpl(track.canvas_element_->GetExecutionContext(),
+                           component),
       canvas_element_(track.canvas_element_),
       draw_listener_(track.draw_listener_) {
   canvas_element_->AddListener(draw_listener_.Get());
@@ -51,7 +52,7 @@ CanvasCaptureMediaStreamTrack::CanvasCaptureMediaStreamTrack(
     HTMLCanvasElement* element,
     ExecutionContext* context,
     std::unique_ptr<CanvasCaptureHandler> handler)
-    : MediaStreamTrack(context, component), canvas_element_(element) {
+    : MediaStreamTrackImpl(context, component), canvas_element_(element) {
   draw_listener_ =
       MakeGarbageCollected<AutoCanvasDrawListener>(std::move(handler));
   canvas_element_->AddListener(draw_listener_.Get());
@@ -63,7 +64,7 @@ CanvasCaptureMediaStreamTrack::CanvasCaptureMediaStreamTrack(
     ExecutionContext* context,
     std::unique_ptr<CanvasCaptureHandler> handler,
     double frame_rate)
-    : MediaStreamTrack(context, component), canvas_element_(element) {
+    : MediaStreamTrackImpl(context, component), canvas_element_(element) {
   if (frame_rate == 0) {
     draw_listener_ =
         MakeGarbageCollected<OnRequestCanvasDrawListener>(std::move(handler));

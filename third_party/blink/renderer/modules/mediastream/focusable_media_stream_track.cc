@@ -32,10 +32,10 @@ FocusableMediaStreamTrack::FocusableMediaStreamTrack(
     base::OnceClosure callback,
     const String& descriptor_id,
     bool is_clone)
-    : MediaStreamTrack(execution_context,
-                       component,
-                       ready_state,
-                       std::move(callback)),
+    : MediaStreamTrackImpl(execution_context,
+                           component,
+                           ready_state,
+                           std::move(callback)),
 #if !BUILDFLAG(IS_ANDROID)
       is_clone_(is_clone),
 #endif
@@ -111,7 +111,7 @@ FocusableMediaStreamTrack* FocusableMediaStreamTrack::clone(
 void FocusableMediaStreamTrack::CloneInternal(
     FocusableMediaStreamTrack* cloned_track) {
   // Clone parent classes' state.
-  MediaStreamTrack::CloneInternal(cloned_track);
+  MediaStreamTrackImpl::CloneInternal(cloned_track);
 
   // Clone own state.
 #if !BUILDFLAG(IS_ANDROID)

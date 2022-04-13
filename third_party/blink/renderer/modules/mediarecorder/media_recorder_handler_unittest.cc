@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -87,7 +88,7 @@ MediaStream* CreateMediaStream(V8TestingScope& scope) {
   auto* component =
       MakeGarbageCollected<MediaStreamComponent>("audioTrack", source);
 
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);
 
   HeapVector<Member<MediaStreamTrack>> tracks;

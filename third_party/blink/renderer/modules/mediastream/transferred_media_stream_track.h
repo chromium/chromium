@@ -32,7 +32,7 @@ class ScriptState;
 // full instance.
 class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
  public:
-  explicit TransferredMediaStreamTrack(ExecutionContext*);
+  TransferredMediaStreamTrack() = default;
 
   // MediaStreamTrack.idl
   String kind() const override;
@@ -55,10 +55,47 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
   void setImplementation(MediaStreamTrack* track);
 
+  void SetConstraints(const MediaConstraints&) override;
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(capturehandlechange, kCapturehandlechange)
+
+  MediaStreamSource::ReadyState GetReadyState() override;
+
+  MediaStreamComponent* Component() const override;
+  bool Ended() const override;
+
+  void RegisterMediaStream(MediaStream*) override;
+  void UnregisterMediaStream(MediaStream*) override;
+
+  // EventTarget
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+  void AddedEventListener(const AtomicString&,
+                          RegisteredEventListener&) override;
+
+  // ScriptWrappable
+  bool HasPendingActivity() const override;
+
+  std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
+      int context_sample_rate) override;
+
+  ImageCapture* GetImageCapture() override;
+  absl::optional<base::UnguessableToken> serializable_session_id()
+      const override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Only relevant for focusable streams (FocusableMediaStreamTrack).
+  // When called on one of these, it signals that Conditional Focus
+  // no longer applies - the browser will now decide whether
+  // the captured display surface should be captured. Later calls to
+  // FocusableMediaStreamTrack.focus() will now raise an exception.
+  void CloseFocusWindowOfOpportunity() override;
+#endif
+
+  void AddObserver(Observer*) override;
 
   void Trace(Visitor*) const override;
 

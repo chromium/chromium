@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -16,7 +16,7 @@ class ExecutionContext;
 class HTMLCanvasElement;
 class CanvasCaptureHandler;
 
-class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
+class CanvasCaptureMediaStreamTrack final : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -110,9 +110,9 @@ MediaStreamSource* MediaStreamTrackGenerator::MakeMediaStreamSource(
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
     MediaStreamSource::StreamType type)
-    : MediaStreamTrack(ExecutionContext::From(script_state),
-                       MakeGarbageCollected<MediaStreamComponent>(
-                           MakeMediaStreamSource(script_state, type))) {
+    : MediaStreamTrackImpl(ExecutionContext::From(script_state),
+                           MakeGarbageCollected<MediaStreamComponent>(
+                               MakeMediaStreamSource(script_state, type))) {
   if (type == MediaStreamSource::kTypeVideo) {
     CreateVideoOutputPlatformTrack();
   } else {
@@ -189,7 +189,7 @@ void MediaStreamTrackGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(video_underlying_sink_);
   visitor->Trace(audio_underlying_sink_);
   visitor->Trace(writable_);
-  MediaStreamTrack::Trace(visitor);
+  MediaStreamTrackImpl::Trace(visitor);
 }
 
 }  // namespace blink

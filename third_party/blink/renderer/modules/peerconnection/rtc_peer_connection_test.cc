@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -421,8 +422,8 @@ class RTCPeerConnectionTest : public testing::Test {
     auto* source = MakeGarbageCollected<MediaStreamSource>("sourceId", type,
                                                            "sourceName", false);
     auto* component = MakeGarbageCollected<MediaStreamComponent>(id, source);
-    return MakeGarbageCollected<MediaStreamTrack>(scope.GetExecutionContext(),
-                                                  component);
+    return MakeGarbageCollected<MediaStreamTrackImpl>(
+        scope.GetExecutionContext(), component);
   }
 
   std::string GetExceptionMessage(V8TestingScope& scope) {

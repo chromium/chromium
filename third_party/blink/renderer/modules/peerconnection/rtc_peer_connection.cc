@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
@@ -2707,8 +2708,8 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
   // Create track.
   MediaStreamTrack* track;
   if (receiver_it == rtp_receivers_.end()) {
-    track = MakeGarbageCollected<MediaStreamTrack>(GetExecutionContext(),
-                                                   platform_receiver->Track());
+    track = MakeGarbageCollected<MediaStreamTrackImpl>(
+        GetExecutionContext(), platform_receiver->Track());
     RegisterTrack(track);
   } else {
     track = (*receiver_it)->track();
@@ -3006,7 +3007,7 @@ void RTCPeerConnection::DidModifyReceiversPlanB(
   // Process the addition of receivers.
   for (auto& platform_receiver : platform_receivers_added) {
     // Create track.
-    auto* track = MakeGarbageCollected<MediaStreamTrack>(
+    auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
         GetExecutionContext(), platform_receiver->Track());
     tracks_.insert(track->Component(), track);
     // Create or update streams.

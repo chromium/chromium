@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -50,7 +51,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
   }
 
   MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
-    return MakeGarbageCollected<MediaStreamTrack>(
+    return MakeGarbageCollected<MediaStreamTrackImpl>(
         execution_context,
         MediaStreamVideoTrack::CreateVideoTrack(
             pushable_video_source_,
@@ -362,7 +363,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
           media_stream_source->GetPlatformSource());
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(),
       MediaStreamVideoTrack::CreateVideoTrack(
           platform_video_source,
@@ -463,7 +464,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
           media_stream_source2->GetPlatformSource());
   V8TestingScope v8_scope2;
   ScriptState* script_state2 = v8_scope2.GetScriptState();
-  auto* track2 = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track2 = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope2.GetExecutionContext(),
       MediaStreamVideoTrack::CreateVideoTrack(
           platform_video_source2,

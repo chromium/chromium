@@ -51,16 +51,6 @@
 
 namespace blink {
 
-TransferredMediaStreamTrack::TransferredMediaStreamTrack(
-    ExecutionContext* context)
-    : MediaStreamTrack(context,
-                       MakeGarbageCollected<MediaStreamComponent>(
-                           MakeGarbageCollected<MediaStreamSource>(
-                               "dummy",
-                               MediaStreamSource::StreamType::kTypeVideo,
-                               "dummy",
-                               false /* remote */))) {}
-
 String TransferredMediaStreamTrack::kind() const {
   if (track_) {
     return track_->kind();
@@ -201,6 +191,130 @@ void TransferredMediaStreamTrack::setImplementation(MediaStreamTrack* track) {
   // before this point. Also set up plumbing so that events fired by the
   // implementation track are propagated to anything listening to events on this
   // object.
+}
+
+void TransferredMediaStreamTrack::SetConstraints(
+    const MediaConstraints& constraints) {
+  if (track_) {
+    track_->SetConstraints(constraints);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
+MediaStreamSource::ReadyState TransferredMediaStreamTrack::GetReadyState() {
+  if (track_) {
+    return track_->GetReadyState();
+  }
+  // TODO(https://crbug.com/1288839): return the transferred value.
+  return MediaStreamSource::kReadyStateLive;
+}
+
+MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
+  if (track_) {
+    return track_->Component();
+  }
+  // TODO(https://crbug.com/1288839): return the transferred value.
+  return nullptr;
+}
+
+bool TransferredMediaStreamTrack::Ended() const {
+  if (track_) {
+    return track_->Ended();
+  }
+  // TODO(https://crbug.com/1288839): return the transferred value.
+  return false;
+}
+
+void TransferredMediaStreamTrack::RegisterMediaStream(MediaStream* stream) {
+  if (track_) {
+    track_->RegisterMediaStream(stream);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
+void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
+  if (track_) {
+    track_->UnregisterMediaStream(stream);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
+// EventTarget
+const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
+  // TODO(https://crbug.com/1288839): Should TMST have its own interface name?
+  return event_target_names::kMediaStreamTrack;
+}
+
+ExecutionContext* TransferredMediaStreamTrack::GetExecutionContext() const {
+  if (track_) {
+    return track_->GetExecutionContext();
+  }
+  // TODO(https://crbug.com/1288839): return the transferred value.
+  return nullptr;
+}
+
+void TransferredMediaStreamTrack::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  if (track_) {
+    return track_->AddedEventListener(event_type, registered_listener);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
+bool TransferredMediaStreamTrack::HasPendingActivity() const {
+  if (track_) {
+    return track_->HasPendingActivity();
+  }
+  return false;
+}
+
+std::unique_ptr<AudioSourceProvider>
+TransferredMediaStreamTrack::CreateWebAudioSource(int context_sample_rate) {
+  if (track_) {
+    return track_->CreateWebAudioSource(context_sample_rate);
+  }
+  // TODO(https://crbug.com/1288839): Create one based on transferred data?
+  return nullptr;
+}
+
+ImageCapture* TransferredMediaStreamTrack::GetImageCapture() {
+  if (track_) {
+    return track_->GetImageCapture();
+  }
+  // TODO(https://crbug.com/1288839): Create one based on transferred data?
+  return nullptr;
+}
+
+absl::optional<base::UnguessableToken>
+TransferredMediaStreamTrack::serializable_session_id() const {
+  if (track_) {
+    return track_->serializable_session_id();
+  }
+  // TODO(https://crbug.com/1288839): Return transferred data
+  return absl::nullopt;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void TransferredMediaStreamTrack::CloseFocusWindowOfOpportunity() {
+  if (track_) {
+    track_->CloseFocusWindowOfOpportunity();
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+#endif
+
+void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
+  if (track_) {
+    track_->AddObserver(observer);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
 }
 
 void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {

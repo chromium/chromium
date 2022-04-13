@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_TRACK_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_TRACK_GENERATOR_H_
 
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -18,7 +18,7 @@ class PushableMediaStreamVideoSource;
 class ScriptState;
 class WritableStream;
 
-class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
+class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

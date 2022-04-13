@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -28,7 +29,7 @@ MediaStream* CreateMediaStream(V8TestingScope* scope) {
   component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
       native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
       true /* enabled */));
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope->GetExecutionContext(), component);
   return MediaStream::Create(scope->GetExecutionContext(),
                              MediaStreamTrackVector{track});

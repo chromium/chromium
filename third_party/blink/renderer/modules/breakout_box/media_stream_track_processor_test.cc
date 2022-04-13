@@ -82,7 +82,7 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
 
   source_ptr->ConnectToTrack(component);
 
-  return MakeGarbageCollected<MediaStreamTrack>(context, component);
+  return MakeGarbageCollected<MediaStreamTrackImpl>(context, component);
 }
 
 }  // namespace
