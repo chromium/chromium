@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -27,18 +28,14 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
  public:
   using TView = ActiveDirectoryPasswordChangeView;
 
-  explicit ActiveDirectoryPasswordChangeScreen(
-      ActiveDirectoryPasswordChangeView* view,
+  ActiveDirectoryPasswordChangeScreen(
+      base::WeakPtr<TView> view,
       const base::RepeatingClosure& exit_callback);
   ActiveDirectoryPasswordChangeScreen(
       const ActiveDirectoryPasswordChangeScreen&) = delete;
   ActiveDirectoryPasswordChangeScreen& operator=(
       const ActiveDirectoryPasswordChangeScreen&) = delete;
   ~ActiveDirectoryPasswordChangeScreen() override;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(ActiveDirectoryPasswordChangeView* view);
 
   // Set username.
   void SetUsername(const std::string& username);
@@ -70,7 +67,7 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
   // password on the Active Directory server.
   std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
-  ActiveDirectoryPasswordChangeView* view_ = nullptr;
+  base::WeakPtr<TView> view_;
 
   base::RepeatingClosure exit_callback_;
 

@@ -18,24 +18,17 @@ constexpr char kErrorKey[] = "error";
 
 }  // namespace
 
-constexpr StaticOobeScreenId ActiveDirectoryPasswordChangeView::kScreenId;
-
 ActiveDirectoryPasswordChangeScreenHandler::
     ActiveDirectoryPasswordChangeScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.ActiveDirectoryPasswordChangeScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
 ActiveDirectoryPasswordChangeScreenHandler::
-    ~ActiveDirectoryPasswordChangeScreenHandler() {}
+    ~ActiveDirectoryPasswordChangeScreenHandler() = default;
 
 void ActiveDirectoryPasswordChangeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("adPassChangeMessage", IDS_AD_PASSWORD_CHANGE_MESSAGE);
 }
-
-void ActiveDirectoryPasswordChangeScreenHandler::InitializeDeprecated() {}
 
 void ActiveDirectoryPasswordChangeScreenHandler::Show(
     const std::string& username,
@@ -46,19 +39,9 @@ void ActiveDirectoryPasswordChangeScreenHandler::Show(
   ShowInWebUI(std::move(data));
 }
 
-void ActiveDirectoryPasswordChangeScreenHandler::Bind(
-    ActiveDirectoryPasswordChangeScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void ActiveDirectoryPasswordChangeScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void ActiveDirectoryPasswordChangeScreenHandler::ShowSignInError(
     const std::string& error_text) {
-  CallJS("login.ActiveDirectoryPasswordChangeScreen.showErrorDialog",
-         error_text);
+  CallExternalAPI("showErrorDialog", error_text);
 }
 
 }  // namespace chromeos
