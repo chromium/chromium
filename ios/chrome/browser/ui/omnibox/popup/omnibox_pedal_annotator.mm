@@ -120,6 +120,7 @@ const char kChromeUIScheme[] = "chrome";
           accessibilityHint:suggestionContents
                   imageName:@"pedal_incognito"
                      action:^{
+                       [omniboxCommandHandler cancelOmniboxEdit];
                        [pedalsEndpoint
                            openURLInNewTab:[OpenNewTabCommand
                                                incognitoTabCommand]];
