@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import Foundation
+import SwiftUI
 
 @objcMembers public class PopupMatch: NSObject, Identifiable {
   // The underlying suggestion backing all the data.
@@ -80,6 +81,20 @@ extension PopupMatch {
       self.icon = icon
       self.pedal = pedal
     }
+
+    init(
+      attributedText: NSAttributedString, attributedDetailText: NSAttributedString? = nil,
+      isAppendable: Bool = false, isTabMatch: Bool = false,
+      supportsDeletion: Bool = false, icon: OmniboxIcon? = nil, pedal: OmniboxPedalData? = nil
+    ) {
+      self.text = attributedText
+      self.detailText = attributedDetailText
+      self.isAppendable = isAppendable
+      self.isTabMatch = isTabMatch
+      self.supportsDeletion = supportsDeletion
+      self.icon = icon
+      self.pedal = pedal
+    }
   }
 
   static let short = PopupMatch(
@@ -120,5 +135,20 @@ extension PopupMatch {
       text: "supports deletion",
       isAppendable: true,
       supportsDeletion: true))
-  static let previews = [short, long, pedal, appendable, tabMatch, supportsDeletion]
+
+  // The blue attribued string is used to verify that keyboard highlighting overrides the attributes.
+  static let blueAttributedText = PopupMatch(
+    suggestion: FakeAutocompleteSuggestion(
+      attributedText: NSAttributedString(
+        string: "blue attr string",
+        attributes: [
+          NSAttributedString.Key.foregroundColor: UIColor.blue
+        ]),
+      isAppendable: true,
+      supportsDeletion: true))
+
+  static let previews = [
+    short, long, pedal, appendable, tabMatch, supportsDeletion, blueAttributedText,
+  ]
+
 }

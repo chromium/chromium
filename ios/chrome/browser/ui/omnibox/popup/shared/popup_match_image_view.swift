@@ -14,17 +14,21 @@ struct PopupMatchImageView: View {
   /// The image model object for this view.
   @ObservedObject var image: PopupImage
 
+  // Overrides the foreground color of the image. Used for keyboard selection state.
+  let highlightColor: Color?
+
   var body: some View {
     ZStack {
       image.backgroundImage?.foregroundColor(image.backgroundImageTintColor)
       switch image.icon.iconType {
       case .favicon:
-        (image.iconImageFromURL ?? image.iconImage).foregroundColor(image.iconImageTintColor)
+        (image.iconImageFromURL ?? image.iconImage).foregroundColor(
+          highlightColor ?? image.iconImageTintColor)
       case .suggestionIcon:
-        image.iconImage?.foregroundColor(image.iconImageTintColor)
+        image.iconImage?.foregroundColor(highlightColor ?? image.iconImageTintColor)
       case .image:
         image.iconImageFromURL?.resizable().aspectRatio(contentMode: .fit).foregroundColor(
-          image.iconImageTintColor)
+          highlightColor ?? image.iconImageTintColor)
       @unknown default:
         image.iconImage?.foregroundColor(image.iconImageTintColor)
       }
@@ -42,7 +46,7 @@ struct PopupMatchImageView_Previews: PreviewProvider {
           FakeOmniboxIcon.favicon,
         ], id: \.self
       ) { icon in
-        PopupMatchImageView(image: PopupImage(icon: icon))
+        PopupMatchImageView(image: PopupImage(icon: icon), highlightColor: nil)
       }
     }
     .previewLayout(.sizeThatFits)

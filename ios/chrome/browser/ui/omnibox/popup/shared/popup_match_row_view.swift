@@ -14,7 +14,6 @@ struct PopupMatchRowView: View {
     static let minHeight: CGFloat = 58
     static let maxHeight: CGFloat = 98
     static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
-    static let textHeight: CGFloat = 40
   }
 
   let match: PopupMatch
@@ -58,9 +57,16 @@ struct PopupMatchRowView: View {
 
   var body: some View {
     ZStack {
-      // TODO(crbug.com/1311615): This next line should be `backgroundColor`,
-      // but for some reason, that causes the tests to fail on the bots only.
-      if self.isPressed || self.isHighlighted { Color.cr_tableRowViewHighlight }
+      if isHighlighted {
+        LinearGradient(
+          gradient:
+            Gradient(colors: [backgroundColor.opacity(0.85), backgroundColor]), startPoint: .top,
+          endPoint: .bottom
+        )
+
+      } else if self.isPressed {
+        Color.cr_tableRowViewHighlight
+      }
 
       button
 
@@ -68,34 +74,37 @@ struct PopupMatchRowView: View {
       HStack(alignment: .center, spacing: 0) {
         HStack(alignment: .center, spacing: 0) {
           Spacer()
-          match.image.map { image in
-            PopupMatchImageView(image: image)
+          match.image
+            .map { image in
+              PopupMatchImageView(
+                image: image, highlightColor: isHighlighted ? foregroundColorPrimary : nil
+              )
               .accessibilityHidden(true)
-          }
+            }
           Spacer()
         }.frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
-            OmniboxText(match.text)
+            OmniboxText(match.text, highlightColor: isHighlighted ? foregroundColorPrimary : nil)
               .lineLimit(1)
-              .truncatedWithGradient(colored: backgroundColor)
+              .truncatedWithGradient()
               .accessibilityHidden(true)
 
             if let subtitle = match.detailText, !subtitle.string.isEmpty {
-              OmniboxText(subtitle)
+              OmniboxText(subtitle, highlightColor: isHighlighted ? foregroundColorPrimary : nil)
                 .font(.footnote)
-                .foregroundColor(Color.gray)
+                .foregroundColor(foregroundColorSecondary)
                 .lineLimit(1)
-                .truncatedWithGradient(colored: backgroundColor)
+                .truncatedWithGradient()
                 .accessibilityHidden(true)
             }
           }
-          .frame(height: Dimensions.textHeight)
           .allowsHitTesting(false)
         }
         Spacer()
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
+            .foregroundColor(isHighlighted ? foregroundColorPrimary : .cr_blue)
         }
       }
       .padding(Dimensions.padding)
@@ -104,10 +113,29 @@ struct PopupMatchRowView: View {
   }
 
   var backgroundColor: Color {
-    if self.isPressed || self.isHighlighted {
+    if isHighlighted {
+      return Color(red: 26 / 255, green: 115 / 255, blue: 232 / 255, opacity: 1)
+    }
+    if self.isPressed {
       return .cr_tableRowViewHighlight
     } else {
       return .cr_groupedSecondaryBackground
+    }
+  }
+
+  var foregroundColorPrimary: Color {
+    if isHighlighted {
+      return .white
+    } else {
+      return .black
+    }
+  }
+
+  var foregroundColorSecondary: Color {
+    if isHighlighted {
+      return .white
+    } else {
+      return .gray
     }
   }
 }

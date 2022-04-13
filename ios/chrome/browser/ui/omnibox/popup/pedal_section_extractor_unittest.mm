@@ -143,6 +143,87 @@ TEST_F(PedalSectionExtractorTest, ForwardsIrrelevantMethods) {
   [delegate_ verify];
 }
 
+// Only the first 3 suggestions are considered for pedal extraction.
+TEST_F(PedalSectionExtractorTest, OnlyExtractFirstFewRows) {
+  id mockSuggestionNoPedal0 =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionNoPedal0 stub] andReturn:nil] pedal];
+  id mockSuggestionNoPedal1 =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionNoPedal1 stub] andReturn:nil] pedal];
+  id mockSuggestionNoPedal2 =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionNoPedal2 stub] andReturn:nil] pedal];
+
+  id mockPedal = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
+  [[[mockPedal stub] andReturn:@"pedal title"] title];
+  id mockSuggestionWithPedal =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionWithPedal stub] andReturn:mockPedal] pedal];
+
+  AutocompleteSuggestionGroupImpl* group = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:@""
+         suggestions:@[
+           mockSuggestionNoPedal0, mockSuggestionNoPedal1,
+           mockSuggestionNoPedal2, mockSuggestionWithPedal
+         ]];
+
+  void (^verifyGroups)(NSInvocation*) = ^(NSInvocation* invocation) {
+    __unsafe_unretained NSArray<id<AutocompleteSuggestionGroup>>* groups = nil;
+    [invocation getArgument:&groups atIndex:2];
+
+    EXPECT_EQ(groups.count, 1u);
+    EXPECT_EQ(groups[0].suggestions.count, 4u);
+  };
+
+  [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
+                                          withAnimation:NO];
+
+  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+
+  [data_sink_ verify];
+}
+
+// Only extract one pedal when there are multiple.
+TEST_F(PedalSectionExtractorTest, OnlyExtractOnePedal) {
+  id mockSuggestionNoPedal =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
+
+  id mockPedal = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
+  [[[mockPedal stub] andReturn:@"pedal title"] title];
+  id mockSuggestionWithPedal0 =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionWithPedal0 stub] andReturn:mockPedal] pedal];
+
+  id mockSuggestionWithPedal1 =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionWithPedal1 stub] andReturn:mockPedal] pedal];
+
+  AutocompleteSuggestionGroupImpl* group = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:@""
+         suggestions:@[
+           mockSuggestionNoPedal, mockSuggestionWithPedal0,
+           mockSuggestionWithPedal1
+         ]];
+
+  void (^verifyGroups)(NSInvocation*) = ^(NSInvocation* invocation) {
+    __unsafe_unretained NSArray<id<AutocompleteSuggestionGroup>>* groups = nil;
+    [invocation getArgument:&groups atIndex:2];
+
+    EXPECT_EQ(groups.count, 2u);
+    EXPECT_EQ(groups[0].suggestions.count, 1u);
+    EXPECT_EQ(groups[1].suggestions.count, 3u);
+  };
+
+  [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
+                                          withAnimation:NO];
+
+  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+
+  [data_sink_ verify];
+}
+
 #pragma mark - highlight tests
 
 // Tests in this class start with a pedal and a regular match.

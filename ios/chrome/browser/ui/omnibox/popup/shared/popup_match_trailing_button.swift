@@ -17,7 +17,6 @@ struct PopupMatchTrailingButton: View {
   var body: some View {
     Button(action: action) {
       Image(systemName: match.isTabMatch ? "arrow.right.square" : "arrow.up.backward")
-        .foregroundColor(Color.cr_blue)
         .aspectRatio(contentMode: .fit)
         .frame(
           width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,

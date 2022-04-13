@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-/// GradientOverlay applies a fading effect from clear to `color` as an overlay
+/// GradientOverlay applies a fading effect from clear to opaque as an overlay
 /// heading in `direction`. E.g. `direction = .right` means the fade goes from
 /// left to right.
 struct GradientOverlay: ViewModifier {
@@ -14,12 +14,11 @@ struct GradientOverlay: ViewModifier {
   }
 
   var direction: OverlayDirection
-  var color: Color
 
   func body(content: Content) -> some View {
     content
       .frame(maxWidth: .infinity, alignment: .leading)
-      .overlay(
+      .mask(
         LinearGradient(
           gradient: Gradient(stops: stops),
           startPoint: .leading, endPoint: .trailing)
@@ -30,13 +29,13 @@ struct GradientOverlay: ViewModifier {
     switch direction {
     case .right:
       return [
-        Gradient.Stop(color: color.opacity(0), location: 0.9),
-        Gradient.Stop(color: color, location: 1),
+        Gradient.Stop(color: .white, location: 0.9),
+        Gradient.Stop(color: .clear, location: 1),
       ]
     case .left:
       return [
-        Gradient.Stop(color: color.opacity(0), location: 0.1),
-        Gradient.Stop(color: color, location: 0),
+        Gradient.Stop(color: .white, location: 0.1),
+        Gradient.Stop(color: .clear, location: 0),
       ]
     }
   }
@@ -57,8 +56,6 @@ struct SizePreferenceKey: PreferenceKey {
 /// is too wide to fit in its container. The content is clipped on the trailing
 /// edge.
 struct TruncatedWithGradient: ViewModifier {
-
-  var gradientColor: Color
 
   // Child view size (width,height)
   @State var childSize = CGSize.zero
@@ -87,7 +84,7 @@ struct TruncatedWithGradient: ViewModifier {
     .clipped()
 
     if truncated {
-      rawContent.gradientOverlay(colored: gradientColor, direction: .right)
+      rawContent.gradientOverlay(direction: .right)
     } else {
       rawContent
     }
@@ -95,12 +92,12 @@ struct TruncatedWithGradient: ViewModifier {
 }
 
 extension View {
-  func truncatedWithGradient(colored color: Color) -> some View {
-    self.modifier(TruncatedWithGradient(gradientColor: color))
+  func truncatedWithGradient() -> some View {
+    self.modifier(TruncatedWithGradient())
   }
-  func gradientOverlay(colored color: Color, direction: GradientOverlay.OverlayDirection)
+  func gradientOverlay(direction: GradientOverlay.OverlayDirection)
     -> some View
   {
-    self.modifier(GradientOverlay(direction: direction, color: color))
+    self.modifier(GradientOverlay(direction: direction))
   }
 }

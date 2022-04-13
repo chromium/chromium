@@ -261,6 +261,12 @@ struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
     PopupView(
       model: PopupModel(
+        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
+    )
+    .environment(\.sizeCategory, .accessibilityExtraLarge)
+
+    PopupView(
+      model: PopupModel(
         matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil))
   }
 }

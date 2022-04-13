@@ -15,6 +15,19 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// How many pedals can be shown at once. This number will be displayed in a
+// separate section, the rest are ignored.
+const NSUInteger kMaxPedalCount = 1;
+
+// Only this many suggestions are considered when extracting pedals. E.g. if
+// there is 100 suggestions with pedals, only the first kMaxPedalExtractionRow
+// are used to extract pedals.
+const NSUInteger kMaxPedalExtractionRow = 3;
+
+}  // namespace
+
 @interface PedalSectionExtractor ()
 
 @property(nonatomic, strong)
@@ -45,7 +58,10 @@
   self.originalResult = result;
 
   for (id<AutocompleteSuggestionGroup> group in result) {
-    for (id<AutocompleteSuggestion> suggestion in group.suggestions) {
+    for (NSUInteger i = 0;
+         i < group.suggestions.count && i < kMaxPedalExtractionRow; i++) {
+      id<AutocompleteSuggestion> suggestion = group.suggestions[i];
+
       if (suggestion.pedal != nil) {
         [self.extractedPedals addObject:suggestion.pedal];
       }
@@ -55,6 +71,10 @@
   if (self.extractedPedals.count == 0) {
     [self.dataSink updateMatches:self.originalResult withAnimation:animation];
     return;
+  }
+
+  while (self.extractedPedals.count > kMaxPedalCount) {
+    [self.extractedPedals removeLastObject];
   }
 
   NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
