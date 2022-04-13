@@ -303,15 +303,12 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
 
   if (!info_data->IsVisibleToUser())
     return;
-  if (info_data->IsFocusableInFullFocusMode()) {
-    // Only consider nodes that can possibly be accessibility focused.
+  // Only consider nodes that can possibly be accessibility focused.
+  if (info_data->IsFocusableInFullFocusMode())
     computed_bounds->Union(info_data->GetBounds());
-    return;
-  }
+
   std::vector<AccessibilityInfoDataWrapper*> children;
   info_data->GetChildren(&children);
-  if (children.empty())
-    return;
   for (AccessibilityInfoDataWrapper* child : children)
     ComputeEnclosingBoundsInternal(child, computed_bounds);
   return;
@@ -502,6 +499,50 @@ void AXTreeSourceArc::Reset() {
   router->DispatchTreeDestroyedEvent(ax_tree_id(), nullptr);
 }
 
+bool AXTreeSourceArc::NeedReorder(AccessibilityInfoDataWrapper* left,
+                                  AccessibilityInfoDataWrapper* right) const {
+  auto left_bounds = ComputeEnclosingBounds(left);
+  auto right_bounds = ComputeEnclosingBounds(right);
+  return !CompareBounds(left_bounds, right_bounds) &&
+         CompareBounds(left->GetBounds(), right->GetBounds());
+}
+
+bool AXTreeSourceArc::CompareBounds(const gfx::Rect& left,
+                                    const gfx::Rect& right) const {
+  if (left.IsEmpty() || right.IsEmpty())
+    return true;
+
+  // Non-intersecting vertical check.
+  if (left.bottom() <= right.y())
+    return true;
+
+  if (left.y() >= right.bottom())
+    return false;
+
+  // Vertically overlapping. Left one comes first.
+  // TODO consider right-to-left
+  int left_difference = left.x() - right.x();
+  if (left_difference != 0)
+    return left_difference < 0;
+
+  // Top to bottom.
+  int top_difference = left.y() - right.y();
+  if (top_difference != 0)
+    return top_difference < 0;
+
+  // Larger to smaller.
+  int height_difference = left.height() - right.height();
+  if (height_difference != 0)
+    return height_difference > 0;
+
+  int width_difference = left.width() - right.width();
+  if (width_difference != 0)
+    return width_difference > 0;
+
+  // The rects are equal. Respect the original order.
+  return true;
+}
+
 int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
   if (!info_data)
     return ui::kInvalidAXNodeID;
@@ -515,58 +556,50 @@ void AXTreeSourceArc::GetChildren(
     return;
 
   info_data->GetChildren(out_children);
-  if (out_children->empty())
+  if (out_children->size() < 2)
     return;
 
-  if (info_data->IsVirtualNode())
+  // We sort output nodes only in full focus mode.
+  // Also don't sort for virtual nodes (e.g. WebView).
+  if (!UseFullFocusMode() || info_data->IsVirtualNode())
     return;
 
-  std::map<int32_t, size_t> id_to_index;
   for (size_t i = 0; i < out_children->size(); i++) {
     if (out_children->at(i)->IsVirtualNode())
       return;
-    id_to_index[out_children->at(i)->GetId()] = i;
   }
 
-  // Sort children based on their enclosing bounding rectangles, based on their
-  // descendants.
-  std::sort(
-      out_children->begin(), out_children->end(),
-      [this, &id_to_index](auto left, auto right) {
-        auto left_bounds = ComputeEnclosingBounds(left);
-        auto right_bounds = ComputeEnclosingBounds(right);
+  // This is a kind of bubble sort, but we reorder nodes only when the original
+  // node bounds (which is from node->GetBounds()) and child enclosing bounds
+  // (which is from ComputeEnclosingBounds()) are different.
+  // This algorithm takes O(N^2) time, but we practically don't expect that
+  // there's a node that contains hundreds of child nodes that require
+  // reordering.
+  //
+  // The concept here is taken from Android accessibility's similar logic in
+  // com.google.android.accessibility.utils.traversal.ReorderedChildrenIterator.
+  //
+  // Note that NeedReorder method is not transitive, so we cannot sort with it.
+  // For example, consider bounds below:
+  //   a = (0,11)-(10x10)
+  //   b = (20,5)-(10x10)
+  //   c = (40,0)-(10x10)
+  // Here, NeedReorder(a, b) = false, NeedReorder(b, c) = false, but
+  // NeedReorder(a, c) = true.
 
-        if (left_bounds.IsEmpty() || right_bounds.IsEmpty()) {
-          return id_to_index.at(left->GetId()) < id_to_index.at(right->GetId());
-        }
+  for (int i = out_children->size() - 2; i >= 0; i--) {
+    auto original_bounds = out_children->at(i)->GetBounds();
+    auto enclosing_bounds = ComputeEnclosingBounds(out_children->at(i));
+    if (original_bounds == enclosing_bounds)
+      continue;
 
-        // Top to bottom sort (non-overlapping).
-        if (!left_bounds.Intersects(right_bounds))
-          return left_bounds.y() < right_bounds.y();
-
-        // Overlapping
-        // Left to right.
-        int left_difference = left_bounds.x() - right_bounds.x();
-        if (left_difference != 0)
-          return left_difference < 0;
-
-        // Top to bottom.
-        int top_difference = left_bounds.y() - right_bounds.y();
-        if (top_difference != 0)
-          return top_difference < 0;
-
-        // Larger to smaller.
-        int height_difference = left_bounds.height() - right_bounds.height();
-        if (height_difference != 0)
-          return height_difference > 0;
-
-        int width_difference = left_bounds.width() - right_bounds.width();
-        if (width_difference != 0)
-          return width_difference > 0;
-
-        // The rects are equal.
-        return id_to_index.at(left->GetId()) < id_to_index.at(right->GetId());
-      });
+    // move the current node to be visited later if necessary.
+    for (int j = i; j + 1 < out_children->size() &&
+                    NeedReorder(out_children->at(j), out_children->at(j + 1));
+         j++) {
+      std::swap(out_children->at(j), out_children->at(j + 1));
+    }
+  }
 }
 
 bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {

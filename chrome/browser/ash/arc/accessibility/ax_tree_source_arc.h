@@ -168,6 +168,14 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // Resets tree state.
   void Reset();
 
+  // Returns true if we want to traversal |left| after |right|.
+  // Note that this comparison is NOT transitive.
+  bool NeedReorder(AccessibilityInfoDataWrapper* left,
+                   AccessibilityInfoDataWrapper* right) const;
+
+  // Returns true if we can traversal |left| before |right|.
+  bool CompareBounds(const gfx::Rect& left, const gfx::Rect& right) const;
+
   // AXTreeSource:
   int32_t GetId(AccessibilityInfoDataWrapper* info_data) const override;
   void GetChildren(
