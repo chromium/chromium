@@ -22,8 +22,8 @@ static inline GridTrackSizingDirection OrthogonalDirection(
 
 }  // namespace
 
-std::unique_ptr<Grid> Grid::Create(const LayoutGrid* layout_grid) {
-  return base::WrapUnique(new ListGrid(layout_grid));
+Grid* Grid::Create(const LayoutGrid* layout_grid) {
+  return MakeGarbageCollected<ListGrid>(layout_grid);
 }
 
 Grid::Grid(const LayoutGrid* grid) : order_iterator_(grid) {}
@@ -230,16 +230,17 @@ GridLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::InsertAfter(
 
 const GridItemList& ListGrid::Cell(wtf_size_t row_index,
                                    wtf_size_t column_index) const {
-  DEFINE_STATIC_LOCAL(const GridItemList, empty_vector, ());
+  DEFINE_STATIC_LOCAL(const Persistent<const GridItemList>, empty_vector,
+                      (MakeGarbageCollected<GridItemList>()));
   for (auto* row = rows_->Head(); row; row = row->Next()) {
     if (row->Index() == row_index) {
       GridCell* cell = row->Find(column_index);
-      return cell ? cell->Items() : empty_vector;
+      return cell ? cell->Items() : *empty_vector;
     }
     if (row->Index() > row_index)
-      return empty_vector;
+      return *empty_vector;
   }
-  return empty_vector;
+  return *empty_vector;
 }
 
 ListGrid::GridTrack* ListGrid::InsertTracks(
@@ -356,12 +357,12 @@ ListGridIterator::ListGridIterator(const ListGrid& grid,
       grid_(grid) {}
 
 LayoutBox* ListGridIterator::NextGridItem() {
-  DCHECK(grid_.NumTracks(kForRows));
-  DCHECK(grid_.NumTracks(kForColumns));
+  DCHECK(grid_->NumTracks(kForRows));
+  DCHECK(grid_->NumTracks(kForColumns));
 
   bool is_row_axis = direction_ == kForColumns;
   if (!cell_node_) {
-    auto* track = is_row_axis ? grid_.columns_->Head() : grid_.rows_->Head();
+    auto* track = is_row_axis ? grid_->columns_->Head() : grid_->rows_->Head();
     DCHECK(track);
     const wtf_size_t fixed_index = is_row_axis ? column_index_ : row_index_;
     while (track && track->Index() != fixed_index)
@@ -393,7 +394,7 @@ LayoutBox* ListGridIterator::NextGridItem() {
       candidate = cell_node_->Items()[child_index_++];
     }
     // Skip items already processed in an earlier cell of the track.
-    const GridSpan& span = grid_.GridItemSpan(*candidate, other_direction);
+    const GridSpan& span = grid_->GridItemSpan(*candidate, other_direction);
     if (span.StartLine() == cell_node_->Index(other_direction))
       return candidate;
   }
@@ -432,7 +433,7 @@ std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
   };
 
   auto orthogonal_axis = OrthogonalDirection(direction_);
-  auto& tracks = grid_.Tracks(orthogonal_axis);
+  auto& tracks = grid_->Tracks(orthogonal_axis);
 
   bool is_row_axis = direction_ == kForColumns;
   auto& varying_index = is_row_axis ? row_index_ : column_index_;

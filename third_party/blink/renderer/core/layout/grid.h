@@ -11,10 +11,11 @@
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -30,7 +31,7 @@ struct OrderedTrackIndexSetHashTraits : public HashTraits<wtf_size_t> {
   }
 };
 
-typedef Vector<UntracedMember<LayoutBox>, 1> GridItemList;
+typedef HeapVector<Member<LayoutBox>, 1> GridItemList;
 typedef LinkedHashSet<wtf_size_t, OrderedTrackIndexSetHashTraits>
     OrderedTrackIndexSet;
 
@@ -42,11 +43,9 @@ class GridIterator;
 // grid like structure, so that they could be accessed by rows/columns
 // instead of just traversing the DOM or Layout trees. The other user
 // of this class is the GridTrackSizingAlgorithm class.
-class CORE_EXPORT Grid {
-  USING_FAST_MALLOC(Grid);
-
+class CORE_EXPORT Grid : public GarbageCollected<Grid> {
  public:
-  static std::unique_ptr<Grid> Create(const LayoutGrid*);
+  static Grid* Create(const LayoutGrid*);
 
   virtual wtf_size_t NumTracks(GridTrackSizingDirection) const = 0;
 
@@ -57,6 +56,11 @@ class CORE_EXPORT Grid {
   virtual const GridItemList& Cell(wtf_size_t row, wtf_size_t column) const = 0;
 
   virtual ~Grid() {}
+
+  virtual void Trace(Visitor* visitor) const {
+    visitor->Trace(grid_item_area_);
+    visitor->Trace(grid_items_indexes_map_);
+  }
 
   // Note that out of flow children are not grid items.
   bool HasGridItems() const { return !grid_item_area_.IsEmpty(); }
@@ -145,8 +149,8 @@ class CORE_EXPORT Grid {
 
   bool needs_items_placement_{true};
 
-  HashMap<UntracedMember<const LayoutBox>, GridArea> grid_item_area_;
-  HashMap<UntracedMember<const LayoutBox>, wtf_size_t> grid_items_indexes_map_;
+  HeapHashMap<Member<const LayoutBox>, GridArea> grid_item_area_;
+  HeapHashMap<Member<const LayoutBox>, wtf_size_t> grid_items_indexes_map_;
 
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_columns_{nullptr};
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_rows_{nullptr};
@@ -163,6 +167,12 @@ class CORE_EXPORT ListGrid final : public Grid {
       : Grid(grid),
         rows_(MakeGarbageCollected<GridLinkedList<GridTrack>>()),
         columns_(MakeGarbageCollected<GridLinkedList<GridTrack>>()) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(rows_);
+    visitor->Trace(columns_);
+    Grid::Trace(visitor);
+  }
 
   wtf_size_t NumTracks(GridTrackSizingDirection direction) const override {
     return direction == kForRows ? num_rows_ : num_columns_;
@@ -191,6 +201,7 @@ class CORE_EXPORT ListGrid final : public Grid {
     void Trace(Visitor* visitor) const final {
       visitor->Trace(prev_ortho_);
       visitor->Trace(next_ortho_);
+      visitor->Trace(items_);
       GridLinkedListNodeBase<GridCell>::Trace(visitor);
     }
 
@@ -287,8 +298,8 @@ class CORE_EXPORT ListGrid final : public Grid {
   wtf_size_t num_rows_{0};
   wtf_size_t num_columns_{0};
 
-  Persistent<GridLinkedList<GridTrack>> rows_;
-  Persistent<GridLinkedList<GridTrack>> columns_;
+  Member<GridLinkedList<GridTrack>> rows_;
+  Member<GridLinkedList<GridTrack>> columns_;
 };
 
 class ListGridIterator final : public Grid::GridIterator {
@@ -301,6 +312,7 @@ class ListGridIterator final : public Grid::GridIterator {
   ListGridIterator& operator=(const ListGridIterator&) = delete;
 
   void Trace(Visitor* visitor) const final {
+    visitor->Trace(grid_);
     visitor->Trace(cell_node_);
     GridIterator::Trace(visitor);
   }
@@ -311,7 +323,7 @@ class ListGridIterator final : public Grid::GridIterator {
       wtf_size_t varying_track_span) override;
 
  private:
-  const ListGrid& grid_;
+  Member<const ListGrid> grid_;
   Member<ListGrid::GridCell> cell_node_;
 };
 

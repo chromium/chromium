@@ -233,7 +233,7 @@ LayoutSize GridTrackSizingAlgorithm::EstimatedGridAreaBreadthForChild(
 LayoutUnit GridTrackSizingAlgorithm::EstimatedGridAreaBreadthForChild(
     const LayoutBox& child,
     GridTrackSizingDirection direction) const {
-  const GridSpan& span = grid_.GridItemSpan(child, direction);
+  const GridSpan& span = grid_->GridItemSpan(child, direction);
   LayoutUnit grid_area_size;
   bool grid_area_is_indefinite = false;
   absl::optional<LayoutUnit> available_size = AvailableSpace(direction);
@@ -259,7 +259,7 @@ LayoutUnit GridTrackSizingAlgorithm::EstimatedGridAreaBreadthForChild(
   }
 
   grid_area_size += layout_grid_->GuttersSize(
-      grid_, direction, span.StartLine(), span.IntegerSpan(), available_size);
+      *grid_, direction, span.StartLine(), span.IntegerSpan(), available_size);
 
   GridTrackSizingDirection child_inline_direction =
       GridLayoutUtils::FlowAwareDirectionForChild(*layout_grid_, child,
@@ -290,7 +290,7 @@ LayoutUnit GridTrackSizingAlgorithm::GridAreaBreadthForChild(
   }
 
   const Vector<GridTrack>& all_tracks = Tracks(direction);
-  const GridSpan& span = grid_.GridItemSpan(child, direction);
+  const GridSpan& span = grid_->GridItemSpan(child, direction);
   LayoutUnit grid_area_breadth;
   for (auto track_position : span)
     grid_area_breadth += all_tracks[track_position].BaseSize();
@@ -301,7 +301,7 @@ LayoutUnit GridTrackSizingAlgorithm::GridAreaBreadthForChild(
   }
 
   grid_area_breadth +=
-      layout_grid_->GuttersSize(grid_, direction, span.StartLine(),
+      layout_grid_->GuttersSize(*grid_, direction, span.StartLine(),
                                 span.IntegerSpan(), AvailableSpace(direction));
 
   return grid_area_breadth;
@@ -311,7 +311,7 @@ bool GridTrackSizingAlgorithm::IsIntrinsicSizedGridArea(const LayoutBox& child,
                                                         GridAxis axis) const {
   DCHECK(WasSetup());
   GridTrackSizingDirection direction = GridDirectionForAxis(axis);
-  const GridSpan& span = grid_.GridItemSpan(child, direction);
+  const GridSpan& span = grid_->GridItemSpan(child, direction);
   for (auto track_position : span) {
     const GridTrackSize& track_size =
         RawGridTrackSize(direction, track_position);
@@ -527,7 +527,7 @@ void GridTrackSizingAlgorithm::UpdateBaselineAlignmentContext(
   ItemPosition align =
       layout_grid_->SelfAlignmentForChild(baseline_axis, child).GetPosition();
   const auto& span =
-      grid_.GridItemSpan(child, GridDirectionForAxis(baseline_axis));
+      grid_->GridItemSpan(child, GridDirectionForAxis(baseline_axis));
   baseline_alignment_.UpdateBaselineAlignmentContext(align, span.StartLine(),
                                                      child, baseline_axis);
 }
@@ -541,7 +541,7 @@ LayoutUnit GridTrackSizingAlgorithm::BaselineOffsetForChild(
   ItemPosition align =
       layout_grid_->SelfAlignmentForChild(baseline_axis, child).GetPosition();
   const auto& span =
-      grid_.GridItemSpan(child, GridDirectionForAxis(baseline_axis));
+      grid_->GridItemSpan(child, GridDirectionForAxis(baseline_axis));
   return baseline_alignment_.BaselineOffsetForChild(align, span.StartLine(),
                                                     child, baseline_axis);
 }
@@ -890,7 +890,7 @@ const GridTrackSize& GridTrackSizingAlgorithm::RawGridTrackSize(
                   : grid_container_style.GridAutoRows().LegacyTrackList();
   wtf_size_t insertion_point =
       computed_grid_track_list.auto_repeat_insertion_point;
-  wtf_size_t auto_repeat_tracks_count = grid_.AutoRepeatTracks(direction);
+  wtf_size_t auto_repeat_tracks_count = grid_->AutoRepeatTracks(direction);
 
   // We should not use GridPositionsResolver::explicitGridXXXCount() for this
   // because the explicit grid might be larger than the number of tracks in
@@ -900,7 +900,7 @@ const GridTrackSize& GridTrackSizingAlgorithm::RawGridTrackSize(
       track_list_sizes.size() + auto_repeat_tracks_count;
 
   int untranslated_index_as_int =
-      static_cast<int>(translated_index - grid_.ExplicitGridStart(direction));
+      static_cast<int>(translated_index - grid_->ExplicitGridStart(direction));
   wtf_size_t auto_track_styles_size = auto_track_styles.size();
   if (untranslated_index_as_int < 0) {
     int index =
@@ -951,8 +951,8 @@ GridTrackSize GridTrackSizingAlgorithm::CalculateGridTrackSize(
     wtf_size_t translated_index) const {
   DCHECK(WasSetup());
   // Collapse empty auto repeat tracks if auto-fit.
-  if (grid_.HasAutoRepeatEmptyTracks(direction) &&
-      grid_.IsEmptyAutoRepeatTrack(direction, translated_index))
+  if (grid_->HasAutoRepeatEmptyTracks(direction) &&
+      grid_->IsEmptyAutoRepeatTrack(direction, translated_index))
     return {Length::Fixed(), kLengthTrackSizing};
 
   const GridTrackSize& track_size =
@@ -975,7 +975,7 @@ GridTrackSize GridTrackSizingAlgorithm::CalculateGridTrackSize(
       // the percentages row tracks against the intrinsic height of the grid
       // container or we treat them as auto. Basically if we have just one row,
       // it has 100% size and the max-block-size is none.
-      if ((grid_.NumTracks(direction) != 1) || !min_track_breadth.IsLength() ||
+      if ((grid_->NumTracks(direction) != 1) || !min_track_breadth.IsLength() ||
           !min_track_breadth.length().IsPercent() ||
           (min_track_breadth.length().Percent() != 100.0f) ||
           !max_track_breadth.IsLength() ||
@@ -1445,7 +1445,7 @@ void GridTrackSizingAlgorithm::IncreaseSizesToAccommodateSpanningItems(
       continue;
 
     spanning_tracks_size +=
-        layout_grid_->GuttersSize(grid_, direction_, item_span.StartLine(),
+        layout_grid_->GuttersSize(*grid_, direction_, item_span.StartLine(),
                                   item_span.IntegerSpan(), AvailableSpace());
 
     LayoutUnit extra_space = ItemSizeForTrackSizeComputationPhase(
@@ -1470,9 +1470,9 @@ void GridTrackSizingAlgorithm::IncreaseSizesToAccommodateSpanningItems(
 void GridTrackSizingAlgorithm::ResolveIntrinsicTrackSizes() {
   Vector<GridTrack>& all_tracks = Tracks(direction_);
   HeapVector<GridItemWithSpan> items_sorted_by_increasing_span;
-  if (grid_.HasGridItems()) {
+  if (grid_->HasGridItems()) {
     IterateGridItemsInTrackIndices(
-        grid_, direction_, content_sized_tracks_index_,
+        *grid_, direction_, content_sized_tracks_index_,
         [&](LayoutBox* grid_item, const GridSpan& span) {
           if (span.IntegerSpan() == 1) {
             SizeTrackToFitNonSpanningItem(span, *grid_item,
@@ -1535,7 +1535,7 @@ LayoutUnit GridTrackSizingAlgorithm::ComputeTrackBasedSize() const {
         track.GrowthLimitIsInfinite() ? track.BaseSize() : track.GrowthLimit();
   }
 
-  size += layout_grid_->GuttersSize(grid_, direction_, 0, all_tracks.size(),
+  size += layout_grid_->GuttersSize(*grid_, direction_, 0, all_tracks.size(),
                                     AvailableSpace());
 
   return size;
@@ -1738,7 +1738,7 @@ void GridTrackSizingAlgorithm::Setup(
 
   if (available_space) {
     LayoutUnit gutters_size = layout_grid_->GuttersSize(
-        grid_, direction, 0, grid_.NumTracks(direction), available_space);
+        *grid_, direction, 0, grid_->NumTracks(direction), available_space);
     SetFreeSpace(direction, available_space.value() - gutters_size);
   } else {
     SetFreeSpace(direction, absl::nullopt);

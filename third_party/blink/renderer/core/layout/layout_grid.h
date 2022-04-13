@@ -144,7 +144,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   // Exposed for testing *ONLY*.
   Grid* InternalGrid() const {
     NOT_DESTROYED();
-    return grid_.get();
+    return grid_;
   }
 
  protected:
@@ -332,7 +332,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   bool AspectRatioPrefersInline(const LayoutBox& child,
                                 bool block_flow_is_column_axis);
 
-  std::unique_ptr<Grid> grid_;
+  Member<Grid> grid_;
   Member<GridTrackSizingAlgorithm> track_sizing_algorithm_;
 
   Vector<LayoutUnit> row_positions_;

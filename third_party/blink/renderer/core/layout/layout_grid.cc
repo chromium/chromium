@@ -57,6 +57,7 @@ LayoutGrid::LayoutGrid(Element* element)
 LayoutGrid::~LayoutGrid() = default;
 
 void LayoutGrid::Trace(Visitor* visitor) const {
+  visitor->Trace(grid_);
   visitor->Trace(track_sizing_algorithm_);
   visitor->Trace(column_of_positioned_item_);
   visitor->Trace(row_of_positioned_item_);
@@ -572,7 +573,7 @@ MinMaxSizes LayoutGrid::ComputeIntrinsicLogicalWidths() const {
     return sizes;
   }
 
-  std::unique_ptr<Grid> grid = Grid::Create(this);
+  Grid* grid = Grid::Create(this);
   GridTrackSizingAlgorithm* algorithm =
       MakeGarbageCollected<GridTrackSizingAlgorithm>(this, *grid);
   PlaceItemsOnGrid(algorithm, absl::nullopt);

@@ -105,10 +105,10 @@ class GridTrackSizingAlgorithm final
   void Reset();
 
   // Required by LayoutGrid. Try to minimize the exposed surface.
-  const Grid& GetGrid() const { return grid_; }
+  const Grid& GetGrid() const { return *grid_; }
   // TODO (jfernandez): We should remove any public getter for this attribute
   // and encapsulate any access in the algorithm class.
-  Grid& GetMutableGrid() const { return grid_; }
+  Grid& GetMutableGrid() const { return *grid_; }
   LayoutUnit MinContentSize() const { return min_content_size_; }
   LayoutUnit MaxContentSize() const { return max_content_size_; }
 
@@ -140,6 +140,7 @@ class GridTrackSizingAlgorithm final
   }
 
   void Trace(Visitor* visitor) const {
+    visitor->Trace(grid_);
     visitor->Trace(layout_grid_);
     visitor->Trace(strategy_);
     visitor->Trace(baseline_alignment_);
@@ -243,8 +244,7 @@ class GridTrackSizingAlgorithm final
 
   GridTrackSizingDirection direction_;
 
-  Grid& grid_;
-
+  Member<Grid> grid_;
   Member<const LayoutGrid> layout_grid_;
   Member<GridTrackSizingAlgorithmStrategy> strategy_;
 
