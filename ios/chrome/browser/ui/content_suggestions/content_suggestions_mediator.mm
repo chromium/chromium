@@ -289,6 +289,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   self.NTPMetrics.webState = self.webState;
 }
 
+- (void)setShowingStartSurface:(BOOL)showingStartSurface {
+  _showingStartSurface = showingStartSurface;
+  self.NTPMetrics.showingStartSurface = showingStartSurface;
+}
+
 + (NSUInteger)maxSitesShown {
   return kMaxNumMostVisitedTiles;
 }
@@ -375,6 +380,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     return;
 
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
+    [self.NTPMetrics recordContentSuggestionsActionForType:
+                         IOSContentSuggestionsActionType::kShortcuts];
     ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
         base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
             item);
@@ -452,6 +459,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)openMostRecentTab {
+  [self.NTPMetrics recordContentSuggestionsActionForType:
+                       IOSContentSuggestionsActionType::kReturnToRecentTab];
   base::RecordAction(
       base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
   [self hideRecentTabTile];
@@ -711,6 +720,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPMetrics
       recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
+  [self.NTPMetrics recordContentSuggestionsActionForType:
+                       IOSContentSuggestionsActionType::kMostVisitedTile];
   base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
   RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
                      item.attributes, GURL());

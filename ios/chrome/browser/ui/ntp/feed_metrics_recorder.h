@@ -167,6 +167,9 @@ enum class BrokenNTPHierarchyRelationship {
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
 
+// Whether or not the feed is currently being shown on the Start Surface.
+@property(nonatomic, assign) BOOL isShownOnStartSurface;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_

@@ -14,7 +14,6 @@ class WebState;
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @protocol DiscoverFeedDelegate;
-@class FeedMetricsRecorder;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 class NotificationPromoWhatsNew;
@@ -60,9 +59,6 @@ class NotificationPromoWhatsNew;
 
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
-
-// Metrics recorder for the feed events related to ContentSuggestions.
-@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Delegate used to communicate to communicate events to the DiscoverFeed.
 @property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;

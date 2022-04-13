@@ -1105,7 +1105,6 @@ namespace {
   contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   contentSuggestionsCoordinator.ntpDelegate = self;
   contentSuggestionsCoordinator.discoverFeedDelegate = self;
-  contentSuggestionsCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
   [contentSuggestionsCoordinator start];
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
     contentSuggestionsCoordinator.headerController.baseViewController =

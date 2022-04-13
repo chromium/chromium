@@ -100,6 +100,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContentSuggestions.ActionOnNTP"
+    enum="IOSContentSuggestionsActionType" expires_after="2023-04-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    When the user taps on a Content Suggestions Module on the NTP Surface.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContentSuggestions.ActionOnStartSurface"
+    enum="IOSContentSuggestionsActionType" expires_after="2023-04-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    When the user taps on a Content Suggestions Module on the Start Surface.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Cookies.GetCookiesForURLCallResult"
     enum="IOSGetCookiesForURLCallResult" expires_after="2021-08-01">
   <owner>mrefaat@chromium.org</owner>

@@ -20,6 +20,7 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   void CreateFeedModel(FeedModelConfiguration* feed_model_config) final {}
   void ClearFeedModels() final {}
   void SetFollowingFeedSortType(FollowingFeedSortType sort_type) final {}
+  void SetIsShownOnStartSurface(bool shown_on_start_surface) final {}
   FeedMetricsRecorder* GetFeedMetricsRecorder() final { return nil; }
   UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration) final {

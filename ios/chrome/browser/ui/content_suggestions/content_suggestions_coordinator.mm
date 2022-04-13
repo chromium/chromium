@@ -17,6 +17,8 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -54,7 +56,6 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -250,7 +251,6 @@
   }
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
   [self.ntpMediator setUp];
-  self.ntpMediator.feedMetricsRecorder = self.feedMetricsRecorder;
 
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
     [self.collectionViewController
@@ -337,6 +337,9 @@
 - (void)viewDidDisappear {
   // Start no longer showing
   self.contentSuggestionsMediator.showingStartSurface = NO;
+  DiscoverFeedServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->SetIsShownOnStartSurface(false);
   // Update DiscoverFeedService to NO
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
@@ -518,6 +521,9 @@
     web::WebState* most_recent_tab =
         StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
             ->most_recent_tab();
+    DiscoverFeedServiceFactory::GetForBrowserState(
+        self.browser->GetBrowserState())
+        ->SetIsShownOnStartSurface(true);
     DCHECK(most_recent_tab);
     NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
     [self.contentSuggestionsMediator

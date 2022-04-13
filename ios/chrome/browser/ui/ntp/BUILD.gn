@@ -16,7 +16,6 @@ source_set("ntp") {
   public_deps = [
     ":constants",
     ":feature_flags",
-    ":metrics",
   ]
   deps = [ "//ios/chrome/browser/ui/util" ]
 }
@@ -76,10 +75,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/context_menu/link_preview",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_observer",
+    "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/ntp/feed_management",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/settings/utils",
@@ -222,6 +223,7 @@ source_set("metrics") {
   deps = [
     "//base",
     "//components/feed/core/v2/public:common",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
   ]
 }
 

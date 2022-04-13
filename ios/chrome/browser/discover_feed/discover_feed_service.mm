@@ -18,6 +18,11 @@ BOOL DiscoverFeedService::GetFollowingFeedHasUnseenContent() {
 }
 void DiscoverFeedService::SetFollowingFeedContentSeen() {}
 
+// TODO(crbug.com/1314418): Remove this when downstream implementation is
+// landed.
+void DiscoverFeedService::SetIsShownOnStartSurface(
+    bool shown_on_start_surface) {}
+
 void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
   observer_list_.AddObserver(observer);
 }

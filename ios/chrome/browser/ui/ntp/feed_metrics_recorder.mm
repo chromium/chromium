@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -583,6 +584,14 @@ const int kMinutesBetweenSessions = 5;
 // Records that a URL was opened regardless of the target surface (e.g. New Tab,
 // Same Tab, Incognito Tab, etc.)
 - (void)recordOpenURL {
+  if (self.isShownOnStartSurface) {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
+                              IOSContentSuggestionsActionType::kFeedCard);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
+                              IOSContentSuggestionsActionType::kFeedCard);
+  }
+
   // TODO(crbug.com/1174088): Add card Index and the max number of suggestions.
   UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
 }

@@ -36,6 +36,9 @@ class DiscoverFeedService : public KeyedService {
   // Sets the Following feed sorting and refreshes the model to display it.
   virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type) = 0;
 
+  // Sets whether the feed is currently being shown on the Start Surface.
+  virtual void SetIsShownOnStartSurface(bool shown_on_start_surface);
+
   // Returns the FeedMetricsRecorder to be used by the feed. There only exists a
   // single instance of the metrics recorder per browser state.
   virtual FeedMetricsRecorder* GetFeedMetricsRecorder() = 0;

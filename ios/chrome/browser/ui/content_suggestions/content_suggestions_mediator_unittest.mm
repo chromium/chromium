@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "components/favicon/core/large_icon_service_impl.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -118,6 +120,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+    histogram_tester_.reset(new base::HistogramTester());
   }
 
  protected:
@@ -151,6 +154,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   ContentSuggestionsMediator* mediator_;
   FakeUrlLoadingBrowserAgent* url_loader_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Tests that the command is sent to the dispatcher when opening the Reading
@@ -158,10 +162,16 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
 
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kShortcuts, 0);
   // Action.
   ContentSuggestionsMostVisitedActionItem* readingList =
       ReadingListActionItem();
   [mediator_ openMostVisitedItem:readingList atIndex:1];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kShortcuts, 1);
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
@@ -173,9 +183,14 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
   ContentSuggestionsMostVisitedItem* item =
       [[ContentSuggestionsMostVisitedItem alloc] initWithType:0];
   item.URL = url;
-
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kMostVisitedTile, 0);
   // Action.
   [mediator_ openMostVisitedItem:item atIndex:0];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kMostVisitedTile, 1);
 
   // Test.
   EXPECT_EQ(url, url_loader_->last_params.web_params.url);
@@ -207,7 +222,13 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                    timeLabel:@"12 hours ago"];
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kReturnToRecentTab, 0);
   [mediator_ openMostRecentTab];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kReturnToRecentTab, 1);
   // Verify the most recent tab was opened.
   EXPECT_EQ(recent_tab_index, web_state_list_->active_index());
 }
