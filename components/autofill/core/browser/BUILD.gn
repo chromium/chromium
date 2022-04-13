@@ -21,11 +21,11 @@ grit("autofill_address_rewriter_resources") {
   output_dir = "$root_gen_dir/components/autofill/core/browser"
 }
 
-action("regex_patterns_cc") {
+action("regex_patterns_inl_h") {
   visibility = [ ":*" ]
   sources = [ "pattern_provider/resources/regex_patterns.json" ]
   script = "pattern_provider/transpile_regex_patterns.py"
-  outputs = [ "$target_gen_dir/pattern_provider/regex_patterns.cc" ]
+  outputs = [ "$target_gen_dir/pattern_provider/regex_patterns_inl.h" ]
   args = rebase_path(sources, root_build_dir) +
          rebase_path(outputs, root_build_dir)
 }
@@ -145,7 +145,6 @@ static_library("browser") {
     "form_data_importer.h",
     "form_parsing/address_field.cc",
     "form_parsing/address_field.h",
-    "form_parsing/autofill_parsing_utils.cc",
     "form_parsing/autofill_parsing_utils.h",
     "form_parsing/autofill_scanner.cc",
     "form_parsing/autofill_scanner.h",
@@ -221,8 +220,7 @@ static_library("browser") {
     "metrics/payments/save_credit_card_prompt_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
-    "pattern_provider/pattern_provider.cc",
-    "pattern_provider/pattern_provider.h",
+    "pattern_provider/regex_patterns.cc",
     "pattern_provider/regex_patterns.h",
     "payments/account_info_getter.h",
     "payments/autofill_offer_manager.cc",
@@ -375,7 +373,7 @@ static_library("browser") {
     "webdata/system_encryptor.h",
   ]
 
-  sources += get_target_outputs(":regex_patterns_cc")
+  sources += get_target_outputs(":regex_patterns_inl_h")
 
   if (is_win) {
     sources += [
@@ -454,7 +452,7 @@ static_library("browser") {
   ]
   deps = [
     ":autofill_address_rewriter_resources",
-    ":regex_patterns_cc",
+    ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",

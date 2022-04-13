@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_AUTOFILL_PARSING_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_AUTOFILL_PARSING_UTILS_H_
 
-#include <string>
-
+#include "base/strings/string_piece.h"
 #include "components/autofill/core/common/dense_set.h"
-#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -83,19 +81,11 @@ constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
 // changes without global updates also for having a quick possibility
 // to recognize incorrect matches.
 struct MatchingPattern {
-  MatchingPattern();
-  MatchingPattern(const MatchingPattern&);
-  MatchingPattern& operator=(const MatchingPattern&);
-  MatchingPattern(MatchingPattern&&);
-  MatchingPattern& operator=(MatchingPattern&&);
-  ~MatchingPattern();
-
-  LanguageCode language;
-  std::u16string positive_pattern;
-  std::u16string negative_pattern;
-  float positive_score = 1.1;
-  DenseSet<MatchAttribute> match_field_attributes;
-  DenseSet<MatchFieldType> match_field_input_types;
+  const char16_t* positive_pattern;
+  const char16_t* negative_pattern;
+  const float positive_score = 1.1;
+  const DenseSet<MatchAttribute> match_field_attributes;
+  const DenseSet<MatchFieldType> match_field_input_types;
 };
 
 }  // namespace autofill

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
-#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -87,7 +86,7 @@ class AddressField : public FormField {
       AutofillScanner* scanner,
       const std::u16string& pattern,
       MatchParams match_type,
-      const std::vector<MatchingPattern>& patterns,
+      base::span<const MatchPatternRef> patterns,
       AutofillField** match,
       const RegExLogging& logging);
 

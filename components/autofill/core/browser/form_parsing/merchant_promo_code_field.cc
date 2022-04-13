@@ -22,9 +22,8 @@ std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
   }
 
   AutofillField* field;
-  const std::vector<MatchingPattern>& merchant_promo_code_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("MERCHANT_PROMO_CODE",
-                                                      page_language);
+  base::span<const MatchPatternRef> merchant_promo_code_patterns =
+      GetMatchPatterns("MERCHANT_PROMO_CODE", page_language);
 
   if (ParseFieldSpecifics(scanner, kMerchantPromoCodeRe,
                           kDefaultMatchParamsWith<MatchFieldType::kNumber,

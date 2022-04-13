@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
-#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {

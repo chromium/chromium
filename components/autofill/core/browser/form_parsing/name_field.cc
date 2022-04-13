@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -148,12 +149,10 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
     LogManager* log_manager) {
   // Exclude e.g. "username" or "nickname" fields.
   scanner->SaveCursor();
-  const std::vector<MatchingPattern>& name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& address_name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
-                                                      page_language);
+  base::span<const MatchPatternRef> name_ignored_patterns =
+      GetMatchPatterns("NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> address_name_ignored_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language);
   bool should_ignore =
       ParseField(scanner, kNameIgnoredRe, name_ignored_patterns, nullptr,
                  {log_manager, "kNameIgnoredRe"}) ||
@@ -168,9 +167,8 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
   // "Travel Profile Name".
   AutofillField* field = nullptr;
 
-  const std::vector<MatchingPattern>& name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("FULL_NAME",
-                                                      page_language);
+  base::span<const MatchPatternRef> name_patterns =
+      GetMatchPatterns("FULL_NAME", page_language);
   if (ParseField(scanner, kFullNameRe, name_patterns, &field,
                  {log_manager, "kFullNameRe"}))
     return std::make_unique<FullNameField>(field);
@@ -203,27 +201,20 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
   auto v = base::WrapUnique(new FirstTwoLastNamesField());
   scanner->SaveCursor();
 
-  const std::vector<MatchingPattern>& honorific_prefix_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("HONORIFIC_PREFIX",
-                                                      page_language);
-  const std::vector<MatchingPattern>& name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& address_name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& first_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("FIRST_NAME",
-                                                      page_language);
-  const std::vector<MatchingPattern>& middle_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("MIDDLE_NAME",
-                                                      page_language);
-  const std::vector<MatchingPattern>& first_last_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("LAST_NAME_FIRST",
-                                                      page_language);
-  const std::vector<MatchingPattern>& second_last_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("LAST_NAME_SECOND",
-                                                      page_language);
+  base::span<const MatchPatternRef> honorific_prefix_patterns =
+      GetMatchPatterns("HONORIFIC_PREFIX", page_language);
+  base::span<const MatchPatternRef> name_ignored_patterns =
+      GetMatchPatterns("NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> address_name_ignored_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> first_name_patterns =
+      GetMatchPatterns("FIRST_NAME", page_language);
+  base::span<const MatchPatternRef> middle_name_patterns =
+      GetMatchPatterns("MIDDLE_NAME", page_language);
+  base::span<const MatchPatternRef> first_last_name_patterns =
+      GetMatchPatterns("LAST_NAME_FIRST", page_language);
+  base::span<const MatchPatternRef> second_last_name_patterns =
+      GetMatchPatterns("LAST_NAME_SECOND", page_language);
 
   // Allow name fields to appear in any order.
   while (!scanner->IsEnd()) {
@@ -318,21 +309,17 @@ FirstLastNameField::ParseNameSurnameLabelSequence(
   // Example: Name [      ] Last Name [      ]
   auto v = base::WrapUnique(new FirstLastNameField());
 
-  const std::vector<MatchingPattern>& name_specific_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_GENERIC",
-                                                      page_language);
+  base::span<const MatchPatternRef> name_specific_patterns =
+      GetMatchPatterns("NAME_GENERIC", page_language);
 
-  const std::vector<MatchingPattern>& last_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("LAST_NAME",
-                                                      page_language);
+  base::span<const MatchPatternRef> last_name_patterns =
+      GetMatchPatterns("LAST_NAME", page_language);
   // Check that the field should not be ignored.
 
-  const std::vector<MatchingPattern>& name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& address_name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
-                                                      page_language);
+  base::span<const MatchPatternRef> name_ignored_patterns =
+      GetMatchPatterns("NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> address_name_ignored_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language);
   scanner->SaveCursor();
 
   bool should_ignore =
@@ -369,9 +356,8 @@ FirstLastNameField::ParseSharedNameLabelSequence(
   scanner->SaveCursor();
 
   AutofillField* next = nullptr;
-  const std::vector<MatchingPattern>& name_specific_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_GENERIC",
-                                                      page_language);
+  base::span<const MatchPatternRef> name_specific_patterns =
+      GetMatchPatterns("NAME_GENERIC", page_language);
 
   if (ParseField(scanner, kNameGenericRe, name_specific_patterns,
                  &v->first_name_, {log_manager, "kNameGenericRe"}) &&
@@ -413,27 +399,20 @@ FirstLastNameField::ParseSpecificComponentSequence(
 
   // Allow name fields to appear in any order.
 
-  const std::vector<MatchingPattern>& honorific_prefix_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("HONORIFIC_PREFIX",
-                                                      page_language);
-  const std::vector<MatchingPattern>& name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& address_name_ignored_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
-                                                      page_language);
-  const std::vector<MatchingPattern>& first_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("FIRST_NAME",
-                                                      page_language);
-  const std::vector<MatchingPattern>& middle_name_initial_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("MIDDLE_INITIAL",
-                                                      page_language);
-  const std::vector<MatchingPattern>& middle_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("MIDDLE_NAME",
-                                                      page_language);
-  const std::vector<MatchingPattern>& last_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("LAST_NAME",
-                                                      page_language);
+  base::span<const MatchPatternRef> honorific_prefix_patterns =
+      GetMatchPatterns("HONORIFIC_PREFIX", page_language);
+  base::span<const MatchPatternRef> name_ignored_patterns =
+      GetMatchPatterns("NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> address_name_ignored_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language);
+  base::span<const MatchPatternRef> first_name_patterns =
+      GetMatchPatterns("FIRST_NAME", page_language);
+  base::span<const MatchPatternRef> middle_name_initial_patterns =
+      GetMatchPatterns("MIDDLE_INITIAL", page_language);
+  base::span<const MatchPatternRef> middle_name_patterns =
+      GetMatchPatterns("MIDDLE_NAME", page_language);
+  base::span<const MatchPatternRef> last_name_patterns =
+      GetMatchPatterns("LAST_NAME", page_language);
 
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names

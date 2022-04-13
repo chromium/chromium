@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -28,15 +29,22 @@ bool SetFieldAndAdvanceCursor(AutofillScanner* scanner, AutofillField** field) {
   return true;
 }
 
-// Removes the |attribute| from all |patterns|.
+// Removes a MatchAttribute from a MatchingPattern.
 // TODO(crbug/1142936): This is necessary for
 // AddressField::ParseNameAndLabelSeparately().
 MatchingPattern WithoutAttribute(MatchingPattern p, MatchAttribute attribute) {
-  p.match_field_attributes.erase(attribute);
-  return p;
+  DenseSet<MatchAttribute> match_field_attributes = p.match_field_attributes;
+  match_field_attributes.erase(attribute);
+  return {
+      .positive_pattern = p.positive_pattern,
+      .negative_pattern = p.negative_pattern,
+      .positive_score = p.positive_score,
+      .match_field_attributes = match_field_attributes,
+      .match_field_input_types = p.match_field_input_types,
+  };
 }
 
-// Removes the |attribute| from all |patterns|.
+// Removes a MatchAttribute from a MatchParams.
 // TODO(crbug/1142936): This is necessary for
 // AddressField::ParseNameAndLabelSeparately().
 MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
@@ -44,12 +52,19 @@ MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
   return match_type;
 }
 
-// Adds the |field_type| to all |patterns|.
+// Adds a MatchFieldType to a MatchingPattern.
 // TODO(crbug/1142936): This is necessary for AddressField::ParseAddressLines()
 // and AddressField::Parse().
 MatchingPattern WithFieldType(MatchingPattern p, MatchFieldType field_type) {
-  p.match_field_input_types.insert(field_type);
-  return p;
+  DenseSet<MatchFieldType> match_field_input_types = p.match_field_input_types;
+  match_field_input_types.insert(field_type);
+  return {
+      .positive_pattern = p.positive_pattern,
+      .negative_pattern = p.negative_pattern,
+      .positive_score = p.positive_score,
+      .match_field_attributes = p.match_field_attributes,
+      .match_field_input_types = match_field_input_types,
+  };
 }
 
 // Some sites use type="tel" for zip fields (to get a numerical input).
@@ -81,25 +96,20 @@ std::unique_ptr<FormField> AddressField::Parse(
   const AutofillField* const initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
-  const std::vector<MatchingPattern>& email_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("EMAIL_ADDRESS",
-                                                      page_language);
+  base::span<const MatchPatternRef> email_patterns =
+      GetMatchPatterns("EMAIL_ADDRESS", page_language);
 
-  const std::vector<MatchingPattern>& address_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LOOKUP",
-                                                      page_language);
+  base::span<const MatchPatternRef> address_patterns =
+      GetMatchPatterns("ADDRESS_LOOKUP", page_language);
 
-  const std::vector<MatchingPattern>& address_ignore_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
-                                                      page_language);
+  base::span<const MatchPatternRef> address_ignore_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language);
 
-  const std::vector<MatchingPattern>& attention_ignore_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ATTENTION_IGNORED",
-                                                      page_language);
+  base::span<const MatchPatternRef> attention_ignore_patterns =
+      GetMatchPatterns("ATTENTION_IGNORED", page_language);
 
-  const std::vector<MatchingPattern>& region_ignore_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("REGION_IGNORED",
-                                                      page_language);
+  base::span<const MatchPatternRef> region_ignore_patterns =
+      GetMatchPatterns("REGION_IGNORED", page_language);
 
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
@@ -221,9 +231,8 @@ bool AddressField::ParseCompany(AutofillScanner* scanner,
   if (company_)
     return false;
 
-  const std::vector<MatchingPattern>& company_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COMPANY_NAME",
-                                                      page_language);
+  base::span<const MatchPatternRef> company_patterns =
+      GetMatchPatterns("COMPANY_NAME", page_language);
 
   return ParseField(scanner, kCompanyRe, company_patterns, &company_,
                     {log_manager_, "kCompanyRe"});
@@ -244,16 +253,13 @@ bool AddressField::ParseAddressFieldSequence(
 
   const size_t cursor_position = scanner->CursorPosition();
 
-  const std::vector<MatchingPattern>& street_name_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_STREET_NAME,
-                                                      page_language);
+  base::span<const MatchPatternRef> street_name_patterns =
+      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, page_language);
 
-  const std::vector<MatchingPattern>& house_number_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER,
-                                                      page_language);
-  const std::vector<MatchingPattern>& apartment_number_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_APT_NUM,
-                                                      page_language);
+  base::span<const MatchPatternRef> house_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER, page_language);
+  base::span<const MatchPatternRef> apartment_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_APT_NUM, page_language);
 
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
@@ -328,9 +334,8 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   std::u16string pattern = kAddressLine1Re;
   std::u16string label_pattern = kAddressLine1LabelRe;
 
-  const std::vector<MatchingPattern>& address_line1_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_1",
-                                                      page_language);
+  base::span<const MatchPatternRef> address_line1_patterns =
+      GetMatchPatterns("ADDRESS_LINE_1", page_language);
 
   // TODO(crbug.com/1121990): Remove duplicate calls when launching
   // AutofillParsingPatternProvider. The old code calls ParseFieldSpecifics()
@@ -377,9 +382,8 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   pattern = kAddressLine2Re;
   label_pattern = kAddressLine2LabelRe;
 
-  const std::vector<MatchingPattern>& address_line2_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_2",
-                                                      page_language);
+  base::span<const MatchPatternRef> address_line2_patterns =
+      GetMatchPatterns("ADDRESS_LINE_2", page_language);
 
   if (!ParseField(scanner, pattern, address_line2_patterns, &address2_,
                   {log_manager_, "kAddressLine2Re"}) &&
@@ -390,9 +394,8 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
           {log_manager_, "kAddressLine2LabelRe"}))
     return true;
 
-  const std::vector<MatchingPattern>& address_line_extra_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_EXTRA",
-                                                      page_language);
+  base::span<const MatchPatternRef> address_line_extra_patterns =
+      GetMatchPatterns("ADDRESS_LINE_EXTRA", page_language);
 
   // Optionally parse address line 3. This uses the same label regexp as
   // address 2 above.
@@ -425,11 +428,10 @@ bool AddressField::ParseCountry(AutofillScanner* scanner,
   if (country_)
     return false;
 
-  const std::vector<MatchingPattern>& country_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY", page_language);
-  const std::vector<MatchingPattern>& country_patternsl =
-      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY_LOCATION",
-                                                      page_language);
+  base::span<const MatchPatternRef> country_patterns =
+      GetMatchPatterns("COUNTRY", page_language);
+  base::span<const MatchPatternRef> country_patternsl =
+      GetMatchPatterns("COUNTRY_LOCATION", page_language);
 
   scanner->SaveCursor();
   if (ParseFieldSpecifics(scanner, kCountryRe,
@@ -455,12 +457,11 @@ bool AddressField::ParseZipCode(AutofillScanner* scanner,
   if (zip_)
     return false;
 
-  const std::vector<MatchingPattern>& zip_code_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ZIP_CODE",
-                                                      page_language);
+  base::span<const MatchPatternRef> zip_code_patterns =
+      GetMatchPatterns("ZIP_CODE", page_language);
 
-  const std::vector<MatchingPattern>& four_digit_zip_code_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ZIP_4", page_language);
+  base::span<const MatchPatternRef> four_digit_zip_code_patterns =
+      GetMatchPatterns("ZIP_4", page_language);
   if (!ParseFieldSpecifics(scanner, kZipCodeRe, kZipCodeMatchType,
                            zip_code_patterns, &zip_,
                            {log_manager_, "kZipCodeRe"})) {
@@ -484,9 +485,8 @@ bool AddressField::ParseDependentLocality(AutofillScanner* scanner,
   if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
     return false;
 
-  const std::vector<MatchingPattern>& dependent_locality_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(
-          "ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
+  base::span<const MatchPatternRef> dependent_locality_patterns =
+      GetMatchPatterns("ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
   return ParseFieldSpecifics(scanner, kDependentLocalityRe,
                              kDependentLocalityMatchType,
                              dependent_locality_patterns, &dependent_locality_,
@@ -498,8 +498,8 @@ bool AddressField::ParseCity(AutofillScanner* scanner,
   if (city_)
     return false;
 
-  const std::vector<MatchingPattern>& city_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("CITY", page_language);
+  base::span<const MatchPatternRef> city_patterns =
+      GetMatchPatterns("CITY", page_language);
   return ParseFieldSpecifics(scanner, kCityRe, kCityMatchType, city_patterns,
                              &city_, {log_manager_, "kCityRe"});
 }
@@ -509,8 +509,8 @@ bool AddressField::ParseState(AutofillScanner* scanner,
   if (state_)
     return false;
 
-  const std::vector<MatchingPattern>& patterns_state =
-      PatternProvider::GetInstance().GetMatchPatterns("STATE", page_language);
+  base::span<const MatchPatternRef> patterns_state =
+      GetMatchPatterns("STATE", page_language);
   return ParseFieldSpecifics(scanner, kStateRe, kStateMatchType, patterns_state,
                              &state_, {log_manager_, "kStateRe"});
 }
@@ -519,7 +519,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
     const std::u16string& pattern,
     MatchParams match_type,
-    const std::vector<MatchingPattern>& patterns,
+    base::span<const MatchPatternRef> patterns,
     AutofillField** match,
     const RegExLogging& logging) {
   if (scanner->IsEnd())
@@ -666,12 +666,11 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
   if (zip_)
     return RESULT_MATCH_NONE;
 
-  const std::vector<MatchingPattern>& zip_code_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ZIP_CODE",
-                                                      page_language);
+  base::span<const MatchPatternRef> zip_code_patterns =
+      GetMatchPatterns("ZIP_CODE", page_language);
 
-  const std::vector<MatchingPattern>& four_digit_zip_code_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("ZIP_4", page_language);
+  base::span<const MatchPatternRef> four_digit_zip_code_patterns =
+      GetMatchPatterns("ZIP_4", page_language);
 
   ParseNameLabelResult result = ParseNameAndLabelSeparately(
       scanner, kZipCodeRe, kZipCodeMatchType, zip_code_patterns, &zip_,
@@ -713,9 +712,8 @@ AddressField::ParseNameAndLabelForDependentLocality(
   if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
     return RESULT_MATCH_NONE;
 
-  const std::vector<MatchingPattern>& dependent_locality_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(
-          "ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
+  base::span<const MatchPatternRef> dependent_locality_patterns =
+      GetMatchPatterns("ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
   return ParseNameAndLabelSeparately(
       scanner, kDependentLocalityRe, kDependentLocalityMatchType,
       dependent_locality_patterns, &dependent_locality_,
@@ -728,8 +726,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
   if (city_)
     return RESULT_MATCH_NONE;
 
-  const std::vector<MatchingPattern>& city_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("CITY", page_language);
+  base::span<const MatchPatternRef> city_patterns =
+      GetMatchPatterns("CITY", page_language);
   return ParseNameAndLabelSeparately(scanner, kCityRe, kCityMatchType,
                                      city_patterns, &city_,
                                      {log_manager_, "kCityRe"});
@@ -741,8 +739,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
   if (state_)
     return RESULT_MATCH_NONE;
 
-  const std::vector<MatchingPattern>& patterns_state =
-      PatternProvider::GetInstance().GetMatchPatterns("STATE", page_language);
+  base::span<const MatchPatternRef> patterns_state =
+      GetMatchPatterns("STATE", page_language);
   return ParseNameAndLabelSeparately(scanner, kStateRe, kStateMatchType,
                                      patterns_state, &state_,
                                      {log_manager_, "kStateRe"});
@@ -754,12 +752,11 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
   if (country_)
     return RESULT_MATCH_NONE;
 
-  const std::vector<MatchingPattern>& country_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY", page_language);
+  base::span<const MatchPatternRef> country_patterns =
+      GetMatchPatterns("COUNTRY", page_language);
 
-  const std::vector<MatchingPattern>& country_location_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY_LOCATION",
-                                                      page_language);
+  base::span<const MatchPatternRef> country_location_patterns =
+      GetMatchPatterns("COUNTRY_LOCATION", page_language);
 
   ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
       scanner, kCountryRe,

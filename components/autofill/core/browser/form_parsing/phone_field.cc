@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -462,9 +463,8 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                          MatchFieldType::kSelect>;
   }
 
-  const std::vector<MatchingPattern>& patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(json_field_type,
-                                                      page_language);
+  base::span<const MatchPatternRef> patterns =
+      GetMatchPatterns(json_field_type, page_language);
 
   return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
                              logging);

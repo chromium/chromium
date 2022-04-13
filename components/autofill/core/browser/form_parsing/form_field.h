@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -90,7 +91,7 @@ class FormField {
 
   static bool ParseField(AutofillScanner* scanner,
                          base::StringPiece16 pattern,
-                         const std::vector<MatchingPattern>& patterns,
+                         base::span<const MatchPatternRef> patterns,
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
@@ -99,7 +100,7 @@ class FormField {
       AutofillScanner* scanner,
       base::StringPiece16 pattern,
       const MatchParams& match_type,
-      const std::vector<MatchingPattern>& patterns,
+      base::span<const MatchPatternRef> patterns,
       AutofillField** match,
       const RegExLogging& logging,
       MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
@@ -140,7 +141,7 @@ class FormField {
 
   static bool ParseFieldSpecificsWithNewPatterns(
       AutofillScanner* scanner,
-      const std::vector<MatchingPattern>& patterns,
+      base::span<const MatchPatternRef> patterns,
       AutofillField** match,
       const RegExLogging& logging,
       MatchingPattern (*projection)(const MatchingPattern&));

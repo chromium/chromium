@@ -38,6 +38,14 @@
 
 namespace autofill {
 
+namespace {
+
+constexpr bool IsEmpty(const char16_t* s) {
+  return s == nullptr || s[0] == '\0';
+}
+
+}  // namespace
+
 // static
 FieldCandidatesMap FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
@@ -154,7 +162,7 @@ FieldCandidatesMap FormField::ParseFormFieldsForPromoCodes(
 // static
 bool FormField::ParseField(AutofillScanner* scanner,
                            base::StringPiece16 pattern,
-                           const std::vector<MatchingPattern>& patterns,
+                           base::span<const MatchPatternRef> patterns,
                            AutofillField** match,
                            const RegExLogging& logging) {
   return ParseFieldSpecifics(scanner, pattern, kDefaultMatchParams, patterns,
@@ -184,7 +192,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 // static
 bool FormField::ParseFieldSpecificsWithNewPatterns(
     AutofillScanner* scanner,
-    const std::vector<MatchingPattern>& patterns,
+    base::span<const MatchPatternRef> patterns,
     AutofillField** match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
@@ -193,9 +201,9 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
 
   const AutofillField* field = scanner->Cursor();
 
-  for (auto pattern : patterns) {
-    if (projection)
-      pattern = (*projection)(pattern);
+  for (MatchPatternRef pattern_ref : patterns) {
+    MatchingPattern pattern =
+        projection ? (*projection)(*pattern_ref) : *pattern_ref;
     if (!MatchesFormControlType(field->form_control_type,
                                 pattern.match_field_input_types)) {
       continue;
@@ -208,7 +216,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
     MatchParams match_type(pattern.match_field_attributes,
                            pattern.match_field_input_types);
 
-    if (!pattern.negative_pattern.empty()) {
+    if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
         if (FormField::Match(field, pattern.negative_pattern,
                              MatchParams({attribute}, match_type.field_types),
@@ -222,7 +230,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
       continue;
 
     // Apply the positive matching against all remaining match field attributes.
-    if (!pattern.positive_pattern.empty() &&
+    if (!IsEmpty(pattern.positive_pattern) &&
         MatchAndAdvance(scanner, pattern.positive_pattern, match_type, match,
                         logging)) {
       return true;
@@ -235,7 +243,7 @@ bool FormField::ParseFieldSpecifics(
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
     const MatchParams& match_type,
-    const std::vector<MatchingPattern>& patterns,
+    base::span<const MatchPatternRef> patterns,
     AutofillField** match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
