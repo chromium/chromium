@@ -1471,14 +1471,15 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
                                                    ui::AXNode* node) {
   DCHECK(node);
   auto iter = id_wrapper_map_.find(node->id());
+  // TODO(crbug.com/1315661): This if statement ideally should never be entered.
+  // Identify why we are entering this code path and fix the root cause.
   if (iter == id_wrapper_map_.end()) {
-    NOTREACHED() << "A reparent operation should reuse an existing native "
-                    "wrapper, and so should not need to create a new one.";
-    auto [iter, success] = id_wrapper_map_.insert(
+    bool success;
+    std::tie(iter, success) = id_wrapper_map_.insert(
         {node->id(), BrowserAccessibility::Create(this, node)});
-    ;
     DCHECK(success);
   }
+  DCHECK(iter != id_wrapper_map_.end());
   BrowserAccessibility* wrapper = iter->second.get();
   wrapper->SetNode(*node);
 }
