@@ -450,6 +450,9 @@ crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/same-page-na
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
 
 crbug.com/736052 compositing/overflow/composited-scroll-with-fractional-translation.html [ Failure Pass ]
+crbug.com/1303091 [ Linux ] compositing/overflow/paint-neg-z-order-descendants-into-scrolling-contents-layer.html [ Failure Pass ]
+
+crbug.com/1303030 [ Linux ] paint/invalidation/forms/range-focus-by-mouse-then-keydown.html [ Failure Pass ]
 
 # New OffscreenCanvas Tests that are breaking LayoutTest
 
