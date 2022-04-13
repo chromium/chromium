@@ -21,7 +21,6 @@ int g_password_input_counter = 0;
 // https://developer.apple.com/library/content/technotes/tn2150/_index.html
 void SetPasswordInputEnabled(bool enabled) {
   if (enabled) {
-    DCHECK(!IsSecureEventInputEnabled());
     EnableSecureEventInput();
 
     CFArrayRef inputSources = TISCreateASCIICapableInputSourceList();
@@ -29,7 +28,6 @@ void SetPasswordInputEnabled(bool enabled) {
                            sizeof(CFArrayRef), &inputSources);
     CFRelease(inputSources);
   } else {
-    DCHECK(IsSecureEventInputEnabled());
     TSMRemoveDocumentProperty(0, kTSMDocumentEnabledInputSourcesPropertyTag);
 
     DisableSecureEventInput();
@@ -41,7 +39,7 @@ void SetPasswordInputEnabled(bool enabled) {
 namespace ui {
 
 ScopedPasswordInputEnabler::ScopedPasswordInputEnabler() {
-  if (!g_password_input_counter && !IsSecureEventInputEnabled()) {
+  if (!g_password_input_counter) {
     SetPasswordInputEnabled(true);
   }
   ++g_password_input_counter;
