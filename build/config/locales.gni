@@ -121,12 +121,16 @@ if (is_ios) {
   ]
 }
 
-# Chrome locales not on Windows, Mac, or Linux
+# Chrome locales not on Windows, Mac, or Linux.
+# This list is used for all platforms except Android. On Android, this list is
+# modified to exclude locales that are not used on Android, so
+# `platform_pak_locales - extended_locales` works as expected.
 extended_locales = [
   "as",
   "az",
   "be",
   "bs",
+  "cy",
   "eu",
   "fr-CA",
   "gl",
@@ -151,11 +155,21 @@ extended_locales = [
   "zu",
 ]
 
+# Chrome locales not on Android.
+# These locales have not yet been tested yet. Specifically, AOSP has not been
+# translated to Welsh at the time of writing (April 2022):
+# https://cs.android.com/android/platform/superproject/+/master:build/make/target/product/languages_default.mk
+# Due to this, the only way a user could see Welsh strings - assuming they were
+# built - would be to manually switch their "Chrome language" in Chrome's
+# language settings to Welsh, so Welsh usage would probably be very low.
+_non_android_locales = [ "cy" ]
+
 # Setup |platform_pak_locales| for each platform.
-# Welsh is currently excluded as it is not included in any platform's build.
-# TODO(b/192306364): Add Welsh to CrOS only.
-platform_pak_locales = all_chrome_locales - [ "cy" ]
-if (!is_android) {
+platform_pak_locales = all_chrome_locales
+if (is_android) {
+  platform_pak_locales -= _non_android_locales
+  extended_locales -= _non_android_locales
+} else {
   platform_pak_locales -= extended_locales
 }
 
@@ -163,6 +177,7 @@ if (!is_android) {
 # Add or subtract platform specific locales below.
 if (is_chromeos) {
   platform_pak_locales += [
+    "cy",
     "eu",
     "gl",
     "is",

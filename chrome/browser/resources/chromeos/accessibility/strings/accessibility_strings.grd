@@ -10,6 +10,7 @@
     <output filename="_locales/bn/messages.json.gz" type="chrome_messages_json_gzip" lang="bn"/>
     <output filename="_locales/ca/messages.json.gz" type="chrome_messages_json_gzip" lang="ca"/>
     <output filename="_locales/cs/messages.json.gz" type="chrome_messages_json_gzip" lang="cs"/>
+    <output filename="_locales/cy/messages.json.gz" type="chrome_messages_json_gzip" lang="cy"/>
     <output filename="_locales/da/messages.json.gz" type="chrome_messages_json_gzip" lang="da"/>
     <output filename="_locales/de/messages.json.gz" type="chrome_messages_json_gzip" lang="de"/>
     <output filename="_locales/el/messages.json.gz" type="chrome_messages_json_gzip" lang="el"/>

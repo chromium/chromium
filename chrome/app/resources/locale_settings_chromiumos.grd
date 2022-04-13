@@ -11,6 +11,7 @@
     <output filename="platform_locale_settings_bn.pak" type="data_package" lang="bn" />
     <output filename="platform_locale_settings_ca.pak" type="data_package" lang="ca" />
     <output filename="platform_locale_settings_cs.pak" type="data_package" lang="cs" />
+    <output filename="platform_locale_settings_cy.pak" type="data_package" lang="cy" />
     <output filename="platform_locale_settings_da.pak" type="data_package" lang="da" />
     <output filename="platform_locale_settings_de.pak" type="data_package" lang="de" />
     <output filename="platform_locale_settings_el.pak" type="data_package" lang="el" />

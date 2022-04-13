@@ -16,6 +16,9 @@
     <output filename="remoting/resources/bn.pak" lang="bn" type="data_package"/>
     <output filename="remoting/resources/ca.pak" lang="ca" type="data_package"/>
     <output filename="remoting/resources/cs.pak" lang="cs" type="data_package"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/cy.pak" lang="cy" type="data_package"/>
+    </if>
     <output filename="remoting/resources/da.pak" lang="da" type="data_package"/>
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
@@ -105,6 +108,9 @@
     <output filename="remoting/resources/_locales/bn/messages.json" lang="bn" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ca/messages.json" lang="ca" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/cs/messages.json" lang="cs" type="chrome_messages_json"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/_locales/cy/messages.json" lang="cy" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/da/messages.json" lang="da" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/de/messages.json" lang="de" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>

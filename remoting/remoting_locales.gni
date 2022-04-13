@@ -76,6 +76,7 @@ if (is_chromeos) {
   # Support Icelandic in ChromeOS
   remoting_locales_without_pseudolocales += [
     "af",
+    "cy",
     "en-US",
     "eu",
     "gl",
