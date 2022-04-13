@@ -152,13 +152,11 @@ void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
 }
 
 void MediaStreamTrackGenerator::CreateAudioOutputPlatformTrack() {
-  // MediaStreamAudioSource creates and sets a PlatformTrack in
-  // ConnectToTrack().
-  // TODO(https://crbug.com/1302689): Create and provide the PlatformTrack
-  // inside the MediaStreamComponent constructor.
+  Component()->SetPlatformTrack(
+      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true));
   static_cast<blink::MediaStreamAudioSource*>(
       Component()->Source()->GetPlatformSource())
-      ->ConnectToTrack(Component());
+      ->ConnectToInitializedTrack(Component());
 }
 
 void MediaStreamTrackGenerator::CreateVideoStream(ScriptState* script_state) {

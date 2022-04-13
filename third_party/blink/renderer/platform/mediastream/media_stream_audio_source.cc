@@ -86,6 +86,20 @@ bool MediaStreamAudioSource::ConnectToTrack(MediaStreamComponent* component) {
     return false;
   }
 
+  // Create and initialize a new MediaStreamAudioTrack and pass ownership of it
+  // to the MediaStreamComponent.
+  component->SetPlatformTrack(
+      CreateMediaStreamAudioTrack(component->Id().Utf8()));
+
+  return ConnectToInitializedTrack(component);
+}
+
+bool MediaStreamAudioSource::ConnectToInitializedTrack(
+    MediaStreamComponent* component) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  DCHECK(component);
+  DCHECK(MediaStreamAudioTrack::From(component));
+
   LogMessage(base::StringPrintf("%s(track=%s)", __func__,
                                 component->ToString().Utf8().c_str()));
 
@@ -96,11 +110,6 @@ bool MediaStreamAudioSource::ConnectToTrack(MediaStreamComponent* component) {
     if (!EnsureSourceIsStarted())
       StopSource();
   }
-
-  // Create and initialize a new MediaStreamAudioTrack and pass ownership of it
-  // to the MediaStreamComponent.
-  component->SetPlatformTrack(
-      CreateMediaStreamAudioTrack(component->Id().Utf8()));
 
   // Propagate initial "enabled" state.
   MediaStreamAudioTrack* const track = MediaStreamAudioTrack::From(component);

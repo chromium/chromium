@@ -88,11 +88,21 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // streamed-in from outside the application.
   bool is_local_source() const { return is_local_source_; }
 
-  // Connects this source to the given |track|, creating the appropriate
+  // Connects this source to the given |component|, creating the appropriate
   // implementation of the content::MediaStreamAudioTrack interface, which
-  // becomes associated with and owned by |track|. Returns true if the source
-  // was successfully started.
-  bool ConnectToTrack(MediaStreamComponent* component);
+  // becomes associated with and owned by |component|. Returns true if the
+  // source was successfully started.
+  // TODO(https://crbug.com/1302689): Remove this once all callers have been
+  // moved to ConnectToInitializedTrack().
+  [
+      [deprecated("Use ConnectToInitializedTrack() with a component which "
+                  "already has an associated MediaStreamAudioTrack.")]] bool
+  ConnectToTrack(MediaStreamComponent* component);
+
+  // Connects this source to the given |component|, which already has an
+  // associated MediaStreamAudioTrack. Returns true if the source was
+  // successfully started.
+  bool ConnectToInitializedTrack(MediaStreamComponent* component);
 
   // Returns the current format of the audio passing through this source to the
   // sinks. This can return invalid parameters if the source has not yet been
