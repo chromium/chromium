@@ -424,6 +424,7 @@ void PageLoadTracker::ReadyToCommitNavigation(
 
 void PageLoadTracker::DidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
+  metrics_update_dispatcher_.DidFinishSubFrameNavigation(navigation_handle);
   largest_contentful_paint_handler_.OnDidFinishSubFrameNavigation(
       navigation_handle, navigation_start_);
   experimental_largest_contentful_paint_handler_.OnDidFinishSubFrameNavigation(

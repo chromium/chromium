@@ -541,8 +541,6 @@ void MetricsWebContentsObserver::DidFinishNavigation(
         GetPageLoadTracker(navigation_handle->GetParentFrame());
     if (tracker) {
       tracker->DidFinishSubFrameNavigation(navigation_handle);
-      tracker->metrics_update_dispatcher()->DidFinishSubFrameNavigation(
-          navigation_handle);
     }
     return;
   }
