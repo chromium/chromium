@@ -48,7 +48,6 @@ class TestAppLauncherHandler : public AppLauncherHandler {
     set_web_ui(test_web_ui);
   }
 };
-}  // namespace
 
 class ForceInstalledDeprecatedAppsDialogViewBrowserTest
     : public extensions::ExtensionBrowserTest,
@@ -152,3 +151,5 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
 INSTANTIATE_TEST_SUITE_P(,
                          ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                          testing::Bool());
+
+}  // namespace

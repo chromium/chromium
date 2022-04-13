@@ -4,7 +4,10 @@
 
 #include "chrome/browser/web_applications/extension_status_utils.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/one_shot_event.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
@@ -21,6 +24,12 @@
 namespace {
 
 const char* g_preinstalled_app_for_testing = nullptr;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+base::FeatureParam<std::string> kChromeAppAllowlist{
+    &features::kChromeAppsDeprecation, "allow_list", ""};
+#endif
 
 }  // namespace
 
@@ -111,15 +120,31 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
   if (!app || !app->is_app())
     return false;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kKeepForceInstalledPreinstalledApps)) {
-    return true;
+  bool force_installed =
+      IsExtensionForceInstalled(context, extension_id, nullptr);
+  bool preinstalled = IsPreinstalledAppId(extension_id);
+
+  // This feature allows us to keep chrome apps that are force installed AND
+  // preinstalled.
+  if (base::FeatureList::IsEnabled(
+          features::kKeepForceInstalledPreinstalledApps) &&
+      force_installed && preinstalled) {
+    return false;
   }
 
-  if (!IsExtensionForceInstalled(context, extension_id, nullptr))
-    return true;
+  // This feature parameter can specify specific extension ids to continue
+  // allowing.
+  if (!kChromeAppAllowlist.Get().empty()) {
+    std::vector<std::string> allowed_extension_ids =
+        base::SplitString(kChromeAppAllowlist.Get(), ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    for (std::string allowed_extension_id : allowed_extension_ids) {
+      if (extension_id == allowed_extension_id)
+        return false;
+    }
+  }
 
-  return !IsPreinstalledAppId(extension_id);
+  return true;
 }
 #endif
 
