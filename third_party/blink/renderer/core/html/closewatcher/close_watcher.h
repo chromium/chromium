@@ -27,6 +27,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   static CloseWatcher* Create(ScriptState*,
                               CloseWatcherOptions*,
                               ExceptionState&);
+  static CloseWatcher* Create(LocalDOMWindow*, CloseWatcherOptions*);
   explicit CloseWatcher(LocalDOMWindow*);
   void Trace(Visitor*) const override;
 
@@ -110,6 +111,10 @@ class CloseWatcher final : public EventTargetWithInlineData,
   };
 
  private:
+  static CloseWatcher* CreateInternal(LocalDOMWindow*,
+                                      WatcherStack&,
+                                      CloseWatcherOptions*);
+
   enum class State { kActive, kClosed };
   State state_ = State::kActive;
   bool dispatching_cancel_ = false;

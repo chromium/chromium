@@ -81,6 +81,18 @@ bool CloseWatcher::WatcherStack::CheckForCreation() {
   return true;
 }
 
+// static
+CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window,
+                                   CloseWatcherOptions* options) {
+  if (!window->GetFrame())
+    return nullptr;
+  WatcherStack* stack = window->closewatcher_stack();
+  if (!stack->CheckForCreation())
+    return nullptr;
+  return CreateInternal(window, *stack, options);
+}
+
+// static
 CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
                                    CloseWatcherOptions* options,
                                    ExceptionState& exception_state) {
@@ -102,6 +114,13 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  return CreateInternal(window, stack, options);
+}
+
+// static
+CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow* window,
+                                           WatcherStack& stack,
+                                           CloseWatcherOptions* options) {
   CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window);
 
   if (options && options->hasSignal()) {

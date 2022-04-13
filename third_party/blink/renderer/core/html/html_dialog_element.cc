@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -156,6 +157,9 @@ void HTMLDialogElement::close(const String& return_value) {
     previously_focused_element_ = nullptr;
     previously_focused_element->focus(focus_options);
   }
+
+  if (close_watcher_)
+    close_watcher_->destroy();
 }
 
 void HTMLDialogElement::SetIsModal(bool is_modal) {
@@ -189,6 +193,28 @@ void HTMLDialogElement::show() {
 
   SetFocusForDialog(this);
 }
+
+class DialogCloseWatcherEventListener : public NativeEventListener {
+ public:
+  explicit DialogCloseWatcherEventListener(HTMLDialogElement* dialog)
+      : dialog_(dialog) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    DCHECK(dialog_);
+    if (event->type() == event_type_names::kCancel)
+      dialog_->CloseWatcherFiredCancel();
+    if (event->type() == event_type_names::kClose)
+      dialog_->CloseWatcherFiredClose();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(dialog_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  WeakMember<HTMLDialogElement> dialog_;
+};
 
 void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   if (FastHasAttribute(html_names::kOpenAttr)) {
@@ -232,6 +258,20 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 
   previously_focused_element_ = document.FocusedElement();
 
+  if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
+    if (LocalDOMWindow* window = GetDocument().domWindow()) {
+      close_watcher_ = CloseWatcher::Create(window, /*options=*/nullptr);
+      if (close_watcher_) {
+        auto* event_listener =
+            MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
+        close_watcher_->addEventListener(event_type_names::kClose,
+                                         event_listener);
+        close_watcher_->addEventListener(event_type_names::kCancel,
+                                         event_listener);
+      }
+    }
+  }
+
   SetFocusForDialog(this);
 }
 
@@ -244,7 +284,8 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLDialogElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kCancel) {
+  if (!RuntimeEnabledFeatures::CloseWatcherEnabled() &&
+      event.type() == event_type_names::kCancel) {
     close();
     event.SetDefaultHandled();
     return;
@@ -252,8 +293,28 @@ void HTMLDialogElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
+void HTMLDialogElement::CloseWatcherFiredCancel() {
+  cancel_fired_since_last_close_ = true;
+}
+
+void HTMLDialogElement::CloseWatcherFiredClose() {
+  // https://wicg.github.io/close-watcher/#cancel-the-dialog
+  if (cancel_fired_since_last_close_) {
+    cancel_fired_since_last_close_ = false;
+
+    Event* cancel_event = Event::CreateCancelable(event_type_names::kCancel);
+    DispatchEvent(*cancel_event);
+    if (cancel_event->defaultPrevented())
+      return;
+    cancel_event->SetDefaultHandled();
+  }
+
+  close();
+}
+
 void HTMLDialogElement::Trace(Visitor* visitor) const {
   visitor->Trace(previously_focused_element_);
+  visitor->Trace(close_watcher_);
   HTMLElement::Trace(visitor);
 }
 

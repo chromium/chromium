@@ -54,4 +54,15 @@ public class CloseWatcherTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
+
+    @Test
+    @MediumTest
+    public void testBackButtonClosesDialogElement() throws Throwable {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("<dialog id=mydialog>hello</dialog>"
+                + "<script>mydialog.showModal();"
+                + "mydialog.onclose = () => window.document.title = 'SUCCESS';</script>"));
+        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
+    }
 }

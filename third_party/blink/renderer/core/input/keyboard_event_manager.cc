@@ -558,8 +558,10 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
-  if (HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog())
+  HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog();
+  if (dialog && !RuntimeEnabledFeatures::CloseWatcherEnabled()) {
     dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
+  }
 
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }
