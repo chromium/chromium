@@ -551,6 +551,17 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
 
   prefs_policy_.set_usb_power_share(values.usb_power_share);
 
+  if (values.adaptive_charging_enabled.has_value()) {
+    prefs_policy_.set_adaptive_charging_enabled(
+        values.adaptive_charging_enabled.value());
+    if (values.adaptive_charging_enabled.value()) {
+      prefs_policy_.set_adaptive_charging_min_probability(
+          values.adaptive_charging_min_probability);
+      prefs_policy_.set_adaptive_charging_hold_percent(
+          values.adaptive_charging_hold_percent);
+    }
+  }
+
   prefs_were_set_ = true;
   SendCurrentPolicy();
 }

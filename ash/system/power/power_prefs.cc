@@ -121,6 +121,26 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
+double GetAdaptiveChargingMinProbability() {
+  // An AdaptiveCharging decision is considered to be reliable if the inference
+  // score is higher than this number.
+  constexpr double kDefaultAdaptiveChargingMinProbability = 0.2;
+
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      ash::features::kAdaptiveCharging, "adaptive_charging_min_probability",
+      kDefaultAdaptiveChargingMinProbability);
+}
+
+int GetAdaptiveChargingHoldPercent() {
+  // The AdaptiveCharging will delay the charging when the battery level is at
+  // or higher than this number until AdaptiveCharging is over.
+  constexpr int kDefaultAdaptiveChargingHoldPercent = 80;
+
+  return base::GetFieldTrialParamByFeatureAsInt(
+      ash::features::kAdaptiveCharging, "adaptive_charging_hold_percent",
+      kDefaultAdaptiveChargingHoldPercent);
+}
+
 }  // namespace
 
 PowerPrefs::PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
@@ -411,6 +431,16 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
         local_state_->GetBoolean(prefs::kUsbPowerShareEnabled);
   }
 
+  if (features::IsAdaptiveChargingEnabled()) {
+    values.adaptive_charging_enabled =
+        prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled);
+    if (values.adaptive_charging_enabled) {
+      values.adaptive_charging_min_probability =
+          GetAdaptiveChargingMinProbability();
+      values.adaptive_charging_hold_percent = GetAdaptiveChargingHoldPercent();
+    }
+  }
+
   power_policy_controller_->ApplyPrefs(values);
 }
 
@@ -467,6 +497,8 @@ void PowerPrefs::ObservePrefs(PrefService* prefs) {
                           update_callback);
   profile_registrar_->Add(prefs::kPowerAlsLoggingEnabled, update_callback);
   profile_registrar_->Add(prefs::kPowerQuickDimEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerAdaptiveChargingEnabled,
+                          update_callback);
 
   UpdatePowerPolicyFromPrefs();
 }

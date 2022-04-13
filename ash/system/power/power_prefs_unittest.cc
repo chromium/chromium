@@ -194,6 +194,15 @@ void SetQuickDimPreference(bool enabled) {
   prefs->SetBoolean(prefs::kPowerQuickDimEnabled, enabled);
 }
 
+void SetAdaptiveChargingPreference(bool enabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs)
+    return;
+
+  prefs->SetBoolean(prefs::kPowerAdaptiveChargingEnabled, enabled);
+}
+
 }  // namespace
 
 class PowerPrefsTest : public NoSessionAshTestBase {
@@ -207,7 +216,8 @@ class PowerPrefsTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQuickDim);
+    feature_list_.InitWithFeatures(
+        {features::kQuickDim, features::kAdaptiveCharging}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
     chromeos::HpsDBusClient::InitializeFake();
     chromeos::FakeHpsDBusClient::Get()->Reset();
@@ -638,6 +648,19 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
   SetQuickDimPreference(false);
   EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
             user_disable_buckets);
+}
+
+TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
+  // Should be disabled by default.
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  // Should be enabled after setting the prefs to true.
+  SetAdaptiveChargingPreference(true);
+  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  // Should be disabled after changing the prefs to false.
+  SetAdaptiveChargingPreference(false);
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
 }
 
 }  // namespace ash
