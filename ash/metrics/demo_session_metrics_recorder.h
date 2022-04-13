@@ -80,9 +80,11 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kClipchamp = 37,
     kGeForceNow = 38,
     kZoom = 39,
+    kSumo = 40,
+    kAdobeSpark = 41,
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kZoom,
+    kMaxValue = kAdobeSpark,
   };
 
   static constexpr char kUserClicksAndPressesMetric[] =

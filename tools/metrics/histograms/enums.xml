@@ -21856,6 +21856,8 @@ Called by update_debug_scenarios.py.-->
   <int value="37" label="Clipchamp (PWA)"/>
   <int value="38" label="GeForce NOW (PWA)"/>
   <int value="39" label="Zoom (PWA)"/>
+  <int value="40" label="Sumo (PWA)"/>
+  <int value="41" label="Adobe Spark (PWA)"/>
 </enum>
 
 <enum name="DemoModeAppLaunchSource">

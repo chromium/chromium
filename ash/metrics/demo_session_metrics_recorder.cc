@@ -100,6 +100,10 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kGeForceNow;
   if (app_id == extension_misc::kZoomAppId)
     return DemoModeApp::kZoom;
+  if (app_id == extension_misc::kSumoAppId)
+    return DemoModeApp::kSumo;
+  if (app_id == extension_misc::kAdobeSparkAppId)
+    return DemoModeApp::kAdobeSpark;
 
   return DemoModeApp::kOtherChromeApp;
 }

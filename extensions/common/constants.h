@@ -315,6 +315,12 @@ EXTENSIONS_EXPORT extern const char kGeForceNowAppId[];
 // The extension id of the Zoom PWA.
 EXTENSIONS_EXPORT extern const char kZoomAppId[];
 
+// The extension id of the Sumo PWA.
+EXTENSIONS_EXPORT extern const char kSumoAppId[];
+
+// The extension id of the Sumo PWA.
+EXTENSIONS_EXPORT extern const char kAdobeSparkAppId[];
+
 // The extension id of the Google Docs application.
 EXTENSIONS_EXPORT extern const char kGoogleDocsAppId[];
 
