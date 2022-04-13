@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
@@ -361,7 +362,13 @@ static bool NeedsScrollOrScrollTranslation(
 }
 
 static bool NeedsReplacedContentTransform(const LayoutObject& object) {
-  return object.IsSVGRoot();
+  if (object.IsSVGRoot())
+    return true;
+
+  if (auto* layout_embedded_object = DynamicTo<LayoutEmbeddedContent>(object))
+    return layout_embedded_object->FrozenFrameSize().has_value();
+
+  return false;
 }
 
 static bool NeedsPaintOffsetTranslationForOverflowControls(
@@ -1918,8 +1925,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       content_to_parent_space =
           SVGRootPainter(To<LayoutSVGRoot>(object_))
               .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
-    } else {
-      NOTREACHED();
+    } else if (object_.IsLayoutEmbeddedContent()) {
+      content_to_parent_space =
+          To<LayoutEmbeddedContent>(object_).EmbeddedContentTransform();
     }
     if (!content_to_parent_space.IsIdentity()) {
       TransformPaintPropertyNode::State state;
@@ -1934,23 +1942,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     }
   }
 
+  if (properties_->ReplacedContentTransform()) {
+    context_.current.transform = properties_->ReplacedContentTransform();
+    // TODO(pdr): SVG does not support 3D transforms so this should be
+    // should_flatten_inherited_transform = true.
+    context_.should_flatten_inherited_transform = false;
+    context_.rendering_context_id = 0;
+  }
+
   if (object_.IsSVGRoot()) {
     // SVG painters don't use paint offset. The paint offset is baked into
     // the transform node instead.
     context_.current.paint_offset = PhysicalOffset();
     context_.current.directly_composited_container_paint_offset_subpixel_delta =
         PhysicalOffset();
-
-    // Only <svg> paints its subtree as replaced contents. Other replaced
-    // element type may have shadow DOM that should not be affected by the
-    // replaced object fit.
-    if (properties_->ReplacedContentTransform()) {
-      context_.current.transform = properties_->ReplacedContentTransform();
-      // TODO(pdr): SVG does not support 3D transforms so this should be
-      // should_flatten_inherited_transform = true.
-      context_.should_flatten_inherited_transform = false;
-      context_.rendering_context_id = 0;
-    }
   }
 }
 

@@ -546,11 +546,10 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
   security_context_.SetInsecureNavigationsSet(set);
 }
 
-void RemoteFrame::FrameRectsChanged(const gfx::Rect& local_frame_rect,
+void RemoteFrame::FrameRectsChanged(const gfx::Size& local_frame_size,
                                     const gfx::Rect& screen_space_rect) {
   pending_visual_properties_.screen_space_rect = screen_space_rect;
-  pending_visual_properties_.local_frame_size =
-      gfx::Size(local_frame_rect.width(), local_frame_rect.height());
+  pending_visual_properties_.local_frame_size = local_frame_size;
   SynchronizeVisualProperties();
 }
 

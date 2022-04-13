@@ -50,7 +50,7 @@ ScopedReplacedContentPaintState::ScopedReplacedContentPaintState(
   bool property_changed = false;
 
   const auto* content_transform = paint_properties->ReplacedContentTransform();
-  if (content_transform && replaced.IsSVGRoot()) {
+  if (content_transform) {
     new_properties.SetTransform(*content_transform);
     adjusted_paint_info_.emplace(input_paint_info_);
     adjusted_paint_info_->TransformCullRect(*content_transform);

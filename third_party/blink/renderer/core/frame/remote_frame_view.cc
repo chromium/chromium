@@ -126,17 +126,10 @@ void RemoteFrameView::SetNeedsOcclusionTracking(bool needs_tracking) {
   }
 }
 
-void RemoteFrameView::UpdateCompositingRect() {
-  remote_frame_->UpdateCompositedLayerBounds();
-  gfx::Rect previous_rect = compositing_rect_;
-  compositing_rect_ = gfx::Rect();
+gfx::Rect RemoteFrameView::ComputeCompositingRect() const {
   LocalFrameView* local_root_view = ParentLocalRootFrameView();
   LayoutEmbeddedContent* owner_layout_object =
       remote_frame_->OwnerLayoutObject();
-  if (!local_root_view || !owner_layout_object) {
-    needs_frame_rect_propagation_ = true;
-    return;
-  }
 
   // For main frames we constrain the rect that gets painted to the viewport.
   // If the local frame root is an OOPIF itself, then we use the root's
@@ -159,7 +152,7 @@ void RemoteFrameView::UpdateCompositingRect() {
       local_root_transform_state.AccumulatedTransform().Inverse();
   PhysicalRect local_viewport_rect = PhysicalRect::EnclosingRect(
       matrix.ProjectQuad(gfx::QuadF(gfx::RectF(viewport_rect))).BoundingBox());
-  compositing_rect_ = ToEnclosingRect(local_viewport_rect);
+  gfx::Rect compositing_rect = ToEnclosingRect(local_viewport_rect);
   gfx::Size frame_size = Size();
 
   // Iframes that fit within the window viewport get fully rastered. For
@@ -170,16 +163,46 @@ void RemoteFrameView::UpdateCompositingRect() {
   // it seems to make guttering rare with slow to medium speed wheel scrolling.
   // Can we collect UMA data to estimate how much extra rastering this causes,
   // and possibly how common guttering is?
-  compositing_rect_.Outset(
+  compositing_rect.Outset(
       gfx::Outsets::VH(ceilf(local_viewport_rect.Height() * 0.15f),
                        ceilf(local_viewport_rect.Width() * 0.15f)));
-  compositing_rect_.set_width(
-      std::min(frame_size.width(), compositing_rect_.width()));
-  compositing_rect_.set_height(
-      std::min(frame_size.height(), compositing_rect_.height()));
-  gfx::Point compositing_rect_location = compositing_rect_.origin();
+  compositing_rect.set_width(
+      std::min(frame_size.width(), compositing_rect.width()));
+  compositing_rect.set_height(
+      std::min(frame_size.height(), compositing_rect.height()));
+  gfx::Point compositing_rect_location = compositing_rect.origin();
   compositing_rect_location.SetToMax(gfx::Point());
-  compositing_rect_.set_origin(compositing_rect_location);
+  compositing_rect.set_origin(compositing_rect_location);
+
+  return compositing_rect;
+}
+
+void RemoteFrameView::UpdateCompositingRect() {
+  remote_frame_->UpdateCompositedLayerBounds();
+  gfx::Rect previous_rect = compositing_rect_;
+  compositing_rect_ = gfx::Rect();
+  LocalFrameView* local_root_view = ParentLocalRootFrameView();
+  LayoutEmbeddedContent* owner_layout_object =
+      remote_frame_->OwnerLayoutObject();
+  if (!local_root_view || !owner_layout_object) {
+    needs_frame_rect_propagation_ = true;
+    return;
+  }
+
+  // The |compositing_rect_| provides the child compositor the rectangle (in its
+  // local coordinate space) which should be rasterized/composited. Its based on
+  // the child frame's intersection with the viewport and an optimization to
+  // avoid large iframes rasterizing their complete viewport.
+  // Since this rectangle is dependent on the child frame's position in the
+  // embedding frame, updating this can be used for communication with a fenced
+  // frame. So if the frame size is frozen, we use the complete viewport of the
+  // child frame as its compositing rect.
+  if (auto frozen_size = owner_layout_object->FrozenFrameSize()) {
+    compositing_rect_ =
+        gfx::Rect(frozen_size->width.ToInt(), frozen_size->height.ToInt());
+  } else {
+    compositing_rect_ = ComputeCompositingRect();
+  }
 
   if (compositing_rect_ != previous_rect)
     needs_frame_rect_propagation_ = true;
@@ -262,7 +285,15 @@ void RemoteFrameView::PropagateFrameRects() {
   if (LocalFrameView* parent = ParentFrameView()) {
     screen_space_rect = parent->ConvertToRootFrame(screen_space_rect);
   }
-  remote_frame_->FrameRectsChanged(frame_rect, screen_space_rect);
+
+  gfx::Size frame_size = frame_rect.size();
+  if (auto* layout_object = GetLayoutEmbeddedContent()) {
+    if (auto frozen_size = layout_object->FrozenFrameSize()) {
+      frame_size =
+          gfx::Size(frozen_size->width.ToInt(), frozen_size->height.ToInt());
+    }
+  }
+  remote_frame_->FrameRectsChanged(frame_size, screen_space_rect);
 }
 
 void RemoteFrameView::Paint(GraphicsContext& context,

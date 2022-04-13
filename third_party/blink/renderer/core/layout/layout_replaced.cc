@@ -637,26 +637,6 @@ void LayoutReplaced::ComputePositionedLogicalHeight(
   computed_values.position_ = logical_top_pos;
 }
 
-PhysicalOffset LayoutReplaced::ObjectFit::Apply(
-    const PhysicalOffset& offset) const {
-  return offset + Offset();
-}
-
-gfx::Rect LayoutReplaced::ObjectFit::Apply(const gfx::Rect& rect) const {
-  return rect + gfx::Vector2d(Offset().left.ToInt(), Offset().top.ToInt());
-}
-
-PhysicalOffset LayoutReplaced::ObjectFit::ApplyInverse(
-    const PhysicalOffset& offset) const {
-  return offset - Offset();
-}
-
-gfx::PointF LayoutReplaced::ObjectFit::ApplyInverse(
-    const gfx::PointF& point) const {
-  return {point.x() - Offset().left.ToFloat(),
-          point.y() - Offset().top.ToFloat()};
-}
-
 absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const LayoutSize* overridden_intrinsic_size) const {
   scoped_refptr<BasicShape> object_view_box = StyleRef().ObjectViewBox();

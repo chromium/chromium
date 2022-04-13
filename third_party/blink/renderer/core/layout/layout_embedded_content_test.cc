@@ -60,6 +60,8 @@ TEST_F(LayoutEmbeddedContentTest, FreozenSizeReplacedContentRect) {
   Document& document = GetDocument();
   auto* element = MakeGarbageCollected<HTMLFreezableIFrameElement>(document);
   element->setAttribute(html_names::kSrcAttr, "http://example.com/");
+  element->SetInlineStyleProperty(CSSPropertyID::kObjectFit,
+                                  CSSValueID::kContain);
   document.body()->AppendChild(element);
   UpdateAllLifecyclePhasesForTest();
   auto* layout_object = element->GetLayoutFreezableIFrame();
@@ -68,8 +70,10 @@ TEST_F(LayoutEmbeddedContentTest, FreozenSizeReplacedContentRect) {
 
   layout_object->FreezeSizeForTesting(PhysicalSize(80, 50));
   UpdateAllLifecyclePhasesForTest();
-  // When the size is frozen, the content box is at the top-left corner.
-  EXPECT_EQ(layout_object->ReplacedContentRect(), PhysicalRect(2, 2, 80, 50));
+  // When the size is frozen, the content is rendered at the centre of the box
+  // and scale to fit based on object-fit:contain.
+  EXPECT_EQ(layout_object->ReplacedContentRect(),
+            PhysicalRect(32, 2, 240, 150));
 }
 
 }  // namespace blink

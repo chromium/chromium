@@ -96,6 +96,12 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   // owner.
   LocalFrameView* ParentLocalRootFrameView() const;
 
+  // This provides the rectangle that the embedded compositor should raster
+  // based on its screen space rect. This takes into account the frame's
+  // viewport intersection and a buffer area to prevent checkerboarding during
+  // animations.
+  gfx::Rect ComputeCompositingRect() const;
+
   // The properties and handling of the cycle between RemoteFrame
   // and its RemoteFrameView corresponds to that between LocalFrame
   // and LocalFrameView. Please see the LocalFrameView::frame_ comment for

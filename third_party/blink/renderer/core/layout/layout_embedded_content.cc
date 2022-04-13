@@ -35,11 +35,15 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -100,40 +104,44 @@ const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return absl::nullopt;
 }
 
-LayoutReplaced::ObjectFit LayoutEmbeddedContent::EmbeddedContentTransform(
-    const PhysicalRect& content_rect) const {
-  if (const absl::optional<PhysicalSize> size = FrozenFrameSize()) {
-    // When frozen, place the child frame content at the top-left corner.
-    // TODO(kojii): The `object-fit` behaviors is not implemented yet.
-    return ObjectFit({content_rect.offset, *size});
+AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
+  auto frozen_size = FrozenFrameSize();
+  if (!frozen_size) {
+    const PhysicalOffset content_box_offset = PhysicalContentBoxOffset();
+    return AffineTransform().Translate(content_box_offset.left,
+                                       content_box_offset.top);
   }
 
-  return ObjectFit(content_rect);
-}
-
-LayoutReplaced::ObjectFit LayoutEmbeddedContent::EmbeddedContentTransform()
-    const {
-  return EmbeddedContentTransform(PhysicalContentBoxRect());
+  AffineTransform translate_and_scale;
+  auto replaced_rect = ReplacedContentRect();
+  translate_and_scale.Translate(replaced_rect.X(), replaced_rect.Y());
+  translate_and_scale.Scale(replaced_rect.Width() / frozen_size->width,
+                            replaced_rect.Height() / frozen_size->height);
+  return translate_and_scale;
 }
 
 PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
     const PhysicalOffset& offset) const {
-  return EmbeddedContentTransform().ApplyInverse(offset);
+  gfx::PointF point(offset);
+  return PhysicalOffset::FromPointFRound(
+      EmbeddedContentTransform().Inverse().MapPoint(point));
 }
 
 gfx::PointF LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
     const gfx::PointF& point) const {
-  return EmbeddedContentTransform().ApplyInverse(point);
+  return EmbeddedContentTransform().Inverse().MapPoint(point);
 }
 
 PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
     const PhysicalOffset& offset) const {
-  return EmbeddedContentTransform().Apply(offset);
+  gfx::PointF point(offset);
+  return PhysicalOffset::FromPointFRound(
+      EmbeddedContentTransform().MapPoint(point));
 }
 
 gfx::Rect LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
     const gfx::Rect& rect) const {
-  return EmbeddedContentTransform().Apply(rect);
+  return EmbeddedContentTransform().MapRect(rect);
 }
 
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
@@ -332,9 +340,14 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
     content_rect.size = View()->ViewRect().size;
   }
 
-  if (FrozenFrameSize()) {
-    // When the size is frozen, return the scaled/offset final rect.
-    content_rect = EmbeddedContentTransform(content_rect).FinalRect();
+  if (const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
+    // TODO(kojii): Setting the `offset` to non-zero values breaks
+    // hit-testing/inputs. Even different size is suspicious, as the input
+    // system forwards mouse events to the child frame even when the mouse is
+    // outside of the child frame. Revisit this when the input system supports
+    // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
+    LayoutSize frozen_layout_size = frozen_size->ToLayoutSize();
+    content_rect = ComputeReplacedContentRect(&frozen_layout_size);
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the

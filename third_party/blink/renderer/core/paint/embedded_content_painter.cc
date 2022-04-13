@@ -6,6 +6,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
@@ -26,8 +27,14 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   if (!embedded_content_view)
     return;
 
-  gfx::Point paint_location(ToRoundedPoint(
-      paint_offset + layout_embedded_content_.ReplacedContentRect().offset));
+  // Apply the translation to offset the content within the object's border-box
+  // only if we're not using a transform node for this. If the frame size is
+  // frozen then |ReplacedContentTransform| is used instead.
+  gfx::Point paint_location;
+  if (!layout_embedded_content_.FrozenFrameSize().has_value()) {
+    paint_location = ToRoundedPoint(
+        paint_offset + layout_embedded_content_.ReplacedContentRect().offset);
+  }
 
   gfx::Vector2d view_paint_offset =
       paint_location - embedded_content_view->FrameRect().origin();
