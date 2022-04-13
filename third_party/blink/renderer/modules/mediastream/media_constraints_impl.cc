@@ -417,6 +417,19 @@ static void ParseOldStyleNames(
     } else if (constraint.name_.Equals(kScreencastMinBitrate)) {
       result.goog_screencast_min_bitrate.SetExact(
           atoi(constraint.value_.Utf8().c_str()));
+      // Count usage of googScreencastMinBitrate, but only when set to anything
+      // other than 100. If set to 100, this matches the new default and an app
+      // doing this would not be affected when this constraint becomes ignored.
+      if (result.goog_screencast_min_bitrate.Exact() != 100) {
+        UseCounter::Count(
+            context, WebFeature::kLegacyConstraintGoogScreencastMinBitrate);
+      }
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Screencast min bitrate is now set to 100 kbps by default and "
+          "googScreencastMinBitrate will soon be ignored in favor of this new "
+          "default. Please stop using it."));
     } else if (constraint.name_.Equals(kCpuOveruseDetection)) {
       result.goog_cpu_overuse_detection.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kCpuUnderuseThreshold) ||

@@ -37818,6 +37818,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4202"
       label="ExplicitOverflowVisibleOnReplacedElementWithObjectProp"/>
   <int value="4203" label="PrivateNetworkAccessNullIpAddress"/>
+  <int value="4204" label="LegacyConstraintGoogScreencastMinBitrate"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

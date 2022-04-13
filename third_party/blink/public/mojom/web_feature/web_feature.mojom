@@ -3522,6 +3522,7 @@ enum WebFeature {
   kExplicitOverflowVisibleOnReplacedElement = 4201,
   kExplicitOverflowVisibleOnReplacedElementWithObjectProp = 4202,
   kPrivateNetworkAccessNullIpAddress = 4203,
+  kLegacyConstraintGoogScreencastMinBitrate = 4204,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
