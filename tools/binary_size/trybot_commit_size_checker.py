@@ -42,7 +42,6 @@ import describe
 import dex_disassembly
 import file_format
 import models
-import native_disassembly
 
 _RESOURCE_SIZES_LOG = 'resource_sizes_log'
 _BASE_RESOURCE_SIZES_LOG = 'base_resource_sizes_log'
@@ -394,12 +393,9 @@ def main():
   size_deltas.add(base_resource_sizes_delta)
   metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
 
-  logging.info('Adding disassembly to dex symbols')
+  logging.info('Adding disassembly to select symbols')
   dex_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
                                  after_path_resolver)
-  logging.info('Adding disassembly to native symbols')
-  native_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
-                                    after_path_resolver)
 
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')
