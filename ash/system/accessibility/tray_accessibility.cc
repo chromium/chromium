@@ -26,11 +26,11 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/vector_icons/vector_icons.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -125,7 +125,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
   Layout();
 
   if (!::features::IsDictationOfflineAvailable() &&
-      !media::IsLiveCaptionFeatureEnabled()) {
+      !captions::IsLiveCaptionFeatureSupported()) {
     return;
   }
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -135,7 +135,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
   if (!::features::IsDictationOfflineAvailable() &&
-      !media::IsLiveCaptionFeatureEnabled()) {
+      !captions::IsLiveCaptionFeatureSupported()) {
     return;
   }
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();

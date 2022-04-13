@@ -53,6 +53,7 @@
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/feed/buildflags.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
@@ -168,7 +169,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/search/ntp_features.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -543,7 +543,7 @@ void BindSpeechRecognitionContextHandler(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  if (captions::IsLiveCaptionFeatureSupported()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
         std::move(receiver));
@@ -558,7 +558,7 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
         receiver) {
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  if (captions::IsLiveCaptionFeatureSupported()) {
     Profile* profile = Profile::FromBrowserContext(
         frame_host->GetProcess()->GetBrowserContext());
 
@@ -575,7 +575,7 @@ void BindSpeechRecognitionRecognizerClientHandler(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
-      media::IsLiveCaptionFeatureEnabled()) {
+      captions::IsLiveCaptionFeatureSupported()) {
     captions::LiveCaptionSpeechRecognitionHost::Create(frame_host,
                                                        std::move(receiver));
   }
@@ -589,7 +589,7 @@ void BindMediaFoundationRendererNotifierHandler(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
-      media::IsLiveCaptionFeatureEnabled()) {
+      captions::IsLiveCaptionFeatureSupported()) {
     captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
                                                         std::move(receiver));
   }

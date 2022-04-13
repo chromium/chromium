@@ -17,6 +17,10 @@ absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics);
 
+// Returns whether the Live Caption feature is supported in Chrome. This can
+// depend on e.g. Chrome feature flags, platform/OS, supported CPU instructions.
+bool IsLiveCaptionFeatureSupported();
+
 }  // namespace captions
 
 #endif  // COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_

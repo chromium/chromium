@@ -21,6 +21,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
+#include "components/live_caption/caption_util.h"
 #include "components/soda/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -180,7 +181,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
                                   spanishConfig->display_name);
 
   html_source->AddBoolean("enableLiveCaption",
-                          media::IsLiveCaptionFeatureEnabled());
+                          captions::IsLiveCaptionFeatureSupported());
   html_source->AddBoolean("enableLiveCaptionMultiLanguage",
                           liveCaptionMultiLanguageEnabled);
 }

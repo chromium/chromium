@@ -55,6 +55,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1236,14 +1237,14 @@ bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForLargeCursor() {
 }
 
 bool AccessibilityControllerImpl::IsLiveCaptionSettingVisibleInTray() {
-  return media::IsLiveCaptionFeatureEnabled() &&
+  return captions::IsLiveCaptionFeatureSupported() &&
          base::FeatureList::IsEnabled(
              media::kLiveCaptionSystemWideOnChromeOS) &&
          live_caption().IsVisibleInTray();
 }
 
 bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForLiveCaption() {
-  return media::IsLiveCaptionFeatureEnabled() &&
+  return captions::IsLiveCaptionFeatureSupported() &&
          base::FeatureList::IsEnabled(
              media::kLiveCaptionSystemWideOnChromeOS) &&
          live_caption().IsEnterpriseIconVisible();

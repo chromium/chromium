@@ -504,6 +504,7 @@ static_library("ui") {
     "//components/language/core/common",
     "//components/lens",
     "//components/live_caption:constants",
+    "//components/live_caption:utils",
     "//components/lookalikes/core",
     "//components/metrics:content",
     "//components/metrics_services_manager",

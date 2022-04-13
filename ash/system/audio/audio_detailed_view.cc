@@ -20,9 +20,9 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"
-#include "media/base/media_switches.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
@@ -96,7 +96,7 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
 
-  if (!media::IsLiveCaptionFeatureEnabled())
+  if (!captions::IsLiveCaptionFeatureSupported())
     return;
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer)
@@ -105,7 +105,7 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
 
 AudioDetailedView::~AudioDetailedView() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
-  if (!media::IsLiveCaptionFeatureEnabled())
+  if (!captions::IsLiveCaptionFeatureSupported())
     return;
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   // `soda_installer` is not guaranteed to be valid, since it's possible for

@@ -27,6 +27,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/live_caption/caption_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -109,7 +110,7 @@ void MediaToolbarButtonView::Enable() {
   // before there is a valid widget to anchor anything to. Previously any
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
-  if (browser_->window() && media::IsLiveCaptionFeatureEnabled()) {
+  if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
     if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       browser_->window()->MaybeShowFeaturePromo(

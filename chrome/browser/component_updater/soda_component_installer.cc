@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/soda/constants.h"
@@ -20,7 +22,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-#include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <memory>
@@ -225,7 +226,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
                            base::OnceClosure on_registered_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  if (captions::IsLiveCaptionFeatureSupported()) {
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<SodaComponentInstallerPolicy>(
             base::BindRepeating(
@@ -251,7 +252,7 @@ void RegisterSodaLanguageComponent(
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  if (captions::IsLiveCaptionFeatureSupported()) {
     absl::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {

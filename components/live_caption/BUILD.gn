@@ -48,7 +48,6 @@ if (!is_android) {
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]
-
     }  # toolkit_views
   }
 }  # !is_android
@@ -80,7 +79,12 @@ source_set("utils") {
     ":constants",
     "//base",
     "//components/prefs",
+    "//media",
     "//ui/base",
     "//ui/native_theme",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }

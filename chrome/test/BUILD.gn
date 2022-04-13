@@ -9168,6 +9168,7 @@ if (!is_android) {
         "interaction/interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
+        "//components/live_caption:utils",
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
         "//ui/base/dragdrop:types",

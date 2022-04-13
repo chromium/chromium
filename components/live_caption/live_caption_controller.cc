@@ -68,10 +68,10 @@ void LiveCaptionController::RegisterProfilePrefs(
 
 void LiveCaptionController::Init() {
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
-                            media::IsLiveCaptionFeatureEnabled());
+                            IsLiveCaptionFeatureSupported());
 
   // Hidden behind a feature flag.
-  if (!media::IsLiveCaptionFeatureEnabled())
+  if (!IsLiveCaptionFeatureSupported())
     return;
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
