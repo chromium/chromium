@@ -105,6 +105,8 @@ using pASurfaceTransaction_setFrameRate =
              ASurfaceControl* surface_control,
              float frameRate,
              int8_t compatibility);
+using pASurfaceTransaction_setFrameTimeline =
+    void (*)(ASurfaceTransaction* transaction, int64_t vsync_id);
 using pASurfaceTransaction_reparent = void (*)(ASurfaceTransaction*,
                                                ASurfaceControl* surface_control,
                                                ASurfaceControl* new_parent);
@@ -236,6 +238,7 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_cta861_3);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_smpte2086);
     LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getPresentFenceFd);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getLatchTime);
@@ -278,6 +281,7 @@ struct SurfaceControlMethods {
   pASurfaceTransaction_setHdrMetadata_smpte2086
       ASurfaceTransaction_setHdrMetadata_smpte2086Fn;
   pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn;
+  pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn;
 
   // TransactionStats methods.
   pASurfaceTransactionStats_getPresentFenceFd
@@ -537,6 +541,12 @@ bool SurfaceControl::SupportsOnCommit() {
              nullptr;
 }
 
+bool SurfaceControl::SupportsSetFrameTimeline() {
+  return IsSupported() &&
+         SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn !=
+             nullptr;
+}
+
 void SurfaceControl::SetStubImplementationForTesting() {
   SurfaceControlMethods::GetImpl(/*load_functions=*/false).InitWithStubs();
 }
@@ -675,6 +685,12 @@ void SurfaceControl::Transaction::SetCrop(const Surface& surface,
   CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setCropFn);
   SurfaceControlMethods::Get().ASurfaceTransaction_setCropFn(
       transaction_, surface.surface(), RectToARect(rect));
+}
+
+void SurfaceControl::Transaction::SetFrameTimelineId(int64_t vsync_id) {
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn);
+  SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn(
+      transaction_, vsync_id);
 }
 
 void SurfaceControl::Transaction::SetOpaque(const Surface& surface,

@@ -561,6 +561,11 @@ void GLSurfaceAdapter::SetFrameRate(float frame_rate) {
   surface_->SetFrameRate(frame_rate);
 }
 
+void GLSurfaceAdapter::SetChoreographerVsyncIdForNextFrame(
+    absl::optional<int64_t> choreographer_vsync_id) {
+  surface_->SetChoreographerVsyncIdForNextFrame(choreographer_vsync_id);
+}
+
 void GLSurfaceAdapter::SetCurrent() {
   surface_->SetCurrent();
 }

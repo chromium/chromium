@@ -15,6 +15,7 @@ include_rules = [
   "+gpu/ipc/shared_image_interface_in_process.h",
   "+mojo/public",
   "+media/video",
+  "+ui/gl/gl_features.h",
 ]
 
 specific_include_rules = {

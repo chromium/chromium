@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -24,6 +25,7 @@ struct DrawAndSwapParams {
   base::TimeTicks frame_time;
   base::TimeTicks expected_display_time;
   int max_pending_swaps = -1;
+  absl::optional<int64_t> choreographer_vsync_id;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {

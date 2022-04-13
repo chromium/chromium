@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -313,6 +314,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual void SetDisplayTransform(gfx::OverlayTransform transform) {}
   virtual void SetFrameRate(float frame_rate) {}
+  virtual void SetChoreographerVsyncIdForNextFrame(
+      absl::optional<int64_t> choreographer_vsync_id) {}
 
   static GLSurface* GetCurrent();
 
@@ -430,6 +433,8 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   void SetGpuVSyncEnabled(bool enabled) override;
   void SetDisplayTransform(gfx::OverlayTransform transform) override;
   void SetFrameRate(float frame_rate) override;
+  void SetChoreographerVsyncIdForNextFrame(
+      absl::optional<int64_t> choreographer_vsync_id) override;
   void SetCurrent() override;
   bool IsCurrent() override;
 

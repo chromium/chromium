@@ -4,7 +4,6 @@
 
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
-#include <dlfcn.h>
 #include <sys/types.h>
 #include <utility>
 
@@ -13,143 +12,10 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
-
-extern "C" {
-typedef struct AChoreographer AChoreographer;
-typedef void (*AChoreographer_frameCallback64)(int64_t, void*);
-typedef void (*AChoreographer_refreshRateCallback)(int64_t, void*);
-
-using pAChoreographer_getInstance = AChoreographer* (*)();
-using pAChoreographer_postFrameCallback64 =
-    void (*)(AChoreographer*, AChoreographer_frameCallback64, void*);
-using pAChoreographer_registerRefreshRateCallback =
-    void (*)(AChoreographer*, AChoreographer_refreshRateCallback, void*);
-using pAChoreographer_unregisterRefreshRateCallback =
-    void (*)(AChoreographer*, AChoreographer_refreshRateCallback, void*);
-
-typedef struct AChoreographerFrameCallbackData AChoreographerFrameCallbackData;
-typedef void (*AChoreographer_vsyncCallback)(
-    const AChoreographerFrameCallbackData*,
-    void*);
-
-using pAChoreographer_postVsyncCallback =
-    void (*)(AChoreographer* choreographer,
-             AChoreographer_vsyncCallback callback,
-             void* data);
-using pAChoreographerFrameCallbackData_getFrameTimeNanos =
-    int64_t (*)(const AChoreographerFrameCallbackData*);
-using pAChoreographerFrameCallbackData_getFrameTimelinesLength =
-    size_t (*)(const AChoreographerFrameCallbackData*);
-using pAChoreographerFrameCallbackData_getPreferredFrameTimelineIndex =
-    size_t (*)(const AChoreographerFrameCallbackData*);
-using pAChoreographerFrameCallbackData_getFrameTimelineVsyncId =
-    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
-using pAChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos =
-    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
-using pAChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos =
-    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
-}
+#include "ui/gfx/android/achoreographer_compat.h"
+#include "ui/gl/gl_features.h"
 
 namespace {
-
-#define LOAD_FUNCTION(lib, func)                             \
-  do {                                                       \
-    func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func)); \
-    if (!func##Fn) {                                         \
-      supported = false;                                     \
-      LOG(ERROR) << "Unable to load function " << #func;     \
-    }                                                        \
-  } while (0)
-
-struct AChoreographerMethods {
-  static const AChoreographerMethods& Get() {
-    static AChoreographerMethods instance;
-    return instance;
-  }
-
-  bool supported = true;
-  pAChoreographer_getInstance AChoreographer_getInstanceFn = nullptr;
-  pAChoreographer_postFrameCallback64 AChoreographer_postFrameCallback64Fn =
-      nullptr;
-  pAChoreographer_registerRefreshRateCallback
-      AChoreographer_registerRefreshRateCallbackFn = nullptr;
-  pAChoreographer_unregisterRefreshRateCallback
-      AChoreographer_unregisterRefreshRateCallbackFn = nullptr;
-
- private:
-  AChoreographerMethods() {
-    void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
-    if (!main_dl_handle) {
-      LOG(ERROR) << "Couldnt load libandroid.so";
-      supported = false;
-      return;
-    }
-
-    LOAD_FUNCTION(main_dl_handle, AChoreographer_getInstance);
-    LOAD_FUNCTION(main_dl_handle, AChoreographer_postFrameCallback64);
-    LOAD_FUNCTION(main_dl_handle, AChoreographer_registerRefreshRateCallback);
-    LOAD_FUNCTION(main_dl_handle, AChoreographer_unregisterRefreshRateCallback);
-  }
-  ~AChoreographerMethods() = default;
-};
-
-struct AChoreographerMethods33 {
-  static const AChoreographerMethods33& Get() {
-    static AChoreographerMethods33 instance;
-    return instance;
-  }
-
-  bool supported = true;
-  pAChoreographer_postVsyncCallback AChoreographer_postVsyncCallbackFn =
-      nullptr;
-  pAChoreographerFrameCallbackData_getFrameTimeNanos
-      AChoreographerFrameCallbackData_getFrameTimeNanosFn = nullptr;
-  pAChoreographerFrameCallbackData_getFrameTimelinesLength
-      AChoreographerFrameCallbackData_getFrameTimelinesLengthFn = nullptr;
-  pAChoreographerFrameCallbackData_getPreferredFrameTimelineIndex
-      AChoreographerFrameCallbackData_getPreferredFrameTimelineIndexFn =
-          nullptr;
-  pAChoreographerFrameCallbackData_getFrameTimelineVsyncId
-      AChoreographerFrameCallbackData_getFrameTimelineVsyncIdFn = nullptr;
-  pAChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos
-      AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanosFn =
-          nullptr;
-  pAChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos
-      AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanosFn = nullptr;
-
- private:
-  AChoreographerMethods33() {
-    if (!base::android::BuildInfo::GetInstance()->is_at_least_t()) {
-      supported = false;
-      return;
-    }
-
-    void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
-    if (!main_dl_handle) {
-      LOG(ERROR) << "Couldnt load libandroid.so";
-      supported = false;
-      return;
-    }
-
-    LOAD_FUNCTION(main_dl_handle, AChoreographer_postVsyncCallback);
-    LOAD_FUNCTION(main_dl_handle,
-                  AChoreographerFrameCallbackData_getFrameTimeNanos);
-    LOAD_FUNCTION(main_dl_handle,
-                  AChoreographerFrameCallbackData_getFrameTimelinesLength);
-    LOAD_FUNCTION(
-        main_dl_handle,
-        AChoreographerFrameCallbackData_getPreferredFrameTimelineIndex);
-    LOAD_FUNCTION(main_dl_handle,
-                  AChoreographerFrameCallbackData_getFrameTimelineVsyncId);
-    LOAD_FUNCTION(
-        main_dl_handle,
-        AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos);
-    LOAD_FUNCTION(
-        main_dl_handle,
-        AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos);
-  }
-  ~AChoreographerMethods33() = default;
-};
 
 base::TimeTicks ToTimeTicks(int64_t time_nanos) {
   // Warning: It is generally unsafe to manufacture TimeTicks values. The
@@ -178,7 +44,7 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
 
  private:
   static void FrameCallback64(int64_t frame_time_nanos, void* data);
-  static void RefershRateCallback(int64_t vsync_period_nanos, void* data);
+  static void RefreshRateCallback(int64_t vsync_period_nanos, void* data);
   static void VsyncCallback(
       const AChoreographerFrameCallbackData* callback_data,
       void* data);
@@ -214,11 +80,11 @@ ExternalBeginFrameSourceAndroid::AChoreographerImpl::Create(
       base::android::SDK_VERSION_R) {
     return nullptr;
   }
-  if (!AChoreographerMethods::Get().supported)
+  if (!gfx::AChoreographerCompat::Get().supported)
     return nullptr;
 
   AChoreographer* choreographer =
-      AChoreographerMethods::Get().AChoreographer_getInstanceFn();
+      gfx::AChoreographerCompat::Get().AChoreographer_getInstanceFn();
   if (!choreographer)
     return nullptr;
 
@@ -231,16 +97,17 @@ ExternalBeginFrameSourceAndroid::AChoreographerImpl::AChoreographerImpl(
     : client_(client),
       achoreographer_(choreographer),
       vsync_period_(base::Microseconds(16666)) {
-  AChoreographerMethods::Get().AChoreographer_registerRefreshRateCallbackFn(
-      achoreographer_, &RefershRateCallback, this);
+  gfx::AChoreographerCompat::Get().AChoreographer_registerRefreshRateCallbackFn(
+      achoreographer_, &RefreshRateCallback, this);
   self_for_frame_callback_ =
       std::make_unique<base::WeakPtr<AChoreographerImpl>>(
           weak_ptr_factory_.GetWeakPtr());
 }
 
 ExternalBeginFrameSourceAndroid::AChoreographerImpl::~AChoreographerImpl() {
-  AChoreographerMethods::Get().AChoreographer_unregisterRefreshRateCallbackFn(
-      achoreographer_, &RefershRateCallback, this);
+  gfx::AChoreographerCompat::Get()
+      .AChoreographer_unregisterRefreshRateCallbackFn(
+          achoreographer_, &RefreshRateCallback, this);
 }
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::SetEnabled(
@@ -275,15 +142,15 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
     delete self;
     return;
   }
-  DCHECK(AChoreographerMethods33::Get().supported);
+  DCHECK(gfx::AChoreographerCompat33::Get().supported);
   int64_t frame_time_nanos =
-      AChoreographerMethods33::Get()
+      gfx::AChoreographerCompat33::Get()
           .AChoreographerFrameCallbackData_getFrameTimeNanosFn(callback_data);
   size_t preferred_index =
-      AChoreographerMethods33::Get()
+      gfx::AChoreographerCompat33::Get()
           .AChoreographerFrameCallbackData_getPreferredFrameTimelineIndexFn(
               callback_data);
-  size_t size = AChoreographerMethods33::Get()
+  size_t size = gfx::AChoreographerCompat33::Get()
                     .AChoreographerFrameCallbackData_getFrameTimelinesLengthFn(
                         callback_data);
   CHECK_LT(preferred_index, size);
@@ -291,15 +158,15 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
   PossibleDeadlines possible_deadlines(preferred_index);
   for (size_t i = 0; i < size; ++i) {
     int64_t vsync_id =
-        AChoreographerMethods33::Get()
+        gfx::AChoreographerCompat33::Get()
             .AChoreographerFrameCallbackData_getFrameTimelineVsyncIdFn(
                 callback_data, i);
     int64_t deadline =
-        AChoreographerMethods33::Get()
+        gfx::AChoreographerCompat33::Get()
             .AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanosFn(
                 callback_data, i);
     int64_t present_time =
-        AChoreographerMethods33::Get()
+        gfx::AChoreographerCompat33::Get()
             .AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanosFn(
                 callback_data, i);
     possible_deadlines.deadlines.emplace_back(
@@ -311,7 +178,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 }
 
 // static
-void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefershRateCallback(
+void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback(
     int64_t vsync_period_nanos,
     void* data) {
   static_cast<AChoreographerImpl*>(data)->SetVsyncPeriod(vsync_period_nanos);
@@ -344,11 +211,11 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
     RequestVsyncIfNeeded() {
   if (!vsync_notification_enabled_ || !self_for_frame_callback_)
     return;
-  if (AChoreographerMethods33::Get().supported) {
-    AChoreographerMethods33::Get().AChoreographer_postVsyncCallbackFn(
+  if (gfx::AChoreographerCompat33::Get().supported) {
+    gfx::AChoreographerCompat33::Get().AChoreographer_postVsyncCallbackFn(
         achoreographer_, &VsyncCallback, self_for_frame_callback_.release());
   } else {
-    AChoreographerMethods::Get().AChoreographer_postFrameCallback64Fn(
+    gfx::AChoreographerCompat::Get().AChoreographer_postFrameCallback64Fn(
         achoreographer_, &FrameCallback64, self_for_frame_callback_.release());
   }
 }
@@ -401,7 +268,9 @@ void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
 
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, deadline, vsync_period);
-  begin_frame_args.possible_deadlines = std::move(possible_deadlines);
+  if (features::IsAndroidFrameDeadlineEnabled()) {
+    begin_frame_args.possible_deadlines = std::move(possible_deadlines);
+  }
   OnBeginFrame(begin_frame_args);
 }
 

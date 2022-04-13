@@ -55,6 +55,9 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if OnCommit callback is supported.
   static bool SupportsOnCommit();
 
+  // Returns true if tagging a transaction with vsync id is supported.
+  static GFX_EXPORT bool SupportsSetFrameTimeline();
+
   // Applies transaction. Used to emulate webview functor interface, where we
   // pass raw ASurfaceTransaction object. For use inside Chromium use
   // Transaction class below instead.
@@ -150,6 +153,7 @@ class GFX_EXPORT SurfaceControl {
     void SetPosition(const Surface& surface, const gfx::Point& position);
     void SetScale(const Surface& surface, float sx, float sy);
     void SetCrop(const Surface& surface, const gfx::Rect& rect);
+    void SetFrameTimelineId(int64_t vsync_id);
 
     // Sets the callback which will be dispatched when the transaction is acked
     // by the framework.

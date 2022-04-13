@@ -1783,9 +1783,13 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   if (context_is_lost_)
     return;
 
-  if (gl_surface_ && frame && frame->delegated_ink_metadata) {
-    gl_surface_->SetDelegatedInkTrailStartPoint(
-        std::move(frame->delegated_ink_metadata));
+  if (gl_surface_ && frame) {
+    gl_surface_->SetChoreographerVsyncIdForNextFrame(
+        frame->choreographer_vsync_id);
+    if (frame->delegated_ink_metadata) {
+      gl_surface_->SetDelegatedInkTrailStartPoint(
+          std::move(frame->delegated_ink_metadata));
+    }
   }
 
   bool sync_cpu =

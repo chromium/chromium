@@ -19,6 +19,7 @@
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_utils.h"
@@ -67,7 +68,9 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
           new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
       transaction_ack_timeout_manager_(task_runner),
       gpu_task_runner_(std::move(task_runner)),
-      using_on_commit_callback_(gfx::SurfaceControl::SupportsOnCommit()) {}
+      use_target_deadline_(features::IsAndroidFrameDeadlineEnabled()),
+      using_on_commit_callback_(!use_target_deadline_ &&
+                                gfx::SurfaceControl::SupportsOnCommit()) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
@@ -277,6 +280,14 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_transaction_->SetOnCompleteCb(std::move(complete_cb),
                                         gpu_task_runner_);
 
+  if (use_target_deadline_) {
+    DCHECK(!!choreographer_vsync_id_for_next_frame_);
+    DCHECK(gfx::SurfaceControl::SupportsSetFrameTimeline());
+    pending_transaction_->SetFrameTimelineId(
+        choreographer_vsync_id_for_next_frame_.value());
+    choreographer_vsync_id_for_next_frame_.reset();
+  }
+
   if (using_on_commit_callback_) {
     gfx::SurfaceControl::Transaction::OnCommitCb commit_cb = base::BindOnce(
         &GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread,
@@ -287,7 +298,7 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_surfaces_count_ = 0u;
   frame_rate_update_pending_ = false;
 
-  if (transaction_ack_pending_) {
+  if (transaction_ack_pending_ && !use_target_deadline_) {
     pending_transaction_queue_.push(std::move(pending_transaction_).value());
   } else {
     transaction_ack_pending_ = true;
@@ -636,6 +647,11 @@ void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
 
   frame_rate_ = frame_rate;
   frame_rate_update_pending_ = true;
+}
+
+void GLSurfaceEGLSurfaceControl::SetChoreographerVsyncIdForNextFrame(
+    absl::optional<int64_t> choreographer_vsync_id) {
+  choreographer_vsync_id_for_next_frame_ = choreographer_vsync_id;
 }
 
 gfx::Rect GLSurfaceEGLSurfaceControl::ApplyDisplayInverse(

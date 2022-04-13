@@ -105,6 +105,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 #if BUILDFLAG(IS_MAC)
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
+    absl::optional<int64_t> choreographer_vsync_id;
   };
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
   virtual void SwapBuffersSkipped() {}

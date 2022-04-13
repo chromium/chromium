@@ -84,6 +84,8 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   void SetDisplayTransform(gfx::OverlayTransform transform) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   void SetFrameRate(float frame_rate) override;
+  void SetChoreographerVsyncIdForNextFrame(
+      absl::optional<int64_t> choreographer_vsync_id) override;
 
  private:
   ~GLSurfaceEGLSurfaceControl() override;
@@ -264,7 +266,12 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
+  // Use target deadline API instead of queuing transactions and submitting
+  // after previous transaction is ack-ed.
+  const bool use_target_deadline_;
   const bool using_on_commit_callback_;
+
+  absl::optional<int64_t> choreographer_vsync_id_for_next_frame_;
 
   base::WeakPtrFactory<GLSurfaceEGLSurfaceControl> weak_factory_{this};
 };

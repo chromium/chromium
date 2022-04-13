@@ -19,6 +19,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
+#include "ui/gfx/android/achoreographer_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
 namespace features {
@@ -68,6 +70,11 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kAndroidFrameDeadline{"AndroidFrameDeadline",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Use the passthrough command decoder by default.  This can be overridden with
 // the --use-cmd-decoder=passthrough or --use-cmd-decoder=validating flags.
 // Feature lives in ui/gl because it affects the GL binding initialization on
@@ -89,6 +96,19 @@ bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableGpuVsync) &&
          base::FeatureList::IsEnabled(kGpuVsync);
+}
+
+bool IsAndroidFrameDeadlineEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  static bool enabled =
+      base::android::BuildInfo::GetInstance()->is_at_least_t() &&
+      gfx::AChoreographerCompat33::Get().supported &&
+      gfx::SurfaceControl::SupportsSetFrameTimeline() &&
+      base::FeatureList::IsEnabled(kAndroidFrameDeadline);
+  return enabled;
+#else
+  return false;
+#endif
 }
 
 bool UsePassthroughCommandDecoder() {
