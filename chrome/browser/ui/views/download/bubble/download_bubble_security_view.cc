@@ -167,7 +167,7 @@ void DownloadBubbleSecurityView::AddIconAndText() {
 
 void DownloadBubbleSecurityView::ProcessButtonClick(
     DownloadCommands::Command command) {
-  bubble_controller_->ProcessDownloadWarningButtonPress(model_.get(), command);
+  bubble_controller_->ProcessDownloadButtonPress(model_.get(), command);
   navigation_handler_->OpenPrimaryDialog();
 }
 

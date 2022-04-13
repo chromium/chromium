@@ -196,8 +196,8 @@ views::View* DownloadBubbleRowView::TargetForRect(views::View* root,
     return views::ViewTargeterDelegate::TargetForRect(root, rect);
 
   views::View* v = views::ViewTargeterDelegate::TargetForRect(root, rect);
-  // Return the primary or cancel button if that is the target.
-  if (v && (v == primary_button_ || v == cancel_button_))
+  // Return the button if that is the target.
+  if (v && (v == cancel_button_ || v == discard_button_ || v == scan_button_))
     return v;
   // All events go to this otherwise.
   return this;
@@ -272,6 +272,22 @@ DownloadBubbleRowView::DownloadBubbleRowView(
           .WithWeight(1));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
+  cancel_button_ =
+      AddMainPageButton(DownloadCommands::CANCEL,
+                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_CANCEL));
+  discard_button_ =
+      AddMainPageButton(DownloadCommands::DISCARD,
+                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE));
+  scan_button_ =
+      AddMainPageButton(DownloadCommands::DEEP_SCAN,
+                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
+
+  subpage_icon_ = main_row_->AddChildView(std::make_unique<views::ImageView>());
+  subpage_icon_->SetProperty(views::kMarginsKey,
+                             gfx::Insets(kDownloadSubpageIconMargin));
+  subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
+
   // Set up initial state.
   mode_ = download::GetDesiredDownloadItemMode(model_.get());
   state_ = model_->GetState();
@@ -308,48 +324,22 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
   }
 }
 
-void DownloadBubbleRowView::UpdateUIForWarnings() {
-  if (ui_info_.has_primary_button && !primary_button_) {
-    // base::Unretained is fine as DownloadBubbleRowView owns the discard button
-    // and the model, and has an ownership ancestry in
-    // DownloadToolbarButtonView, which also owns bubble_controller. So, if the
-    // discard button is alive, so should be its parents and their owned fields.
-    primary_button_ =
-        main_row_->AddChildView(std::make_unique<views::MdTextButton>(
-            base::BindRepeating(
-                &DownloadBubbleUIController::ProcessDownloadWarningButtonPress,
-                base::Unretained(bubble_controller_),
-                base::Unretained(model_.get()),
-                ui_info_.primary_button_command),
-            ui_info_.primary_button_label));
-    primary_button_->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
-  } else if (!ui_info_.has_primary_button && primary_button_) {
-    primary_button_->parent()->RemoveChildViewT(primary_button_);
-    primary_button_ = nullptr;
-  }
+void DownloadBubbleRowView::UpdateButtonsForItems() {
+  cancel_button_->SetVisible(ui_info_.primary_button_command ==
+                             DownloadCommands::CANCEL);
+  discard_button_->SetVisible(ui_info_.primary_button_command ==
+                              DownloadCommands::DISCARD);
+  scan_button_->SetVisible(ui_info_.primary_button_command ==
+                           DownloadCommands::DEEP_SCAN);
 
-  if (ui_info_.has_subpage && !subpage_icon_) {
-    subpage_icon_ =
-        main_row_->AddChildView(std::make_unique<views::ImageView>());
-    subpage_icon_->SetProperty(views::kMarginsKey,
-                               gfx::Insets(kDownloadSubpageIconMargin));
-    subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
-  } else if (!ui_info_.has_subpage && subpage_icon_) {
-    subpage_icon_->parent()->RemoveChildViewT(subpage_icon_);
-    subpage_icon_ = nullptr;
-  }
+  subpage_icon_->SetVisible(ui_info_.has_subpage);
 }
 
-void DownloadBubbleRowView::UpdateUIForInProgressItems() {
-  if (ui_info_.has_progress_and_cancel) {
+void DownloadBubbleRowView::UpdateProgressBar() {
+  // Cannot simply set progress_bar's visibility because the bubble needs to be
+  // resized.
+  if (ui_info_.has_progress_bar) {
     if (!progress_bar_) {
-      cancel_button_ =
-          main_row_->AddChildView(std::make_unique<views::MdTextButton>(
-              base::BindRepeating(&DownloadBubbleRowView::OnCancelButtonPressed,
-                                  base::Unretained(this)),
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_CANCEL)));
-      cancel_button_->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
       progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
       progress_bar_->SetProperty(
           views::kFlexBehaviorKey,
@@ -364,21 +354,14 @@ void DownloadBubbleRowView::UpdateUIForInProgressItems() {
     }
     progress_bar_->SetValue(static_cast<double>(model_->PercentComplete()) /
                             100);
+    return;
   }
 
-  if (!ui_info_.has_progress_and_cancel && progress_bar_) {
-    cancel_button_->parent()->RemoveChildViewT(cancel_button_);
-    cancel_button_ = nullptr;
+  if (progress_bar_) {
     RemoveChildViewT(progress_bar_);
     progress_bar_ = nullptr;
     navigation_handler_->ResizeDialog();
   }
-}
-
-void DownloadBubbleRowView::OnCancelButtonPressed() {
-  bubble_controller_->RemoveContentIdFromPartialView(model_->GetContentId());
-  bubble_controller_->ProcessDownloadWarningButtonPress(
-      model_.get(), DownloadCommands::CANCEL);
 }
 
 void DownloadBubbleRowView::UpdateLabels() {
@@ -398,8 +381,8 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
   UpdateBubbleUIInfo();
   UpdateLabels();
   LoadIcon();
-  UpdateUIForInProgressItems();
-  UpdateUIForWarnings();
+  UpdateButtonsForItems();
+  UpdateProgressBar();
 }
 
 void DownloadBubbleRowView::OnDownloadOpened() {
@@ -415,6 +398,24 @@ void DownloadBubbleRowView::OnDownloadDestroyed() {
   } else {
     navigation_handler_->ResizeDialog();
   }
+}
+
+raw_ptr<views::MdTextButton> DownloadBubbleRowView::AddMainPageButton(
+    DownloadCommands::Command command,
+    const std::u16string& button_string) {
+  // base::Unretained is fine as DownloadBubbleRowView owns the discard button
+  // and the model, and has an ownership ancestry in
+  // DownloadToolbarButtonView, which also owns bubble_controller. So, if the
+  // discard button is alive, so should be its parents and their owned fields.
+  raw_ptr<views::MdTextButton> button =
+      main_row_->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &DownloadBubbleUIController::ProcessDownloadButtonPress,
+              base::Unretained(bubble_controller_),
+              base::Unretained(model_.get()), command),
+          button_string));
+  button->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
+  return button;
 }
 
 void DownloadBubbleRowView::ShowContextMenuForViewImpl(

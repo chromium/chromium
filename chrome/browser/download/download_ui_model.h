@@ -85,7 +85,7 @@ class DownloadUIModel {
 #if !BUILDFLAG(IS_ANDROID)
   struct BubbleUIInfo {
     // has a progress bar and a cancel button.
-    bool has_progress_and_cancel = false;
+    bool has_progress_bar = false;
     // kColorAlertHighSeverity, kColorAlertMediumSeverity, or
     // kColorSecondaryForeground
     ui::ColorId secondary_color = ui::kColorSecondaryForeground;
@@ -104,7 +104,6 @@ class DownloadUIModel {
     // Label and commands for the primary button
     bool has_primary_button = false;
     DownloadCommands::Command primary_button_command;
-    std::u16string primary_button_label;
 
     // Label and commands for the two subpage buttons
     bool has_first_button = false;
@@ -117,14 +116,13 @@ class DownloadUIModel {
     // The subpage exists if the summary exists.
     explicit BubbleUIInfo(const std::u16string& summary);
     // If no subpage, the progress bar may exist.
-    explicit BubbleUIInfo(bool has_progress_and_cancel);
+    explicit BubbleUIInfo(bool has_progress_bar);
     BubbleUIInfo();
     ~BubbleUIInfo();
     BubbleUIInfo(const BubbleUIInfo&);
     BubbleUIInfo& AddIconAndColor(const gfx::VectorIcon& vector_icon,
                                   ui::ColorId color_id);
-    BubbleUIInfo& AddPrimaryButton(const std::u16string& label,
-                                   DownloadCommands::Command command);
+    BubbleUIInfo& AddPrimaryButton(DownloadCommands::Command command);
     BubbleUIInfo& AddCheckbox(const std::u16string& label);
     BubbleUIInfo& AddSubpageButton(const std::u16string& label,
                                    DownloadCommands::Command command);

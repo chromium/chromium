@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
@@ -305,10 +306,34 @@ void DownloadBubbleUIController::ProcessDownloadWarningButtonPress(
     DownloadUIModel* model,
     DownloadCommands::Command command) {
   DownloadCommands commands(model->GetWeakPtr());
+  DCHECK(command == DownloadCommands::KEEP ||
+         command == DownloadCommands::DISCARD);
   if (model->IsMixedContent())
     commands.ExecuteCommand(command);
   else
     MaybeSubmitDownloadToFeedbackService(model, command);
+}
+
+void DownloadBubbleUIController::ProcessDownloadButtonPress(
+    DownloadUIModel* model,
+    DownloadCommands::Command command) {
+  DownloadCommands commands(model->GetWeakPtr());
+  switch (command) {
+    case DownloadCommands::KEEP:
+    case DownloadCommands::DISCARD:
+      ProcessDownloadWarningButtonPress(model, command);
+      break;
+    case DownloadCommands::CANCEL:
+      RemoveContentIdFromPartialView(model->GetContentId());
+      [[fallthrough]];
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::DEEP_SCAN:
+      commands.ExecuteCommand(command);
+      break;
+    default:
+      NOTREACHED() << "Unexpected button pressed on download bubble: "
+                   << command;
+  }
 }
 
 void DownloadBubbleUIController::MaybeSubmitDownloadToFeedbackService(
