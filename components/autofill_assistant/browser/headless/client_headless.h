@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/device_context.h"
+#include "components/autofill_assistant/browser/headless/headless_ui_controller.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -20,10 +21,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace password_manager {
-class PasswordManagerClient;
-}
 
 namespace autofill_assistant {
 
@@ -36,12 +33,10 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
 
   ~ClientHeadless() override;
 
-  bool Start(const GURL& url,
-             std::unique_ptr<TriggerContext> trigger_context,
-             password_manager::PasswordManagerClient* password_manager_client,
-             password_manager::PasswordChangeSuccessTracker*
-                 password_change_success_tracker);
   bool IsRunning() const;
+  void Start(const GURL& url,
+             std::unique_ptr<TriggerContext> trigger_context,
+             ControllerObserver* observer);
 
   // Overrides Client
   void AttachUI() override;
@@ -82,10 +77,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
 
   content::WebContents* web_contents_;
   std::unique_ptr<Controller> controller_;
-  raw_ptr<password_manager::PasswordManagerClient> password_manager_client_;
-  raw_ptr<password_manager::PasswordChangeSuccessTracker>
-      password_change_success_tracker_;
-  mutable std::unique_ptr<WebsiteLoginManager> website_login_manager_;
+  std::unique_ptr<HeadlessUiController> headless_ui_controller_;
 
   base::WeakPtrFactory<ClientHeadless> weak_ptr_factory_{this};
 };

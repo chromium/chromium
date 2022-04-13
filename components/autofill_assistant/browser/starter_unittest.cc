@@ -2293,4 +2293,47 @@ TEST_F(StarterTest, StartupRegistersExperimentFieldTrials) {
       TriggerContext::Options()));
 }
 
+TEST_F(StarterTest, CanStartSucceeds) {
+  SetupPlatformDelegateForReturningUser();
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+  base::MockCallback<
+      base::OnceCallback<void(bool success, absl::optional<GURL> url,
+                              std::unique_ptr<TriggerContext> trigger_context)>>
+      mock_preconditions_checked_callback;
+  EXPECT_CALL(mock_preconditions_checked_callback,
+              Run(true, Optional(GURL(kExampleDeeplink)), _));
+
+  starter_->CanStart(
+      std::make_unique<TriggerContext>(
+          std::make_unique<ScriptParameters>(script_parameters), options),
+      mock_preconditions_checked_callback.Get());
+
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(0));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
+  EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptOnboarding(ukm_recorder_), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  EXPECT_THAT(
+      GetUkmRegularScriptOnboarding(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0], {Metrics::Onboarding::OB_NOT_SHOWN}}})));
+  EXPECT_THAT(GetUkmStartRequest(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::AutofillAssistantStarted::OK_IMMEDIATE_START,
+                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
+                     Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
+                     Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
+}
+
 }  // namespace autofill_assistant

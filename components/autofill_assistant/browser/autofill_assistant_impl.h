@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
+#include "components/autofill_assistant/browser/public/external_script_controller.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +36,9 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
       const std::vector<uint64_t>& hash_prefixes,
       const std::string& intent,
       GetCapabilitiesResponseCallback callback) override;
+
+  std::unique_ptr<ExternalScriptController> CreateExternalScriptController(
+      content::WebContents* web_contents) override;
 
  private:
   // The request sender responsible for communicating with a remote endpoint.

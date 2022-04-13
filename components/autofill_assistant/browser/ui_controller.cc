@@ -1045,6 +1045,7 @@ void UiController::OnOverlayColorsChanged(
     const ExecutionDelegate::OverlayColors& colors) {}
 void UiController::OnClientSettingsChanged(const ClientSettings& settings) {}
 void UiController::OnShouldShowOverlayChanged(bool should_show) {}
+void UiController::OnShutdown(Metrics::DropOutReason reason) {}
 
 void UiController::OnExecuteScript(const std::string& start_message) {
   if (!start_message.empty())

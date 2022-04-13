@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "components/autofill_assistant/browser/public/external_script_controller.h"
 
 namespace autofill_assistant {
 
@@ -46,6 +47,14 @@ class AutofillAssistant {
       const std::vector<uint64_t>& hash_prefix,
       const std::string& intent,
       GetCapabilitiesResponseCallback callback) = 0;
+
+  // Returns an |ExternalScriptController| which can be used to execute scripts
+  // on the tab specified by |web_contents|, by calling
+  // |ExternalScriptController::StartScript|.
+  // The returned |ExternalScriptController| instance has to survive for the
+  // duration of the execution of the script.
+  virtual std::unique_ptr<ExternalScriptController>
+  CreateExternalScriptController(content::WebContents* web_contents) = 0;
 
  protected:
   AutofillAssistant() = default;

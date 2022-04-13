@@ -278,6 +278,9 @@ class Controller : public ScriptExecutorDelegate,
   // for the message and possibly the "Send feedback" chip.
   void SetStoppedUI();
 
+  // Notifies observers and shuts down.
+  void Shutdown(Metrics::DropOutReason reason);
+
   ElementArea* touchable_element_area();
   ScriptTracker* script_tracker();
   bool allow_autostart() { return state_ == AutofillAssistantState::STARTING; }

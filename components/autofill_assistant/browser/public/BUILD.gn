@@ -7,6 +7,7 @@ static_library("public") {
     "autofill_assistant.cc",
     "autofill_assistant.h",
     "autofill_assistant_factory.h",
+    "external_script_controller.h",
     "runtime_manager.cc",
     "runtime_manager.h",
     "runtime_manager_impl.cc",

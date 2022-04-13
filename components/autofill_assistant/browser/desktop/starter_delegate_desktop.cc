@@ -118,10 +118,13 @@ StarterDelegateDesktop::CreateFieldTrialUtil() {
   return nullptr;
 }
 
-void StarterDelegateDesktop::StartRegularScript(
+void StarterDelegateDesktop::StartScriptDefaultUi(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
-    const absl::optional<TriggerScriptProto>& unused_trigger_script) {}
+    const absl::optional<TriggerScriptProto>& unused_trigger_script) {
+  // On desktop there is no default UI, so this is not supported.
+  NOTREACHED();
+}
 
 bool StarterDelegateDesktop::IsRegularScriptRunning() const {
   // TODO(b/201964911): rework how we check for running scripts.

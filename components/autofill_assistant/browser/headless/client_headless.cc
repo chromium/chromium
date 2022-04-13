@@ -34,34 +34,22 @@
 namespace autofill_assistant {
 
 ClientHeadless::ClientHeadless(content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : web_contents_(web_contents) {
+  headless_ui_controller_ = std::make_unique<HeadlessUiController>();
+}
 
 ClientHeadless::~ClientHeadless() = default;
 
-bool ClientHeadless::Start(
-    const GURL& url,
-    std::unique_ptr<TriggerContext> trigger_context,
-    password_manager::PasswordManagerClient* password_manager_client,
-    password_manager::PasswordChangeSuccessTracker*
-        password_change_success_tracker) {
-  password_manager_client_ = password_manager_client;
-  password_change_success_tracker_ = password_change_success_tracker;
-  website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
-      password_manager_client_, GetWebContents());
-  CreateController();
-
-  DCHECK(!trigger_context->GetDirectAction());
-  if (VLOG_IS_ON(2)) {
-    DVLOG(2) << "Starting autofill assistant in headless with parameters:";
-    DVLOG(2) << "\ttarget_url: " << url;
-    DVLOG(2) << "\texperiment_ids: " << trigger_context->GetExperimentIds();
-    DVLOG(2) << "\tparameters:";
-    auto parameters = trigger_context->GetScriptParameters().ToProto();
-    for (const auto& param : parameters) {
-      DVLOG(2) << "\t\t" << param.name() << ": " << param.value();
-    }
-  }
-  return controller_->Start(url, std::move(trigger_context));
+void ClientHeadless::Start(const GURL& url,
+                           std::unique_ptr<TriggerContext> trigger_context,
+                           ControllerObserver* observer) {
+  controller_ = std::make_unique<Controller>(
+      web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
+      RuntimeManager::GetForWebContents(web_contents_)->GetWeakPtr(),
+      /* service= */ nullptr, ukm::UkmRecorder::Get(),
+      /* annotate_dom_model_service= */ nullptr);
+  controller_->AddObserver(observer);
+  controller_->Start(url, std::move(trigger_context));
 }
 
 bool ClientHeadless::IsRunning() const {
@@ -117,12 +105,14 @@ autofill::PersonalDataManager* ClientHeadless::GetPersonalDataManager() const {
 }
 
 WebsiteLoginManager* ClientHeadless::GetWebsiteLoginManager() const {
-  return website_login_manager_.get();
+  // TODO(b/201964911): return instance.
+  return nullptr;
 }
 
 password_manager::PasswordChangeSuccessTracker*
 ClientHeadless::GetPasswordChangeSuccessTracker() const {
-  return password_change_success_tracker_;
+  // TODO(b/201964911): return instance.
+  return nullptr;
 }
 
 std::string ClientHeadless::GetLocale() const {
@@ -160,24 +150,10 @@ bool ClientHeadless::HasHadUI() const {
 }
 
 ScriptExecutorUiDelegate* ClientHeadless::GetScriptExecutorUiDelegate() {
-  // TODO(b/201964911): Create headless ScriptExecutorUiDelegate.
-  return nullptr;
+  return headless_ui_controller_.get();
 }
 
-void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {
-  if (!controller_)
-    return;
-
-  // Shutdown in a separate task. This avoids tricky ordering issues when
-  // Shutdown is called from the controller.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ClientHeadless::SafeDestroyController,
-                                weak_ptr_factory_.GetWeakPtr(), reason));
-}
-
-void ClientHeadless::SafeDestroyController(Metrics::DropOutReason reason) {
-  DestroyController();
-}
+void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {}
 
 void ClientHeadless::FetchAccessToken(
     base::OnceCallback<void(bool, const std::string&)> callback) {
@@ -187,23 +163,6 @@ void ClientHeadless::FetchAccessToken(
 
 void ClientHeadless::InvalidateAccessToken(const std::string& access_token) {
   // TODO(b/201964911): get access token via native.
-}
-
-void ClientHeadless::CreateController() {
-  // TODO(b/201964911): add a check to RuntimeManager to make sure only one
-  // instance of the Controller exists per WebContents across the different
-  // instances of Clients.
-  DestroyController();
-  controller_ = std::make_unique<Controller>(
-      GetWebContents(), /* client= */ this,
-      base::DefaultTickClock::GetInstance(),
-      RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
-      /* service= */ nullptr, ukm::UkmRecorder::Get(),
-      /*annotate_dom_model_service= */ nullptr);
-}
-
-void ClientHeadless::DestroyController() {
-  controller_.reset();
 }
 
 }  // namespace autofill_assistant

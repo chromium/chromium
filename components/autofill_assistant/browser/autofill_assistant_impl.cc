@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
+#include "components/autofill_assistant/browser/headless/external_script_controller_impl.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -117,6 +119,12 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
       base::BindOnce(&OnCapabilitiesResponse, std::move(callback)),
       RpcType::GET_CAPABILITIES_BY_HASH_PREFIX);
   return;
+}
+
+std::unique_ptr<ExternalScriptController>
+AutofillAssistantImpl::CreateExternalScriptController(
+    content::WebContents* web_contents) {
+  return std::make_unique<ExternalScriptControllerImpl>(web_contents);
 }
 
 }  // namespace autofill_assistant

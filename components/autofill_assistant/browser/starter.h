@@ -58,6 +58,15 @@ class Starter : public content::WebContentsObserver,
   // cancelled.
   void Start(std::unique_ptr<TriggerContext> trigger_context);
 
+  // Runs the same checks as |Start| but instead of starting the regular script
+  // at the end, it calls |preconditions_checked_callback|.
+  void CanStart(
+      std::unique_ptr<TriggerContext> trigger_context,
+      base::OnceCallback<void(bool success,
+                              absl::optional<GURL> url,
+                              std::unique_ptr<TriggerContext> trigger_contexts)>
+          preconditions_checked_callback);
+
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
@@ -123,7 +132,7 @@ class Starter : public content::WebContentsObserver,
 
   // Called at the end of each |Start| invocation.
   void OnStartDone(
-      bool start_regular_script,
+      bool start_script,
       absl::optional<TriggerScriptProto> trigger_script = absl::nullopt);
 
   // Called when the heuristic result for |url| is available.
@@ -149,6 +158,10 @@ class Starter : public content::WebContentsObserver,
   // Registers the synthetic field trials for triggering and experiments.
   void RegisterSyntheticFieldTrials(
       const TriggerContext& trigger_context) const;
+
+  // Calls |preconditions_checked_callback_| to notify whether the checks were
+  // successful.
+  void ReportPreconditionsChecked(bool start_script);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -190,6 +203,10 @@ class Starter : public content::WebContentsObserver,
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
   const scoped_refptr<StarterHeuristic> starter_heuristic_;
   const raw_ptr<const base::TickClock> tick_clock_;
+  base::OnceCallback<void(bool success,
+                          absl::optional<GURL> url,
+                          std::unique_ptr<TriggerContext> trigger_contexts)>
+      preconditions_checked_callback_;
   base::WeakPtrFactory<Starter> weak_ptr_factory_{this};
 };
 

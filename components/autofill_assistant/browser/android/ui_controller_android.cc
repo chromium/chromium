@@ -1992,6 +1992,7 @@ void UiControllerAndroid::OnStart(const TriggerContext& trigger_context) {}
 void UiControllerAndroid::OnStop() {}
 void UiControllerAndroid::OnResetState() {}
 void UiControllerAndroid::OnUiShownChanged(bool shown) {}
+void UiControllerAndroid::OnShutdown(Metrics::DropOutReason reason) {}
 
 base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetGenericUiModel() {

@@ -23,7 +23,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   CreateTriggerScriptUiDelegate() override;
   std::unique_ptr<ServiceRequestSender> GetTriggerScriptRequestSenderToInject()
       override;
-  void StartRegularScript(
+  void StartScriptDefaultUi(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
       const absl::optional<TriggerScriptProto>& trigger_script) override;

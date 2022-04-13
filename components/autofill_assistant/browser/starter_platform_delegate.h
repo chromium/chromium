@@ -34,7 +34,7 @@ class StarterPlatformDelegate {
   GetTriggerScriptRequestSenderToInject() = 0;
 
   // Requests the platform delegate to start the regular script.
-  virtual void StartRegularScript(
+  virtual void StartScriptDefaultUi(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
       const absl::optional<TriggerScriptProto>& trigger_script) = 0;

@@ -189,6 +189,7 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnStop() override;
   void OnResetState() override;
   void OnUiShownChanged(bool shown) override;
+  void OnShutdown(Metrics::DropOutReason reason) override;
 
   // Overrides AutofillAssistantTtsController::TtsEventDelegate
   void OnTtsEvent(AutofillAssistantTtsController::TtsEventType event) override;

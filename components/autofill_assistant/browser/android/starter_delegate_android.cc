@@ -308,7 +308,7 @@ void StarterDelegateAndroid::Start(
   starter_->Start(std::move(trigger_context));
 }
 
-void StarterDelegateAndroid::StartRegularScript(
+void StarterDelegateAndroid::StartScriptDefaultUi(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {

@@ -113,7 +113,6 @@ absl::optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
   if (url.is_valid()) {
     return url;
   }
-
   return absl::nullopt;
 }
 
