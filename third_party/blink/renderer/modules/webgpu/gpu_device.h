@@ -164,6 +164,11 @@ class GPUDevice final : public EventTargetWithInlineData,
       WGPUComputePipeline compute_pipeline,
       const char* message);
 
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().deviceSetLabel(GetHandle(), utf8_label.c_str());
+  }
+
   Member<GPUAdapter> adapter_;
   Member<GPUSupportedFeatures> features_;
   Member<GPUSupportedLimits> limits_;

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuoutofmemoryerror_gpuvalidationerror.h"
@@ -98,6 +99,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 
   if (descriptor->hasLabel())
     setLabel(descriptor->label());
+
+  if (descriptor->defaultQueue()->hasLabel())
+    queue_->setLabel(descriptor->defaultQueue()->label());
 }
 
 GPUDevice::~GPUDevice() {

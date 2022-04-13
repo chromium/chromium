@@ -100,6 +100,11 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                         GPUImageDataLayout* data_layout,
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().queueSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink
