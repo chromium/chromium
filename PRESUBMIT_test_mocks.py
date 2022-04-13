@@ -70,6 +70,7 @@ class MockInputApi(object):
     self.os_path = os.path
     self.platform = sys.platform
     self.python_executable = sys.executable
+    self.python3_executable = sys.executable
     self.platform = sys.platform
     self.subprocess = subprocess
     self.sys = sys

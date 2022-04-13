@@ -8,12 +8,9 @@ import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 import os
 import sys
+import urllib.request
 from mojom.generate.template_expander import UseJinja
 
-if sys.version_info.major == 2:
-  import urllib as urllib_request
-else:
-  import urllib.request as urllib_request
 
 _kind_to_javascript_default_value = {
     mojom.BOOL: "false",
@@ -250,7 +247,7 @@ def GetArrayExpectedDimensionSizes(kind):
 
 
 def GetRelativeUrl(module, base_module):
-  return urllib_request.pathname2url(
+  return urllib.request.pathname2url(
       os.path.relpath(module.path, os.path.dirname(base_module.path)))
 
 
@@ -448,7 +445,7 @@ class Generator(generator.Generator):
                               "mojom-webui/%s-webui.js" % self.module.path)
 
   def _GetRelativePath(self, path):
-    relpath = urllib_request.pathname2url(
+    relpath = urllib.request.pathname2url(
         os.path.relpath(path, os.path.dirname(self.module.path)))
     if relpath.startswith('.') or relpath.startswith('/'):
       return relpath
@@ -1059,7 +1056,7 @@ class Generator(generator.Generator):
               return s[len(prefix):]
             return s
 
-          import_path = urllib_request.pathname2url(
+          import_path = urllib.request.pathname2url(
               os.path.relpath(
                   strip_prefix(import_path, _SHARED_MODULE_PREFIX),
                   strip_prefix(this_module_path, _SHARED_MODULE_PREFIX)))

@@ -5499,7 +5499,7 @@ def CheckStableMojomChanges(input_api, output_api):
         })
 
     process = input_api.subprocess.Popen([
-        input_api.python_executable,
+        input_api.python3_executable,
         input_api.os_path.join(
             input_api.PresubmitLocalPath(), 'mojo', 'public', 'tools', 'mojom',
             'check_stable_mojom_compatibility.py'), '--src-root',
