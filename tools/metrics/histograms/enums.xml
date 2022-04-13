@@ -97233,6 +97233,12 @@ Called by update_scheduler_enums.py.-->
   <int value="5" label="AcceptButtonClicked"/>
 </enum>
 
+<enum name="WiFiAdapterInAllowlist">
+  <int value="0" label="Adapter is not in the allowlist"/>
+  <int value="1" label="Adapter in AVL"/>
+  <int value="2" label="Adapter in allowlist but not in AVL"/>
+</enum>
+
 <enum name="WiFiAp80211kSupport">
   <int value="0" label="Does not support 802.11k"/>
   <int value="1" label="Supports 802.11k neighbor lists"/>
