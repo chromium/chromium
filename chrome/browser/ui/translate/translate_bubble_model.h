@@ -7,12 +7,13 @@
 
 #include <string>
 
+#include "chrome/browser/ui/translate/translate_language_list_model.h"
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/common/translate_errors.h"
 
 // The model for the Translate bubble UX. This manages the user's manipulation
 // of the bubble and offers the data to show on the bubble.
-class TranslateBubbleModel {
+class TranslateBubbleModel : public TranslateLanguageListModel {
  public:
   enum ViewState {
     // The view state before translating.
@@ -29,15 +30,16 @@ class TranslateBubbleModel {
 
     // The view state for when the source language combobox is shown. This view
     // appears when the user selects "Page is not in {source language}" under
-    // option menu.
+    // the options menu.
     VIEW_STATE_SOURCE_LANGUAGE,
 
-    // The view state for when the source language combobox is shown. This view
-    // appears when the user selects "More options..." under option menu.
+    // The view state for when the target language combobox is shown. This view
+    // appears when the user selects "Choose another language..." under the
+    // options menu.
     VIEW_STATE_TARGET_LANGUAGE
   };
 
-  virtual ~TranslateBubbleModel() {}
+  ~TranslateBubbleModel() override = default;
 
   // Returns the current view state.
   virtual ViewState GetViewState() const = 0;
@@ -51,32 +53,18 @@ class TranslateBubbleModel {
   // Goes back from the 'Advanced' view state.
   virtual void GoBackFromAdvanced() = 0;
 
-  // Returns the number of source languages supported.
-  virtual int GetNumberOfSourceLanguages() const = 0;
-
-  // Returns the number of target languages supported.
-  virtual int GetNumberOfTargetLanguages() const = 0;
-
-  // Returns the displayable name for the source language at |index|.
-  virtual std::u16string GetSourceLanguageNameAt(int index) const = 0;
-
-  // Returns the displayable name for the target language at |index|.
-  virtual std::u16string GetTargetLanguageNameAt(int index) const = 0;
+  // TranslateLanguageListModel:
+  int GetNumberOfSourceLanguages() const override = 0;
+  int GetNumberOfTargetLanguages() const override = 0;
+  std::u16string GetSourceLanguageNameAt(int index) const override = 0;
+  std::u16string GetTargetLanguageNameAt(int index) const override = 0;
+  int GetSourceLanguageIndex() const override = 0;
+  void UpdateSourceLanguageIndex(int index) override = 0;
+  int GetTargetLanguageIndex() const override = 0;
+  void UpdateTargetLanguageIndex(int index) override = 0;
 
   // Returns the source language code.
   virtual std::string GetSourceLanguageCode() const = 0;
-
-  // Returns the source language index.
-  virtual int GetSourceLanguageIndex() const = 0;
-
-  // Updates the source language index.
-  virtual void UpdateSourceLanguageIndex(int index) = 0;
-
-  // Returns the target language index.
-  virtual int GetTargetLanguageIndex() const = 0;
-
-  // Updates the target language index.
-  virtual void UpdateTargetLanguageIndex(int index) = 0;
 
   // Invoked when the user actively declines to translate the page - e.g.
   // selects 'nope', 'never translate this language', etc.

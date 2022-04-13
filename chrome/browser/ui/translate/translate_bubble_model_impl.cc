@@ -21,7 +21,7 @@ TranslateBubbleModelImpl::TranslateBubbleModelImpl(
     translate_executed_ = true;
 }
 
-TranslateBubbleModelImpl::~TranslateBubbleModelImpl() {}
+TranslateBubbleModelImpl::~TranslateBubbleModelImpl() = default;
 
 // static
 TranslateBubbleModel::ViewState

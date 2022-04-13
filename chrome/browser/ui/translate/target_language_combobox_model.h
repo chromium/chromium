@@ -11,13 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/combobox_model.h"
 
-class TranslateBubbleModel;
+class TranslateLanguageListModel;
 
 // The model for the combobox to select a language. This is used for Translate
 // user interface to select language.
 class TargetLanguageComboboxModel : public ui::ComboboxModel {
  public:
-  TargetLanguageComboboxModel(int default_index, TranslateBubbleModel* model);
+  TargetLanguageComboboxModel(int default_index,
+                              TranslateLanguageListModel* model);
 
   TargetLanguageComboboxModel(const TargetLanguageComboboxModel&) = delete;
   TargetLanguageComboboxModel& operator=(const TargetLanguageComboboxModel&) =
@@ -32,7 +33,7 @@ class TargetLanguageComboboxModel : public ui::ComboboxModel {
 
  private:
   const int default_index_;
-  raw_ptr<TranslateBubbleModel> model_;
+  raw_ptr<TranslateLanguageListModel> model_;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TARGET_LANGUAGE_COMBOBOX_MODEL_H_

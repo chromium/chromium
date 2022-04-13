@@ -117,10 +117,10 @@ class TranslateBubbleViewStateTransition {
   // The current view type.
   TranslateBubbleModel::ViewState view_state_;
 
-  // The view type. When the current view type is not 'Advanced' view, this is
-  // equivalent to |view_state_|. Otherwise, this is the previous view type
-  // before the user opens the 'Advanced' view. This is used to navigate when
-  // pressing 'Cancel' button on the 'Advanced' view.
+  // When the current view type is not 'Advanced' view, this is equivalent to
+  // |view_state_|. Otherwise, this is the previous view type before the user
+  // opens the 'Advanced' view. This is used to navigate back after pressing the
+  // 'Cancel' button on the 'Advanced' view.
   TranslateBubbleModel::ViewState view_state_before_advanced_view_;
 };
 

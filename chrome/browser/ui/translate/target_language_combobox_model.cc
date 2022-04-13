@@ -5,17 +5,17 @@
 #include "chrome/browser/ui/translate/target_language_combobox_model.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "chrome/browser/ui/translate/translate_language_list_model.h"
 
 TargetLanguageComboboxModel::TargetLanguageComboboxModel(
     int default_index,
-    TranslateBubbleModel* model)
+    TranslateLanguageListModel* model)
     : default_index_(default_index < 0 ? 0 : default_index), model_(model) {
   // view::Combobox can't treate an negative index, but |default_index| can be
   // negative when, for example, the page's language can't be detected.
 }
 
-TargetLanguageComboboxModel::~TargetLanguageComboboxModel() {}
+TargetLanguageComboboxModel::~TargetLanguageComboboxModel() = default;
 
 int TargetLanguageComboboxModel::GetItemCount() const {
   return model_->GetNumberOfTargetLanguages();
