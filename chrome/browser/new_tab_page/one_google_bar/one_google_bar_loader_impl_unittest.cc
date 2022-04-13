@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -47,6 +48,23 @@ const char kMinimalValidResponse[] = R"json({"update": { "ogb": {
   "html": { "private_do_not_access_or_else_safe_html_wrapped_value": "" },
   "page_hooks": {}
 }}})json";
+
+// Returns the value of the "enable_account_consistency" parameter in the
+// "X-ChromeConnected" header. The header is expected to be in the format:
+//    param1=value1,param2=value2,[...],paramN=valueN
+// If the "enable_account_consistency" parameter is not found, returns the empty
+// string.
+std::string GetEnableAccountConsistencyValue(
+    const std::string& chrome_connected_header) {
+  base::StringPairs header_params;
+  base::SplitStringIntoKeyValuePairs(chrome_connected_header, '=', ',',
+                                     &header_params);
+  for (const auto& [key, value] : header_params) {
+    if (key == "enable_account_consistency")
+      return value;
+  }
+  return std::string();
+}
 
 }  // namespace
 
@@ -334,10 +352,7 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
     EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
                                                  &header_value));
     // mode = PROFILE_MODE_DEFAULT
-    EXPECT_EQ(
-        "source=Chrome,mode=0,enable_account_consistency=false,"
-        "consistency_enabled_by_default=false",
-        header_value);
+    EXPECT_EQ(GetEnableAccountConsistencyValue(header_value), "false");
   } else {
     // On not Chrome OS, the X-Chrome-Connected header must not be present.
     EXPECT_FALSE(
@@ -379,10 +394,7 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
                                                  &header_value));
     // mode = PROFILE_MODE_INCOGNITO_DISABLED |
     // PROFILE_MODE_ADD_ACCOUNT_DISABLED
-    EXPECT_EQ(
-        "source=Chrome,mode=3,enable_account_consistency=true,"
-        "consistency_enabled_by_default=false",
-        header_value);
+    EXPECT_EQ(GetEnableAccountConsistencyValue(header_value), "true");
   } else {
     // This is not a valid case (mirror account consistency can only be required
     // on Chrome OS). This ensures in this case nothing happens.
