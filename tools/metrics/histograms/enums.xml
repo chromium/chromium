@@ -22360,6 +22360,7 @@ Called by update_debug_scenarios.py.-->
   <int value="57" label="lighthousePanelFR"/>
   <int value="58" label="evaluateExpressionsWithSourceMaps"/>
   <int value="59" label="cssLayers"/>
+  <int value="60" label="eyedropperColorPicker"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
