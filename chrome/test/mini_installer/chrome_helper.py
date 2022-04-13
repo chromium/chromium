@@ -99,7 +99,7 @@ def WaitForChromeExit(chrome_path):
         |chrome_processes|.
         """
         # Find the one whose parent isn't a chrome.exe process.
-        for process in chrome_processes.itervalues():
+        for process in chrome_processes.values():
             try:
                 if get_process_ppid(process) not in chrome_processes:
                     return process
@@ -113,7 +113,7 @@ def WaitForChromeExit(chrome_path):
         process = GetBrowserProcess(chrome_processes)
         if not process:
             # Pick any process to wait on if no top-level parent was found.
-            process = next(chrome_processes.itervalues())
+            process = next(chrome_processes.values())
         if process.is_running():
             LOGGER.info('Waiting on %s for %s %s processes to exit' %
                         (str(process), len(chrome_processes),

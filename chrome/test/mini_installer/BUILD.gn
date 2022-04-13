@@ -65,7 +65,6 @@ if (is_win) {
       "//third_party/catapult/third_party/typ",
     ]
     data = [
-             "//third_party/webdriver/pylib/",
              "//testing/scripts/",
              "//third_party/depot_tools/download_from_google_storage.py",
              "//third_party/depot_tools/gsutil.py",

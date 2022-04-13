@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,7 +12,6 @@ and fails if anything is incorrect.
 """
 
 import argparse
-import atexit
 import contextlib
 import logging
 import os
@@ -20,24 +20,12 @@ import sys
 import tempfile
 import time
 
+from selenium import webdriver
+from selenium.webdriver import ChromeOptions
 import chrome_helper
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.join(THIS_DIR, '..', '..', '..')
-WEBDRIVER_PATH = os.path.join(SRC_DIR, r'third_party', 'webdriver', 'pylib')
 TEST_HTML_FILE = 'file://' + os.path.join(THIS_DIR, 'test_page.html')
-
-# Try and import webdriver
-sys.path.insert(0, WEBDRIVER_PATH)
-try:
-    from selenium import webdriver
-    from selenium.webdriver import ChromeOptions
-except ImportError:
-    # If a system doesn't have the webdriver API this is a no-op phase
-    logging.info(
-        'Chromedriver API (selenium.webdriver) is not installed available in '
-        '%s. Exiting test_chrome_with_chromedriver.py' % WEBDRIVER_PATH)
-    sys.exit(0)
 
 
 @contextlib.contextmanager
@@ -48,7 +36,7 @@ def CreateChromedriver(args):
         # There seems to be a race condition on the bots that causes the paths
         # to not delete because they are being used. This allows up to 4 seconds
         # to delete
-        for _ in xrange(8):
+        for _ in range(8):
             try:
                 return func(path)
             except WindowsError:

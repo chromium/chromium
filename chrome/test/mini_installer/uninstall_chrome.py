@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,10 +8,11 @@ This script reads the uninstall command from registry, calls it, and verifies
 the output status code.
 """
 
-import _winreg
+import logging
 import optparse
 import subprocess
 import sys
+import winreg
 
 
 def main():
@@ -45,32 +47,31 @@ def main():
     # TODO(sukolsak): Add support for uninstalling MSI-based Chrome installs
     # when we support testing MSIs.
     if options.system_level:
-        root_key = _winreg.HKEY_LOCAL_MACHINE
+        root_key = winreg.HKEY_LOCAL_MACHINE
     else:
-        root_key = _winreg.HKEY_CURRENT_USER
+        root_key = winreg.HKEY_CURRENT_USER
     sub_key = ('SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s' %
                options.chrome_long_name)
     # Query the key. It will throw a WindowsError if the key doesn't exist.
     try:
-        key = _winreg.OpenKey(
-            root_key, sub_key, 0,
-            _winreg.KEY_QUERY_VALUE | _winreg.KEY_WOW64_32KEY)
-    except WindowsError:
+        key = winreg.OpenKey(root_key, sub_key, 0,
+                             winreg.KEY_QUERY_VALUE | winreg.KEY_WOW64_32KEY)
+    except WindowsError as e:
         if options.no_error_if_absent:
             return 0
         raise KeyError('Registry key %s\\%s is missing' %
                        ('HKEY_LOCAL_MACHINE' if options.system_level else
-                        'HKEY_CURRENT_USER', sub_key))
+                        'HKEY_CURRENT_USER', sub_key)) from e
     if options.interactive:
         prompt = (
             'Warning: This will uninstall %s at %s. Do you want to continue? '
             '(y/N) ' %
             (options.chrome_long_name,
              'system-level' if options.system_level else 'user-level'))
-        if raw_input(prompt).strip() != 'y':
-            print >> sys.stderr, 'User aborted'
+        if input(prompt).strip() != 'y':
+            logging.error('User aborted')
             return 1
-    uninstall_string, _ = _winreg.QueryValueEx(key, 'UninstallString')
+    uninstall_string, _ = winreg.QueryValueEx(key, 'UninstallString')
     uninstall_string += ' --force-uninstall'
     if options.log_file:
         uninstall_string += (' --verbose-logging --log-file="%s"' %
