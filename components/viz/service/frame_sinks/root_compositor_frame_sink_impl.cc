@@ -555,6 +555,18 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
   // If |ca_layer_params| should have content only when there exists a client
   // to send it to.
   DCHECK(ca_layer_params.is_empty || display_client_);
+  if (last_ca_layer_params_ == ca_layer_params &&
+      base::TimeTicks::Now() < next_forced_ca_layer_params_update_time_) {
+    return;
+  }
+  last_ca_layer_params_ = ca_layer_params;
+  // OnDisplayReceivedCALayerParams() is ultimately responsible for triggering
+  // updates to vsync. VSync may change dynamically. To ensure the value is
+  // updated correctly, OnDisplayReceivedCALayerParams() is periodically called,
+  // even if the params haven't changed. The value here matches that of
+  // DisplayLinkMac, which is responsible for querying for vsync updates.
+  next_forced_ca_layer_params_update_time_ =
+      base::TimeTicks::Now() + base::Seconds(10);
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
 #else

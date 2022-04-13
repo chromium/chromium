@@ -247,8 +247,7 @@ NativeWidgetMacNSWindowHost::NativeWidgetMacNSWindowHost(NativeWidgetMac* owner)
       native_widget_mac_(owner),
       root_view_id_(remote_cocoa::GetNewNSViewId()),
       accessibility_focus_overrider_(this),
-      text_input_host_(new TextInputHost(this)),
-      weak_factory_(this) {
+      text_input_host_(new TextInputHost(this)) {
   DCHECK(GetIdToWidgetHostImplMap().find(widget_id_) ==
          GetIdToWidgetHostImplMap().end());
   GetIdToWidgetHostImplMap().emplace(widget_id_, this);
@@ -1547,9 +1546,28 @@ void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated() {
   if (display_link_) {
     base::TimeTicks timebase;
     base::TimeDelta interval;
-    if (display_link_->GetVSyncParameters(&timebase, &interval))
+    bool register_for_vsync_update = display_link_->IsVSyncPotentiallyStale();
+    if (display_link_->GetVSyncParameters(&timebase, &interval)) {
       compositor_->compositor()->SetDisplayVSyncParameters(timebase, interval);
+    } else {
+      register_for_vsync_update = true;
+    }
+    if (register_for_vsync_update) {
+      if (!weak_factory_for_vsync_update_.HasWeakPtrs()) {
+        display_link_->RegisterCallbackForNextVSyncUpdate(base::BindOnce(
+            &NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated,
+            weak_factory_for_vsync_update_.GetWeakPtr()));
+      }
+    } else {
+      weak_factory_for_vsync_update_.InvalidateWeakPtrs();
+    }
   }
+}
+
+void NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated(
+    base::TimeTicks timebase,
+    base::TimeDelta interval) {
+  compositor_->compositor()->SetDisplayVSyncParameters(timebase, interval);
 }
 
 }  // namespace views

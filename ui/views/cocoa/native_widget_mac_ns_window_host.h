@@ -417,6 +417,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // ui::AcceleratedWidgetMacNSView:
   void AcceleratedWidgetCALayerParamsUpdated() override;
 
+  void OnVSyncParametersUpdated(base::TimeTicks timebase,
+                                base::TimeDelta interval);
+
   // The id that this bridge may be looked up from.
   const uint64_t widget_id_;
   views::NativeWidgetMac* const native_widget_mac_;  // Weak. Owns |this_|.
@@ -514,7 +517,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};
 
-  base::WeakPtrFactory<NativeWidgetMacNSWindowHost> weak_factory_;
+  base::WeakPtrFactory<NativeWidgetMacNSWindowHost>
+      weak_factory_for_vsync_update_{this};
+  base::WeakPtrFactory<NativeWidgetMacNSWindowHost> weak_factory_{this};
 };
 
 }  // namespace views

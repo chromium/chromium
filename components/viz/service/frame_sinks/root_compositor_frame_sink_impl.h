@@ -201,6 +201,14 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   gfx::Size last_swap_pixel_size_;
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+  gfx::CALayerParams last_ca_layer_params_;
+
+  // Used to force a call to OnDisplayReceivedCALayerParams() even if the params
+  // did not change.
+  base::TimeTicks next_forced_ca_layer_params_update_time_;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_competion_callback_ = false;

@@ -25,6 +25,16 @@ struct GFX_EXPORT CALayerParams {
   CALayerParams& operator=(const CALayerParams& params);
   ~CALayerParams();
 
+  bool operator==(const CALayerParams& params) const {
+    return is_empty == params.is_empty &&
+           ca_context_id == params.ca_context_id &&
+#if BUILDFLAG(IS_MAC)
+           io_surface_mach_port == params.io_surface_mach_port &&
+#endif
+           pixel_size == params.pixel_size &&
+           scale_factor == params.scale_factor;
+  }
+
   // The |is_empty| flag is used to short-circuit code to handle CALayerParams
   // on non-macOS platforms.
   bool is_empty = true;
