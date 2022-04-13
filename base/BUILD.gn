@@ -3617,6 +3617,7 @@ test("base_unittests") {
       "allocator/partition_allocator/address_pool_manager_unittest.cc",
       "allocator/partition_allocator/address_space_randomization_unittest.cc",
       "allocator/partition_allocator/base/bits_pa_unittest.cc",
+      "allocator/partition_allocator/base/sys_byteorder_pa_unittest.cc",
       "allocator/partition_allocator/hardening_unittest.cc",
       "allocator/partition_allocator/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/page_allocator_unittest.cc",

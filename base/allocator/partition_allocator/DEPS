@@ -36,7 +36,6 @@ include_rules = [
     "+base/process/memory.h",
     "+base/rand_util.h",
     "+base/strings/stringprintf.h",
-    "+base/sys_byteorder.h",
     "+base/system/sys_info.h",
     "+base/test/bind.h",
     "+base/test/gtest_util.h",

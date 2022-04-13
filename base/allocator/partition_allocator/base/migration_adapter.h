@@ -31,8 +31,6 @@ class LazyInstance;
 template <typename Type>
 struct LazyInstanceTraitsBase;
 
-constexpr uintptr_t ByteSwapUintPtrT(uintptr_t x);
-
 template <typename T>
 constexpr TimeDelta Seconds(T n);
 template <typename T>
@@ -90,7 +88,6 @@ namespace partition_alloc::internal::base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
-using ::base::ByteSwapUintPtrT;
 using ::base::CPU;
 using ::base::LapTimer;
 using ::base::LazyInstance;
