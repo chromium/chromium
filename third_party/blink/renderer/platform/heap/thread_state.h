@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_H_
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8-profiler.h"
 #include "v8/include/cppgc/common.h"
@@ -20,9 +20,6 @@
 
 namespace v8 {
 class CppHeap;
-}  // namespace v8
-
-namespace v8 {
 class EmbedderGraph;
 class EmbedderRootsHandler;
 }  // namespace v8
@@ -35,8 +32,8 @@ using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
 
 class PLATFORM_EXPORT ThreadState final {
  public:
-  class NoAllocationScope;
   class GCForbiddenScope;
+  class NoAllocationScope;
 
   using StackState = cppgc::EmbedderStackState;
 
