@@ -4467,4 +4467,76 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
             controller_->GetWallpaperType() == WallpaperType::kDefault);
 }
 
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       GooglePhotosAreCachedOnDisk) {
+  SimulateUserLogin(account_id_1);
+
+  std::string photo_id = "foobar";
+  base::test::TestFuture<bool> google_photos_future;
+
+  controller_->SetGooglePhotosWallpaper(
+      {account_id_1, photo_id, WallpaperLayout::WALLPAPER_LAYOUT_STRETCH},
+      google_photos_future.GetCallback());
+  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  RunAllTasksUntilIdle();
+
+  base::FilePath saved_wallpaper =
+      online_wallpaper_dir_.GetPath().Append("google_photos/").Append(photo_id);
+  ASSERT_EQ(GooglePhotosEnabled(), base::PathExists(saved_wallpaper));
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       GooglePhotosAreCachedInMemory) {
+  SimulateUserLogin(account_id_1);
+
+  base::FilePath path;
+  EXPECT_FALSE(controller_->GetPathFromCache(account_id_1, &path));
+  gfx::ImageSkia cached_wallpaper;
+  EXPECT_FALSE(
+      controller_->GetWallpaperFromCache(account_id_1, &cached_wallpaper));
+
+  std::string photo_id = "foobar";
+  base::test::TestFuture<bool> google_photos_future;
+  controller_->SetGooglePhotosWallpaper(
+      {account_id_1, photo_id, WallpaperLayout::WALLPAPER_LAYOUT_STRETCH},
+      google_photos_future.GetCallback());
+  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(GooglePhotosEnabled(),
+            controller_->GetPathFromCache(account_id_1, &path));
+  EXPECT_EQ(GooglePhotosEnabled(), controller_->GetWallpaperFromCache(
+                                       account_id_1, &cached_wallpaper));
+  EXPECT_EQ(GooglePhotosEnabled(), path == online_wallpaper_dir_.GetPath()
+                                               .Append("google_photos/")
+                                               .Append(photo_id));
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       GooglePhotosAreReadFromCache) {
+  SimulateUserLogin(account_id_1);
+
+  std::string photo_id = "foobar";
+  base::test::TestFuture<bool> google_photos_future;
+
+  GooglePhotosWallpaperParams params(
+      {account_id_1, photo_id, WallpaperLayout::WALLPAPER_LAYOUT_STRETCH});
+  controller_->SetGooglePhotosWallpaper(params,
+                                        google_photos_future.GetCallback());
+  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  RunAllTasksUntilIdle();
+
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+  // When Google Photos is disabled, the wallpaper will not be in disk cache,
+  // so it will attempt to read from disk, fail to find it, and then reset to
+  // the default wallpaper.
+  const size_t expected_decodes = GooglePhotosEnabled() ? 0 : 1;
+  const WallpaperType expected_type = GooglePhotosEnabled()
+                                          ? WallpaperType::kGooglePhotos
+                                          : WallpaperType::kDefault;
+
+  EXPECT_EQ(expected_decodes, GetDecodeFilePaths().size());
+  EXPECT_EQ(expected_type, controller_->GetWallpaperType());
+}
+
 }  // namespace ash

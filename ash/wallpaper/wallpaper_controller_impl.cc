@@ -2298,18 +2298,8 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
     const base::FilePath& path,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
-  if (image.isNull()) {
-    std::move(callback).Run(false);
-    return;
-  }
-  std::move(callback).Run(true);
-
-  if (!SetUserWallpaperInfo(account_id, info)) {
-    LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
-                  "except in tests.";
-  }
-  ShowWallpaperImage(image, info, /*preview_mode=*/false,
-                     /*always_on_top=*/false);
+  std::move(callback).Run(!image.isNull());
+  OnWallpaperDecoded(account_id, path, info, /*show_wallpaper=*/true, image);
 }
 
 void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
