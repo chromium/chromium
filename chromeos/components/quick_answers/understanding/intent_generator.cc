@@ -306,16 +306,17 @@ void IntentGenerator::LanguageDetectorCallback(
     absl::optional<std::string> detected_language) {
   language_detector_.reset();
 
+  auto device_language =
+      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
+
   // Generate translation intent if the detected language is different to the
   // system language and is not one of the preferred languages.
   if (detected_language.has_value() &&
-      detected_language.value() !=
-          QuickAnswersState::Get()->application_locale() &&
+      detected_language.value() != device_language &&
       !IsPreferredLanguage(detected_language.value())) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
-                        QuickAnswersState::Get()->application_locale(),
-                        detected_language.value()));
+                        device_language, detected_language.value()));
     return;
   }
 
