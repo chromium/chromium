@@ -28,6 +28,7 @@
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
+#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -216,6 +217,8 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(IS_LINUX)
   RegisterScreenAIComponent(cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(IS_LINUX)
+
+  RegisterUrlParamClassificationComponent(cus);
 }
 
 }  // namespace component_updater
