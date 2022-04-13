@@ -7,7 +7,6 @@ import("//build/config/ios/asset_catalog.gni")
 imageset("password_suggestion_icon") {
   sources = [
     "password_suggestion_icon.imageset/Contents.json",
-    "password_suggestion_icon.imageset/password_suggestion_icon.png",
     "password_suggestion_icon.imageset/password_suggestion_icon@2x.png",
     "password_suggestion_icon.imageset/password_suggestion_icon@3x.png",
   ]
