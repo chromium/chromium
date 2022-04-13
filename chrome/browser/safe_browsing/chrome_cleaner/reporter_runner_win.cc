@@ -773,12 +773,6 @@ class ReporterRunner {
       invocation->mutable_command_line().AppendSwitch(
           chrome_cleaner::kEnableCrashReportingSwitch);
     }
-
-    const std::string group_name = GetSRTPromptGroupName();
-    if (!group_name.empty()) {
-      invocation->mutable_command_line().AppendSwitchASCII(
-          chrome_cleaner::kSRTPromptFieldTrialGroupNameSwitch, group_name);
-    }
   }
 
   // Adds switches to be sent to the Software Reporter when the user opted into

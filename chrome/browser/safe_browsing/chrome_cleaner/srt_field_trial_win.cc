@@ -14,9 +14,6 @@ namespace {
 
 constexpr char kSRTPromptSeedParam[] = "Seed";
 
-constexpr base::FeatureParam<std::string> kSRTPromptGroupNameParam{
-    &safe_browsing::kChromeCleanupInBrowserPromptFeature, "Group", "Off"};
-
 // The download links of the Software Removal Tool.
 constexpr char kDownloadRootPath[] =
     "https://dl.google.com/dl/softwareremovaltool/win/";
@@ -81,10 +78,6 @@ GURL GetSRTDownloadURL() {
 std::string GetIncomingSRTSeed() {
   return base::GetFieldTrialParamValueByFeature(
       kChromeCleanupInBrowserPromptFeature, kSRTPromptSeedParam);
-}
-
-std::string GetSRTPromptGroupName() {
-  return kSRTPromptGroupNameParam.Get();
 }
 
 void RecordPromptNotShownWithReasonHistogram(

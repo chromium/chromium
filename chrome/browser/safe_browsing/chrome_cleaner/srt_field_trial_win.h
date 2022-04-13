@@ -70,10 +70,6 @@ GURL GetSRTDownloadURL();
 // Returns the value of the incoming SRT seed.
 std::string GetIncomingSRTSeed();
 
-// Returns the value of the "Group" parameter associed with the SRTPrompt
-// feature.
-std::string GetSRTPromptGroupName();
-
 // Records a value for the SRT Prompt Histogram.
 void RecordSRTPromptHistogram(SRTPromptHistogramValue value);
 
