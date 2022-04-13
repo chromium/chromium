@@ -1838,6 +1838,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FIVE" desc="Fifth bullet point under the Safe Browsing enhanced protection mode">
         Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing standard protection mode.">
+        Detects and warns you about dangerous events when they happen.
+      </message>
       <message name="IDS_IOS_SCANNER_TORCH_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the button to turn torch on and off in the Scanner. The current state of the button is communicated using the accessibility value. [Length: unlimited] [iOS only]"  meaning="The button to turn on and off the torch. [20em] [Read by Text-to-Speech]">
         Torch
       </message>

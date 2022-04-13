@@ -413,6 +413,9 @@ Things to consider:
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing standard protection mode.">
+        Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.
+      </message>
       <message name="IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND" desc="The message indicating a 3rd party tweak has been found that is known to crash Chromium.  After the ':', we will list the names of the libraries. [Length: 140em]">
         Some add-ons cause Chromium to crash. Please uninstall:
       </message>

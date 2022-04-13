@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -69,12 +70,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
     SettingsImageDetailTextItem* shieldIconItem = [self
              detailItemWithType:ItemTypeShieldIcon
                      detailText:
-                         IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE
+                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE
                           image:[[UIImage imageNamed:@"shield"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]
-        accessibilityIdentifier:kSafeBrowsingEnhancedProtectionShieldCellId];
+        accessibilityIdentifier:kSafeBrowsingStandardProtectionShieldCellId];
     [items addObject:shieldIconItem];
+
+    SettingsImageDetailTextItem* metricIconItem = [self
+             detailItemWithType:ItemTypeMetricIcon
+                     detailText:
+                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO
+                          image:[[UIImage imageNamed:@"bar_chart"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]
+        accessibilityIdentifier:kSafeBrowsingStandardProtectionMetricCellId];
+    [items addObject:metricIconItem];
 
     _safeBrowsingStandardProtectionItems = items;
   }

@@ -35,4 +35,12 @@ extern NSString* const kSafeBrowsingEnhancedProtectionKeyCellId;
 // cell.
 extern NSString* const kSafeBrowsingEnhancedProtectionMetricCellId;
 
+// The accessibility identifier of the Safe Browsing Standard Protection shield
+// cell.
+extern NSString* const kSafeBrowsingStandardProtectionShieldCellId;
+
+// The accessibility identifier of the Safe Browsing Standard Protection metric
+// cell.
+extern NSString* const kSafeBrowsingStandardProtectionMetricCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_CONSTANTS_H_
