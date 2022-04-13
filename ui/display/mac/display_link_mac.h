@@ -80,6 +80,9 @@ class DISPLAY_EXPORT DisplayLinkMac
   // The time after which we should re-start the display link to get fresh
   // parameters.
   base::TimeTicks recalculate_time_;
+
+  // TODO(sky): temporary, will remove after doing some analysis.
+  const bool force_60hz_;
 };
 
 }  // namespace ui

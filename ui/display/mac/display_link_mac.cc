@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -150,7 +151,10 @@ double DisplayLinkMac::GetRefreshRate() {
 DisplayLinkMac::DisplayLinkMac(
     CGDirectDisplayID display_id,
     base::ScopedTypeRef<CVDisplayLinkRef> display_link)
-    : display_id_(display_id), display_link_(display_link) {
+    : display_id_(display_id),
+      display_link_(display_link),
+      force_60hz_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch("force-60hz")) {
   DisplayLinkMap& all_display_links = GetAllDisplayLinks();
   DCHECK(all_display_links.find(display_id) == all_display_links.end());
   if (all_display_links.empty()) {
@@ -222,6 +226,8 @@ void DisplayLinkMac::UpdateVSyncParameters(const CVTimeStamp& cv_time) {
 
   timebase_ = base::TimeTicks::FromMachAbsoluteTime(cv_time.hostTime);
   interval_ = base::Microseconds(int64_t{interval_us.ValueOrDie()});
+  if (force_60hz_)
+    interval_ = std::max(base::Hertz(60), interval_);
   timebase_and_interval_valid_ = true;
 
   // Don't restart the display link for 10 seconds.
