@@ -875,9 +875,6 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
 class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatures(
-        {media::kShareThisTabInsteadButtonGetDisplayMedia}, {});
-
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
     DetectErrorsInJavaScript();
@@ -892,9 +889,6 @@ class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
