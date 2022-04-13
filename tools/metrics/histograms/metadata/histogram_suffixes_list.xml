@@ -4310,14 +4310,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ModuleIntegrityVerification.Difference"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NativeFileSystemAPIChooserType" separator=".">
-  <suffix name="OpenDirectory" label=""/>
-  <suffix name="OpenFile" label=""/>
-  <suffix name="OpenMultipleFiles" label=""/>
-  <suffix name="SaveFile" label=""/>
-  <affected-histogram name="NativeFileSystemAPI.FileChooserResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NativeFileSystemAPIHandleType" separator=".">
   <suffix name="Directory" label=""/>
   <suffix name="File" label=""/>
