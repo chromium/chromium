@@ -14,6 +14,12 @@
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
+namespace features {
+// Enables remembering of access code cast devices.
+const base::Feature kAccessCodeCastRememberDevices{
+    "AccessCodeCastRememberDevices", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace features
+
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID)

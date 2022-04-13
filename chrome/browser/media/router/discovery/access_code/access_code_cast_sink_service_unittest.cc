@@ -13,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/mock_timer.h"
@@ -80,6 +81,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
                 discovery_network_monitor_.get(),
                 &dual_media_sink_service_)) {
     mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
+    feature_list_.InitWithFeatures({features::kAccessCodeCastRememberDevices},
+                                   {});
   }
   AccessCodeCastSinkServiceTest(AccessCodeCastSinkServiceTest&) = delete;
   AccessCodeCastSinkServiceTest& operator=(AccessCodeCastSinkServiceTest&) =
@@ -140,6 +143,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<media_router::MockMediaRouter> router_;
   std::unique_ptr<LoggerImpl> logger_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   static std::vector<DiscoveryNetworkInfo> fake_network_info_;

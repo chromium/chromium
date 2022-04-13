@@ -74,7 +74,6 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
   DCHECK(profile_) << "The profile does not exist.";
   DCHECK(prefs)
       << "Prefs could not be fetched from the profile for some reason.";
-  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs);
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
       // exponential backoff.
@@ -103,11 +102,14 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       // successful requests.
       false,
   };
-  // We don't need to post this task per the DiscoveryNetworkMonitor's promise:
-  // "All observers will be notified of network changes on the thread from which
-  // they registered."
-  network_monitor_->AddObserver(this);
-  InitStoredDeviceConnections();
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
+    // We don't need to post this task per the DiscoveryNetworkMonitor's
+    // promise: "All observers will be notified of network changes on the thread
+    // from which they registered."
+    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs);
+    network_monitor_->AddObserver(this);
+    InitStoredDeviceConnections();
+  }
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)

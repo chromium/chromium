@@ -15,6 +15,10 @@ namespace base {
 class TimeDelta;
 }
 
+namespace features {
+extern const base::Feature kAccessCodeCastRememberDevices;
+}
+
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID)
