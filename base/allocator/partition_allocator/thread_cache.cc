@@ -189,7 +189,13 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // passes. See crbug.com/1216964.
     tcache->cached_memory_ = tcache->CachedMemory();
 
-    tcache->TryPurge();
+    // At this point, we should call |TryPurge|. However, due to the thread
+    // cache being possibly inconsistent at this point, this may crash. Rather
+    // than crash, we'd prefer to simply not purge, even though this may leak
+    // memory in some cases.
+    //
+    // see crbug.com/1289092 for details of the crashes.
+
     tcache = tcache->next_;
   }
 }
