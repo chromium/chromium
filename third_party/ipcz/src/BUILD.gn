@@ -142,6 +142,7 @@ ipcz_source_set("util") {
     "util/log.h",
     "util/ref_counted.h",
     "util/stack_trace.h",
+    "util/strong_alias.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
@@ -155,6 +156,8 @@ ipcz_source_set("impl") {
   public = [
     "ipcz/api_object.h",
     "ipcz/node.h",
+    "ipcz/sequence_number.h",
+    "ipcz/sequenced_queue.h",
   ]
   sources = [
     "ipcz/api_object.cc",
@@ -194,6 +197,7 @@ ipcz_source_set("ipcz_tests_sources") {
 
   sources = [
     "api_test.cc",
+    "ipcz/sequenced_queue_test.cc",
     "test/test_base.cc",
     "test/test_base.h",
     "util/ref_counted_test.cc",
@@ -205,6 +209,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "//third_party/abseil-cpp:absl",
   ]
   ipcz_deps = [
+    ":impl",
     ":ipcz",
     ":reference_drivers",
     ":util",
