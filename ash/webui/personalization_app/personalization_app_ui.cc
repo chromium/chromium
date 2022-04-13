@@ -92,6 +92,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"managedSetting", IDS_PERSONALIZATION_APP_MANAGED_SETTING},
       {"ariaLabelChangeWallpaper",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_WALLPAPER},
+      {"ariaLabelHome", IDS_PERSONALIZATION_APP_ARIA_LABEL_HOME},
 
       // Theme related strings.
       {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},

@@ -59,6 +59,7 @@
       </template>
       <template is="dom-if" if="[[showHomeButton_()]]">
         <cr-icon-button id="homeButton" class="selectable"
+            aria-label$="[[getHomeButtonAriaLabel_()]]"
             iron-icon="personalization:home" role="button" on-click="onHomeIconClick_">
         </cr-icon-button>
         <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>

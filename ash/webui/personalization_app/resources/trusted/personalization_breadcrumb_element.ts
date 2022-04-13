@@ -238,6 +238,10 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     return this.i18n('back', this.i18n('wallpaperLabel'));
   }
 
+  private getHomeButtonAriaLabel_(): string {
+    return this.i18n('ariaLabelHome');
+  }
+
   private onBackClick_() {
     window.history.back();
   }

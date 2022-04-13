@@ -2319,6 +2319,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_LAST_EXTERNAL_IMAGE" desc="Title for the existing photo from camera or file option.">
         Existing photo from camera or file
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_HOME" desc="Aria label for the home page of the hub.">
+        Home
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
