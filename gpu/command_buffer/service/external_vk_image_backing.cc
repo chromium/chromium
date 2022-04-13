@@ -424,14 +424,26 @@ bool ExternalVkImageBacking::BeginAccess(
         GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                      VK_QUEUE_FAMILY_EXTERNAL));
 
-    auto semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
-    if (!SubmitSignalVkSemaphore(
-            context_provider()->GetDeviceQueue()->GetVulkanQueue(),
-            semaphore.GetVkSemaphore())) {
+    ExternalSemaphore external_semaphore =
+        external_semaphore_pool()->GetOrCreateSemaphore();
+    GrBackendSemaphore semaphore;
+    semaphore.initVulkan(external_semaphore.GetVkSemaphore());
+
+    GrFlushInfo flush_info;
+    flush_info.fNumSemaphores = 1;
+    flush_info.fSignalSemaphores = &semaphore;
+
+    if (gr_context->flush(flush_info) != GrSemaphoresSubmitted::kYes) {
       LOG(ERROR) << "Failed to create a signaled semaphore";
       return false;
     }
-    external_semaphores->push_back(std::move(semaphore));
+
+    if (!gr_context->submit()) {
+      LOG(ERROR) << "Failed GrContext submit";
+      return false;
+    }
+
+    external_semaphores->push_back(std::move(external_semaphore));
   }
 
   if (readonly) {
