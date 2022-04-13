@@ -483,7 +483,8 @@ int CEscapeInternal(const char* src, int src_len, char* dest,
   bool last_hex_escape = false; // true if last output char was \xNN
 
   for (; src < src_end; src++) {
-    if (dest_len - used < 2)   // Need space for two letter escape
+    auto lasts = dest_len - used;
+    if (lasts < 2)   // Need space for two letter escape
       return -1;
 
     bool is_hex_escape = false;
@@ -501,10 +502,11 @@ int CEscapeInternal(const char* src, int src_len, char* dest,
         if ((!utf8_safe || static_cast<uint8>(*src) < 0x80) &&
             (!isprint(*src) ||
              (last_hex_escape && isxdigit(*src)))) {
-          if (dest_len - used < 4) // need space for 4 letter escape
+          if (lasts < 4) // need space for 4 letter escape
             return -1;
-          snprintf(dest + used, 5, (use_hex ? "\\x%02x" : "\\%03o"),
-                   static_cast<uint8>(*src));
+          snprintf(dest + used, lasts,
+                  use_hex ? "\\x%02x" : "\\%03o",
+                  static_cast<uint8>(*src));
           is_hex_escape = use_hex;
           used += 4;
         } else {
