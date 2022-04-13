@@ -418,10 +418,11 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
 
 VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
                        ExecutionContext* context,
-                       std::string monitoring_source_id) {
+                       std::string monitoring_source_id,
+                       sk_sp<SkImage> sk_image) {
   DCHECK(frame);
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
-      frame, context, std::move(monitoring_source_id));
+      frame, std::move(sk_image), context, std::move(monitoring_source_id));
 
   external_allocated_memory_ =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
@@ -469,7 +470,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   constexpr char kAlphaDiscard[] = "discard";
-  constexpr char kAlphaKeep[] = "keep";
 
   // Special case <video> and VideoFrame to directly use the underlying frame.
   if (source->IsVideoFrame() || source->IsHTMLVideoElement()) {
@@ -477,15 +477,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     switch (source->GetContentType()) {
       case V8CanvasImageSource::ContentType::kVideoFrame:
         source_frame = source->GetAsVideoFrame()->frame();
-        if (!init->hasTimestamp() && !init->hasDuration() &&
-            (init->alpha() == kAlphaKeep ||
-             media::IsOpaque(source_frame->format())) &&
-            !init->hasVisibleRect() && !init->hasDisplayWidth() &&
-            !init->hasDisplayHeight()) {
-          // TODO(https://crbug.com/1243829): assess value of this shortcut and
-          // consider expanding usage where feasible.
-          return source->GetAsVideoFrame()->clone(exception_state);
-        }
         break;
       case V8CanvasImageSource::ContentType::kHTMLVideoElement:
         if (auto* wmp = source->GetAsHTMLVideoElement()->GetWebMediaPlayer())
@@ -504,21 +495,22 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     const bool force_opaque = init->alpha() == kAlphaDiscard &&
                               !media::IsOpaque(source_frame->format());
 
+    const auto wrapped_format =
+        force_opaque ? ToOpaqueMediaPixelFormat(source_frame->format())
+                     : source_frame->format();
+    const gfx::Size& coded_size = source_frame->coded_size();
+    const gfx::Rect default_visible_rect = source_frame->visible_rect();
+    const gfx::Size default_display_size = source_frame->natural_size();
+    ParsedVideoFrameInit parsed_init(init, wrapped_format, coded_size,
+                                     default_visible_rect, default_display_size,
+                                     exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+
     // We can't modify frame metadata directly since there may be other owners
     // accessing these fields concurrently.
     if (init->hasTimestamp() || init->hasDuration() || force_opaque ||
         init->hasVisibleRect() || init->hasDisplayWidth()) {
-      const auto wrapped_format =
-          force_opaque ? ToOpaqueMediaPixelFormat(source_frame->format())
-                       : source_frame->format();
-      const gfx::Size& coded_size = source_frame->coded_size();
-      const gfx::Rect default_visible_rect = source_frame->visible_rect();
-      const gfx::Size default_display_size = source_frame->natural_size();
-      ParsedVideoFrameInit parsed_init(init, wrapped_format, coded_size,
-                                       default_visible_rect,
-                                       default_display_size, exception_state);
-      if (exception_state.HadException())
-        return nullptr;
       auto wrapped_frame = media::VideoFrame::WrapVideoFrame(
           source_frame, wrapped_format, parsed_init.visible_rect,
           parsed_init.display_size);
@@ -546,8 +538,30 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       source_frame = std::move(wrapped_frame);
     }
 
+    // Re-use the sk_image if available and not obsoleted by metadata overrides.
+    sk_sp<SkImage> sk_image;
+    if (source->GetContentType() ==
+        V8CanvasImageSource::ContentType::kVideoFrame) {
+      auto local_handle =
+          source->GetAsVideoFrame()->handle()->CloneForInternalUse();
+      if (!local_handle) {
+        // It's possible for another realm (Worker) to destroy our handle if
+        // this frame was transferred via BroadcastChannel to multiple realms.
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "Source VideoFrame was closed");
+        return nullptr;
+      }
+
+      if (local_handle->sk_image() && !force_opaque &&
+          !init->hasVisibleRect() && !init->hasDisplayWidth() &&
+          !init->hasDisplayHeight()) {
+        sk_image = local_handle->sk_image();
+      }
+    }
+
     return MakeGarbageCollected<VideoFrame>(
-        std::move(source_frame), ExecutionContext::From(script_state));
+        std::move(source_frame), ExecutionContext::From(script_state),
+        /* monitoring_source_id */ std::string(), std::move(sk_image));
   }
 
   // Some elements like OffscreenCanvas won't choose a default size, so we must

@@ -11,8 +11,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
@@ -257,6 +259,84 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
 
   auto* clone = video_frame->clone(scope.GetExceptionState());
   EXPECT_EQ(clone->handle()->sk_image(), original_image);
+}
+
+// Wraps |source| in a VideoFrame and checks for SkImage re-use where feasible.
+void TestWrappedVideoFrameImageReuse(V8TestingScope& scope,
+                                     const sk_sp<SkImage> orig_image,
+                                     const V8CanvasImageSource* source) {
+  // Wrapping image in a VideoFrame without changing any metadata should reuse
+  // the original image.
+  auto* init = VideoFrameInit::Create();
+  init->setTimestamp(0);  // Timestamp is required since ImageBitmap lacks.
+  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                         scope.GetExceptionState());
+  EXPECT_EQ(video_frame->handle()->sk_image(), orig_image);
+
+  // Duration metadata doesn't impact drawing so VideoFrame should still reuse
+  // the original image.
+  init->setDuration(1000);
+  video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                   scope.GetExceptionState());
+  EXPECT_EQ(video_frame->handle()->sk_image(), orig_image);
+
+  // VisibleRect change does impact drawing, so VideoFrame should NOT re-use the
+  // original image.
+  DOMRectInit* visible_rect = DOMRectInit::Create();
+  visible_rect->setX(1);
+  visible_rect->setY(1);
+  visible_rect->setWidth(2);
+  visible_rect->setHeight(2);
+  init->setVisibleRect(visible_rect);
+  video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                   scope.GetExceptionState());
+  EXPECT_NE(video_frame->handle()->sk_image(), orig_image);
+}
+
+// Wraps an ImageBitmap in a VideoFrame and checks for SkImage re-use where
+// feasible.
+// TODO(crbug.com/1316089): Re-enable this test when code is fixed.
+TEST_F(VideoFrameTest, DISABLED_ImageReuse_VideoFrameFromImage) {
+  V8TestingScope scope;
+
+  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+      SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
+  sk_sp<SkImage> original_image = surface->makeImageSnapshot();
+
+  const auto* default_options = ImageBitmapOptions::Create();
+  auto* image_bitmap_layer = MakeGarbageCollected<ImageBitmap>(
+      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      default_options);
+
+  TestWrappedVideoFrameImageReuse(
+      scope, original_image,
+      MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_layer));
+}
+
+// Like ImageReuse_VideoFrameFromImage, but adds an intermediate VideoFrame
+// to the sandwich (which triggers distinct code paths).
+TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromVideoFrameFromImage) {
+  V8TestingScope scope;
+
+  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+      SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
+  sk_sp<SkImage> original_image = surface->makeImageSnapshot();
+
+  const auto* default_options = ImageBitmapOptions::Create();
+  auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
+      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      default_options);
+
+  auto* init = VideoFrameInit::Create();
+  init->setTimestamp(0);  // Timestamp is required since ImageBitmap lacks.
+  auto* video_frame = VideoFrame::Create(
+      scope.GetScriptState(),
+      MakeGarbageCollected<V8CanvasImageSource>(image_bitmap), init,
+      scope.GetExceptionState());
+
+  TestWrappedVideoFrameImageReuse(
+      scope, original_image,
+      MakeGarbageCollected<V8CanvasImageSource>(video_frame));
 }
 
 TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {

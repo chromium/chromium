@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
@@ -57,7 +58,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // monitored using |monitoring_source_id|.
   VideoFrame(scoped_refptr<media::VideoFrame> frame,
              ExecutionContext*,
-             std::string monitoring_source_id = std::string());
+             std::string monitoring_source_id = std::string(),
+             sk_sp<SkImage> sk_image = nullptr);
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of
