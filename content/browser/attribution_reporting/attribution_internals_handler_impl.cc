@@ -316,6 +316,9 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
     case StorableSource::Result::kExcessiveReportingOrigins:
       attributability = Attributability::kExcessiveReportingOrigins;
       break;
+    case StorableSource::Result::kProhibitedByBrowserPolicy:
+      attributability = Attributability::kProhibitedByBrowserPolicy;
+      break;
   }
 
   auto web_ui_source =
@@ -386,6 +389,8 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kExcessiveReportingOrigins;
     case EventLevelStatus::kNoMatchingSourceFilterData:
       return WebUITriggerStatus::kNoMatchingSourceFilterData;
+    case EventLevelStatus::kProhibitedByBrowserPolicy:
+      return WebUITriggerStatus::kProhibitedByBrowserPolicy;
   }
 }
 
@@ -411,6 +416,8 @@ WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
       return WebUITriggerStatus::kNoMatchingSourceFilterData;
     case AggregatableStatus::kNotRegistered:
       return WebUITriggerStatus::kNotRegistered;
+    case AggregatableStatus::kProhibitedByBrowserPolicy:
+      return WebUITriggerStatus::kProhibitedByBrowserPolicy;
   }
 }
 

@@ -119,6 +119,7 @@ struct WebUISource {
     kInsufficientSourceCapacity,
     kInsufficientUniqueDestinationCapacity,
     kExcessiveReportingOrigins,
+    kProhibitedByBrowserPolicy,
   };
   Attributability attributability;
 };
@@ -154,6 +155,7 @@ struct WebUITrigger {
     kNoReportCapacityForDestinationSite,
     kExcessiveAttributions,
     kExcessiveReportingOrigins,
+    kProhibitedByBrowserPolicy,
 
     // Event-level statuses:
     kDeduplicated,

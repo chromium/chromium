@@ -1043,7 +1043,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus",
+      "Conversions.CreateReportStatus2",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus2",
@@ -1226,6 +1226,17 @@ TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsImpressions_SourceNotStored) {
   base::HistogramTester histograms;
 
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  const auto source = SourceBuilder().SetExpiry(kImpressionExpiry).Build();
+
+  EXPECT_CALL(observer,
+              OnSourceHandled(
+                  source, StorableSource::Result::kProhibitedByBrowserPolicy));
+
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
@@ -1236,8 +1247,7 @@ TEST_F(AttributionManagerImplTest,
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleSource(source);
   EXPECT_THAT(StoredSources(), IsEmpty());
 
   histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", false,
@@ -1247,6 +1257,23 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsConversions_ReportNotStored) {
   base::HistogramTester histograms;
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  const auto trigger = DefaultTrigger();
+
+  EXPECT_CALL(observer,
+              OnTriggerHandled(
+                  trigger, AllOf(_,
+                                 CreateReportEventLevelStatusIs(
+                                     AttributionTrigger::EventLevelResult::
+                                         kProhibitedByBrowserPolicy),
+                                 CreateReportAggregatableStatusIs(
+                                     AttributionTrigger::AggregatableResult::
+                                         kProhibitedByBrowserPolicy))));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1269,7 +1296,7 @@ TEST_F(AttributionManagerImplTest,
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
-  attribution_manager_->HandleTrigger(DefaultTrigger());
+  attribution_manager_->HandleTrigger(trigger);
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", false,

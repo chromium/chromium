@@ -16926,6 +16926,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Insufficient aggregatable budget"/>
   <int value="8" label="No matching source filter data"/>
   <int value="9" label="Not registered"/>
+  <int value="10" label="Prohibited by browser policy"/>
 </enum>
 
 <enum name="ConversionDataHandleStatus">
@@ -16969,6 +16970,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Dropped for noise"/>
   <int value="9" label="Excessive reporting origins"/>
   <int value="10" label="No matching source filter data"/>
+  <int value="11" label="Prohibited by browser policy"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

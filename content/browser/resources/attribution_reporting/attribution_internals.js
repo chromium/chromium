@@ -949,6 +949,8 @@ function AttributabilityToText(attributability) {
       return 'Rejected: insufficient unique destination capacity';
     case WebUISource_Attributability.kExcessiveReportingOrigins:
       return 'Rejected: excessive reporting origins';
+    case WebUISource_Attributability.kProhibitedByBrowserPolicy:
+      return 'Rejected: prohibited by browser policy';
     default:
       return attributability.toString();
   }
@@ -986,6 +988,8 @@ function TriggerStatusToText(status) {
       return 'Failure: Insufficient budget';
     case WebUITrigger_Status.kNotRegistered:
       return 'Failure: No aggregatable data present';
+    case WebUITrigger_Status.kProhibitedByBrowserPolicy:
+      return 'Failure: Prohibited by browser policy';
     default:
       return status.toString();
   }

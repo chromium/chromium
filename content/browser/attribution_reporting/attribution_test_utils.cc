@@ -956,6 +956,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
       out << "noMatchingSourceFilterData";
       break;
+    case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
+      out << "prohibitedByBrowserPolicy";
+      break;
   }
   return out;
 }
@@ -993,6 +996,9 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case AttributionTrigger::AggregatableResult::kNotRegistered:
       out << "notRegistered";
+      break;
+    case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
+      out << "prohibitedByBrowserPolicy";
       break;
   }
   return out;
@@ -1265,6 +1271,8 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
       return out << "insufficientUniqueDestinationCapacity";
     case StorableSource::Result::kExcessiveReportingOrigins:
       return out << "excessiveReportingOrigins";
+    case StorableSource::Result::kProhibitedByBrowserPolicy:
+      return out << "prohibitedByBrowserPolicy";
   }
 }
 

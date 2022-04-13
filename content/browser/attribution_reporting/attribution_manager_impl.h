@@ -22,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_scheduler.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -154,6 +155,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       AggregationService::AssemblyStatus status);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
+  void OnSourceStored(StorableSource source,
+                      AttributionStorage::StoreSourceResult result);
   void OnReportStored(AttributionTrigger trigger, CreateReportResult result);
 
   void MaybeSendDebugReport(AttributionReport&&);

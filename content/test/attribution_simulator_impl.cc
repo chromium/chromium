@@ -252,6 +252,7 @@ class AttributionEventHandler : public AttributionObserver {
       case StorableSource::Result::kInsufficientSourceCapacity:
       case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
       case StorableSource::Result::kExcessiveReportingOrigins:
+      case StorableSource::Result::kProhibitedByBrowserPolicy:
         reason << result;
         break;
     }
@@ -288,6 +289,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::EventLevelResult::kDroppedForNoise:
       case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
+      case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
         event_level_reason << result.event_level_status();
         break;
     }
@@ -306,6 +308,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::AggregatableResult::kInsufficientBudget:
       case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
       case AttributionTrigger::AggregatableResult::kNoHistograms:
+      case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
         aggregatable_reason << result.aggregatable_status();
         break;
     }

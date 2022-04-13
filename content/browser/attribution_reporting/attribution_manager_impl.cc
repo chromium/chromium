@@ -104,7 +104,11 @@ bool IsOriginSessionOnly(
 }
 
 void RecordCreateReportStatus(CreateReportResult result) {
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus",
+  static_assert(
+      AttributionTrigger::EventLevelResult::kMaxValue ==
+          AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy,
+      "Bump version of Conversions.CreateReportStatus2 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus2",
                                 result.event_level_status());
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus2",
@@ -333,28 +337,26 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
   int deactivated_source_return_limit = observers_.empty() ? 0 : 50;
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(source, deactivated_source_return_limit)
-      .Then(base::BindOnce(
-          [](base::WeakPtr<AttributionManagerImpl> manager,
-             StorableSource source,
-             AttributionStorage::StoreSourceResult result) {
-            // TODO(apaseltiner): Consider logging UMA based on `result` to help
-            // understand how often this fails due to privacy limits, etc.
+      .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
+                           weak_factory_.GetWeakPtr(), std::move(source)));
+}
 
-            if (!manager)
-              return;
+void AttributionManagerImpl::OnSourceStored(
+    StorableSource source,
+    AttributionStorage::StoreSourceResult result) {
+  // TODO(apaseltiner): Consider logging UMA based on `result` to help
+  // understand how often this fails due to privacy limits, etc.
 
-            for (auto& observer : manager->observers_)
-              observer.OnSourceHandled(source, result.status);
+  for (auto& observer : observers_)
+    observer.OnSourceHandled(source, result.status);
 
-            manager->scheduler_.ScheduleSend(result.min_fake_report_time);
+  scheduler_.ScheduleSend(result.min_fake_report_time);
 
-            manager->NotifySourcesChanged();
+  NotifySourcesChanged();
 
-            for (const auto& deactivated_source : result.deactivated_sources) {
-              manager->NotifySourceDeactivated(deactivated_source);
-            }
-          },
-          weak_factory_.GetWeakPtr(), std::move(source)));
+  for (const auto& deactivated_source : result.deactivated_sources) {
+    NotifySourceDeactivated(deactivated_source);
+  }
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
@@ -446,9 +448,13 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
           &common_info.impression_origin(),
           /*destination_origin=*/nullptr, &common_info.reporting_origin());
       RecordRegisterImpressionAllowed(allowed);
-      // TODO(apaseltiner): Notify observers when the source is prohibited.
-      if (!allowed)
+      if (!allowed) {
+        manager->OnSourceStored(
+            std::move(source),
+            AttributionStorage::StoreSourceResult(
+                StorableSource::Result::kProhibitedByBrowserPolicy));
         return;
+      }
 
       if (!is_debug_cookie_set)
         common_info.ClearDebugKey();
@@ -463,9 +469,16 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
           /*source_origin=*/nullptr, &trigger.destination_origin(),
           &trigger.reporting_origin());
       RecordRegisterConversionAllowed(allowed);
-      // TODO(apaseltiner): Notify observers when the trigger is prohibited.
-      if (!allowed)
+      if (!allowed) {
+        manager->OnReportStored(
+            std::move(trigger),
+            CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                               AttributionTrigger::EventLevelResult::
+                                   kProhibitedByBrowserPolicy,
+                               AttributionTrigger::AggregatableResult::
+                                   kProhibitedByBrowserPolicy));
         return;
+      }
 
       if (!is_debug_cookie_set)
         trigger.ClearDebugKey();

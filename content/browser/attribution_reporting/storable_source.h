@@ -20,6 +20,7 @@ class CONTENT_EXPORT StorableSource {
     kInsufficientSourceCapacity,
     kInsufficientUniqueDestinationCapacity,
     kExcessiveReportingOrigins,
+    kProhibitedByBrowserPolicy,
   };
 
   explicit StorableSource(CommonSourceInfo common_info);
