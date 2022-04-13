@@ -474,15 +474,6 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   g_feature_list_instance = instance.release();
 
 #if defined(DCHECK_IS_CONFIGURABLE)
-  // Always enable the trial at 50/50 per-session, if DCHECK_IS_CONFIGURABLE.
-  base::FieldTrial* const trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "DCheckIsFatal", 100, "Default",
-      base::FieldTrial::RandomizationType::SESSION_RANDOMIZED, nullptr);
-  trial->AppendGroup("Enabled", 50);
-  trial->AppendGroup("Disabled", 50);
-
-  LOG(WARNING) << "DCheckIsFatal: " << trial->group_name();
-
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
   // DCHECK is also forced to be FATAL if we are running a death-test.
   // TODO(crbug.com/1057995#c11): --gtest_internal_run_death_test doesn't
