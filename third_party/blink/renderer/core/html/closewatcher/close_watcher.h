@@ -17,6 +17,7 @@ namespace blink {
 
 class CloseWatcherOptions;
 class LocalDOMWindow;
+class KeyboardEvent;
 
 class CloseWatcher final : public EventTargetWithInlineData,
                            public ExecutionContextClient {
@@ -47,7 +48,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   // stack, and a close signal will pop the top watcher. If the stack is empty,
   // the first CloseWatcher is "free", but creating a new
   // CloseWatcher when the stack is non-empty requires a user activation.
-  class WatcherStack final : public NativeEventListener,
+  class WatcherStack final : public GarbageCollected<WatcherStack>,
                              public mojom::blink::CloseListener {
    public:
     explicit WatcherStack(LocalDOMWindow*);
@@ -75,7 +76,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
     // are a shared resource between creation and the cancel event.
     bool CheckForCreation();
 
-    void Trace(Visitor*) const final;
+    void Trace(Visitor*) const;
 
     void DidReceiveUserActivation() {
       user_activation_time_ = base::TimeTicks::Now();
@@ -87,10 +88,9 @@ class CloseWatcher final : public EventTargetWithInlineData,
       return last_used_user_activation_time_ != user_activation_time_;
     }
 
-   private:
-    // NativeEventListener override:
-    void Invoke(ExecutionContext*, Event*) final;
+    void EscapeKeyHandler(KeyboardEvent*);
 
+   private:
     // mojom::blink::CloseListener override:
     void Signal() final { watchers_.back()->close(); }
 
