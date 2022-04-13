@@ -1606,7 +1606,8 @@ public class UndoTabModelTest {
         final TabModel firstModel = firstSelector.getModel(false);
 
         // Second window context.
-        final TabModel secondModel = secondActivity.getTabModelSelector().getModel(false);
+        final TabModelSelector secondSelector = secondActivity.getTabModelSelector();
+        final TabModel secondModel = secondSelector.getModel(false);
 
         // Create tabs.
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
@@ -1630,13 +1631,13 @@ public class UndoTabModelTest {
         Assert.assertEquals(
                 "Unexpected number of tabs in second window.", 1, secondModel.getCount());
 
-        // Restore one tab.
-        openMostRecentlyClosedTabOnUiThread(firstSelector);
+        // Restore one tab to the second selector.
+        openMostRecentlyClosedTabOnUiThread(secondSelector);
         Assert.assertEquals("Unexpected number of tabs in first window.", 1, firstModel.getCount());
         Assert.assertEquals(
                 "Unexpected number of tabs in second window.", 2, secondModel.getCount());
 
-        // Restore one more tab.
+        // Restore one more tab to the first selector.
         openMostRecentlyClosedTabOnUiThread(firstSelector);
 
         // Check final states of both windows.
