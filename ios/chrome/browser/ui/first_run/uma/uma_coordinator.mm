@@ -44,8 +44,8 @@
   // Creates the navigation controller and present.
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];
-  navigationController.presentationController.delegate = self;
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  navigationController.presentationController.delegate = self;
   if (@available(iOS 15, *)) {
     // TODO(crbug.com/1290848): Needs to set the presentation for iPad.
     UISheetPresentationController* presentationController =
