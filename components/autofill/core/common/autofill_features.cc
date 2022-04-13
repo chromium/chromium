@@ -264,13 +264,6 @@ const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled{
     "AutofillFixServerQueriesIfPasswordManagerIsEnabled",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// The autocomplete attribute may prevent Autofill import, crbug/1213301. This
-// feature addresses the issue. For now, the fix only concerns fields with the
-// signature 2281611779.
-// TODO(crbug/1213301): Remove this.
-const base::Feature kAutofillIgnoreAutocompleteForImport{
-    "AutofillIgnoreAutocompleteForImport", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, the Autofill popup ignores second clicks for a certain period
 // (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
 // shown. This is to prevent double clicks accidentally accepting suggestions.

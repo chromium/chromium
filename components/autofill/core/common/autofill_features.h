@@ -98,8 +98,6 @@ extern const base::Feature kAutofillFixFillableFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillIgnoreAutocompleteForImport;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreEarlyClicksOnPopup;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta>

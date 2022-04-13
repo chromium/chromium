@@ -559,15 +559,6 @@ bool FormDataImporter::ImportAddressProfileForSection(
     if (field->section != section && !section.empty())
       continue;
 
-    // TODO(crbug/1213301): Remove this. This hack replaces the UNKNOWN_TYPE
-    // (due to autocomplete) of fields of a specific signature with their server
-    // or heuristic type. The changed value is reset below.
-    bool is_autocomplete_workaround =
-        field->GetFieldSignature() == FieldSignature(2281611779) &&
-        field->Type().IsUnknown() &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillIgnoreAutocompleteForImport);
-
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
@@ -579,17 +570,10 @@ bool FormDataImporter::ImportAddressProfileForSection(
         !field->is_focusable &&
         !base::FeatureList::IsEnabled(
             features::kAutofillProfileImportFromUnfocusableFields);
-    if ((!is_autocomplete_workaround && !field->IsFieldFillable()) ||
-        skip_unfocussable_field || value.empty()) {
+    if (!field->IsFieldFillable() || skip_unfocussable_field || value.empty())
       continue;
-    }
 
     AutofillType field_type = field->Type();
-    if (is_autocomplete_workaround) {
-      field_type = AutofillType(field->server_type() != NO_SERVER_DATA
-                                    ? field->server_type()
-                                    : field->heuristic_type());
-    }
 
     // Credit card fields are handled by ImportCreditCard().
     if (field_type.group() == FieldTypeGroup::kCreditCard)
