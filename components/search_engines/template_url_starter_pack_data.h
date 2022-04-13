@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_STARTER_PACK_DATA_H_
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_STARTER_PACK_DATA_H_
 
+#include <memory>
 #include <vector>
 
 struct TemplateURLData;
