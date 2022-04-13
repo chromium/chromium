@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,7 +23,7 @@ namespace printer {
 // comparison.
 std::string NormalizeJson(const std::string& json) {
   std::string result;
-  base::JSONWriter::Write(*base::JSONReader::Read(json), &result);
+  base::JSONWriter::Write(base::test::ParseJson(json), &result);
   return result;
 }
 
@@ -892,12 +892,10 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
 
 TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
   for (const auto& capacity : kTestRangeCapabilities) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(capacity.json_name);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description = base::test::ParseJson(capacity.json_name);
+    ASSERT_TRUE(description.is_dict());
     RangeVendorCapability range_capability;
-    EXPECT_TRUE(range_capability.LoadFrom(description));
+    EXPECT_TRUE(range_capability.LoadFrom(description.GetDict()));
     EXPECT_EQ(capacity.range_capability, range_capability);
   }
 
@@ -907,18 +905,16 @@ TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
       kInvalidBoundariesRangeVendorCapabilityJson,
       kInvalidDefaultValueRangeVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(invalid_json_name);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description = base::test::ParseJson(invalid_json_name);
+    ASSERT_TRUE(description.is_dict());
     RangeVendorCapability range_capability;
-    EXPECT_FALSE(range_capability.LoadFrom(description));
+    EXPECT_FALSE(range_capability.LoadFrom(description.GetDict()));
   }
 }
 
 TEST(PrinterDescriptionTest, CddSetRangeVendorCapability) {
   for (const auto& capacity : kTestRangeCapabilities) {
-    base::Value range_capability_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict range_capability_value;
     capacity.range_capability.SaveTo(&range_capability_value);
     std::string range_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -931,12 +927,11 @@ TEST(PrinterDescriptionTest, CddSetRangeVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
   {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(kSelectVendorCapabilityJson);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description =
+        base::test::ParseJson(kSelectVendorCapabilityJson);
+    ASSERT_TRUE(description.is_dict());
     SelectVendorCapability select_capability;
-    EXPECT_TRUE(select_capability.LoadFrom(description));
+    EXPECT_TRUE(select_capability.LoadFrom(description.GetDict()));
     EXPECT_EQ(2u, select_capability.size());
     EXPECT_TRUE(select_capability.Contains(
         SelectVendorCapabilityOption("value_1", "name_1")));
@@ -946,12 +941,11 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
               select_capability.GetDefault());
   }
   {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(kNoDefaultSelectVendorCapabilityJson);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description =
+        base::test::ParseJson(kNoDefaultSelectVendorCapabilityJson);
+    ASSERT_TRUE(description.is_dict());
     SelectVendorCapability select_capability;
-    EXPECT_TRUE(select_capability.LoadFrom(description));
+    EXPECT_TRUE(select_capability.LoadFrom(description.GetDict()));
     EXPECT_EQ(2u, select_capability.size());
     EXPECT_TRUE(select_capability.Contains(
         SelectVendorCapabilityOption("value_1", "name_1")));
@@ -966,12 +960,10 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
       kMissingDisplayNameSelectVendorCapabilityJson,
       kSeveralDefaultsSelectVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(invalid_json_name);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description = base::test::ParseJson(invalid_json_name);
+    ASSERT_TRUE(description.is_dict());
     SelectVendorCapability select_capability;
-    EXPECT_FALSE(select_capability.LoadFrom(description));
+    EXPECT_FALSE(select_capability.LoadFrom(description.GetDict()));
   }
 }
 
@@ -982,7 +974,7 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
         SelectVendorCapabilityOption("value_1", "name_1"));
     select_capability.AddDefaultOption(
         SelectVendorCapabilityOption("value_2", "name_2"), true);
-    base::Value select_capability_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict select_capability_value;
     select_capability.SaveTo(&select_capability_value);
     std::string select_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -997,7 +989,7 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
         SelectVendorCapabilityOption("value_1", "name_1"));
     select_capability.AddOption(
         SelectVendorCapabilityOption("value_2", "name_2"));
-    base::Value select_capability_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict select_capability_value;
     select_capability.SaveTo(&select_capability_value);
     std::string select_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -1010,12 +1002,10 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
   for (const auto& capacity : kTestTypedValueCapabilities) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(capacity.json_name);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description = base::test::ParseJson(capacity.json_name);
+    ASSERT_TRUE(description.is_dict());
     TypedValueVendorCapability typed_value_capability;
-    EXPECT_TRUE(typed_value_capability.LoadFrom(description));
+    EXPECT_TRUE(typed_value_capability.LoadFrom(description.GetDict()));
     EXPECT_EQ(capacity.typed_value_capability, typed_value_capability);
   }
 
@@ -1025,18 +1015,16 @@ TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
       kInvalidFloatTypedValueVendorCapabilityJson,
       kInvalidIntegerTypedValueVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(invalid_json_name);
-    ASSERT_TRUE(value);
-    base::Value description = std::move(*value);
+    base::Value description = base::test::ParseJson(invalid_json_name);
+    ASSERT_TRUE(description.is_dict());
     TypedValueVendorCapability typed_value_capability;
-    EXPECT_FALSE(typed_value_capability.LoadFrom(description));
+    EXPECT_FALSE(typed_value_capability.LoadFrom(description.GetDict()));
   }
 }
 
 TEST(PrinterDescriptionTest, CddSetTypedValueVendorCapability) {
   for (const auto& capacity : kTestTypedValueCapabilities) {
-    base::Value typed_value_capability_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict typed_value_capability_value;
     capacity.typed_value_capability.SaveTo(&typed_value_capability_value);
     std::string typed_value_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(

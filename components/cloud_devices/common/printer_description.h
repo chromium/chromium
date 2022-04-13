@@ -91,8 +91,8 @@ class RangeVendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   ValueType value_type_;
@@ -146,8 +146,8 @@ class TypedValueVendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   ValueType value_type_;
@@ -186,8 +186,8 @@ class VendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   void InternalCleanup();

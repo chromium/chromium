@@ -35,8 +35,8 @@ template <class Option, class Traits>
 bool ListCapability<Option, Traits>::IsValid() const {
   if (empty())
     return false;  // This type of capabilities can't be empty.
-  for (size_t i = 0; i < options_.size(); ++i) {
-    if (!Traits::IsValid(options_[i]))
+  for (const auto& item : options_) {
+    if (!Traits::IsValid(item))
       return false;
   }
   return true;
@@ -50,10 +50,12 @@ bool ListCapability<Option, Traits>::LoadFrom(
       description.GetItem(Traits::GetCapabilityPath(), base::Value::Type::LIST);
   if (!options_value)
     return false;
-  for (const base::Value& option_value : options_value->GetListDeprecated()) {
+  for (const base::Value& option_value : options_value->GetList()) {
     Option option;
-    if (!option_value.is_dict() || !Traits::Load(option_value, &option))
+    if (!option_value.is_dict() ||
+        !Traits::Load(option_value.GetDict(), &option)) {
       return false;
+    }
     AddOption(std::move(option));
   }
   return IsValid();
@@ -63,12 +65,13 @@ template <class Option, class Traits>
 void ListCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  base::Value* options_list = description->CreateItem(
-      Traits::GetCapabilityPath(), base::Value::Type::LIST);
+  base::Value* options = description->CreateItem(Traits::GetCapabilityPath(),
+                                                 base::Value::Type::LIST);
+  base::Value::List& options_list = options->GetList();
   for (const Option& option : options_) {
-    base::Value option_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict option_value;
     Traits::Save(option, &option_value);
-    options_list->Append(std::move(option_value));
+    options_list.Append(std::move(option_value));
   }
 }
 
@@ -99,8 +102,8 @@ template <class Option, class Traits>
 bool SelectionCapability<Option, Traits>::IsValid() const {
   if (empty())
     return false;  // This type of capabilities can't be empty.
-  for (size_t i = 0; i < options_.size(); ++i) {
-    if (!Traits::IsValid(options_[i]))
+  for (const auto& item : options_) {
+    if (!Traits::IsValid(item))
       return false;
   }
   // This type of capability does not need a default value.
@@ -116,30 +119,33 @@ bool SelectionCapability<Option, Traits>::LoadFrom(
     Reset();
     return false;
   }
-  return LoadFrom(*item);
+  return LoadFrom(item->GetDict());
 }
 
 template <class Option, class Traits>
 void SelectionCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  SaveTo(description->CreateItem(Traits::GetCapabilityPath(),
-                                 base::Value::Type::DICTIONARY));
+  base::Value* dict = description->CreateItem(Traits::GetCapabilityPath(),
+                                              base::Value::Type::DICTIONARY);
+  SaveTo(&dict->GetDict());
 }
 
 template <class Option, class Traits>
-bool SelectionCapability<Option, Traits>::LoadFrom(const base::Value& dict) {
+bool SelectionCapability<Option, Traits>::LoadFrom(
+    const base::Value::Dict& dict) {
   Reset();
-  const base::Value* options_value =
-      dict.FindKeyOfType(json::kKeyOption, base::Value::Type::LIST);
+  const base::Value::List* options_value = dict.FindList(json::kKeyOption);
   if (!options_value)
     return false;
-  for (const base::Value& option_value : options_value->GetListDeprecated()) {
+  for (const base::Value& option_value : *options_value) {
     Option option;
-    if (!option_value.is_dict() || !Traits::Load(option_value, &option))
+    if (!option_value.is_dict() ||
+        !Traits::Load(option_value.GetDict(), &option)) {
       return false;
+    }
     bool is_default =
-        option_value.FindBoolKey(json::kKeyIsDefault).value_or(false);
+        option_value.GetDict().FindBool(json::kKeyIsDefault).value_or(false);
     if (is_default && default_idx_.has_value())
       return false;  // Multiple defaults.
 
@@ -149,17 +155,18 @@ bool SelectionCapability<Option, Traits>::LoadFrom(const base::Value& dict) {
 }
 
 template <class Option, class Traits>
-void SelectionCapability<Option, Traits>::SaveTo(base::Value* dict) const {
+void SelectionCapability<Option, Traits>::SaveTo(
+    base::Value::Dict* dict) const {
   DCHECK(IsValid());
-  base::Value options_list(base::Value::Type::LIST);
+  base::Value::List options_list;
   for (size_t i = 0; i < options_.size(); ++i) {
-    base::Value option_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict option_value;
     if (default_idx_.has_value() && default_idx_.value() == i)
-      option_value.SetKey(json::kKeyIsDefault, base::Value(true));
+      option_value.Set(json::kKeyIsDefault, true);
     Traits::Save(options_[i], &option_value);
     options_list.Append(std::move(option_value));
   }
-  dict->SetKey(json::kKeyOption, std::move(options_list));
+  dict->Set(json::kKeyOption, std::move(options_list));
 }
 
 template <class Traits>
@@ -179,7 +186,8 @@ bool BooleanCapability<Traits>::LoadFrom(
                                                 base::Value::Type::DICTIONARY);
   if (!dict)
     return false;
-  default_value_ = dict->FindBoolKey(json::kKeyDefault)
+  default_value_ = dict->GetDict()
+                       .FindBool(json::kKeyDefault)
                        .value_or(static_cast<bool>(Traits::kDefault));
   return true;
 }
@@ -190,7 +198,7 @@ void BooleanCapability<Traits>::SaveTo(
   base::Value* dict = description->CreateItem(Traits::GetCapabilityPath(),
                                               base::Value::Type::DICTIONARY);
   if (default_value_ != Traits::kDefault)
-    dict->SetKey(json::kKeyDefault, base::Value(default_value_));
+    dict->GetDict().Set(json::kKeyDefault, default_value_);
 }
 
 template <class Traits>
@@ -230,7 +238,7 @@ bool ValueCapability<Option, Traits>::LoadFrom(
   if (!option_value)
     return false;
   Option option;
-  if (!Traits::Load(*option_value, &option))
+  if (!Traits::Load(option_value->GetDict(), &option))
     return false;
   set_value(option);
   return IsValid();
@@ -240,8 +248,9 @@ template <class Option, class Traits>
 void ValueCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  Traits::Save(value(), description->CreateItem(Traits::GetCapabilityPath(),
-                                                base::Value::Type::DICTIONARY));
+  base::Value* dict = description->CreateItem(Traits::GetCapabilityPath(),
+                                              base::Value::Type::DICTIONARY);
+  Traits::Save(value(), &dict->GetDict());
 }
 
 template <class Option, class Traits>
@@ -267,7 +276,7 @@ bool TicketItem<Option, Traits>::LoadFrom(
   if (!option_value)
     return false;
   Option option;
-  if (!Traits::Load(*option_value, &option))
+  if (!Traits::Load(option_value->GetDict(), &option))
     return false;
   set_value(option);
   return IsValid();
@@ -277,8 +286,9 @@ template <class Option, class Traits>
 void TicketItem<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  Traits::Save(value(), description->CreateItem(Traits::GetTicketItemPath(),
-                                                base::Value::Type::DICTIONARY));
+  base::Value* dict = description->CreateItem(Traits::GetTicketItemPath(),
+                                              base::Value::Type::DICTIONARY);
+  Traits::Save(value(), &dict->GetDict());
 }
 
 }  // namespace cloud_devices

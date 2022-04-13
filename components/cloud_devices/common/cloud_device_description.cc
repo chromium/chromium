@@ -15,7 +15,7 @@ namespace cloud_devices {
 
 CloudDeviceDescription::CloudDeviceDescription()
     : root_(base::Value(base::Value::Type::DICTIONARY)) {
-  root_.SetKey(json::kVersion, base::Value(json::kVersion10));
+  root_.GetDict().Set(json::kVersion, base::Value(json::kVersion10));
 }
 
 CloudDeviceDescription::~CloudDeviceDescription() = default;
@@ -40,7 +40,7 @@ bool CloudDeviceDescription::IsValidTicket(const base::Value& ticket) {
   if (!ticket.is_dict())
     return false;
 
-  const std::string* version = ticket.FindStringKey(json::kVersion);
+  const std::string* version = ticket.GetDict().FindString(json::kVersion);
   return version && *version == json::kVersion10;
 }
 
