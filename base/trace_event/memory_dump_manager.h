@@ -14,7 +14,6 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_allocator_dump.h"

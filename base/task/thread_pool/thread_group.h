@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"

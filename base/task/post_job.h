@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 
 namespace base {
 namespace internal {

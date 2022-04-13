@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/memory/ref_counted.h"
 #include "base/task/bind_post_task_internal.h"
 #include "base/task/task_runner.h"
 

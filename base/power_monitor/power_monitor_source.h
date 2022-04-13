@@ -6,7 +6,6 @@
 #define BASE_POWER_MONITOR_POWER_MONITOR_SOURCE_H_
 
 #include "base/base_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"

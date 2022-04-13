@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_request_args.h"
 
 namespace base {

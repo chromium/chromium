@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool/environment_config.h"

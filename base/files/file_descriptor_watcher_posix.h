@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"

@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 
 namespace base {
