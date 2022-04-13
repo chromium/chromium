@@ -237,6 +237,11 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 #elif BUILDFLAG(IS_LINUX)
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+#elif BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1312215): Change this once we decide on a unique platform
+  // key for Fuchsia.
+  ui::Accelerator accelerator(ui::VKEY_L,
+                              ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #else
   ui::Accelerator accelerator(ui::VKEY_D,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
