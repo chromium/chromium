@@ -6,12 +6,21 @@
 #include <cstring>
 
 #include "api.h"
+#include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/node.h"
+#include "util/ref_counted.h"
 
 extern "C" {
 
 IpczResult Close(IpczHandle handle, uint32_t flags, const void* options) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  const ipcz::Ref<ipcz::APIObject> doomed_object =
+      ipcz::APIObject::TakeFromHandle(handle);
+  if (!doomed_object) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return doomed_object->Close();
 }
 
 IpczResult CreateNode(const IpczDriver* driver,
@@ -19,7 +28,37 @@ IpczResult CreateNode(const IpczDriver* driver,
                       IpczCreateNodeFlags flags,
                       const void* options,
                       IpczHandle* node) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  if (!node || !driver || driver->size < sizeof(IpczDriver)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (!driver->Close || !driver->Serialize || !driver->Deserialize ||
+      !driver->CreateTransports || !driver->ActivateTransport ||
+      !driver->DeactivateTransport || !driver->Transmit ||
+      !driver->AllocateSharedMemory || !driver->GetSharedMemoryInfo ||
+      !driver->DuplicateSharedMemory || !driver->MapSharedMemory ||
+      !driver->GenerateRandomBytes) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  // ipcz relies on lock-free implementations of both 32-bit and 64-bit atomics,
+  // assuming any applicable alignment requirements are met. This is not
+  // required by the standard, but it is a reasonable expectation for modern
+  // std::atomic implementations on supported architectures. We verify here just
+  // in case, as CreateNode() is a common API which will in practice always be
+  // called before ipcz would do any work that might rely on such atomics.
+  std::atomic<uint32_t> atomic32;
+  std::atomic<uint64_t> atomic64;
+  if (!atomic32.is_lock_free() || !atomic64.is_lock_free()) {
+    return IPCZ_RESULT_UNIMPLEMENTED;
+  }
+
+  auto node_ptr = ipcz::MakeRefCounted<ipcz::Node>(
+      (flags & IPCZ_CREATE_NODE_AS_BROKER) != 0 ? ipcz::Node::Type::kBroker
+                                                : ipcz::Node::Type::kNormal,
+      *driver, driver_node);
+  *node = ipcz::Node::ReleaseAsHandle(std::move(node_ptr));
+  return IPCZ_RESULT_OK;
 }
 
 IpczResult ConnectNode(IpczHandle node_handle,

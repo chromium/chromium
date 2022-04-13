@@ -125,6 +125,16 @@ ipcz_source_set("ipcz") {
   configs = [ ":ipcz_include_src_dir" ]
 }
 
+ipcz_source_set("reference_drivers") {
+  sources = [
+    "reference_drivers/single_process_reference_driver.cc",
+    "reference_drivers/single_process_reference_driver.h",
+  ]
+
+  public_deps = [ ":ipcz_header" ]
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
 ipcz_source_set("util") {
   visibility = [ ":*" ]
 
@@ -142,7 +152,20 @@ ipcz_source_set("util") {
 
 ipcz_source_set("impl") {
   visibility = [ ":*" ]
-  public_deps = [ ":ipcz_header" ]
+  public = [
+    "ipcz/api_object.h",
+    "ipcz/node.h",
+  ]
+  sources = [
+    "ipcz/api_object.cc",
+    "ipcz/node.cc",
+    "ipcz/node_name.cc",
+    "ipcz/node_name.h",
+  ]
+  public_deps = [
+    ":ipcz_header",
+    "//third_party/abseil-cpp:absl",
+  ]
   ipcz_public_deps = [ ":util" ]
   public_configs = [ ":ipcz_include_dir" ]
   configs = [ ":ipcz_include_src_dir" ]
@@ -183,6 +206,7 @@ ipcz_source_set("ipcz_tests_sources") {
   ]
   ipcz_deps = [
     ":ipcz",
+    ":reference_drivers",
     ":util",
   ]
 
