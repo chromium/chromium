@@ -341,11 +341,16 @@
                        constant:kContractedLocationBarHorizontalMargin],
   ]];
 
+  CGFloat leadingMargin =
+      base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)
+          ? kExpandedLocationBarLeadingMarginRefreshedPopup
+          : kExpandedLocationBarHorizontalMargin;
+
   // Constraints for contractedNoMarginConstraints.
   [self.contractedNoMarginConstraints addObjectsFromArray:@[
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kExpandedLocationBarHorizontalMargin],
+                       constant:leadingMargin],
     [self.locationBarContainer.trailingAnchor
         constraintEqualToAnchor:safeArea.trailingAnchor
                        constant:-kExpandedLocationBarHorizontalMargin]
@@ -356,7 +361,7 @@
         constraintEqualToAnchor:self.cancelButton.leadingAnchor],
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kExpandedLocationBarHorizontalMargin]
+                       constant:leadingMargin]
   ]];
 
   // Trailing StackView constraints.
