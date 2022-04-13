@@ -159,12 +159,12 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   receiver_.set_disconnect_handler(WTF::Bind(
       &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver_->Promise();
   IdleManager::From(context)->AddMonitor(
       std::move(remote),
       WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
+                WrapPersistent(resolver_.Get())));
   return promise;
 }
 
@@ -214,9 +214,14 @@ void IdleDetector::OnMonitorDisconnected() {
 void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
                                 IdleManagerError error,
                                 mojom::blink::IdleStatePtr state) {
-  DCHECK(resolver);
-  ScriptState* resolver_script_state = resolver->GetScriptState();
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+  if (resolver_ != resolver) {
+    // Starting the detector was aborted so `resolver_` has already been used
+    // and `receiver_` has already been reset.
+    return;
+  }
+
+  ScriptState* resolver_script_state = resolver_->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
                                      resolver_script_state)) {
     resolver_ = nullptr;
     return;
@@ -225,19 +230,21 @@ void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
 
   switch (error) {
     case IdleManagerError::kPermissionDisabled:
-      resolver->Reject(
+      resolver_->Reject(
           V8ThrowDOMException::CreateOrDie(resolver_script_state->GetIsolate(),
                                            DOMExceptionCode::kNotAllowedError,
                                            "Idle detection permission denied"));
+      resolver_ = nullptr;
       break;
     case IdleManagerError::kSuccess:
       DCHECK(state);
-      resolver->Resolve();
+      resolver_->Resolve();
+      resolver_ = nullptr;
+
+      // This call may execute script if it dispatches an event.
       Update(std::move(state), /*is_overridden_by_devtools=*/false);
       break;
   }
-
-  resolver_ = nullptr;
 }
 
 void IdleDetector::Update(mojom::blink::IdleStatePtr state,
