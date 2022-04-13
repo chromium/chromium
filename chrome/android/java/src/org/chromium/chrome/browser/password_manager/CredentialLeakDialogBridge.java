@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -57,11 +58,19 @@ public class CredentialLeakDialogBridge {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.PASSWORD_CHANGE, VARIATION_PARAM_USE_ASSISTANT_ICON,
                         true);
+
+        @DrawableRes
+        int headerDrawableId;
+        if (isChangeAutomaticallyAvailable) {
+            headerDrawableId = R.drawable.password_checkup_change_automatically;
+        } else {
+            headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerUI()
+                    ? R.drawable.password_check_header_red
+                    : R.drawable.password_checkup_warning;
+        };
+
         PasswordManagerDialogContents contents = createDialogContents(credentialLeakTitle,
-                credentialLeakDetails,
-                isChangeAutomaticallyAvailable ? R.drawable.password_checkup_change_automatically
-                                               : R.drawable.password_checkup_warning,
-                positiveButton,
+                credentialLeakDetails, headerDrawableId, positiveButton,
                 isChangeAutomaticallyAvailable ? R.drawable.ic_autofill_assistant_white_24dp : 0,
                 negativeButton);
         contents.setPrimaryButtonFilled(negativeButton != null);

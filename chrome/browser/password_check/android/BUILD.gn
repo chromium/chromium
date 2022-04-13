@@ -166,10 +166,12 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/password_check_header_red.xml",
     "java/res/drawable-night/password_check_neutral.xml",
     "java/res/drawable-night/password_checkup_change_automatically.xml",
     "java/res/drawable-night/password_checkup_warning.xml",
     "java/res/drawable/ic_autofill_assistant_white_24dp.xml",
+    "java/res/drawable/password_check_header_red.xml",
     "java/res/drawable/password_check_neutral.xml",
     "java/res/drawable/password_checkup_change_automatically.xml",
     "java/res/drawable/password_checkup_warning.xml",
