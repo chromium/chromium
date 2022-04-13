@@ -19,6 +19,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
@@ -76,19 +80,6 @@ void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
-void PageSpecificContentSettingsDelegate::SetContentSettingRules(
-    content::RenderProcessHost* process,
-    const RendererContentSettingRules& rules) {
-  // |channel| may be null in tests.
-  IPC::ChannelProxy* channel = process->GetChannel();
-  if (!channel)
-    return;
-
-  mojo::AssociatedRemote<chrome::mojom::RendererConfiguration> rc_interface;
-  channel->GetRemoteAssociatedInterface(&rc_interface);
-  rc_interface->SetContentSettingRules(rules);
-}
-
 PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -101,6 +92,63 @@ PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
 HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
   return HostContentSettingsMapFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+}
+
+namespace {
+// By default, JavaScript, images and auto dark are allowed, and blockable mixed
+// content is blocked in guest content
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void GetGuestViewDefaultContentSettingRules(
+    bool incognito,
+    RendererContentSettingRules* rules) {
+  rules->image_rules.clear();
+  rules->image_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->auto_dark_content_rules.clear();
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->script_rules.clear();
+  rules->script_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->mixed_content_rules.clear();
+  rules->mixed_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
+      std::string(), incognito));
+}
+#endif
+}  // namespace
+
+void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
+    content::RenderFrameHost* rfh,
+    RendererContentSettingRules* rules) {
+  bool is_off_the_record =
+      web_contents()->GetBrowserContext()->IsOffTheRecord();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (guest_view::GuestViewBase::IsGuest(
+          content::WebContents::FromRenderFrameHost(rfh))) {
+    GetGuestViewDefaultContentSettingRules(is_off_the_record, rules);
+    return;
+  }
+#endif
+  // Always allow scripting in PDF renderers to retain the functionality of
+  // the scripted messaging proxy in between the plugins in the PDF renderers
+  // and the PDF extension UI. Content settings for JavaScript embedded in
+  // PDFs are enforced by the PDF plugin.
+  if (rfh->GetProcess()->IsPdf()) {
+    rules->script_rules.clear();
+    rules->script_rules.emplace_back(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+        std::string(), is_off_the_record);
+  }
 }
 
 ContentSetting PageSpecificContentSettingsDelegate::GetEmbargoSetting(

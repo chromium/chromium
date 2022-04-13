@@ -35,7 +35,14 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
   content_settings::ContentSettingsAgentImpl* agent =
       content_settings::ContentSettingsAgentImpl::Get(render_frame);
   allow_running_insecure_content_ = agent->allow_running_insecure_content();
-  content_setting_rules_ = agent->GetContentSettingRules();
+  RendererContentSettingRules* rules = agent->GetRendererContentSettingRules();
+  if (rules) {
+    // Note: Makes a copy of the rules instead of directly using a pointer as
+    // there is no guarantee that the RenderFrame will exist throughout this
+    // object's lifetime.
+    content_setting_rules_ =
+        std::make_unique<RendererContentSettingRules>(*rules);
+  }
 }
 
 WorkerContentSettingsClient::WorkerContentSettingsClient(
@@ -45,11 +52,13 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
       site_for_cookies_(other.site_for_cookies_),
       top_frame_origin_(other.top_frame_origin_),
       allow_running_insecure_content_(other.allow_running_insecure_content_),
-      render_frame_id_(other.render_frame_id_),
-      content_setting_rules_(other.content_setting_rules_) {
+      render_frame_id_(other.render_frame_id_) {
   other.EnsureContentSettingsManager();
   other.content_settings_manager_->Clone(
       pending_content_settings_manager_.InitWithNewPipeAndPassReceiver());
+  if (other.content_setting_rules_)
+    content_setting_rules_ = std::make_unique<RendererContentSettingRules>(
+        *(other.content_setting_rules_));
 }
 
 WorkerContentSettingsClient::~WorkerContentSettingsClient() {}
@@ -115,8 +124,10 @@ bool WorkerContentSettingsClient::AllowScriptFromSource(
     if (top_frame_origin_url.SchemeIs(content::kChromeDevToolsScheme))
       return true;
     for (const auto& rule : content_setting_rules_->script_rules) {
-      if (rule.primary_pattern.Matches(top_frame_origin_url) &&
-          rule.secondary_pattern.Matches(script_url)) {
+      // The primary pattern was already matched in the browser process (see
+      // PageSpecificContentSettings::ReadyToCommitNavigation), so we only need
+      // to match the secondary pattern here.
+      if (rule.secondary_pattern.Matches(script_url)) {
         allow = rule.GetContentSetting() != CONTENT_SETTING_BLOCK;
         break;
       }
@@ -135,11 +146,9 @@ bool WorkerContentSettingsClient::AllowScriptFromSource(
 
 bool WorkerContentSettingsClient::ShouldAutoupgradeMixedContent() {
   if (content_setting_rules_) {
-    for (const auto& rule : content_setting_rules_->mixed_content_rules) {
-      if (rule.primary_pattern.Matches(top_frame_origin_.GetURL())) {
-        return rule.GetContentSetting() != CONTENT_SETTING_ALLOW;
-      }
-    }
+    if (content_setting_rules_->mixed_content_rules.size() > 0)
+      return content_setting_rules_->mixed_content_rules[0]
+                 .GetContentSetting() != CONTENT_SETTING_ALLOW;
   }
   return false;
 }

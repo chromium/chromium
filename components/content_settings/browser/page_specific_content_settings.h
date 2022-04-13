@@ -97,17 +97,17 @@ class PageSpecificContentSettings
     // the location bar.
     virtual void UpdateLocationBar() = 0;
 
-    // Notifies the delegate content settings rules have changed that need to be
-    // sent to the renderer.
-    virtual void SetContentSettingRules(
-        content::RenderProcessHost* process,
-        const RendererContentSettingRules& rules) = 0;
-
     // Gets the pref service for the current web contents.
     virtual PrefService* GetPrefs() = 0;
 
     // Gets the settings map for the current web contents.
     virtual HostContentSettingsMap* GetSettingsMap() = 0;
+
+    // Allows delegate to override content setting rules that will be sent to
+    // the renderer.
+    virtual void SetDefaultRendererContentSettingRules(
+        content::RenderFrameHost* rfh,
+        RendererContentSettingRules* rules) = 0;
 
     virtual ContentSetting GetEmbargoSetting(
         const GURL& request_origin,
@@ -445,6 +445,8 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh);
 
     // content::WebContentsObserver overrides.
+    void ReadyToCommitNavigation(
+        content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
     void OnCookiesAccessed(

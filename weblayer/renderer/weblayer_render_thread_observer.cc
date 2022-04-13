@@ -32,11 +32,6 @@ void WebLayerRenderThreadObserver::SetInitialConfiguration(
     content_settings_manager_.Bind(std::move(content_settings_manager));
 }
 
-void WebLayerRenderThreadObserver::SetContentSettingRules(
-    const RendererContentSettingRules& rules) {
-  content_setting_rules_ = rules;
-}
-
 void WebLayerRenderThreadObserver::OnRendererConfigurationAssociatedRequest(
     mojo::PendingAssociatedReceiver<mojom::RendererConfiguration> receiver) {
   renderer_configuration_receivers_.Add(this, std::move(receiver));

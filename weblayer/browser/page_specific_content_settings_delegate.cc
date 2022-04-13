@@ -19,16 +19,6 @@
 #include "weblayer/common/renderer_configuration.mojom.h"
 
 namespace weblayer {
-namespace {
-
-void SetContentSettingRules(content::RenderProcessHost* process,
-                            const RendererContentSettingRules& rules) {
-  mojo::AssociatedRemote<mojom::RendererConfiguration> rc_interface;
-  process->GetChannel()->GetRemoteAssociatedInterface(&rc_interface);
-  rc_interface->SetContentSettingRules(rules);
-}
-
-}  // namespace
 
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
@@ -51,22 +41,9 @@ void PageSpecificContentSettingsDelegate::InitializeRenderer(
         std::make_unique<ContentSettingsManagerDelegate>());
   }
   rc_interface->SetInitialConfiguration(std::move(content_settings_manager));
-
-  RendererContentSettingRules rules;
-  GetRendererContentSettingRules(
-      HostContentSettingsMapFactory::GetForBrowserContext(
-          process->GetBrowserContext()),
-      &rules);
-  rc_interface->SetContentSettingRules(rules);
 }
 
 void PageSpecificContentSettingsDelegate::UpdateLocationBar() {}
-
-void PageSpecificContentSettingsDelegate::SetContentSettingRules(
-    content::RenderProcessHost* process,
-    const RendererContentSettingRules& rules) {
-  weblayer::SetContentSettingRules(process, rules);
-}
 
 PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
   return static_cast<BrowserContextImpl*>(web_contents_->GetBrowserContext())
@@ -77,6 +54,10 @@ HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
   return HostContentSettingsMapFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 }
+
+void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
+    content::RenderFrameHost* rfh,
+    RendererContentSettingRules* rules) {}
 
 ContentSetting PageSpecificContentSettingsDelegate::GetEmbargoSetting(
     const GURL& request_origin,

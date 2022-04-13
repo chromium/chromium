@@ -528,8 +528,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
           render_frame, should_allow_for_content_settings,
           std::move(content_settings_delegate));
   if (chrome_observer_.get()) {
-    content_settings->SetContentSettingRules(
-        chrome_observer_->content_setting_rules());
     if (chrome_observer_->content_settings_manager()) {
       mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;
       chrome_observer_->content_settings_manager()->Clone(

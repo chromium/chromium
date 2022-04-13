@@ -27,6 +27,7 @@
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -176,6 +177,29 @@ void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
     pscs->OnServiceWorkerAccessed(scope, allowed);
 }
 
+void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
+
+  RendererContentSettingRules rules;
+  content_settings::GetRendererContentSettingRules(map_, &rules);
+  delegate()->SetDefaultRendererContentSettingRules(rfh, &rules);
+  const GURL& primary_url =
+      navigation_handle->GetParentFrameOrOuterDocument()
+          ? navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetLastCommittedURL()
+          : navigation_handle->GetURL();
+  rules.FilterRulesByOutermostMainFrameURL(primary_url);
+
+  mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
+  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+  // TODO(crbug.com/1187618): We shouldn't be sending the primary patterns here
+  // because: a) we have already filtered based on them and they are not needed
+  // in the renderer, and b) they could leak the embedder origin to embedded
+  // pages like fenced frames.
+  agent->SendRendererContentSettingRules(std::move(rules));
+}
+
 void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())
@@ -200,6 +224,7 @@ void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
     auto* pscs = PageSpecificContentSettings::GetForFrame(
         navigation_handle->GetRenderFrameHost());
     DCHECK(pscs);
+
     pscs->OnPrerenderingPageActivation();
   }
 
@@ -738,12 +763,13 @@ void PageSpecificContentSettings::SetPepperBrokerAllowed(bool allowed) {
   }
 }
 
-// TODO(crbug.com/1187618): This method needs to be updated to deal with
-// fenced frames.
 void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
+  if (IsEmbeddedPage())
+    return;
+
   const GURL current_url = page().GetMainDocument().GetLastCommittedURL();
   if (!primary_pattern.Matches(current_url)) {
     return;

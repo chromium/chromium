@@ -15,8 +15,4 @@ interface RendererConfiguration {
   SetInitialConfiguration(
       pending_remote<content_settings.mojom.ContentSettingsManager>?
           content_settings_manager);
-
-  // Set the content setting rules stored by the renderer.
-  SetContentSettingRules(
-      content_settings.mojom.RendererContentSettingRules rules);
 };

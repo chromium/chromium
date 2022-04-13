@@ -18,10 +18,6 @@ TestPageSpecificContentSettingsDelegate::
 
 void TestPageSpecificContentSettingsDelegate::UpdateLocationBar() {}
 
-void TestPageSpecificContentSettingsDelegate::SetContentSettingRules(
-    content::RenderProcessHost* process,
-    const RendererContentSettingRules& rules) {}
-
 PrefService* TestPageSpecificContentSettingsDelegate::GetPrefs() {
   return prefs_;
 }
@@ -30,6 +26,10 @@ HostContentSettingsMap*
 TestPageSpecificContentSettingsDelegate::GetSettingsMap() {
   return settings_map_.get();
 }
+
+void TestPageSpecificContentSettingsDelegate::
+    SetDefaultRendererContentSettingRules(content::RenderFrameHost* rfh,
+                                          RendererContentSettingRules* rules) {}
 
 ContentSetting TestPageSpecificContentSettingsDelegate::GetEmbargoSetting(
     const GURL& request_origin,

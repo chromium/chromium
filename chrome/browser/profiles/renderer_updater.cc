@@ -31,56 +31,6 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #endif
 
-namespace {
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-// By default, JavaScript, images and auto dark are allowed, and blockable mixed
-// content is blocked in guest content
-void GetGuestViewDefaultContentSettingRules(
-    bool incognito,
-    RendererContentSettingRules* rules) {
-  rules->image_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->script_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->mixed_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
-      std::string(), incognito));
-}
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-bool IsRendererSupportedContentSettingsTypeSet(
-    ContentSettingsTypeSet content_type_set) {
-  // ContainsAllTypes() signals that multiple content settings may have been
-  // updated, e.g. by the PolicyProvider. This should always be sent to the
-  // renderer in case a relevant setting is updated.
-  if (content_type_set.ContainsAllTypes())
-    return true;
-
-  return RendererContentSettingRules::IsRendererContentSetting(
-      content_type_set.GetType());
-}
-
-bool ShouldSendUpdatedContentSettingsRulesToRenderer(
-    content::RenderProcessHost* render_process_host) {
-  // Some renderers use manually-crafted rules that aren't meant to be updated.
-  return !render_process_host->IsForGuestsOnly() &&
-         !render_process_host->IsPdf();
-}
-
-}  // namespace
-
 RendererUpdater::RendererUpdater(Profile* profile)
     : profile_(profile),
       is_off_the_record_(profile_->IsOffTheRecord()),
@@ -97,11 +47,6 @@ RendererUpdater::RendererUpdater(Profile* profile)
           original_profile_);
 #endif
 
-  host_content_settings_map_ =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  host_content_settings_map_observation_.Observe(
-      host_content_settings_map_.get());
-
   PrefService* pref_service = profile_->GetPrefs();
   force_google_safesearch_.Init(prefs::kForceGoogleSafeSearch, pref_service);
   force_youtube_restrict_.Init(prefs::kForceYouTubeRestrict, pref_service);
@@ -111,28 +56,25 @@ RendererUpdater::RendererUpdater(Profile* profile)
   pref_change_registrar_.Add(
       prefs::kForceGoogleSafeSearch,
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
-                          base::Unretained(this), kUpdateDynamicParams));
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kForceYouTubeRestrict,
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
-                          base::Unretained(this), kUpdateDynamicParams));
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kAllowedDomainsForApps,
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
-                          base::Unretained(this), kUpdateDynamicParams));
+                          base::Unretained(this)));
 }
 
 RendererUpdater::~RendererUpdater() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!oauth2_login_manager_);
 #endif
-  DCHECK(!host_content_settings_map_);
 }
 
 void RendererUpdater::Shutdown() {
   pref_change_registrar_.RemoveAll();
-  host_content_settings_map_observation_.Reset();
-  host_content_settings_map_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_->RemoveObserver(this);
   oauth2_login_manager_ = nullptr;
@@ -169,32 +111,6 @@ void RendererUpdater::InitializeRenderer(
       std::move(content_settings_manager));
 
   renderer_configuration->SetConfiguration(CreateRendererDynamicParams());
-
-  RendererContentSettingRules rules;
-  if (render_process_host->IsForGuestsOnly()) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    GetGuestViewDefaultContentSettingRules(is_off_the_record_, &rules);
-#else
-    NOTREACHED();
-#endif
-  } else {
-    content_settings::GetRendererContentSettingRules(host_content_settings_map_,
-                                                     &rules);
-
-    // Always allow scripting in PDF renderers to retain the functionality of
-    // the scripted messaging proxy in between the plugins in the PDF renderers
-    // and the PDF extension UI. Content settings for JavaScript embedded in
-    // PDFs are enforced by the PDF plugin.
-    if (render_process_host->IsPdf()) {
-      rules.script_rules.clear();
-      rules.script_rules.emplace_back(
-          ContentSettingsPattern::Wildcard(),
-          ContentSettingsPattern::Wildcard(),
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-          std::string(), is_off_the_record_);
-    }
-  }
-  renderer_configuration->SetContentSettingRules(rules);
 }
 
 RendererUpdater::RendererConfigurations
@@ -252,48 +168,19 @@ void RendererUpdater::OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent::Type::kNone) {
     return;
   }
-  UpdateAllRenderers(kUpdateDynamicParams);
+  UpdateAllRenderers();
 }
 
-void RendererUpdater::OnContentSettingChanged(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsTypeSet content_type_set) {
-  // Do not send updates for non-renderer supported types.
-  if (!IsRendererSupportedContentSettingsTypeSet(content_type_set)) {
-    return;
-  }
-
-  // Send updates to all RenderProcessHosts.
-  UpdateAllRenderers(kUpdateContentSettings);
-}
-
-void RendererUpdater::UpdateAllRenderers(UpdateTypes update_types) {
-  chrome::mojom::DynamicParamsPtr dynamic_params;
-  if (update_types & kUpdateDynamicParams) {
-    dynamic_params = CreateRendererDynamicParams();
-  }
-
-  RendererContentSettingRules rules;
-  if (update_types & kUpdateContentSettings) {
-    content_settings::GetRendererContentSettingRules(host_content_settings_map_,
-                                                     &rules);
-  }
-
+void RendererUpdater::UpdateAllRenderers() {
+  chrome::mojom::DynamicParamsPtr dynamic_params =
+      CreateRendererDynamicParams();
   auto renderer_configurations = GetRendererConfigurations();
   for (auto& renderer_configuration : renderer_configurations) {
     content::RenderProcessHost* render_process_host =
         renderer_configuration.first;
     if (!render_process_host->IsInitializedAndNotDead())
       continue;
-
-    if (update_types & kUpdateDynamicParams) {
-      renderer_configuration.second->SetConfiguration(dynamic_params.Clone());
-    }
-    if (update_types & kUpdateContentSettings &&
-        ShouldSendUpdatedContentSettingsRulesToRenderer(render_process_host)) {
-      renderer_configuration.second->SetContentSettingRules(rules);
-    }
+    renderer_configuration.second->SetConfiguration(dynamic_params.Clone());
   }
 }
 

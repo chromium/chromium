@@ -4,6 +4,8 @@
 
 module content_settings.mojom;
 
+import "components/content_settings/core/common/content_settings.mojom";
+
 // An interface to the content settings agent running in the renderer process.
 interface ContentSettingsAgent {
   // Sent to allow the running of insecure mixed-content. If received by the
@@ -13,4 +15,8 @@ interface ContentSettingsAgent {
   // Sent to inform the renderer automatic upgrades for mixed content are
   // disabled.
   SetDisabledMixedContentUpgrades();
+
+  // Sends content setting rules for each frame to the renderer process.
+  SendRendererContentSettingRules(
+      RendererContentSettingRules renderer_settings);
 };

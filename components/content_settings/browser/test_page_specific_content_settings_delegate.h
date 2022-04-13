@@ -20,11 +20,11 @@ class TestPageSpecificContentSettingsDelegate
 
   // PageSpecificContentSettings::Delegate:
   void UpdateLocationBar() override;
-  void SetContentSettingRules(
-      content::RenderProcessHost* process,
-      const RendererContentSettingRules& rules) override;
   PrefService* GetPrefs() override;
   HostContentSettingsMap* GetSettingsMap() override;
+  void SetDefaultRendererContentSettingRules(
+      content::RenderFrameHost* rfh,
+      RendererContentSettingRules* rules) override;
   ContentSetting GetEmbargoSetting(const GURL& request_origin,
                                    ContentSettingsType permission) override;
   std::vector<storage::FileSystemType> GetAdditionalFileSystemTypes() override;

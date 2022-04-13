@@ -68,13 +68,6 @@ class ContentSettingsAgentImpl
 
   ~ContentSettingsAgentImpl() override;
 
-  // Sets the content setting rules which back `allowImage()`, `allowScript()`,
-  // `allowScriptFromSource()`. `content_setting_rules` must outlive this
-  // `ContentSettingsAgentImpl`.
-  void SetContentSettingRules(
-      const RendererContentSettingRules* content_setting_rules);
-  const RendererContentSettingRules* GetContentSettingRules();
-
   // Sends an IPC notification that the specified content type was blocked.
   void DidBlockContentType(ContentSettingsType settings_type);
 
@@ -105,21 +98,14 @@ class ContentSettingsAgentImpl
     return allow_running_insecure_content_;
   }
 
-  // Allow passing both WebURL and GURL here, so that we can early return
-  // without allocating a new backing string if only the default rule matches.
-  ContentSetting GetContentSettingFromRules(
-      const ContentSettingsForOneType& rules,
-      const blink::WebFrame* frame,
-      const GURL& secondary_url);
-  ContentSetting GetContentSettingFromRules(
-      const ContentSettingsForOneType& rules,
-      const blink::WebFrame* frame,
-      const blink::WebURL& secondary_url);
-
   void SetContentSettingsManager(
       mojo::Remote<mojom::ContentSettingsManager> manager) {
     content_settings_manager_ = std::move(manager);
   }
+
+  RendererContentSettingRules* GetRendererContentSettingRules();
+  void SetRendererContentSettingRulesForTest(
+      const RendererContentSettingRules& rules);
 
  protected:
   // Allow this to be overridden by tests.
@@ -139,6 +125,8 @@ class ContentSettingsAgentImpl
   // mojom::ContentSettingsAgent:
   void SetAllowRunningInsecureContent() override;
   void SetDisabledMixedContentUpgrades() override;
+  void SendRendererContentSettingRules(
+      const RendererContentSettingRules& renderer_settings) override;
 
   void OnContentSettingsAgentRequest(
       mojo::PendingAssociatedReceiver<mojom::ContentSettingsAgent> receiver);
@@ -159,11 +147,7 @@ class ContentSettingsAgentImpl
   // Insecure content may be permitted for the duration of this render view.
   bool allow_running_insecure_content_ = false;
 
-  // A pointer to content setting rules stored by the renderer. Normally, the
-  // `RendererContentSettingRules` object is owned by
-  // `ChromeRenderThreadObserver`. In the tests it is owned by the caller of
-  // `SetContentSettingRules`.
-  const RendererContentSettingRules* content_setting_rules_ = nullptr;
+  std::unique_ptr<RendererContentSettingRules> content_setting_rules_ = nullptr;
 
   // Stores if images, scripts, and plugins have actually been blocked.
   base::flat_set<ContentSettingsType> content_blocked_;

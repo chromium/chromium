@@ -73,8 +73,20 @@ struct RendererContentSettingRules {
   // Any new type added below must also update this method.
   static bool IsRendererContentSetting(ContentSettingsType content_type);
 
+  // Filters all the rules by matching the primary pattern with
+  // |outermost_main_frame_url|. Any new type added below that needs to match
+  // the primary pattern with the outermost main frame's url should also update
+  // this method.
+  void FilterRulesByOutermostMainFrameURL(const GURL& outermost_main_frame_url);
+
   RendererContentSettingRules();
   ~RendererContentSettingRules();
+  RendererContentSettingRules(const RendererContentSettingRules& rules);
+  RendererContentSettingRules(RendererContentSettingRules&& rules);
+  RendererContentSettingRules& operator=(
+      const RendererContentSettingRules& rules);
+  RendererContentSettingRules& operator=(RendererContentSettingRules&& rules);
+
   ContentSettingsForOneType image_rules;
   ContentSettingsForOneType script_rules;
   ContentSettingsForOneType popup_redirect_rules;

@@ -34,8 +34,7 @@ class RendererUpdater : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                         public ash::OAuth2LoginManager::Observer,
 #endif
-                        public signin::IdentityManager::Observer,
-                        public content_settings::Observer {
+                        public signin::IdentityManager::Observer {
  public:
   explicit RendererUpdater(Profile* profile);
   RendererUpdater(const RendererUpdater&) = delete;
@@ -49,11 +48,6 @@ class RendererUpdater : public KeyedService,
   void InitializeRenderer(content::RenderProcessHost* render_process_host);
 
  private:
-  enum UpdateTypes {
-    kUpdateDynamicParams = 1 << 0,
-    kUpdateContentSettings = 1 << 1,
-  };
-
   using RendererConfigurations = std::vector<
       std::pair<content::RenderProcessHost*,
                 mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>>>;
@@ -75,14 +69,8 @@ class RendererUpdater : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  // content_settings::Observer:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override;
-
   // Update all renderers due to a configuration change.
-  void UpdateAllRenderers(UpdateTypes update_types);
+  void UpdateAllRenderers();
 
   // Create renderer configuration that changes at runtime.
   chrome::mojom::DynamicParamsPtr CreateRendererDynamicParams() const;
@@ -100,9 +88,6 @@ class RendererUpdater : public KeyedService,
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;
 #endif
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
-      host_content_settings_map_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
 

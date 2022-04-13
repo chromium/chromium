@@ -37,8 +37,4 @@ interface RendererConfiguration {
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);
-
-  // Set the content setting rules stored by the renderer.
-  SetContentSettingRules(
-      content_settings.mojom.RendererContentSettingRules rules);
 };

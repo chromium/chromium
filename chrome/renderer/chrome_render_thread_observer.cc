@@ -256,18 +256,8 @@ void ChromeRenderThreadObserver::SetConfiguration(
   *GetDynamicConfigParams() = std::move(*params);
 }
 
-void ChromeRenderThreadObserver::SetContentSettingRules(
-    const RendererContentSettingRules& rules) {
-  content_setting_rules_ = rules;
-}
-
 void ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest(
     mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
         receiver) {
   renderer_configuration_receivers_.Add(this, std::move(receiver));
-}
-
-const RendererContentSettingRules*
-ChromeRenderThreadObserver::content_setting_rules() const {
-  return &content_setting_rules_;
 }

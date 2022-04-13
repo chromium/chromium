@@ -105,6 +105,16 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_API, 85},
 };
 
+void FilterRulesForType(ContentSettingsForOneType& settings,
+                        const GURL& primary_url) {
+  base::EraseIf(settings,
+                [&primary_url](const ContentSettingPatternSource& source) {
+                  return !source.primary_pattern.Matches(primary_url);
+                });
+  // We should have at least on rule remaining (the default rule).
+  DCHECK_GE(settings.size(), 1u);
+}
+
 }  // namespace
 
 ContentSetting IntToContentSetting(int content_setting) {
@@ -192,6 +202,27 @@ bool RendererContentSettingRules::IsRendererContentSetting(
          content_type == ContentSettingsType::AUTO_DARK_WEB_CONTENT;
 }
 
-RendererContentSettingRules::RendererContentSettingRules() {}
+void RendererContentSettingRules::FilterRulesByOutermostMainFrameURL(
+    const GURL& outermost_main_frame_url) {
+  FilterRulesForType(image_rules, outermost_main_frame_url);
+  FilterRulesForType(script_rules, outermost_main_frame_url);
+  FilterRulesForType(popup_redirect_rules, outermost_main_frame_url);
+  FilterRulesForType(mixed_content_rules, outermost_main_frame_url);
+  FilterRulesForType(auto_dark_content_rules, outermost_main_frame_url);
+}
 
-RendererContentSettingRules::~RendererContentSettingRules() {}
+RendererContentSettingRules::RendererContentSettingRules() = default;
+
+RendererContentSettingRules::~RendererContentSettingRules() = default;
+
+RendererContentSettingRules::RendererContentSettingRules(
+    const RendererContentSettingRules&) = default;
+
+RendererContentSettingRules::RendererContentSettingRules(
+    RendererContentSettingRules&& rules) = default;
+
+RendererContentSettingRules& RendererContentSettingRules::operator=(
+    const RendererContentSettingRules& rules) = default;
+
+RendererContentSettingRules& RendererContentSettingRules::operator=(
+    RendererContentSettingRules&& rules) = default;

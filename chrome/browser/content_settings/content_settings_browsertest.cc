@@ -1708,3 +1708,152 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
     EXPECT_EQ(container.service_workers()->GetCount(), 1u);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
+                       RendererContentSettings) {
+  const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL fenced_frame_url =
+      https_server_.GetURL("b.test", "/fenced_frames/page_with_script.html");
+  const GURL other_main_url = https_server_.GetURL("c.test", "/empty.html");
+
+  // Block script in (a.test, b.test).
+  auto* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(main_url),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  ASSERT_FALSE(GetWebContents()->GetMainFrame()->IsErrorDocument());
+  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame, nullptr);
+  auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+
+  // Script should have been blocked in the fenced frame (and reflected in the
+  // PSCS of the primary page as well).
+  EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+
+  // Allow script in (a.test, b.test).
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(main_url),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_ALLOW);
+  content::RenderFrameHost* fenced_frame_two =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame_two, nullptr);
+  auto* ff_two_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_two);
+  // Script should not have been blocked in newly added fenced frame.
+  EXPECT_FALSE(ff_two_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+
+  // Block script in (c.test, b.test).
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(other_main_url),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
+  content::RenderFrameHost* fenced_frame_three =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame_three, nullptr);
+  auto* ff_three_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_three);
+  // Script should not have been blocked in newly added fenced frame.
+  EXPECT_FALSE(
+      ff_three_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+
+  // Block script in (*, b.test) - this should not have any effect as the
+  // (a.test, b.test) rule is a narrower rule and should have precedence.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
+  content::RenderFrameHost* fenced_frame_four =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame_four, nullptr);
+  auto* ff_four_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_four);
+  // Script should not have been blocked in newly added fenced frame.
+  EXPECT_FALSE(ff_four_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+
+  // Remove (a.test, b.test) rule - (*, b.test) rule should now be the narrowest
+  // and will be applied.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(main_url),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_DEFAULT);
+  content::RenderFrameHost* fenced_frame_five =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_NE(fenced_frame_five, nullptr);
+  auto* ff_five_pscs =
+      PageSpecificContentSettings::GetForFrame(fenced_frame_five);
+  // Script should have been blocked in newly added fenced frame.
+  EXPECT_TRUE(ff_five_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+}
+
+class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
+    : public ContentSettingsWorkerModulesBrowserTest {
+ public:
+  ContentSettingsWorkerModulesWithFencedFrameBrowserTest() = default;
+  ~ContentSettingsWorkerModulesWithFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
+                       WorkerImportModuleBlocked) {
+  const std::string script = base::StringPrintf(
+      "import('%s')\n"
+      "  .then(module => postMessage(module.msg), _ => postMessage('Failed'));",
+      "/worker_import_module_imported.js");
+  RegisterStaticFile(&https_server_, "/worker_import_module_worker.js", script,
+                     "text/javascript");
+  https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server_.Start());
+  GURL main_url = https_server_.GetURL("a.test", "/title1.html");
+  GURL module_url =
+      https_server_.GetURL("b.test", "/worker_import_module_imported.js");
+  GURL fenced_frame_url =
+      https_server_.GetURL("b.test", "/worker_import_module.html");
+
+  // Change the settings to block the script loading of
+  // worker_import_module_imported.js from worker_import_module.html.
+  auto* content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings_map->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(main_url),
+      ContentSettingsPattern::FromURLNoWildcard(module_url),
+      ContentSettingsType::JAVASCRIPT, base::Value(CONTENT_SETTING_BLOCK));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  ASSERT_FALSE(web_contents->GetMainFrame()->IsErrorDocument());
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(web_contents->GetMainFrame(),
+                                                   fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame);
+
+  // The import must be blocked.
+  ui_test_utils::WaitForViewVisibility(
+      browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
+  EXPECT_TRUE(
+      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+}
