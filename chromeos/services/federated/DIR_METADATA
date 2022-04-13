@@ -1,4 +1,4 @@
-monorail {
-  component: "UI>ML>Service"
+buganizer {
+  component_id: 1176098  # http://go/cros-federated-bug
 }
-team_email: "ml-service-team@google.com"
+team_email: "cros-federated-team@google.com"
