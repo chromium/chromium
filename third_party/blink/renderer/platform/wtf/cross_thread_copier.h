@@ -48,12 +48,6 @@ namespace blink {
 class WebTimeRanges;
 }  // namespace blink
 
-namespace gfx {
-class ColorSpace;
-class Rect;
-class Size;
-}  // namespace gfx
-
 namespace gpu {
 struct SyncToken;
 }
@@ -201,24 +195,6 @@ struct CrossThreadCopier<
 template <>
 struct CrossThreadCopier<SkISize>
     : public CrossThreadCopierPassThrough<SkISize> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<gfx::Size>
-    : public CrossThreadCopierPassThrough<gfx::Size> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<gfx::Rect>
-    : public CrossThreadCopierPassThrough<gfx::Rect> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<gfx::ColorSpace>
-    : public CrossThreadCopierPassThrough<gfx::ColorSpace> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
