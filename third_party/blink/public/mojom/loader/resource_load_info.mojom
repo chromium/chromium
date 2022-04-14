@@ -17,9 +17,12 @@ import "url/mojom/url.mojom";
 // in sync with "ContentResourceType2" in
 // src/tools/metrics/histograms/enums.xml.
 // DEPRECATED. Consider using network::mojom::RequestDestination instead.
+// TODO(bokan): Consider renaming kMainFrame and kSubFrame to better reflect
+// embedded frame trees like fenced frames (e.g. kMainFrame to
+// kOutermostMainFrame and kSubFrame to kEmbeddedFrame?)
 enum ResourceType {
   kMainFrame = 0,           // top level page
-  kSubFrame = 1,            // frame or iframe
+  kSubFrame = 1,            // frame or iframe (or fenced frame)
   kStylesheet = 2,          // a CSS stylesheet
   kScript = 3,              // an external script
   kImage = 4,               // an image (jpg/gif/png/etc)

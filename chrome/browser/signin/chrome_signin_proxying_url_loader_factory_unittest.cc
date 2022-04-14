@@ -146,7 +146,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   request->url = kTestURL;
   request->referrer = kTestReferrer;
   request->destination = network::mojom::RequestDestination::kDocument;
-  request->is_main_frame = true;
+  request->is_outermost_main_frame = true;
   request->headers.SetHeader("X-Request-1", "Foo");
 
   base::WeakPtr<MockDelegate> delegate = StartRequest(std::move(request));
@@ -166,6 +166,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
             EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
@@ -183,6 +184,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
@@ -216,7 +218,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(GURL("https://google.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         adapter->SetUserData(kResponseUserDataKey,
                              std::move(response_user_data));
@@ -232,7 +234,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
       }))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(GURL("https://youtube.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         EXPECT_EQ(response_user_data_ptr,
                   adapter->GetUserData(kResponseUserDataKey));

@@ -40,9 +40,9 @@ void UrlParamFilterThrottle::MaybeCreateThrottle(
   if (!web_contents) {
     return;
   }
-  // Only main frame navigations are in scope. We do not modify other
+  // Only outermost main frame navigations are in scope. We do not modify other
   // navigations.
-  if (!request.is_main_frame) {
+  if (!request.is_outermost_main_frame) {
     return;
   }
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(web_contents);

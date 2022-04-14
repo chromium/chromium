@@ -116,7 +116,8 @@ class NavigationURLLoaderTest : public testing::Test {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromUrl(url)),
-            true /* is_primary_main_frame */, true /* is_main_frame */,
+            true /* is_primary_main_frame */,
+            true /* is_outermost_main_frame */, true /* is_main_frame */,
             false /* are_ancestors_secure */, frame_tree_node_id,
             false /* report_raw_headers */, false /* upgrade_if_insecure */,
             nullptr /* blob_url_loader_factory */,

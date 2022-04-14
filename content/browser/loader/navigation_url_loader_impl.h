@@ -217,7 +217,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
   // Records UKM for the navigation load.
-  void RecordReceivedResponseUkmForMainFrame();
+  void RecordReceivedResponseUkmForOutermostMainFrame();
 
   raw_ptr<NavigationURLLoaderDelegate> delegate_;
   raw_ptr<BrowserContext> browser_context_;

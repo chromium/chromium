@@ -4100,6 +4100,8 @@ void NavigationRequest::OnStartChecksComplete(
                             !!rfh_restored_from_back_forward_cache_);
       SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_main_frame",
                             frame_tree_node_->IsMainFrame());
+      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_outermost_main_frame",
+                            frame_tree_node_->IsOutermostMainFrame());
       SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_ftn_nav_req",
                             (frame_tree_node_->navigation_request() == this));
       BackForwardCacheImpl& back_forward_cache =
@@ -4147,6 +4149,7 @@ void NavigationRequest::OnStartChecksComplete(
           common_params_->Clone(), begin_params_.Clone(), sandbox_flags,
           GetIsolationInfo(),
           frame_tree_node_->current_frame_host()->IsInPrimaryMainFrame(),
+          frame_tree_node_->IsOutermostMainFrame(),
           frame_tree_node_->IsMainFrame(),
           IsSecureFrame(frame_tree_node_->parent()),
           frame_tree_node_->frame_tree_node_id(), report_raw_headers,

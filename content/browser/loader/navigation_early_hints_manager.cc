@@ -563,7 +563,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
         content_security_policies,
     net::ReferrerPolicy referrer_policy,
     bool enabled_by_origin_trial) {
-  DCHECK(request_for_navigation.is_main_frame);
+  DCHECK(request_for_navigation.is_outermost_main_frame);
   DCHECK(request_for_navigation.url.SchemeIsHTTPOrHTTPS());
 
   was_resource_hints_received_ = true;

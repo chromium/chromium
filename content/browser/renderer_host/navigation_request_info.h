@@ -32,6 +32,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       network::mojom::WebSandboxFlags sandbox_flags,
       const net::IsolationInfo& isolation_info,
       bool is_primary_main_frame,
+      bool is_outermost_main_frame,
       bool is_main_frame,
       bool are_ancestors_secure,
       int frame_tree_node_id,
@@ -72,8 +73,22 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // main frames and subresources.
   const net::IsolationInfo isolation_info;
 
+  // Whether this navigation is for the primary main frame of the web contents.
+  // That is, the one that the user can see and interact with (as opposed to,
+  // say, a prerendering main frame).
   const bool is_primary_main_frame;
 
+  // Whether this navigation is for an outermost main frame. That is, a main
+  // frame that isn't embedded in another frame tree. A prerendering page will
+  // have an outermost main frame whereas a fenced frame will have an embedded
+  // main frame. A primary main frame is always outermost.
+  const bool is_outermost_main_frame;
+
+  // Whether this navigation is for a main frame; one that is the root of its
+  // own frame tree. This can include embedded frame trees such as Portals and
+  // FencedFrames. Both `is_primary_main_frame` and `is_outermost_main_frame`
+  // imply `is_main_frame`, however, `is_main_frame` does not imply either
+  // primary or outermost.
   const bool is_main_frame;
 
   // Whether all ancestor frames of the frame that is navigating have a secure

@@ -231,7 +231,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          enable_load_timing == request.enable_load_timing &&
          enable_upload_progress == request.enable_upload_progress &&
          do_not_prompt_for_login == request.do_not_prompt_for_login &&
-         is_main_frame == request.is_main_frame &&
+         is_outermost_main_frame == request.is_outermost_main_frame &&
          transition_type == request.transition_type &&
          previews_state == request.previews_state &&
          upgrade_if_insecure == request.upgrade_if_insecure &&

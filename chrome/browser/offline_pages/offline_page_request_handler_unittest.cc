@@ -241,12 +241,12 @@ static network::ResourceRequest CreateResourceRequest(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   network::ResourceRequest request;
   request.method = method;
   request.headers = extra_headers;
   request.url = url;
-  request.is_main_frame = is_main_frame;
+  request.is_outermost_main_frame = is_outermost_main_frame;
   return request;
 }
 
@@ -269,7 +269,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void InterceptRequest(const GURL& url,
                         const std::string& method,
                         const net::HttpRequestHeaders& extra_headers,
-                        bool is_main_frame);
+                        bool is_outermost_main_frame);
 
   OfflinePageRequestHandlerTest* test() { return test_; }
 
@@ -278,7 +278,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void InterceptRequestInternal(const GURL& url,
                                 const std::string& method,
                                 const net::HttpRequestHeaders& extra_headers,
-                                bool is_main_frame);
+                                bool is_outermost_main_frame);
   void MaybeStartLoader(
       const network::ResourceRequest& request,
       content::URLLoaderRequestInterceptor::RequestHandler request_handler);
@@ -311,7 +311,7 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   void InterceptRequest(const GURL& url,
                         const std::string& method,
                         const net::HttpRequestHeaders& extra_headers,
-                        bool is_main_frame);
+                        bool is_outermost_main_frame);
   void SimulateHasNetworkConnectivity(bool has_connectivity);
   void RunUntilIdle();
   void WaitForAsyncOperation();
@@ -554,11 +554,11 @@ void OfflinePageRequestHandlerTest::InterceptRequest(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   interceptor_factory_.InterceptRequest(url, method, extra_headers,
-                                        is_main_frame);
+                                        is_outermost_main_frame);
 }
 
 void OfflinePageRequestHandlerTest::SimulateHasNetworkConnectivity(
@@ -917,13 +917,14 @@ void OfflinePageRequestHandlerTest::OnGetPageByOfflineIdDone(
 
 void OfflinePageRequestHandlerTest::LoadPage(const GURL& url) {
   InterceptRequest(url, "GET", net::HttpRequestHeaders(),
-                   true /* is_main_frame */);
+                   true /* is_outermost_main_frame */);
 }
 
 void OfflinePageRequestHandlerTest::LoadPageWithHeaders(
     const GURL& url,
     const net::HttpRequestHeaders& extra_headers) {
-  InterceptRequest(url, "GET", extra_headers, true /* is_main_frame */);
+  InterceptRequest(url, "GET", extra_headers,
+                   true /* is_outermost_main_frame */);
 }
 
 void OfflinePageRequestHandlerTest::ReadCompleted(
@@ -975,13 +976,13 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   client_ = std::make_unique<TestURLLoaderClient>(this);
 
-  network::ResourceRequest request =
-      CreateResourceRequest(url, method, extra_headers, is_main_frame);
+  network::ResourceRequest request = CreateResourceRequest(
+      url, method, extra_headers, is_outermost_main_frame);
 
   url_loader_ = OfflinePageURLLoader::Create(
       navigation_ui_data_.get(),
@@ -1000,9 +1001,9 @@ void OfflinePageURLLoaderBuilder::InterceptRequest(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  InterceptRequestInternal(url, method, extra_headers, is_main_frame);
+  InterceptRequestInternal(url, method, extra_headers, is_outermost_main_frame);
   base::RunLoop().Run();
 }
 
@@ -1092,29 +1093,29 @@ TEST_F(OfflinePageRequestHandlerTest, FailedToCreateRequestJob) {
 
   // Must be http/https URL.
   InterceptRequest(GURL("ftp://host/doc"), "GET", net::HttpRequestHeaders(),
-                   true /* is_main_frame */);
+                   true /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 
   InterceptRequest(GURL("file:///path/doc"), "GET", net::HttpRequestHeaders(),
-                   true /* is_main_frame */);
+                   true /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 
   // Must be GET method.
   InterceptRequest(GURL(kTestUrl), "POST", net::HttpRequestHeaders(),
-                   true /* is_main_frame */);
+                   true /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 
   InterceptRequest(GURL(kTestUrl), "HEAD", net::HttpRequestHeaders(),
-                   true /* is_main_frame */);
+                   true /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 
   // Must be main resource.
   InterceptRequest(GURL(kTestUrl), "POST", net::HttpRequestHeaders(),
-                   false /* is_main_frame */);
+                   false /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 

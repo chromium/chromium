@@ -134,6 +134,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::HttpRequestHeaders headers;
   net::HttpRequestHeaders cors_exempt_headers;
   int load_flags = 0;
+  // Note: kMainFrame is used only for outermost main frames, i.e. fenced
+  // frames are considered a kSubframe for ResourceType.
   int resource_type = 0;
   net::RequestPriority priority = net::IDLE;
   mojom::CorsPreflightPolicy cors_preflight_policy =
@@ -154,7 +156,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool enable_load_timing = false;
   bool enable_upload_progress = false;
   bool do_not_prompt_for_login = false;
-  bool is_main_frame = false;
+  bool is_outermost_main_frame = false;
   int transition_type = 0;
   int previews_state = 0;
   bool upgrade_if_insecure = false;

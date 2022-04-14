@@ -40,6 +40,10 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
     return throttle_->request_destination_;
   }
 
+  bool IsOutermostMainFrame() const override {
+    return throttle_->is_outermost_main_frame_;
+  }
+
   bool IsFetchLikeAPI() const override {
     return throttle_->request_is_fetch_like_api_;
   }
@@ -73,9 +77,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
     return throttle_->web_contents_getter_;
   }
 
-  bool IsMainFrame() const override {
-    return throttle_->request_destination_ ==
-           network::mojom::RequestDestination::kDocument;
+  bool IsOutermostMainFrame() const override {
+    return throttle_->is_outermost_main_frame_;
   }
 
   GURL GetOrigin() const override {
@@ -126,6 +129,7 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
   request_url_ = request->url;
   request_referrer_ = request->referrer;
   request_destination_ = request->destination;
+  is_outermost_main_frame_ = request->is_outermost_main_frame;
   request_is_fetch_like_api_ = request->is_fetch_like_api;
 
   net::HttpRequestHeaders modified_request_headers;

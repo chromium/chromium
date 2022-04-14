@@ -62,6 +62,7 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   net::HttpRequestHeaders request_cors_exempt_headers_;
   network::mojom::RequestDestination request_destination_ =
       network::mojom::RequestDestination::kEmpty;
+  bool is_outermost_main_frame_ = false;
   bool request_is_fetch_like_api_ = false;
 
   base::OnceClosure destruction_callback_;

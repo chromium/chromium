@@ -46,9 +46,12 @@ CreateContentBrowserURLLoaderThrottles(
 
   ClientHintsControllerDelegate* client_hint_delegate =
       browser_context->GetClientHintsControllerDelegate();
+  // TODO(bokan): How to handle client hints in a fenced frame is still an open
+  // question, see:
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/permission_document_policies.md#ua-client-hints-open-question
   if (base::FeatureList::IsEnabled(features::kCriticalClientHint) &&
-      net::HttpUtil::IsMethodSafe(request.method) && request.is_main_frame &&
-      client_hint_delegate) {
+      net::HttpUtil::IsMethodSafe(request.method) &&
+      request.is_outermost_main_frame && client_hint_delegate) {
     throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(
         browser_context, client_hint_delegate, frame_tree_node_id));
   }

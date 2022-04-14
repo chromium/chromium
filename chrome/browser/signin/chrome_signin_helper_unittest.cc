@@ -64,8 +64,8 @@ class TestResponseAdapter : public signin::ResponseAdapter,
  public:
   TestResponseAdapter(const std::string& header_name,
                       const std::string& header_value,
-                      bool is_main_frame)
-      : is_main_frame_(is_main_frame),
+                      bool is_outermost_main_frame)
+      : is_outermost_main_frame_(is_outermost_main_frame),
         headers_(new net::HttpResponseHeaders(std::string())) {
     headers_->SetHeader(header_name, header_value);
   }
@@ -79,7 +79,9 @@ class TestResponseAdapter : public signin::ResponseAdapter,
     return base::BindRepeating(
         []() -> content::WebContents* { return nullptr; });
   }
-  bool IsMainFrame() const override { return is_main_frame_; }
+  bool IsOutermostMainFrame() const override {
+    return is_outermost_main_frame_;
+  }
   GURL GetOrigin() const override {
     return GURL("https://accounts.google.com");
   }
@@ -102,7 +104,7 @@ class TestResponseAdapter : public signin::ResponseAdapter,
   }
 
  private:
-  bool is_main_frame_;
+  bool is_outermost_main_frame_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
 };
 
@@ -138,6 +140,7 @@ class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
   network::mojom::RequestDestination GetRequestDestination() const override {
     return network::mojom::RequestDestination::kDocument;
   }
+  bool IsOutermostMainFrame() const override { return true; }
   bool IsFetchLikeAPI() const override { return false; }
   GURL GetReferrerOrigin() const override { return GURL(); }
   void SetDestructionCallback(base::OnceClosure closure) override {}
@@ -152,7 +155,7 @@ class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
 TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
   // Process the header.
   TestResponseAdapter adapter(signin::kDiceResponseHeader, "Foo",
-                              /*is_main_frame=*/false);
+                              /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&adapter, GURL(),
                                                    false /* is_incognito */);
 
@@ -214,7 +217,7 @@ TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
   // Process the header.
   TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
                                        kMirrorAction,
-                                       /*is_main_frame=*/true);
+                                       /*is_outermost_main_frame=*/true);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    false /* is_incognito */);
   // Check that the header has not been removed.
@@ -230,7 +233,7 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
   // Process the header.
   TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
                                        kMirrorAction,
-                                       /*is_main_frame=*/false);
+                                       /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    false /* is_incognito */);
   // Request was not flagged with the user data.
@@ -245,18 +248,18 @@ TEST_F(ChromeSigninHelperTest,
             signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
                 TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
                                     "obfuscatedid=\"123456\"",
-                                    /*is_main_frame=*/false)
+                                    /*is_outermost_main_frame=*/false)
                     .GetHeaders()));
   EXPECT_EQ("123456",
             signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
                 TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
                                     "obfuscatedid=\"123456\",foo=\"bar\"",
-                                    /*is_main_frame=*/false)
+                                    /*is_outermost_main_frame=*/false)
                     .GetHeaders()));
   EXPECT_EQ(
       "",
       signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
           TestResponseAdapter("Google-Accounts-RemoveLocalAccount", "malformed",
-                              /*is_main_frame=*/false)
+                              /*is_outermost_main_frame=*/false)
               .GetHeaders()));
 }

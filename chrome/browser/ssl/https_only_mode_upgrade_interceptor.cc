@@ -37,7 +37,8 @@ int g_http_port_for_testing = 0;
 // proceeding through the interstitial.
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
                         HttpsOnlyModeTabHelper* tab_helper) {
-  if (resource_request.is_main_frame && resource_request.method == "GET" &&
+  if (resource_request.is_outermost_main_frame &&
+      resource_request.method == "GET" &&
       !net::IsLocalhost(resource_request.url) &&
       (resource_request.url.SchemeIs(url::kHttpScheme) ||
        tab_helper->is_navigation_fallback())) {

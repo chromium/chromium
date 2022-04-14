@@ -147,19 +147,19 @@ class NavigationLoaderInterceptorBrowserContainer
 
 class NavigationTimingThrottle : public blink::URLLoaderThrottle {
  public:
-  NavigationTimingThrottle(bool is_main_frame, base::TimeTicks start)
-      : is_main_frame_(is_main_frame), start_(start) {}
+  NavigationTimingThrottle(bool is_outermost_main_frame, base::TimeTicks start)
+      : is_outermost_main_frame_(is_outermost_main_frame), start_(start) {}
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
     base::UmaHistogramTimes(
         base::StrCat({"Navigation.LoaderCreateToRequestStart.",
-                      is_main_frame_ ? "MainFrame" : "Subframe"}),
+                      is_outermost_main_frame_ ? "MainFrame" : "Subframe"}),
         base::TimeTicks::Now() - start_);
   }
 
  private:
-  bool is_main_frame_;
+  bool is_outermost_main_frame_;
   base::TimeTicks start_;
 };
 
@@ -229,7 +229,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.client_security_state.Clone();
   new_request->trusted_params->accept_ch_frame_observer =
       std::move(accept_ch_frame_observer);
-  new_request->is_main_frame = request_info.is_main_frame;
+  new_request->is_outermost_main_frame = request_info.is_outermost_main_frame;
   new_request->priority = net::HIGHEST;
   new_request->request_initiator = request_info.common_params->initiator_origin;
   new_request->referrer = request_info.common_params->referrer->url;
@@ -248,15 +248,21 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   }
   new_request->devtools_accepted_stream_types =
       request_info.devtools_accepted_stream_types;
-
-  new_request->resource_type = static_cast<int>(
-      request_info.is_main_frame ? blink::mojom::ResourceType::kMainFrame
-                                 : blink::mojom::ResourceType::kSubFrame);
+  // For ResourceType purposes, fenced frames are considered a kSubFrame.
+  new_request->resource_type =
+      static_cast<int>(request_info.is_outermost_main_frame
+                           ? blink::mojom::ResourceType::kMainFrame
+                           : blink::mojom::ResourceType::kSubFrame);
+  // When set, `update_first_party_url_on_redirect` will cause a
+  // server-redirect to update the URL used to determine if cookies are
+  // first-party. Since fenced frames are main frames in terms of cookie
+  // partitioning, this needs to be `is_main_frame` rather than
+  // `is_outermost_main_frame`.
   if (request_info.is_main_frame)
     new_request->update_first_party_url_on_redirect = true;
 
   int load_flags = request_info.begin_params->load_flags;
-  if (request_info.is_main_frame) {
+  if (request_info.is_outermost_main_frame) {
     load_flags |= net::LOAD_MAIN_FRAME_DEPRECATED;
     load_flags |= net::LOAD_CAN_USE_RESTRICTED_PREFETCH;
   }
@@ -307,13 +313,13 @@ void UnknownSchemeCallback(
           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 }
 
-uint32_t GetURLLoaderOptions(bool is_main_frame, bool is_in_fenced_frame_tree) {
+uint32_t GetURLLoaderOptions(bool is_outermost_main_frame) {
   uint32_t options = network::mojom::kURLLoadOptionNone;
 
   // Ensure that Mime sniffing works.
   options |= network::mojom::kURLLoadOptionSniffMimeType;
 
-  if (is_main_frame && !is_in_fenced_frame_tree) {
+  if (is_outermost_main_frame) {
     // SSLInfo is not needed on subframe or fenced frame responses because users
     // can inspect only the certificate for the main frame when using the info
     // bubble.
@@ -328,14 +334,16 @@ uint32_t GetURLLoaderOptions(bool is_main_frame, bool is_in_fenced_frame_tree) {
   return options;
 }
 
-void LogQueueTimeHistogram(base::StringPiece name, bool is_main_frame) {
+void LogQueueTimeHistogram(base::StringPiece name,
+                           bool is_outermost_main_frame) {
   auto* task = base::TaskAnnotator::CurrentTaskForThread();
   // Only log for non-delayed tasks with a valid queue_time.
   if (!task || task->queue_time.is_null() || !task->delayed_run_time.is_null())
     return;
 
   base::UmaHistogramTimes(
-      base::StrCat({name, is_main_frame ? ".MainFrame" : ".Subframe"}),
+      base::StrCat(
+          {name, is_outermost_main_frame ? ".MainFrame" : ".Subframe"}),
       base::TimeTicks::Now() - task->queue_time);
 }
 
@@ -725,11 +733,9 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
     factory = network_loader_factory_;
   }
   url_chain_.push_back(resource_request_->url);
-  *out_options = GetURLLoaderOptions(
-      resource_request_->resource_type ==
-          static_cast<int>(blink::mojom::ResourceType::kMainFrame),
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
-          ->IsInFencedFrameTree());
+
+  *out_options =
+      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
   return factory;
 }
 
@@ -767,7 +773,7 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle response_body) {
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
-                        resource_request_->is_main_frame);
+                        resource_request_->is_outermost_main_frame);
   head_ = std::move(head);
   if (response_body)
     OnStartLoadingResponseBody(std::move(response_body));
@@ -776,7 +782,7 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
 void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   LogQueueTimeHistogram("Navigation.QueueTime.OnStartLoadingResponseBody",
-                        resource_request_->is_main_frame);
+                        resource_request_->is_outermost_main_frame);
   response_body_ = std::move(response_body);
   received_response_ = true;
 
@@ -872,8 +878,8 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
   // Record navigation loader response metrics.  We don't want to record the
   // metrics for requests that had redirects to avoid adding noise to the
   // latency measurements.
-  if (resource_request_->is_main_frame && url_chain_.size() == 1) {
-    RecordReceivedResponseUkmForMainFrame();
+  if (resource_request_->is_outermost_main_frame && url_chain_.size() == 1) {
+    RecordReceivedResponseUkmForOutermostMainFrame();
   }
 
   network::mojom::URLResponseHead* head_ptr = head.get();
@@ -890,7 +896,7 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
-                        resource_request_->is_main_frame);
+                        resource_request_->is_outermost_main_frame);
   net::Error error = net::OK;
   if (!bypass_redirect_checks_ &&
       !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
@@ -1122,7 +1128,7 @@ NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
       *resource_request_, browser_context_, web_contents_getter_,
       navigation_ui_data_.get(), frame_tree_node_id_);
   throttles.push_back(std::make_unique<NavigationTimingThrottle>(
-      resource_request_->is_main_frame, loader_creation_time_));
+      resource_request_->is_outermost_main_frame, loader_creation_time_));
   return throttles;
 }
 
@@ -1137,11 +1143,8 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
   // unretained `this`, because the passed callback will be used by a
   // SignedExchangeHandler which is indirectly owned by `this` until its
   // header is verified and parsed, that's where the getter is used.
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   return std::make_unique<SignedExchangeRequestHandler>(
-      GetURLLoaderOptions(request_info.is_main_frame,
-                          frame_tree_node->IsInFencedFrameTree()),
+      GetURLLoaderOptions(request_info.is_outermost_main_frame),
       request_info.frame_tree_node_id, request_info.devtools_navigation_token,
       std::move(url_loader_factory),
       base::BindRepeating(&NavigationURLLoaderImpl::CreateURLLoaderThrottles,
@@ -1598,7 +1601,7 @@ void NavigationURLLoaderImpl::
   BindNonNetworkURLLoaderFactoryReceiver(url, std::move(factory_receiver));
 }
 
-void NavigationURLLoaderImpl::RecordReceivedResponseUkmForMainFrame() {
+void NavigationURLLoaderImpl::RecordReceivedResponseUkmForOutermostMainFrame() {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   DCHECK(frame_tree_node);

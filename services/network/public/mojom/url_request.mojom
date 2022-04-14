@@ -304,8 +304,8 @@ struct URLRequest {
   // credentials or default credentials may still be used for authentication.
   bool do_not_prompt_for_login;
 
-  // True if |frame_id| is the main frame of a RenderView.
-  bool is_main_frame;
+  // True if |frame_id| is the outermost main frame of a page.
+  bool is_outermost_main_frame;
 
   // Note: this is an enum of type ui::PageTransition.
   // TODO(jam): remove this from the struct since network service shouldn't know

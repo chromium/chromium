@@ -150,8 +150,9 @@ class AccountReconcilorLockWrapper
 // * Main frame  requests.
 // * XHR requests having Gaia URL as referrer.
 bool ShouldBlockReconcilorForRequest(ChromeRequestAdapter* request) {
-  if (request->GetRequestDestination() ==
-      network::mojom::RequestDestination::kDocument) {
+  if (request->IsOutermostMainFrame() &&
+      request->GetRequestDestination() ==
+          network::mojom::RequestDestination::kDocument) {
     return true;
   }
 
@@ -438,7 +439,7 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
                                          bool is_off_the_record) {
   CHECK(gaia::IsGaiaSignonRealm(response->GetOrigin()));
 
-  if (!response->IsMainFrame())
+  if (!response->IsOutermostMainFrame())
     return;
 
   const net::HttpResponseHeaders* response_headers = response->GetHeaders();

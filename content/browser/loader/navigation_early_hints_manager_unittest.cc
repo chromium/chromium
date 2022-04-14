@@ -136,7 +136,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 
   network::ResourceRequest CreateNavigationResourceRequest() {
     network::ResourceRequest request;
-    request.is_main_frame = true;
+    request.is_outermost_main_frame = true;
     request.url = GURL(kNavigationPath);
     return request;
   }

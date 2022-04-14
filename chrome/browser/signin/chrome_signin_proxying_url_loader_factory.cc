@@ -200,7 +200,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
   const network::mojom::RequestDestination request_destination_;
-  const bool is_main_frame_;
+  const bool is_outermost_main_frame_;
   const bool is_fetch_like_api_;
 
   base::OnceClosure destruction_callback_;
@@ -244,6 +244,10 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
     return in_progress_request_->request_destination_;
   }
 
+  bool IsOutermostMainFrame() const override {
+    return in_progress_request_->is_outermost_main_frame_;
+  }
+
   bool IsFetchLikeAPI() const override {
     return in_progress_request_->is_fetch_like_api_;
   }
@@ -281,8 +285,8 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     return in_progress_request_->factory_->web_contents_getter_;
   }
 
-  bool IsMainFrame() const override {
-    return in_progress_request_->is_main_frame_;
+  bool IsOutermostMainFrame() const override {
+    return in_progress_request_->is_outermost_main_frame_;
   }
 
   GURL GetOrigin() const override {
@@ -325,7 +329,7 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       response_url_(request.url),
       referrer_origin_(request.referrer.DeprecatedGetOriginAsURL()),
       request_destination_(request.destination),
-      is_main_frame_(request.is_main_frame),
+      is_outermost_main_frame_(request.is_outermost_main_frame),
       is_fetch_like_api_(request.is_fetch_like_api),
       target_client_(std::move(client)),
       loader_receiver_(this, std::move(loader_receiver)) {

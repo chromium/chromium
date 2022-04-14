@@ -6749,7 +6749,7 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
       // TODO(crbug.com/1172314): Unify these to avoid inconsistencies.
       if (isolation_info.request_type() ==
           net::IsolationInfo::RequestType::kMainFrame) {
-        request.is_main_frame = true;
+        request.is_outermost_main_frame = true;
         request.update_first_party_url_on_redirect = true;
       }
     }

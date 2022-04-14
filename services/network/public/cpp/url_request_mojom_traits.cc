@@ -207,7 +207,7 @@ bool StructTraits<
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
   out->do_not_prompt_for_login = data.do_not_prompt_for_login();
-  out->is_main_frame = data.is_main_frame();
+  out->is_outermost_main_frame = data.is_outermost_main_frame();
   out->transition_type = data.transition_type();
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();

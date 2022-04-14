@@ -14,7 +14,7 @@ WebURLRequestExtraData::~WebURLRequestExtraData() = default;
 
 void WebURLRequestExtraData::CopyToResourceRequest(
     network::ResourceRequest* request) const {
-  request->is_main_frame = is_main_frame_;
+  request->is_outermost_main_frame = is_outermost_main_frame_;
   request->transition_type = transition_type_;
   request->originated_from_service_worker = originated_from_service_worker_;
 }

@@ -394,7 +394,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->do_not_prompt_for_login = params->do_not_prompt_for_login();
   request->referrer = params->referrer();
   request->referrer_policy = params->referrer_policy();
-  request->is_main_frame = true;
+  request->is_outermost_main_frame = true;
   request->update_first_party_url_on_redirect = true;
 
   // Downloads should be treated as navigations from Fetch spec perspective.

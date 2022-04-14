@@ -27,7 +27,7 @@ namespace {
 // Returns a ResourceRequest created from the given values.
 network::ResourceRequest CreateResourceRequest(
     const std::string& request_initiator_url,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     bool has_trusted_params,
     const std::string& isolation_info_top_frame_origin_url,
     const std::string& isolation_info_frame_origin_url) {
@@ -36,7 +36,7 @@ network::ResourceRequest CreateResourceRequest(
     return request;
 
   request.request_initiator = url::Origin::Create(GURL(request_initiator_url));
-  request.is_main_frame = is_main_frame;
+  request.is_outermost_main_frame = is_outermost_main_frame;
   if (!has_trusted_params)
     return request;
 
@@ -245,7 +245,7 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeaderLocalhost) {
 
 struct PopulateRequestContextHistogramData {
   const char* request_initiator_url;
-  bool is_main_frame;
+  bool is_outermost_main_frame;
   bool has_trusted_params;
   const char* isolation_info_top_frame_origin_url;
   const char* isolation_info_frame_origin_url;
@@ -336,7 +336,7 @@ TEST(VariationsHttpHeadersTest, PopulateDomainOwnerHistogram) {
   const GURL destination("https://fonts.googleapis.com/foo");
   network::ResourceRequest request = CreateResourceRequest(
       /*request_initiator_url=*/"https://docs.google.com/",
-      /*is_main_frame=*/false,
+      /*is_outermost_main_frame=*/false,
       /*has_trusted_params=*/false,
       /*isolation_info_top_frame_origin_url=*/"",
       /*isolation_info_frame_origin_url=*/"");
@@ -361,8 +361,8 @@ TEST_P(PopulateRequestContextHistogramTest, PopulateRequestContextHistogram) {
   SCOPED_TRACE(data.name);
 
   network::ResourceRequest request = CreateResourceRequest(
-      data.request_initiator_url, data.is_main_frame, data.has_trusted_params,
-      data.isolation_info_top_frame_origin_url,
+      data.request_initiator_url, data.is_outermost_main_frame,
+      data.has_trusted_params, data.isolation_info_top_frame_origin_url,
       data.isolation_info_frame_origin_url);
 
   base::HistogramTester tester;

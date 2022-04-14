@@ -67,7 +67,7 @@ class UrlParamFilterThrottleFilteringEnabledTest
 TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        ShouldCreateThrottleNullContents) {
   network::ResourceRequest resource_request;
-  resource_request.is_main_frame = true;
+  resource_request.is_outermost_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   UrlParamFilterThrottle::MaybeCreateThrottle(
@@ -79,7 +79,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
 TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        ShouldCreateThrottleNotCrossOtr) {
   network::ResourceRequest resource_request;
-  resource_request.is_main_frame = true;
+  resource_request.is_outermost_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   UrlParamFilterThrottle::MaybeCreateThrottle(
@@ -92,7 +92,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        ShouldCreateThrottleNotMainFrame) {
   CreateCrossOtrState();
   network::ResourceRequest resource_request;
-  resource_request.is_main_frame = false;
+  resource_request.is_outermost_main_frame = false;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   UrlParamFilterThrottle::MaybeCreateThrottle(
@@ -104,7 +104,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
 TEST_F(UrlParamFilterThrottleTest, ShouldCreateThrottlePolicyDisabled) {
   CreateCrossOtrState();
   network::ResourceRequest resource_request;
-  resource_request.is_main_frame = true;
+  resource_request.is_outermost_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   UrlParamFilterThrottle::MaybeCreateThrottle(
@@ -117,7 +117,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
        ShouldCreateThrottleTrueCase) {
   CreateCrossOtrState();
   network::ResourceRequest resource_request;
-  resource_request.is_main_frame = true;
+  resource_request.is_outermost_main_frame = true;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   UrlParamFilterThrottle::MaybeCreateThrottle(

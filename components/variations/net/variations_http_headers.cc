@@ -157,15 +157,16 @@ bool IsFirstPartyContext(Owner owner,
     LogRequestContextHistogram(kNonGooglePageInitiated);
     return false;
   }
-  if (resource_request.is_main_frame) {
+  if (resource_request.is_outermost_main_frame) {
     // The request is from a Google-associated page--not a subframe--e.g. a
     // request from https://calendar.google.com/.
     LogRequestContextHistogram(kGooglePageInitiated);
     return true;
   }
-  // |is_main_frame| is false, so the request was initiated by a subframe, and
-  // we need to determine whether the top-level page in which the frame is
-  // embedded is a Google-owned web property.
+  // |is_outermost_main_frame| is false, so the request was initiated by a
+  // subframe (or embedded main frame like a fenced frame), and we need to
+  // determine whether the top-level page in which the frame is embedded is a
+  // Google-owned web property.
   //
   // If TrustedParams is populated, then we can use it to determine the request
   // context. If not, e.g. for subresource requests, we use |owner|.

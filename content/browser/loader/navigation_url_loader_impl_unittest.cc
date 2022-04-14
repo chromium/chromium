@@ -239,6 +239,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
     uint32_t frame_tree_node_id =
         web_contents_->GetMainFrame()->GetFrameTreeNodeId();
 
+    bool is_primary_main_frame = is_main_frame;
+    bool is_outermost_main_frame = is_main_frame;
+
     std::unique_ptr<NavigationRequestInfo> request_info(
         std::make_unique<NavigationRequestInfo>(
             std::move(common_params), std::move(begin_params),
@@ -246,7 +249,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromUrl(url)),
-            true /* is_primary_main_frame */, is_main_frame,
+            is_primary_main_frame, is_outermost_main_frame, is_main_frame,
             false /* are_ancestors_secure */, frame_tree_node_id,
             false /* report_raw_headers */,
             upgrade_if_insecure /* upgrade_if_insecure */,

@@ -153,7 +153,7 @@ network::ResourceRequest CreateResourceRequest(
       url::Origin::Create(url);  // ensure initiator set.
   request.referrer_policy = blink::ReferrerUtils::GetDefaultNetReferrerPolicy();
   request.destination = destination;
-  request.is_main_frame =
+  request.is_outermost_main_frame =
       destination == network::mojom::RequestDestination::kDocument;
   return request;
 }

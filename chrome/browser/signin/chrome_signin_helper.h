@@ -57,6 +57,8 @@ class ChromeRequestAdapter : public RequestAdapter {
 
   virtual network::mojom::RequestDestination GetRequestDestination() const = 0;
 
+  virtual bool IsOutermostMainFrame() const = 0;
+
   virtual bool IsFetchLikeAPI() const = 0;
 
   virtual GURL GetReferrerOrigin() const = 0;
@@ -77,7 +79,7 @@ class ResponseAdapter {
   virtual ~ResponseAdapter();
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
-  virtual bool IsMainFrame() const = 0;
+  virtual bool IsOutermostMainFrame() const = 0;
   virtual GURL GetOrigin() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
