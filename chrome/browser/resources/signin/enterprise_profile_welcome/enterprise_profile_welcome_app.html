@@ -24,7 +24,7 @@
     --info-box-margin-top: 28px;
     --info-box-width: auto;
     --footer-margin: 16px;
-    min-height: 468px;
+    min-height: 500px;
     position: relative;
     width: 512px;
   }
@@ -160,9 +160,8 @@
     font-weight: normal;
   }
 
-  #buttonsContainer cr-checkbox {
-    font-size: 12px;
-    padding-inline-end: 8px;
+  #linkData {
+    margin: 16px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -218,12 +217,12 @@
     </div>
   </template>
 </div>
+<template is="dom-if" if="[[showLinkDataCheckbox_]]">
+  <cr-checkbox id="linkData" checked="{{linkData_}}">
+    <div>$i18n{linkDataText}</div>
+  </cr-checkbox>
+</template>
 <div id="buttonsContainer" class="action-container">
-  <template is="dom-if" if="[[showLinkDataCheckbox_]]">
-    <cr-checkbox id="linkData" checked="{{linkData_}}">
-      <div>$i18n{linkDataText}</div>
-    </cr-checkbox>
-  </template>
   <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
       autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
     [[proceedLabel_]]
