@@ -10,13 +10,18 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/data_element.h"
-#include "services/network/public/mojom/url_loader.mojom-shared.h"
-#include "url/gurl.h"
+#include "services/network/public/mojom/chunked_data_pipe_getter.mojom-shared.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-shared.h"
+#include "services/network/public/mojom/url_request.mojom-shared.h"
+
+namespace base {
+class Time;
+}
 
 namespace blink {
 namespace mojom {
