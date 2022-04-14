@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "content/public/browser/web_contents.h"
@@ -78,13 +79,13 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   bool IsGooglePayBrandingEnabled() const;
 
   // Runs the appropriate local or upload save callback with the given
-  // |user_decision|, using the |user_provided_details|. If
+  // |save_result|, using the |user_provided_details|. If
   // |user_provided_details| is empty then the current Card values will be used.
   // The cardholder name and expiration date portions of
   // |user_provided_details| are handled separately, so if either of them are
   // empty the current Card values will be used in their place.
   void OnPromptCompleted(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      SaveCreditCardPromptResult save_result,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
   // Did the user ever explicitly accept or dismiss this message?

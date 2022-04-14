@@ -217,6 +217,8 @@ static_library("browser") {
     "metrics/form_events/form_event_logger_base.cc",
     "metrics/form_events/form_event_logger_base.h",
     "metrics/form_events/form_events.h",
+    "metrics/payments/save_credit_card_prompt_metrics.cc",
+    "metrics/payments/save_credit_card_prompt_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
     "pattern_provider/default_regex_patterns.h",

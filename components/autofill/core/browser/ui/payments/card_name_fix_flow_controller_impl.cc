@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,6 +31,10 @@ CardNameFixFlowControllerImpl::~CardNameFixFlowControllerImpl() {
     AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
         AutofillMetrics::
             CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION);
+    LogSaveCreditCardPromptResult(
+        SaveCreditCardPromptResult::kInteractedAndIgnored, true,
+        AutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(true));
   }
 }
 
@@ -63,6 +68,9 @@ void CardNameFixFlowControllerImpl::OnConfirmNameDialogClosed() {
 void CardNameFixFlowControllerImpl::OnNameAccepted(const std::u16string& name) {
   AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_ACCEPTED);
+  LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kAccepted, true,
+                                AutofillClient::SaveCreditCardOptions()
+                                    .with_should_request_name_from_user(true));
   had_user_interaction_ = true;
   AutofillMetrics::LogSaveCardCardholderNameWasEdited(
       inferred_cardholder_name_ != name);
@@ -74,6 +82,9 @@ void CardNameFixFlowControllerImpl::OnNameAccepted(const std::u16string& name) {
 void CardNameFixFlowControllerImpl::OnDismissed() {
   AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_DISMISSED);
+  LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kDenied, true,
+                                AutofillClient::SaveCreditCardOptions()
+                                    .with_should_request_name_from_user(true));
   had_user_interaction_ = true;
 }
 
