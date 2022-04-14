@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -37,19 +39,23 @@ class TextFragmentGenerationNavigationTest
 
   // SharedHighlightingDataDrivenTest:
   void GenerateAndNavigate(std::string html_content,
-                           std::string start_node_name,
-                           int start_offset,
-                           std::string end_node_name,
-                           int end_offset,
+                           std::string* start_parent_id,
+                           int start_offset_in_parent,
+                           absl::optional<int> start_text_offset,
+                           std::string* end_parent_id,
+                           int end_offset_in_parent,
+                           absl::optional<int> end_text_offset,
                            std::string selected_text,
-                           std::string highlight_text) override;
+                           std::string* highlight_text) override;
 
   void LoadHTML(String url, String html_content);
 
-  RangeInFlatTree* GetSelectionRange(AtomicString start_node_name,
-                                     int start_offset,
-                                     AtomicString end_node_name,
-                                     int end_offset);
+  RangeInFlatTree* GetSelectionRange(std::string* start_parent_id,
+                                     int start_offset_in_parent,
+                                     absl::optional<int> start_text_offset,
+                                     std::string* end_parent_id,
+                                     int end_offset_in_parent,
+                                     absl::optional<int> end_text_offset);
 
   String GenerateSelector(const RangeInFlatTree& selection_range);
 
@@ -85,13 +91,34 @@ void TextFragmentGenerationNavigationTest::LoadHTML(String url,
 }
 
 RangeInFlatTree* TextFragmentGenerationNavigationTest::GetSelectionRange(
-    AtomicString start_node_name,
-    int start_offset,
-    AtomicString end_node_name,
-    int end_offset) {
-  Node* start_node =
-      GetDocument().getElementById(start_node_name)->firstChild();
-  Node* end_node = GetDocument().getElementById(end_node_name)->firstChild();
+    std::string* start_parent_id,
+    int start_offset_in_parent,
+    absl::optional<int> start_text_offset,
+    std::string* end_parent_id,
+    int end_offset_in_parent,
+    absl::optional<int> end_text_offset) {
+  // Parent of start node will be the node with `start_parent_id` id
+  // or the DOM body if no `start_parent_id`.
+  Node* start_parent_node =
+      start_parent_id == nullptr
+          ? GetDocument().body()
+          : GetDocument().getElementById(start_parent_id->c_str());
+
+  // Parent of end node will be the node with `end_parent_id` id
+  // or the DOM body if no `end_parent_id`.
+  Node* end_parent_node =
+      end_parent_id == nullptr
+          ? GetDocument().body()
+          : GetDocument().getElementById(end_parent_id->c_str());
+
+  const Node* start_node =
+      start_parent_node->childNodes()->item(start_offset_in_parent);
+  const Node* end_node =
+      end_parent_node->childNodes()->item(end_offset_in_parent);
+
+  int start_offset = start_text_offset.has_value() ? *start_text_offset : 0;
+  int end_offset = end_text_offset.has_value() ? *end_text_offset : 0;
+
   const auto& selected_start = Position(start_node, start_offset);
   const auto& selected_end = Position(end_node, end_offset);
 
@@ -130,19 +157,21 @@ String TextFragmentGenerationNavigationTest::GetHighlightedText() {
 
 void TextFragmentGenerationNavigationTest::GenerateAndNavigate(
     std::string html_content,
-    std::string start_node_name,
-    int start_offset,
-    std::string end_node_name,
-    int end_offset,
+    std::string* start_parent_id,
+    int start_offset_in_parent,
+    absl::optional<int> start_text_offset,
+    std::string* end_parent_id,
+    int end_offset_in_parent,
+    absl::optional<int> end_text_offset,
     std::string selected_text,
-    std::string highlight_text) {
+    std::string* highlight_text) {
   String base_url = "https://example.com/test.html";
   String html_content_wtf = String::FromUTF8(html_content.c_str());
   LoadHTML(base_url, html_content_wtf);
 
   RangeInFlatTree* selection_range = GetSelectionRange(
-      AtomicString::FromUTF8(start_node_name.c_str()), start_offset,
-      AtomicString::FromUTF8(end_node_name.c_str()), end_offset);
+      start_parent_id, start_offset_in_parent, start_text_offset, end_parent_id,
+      end_offset_in_parent, end_text_offset);
   ASSERT_EQ(String::FromUTF8(selected_text.c_str()),
             PlainText(selection_range->ToEphemeralRange()));
 
@@ -161,7 +190,9 @@ void TextFragmentGenerationNavigationTest::GenerateAndNavigate(
   String actual_highlighted_text = GetHighlightedText();
   ASSERT_TRUE(actual_highlighted_text);
 
-  String expected_highlighted_text = String::FromUTF8(highlight_text.c_str());
+  String expected_highlighted_text =
+      highlight_text != nullptr ? String::FromUTF8(highlight_text->c_str())
+                                : String();
   EXPECT_EQ(expected_highlighted_text, actual_highlighted_text);
 }
 

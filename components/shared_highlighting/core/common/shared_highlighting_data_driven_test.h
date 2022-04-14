@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "testing/data_driven_testing/data_driven_test.h"
 
 namespace shared_highlighting {
@@ -28,12 +29,14 @@ class SharedHighlightingDataDrivenTest : public testing::DataDrivenTest {
   void GenerateResults(const std::string& input, std::string* output) override;
 
   virtual void GenerateAndNavigate(std::string html_content,
-                                   std::string start_node_name,
-                                   int start_offset,
-                                   std::string end_node_name,
-                                   int end_offset,
+                                   std::string* start_parent_id,
+                                   int start_offset_in_parent,
+                                   absl::optional<int> start_text_offset,
+                                   std::string* end_parent_id,
+                                   int end_offset_in_parent,
+                                   absl::optional<int> end_text_offset,
                                    std::string selected_text,
-                                   std::string highlight_text) = 0;
+                                   std::string* highlight_text) = 0;
 };
 
 }  // namespace shared_highlighting

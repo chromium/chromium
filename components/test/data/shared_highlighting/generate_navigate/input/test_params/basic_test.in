@@ -1,7 +1,0 @@
-HTML_FILE_NAME: html/basic_test.html
-START_NODE_NAME: first
-START_OFFSET: 0
-END_NODE_NAME: first
-END_OFFSET: 28
-SELECTED_TEXT: First paragraph text that is
-HIGHLIGHT_TEXT: First paragraph text that is
