@@ -27,6 +27,13 @@
       outline: 2px solid var(--cros-focus-ring-color);
     }
 
+    cr-icon-button:hover,
+    cr-button:hover {
+      background-color: rgba(var(--cros-icon-button-background-color-rgb),
+            0.06);
+      box-shadow: none;
+    }
+
     cr-button[aria-pressed=true],
     cr-button[aria-selected=true] {
       background-color: var(--cros-button-background-color-primary) !important;
