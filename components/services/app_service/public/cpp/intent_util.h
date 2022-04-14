@@ -27,6 +27,8 @@ extern const char kIntentActionView[];
 extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];
 extern const char kIntentActionCreateNote[];
+// A request to edit a file in an app. Must include an attached file.
+extern const char kIntentActionEdit[];
 
 // App ID value which can be used as a Preferred App to denote that the browser
 // will open the link, and that we should not prompt the user about it.
@@ -73,6 +75,11 @@ apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
 apps::mojom::IntentPtr CreateShareIntentFromText(
     const std::string& share_text,
     const std::string& share_title);
+
+// Create an edit intent struct for the file with a given filesystem:// URL and
+// mime type.
+apps::mojom::IntentPtr CreateEditIntentFromFile(const GURL& filesystem_url,
+                                                const std::string& mime_type);
 
 // Create an intent struct from activity and start type.
 apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,

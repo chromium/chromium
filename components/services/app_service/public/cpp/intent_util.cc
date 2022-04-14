@@ -91,6 +91,8 @@ const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
 const char kIntentActionCreateNote[] = "create_note";
+const char kIntentActionEdit[] = "edit";
+
 const char kUseBrowserForLink[] = "use_browser";
 
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
@@ -174,6 +176,20 @@ apps::mojom::IntentPtr CreateShareIntentFromText(
   intent->share_text = share_text;
   if (!share_title.empty())
     intent->share_title = share_title;
+  return intent;
+}
+
+apps::mojom::IntentPtr CreateEditIntentFromFile(const GURL& filesystem_url,
+                                                const std::string& mime_type) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = kIntentActionEdit;
+  intent->files = std::vector<apps::mojom::IntentFilePtr>{};
+  intent->mime_type = mime_type;
+
+  auto file = apps::mojom::IntentFile::New();
+  file->url = filesystem_url;
+  file->mime_type = mime_type;
+  intent->files->push_back(std::move(file));
   return intent;
 }
 

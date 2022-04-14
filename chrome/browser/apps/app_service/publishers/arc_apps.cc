@@ -389,6 +389,8 @@ arc::mojom::ActionType GetArcActionType(const std::string& action) {
     return arc::mojom::ActionType::SEND;
   } else if (action == apps_util::kIntentActionSendMultiple) {
     return arc::mojom::ActionType::SEND_MULTIPLE;
+  } else if (action == apps_util::kIntentActionEdit) {
+    return arc::mojom::ActionType::EDIT;
   } else {
     return arc::mojom::ActionType::VIEW;
   }
