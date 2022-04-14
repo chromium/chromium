@@ -307,7 +307,7 @@
                 {
                     "name": "TextVariant2",
                     "params": {
-                        "always_show_rationale_before_requesting_permission": "false",
+                        "always_show_rationale_before_requesting_permission": "true",
                         "notification_permission_dialog_text_variant_2": "true",
                         "permission_request_interval_days": "7"
                     },

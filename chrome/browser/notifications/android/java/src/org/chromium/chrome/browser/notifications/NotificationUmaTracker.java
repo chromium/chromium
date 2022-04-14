@@ -400,10 +400,10 @@ public class NotificationUmaTracker {
      * OS prompt or Chrome's permission rationale.
      */
     public void onNotificationPermissionRequested() {
-        int newCount = mSharedPreferences.incrementInt(
+        int requestCount = mSharedPreferences.readInt(
                 ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
         RecordHistogram.recordExactLinearHistogram(
-                "Mobile.SystemNotification.Permission.StartupRequestCount", newCount, 50);
+                "Mobile.SystemNotification.Permission.StartupRequestCount", requestCount, 50);
     }
 
     /**

@@ -63,12 +63,8 @@ public class NotificationPermissionControllerTest {
         ShadowSystemClock.reset();
         // Set a non-zero currentTimeMillis.
         ShadowSystemClock.advanceBy(Duration.ofDays(10));
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                NotificationPermissionController
-                        .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
-                "false");
-        FeatureList.setTestValues(testValues);
+
+        setupFeatureParams(false, null, null);
 
         // These tests only apply on builds targeting T running on a T device.
         ShadowBuildInfo.setTargetsAtLeastT(true);
@@ -142,6 +138,28 @@ public class NotificationPermissionControllerTest {
                 .setShouldShowRequestPermissionRationale(
                         PermissionConstants.NOTIFICATION_PERMISSION,
                         shouldShowRequestPermissionRationale);
+    }
+
+    private void setupFeatureParams(Boolean alwaysShowRationale, Integer permissionRequestMaxCount,
+            Integer requestIntervalDays) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        if (alwaysShowRationale != null) {
+            testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                    NotificationPermissionController
+                            .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
+                    Boolean.toString(alwaysShowRationale));
+        }
+        if (permissionRequestMaxCount != null) {
+            testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT,
+                    Integer.toString(permissionRequestMaxCount));
+        }
+        if (requestIntervalDays != null) {
+            testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
+                    Integer.toString(requestIntervalDays));
+        }
+        FeatureList.setTestValues(testValues);
     }
 
     private static class TestAndroidPermissionDelegate extends ActivityAndroidPermissionDelegate {
@@ -296,12 +314,7 @@ public class NotificationPermissionControllerTest {
 
     @Test
     public void testNotificationPromptShownOnStartup_alwaysShowRationale() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                NotificationPermissionController
-                        .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
-                "true");
-        FeatureList.setTestValues(testValues);
+        setupFeatureParams(true, 3, null);
 
         mActivityScenarios.getScenario().onActivity(activity -> {
             TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
@@ -310,7 +323,7 @@ public class NotificationPermissionControllerTest {
             NotificationPermissionController notificationPermissionController =
                     createNotificationPermissionController(rationaleDelegate, permissionDelegate);
 
-            // Show OS prompt shown for the first time.
+            // Show rationale for the first time.
             setShouldShowRequestPermissionRationale(activity, false);
             assertEquals(PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
                     notificationPermissionController.shouldRequestPermission());
@@ -760,11 +773,7 @@ public class NotificationPermissionControllerTest {
                     createNotificationPermissionController(rationaleDelegate, activity);
 
             // Set field trial params to wait 14 days.
-            FeatureList.TestValues testValues = new FeatureList.TestValues();
-            testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
-                    "14");
-            FeatureList.setTestValues(testValues);
+            setupFeatureParams(false, null, 14);
 
             // Show and reject OS prompt for the first time.
             setShouldShowRequestPermissionRationale(activity, false);

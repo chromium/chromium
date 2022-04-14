@@ -38,6 +38,18 @@ public class NotificationPermissionController implements UnownedUserData {
     /** Field trial param controlling number of days between permission requests. */
     public static final String FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS =
             "permission_request_interval_days";
+    /**
+     * Field trial param controlling whether site notification requests are allowed when
+     * permissions are blocked.
+     */
+    public static final String FIELD_TRIAL_ALLOW_SITE_NOTIFICATION_REQUESTS =
+            "permission_request_allow_site_notification_requests";
+
+    /**
+     * Field trial param controlling how many times notification permission request should be shown.
+     */
+    public static final String FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT =
+            "permission_request_max_count";
 
     /** Refers to what type of permission UI should be shown. */
     @IntDef({PermissionRequestMode.DO_NOT_REQUEST, PermissionRequestMode.REQUEST_ANDROID_PERMISSION,
@@ -140,6 +152,8 @@ public class NotificationPermissionController implements UnownedUserData {
         int requestMode = shouldRequestPermission();
         if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return;
 
+        SharedPreferencesManager.getInstance().incrementInt(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
         NotificationUmaTracker.getInstance().onNotificationPermissionRequested();
 
         if (requestMode == PermissionRequestMode.REQUEST_ANDROID_PERMISSION) {
@@ -177,14 +191,16 @@ public class NotificationPermissionController implements UnownedUserData {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
-        // Check if we have already exhausted the max number of times we can show the rationale. If
-        // shouldAlwaysShowRationaleFirst is false, we can show the rationale max once.
-        boolean wasRationaleShown =
-                SharedPreferencesManager.getInstance().readLong(
-                        ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY, 0)
-                != 0;
-        boolean exceedsRationaleShowLimit = !shouldAlwaysShowRationaleFirst() && wasRationaleShown;
-        if (exceedsRationaleShowLimit) return PermissionRequestMode.DO_NOT_REQUEST;
+        // Check if we have already exhausted the max number of times we can request permission.
+        // If we have already declined OS prompt twice, we would have bailed out earlier above.
+        int previousAttemptCount = SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
+        int maxPermissionRequestCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT, 2);
+        if (previousAttemptCount >= maxPermissionRequestCount) {
+            return PermissionRequestMode.DO_NOT_REQUEST;
+        }
 
         // Decide whether to show the rationale or just the system prompt.
         boolean meetsAndroidRationaleAPI =
@@ -208,11 +224,17 @@ public class NotificationPermissionController implements UnownedUserData {
         boolean notificationsEnabledAtAppLevel = manager.areNotificationsEnabled();
         if (!BuildInfo.isAtLeastT()) return notificationsEnabledAtAppLevel;
 
-        boolean hasPermission = mAndroidPermissionDelegate.hasPermission(
-                PermissionConstants.NOTIFICATION_PERMISSION);
+        if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
+            return true;
+        }
+
+        boolean allowRequestingPermissionsForSiteNotifications =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                        FIELD_TRIAL_ALLOW_SITE_NOTIFICATION_REQUESTS, true);
         boolean canRequestPermission = mAndroidPermissionDelegate.canRequestPermission(
                 PermissionConstants.NOTIFICATION_PERMISSION);
-        return hasPermission || canRequestPermission;
+        return allowRequestingPermissionsForSiteNotifications && canRequestPermission;
     }
 
     /**
@@ -298,7 +320,7 @@ public class NotificationPermissionController implements UnownedUserData {
     private static boolean shouldAlwaysShowRationaleFirst() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION, false);
+                FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION, true);
     }
 
     private boolean wasPermissionRequestShown() {
