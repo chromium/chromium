@@ -5490,8 +5490,6 @@ def CheckStableMojomChanges(input_api, output_api):
 
     delta = []
     for mojom in changed_mojoms:
-        old_contents = ''.join(mojom.OldContents()) or None
-        new_contents = ''.join(mojom.NewContents()) or None
         delta.append({
             'filename': mojom.LocalPath(),
             'old': '\n'.join(mojom.OldContents()) or None,
