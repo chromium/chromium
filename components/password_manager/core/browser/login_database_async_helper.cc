@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -70,6 +71,17 @@ bool LoginDatabaseAsyncHelper::Initialize(
           syncer::PASSWORDS, base::DoNothing()),
       static_cast<PasswordStoreSync*>(this),
       std::move(sync_enabled_or_disabled_cb));
+
+// On Windows encryption capability is expected to be available by default.
+// On MacOS encrpytion is also expected to be available unless the user didn't
+// unlock the Keychain.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Check that the backend works.
+  if (success && !OSCrypt::IsEncryptionAvailable()) {
+    success = false;
+    LOG(ERROR) << "Encryption is not available.";
+  }
+#endif
 
   return success;
 }
