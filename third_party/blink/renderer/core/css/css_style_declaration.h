@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -36,6 +35,7 @@ class CSSRule;
 class CSSStyleSheet;
 class CSSValue;
 class ExceptionState;
+class ExecutionContext;
 enum class SecureContextMode;
 
 class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
@@ -45,7 +45,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
  public:
   CSSStyleDeclaration(const CSSStyleDeclaration&) = delete;
   CSSStyleDeclaration& operator=(const CSSStyleDeclaration&) = delete;
-  ~CSSStyleDeclaration() override = default;
+  ~CSSStyleDeclaration() override;
 
   void Trace(Visitor* visitor) const override;
 
@@ -53,11 +53,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   String cssFloat() { return GetPropertyValueInternal(CSSPropertyID::kFloat); }
   void setCSSFloat(const ExecutionContext* execution_context,
                    const String& value,
-                   ExceptionState& exception_state) {
-    SetPropertyInternal(CSSPropertyID::kFloat, String(), value, false,
-                        execution_context->GetSecureContextMode(),
-                        exception_state);
-  }
+                   ExceptionState& exception_state);
   virtual String cssText() const = 0;
   virtual void setCSSText(const ExecutionContext*,
                           const String&,
@@ -107,8 +103,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&);
 
  protected:
-  CSSStyleDeclaration(ExecutionContext* context)
-      : ExecutionContextClient(context) {}
+  explicit CSSStyleDeclaration(ExecutionContext* context);
 };
 
 }  // namespace blink

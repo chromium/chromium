@@ -156,6 +156,19 @@ void CSSStyleDeclaration::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+CSSStyleDeclaration::CSSStyleDeclaration(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
+
+CSSStyleDeclaration::~CSSStyleDeclaration() = default;
+
+void CSSStyleDeclaration::setCSSFloat(const ExecutionContext* execution_context,
+                                      const String& value,
+                                      ExceptionState& exception_state) {
+  SetPropertyInternal(CSSPropertyID::kFloat, String(), value, false,
+                      execution_context->GetSecureContextMode(),
+                      exception_state);
+}
+
 String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
   // Search the style declaration.
   CSSPropertyID unresolved_property =
