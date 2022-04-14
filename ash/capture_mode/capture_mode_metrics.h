@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_METRICS_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -111,6 +112,15 @@ enum class CaptureModeSwitchToDefaultReason {
   kMaxValue = kUserSelectedFromSettingsMenu,
 };
 
+// Enumeration of the camera preview size. Note that these values are persisted
+// to histograms so existing values should remain unchanged and new values
+// should be added to the end.
+enum class CaptureModeCameraSize {
+  kExpanded,
+  kCollapsed,
+  kMaxValue = kCollapsed,
+};
+
 // Records the `reason` for which screen recording was ended.
 void RecordEndRecordingReason(EndRecordingReason reason);
 
@@ -166,6 +176,27 @@ void RecordSwitchToDefaultFolderReason(CaptureModeSwitchToDefaultReason reason);
 // Maps given `type` and `source` to CaptureModeConfiguration enum.
 ASH_EXPORT CaptureModeConfiguration GetConfiguration(CaptureModeType type,
                                                      CaptureModeSource source);
+// Records how often recording starts with a camera on.
+void RecordRecordingStartsWithCamera(bool starts_with_camera,
+                                     bool is_in_projector_mode);
+
+// Records the number of camera disconnections during recording.
+void RecordCameraDisconnectionsDuringRecordings(int num_camera_disconnections);
+
+// Records the duration of camera becoming available again after camera
+// disconnection.
+void RecordCameraReconnectDuration(int length_in_seconds,
+                                   int grace_period_in_seconds);
+
+// Records the camera size when recording starts.
+void RecordCameraSizeOnStart(CaptureModeCameraSize camera_size);
+
+// Records the camera position when recording starts.
+void RecordCameraPositionOnStart(CameraPreviewSnapPosition camera_position);
+
+// Appends the proper suffix to `prefix` based on whether the user is in tablet
+// mode or not.
+ASH_EXPORT std::string GetCaptureModeHistogramName(std::string prefix);
 
 }  // namespace ash
 

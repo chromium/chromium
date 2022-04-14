@@ -83,7 +83,7 @@ CameraPreviewView::CameraPreviewView(
   // from 0 to 1.
   resize_button_->layer()->SetOpacity(0);
 
-  // The resize button should be hidden by default so that it doesn't hanld
+  // The resize button should be hidden by default so that it doesn't handle
   // events.
   resize_button_->SetVisible(false);
   UpdateResizeButtonTooltip();

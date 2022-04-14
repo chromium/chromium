@@ -205,6 +205,9 @@ class ASH_EXPORT CaptureModeCameraController
   void FadeInCameraPreview();
   void FadeOutCameraPreview();
 
+  void OnRecordingStarted(bool is_in_projector_mode);
+  void OnRecordingEnded();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
@@ -343,6 +346,10 @@ class ASH_EXPORT CaptureModeCameraController
   // the resize button is clicked. The size of the preview widget and the icon
   // of the resize button will be updated based on it.
   bool is_camera_preview_collapsed_ = false;
+
+  // Valid only during recording to track the number of camera disconnections
+  // while recording is in progress.
+  absl::optional<int> in_recording_camera_disconnections_;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

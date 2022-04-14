@@ -131,17 +131,6 @@ bool IsCursorCompositingEnabled() {
       ->is_cursor_compositing_enabled();
 }
 
-void TouchOnView(const views::View* view,
-                 ui::test::EventGenerator* event_generator) {
-  DCHECK(view);
-  DCHECK(event_generator);
-
-  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
-  event_generator->MoveTouch(view_center);
-  event_generator->PressTouch();
-  event_generator->ReleaseTouch();
-}
-
 const message_center::Notification* GetPreviewNotification() {
   const message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
@@ -196,15 +185,6 @@ std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
   child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
   wm::SetModalParent(child.get(), transient_parent);
   return child;
-}
-
-// To avoid flaky failures due to mouse devices blocking entering tablet mode,
-// we detach all mouse devices. This shouldn't affect testing the cursor
-// status.
-void SwitchToTabletMode() {
-  TabletModeControllerTestApi test_api;
-  test_api.DetachAllMice();
-  test_api.EnterTabletMode();
 }
 
 void LeaveTabletMode() {
@@ -437,13 +417,6 @@ class CaptureModeTest : public AshTestBase {
     session_controller->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
   }
 
-  void WaitForSeconds(int seconds) {
-    base::RunLoop loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
-    loop.Run();
-  }
-
   base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
     auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
     base::FilePath mount_point_path;
@@ -454,12 +427,6 @@ class CaptureModeTest : public AshTestBase {
     const bool result = base::CreateDirectory(folder_on_drive_fs);
     EXPECT_TRUE(result);
     return folder_on_drive_fs;
-  }
-
-  std::string GetCaptureModeHistogramName(std::string prefix) {
-    prefix.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                 : ".ClamshellMode");
-    return prefix;
   }
 
   void OpenSettingsView() {

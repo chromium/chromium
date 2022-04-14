@@ -73,6 +73,24 @@ void SendKey(ui::KeyboardCode key_code,
              int flags = ui::EF_NONE,
              int count = 1);
 
+// Wait for a specific `seconds`.
+void WaitForSeconds(int seconds);
+
+// To avoid flaky failures due to mouse devices blocking entering tablet mode,
+// we detach all mouse devices. This shouldn't affect testing the cursor
+// status.
+void SwitchToTabletMode();
+
+// Open the `view` by touch.
+void TouchOnView(const views::View* view,
+                 ui::test::EventGenerator* event_generator);
+
+// Clicks or taps on the `view` based on whether the user is in clamshell or
+// tablet mode.
+void ClickOrTapView(const views::View* view,
+                    bool in_table_mode,
+                    ui::test::EventGenerator* event_generator);
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should

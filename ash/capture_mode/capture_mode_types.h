@@ -8,12 +8,15 @@
 namespace ash {
 
 // Specifies the camera preview snap position, it can be one of the four corners
-// of the surface being recorded.
+// of the surface being recorded. Note that these values are persisted to
+// histograms so existing values should remain unchanged and new values should
+// be added to the end.
 enum class CameraPreviewSnapPosition {
   kTopLeft = 0,
   kBottomLeft,
   kBottomRight,
   kTopRight,
+  kMaxValue = kTopRight,
 };
 
 // Defines the capture type Capture Mode is currently using.

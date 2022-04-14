@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
@@ -605,6 +606,32 @@ void CaptureModeCameraController::FadeOutCameraPreview() {
       .SetOpacity(layer, 0.f, gfx::Tween::LINEAR);
 }
 
+void CaptureModeCameraController::OnRecordingStarted(
+    bool is_in_projector_mode) {
+  // Check if there's a camera disconnection that happened before recording
+  // starts. In this case, we don't want the camera preview to show, even if the
+  // camera reconnects within the allowed grace period.
+  if (selected_camera_.is_valid() && !camera_preview_widget_)
+    SetShouldShowPreview(false);
+
+  in_recording_camera_disconnections_ = 0;
+
+  const bool starts_with_camera = camera_preview_widget();
+  RecordRecordingStartsWithCamera(starts_with_camera, is_in_projector_mode);
+  RecordCameraSizeOnStart(is_camera_preview_collapsed_
+                              ? CaptureModeCameraSize::kCollapsed
+                              : CaptureModeCameraSize::kExpanded);
+  RecordCameraPositionOnStart(camera_preview_snap_position_);
+}
+
+void CaptureModeCameraController::OnRecordingEnded() {
+  DCHECK(in_recording_camera_disconnections_);
+  SetShouldShowPreview(false);
+  RecordCameraDisconnectionsDuringRecordings(
+      *in_recording_camera_disconnections_);
+  in_recording_camera_disconnections_.reset();
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
@@ -692,6 +719,14 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   if (selected_camera_.is_valid()) {
     if (camera_info = GetCameraInfoById(selected_camera_, available_cameras_);
         camera_info) {
+      if (camera_reconnect_timer_.IsRunning()) {
+        const base::TimeDelta remaining_time =
+            camera_reconnect_timer_.desired_run_time() - base::TimeTicks::Now();
+        const int reconnect_duration_in_seconds =
+            (kDisconnectionGracePeriod - remaining_time).InSeconds();
+        RecordCameraReconnectDuration(reconnect_duration_in_seconds,
+                                      kDisconnectionGracePeriod.InSeconds());
+      }
       // When a selected camera becomes available, we stop any grace period
       // timer (if any), and decide whether to show or hide the preview widget
       // based on the current value of `should_show_preview_`.
@@ -705,6 +740,9 @@ void CaptureModeCameraController::RefreshCameraPreview() {
       camera_reconnect_timer_.Start(
           FROM_HERE, kDisconnectionGracePeriod, this,
           &CaptureModeCameraController::OnSelectedCameraDisconnected);
+
+      if (in_recording_camera_disconnections_)
+        ++(*in_recording_camera_disconnections_);
     }
   }
 

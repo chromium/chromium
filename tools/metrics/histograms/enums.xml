@@ -11792,6 +11792,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="By Stylus"/>
 </enum>
 
+<enum name="CameraPreviewSnapPosition">
+  <int value="0" label="kTopLeft"/>
+  <int value="1" label="kBottomLeft"/>
+  <int value="2" label="kBottomRight"/>
+  <int value="3" label="kTopRight"/>
+</enum>
+
 <enum name="CameraPrivacySwitchEvent">
   <int value="0" label="Camera privacy switch toggled on"/>
   <int value="1" label="Camera privacy switch toggled off"/>
@@ -12117,6 +12124,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Region Button"/>
   <int value="4" label="Window Button"/>
   <int value="5" label="Exit Button"/>
+</enum>
+
+<enum name="CaptureModeCameraSize">
+  <int value="0" label="kExpanded"/>
+  <int value="1" label="kCollapsed"/>
 </enum>
 
 <enum name="CaptureModeConfiguration">

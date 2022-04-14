@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
@@ -40,6 +41,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -1943,6 +1945,220 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
 }
 
+// Tests that the recording starts with camera metrics are recorded correctly
+// both in clamshell and tablet mode.
+TEST_F(CaptureModeCameraTest, RecordingStartsWithCameraHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.RecordingStartsWithCamera";
+
+  AddDefaultCamera();
+
+  struct {
+    bool tablet_enabled;
+    bool camera_on;
+  } kTestCases[] = {
+      {false, false},
+      {false, true},
+      {true, false},
+      {true, true},
+  };
+
+  for (const auto test_case : kTestCases) {
+    if (test_case.tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), test_case.camera_on,
+        0);
+
+    auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                           CaptureModeType::kVideo);
+    auto* camera_controller = GetCameraController();
+    camera_controller->SetSelectedCamera(
+        test_case.camera_on ? CameraId(kDefaultCameraModelId, 1) : CameraId());
+
+    StartVideoRecordingImmediately();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), test_case.camera_on,
+        1);
+  }
+}
+
+// Tests that the number of camera disconnections happens during recording is
+// recorded correctly both in clamshell and tablet mode.
+TEST_F(CaptureModeCameraTest,
+       RecordCameraDisconnectionsDuringRecordingsHistogramTest) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.CameraDisconnectionsDuringRecordings";
+  base::HistogramTester histogram_tester;
+
+  auto* camera_controller = GetCameraController();
+
+  auto disconnect_and_reconnect_camera_n_times = [&](int n) {
+    for (int i = 0; i < n; i++) {
+      AddAndRemoveCameraAndTriggerGracePeriod();
+      camera_controller->camera_reconnect_timer_for_test()->FireNow();
+    }
+  };
+
+  for (const bool tablet_enabled : {false, true}) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                           CaptureModeType::kVideo);
+    controller->StartVideoRecordingImmediatelyForTesting();
+
+    // Disconnect the camera, exhaust the timer and reconnect three times. The
+    // metric should record accordingly.
+    disconnect_and_reconnect_camera_n_times(3);
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), 3, 1);
+  }
+}
+
+// Tests that the duration for disconnected camera to become available again is
+// recorded correctly both in clamshell and tablet mode.
+TEST_F(CaptureModeCameraTest, RecordCameraReconnectDurationHistogramTest) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.CameraReconnectDuration";
+  base::HistogramTester histogram_tester;
+
+  for (const bool tablet_enabled : {false, true}) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    AddAndRemoveCameraAndTriggerGracePeriod();
+    WaitForSeconds(1);
+    AddDefaultCamera();
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), 1, 1);
+    RemoveDefaultCamera();
+  }
+}
+
+// Tests that the camera size on start is recorded correctly in the metrics both
+// in clamshell and tablet mode.
+TEST_F(CaptureModeCameraTest, RecordingCameraSizeOnStartHistogramTest) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.RecordingCameraSizeOnStart";
+  base::HistogramTester histogram_tester;
+
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  for (const bool tablet_enabled : {false, true}) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    for (const bool collapsed : {false, true}) {
+      const auto sample = collapsed ? CaptureModeCameraSize::kCollapsed
+                                    : CaptureModeCameraSize::kExpanded;
+      histogram_tester.ExpectBucketCount(
+          GetCaptureModeHistogramName(kHistogramNameBase), sample, 0);
+
+      auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                             CaptureModeType::kVideo);
+
+      auto* event_generator = GetEventGenerator();
+
+      // Resize button is hidden by default, click/tap on the preview to make
+      // it visible.
+      ClickOrTapView(camera_controller->camera_preview_view(), tablet_enabled,
+                     event_generator);
+
+      auto* resize_button = GetPreviewResizeButton();
+      DCHECK(resize_button);
+
+      if (collapsed) {
+        if (!camera_controller->is_camera_preview_collapsed())
+          ClickOrTapView(resize_button, tablet_enabled, event_generator);
+
+        EXPECT_TRUE(camera_controller->is_camera_preview_collapsed());
+      } else {
+        if (camera_controller->is_camera_preview_collapsed())
+          ClickOrTapView(resize_button, tablet_enabled, event_generator);
+
+        EXPECT_FALSE(camera_controller->is_camera_preview_collapsed());
+      }
+
+      StartVideoRecordingImmediately();
+      controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+      WaitForCaptureFileToBeSaved();
+      histogram_tester.ExpectBucketCount(
+          GetCaptureModeHistogramName(kHistogramNameBase), sample, 1);
+    }
+  }
+}
+
+// Tests that the camera position on start is recorded correctly in the metrics
+// both in clamshell and tablet mode.
+TEST_F(CaptureModeCameraTest, RecordingCameraPositionOnStartHistogramTest) {
+  constexpr char kHistogramName[] =
+      "Ash.CaptureModeController.RecordingCameraPositionOnStart";
+  base::HistogramTester histogram_tester;
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  camera_controller->SetSelectedCamera(camera_id);
+
+  const CameraPreviewSnapPosition kCameraPositionTestCases[]{
+      CameraPreviewSnapPosition::kTopLeft,
+      CameraPreviewSnapPosition::kBottomLeft,
+      CameraPreviewSnapPosition::kTopRight,
+      CameraPreviewSnapPosition::kBottomRight};
+
+  for (const bool tablet_enabled : {false, true}) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    for (const auto camera_position : kCameraPositionTestCases) {
+      histogram_tester.ExpectBucketCount(
+          GetCaptureModeHistogramName(kHistogramName), camera_position, 0);
+      auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                             CaptureModeType::kVideo);
+      DCHECK(camera_controller->camera_preview_widget());
+      camera_controller->SetCameraPreviewSnapPosition(camera_position);
+      StartVideoRecordingImmediately();
+      controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+      WaitForCaptureFileToBeSaved();
+      histogram_tester.ExpectBucketCount(
+          GetCaptureModeHistogramName(kHistogramName), camera_position, 1);
+    }
+  }
+}
+
 class CaptureModeCameraPreviewTest
     : public CaptureModeCameraTest,
       public testing::WithParamInterface<CaptureModeSource> {
@@ -2915,6 +3131,64 @@ TEST_F(ProjectorCaptureModeCameraTest,
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
   EXPECT_EQ(cam_id_2, camera_controller->selected_camera());
   EXPECT_TRUE(camera_controller->camera_preview_widget());
+}
+
+// Tests that the recording starts with camera metrics are recorded correctly in
+// a projector-initiated recording.
+TEST_F(ProjectorCaptureModeCameraTest,
+       ProjectorRecordingStartsWithCameraHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.Projector.RecordingStartsWithCamera";
+
+  AddDefaultCamera();
+
+  struct {
+    bool tablet_enabled;
+    bool camera_on;
+  } kTestCases[] = {
+      {false, false},
+      {false, true},
+      {true, false},
+      {true, true},
+  };
+
+  for (const auto test_case : kTestCases) {
+    if (test_case.tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), test_case.camera_on,
+        0);
+
+    auto* controller = CaptureModeController::Get();
+    controller->SetType(CaptureModeType::kVideo);
+    controller->SetSource(CaptureModeSource::kFullscreen);
+
+    StartProjectorModeSession();
+    EXPECT_TRUE(controller->IsActive());
+    auto* session = controller->capture_mode_session();
+    EXPECT_TRUE(session->is_in_projector_mode());
+
+    GetCameraController()->SetSelectedCamera(
+        test_case.camera_on ? CameraId(kDefaultCameraModelId, 1) : CameraId());
+
+    StartVideoRecordingImmediately();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+
+    WaitForSeconds(1);
+
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramNameBase), test_case.camera_on,
+        1);
+  }
 }
 
 // A test fixture for testing the rendered video frames. The boolean parameter

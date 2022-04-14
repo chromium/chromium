@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "ash/wm/cursor_manager_chromeos.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -98,6 +99,39 @@ void SendKey(ui::KeyboardCode key_code,
              int count) {
   for (int i = 0; i < count; ++i)
     event_generator->PressAndReleaseKey(key_code, flags);
+}
+
+void WaitForSeconds(int seconds) {
+  base::RunLoop loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
+  loop.Run();
+}
+
+void SwitchToTabletMode() {
+  TabletModeControllerTestApi test_api;
+  test_api.DetachAllMice();
+  test_api.EnterTabletMode();
+}
+
+void TouchOnView(const views::View* view,
+                 ui::test::EventGenerator* event_generator) {
+  DCHECK(view);
+  DCHECK(event_generator);
+
+  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveTouch(view_center);
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
+}
+
+void ClickOrTapView(const views::View* view,
+                    const bool in_tablet_mode,
+                    ui::test::EventGenerator* event_generator) {
+  if (in_tablet_mode)
+    TouchOnView(view, event_generator);
+  else
+    ClickOnView(view, event_generator);
 }
 
 // -----------------------------------------------------------------------------
