@@ -147,7 +147,7 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
 
   switch (controllers_->find(type)->second->GetPreconditionState()) {
     case DataTypeController::PreconditionState::kPreconditionsMet:
-      if (last_requested_types_.Has(type)) {
+      if (preferred_types_.Has(type)) {
         // Only reconfigure if the type is both ready and desired. This will
         // internally also update ready state of all other requested types.
         ForceReconfiguration();
@@ -182,7 +182,7 @@ void DataTypeManagerImpl::ResetDataTypeErrors() {
 }
 
 void DataTypeManagerImpl::PurgeForMigration(ModelTypeSet undesired_types) {
-  ModelTypeSet remainder = Difference(last_requested_types_, undesired_types);
+  ModelTypeSet remainder = Difference(preferred_types_, undesired_types);
   last_requested_context_.reason = CONFIGURE_REASON_MIGRATION;
   ConfigureImpl(remainder, last_requested_context_);
 }
@@ -208,7 +208,7 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
   // reliable way to determine if the requested set of enabled types matches the
   // current set.
 
-  last_requested_types_ = desired_types;
+  preferred_types_ = desired_types;
   last_requested_context_ = context;
 
   // Only proceed if we're in a steady state or retrying.
@@ -291,8 +291,8 @@ DataTypeManagerImpl::DataTypeConfigStateMap
 DataTypeManagerImpl::BuildDataTypeConfigStateMap(
     const ModelTypeSet& types_being_configured) const {
   // 1. Get the failed types (due to fatal, crypto, and unready errors).
-  // 2. Add the difference between last_requested_types_ and the failed types
-  //    as CONFIGURE_INACTIVE.
+  // 2. Add the difference between preferred_types_ and the failed types as
+  //    CONFIGURE_INACTIVE.
   // 3. Flip |types_being_configured| to CONFIGURE_ACTIVE.
   // 4. Set non-enabled user types as DISABLED.
   // 5. Set the fatal, crypto, and unready types to their respective states.
@@ -301,7 +301,7 @@ DataTypeManagerImpl::BuildDataTypeConfigStateMap(
       data_type_status_table_.GetCryptoErrorTypes();
   // Types with unready errors do not count as unready if they've been disabled.
   const ModelTypeSet unready_types = Intersection(
-      data_type_status_table_.GetUnreadyErrorTypes(), last_requested_types_);
+      data_type_status_table_.GetUnreadyErrorTypes(), preferred_types_);
 
   const ModelTypeSet enabled_types = GetEnabledTypes();
 
@@ -332,7 +332,7 @@ void DataTypeManagerImpl::Restart() {
   if (reason == CONFIGURE_REASON_RECONFIGURATION ||
       reason == CONFIGURE_REASON_NEW_CLIENT ||
       reason == CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE) {
-    for (ModelType type : last_requested_types_) {
+    for (ModelType type : preferred_types_) {
       UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypes",
                                 ModelTypeHistogramValue(type));
     }
@@ -341,7 +341,7 @@ void DataTypeManagerImpl::Restart() {
   // Check for new or resolved data type crypto errors.
   if (encryption_handler_->HasCryptoError()) {
     ModelTypeSet encrypted_types = encryption_handler_->GetEncryptedDataTypes();
-    encrypted_types.RetainAll(last_requested_types_);
+    encrypted_types.RetainAll(preferred_types_);
     encrypted_types.RemoveAll(data_type_status_table_.GetCryptoErrorTypes());
     DataTypeStatusTable::TypeErrorMap crypto_errors =
         GenerateCryptoErrorsForTypes(encrypted_types);
@@ -350,7 +350,7 @@ void DataTypeManagerImpl::Restart() {
     data_type_status_table_.ResetCryptoErrors();
   }
 
-  UpdatePreconditionErrors(last_requested_types_);
+  UpdatePreconditionErrors(preferred_types_);
 
   last_restart_time_ = base::Time::Now();
   configuration_stats_.clear();
@@ -370,14 +370,13 @@ void DataTypeManagerImpl::Restart() {
 
   // Compute `last_enabled_types_` after NotifyStart() to be sure to provide
   // consistent values to ModelLoadManager. (Namely, observers may trigger
-  // another reconfiguration which may change the value of
-  // `last_requested_types_`.)
+  // another reconfiguration which may change the value of `preferred_types_`.)
   last_enabled_types_ = GetEnabledTypes();
   configuration_types_queue_ = PrioritizeTypes(last_enabled_types_);
 
   model_load_manager_.Initialize(
       /*desired_types=*/last_enabled_types_,
-      /*preferred_types=*/last_requested_types_, last_requested_context_);
+      /*preferred_types=*/preferred_types_, last_requested_context_);
 }
 
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
@@ -462,8 +461,8 @@ void DataTypeManagerImpl::ProcessReconfigure() {
 
   // An attempt was made to reconfigure while we were already configuring.
   // This can be because a passphrase was accepted or the user changed the
-  // set of desired types. Either way, |last_requested_types_| will contain
-  // the most recent set of desired types, so we just call configure.
+  // set of desired types. Either way, |preferred_types_| will contain the most
+  // recent set of desired types, so we just call configure.
   // Note: we do this whether or not GetControllersNeedingStart is true,
   // because we may need to stop datatypes.
   DVLOG(1) << "Reconfiguring due to previous configure attempt occurring while"
@@ -475,7 +474,7 @@ void DataTypeManagerImpl::ProcessReconfigure() {
   // types may be reset before the purging was performed.
   state_ = RETRYING;
   needs_reconfigure_ = false;
-  ConfigureImpl(last_requested_types_, last_requested_context_);
+  ConfigureImpl(preferred_types_, last_requested_context_);
 }
 
 void DataTypeManagerImpl::ConfigurationCompleted(
@@ -517,7 +516,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
 
   if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
-    NotifyDone(ConfigureResult(OK, last_requested_types_));
+    NotifyDone(ConfigureResult(OK, preferred_types_));
     return;
   }
 
@@ -701,7 +700,7 @@ void DataTypeManagerImpl::Stop(ShutdownReason reason) {
   StopImpl(reason);
 
   if (need_to_notify) {
-    ConfigureResult result(ABORTED, last_requested_types_);
+    ConfigureResult result(ABORTED, preferred_types_);
     NotifyDone(result);
   }
 }
@@ -802,8 +801,7 @@ DataTypeManager::State DataTypeManagerImpl::state() const {
 }
 
 ModelTypeSet DataTypeManagerImpl::GetEnabledTypes() const {
-  return Difference(last_requested_types_,
-                    data_type_status_table_.GetFailedTypes());
+  return Difference(preferred_types_, data_type_status_table_.GetFailedTypes());
 }
 
 }  // namespace syncer

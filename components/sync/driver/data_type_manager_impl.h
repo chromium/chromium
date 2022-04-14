@@ -180,7 +180,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet downloaded_types_ = ControlTypes();
 
   // Types that requested in current configuration cycle.
-  ModelTypeSet last_requested_types_;
+  ModelTypeSet preferred_types_;
 
   // Context information (e.g. the reason) for the last reconfigure attempt.
   ConfigureContext last_requested_context_;
@@ -197,7 +197,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet force_redownload_types_;
 
   // Whether an attempt to reconfigure was made while we were busy configuring.
-  // The |last_requested_types_| will reflect the newest set of requested types.
+  // The |preferred_types_| will reflect the newest set of requested types.
   bool needs_reconfigure_ = false;
 
   // The last time Restart() was called.
