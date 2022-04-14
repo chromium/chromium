@@ -20,7 +20,6 @@ import org.chromium.base.Log;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.PurchaseReference;
-import org.chromium.payments.mojom.PurchaseState;
 
 /**
  * A converter that deals with the results of ListPurchases calls.
@@ -34,12 +33,6 @@ class ListPurchasesConverter {
 
     static final String KEY_ITEM_ID = "purchaseDetails.itemId";
     static final String KEY_PURCHASE_TOKEN = "purchaseDetails.purchaseToken";
-
-    // These values are copied from the Play Billing library since Chrome cannot depend on it.
-    // https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
-    static final int PLAY_BILLING_PURCHASE_STATE_PENDING = 2;
-    static final int PLAY_BILLING_PURCHASE_STATE_PURCHASED = 1;
-    static final int PLAY_BILLING_PURCHASE_STATE_UNSPECIFIED = 0;
 
     private ListPurchasesConverter() {}
 
@@ -91,17 +84,6 @@ class ListPurchasesConverter {
         result.purchaseToken = purchase.getString(KEY_PURCHASE_TOKEN);
 
         return result;
-    }
-
-    static int convertPurchaseState(int purchaseState) {
-        switch (purchaseState) {
-            case PLAY_BILLING_PURCHASE_STATE_PENDING:
-                return PurchaseState.PENDING;
-            case PLAY_BILLING_PURCHASE_STATE_PURCHASED:
-                return PurchaseState.PURCHASED;
-            default:
-                return PurchaseState.UNKNOWN;
-        }
     }
 
     static void returnClientAppUnavailable(ListPurchases_Response callback) {
