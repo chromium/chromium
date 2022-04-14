@@ -133,8 +133,6 @@ const char kIceRestart[] = "IceRestart";
 // gone to unblock mediaConstraints removal.
 const char kEnableDtlsSrtp[] = "DtlsSrtpKeyAgreement";
 const char kEnableRtpDataChannels[] = "RtpDataChannels";
-// TODO(https://crbug.com/1315574): Deprecate and ignore.
-const char kEnableDscp[] = "googDscp";
 // TODO(https://crbug.com/1315576): Deprecate and ignore.
 const char kEnableIPv6[] = "googIPv6";
 // TODO(https://crbug.com/1315564): Deprecate and ignore.
@@ -156,6 +154,7 @@ const char kHighStartBitrate[] = "googHighStartBitrate";
 const char kPayloadPadding[] = "googPayloadPadding";
 const char kAudioLatency[] = "latencyMs";
 const char kUseRtpMux[] = "googUseRtpMUX";
+const char kEnableDscp[] = "googDscp";
 
 // Names that have been used in the past, but should now be ignored.
 // Kept around for backwards compatibility.
@@ -407,31 +406,44 @@ static void ParseOldStyleNames(
             context, WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
       }
       UseCounter::Count(context, WebFeature::kOldConstraintIgnored);
-    } else if (constraint.name_.Equals(kEnableDscp)) {
-      result.enable_dscp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableIPv6)) {
       result.enable_i_pv6.SetExact(ToBoolean(constraint.value_));
+      // Count deprecated usage of googIPv6, when it is set to false. Setting it
+      // to true is a NO-OP and apps doing this will not be affected when this
+      // constraint is ignored.
+      if (!result.enable_i_pv6.Exact()) {
+        Deprecation::CountDeprecation(context,
+                                      WebFeature::kLegacyConstraintGoogIPv6);
+      }
     } else if (constraint.name_.Equals(kEnableVideoSuspendBelowMinBitrate)) {
       result.goog_enable_video_suspend_below_min_bitrate.SetExact(
           ToBoolean(constraint.value_));
+      // Count deprecated usage of googSuspendBelowMinBitrate, when it is set to
+      // true. Setting it to false is a NO-OP and apps doing this will not be
+      // affected when this constraint is ignored.
+      if (result.goog_enable_video_suspend_below_min_bitrate.Exact()) {
+        Deprecation::CountDeprecation(
+            context, WebFeature::kLegacyConstraintGoogSuspendBelowMinBitrate);
+      }
     } else if (constraint.name_.Equals(kScreencastMinBitrate)) {
       result.goog_screencast_min_bitrate.SetExact(
           atoi(constraint.value_.Utf8().c_str()));
-      // Count usage of googScreencastMinBitrate, but only when set to anything
-      // other than 100. If set to 100, this matches the new default and an app
-      // doing this would not be affected when this constraint becomes ignored.
+      // Count deprecated usage of googScreencastMinBitrate, when it is set to
+      // anything other than 100. Setting it to 100 is a NO-OP and apps doing
+      // this will not be affected when this constraint is ignored.
       if (result.goog_screencast_min_bitrate.Exact() != 100) {
-        UseCounter::Count(
+        Deprecation::CountDeprecation(
             context, WebFeature::kLegacyConstraintGoogScreencastMinBitrate);
       }
-      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kDeprecation,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Screencast min bitrate is now set to 100 kbps by default and "
-          "googScreencastMinBitrate will soon be ignored in favor of this new "
-          "default. Please stop using it."));
     } else if (constraint.name_.Equals(kCpuOveruseDetection)) {
       result.goog_cpu_overuse_detection.SetExact(ToBoolean(constraint.value_));
+      // Count deprecated usage of googCpuOveruseDetection, when it is set to
+      // false. Setting it to true is a NO-OP and apps doing this will not be
+      // affected when this constraint is ignored.
+      if (!result.goog_cpu_overuse_detection.Exact()) {
+        Deprecation::CountDeprecation(
+            context, WebFeature::kLegacyConstraintGoogCpuOveruseDetection);
+      }
     } else if (constraint.name_.Equals(kCpuUnderuseThreshold) ||
                constraint.name_.Equals(kCpuOveruseThreshold) ||
                constraint.name_.Equals(kCpuUnderuseEncodeRsdThreshold) ||
@@ -448,7 +460,8 @@ static void ParseOldStyleNames(
                constraint.name_.Equals(kHighStartBitrate) ||
                constraint.name_.Equals(kAudioLatency) ||
                constraint.name_.Equals(kUseRtpMux) ||
-               constraint.name_.Equals(kPayloadPadding)) {
+               constraint.name_.Equals(kPayloadPadding) ||
+               constraint.name_.Equals(kEnableDscp)) {
       // TODO(crbug.com/856176): Remove the kGoogBeamforming and
       // kGoogArrayGeometry special cases.
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

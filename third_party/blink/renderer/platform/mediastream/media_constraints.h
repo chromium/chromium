@@ -271,7 +271,6 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint enable_dtls_srtp;
 #endif
   BooleanConstraint enable_rtp_data_channels;
-  BooleanConstraint enable_dscp;
   BooleanConstraint enable_i_pv6;
   BooleanConstraint goog_enable_video_suspend_below_min_bitrate;
   LongConstraint goog_screencast_min_bitrate;

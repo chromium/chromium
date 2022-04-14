@@ -186,12 +186,6 @@ void CopyConstraintsIntoRtcConfiguration(
     configuration->disable_ipv6 = false;
   }
 
-  if (GetConstraintValueAsBoolean(constraints,
-                                  &MediaTrackConstraintSetPlatform::enable_dscp,
-                                  &the_value)) {
-    configuration->set_dscp(the_value);
-  }
-
   if (GetConstraintValueAsBoolean(
           constraints,
           &MediaTrackConstraintSetPlatform::goog_cpu_overuse_detection,

@@ -710,6 +710,33 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "are deprecated and will soon be removed, please migrate to the "
           "promise-based createOffer/createAnswer instead.");
 
+    case WebFeature::kLegacyConstraintGoogScreencastMinBitrate:
+      return DeprecationInfo::WithDetails(
+          "LegacyConstraintGoogScreencastMinBitrate", kM103,
+          "Screencast min bitrate is now set to 100 kbps by default and "
+          "googScreencastMinBitrate will soon be ignored in favor of this new "
+          "default. Please stop using this legacy constraint.");
+
+    case WebFeature::kLegacyConstraintGoogIPv6:
+      return DeprecationInfo::WithDetails(
+          "LegacyConstraintGoogIPv6", kM103,
+          "IPv6 is enabled-by-default and the ability to disable it using "
+          "googIPv6 will soon be removed. Please stop using this legacy "
+          "constraint.");
+
+    case WebFeature::kLegacyConstraintGoogSuspendBelowMinBitrate:
+      return DeprecationInfo::WithDetails(
+          "LegacyConstraintGoogSuspendBelowMinBitrate", kM103,
+          "Support for the googSuspendBelowMinBitrate constraint is about to "
+          "be removed. Please stop using this legacy constraint.");
+
+    case WebFeature::kLegacyConstraintGoogCpuOveruseDetection:
+      return DeprecationInfo::WithDetails(
+          "LegacyConstraintGoogCpuOveruseDetection", kM103,
+          "CPU overuse detection is enabled-by-default and the ability to "
+          "disable it using googCpuOveruseDetection will soon be removed. "
+          "Please stop using this legacy constraint.");
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return DeprecationInfo::WithDetails("NotDeprecated", kUnknown, String());

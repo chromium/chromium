@@ -375,7 +375,6 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       enable_dtls_srtp("enableDtlsSrtp"),
 #endif
       enable_rtp_data_channels("enableRtpDataChannels"),
-      enable_dscp("enableDscp"),
       enable_i_pv6("enableIPv6"),
       goog_enable_video_suspend_below_min_bitrate(
           "googEnableVideoSuspendBelowMinBitrate"),
@@ -401,7 +400,7 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
         // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
         &enable_dtls_srtp,
 #endif
-        &enable_rtp_data_channels, &enable_dscp, &enable_i_pv6,
+        &enable_rtp_data_channels, &enable_i_pv6,
         &goog_enable_video_suspend_below_min_bitrate,
         &goog_screencast_min_bitrate, &goog_cpu_overuse_detection
   };

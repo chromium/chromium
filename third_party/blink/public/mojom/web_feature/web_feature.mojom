@@ -3525,6 +3525,9 @@ enum WebFeature {
   kLegacyConstraintGoogScreencastMinBitrate = 4204,
   kRTCPeerConnectionLegacyCreateWithMediaConstraints = 4205,
   kClientHintsSaveData = 4206,
+  kLegacyConstraintGoogIPv6 = 4207,
+  kLegacyConstraintGoogSuspendBelowMinBitrate = 4208,
+  kLegacyConstraintGoogCpuOveruseDetection = 4209,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

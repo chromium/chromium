@@ -37872,6 +37872,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4204" label="LegacyConstraintGoogScreencastMinBitrate"/>
   <int value="4205" label="RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
   <int value="4206" label="ClientHintsSaveData"/>
+  <int value="4207" label="LegacyConstraintGoogIPv6"/>
+  <int value="4208" label="LegacyConstraintGoogSuspendBelowMinBitrate"/>
+  <int value="4209" label="LegacyConstraintGoogCpuOveruseDetection"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
