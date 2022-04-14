@@ -71,48 +71,45 @@ void RecordDeviceNotificationUserActionMetric(
 
 using file_manager::io_task::OperationType;
 using file_manager::io_task::ProgressStatus;
-using file_manager::util::GetDisplayableFileName16;
+using file_manager::util::GetDisplayablePath;
 using l10n_util::GetStringFUTF16;
 
-std::u16string GetIOTaskMessage(const ProgressStatus& status) {
+std::u16string GetIOTaskMessage(Profile* profile,
+                                const ProgressStatus& status) {
+  int single_file_message_id;
+  int multiple_file_message_id;
+
   switch (status.type) {
     case OperationType::kCopy:
-      if (status.sources.size() > 1) {
-        return GetStringFUTF16(IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
-                               base::NumberToString16(status.sources.size()));
-      }
-      return GetStringFUTF16(
-          IDS_FILE_BROWSER_COPY_FILE_NAME,
-          GetDisplayableFileName16(status.sources.back().url));
+      single_file_message_id = IDS_FILE_BROWSER_COPY_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_COPY_ITEMS_REMAINING;
+      break;
     case OperationType::kMove:
-      if (status.sources.size() > 1) {
-        return GetStringFUTF16(IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING,
-                               base::NumberToString16(status.sources.size()));
-      }
-      return GetStringFUTF16(
-          IDS_FILE_BROWSER_MOVE_FILE_NAME,
-          GetDisplayableFileName16(status.sources.back().url));
+      single_file_message_id = IDS_FILE_BROWSER_MOVE_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING;
+      break;
     case OperationType::kDelete:
-      if (status.sources.size() > 1) {
-        return GetStringFUTF16(IDS_FILE_BROWSER_DELETE_ITEMS_REMAINING,
-                               base::NumberToString16(status.sources.size()));
-      }
-      return GetStringFUTF16(
-          IDS_FILE_BROWSER_DELETE_FILE_NAME,
-          GetDisplayableFileName16(status.sources.back().url));
-
+      single_file_message_id = IDS_FILE_BROWSER_DELETE_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_DELETE_ITEMS_REMAINING;
+      break;
     case OperationType::kZip:
-      if (status.sources.size() > 1) {
-        return GetStringFUTF16(IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING,
-                               base::NumberToString16(status.sources.size()));
-      }
-      return GetStringFUTF16(
-          IDS_FILE_BROWSER_ZIP_FILE_NAME,
-          GetDisplayableFileName16(status.sources.back().url));
+      single_file_message_id = IDS_FILE_BROWSER_ZIP_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING;
+      break;
     default:
       NOTREACHED();
       return u"Unknown operation type";
   }
+  if (status.sources.size() > 1) {
+    return GetStringFUTF16(multiple_file_message_id,
+                           base::NumberToString16(status.sources.size()));
+  }
+  return GetStringFUTF16(
+      single_file_message_id,
+      base::UTF8ToUTF16(GetDisplayablePath(profile, status.sources.back().url)
+                            .value_or(base::FilePath())
+                            .BaseName()
+                            .value()));
 }
 
 }  // namespace
@@ -673,7 +670,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // From here state is kQueued or kInProgress:
   std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
 
-  std::u16string message = GetIOTaskMessage(status);
+  std::u16string message = GetIOTaskMessage(profile_, status);
 
   int progress = 0;
   if (status.total_bytes > 0) {

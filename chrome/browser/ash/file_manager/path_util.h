@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -207,6 +208,14 @@ std::string GetDisplayableFileName(GURL file_url);
 std::string GetDisplayableFileName(storage::FileSystemURL file_url);
 std::u16string GetDisplayableFileName16(GURL file_url);
 std::u16string GetDisplayableFileName16(storage::FileSystemURL file_url);
+
+// Turns an absolute path into one suitable for display. Returns nullopt if the
+// given path is invalid or not on a mounted volume.
+absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
+                                                  base::FilePath path);
+absl::optional<base::FilePath> GetDisplayablePath(
+    Profile* profile,
+    storage::FileSystemURL file_url);
 
 }  // namespace util
 }  // namespace file_manager

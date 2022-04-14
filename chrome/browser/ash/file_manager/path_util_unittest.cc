@@ -13,29 +13,37 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/account_id/account_id.h"
@@ -44,6 +52,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using base::FilePath;
@@ -63,13 +72,24 @@ class FileManagerPathUtilTest : public testing::Test {
   ~FileManagerPathUtilTest() override = default;
 
   void SetUp() override {
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new FakeDiskMountManager);
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath("/home/chronos/u-0123456789abcdef"));
+    VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              Profile::FromBrowserContext(context), nullptr, nullptr,
+              ash::disks::DiskMountManager::GetInstance(), nullptr,
+              VolumeManager::GetMtpStorageInfoCallback()));
+        }));
   }
 
   void TearDown() override {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     profile_.reset();
+    ash::disks::DiskMountManager::Shutdown();
   }
 
  protected:
@@ -150,7 +170,6 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(profile_.get(),
                                                  "/media/archive/foo"));
 
-  ash::disks::DiskMountManager::InitializeForTesting(new FakeDiskMountManager);
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
   ash::FakeChromeUserManager user_manager;
   user_manager.AddUser(
@@ -201,8 +220,6 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   // Test that a passthrough path doesn't crash on requesting the Drive mount
   // path for a guest profile.
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(&guest_profile, "foo"));
-
-  ash::disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
@@ -1090,6 +1107,191 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
+  auto* volume_manager = VolumeManager::Get(profile_.get());
+  volume_manager->RegisterDownloadsDirectoryForTesting(
+      base::FilePath("/mount_path/my_files"));
+  volume_manager->RegisterCrostiniDirectoryForTesting(
+      base::FilePath("/mount_path/crostini"));
+  volume_manager->RegisterAndroidFilesDirectoryForTesting(
+      base::FilePath("/mount_path/android"));
+
+  volume_manager->RegisterMediaViewForTesting(arc::kAudioRootDocumentId);
+  volume_manager->RegisterMediaViewForTesting(arc::kImagesRootDocumentId);
+  volume_manager->RegisterMediaViewForTesting(arc::kVideosRootDocumentId);
+
+  volume_manager->AddVolumeForTesting(
+      Volume::CreateForDrive(base::FilePath("/mount_path/drive")));
+
+  auto removable_disk =
+      ash::disks::Disk::Builder().SetDeviceLabel("removable_label").Build();
+  volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
+      {"/source_path/removable", "/mount_path/removable",
+       chromeos::MOUNT_TYPE_DEVICE, ash::disks::MOUNT_CONDITION_NONE},
+      removable_disk.get()));
+
+  // The source path for archives need to be inside an already mounted volume,
+  // so add it under the My Files volume.
+  volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
+      {"/mount_path/my_files/archive", "/mount_path/archive.zip",
+       chromeos::MOUNT_TYPE_ARCHIVE, ash::disks::MOUNT_CONDITION_NONE},
+      nullptr));
+
+  volume_manager->AddVolumeForTesting(Volume::CreateForProvidedFileSystem(
+      {ash::file_system_provider::ProviderId::FromString("provider_id"),
+       {"file_system_id", "provided_label"},
+       base::FilePath("/mount_path/provided"),
+       false,
+       false,
+       extensions::SOURCE_FILE,
+       {}},
+      MOUNT_CONTEXT_USER));
+
+  volume_manager->AddVolumeForTesting(Volume::CreateForDocumentsProvider(
+      "authority", "root_id", "document_id", "documents_provider_label",
+      "summary", {}, false));
+
+  volume_manager->AddVolumeForTesting(Volume::CreateForSftpGuestOs(
+      "guest_os_label", base::FilePath("/mount_path/guest_os"),
+      base::FilePath("/remote_mount_path/guest_os")));
+
+  volume_manager->AddVolumeForTesting(Volume::CreateForMTP(
+      base::FilePath("/mount_path/mtp"), "mtp_label", false));
+
+  volume_manager->AddVolumeForTesting(
+      Volume::CreateForSmb(base::FilePath("/mount_path/smb"), "smb_label"));
+
+  volume_manager->AddVolumeForTesting(
+      Volume::CreateForShareCache(base::FilePath("/mount_path/share_cache")));
+
+  volume_manager->AddVolumeForTesting(
+      base::FilePath("/mount_path/testing"), VOLUME_TYPE_TESTING,
+      chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);
+
+  struct Test {
+    std::string path;
+    std::string expected;
+  };
+  Test tests[] = {
+      {
+          "/mount_path/drive/root",
+          "Google Drive/My Drive",
+      },
+      {
+          "/mount_path/drive/root/foo",
+          "Google Drive/My Drive/foo",
+      },
+      {
+          "/mount_path/drive/team_drives/foo",
+          "Google Drive/Shared drives/foo",
+      },
+      {
+          "/mount_path/drive/Computers/foo",
+          "Google Drive/Computers/foo",
+      },
+      {
+          "/mount_path/drive/.files-by-id/id/foo",
+          "Google Drive/Shared with me/foo",
+      },
+      {
+          "/mount_path/drive/.shortcut-targets-by-id/id/foo",
+          "Google Drive/Shared with me/foo",
+      },
+      {
+          "/mount_path/my_files",
+          "My files",
+      },
+      {
+          "/mount_path/my_files/foo",
+          "My files/foo",
+      },
+      {
+          "/mount_path/my_files/Downloads/foo",
+          "My files/Downloads/foo",
+      },
+      {
+          "/mount_path/my_files/PvmDefault",
+          "My files/Windows files",
+      },
+      {
+          "/mount_path/my_files/Camera/foo",
+          "My files/Camera/foo",
+      },
+      {
+          "/mount_path/my_files/foo/bar",
+          "My files/foo/bar",
+      },
+      {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                          arc::kAudioRootDocumentId)
+           .value(),
+       "Audio"},
+      {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                          arc::kImagesRootDocumentId)
+           .Append("foo")
+           .value(),
+       "Images/foo"},
+      {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                          arc::kVideosRootDocumentId)
+           .Append("foo/bar")
+           .value(),
+       "Videos/foo/bar"},
+      {
+          "/mount_path/android",
+          "My files/Play files",
+      },
+      {
+          "/mount_path/crostini/foo",
+          "My files/Linux files/foo",
+      },
+      {
+          "/mount_path/provided/foo",
+          "provided_label/foo",
+      },
+      {
+          "/mount_path/removable",
+          "removable_label",
+      },
+      {
+          "/mount_path/archive.zip/foo",
+          "archive.zip/foo",
+      },
+      {
+          "/mount_path/removable/foo",
+          "removable_label/foo",
+      },
+      {
+          arc::GetDocumentsProviderMountPath("authority", "document_id")
+              .value(),
+          "documents_provider_label",
+      },
+      {
+          "/mount_path/guest_os/foo",
+          "guest_os_label/foo",
+      },
+      {
+          "/mount_path/mtp",
+          "mtp_label",
+      },
+      {
+          "/mount_path/smb/foo",
+          "smb_label/foo",
+      },
+  };
+  for (auto& test : tests) {
+    EXPECT_EQ(base::FilePath(test.expected),
+              *GetDisplayablePath(profile_.get(), base::FilePath(test.path)));
+  }
+  EXPECT_EQ(absl::nullopt,
+            GetDisplayablePath(profile_.get(),
+                               base::FilePath("/non_existent/mount")));
+  EXPECT_EQ(absl::nullopt,
+            GetDisplayablePath(profile_.get(),
+                               base::FilePath("/mount_path/share_cache")));
+  EXPECT_EQ(absl::nullopt,
+            GetDisplayablePath(profile_.get(),
+                               base::FilePath("/mount_path/testing")));
 }
 
 }  // namespace

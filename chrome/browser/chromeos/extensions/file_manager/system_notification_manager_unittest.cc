@@ -11,11 +11,14 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -161,19 +164,34 @@ class SystemNotificationManagerTest
     device_event_router_ = std::make_unique<DeviceEventRouterImpl>(
         notification_manager_.get(), profile_);
 
+    VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              Profile::FromBrowserContext(context), nullptr, nullptr,
+              &disk_mount_manager_, nullptr,
+              VolumeManager::GetMtpStorageInfoCallback()));
+        }));
+    auto* volume_manager = VolumeManager::Get(profile_);
+
     // SystemNotificationManager needs the IOTaskController to be able to cancel
     // the task.
-    notification_manager_->SetIOTaskController(&io_task_controller);
-    io_task_controller.AddObserver(this);
+    io_task_controller = volume_manager->io_task_controller();
+    notification_manager_->SetIOTaskController(io_task_controller);
+    io_task_controller->AddObserver(this);
 
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     ASSERT_TRUE(dir_.GetPath().IsAbsolute());
     file_system_context = storage::CreateFileSystemContextForTesting(
         /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+
+    volume_manager->AddVolumeForTesting(
+        CreateTestFile("volume/").path(), VOLUME_TYPE_DOWNLOADS_DIRECTORY,
+        chromeos::DEVICE_TYPE_UNKNOWN, false /* read only */);
   }
 
   void TearDown() override {
-    io_task_controller.RemoveObserver(this);
+    io_task_controller->RemoveObserver(this);
 
     profile_manager_->DeleteAllTestingProfiles();
     profile_ = nullptr;
@@ -256,6 +274,7 @@ class SystemNotificationManagerTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  file_manager::FakeDiskMountManager disk_mount_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
@@ -274,7 +293,7 @@ class SystemNotificationManagerTest
   TestNotificationPlatformBridgeDelegator* notification_platform_bridge;
 
   // Used for tests with IOTask:
-  io_task::IOTaskController io_task_controller;
+  io_task::IOTaskController* io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context;
 
   // Keep track of the task state transitions.
@@ -1161,8 +1180,9 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.total_bytes = 100;
   status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("src_file.txt"), absl::nullopt);
-  status.destination_folder = CreateTestFile("dest_dir/");
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.destination_folder = CreateTestFile("volume/dest_dir/");
 
   // Send the copy begin/queued progress.
   auto* notification_manager = GetSystemNotificationManager();
@@ -1209,9 +1229,9 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.total_bytes = 100;
   status.bytes_transferred = 0;
-  auto src = CreateTestFile("src_file.txt");
+  auto src = CreateTestFile("volume/src_file.txt");
   status.sources.emplace_back(src, absl::nullopt);
-  auto dst = CreateTestFile("dest_dir/");
+  auto dst = CreateTestFile("volume/dest_dir/");
   status.destination_folder = dst;
 
   auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
@@ -1220,7 +1240,7 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
       file_system_context);
 
   // Send the copy begin/queued progress.
-  const io_task::IOTaskId task_id = io_task_controller.Add(std::move(task));
+  const io_task::IOTaskId task_id = io_task_controller->Add(std::move(task));
 
   // Check: We have the 1 notification.
   ASSERT_EQ(1u, GetNotificationCount());
