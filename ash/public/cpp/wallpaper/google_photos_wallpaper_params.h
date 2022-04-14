@@ -16,7 +16,8 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
   GooglePhotosWallpaperParams(const AccountId& account_id,
                               const std::string& id,
-                              WallpaperLayout layout);
+                              WallpaperLayout layout,
+                              bool preview_mode);
 
   GooglePhotosWallpaperParams(const GooglePhotosWallpaperParams& other);
 
@@ -33,6 +34,10 @@ struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
 
   // The layout of the wallpaper, used for wallpaper resizing.
   WallpaperLayout layout;
+
+  // If true, show the wallpaper immediately, but don't change the user
+  // wallpaper info until `ConfirmPreviewWallpaper()` is called.
+  bool preview_mode;
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(

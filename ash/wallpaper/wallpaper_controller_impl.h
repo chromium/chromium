@@ -493,10 +493,13 @@ class ASH_EXPORT WallpaperControllerImpl
       SetWallpaperCallback callback,
       const gfx::ImageSkia& image);
 
-  void CacheAndShowGooglePhotosWallpaper(
+  // Sets the current wallpaper to the Google Photos photo specified by `params`
+  // and updates the Google Photos cache to contain only `image`. Shows the
+  // wallpaper on screen if `show_wallpaper` is true.
+  void SetGooglePhotosWallpaperAndUpdateCache(
       const GooglePhotosWallpaperParams& params,
       const gfx::ImageSkia& image,
-      const WallpaperInfo& wallpaper_info);
+      bool show_wallpaper);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
   // |show_wallpaper| is true.

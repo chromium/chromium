@@ -2262,6 +2262,7 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     std::move(callback).Run(false);
     return;
   }
+
   if (photo.is_null()) {
     // The photo doesn't exist, or has been deleted. If this photo is the
     // current wallpaper, we need to reset to the default.
@@ -2292,11 +2293,11 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
     const base::FilePath& cached_path,
     bool cached_path_exists) {
   if (cached_path_exists) {
-    WallpaperInfo info(params);
     ReadAndDecodeWallpaper(
         base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded,
-                       set_wallpaper_weak_factory_.GetWeakPtr(), info,
-                       params.account_id, cached_path, std::move(callback)),
+                       set_wallpaper_weak_factory_.GetWeakPtr(),
+                       WallpaperInfo(params), params.account_id, cached_path,
+                       std::move(callback)),
         cached_path);
   } else {
     // We need to add a string to the URL to make sure we get back the correct
@@ -2339,6 +2340,29 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
   // propagation of `CurrentWallpaper` to the WebUI.
   std::move(callback).Run(true);
 
+  bool is_active_user = IsActiveUser(params.account_id);
+  if (params.preview_mode) {
+    DCHECK(is_active_user);
+    confirm_preview_wallpaper_callback_ = base::BindOnce(
+        &WallpaperControllerImpl::SetGooglePhotosWallpaperAndUpdateCache,
+        weak_factory_.GetWeakPtr(), params, image, /*show_wallpaper=*/false);
+    reload_preview_wallpaper_callback_ = base::BindRepeating(
+        &WallpaperControllerImpl::ShowWallpaperImage,
+        weak_factory_.GetWeakPtr(), image, WallpaperInfo(params),
+        /*preview_mode=*/true, /*always_on_top=*/false);
+
+    // Show the preview wallpaper.
+    reload_preview_wallpaper_callback_.Run();
+  } else {
+    SetGooglePhotosWallpaperAndUpdateCache(params, image,
+                                           /*show_wallpaper=*/is_active_user);
+  }
+}
+
+void WallpaperControllerImpl::SetGooglePhotosWallpaperAndUpdateCache(
+    const GooglePhotosWallpaperParams& params,
+    const gfx::ImageSkia& image,
+    bool show_wallpaper) {
   WallpaperInfo wallpaper_info(params);
 
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
@@ -2346,45 +2370,32 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
                   "except in tests.";
   }
 
-  sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, params.account_id),
-      base::BindOnce(
-          &WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper,
-          set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params), image,
-          wallpaper_info));
-}
-
-void WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper(
-    const GooglePhotosWallpaperParams& params,
-    const gfx::ImageSkia& image,
-    const WallpaperInfo& wallpaper_info) {
-  auto path =
-      GetUserGooglePhotosWallpaperDir(params.account_id).Append(params.id);
-
-  gfx::ImageSkia thread_safe_image(image);
-  thread_safe_image.MakeThreadSafe();
-
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&EnsureGooglePhotosDirectoryExists, params.account_id)
-          .Then(base::BindOnce(&ResizeAndSaveWallpaper, thread_safe_image, path,
-                               params.layout, thread_safe_image.width(),
-                               thread_safe_image.height()))
-          .Then(base::BindOnce([](bool success) {
-            if (!success) {
-              NOTREACHED();
-              LOG(ERROR) << "Failed to save Google Photos wallpaper cache.";
-              return;
-            }
-          })));
-
-  wallpaper_cache_map_[params.account_id] = CustomWallpaperElement(path, image);
-
-  if (IsActiveUser(params.account_id)) {
-    ShowWallpaperImage(image, wallpaper_info,
-                       /*preview_mode=*/false,
+  if (show_wallpaper) {
+    ShowWallpaperImage(image, wallpaper_info, /*preview_mode=*/false,
                        /*always_on_top=*/false);
   }
+
+  // Add current Google Photos wallpaper to in-memory cache.
+  wallpaper_cache_map_[params.account_id] =
+      CustomWallpaperElement(base::FilePath(), image);
+
+  // Clear persistent cache and repopulate with current Google Photos wallpaper.
+  gfx::ImageSkia thread_safe_image(image);
+  thread_safe_image.MakeThreadSafe();
+  auto path =
+      GetUserGooglePhotosWallpaperDir(params.account_id).Append(params.id);
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DeleteGooglePhotosCache, params.account_id)
+          .Then(base::BindOnce(&EnsureGooglePhotosDirectoryExists,
+                               params.account_id))
+          .Then(base::BindOnce(&ResizeAndSaveWallpaper, thread_safe_image, path,
+                               params.layout, thread_safe_image.width(),
+                               thread_safe_image.height())),
+      base::BindOnce([](bool success) {
+        if (!success)
+          LOG(ERROR) << "Failed to save Google Photos wallpaper.";
+      }));
 }
 
 void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
@@ -3287,7 +3298,8 @@ void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& info) {
   SetGooglePhotosWallpaper(
-      GooglePhotosWallpaperParams(account_id, info.location, info.layout),
+      GooglePhotosWallpaperParams(account_id, info.location, info.layout,
+                                  /*preview_mode=*/false),
       base::DoNothing());
 }
 

@@ -992,6 +992,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Test selecting a wallpaper before fetching the enterprise setting.
   wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
       photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false,
       base::BindLambdaForTesting([](bool success) { EXPECT_FALSE(success); }));
   wallpaper_provider_remote()->FlushForTesting();
 
@@ -1000,7 +1001,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   EXPECT_NE(
       ash::WallpaperInfo(
           {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED}),
+           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+           /*preview_mode=*/false}),
       test_wallpaper_controller()->wallpaper_info().value_or(
           ash::WallpaperInfo()));
 
@@ -1008,6 +1010,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   FetchGooglePhotosEnabled();
   wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
       photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false,
       base::BindLambdaForTesting([feature_enabled](bool success) {
         EXPECT_EQ(success, feature_enabled);
       }));
@@ -1019,7 +1022,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       feature_enabled,
       ash::WallpaperInfo(
           {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED}) ==
+           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+           /*preview_mode=*/false}) ==
           test_wallpaper_controller()->wallpaper_info().value_or(
               ash::WallpaperInfo()));
 }

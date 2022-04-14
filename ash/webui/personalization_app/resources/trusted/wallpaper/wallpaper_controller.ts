@@ -279,7 +279,8 @@ export async function selectWallpaper(
       return provider.selectLocalImage(
           image, layout, /*preview_mode=*/ shouldPreview);
     } else if (isGooglePhotosPhoto(image)) {
-      return provider.selectGooglePhotosPhoto(image.id, layout);
+      return provider.selectGooglePhotosPhoto(
+          image.id, layout, /*preview_mode=*/ shouldPreview);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};
