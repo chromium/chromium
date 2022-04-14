@@ -379,7 +379,7 @@ void PrivacySandboxService::SetFlocPrefEnabled(bool enabled) const {
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {
   return base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)
              ? pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
-             : pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
+             : pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }
 
 bool PrivacySandboxService::IsPrivacySandboxManaged() {

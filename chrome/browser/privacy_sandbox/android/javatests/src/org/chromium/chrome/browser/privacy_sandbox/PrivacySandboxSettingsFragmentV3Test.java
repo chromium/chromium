@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -64,6 +65,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /** Tests {@link PrivacySandboxSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -143,6 +145,10 @@ public final class PrivacySandboxSettingsFragmentV3Test {
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
+    private boolean isPrivacySandboxEnabled() throws ExecutionException {
+        return TestThreadUtils.runOnUiThreadBlocking(PrivacySandboxBridge::isPrivacySandboxEnabled);
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -210,14 +216,26 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     @Test
     @SmallTest
-    public void testMainSettingsView() throws IOException {
+    public void testMainSettingsView() throws IOException, ExecutionException {
+        // Reset mock to test the real instance.
+        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, null);
+        Matcher<View> sandboxCheckboxMatcher = allOf(withId(R.id.switchWidget),
+                withParent(withParent(
+                        hasDescendant(withText(R.string.privacy_sandbox_trials_title)))));
+        // Initially setting is off.
         openPrivacySandboxSettings();
-        assertTrue("Enabled initially", PrivacySandboxBridge.isPrivacySandboxEnabled());
-        // Toggle sandbox settings.
+        onView(sandboxCheckboxMatcher).check(matches(not(isChecked())));
+        assertFalse("Disabled initially", isPrivacySandboxEnabled());
+
+        // Toggle sandbox settings on.
         onView(withText(R.string.privacy_sandbox_trials_title)).perform(click());
-        assertFalse("Then disabled", PrivacySandboxBridge.isPrivacySandboxEnabled());
+        onView(sandboxCheckboxMatcher).check(matches(isChecked()));
+        assertTrue("Then enabled", isPrivacySandboxEnabled());
+
+        // Toggle sandbox settings off.
         onView(withText(R.string.privacy_sandbox_trials_title)).perform(click());
-        assertTrue("And enabled again", PrivacySandboxBridge.isPrivacySandboxEnabled());
+        onView(sandboxCheckboxMatcher).check(matches(not(isChecked())));
+        assertFalse("And disabled again", isPrivacySandboxEnabled());
     }
 
     @Test
