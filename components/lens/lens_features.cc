@@ -35,7 +35,7 @@ const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
     &kLensStandalone, "enable-ukm-logging", true};
 
 const base::FeatureParam<bool> kEnableSidePanelForLens{
-    &kLensStandalone, "enable-side-panel", false};
+    &kLensStandalone, "enable-side-panel", true};
 
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
     &kLensStandalone, "region-search-dimensions-max-pixels", 1000};

@@ -1801,6 +1801,14 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
 // must live until the right-click completes asynchronously.
 class SearchByImageBrowserTest : public InProcessBrowserTest {
  protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensStandalone,
+        std::map<std::string, std::string>{
+            {lens::features::kEnableSidePanelForLens.name, "false"}});
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetupAndLoadImagePage(const std::string& image_path) {
     // The test server must start first, so that we know the port that the test
     // server is using.
@@ -1877,6 +1885,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
