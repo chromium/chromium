@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("screen_ai_proto") {
+  sources = [ "proto/chrome_screen_ai.proto" ]
+}
+
 source_set("screen_ai") {
   sources = [
     "screen_ai_service_impl.cc",
@@ -9,6 +15,7 @@ source_set("screen_ai") {
   ]
 
   deps = [
+    ":screen_ai_proto",
     "//base",
     "//components/services/screen_ai/public/cpp:utilities",
   ]

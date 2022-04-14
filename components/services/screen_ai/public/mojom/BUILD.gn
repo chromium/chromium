@@ -10,5 +10,6 @@ mojom("mojom") {
   public_deps = [
     "//media/mojo/mojom",
     "//sandbox/policy/mojom",
+    "//ui/accessibility:ax_enums_mojo",
   ]
 }
