@@ -44,6 +44,34 @@
 
 namespace blink {
 
+namespace {
+class V8Callbacks final : public blink::UserMediaRequest::Callbacks {
+ public:
+  V8Callbacks(V8NavigatorUserMediaSuccessCallback* success_callback,
+              V8NavigatorUserMediaErrorCallback* error_callback)
+      : success_callback_(success_callback), error_callback_(error_callback) {}
+  ~V8Callbacks() override = default;
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(success_callback_);
+    visitor->Trace(error_callback_);
+    UserMediaRequest::Callbacks::Trace(visitor);
+  }
+
+  void OnSuccess(MediaStream* stream) override {
+    success_callback_->InvokeAndReportException(nullptr, stream);
+  }
+  void OnError(ScriptWrappable* callback_this_value,
+               const V8MediaStreamError* error) override {
+    error_callback_->InvokeAndReportException(callback_this_value, error);
+  }
+
+ private:
+  Member<V8NavigatorUserMediaSuccessCallback> success_callback_;
+  Member<V8NavigatorUserMediaErrorCallback> error_callback_;
+};
+}  // namespace
+
 void NavigatorMediaStream::getUserMedia(
     Navigator& navigator,
     const MediaStreamConstraints* options,
@@ -71,8 +99,10 @@ void NavigatorMediaStream::getUserMedia(
   }
   MediaErrorState error_state;
   UserMediaRequest* request = UserMediaRequest::Create(
-      navigator.DomWindow(), user_media, options, success_callback,
-      error_callback, error_state, surface);
+      navigator.DomWindow(), user_media,
+      UserMediaRequest::MediaType::kUserMedia, options,
+      MakeGarbageCollected<V8Callbacks>(success_callback, error_callback),
+      error_state, surface);
   if (!request) {
     DCHECK(error_state.HadException());
     if (error_state.CanGenerateException()) {

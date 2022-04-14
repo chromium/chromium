@@ -32,8 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_error_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_success_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -45,8 +43,10 @@ namespace blink {
 
 class LocalDOMWindow;
 class MediaErrorState;
+class MediaStream;
 class MediaStreamConstraints;
 class MediaStreamDescriptor;
+class ScriptWrappable;
 class UserMediaController;
 
 class MODULES_EXPORT UserMediaRequest final
@@ -93,13 +93,6 @@ class MODULES_EXPORT UserMediaRequest final
                                   MediaType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  MediaErrorState&,
-                                  IdentifiableSurface surface);
-  static UserMediaRequest* Create(ExecutionContext*,
-                                  UserMediaController*,
-                                  const MediaStreamConstraints* options,
-                                  V8NavigatorUserMediaSuccessCallback*,
-                                  V8NavigatorUserMediaErrorCallback*,
                                   MediaErrorState&,
                                   IdentifiableSurface surface);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,

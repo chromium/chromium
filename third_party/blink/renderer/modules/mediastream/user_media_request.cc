@@ -303,32 +303,6 @@ MediaConstraints ParseOptions(
 
 }  // namespace
 
-class UserMediaRequest::V8Callbacks final : public UserMediaRequest::Callbacks {
- public:
-  V8Callbacks(V8NavigatorUserMediaSuccessCallback* success_callback,
-              V8NavigatorUserMediaErrorCallback* error_callback)
-      : success_callback_(success_callback), error_callback_(error_callback) {}
-  ~V8Callbacks() override = default;
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(success_callback_);
-    visitor->Trace(error_callback_);
-    UserMediaRequest::Callbacks::Trace(visitor);
-  }
-
-  void OnSuccess(MediaStream* stream) override {
-    success_callback_->InvokeAndReportException(nullptr, stream);
-  }
-  void OnError(ScriptWrappable* callback_this_value,
-               const V8MediaStreamError* error) override {
-    error_callback_->InvokeAndReportException(callback_this_value, error);
-  }
-
- private:
-  Member<V8NavigatorUserMediaSuccessCallback> success_callback_;
-  Member<V8NavigatorUserMediaErrorCallback> error_callback_;
-};
-
 UserMediaRequest* UserMediaRequest::Create(
     ExecutionContext* context,
     UserMediaController* controller,
@@ -418,20 +392,6 @@ UserMediaRequest* UserMediaRequest::Create(
   return MakeGarbageCollected<UserMediaRequest>(
       context, controller, media_type, audio, video,
       options->preferCurrentTab(), callbacks, surface);
-}
-
-UserMediaRequest* UserMediaRequest::Create(
-    ExecutionContext* context,
-    UserMediaController* controller,
-    const MediaStreamConstraints* options,
-    V8NavigatorUserMediaSuccessCallback* success_callback,
-    V8NavigatorUserMediaErrorCallback* error_callback,
-    MediaErrorState& error_state,
-    IdentifiableSurface surface) {
-  return Create(
-      context, controller, UserMediaRequest::MediaType::kUserMedia, options,
-      MakeGarbageCollected<V8Callbacks>(success_callback, error_callback),
-      error_state, surface);
 }
 
 UserMediaRequest* UserMediaRequest::CreateForTesting(
