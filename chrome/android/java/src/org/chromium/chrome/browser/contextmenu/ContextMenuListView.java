@@ -16,8 +16,12 @@ import org.chromium.chrome.R;
  * constrained to make sure the view fits the screen size with margins.
  */
 public class ContextMenuListView extends ListView {
+    // Whether the max width of this list view is limited by screen width.
+    private final boolean mLimitedByScreenWidth;
+
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mLimitedByScreenWidth = ContextMenuUtils.forcePopupStyleEnabled();
     }
 
     @Override
@@ -47,6 +51,11 @@ public class ContextMenuListView extends ListView {
         final int parentLateralPadding = frame.getPaddingLeft();
         final int maxWidth = Math.min(maxWidthFromRes, frame.getMeasuredWidth());
 
+        // When context menu is a popup, the max width with windowWidth - 2 * lateralMargin does not
+        // applied since it is presented in a popup window. See https://crbug.com/1314675.
+        if (mLimitedByScreenWidth) {
+            return maxWidth - 2 * parentLateralPadding;
+        }
         return Math.min(maxWidth, windowWidthPx - 2 * lateralMargin) - 2 * parentLateralPadding;
     }
 }
