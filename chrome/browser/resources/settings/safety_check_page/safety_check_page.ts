@@ -25,7 +25,7 @@ import './safety_check_chrome_cleaner_child.js';
 
 // </if>
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -107,8 +107,7 @@ export class SettingsSafetyCheckPageElement extends
     // Trigger safety check.
     this.safetyCheckBrowserProxy_.runSafetyCheck();
     // Readout new safety check status via accessibility.
-    CrA11yAnnouncerElement.getInstance().announce(
-        this.i18n('safetyCheckAriaLiveRunning'));
+    getAnnouncerInstance().announce(this.i18n('safetyCheckAriaLiveRunning'));
   }
 
   private onSafetyCheckParentChanged_(event: ParentChangedEvent) {
@@ -129,8 +128,7 @@ export class SettingsSafetyCheckPageElement extends
       // Run initial safety check parent ran string update now.
       update();
       // Readout new safety check status via accessibility.
-      CrA11yAnnouncerElement.getInstance().announce(
-          this.i18n('safetyCheckAriaLiveAfter'));
+      getAnnouncerInstance().announce(this.i18n('safetyCheckAriaLiveAfter'));
     }
   }
 

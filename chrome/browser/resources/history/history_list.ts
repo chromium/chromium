@@ -9,7 +9,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import './shared_style.js';
 import './history_item.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -160,7 +160,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
 
     if (info.term && !this.queryState.incremental) {
-      CrA11yAnnouncerElement.getInstance().announce(
+      getAnnouncerInstance().announce(
           searchResultsTitle(results.length, info.term));
     }
 
@@ -453,7 +453,7 @@ export class HistoryListElement extends HistoryListElementBase {
     const itemData = this.actionMenuModel_!;
 
     this.deleteItems_([itemData.item]).then(() => {
-      CrA11yAnnouncerElement.getInstance().announce(
+      getAnnouncerInstance().announce(
           this.i18n('deleteSuccess', itemData.item.title));
 
       // This unselect-all resets the toolbar when deleting a selected item

@@ -13,7 +13,7 @@ import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Route, Router} from '../../router.js';
@@ -184,7 +184,7 @@ function longestCommonSubstrings(string1, string2) {
 
       // The selected item is normally not focused when selected, the
       // selected search result should be verbalized as it changes.
-      CrA11yAnnouncerElement.getInstance().announce(this.ariaLabel);
+      getAnnouncerInstance().announce(this.ariaLabel);
     },
 
     /**

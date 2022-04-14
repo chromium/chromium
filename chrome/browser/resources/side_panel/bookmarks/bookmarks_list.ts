@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -242,7 +242,7 @@ export class BookmarksListElement extends PolymerElement {
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
     afterNextRender(this, () => {
       this.focusBookmark_(node.id);
-      CrA11yAnnouncerElement.getInstance().announce(
+      getAnnouncerInstance().announce(
           loadTimeData.getStringF('bookmarkCreated', getBookmarkName(node)));
     });
   }
@@ -286,7 +286,7 @@ export class BookmarksListElement extends PolymerElement {
       this.bookmarksApi_.cutBookmark(bookmarkData.id);
     } else if (event.key === 'c') {
       this.bookmarksApi_.copyBookmark(bookmarkData.id);
-      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+      getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkCopied', getBookmarkName(bookmarkData)));
     } else if (event.key === 'v') {
       if (isBookmarkFolderElement(eventTarget)) {
@@ -343,10 +343,10 @@ export class BookmarksListElement extends PolymerElement {
         `${newParentPathString}.children`, movedInfo.index, 0, movedNode);
 
     if (movedInfo.oldParentId === movedInfo.parentId) {
-      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+      getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkReordered', getBookmarkName(movedNode)));
     } else {
-      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+      getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(movedNode),
           getBookmarkName(newParent!)));
     }
@@ -361,7 +361,7 @@ export class BookmarksListElement extends PolymerElement {
         `${oldParentPathString}.children`,
         oldParent.children!.indexOf(removedNode), 1);
 
-    CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+    getAnnouncerInstance().announce(loadTimeData.getStringF(
         'bookmarkDeleted', getBookmarkName(removedNode)));
   }
 

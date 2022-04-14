@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -229,7 +229,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
                      loadTimeData.getStringF(
                          'searchResultsPlural', this.items_.length,
                          searchText));
-            CrA11yAnnouncerElement.getInstance().announce(announcement);
+            getAnnouncerInstance().announce(announcement);
           });
     }
   }

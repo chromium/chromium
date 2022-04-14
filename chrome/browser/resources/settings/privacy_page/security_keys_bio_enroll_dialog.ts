@@ -21,7 +21,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
@@ -262,7 +262,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     if (response.status !== SampleStatus.OK) {
       this.progressArcLabel_ =
           this.i18n('securityKeysBioEnrollmentTryAgainLabel');
-      CrA11yAnnouncerElement.getInstance().announce(this.progressArcLabel_);
+      getAnnouncerInstance().announce(this.progressArcLabel_);
       return;
     }
 

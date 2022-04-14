@@ -30,7 +30,7 @@ import './passwords_export_dialog.js';
 import './passwords_shared_css.js';
 import './avatar_icon.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -739,7 +739,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
               this.i18n('searchResultsPlural', total.toString(), this.filter);
       }
 
-      CrA11yAnnouncerElement.getInstance().announce(text);
+      getAnnouncerInstance().announce(text);
     }, 0);
   }
 

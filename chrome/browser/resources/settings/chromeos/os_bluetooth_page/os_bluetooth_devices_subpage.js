@@ -16,7 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {Route, Router} from '../../router.js';
@@ -288,7 +288,7 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   /** @private */
   annouceBluetoothStateChange_() {
-    CrA11yAnnouncerElement.getInstance().announce(
+    getAnnouncerInstance().announce(
         this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
                                     this.i18n('bluetoothDisabledA11YLabel'));
   }

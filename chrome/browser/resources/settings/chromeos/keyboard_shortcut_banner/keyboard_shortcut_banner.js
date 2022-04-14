@@ -15,7 +15,7 @@
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 
 /**
@@ -51,8 +51,7 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
 
   /** @private */
   onDismissClick_() {
-    CrA11yAnnouncerElement.getInstance().announce(
-        this.i18n('shortcutBannerDismissed'));
+    getAnnouncerInstance().announce(this.i18n('shortcutBannerDismissed'));
     this.dispatchEvent(new CustomEvent('dismiss'));
   }
 

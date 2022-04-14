@@ -17,7 +17,7 @@ import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
@@ -309,7 +309,7 @@ Polymer({
     this.browserProxy_.photoTaken(event.detail.photoDataUrl);
     this.pictureList_.setOldImageUrl(event.detail.photoDataUrl);
     this.pictureList_.setFocus();
-    CrA11yAnnouncerElement.getInstance().announce(
+    getAnnouncerInstance().announce(
         loadTimeData.getString('photoCaptureAccessibleText'));
   },
 
@@ -319,7 +319,7 @@ Polymer({
    */
   onSwitchMode_(event) {
     const videomode = event.detail;
-    CrA11yAnnouncerElement.getInstance().announce(this.i18n(
+    getAnnouncerInstance().announce(this.i18n(
         videomode ? 'videoModeAccessibleText' : 'photoModeAccessibleText'));
   },
 

@@ -36,6 +36,18 @@ export const TIMEOUT_MS: number = 150;
  */
 const instances: Map<HTMLElement, CrA11yAnnouncerElement> = new Map();
 
+export function getInstance(container: HTMLElement = document.body):
+    CrA11yAnnouncerElement {
+  if (instances.has(container)) {
+    return instances.get(container)!;
+  }
+  assert(container.isConnected);
+  const instance = new CrA11yAnnouncerElement();
+  container.appendChild(instance);
+  instances.set(container, instance);
+  return instance;
+}
+
 export class CrA11yAnnouncerElement extends PolymerElement {
   static get is() {
     return 'cr-a11y-announcer';
@@ -98,18 +110,6 @@ export class CrA11yAnnouncerElement extends PolymerElement {
       this.messages_.length = 0;
       this.currentTimeout_ = null;
     }, TIMEOUT_MS);
-  }
-
-  static getInstance(container: HTMLElement = document.body):
-      CrA11yAnnouncerElement {
-    if (instances.has(container)) {
-      return instances.get(container)!;
-    }
-    assert(container.isConnected);
-    const instance = new CrA11yAnnouncerElement();
-    container.appendChild(instance);
-    instances.set(container, instance);
-    return instance;
   }
 }
 

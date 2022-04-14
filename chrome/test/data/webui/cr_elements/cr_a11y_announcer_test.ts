@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
-import {CrA11yAnnouncerElement, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -14,19 +14,19 @@ suite('CrA11yAnnouncerElementTest', () => {
   });
 
   test('CreatesAndGetsAnnouncers', () => {
-    const defaultAnnouncer = CrA11yAnnouncerElement.getInstance();
+    const defaultAnnouncer = getInstance();
     assertEquals(document.body, defaultAnnouncer.parentElement);
-    assertEquals(defaultAnnouncer, CrA11yAnnouncerElement.getInstance());
+    assertEquals(defaultAnnouncer, getInstance());
 
     const dialog = document.createElement('dialog');
     document.body.appendChild(dialog);
-    const dialogAnnouncer = CrA11yAnnouncerElement.getInstance(dialog);
+    const dialogAnnouncer = getInstance(dialog);
     assertEquals(dialog, dialogAnnouncer.parentElement);
-    assertEquals(dialogAnnouncer, CrA11yAnnouncerElement.getInstance(dialog));
+    assertEquals(dialogAnnouncer, getInstance(dialog));
   });
 
   test('QueuesMessages', async () => {
-    const announcer = CrA11yAnnouncerElement.getInstance();
+    const announcer = getInstance();
     const messagesDiv = announcer.shadowRoot!.querySelector('#messages')!;
 
     // Queue up 2 messages at once, and assert they both exist.
@@ -48,7 +48,7 @@ suite('CrA11yAnnouncerElementTest', () => {
   });
 
   test('ClearsAnnouncerOnDisconnect', async () => {
-    const announcer = CrA11yAnnouncerElement.getInstance();
+    const announcer = getInstance();
     const lostMessage = 'You will never hear me.';
     announcer.announce(lostMessage);
     announcer.remove();
@@ -58,11 +58,11 @@ suite('CrA11yAnnouncerElementTest', () => {
             lostMessage));
 
     // Creates new announcer since previous announcer is removed from instances.
-    assertNotEquals(announcer, CrA11yAnnouncerElement.getInstance());
+    assertNotEquals(announcer, getInstance());
   });
 
   test('SendsCustomEvent', async () => {
-    const announcer = CrA11yAnnouncerElement.getInstance();
+    const announcer = getInstance();
     const announcerEventPromise =
         eventToPromise('cr-a11y-announcer-messages-sent', document.body);
     const message1 = 'Hello.';

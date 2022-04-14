@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../settings_shared_css.js';
 import '../i18n_setup.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 
@@ -209,7 +209,7 @@ export class SettingsSecurityKeysPinFieldElement extends
   private errorChanged_() {
     // Make screen readers announce changes to the PIN validation error
     // label.
-    CrA11yAnnouncerElement.getInstance().announce(this.error_);
+    getAnnouncerInstance().announce(this.error_);
   }
 }
 

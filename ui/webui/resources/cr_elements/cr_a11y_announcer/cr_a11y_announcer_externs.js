@@ -10,6 +10,3 @@ function CrA11yAnnouncerElement() {}
 
 /** @param {string} message */
 CrA11yAnnouncerElement.prototype.announce = function(message) {};
-
-/** @return {!CrA11yAnnouncerElement} */
-CrA11yAnnouncerElement.getInstance = function() {};

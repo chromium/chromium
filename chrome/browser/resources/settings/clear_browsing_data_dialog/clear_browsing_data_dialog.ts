@@ -20,7 +20,7 @@ import '../controls/settings_checkbox.js';
 import '../icons.js';
 import '../settings_shared_css.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
@@ -480,8 +480,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         await this.browserProxy_.clearBrowsingData(
             dataTypes, timePeriod, this.installedApps_);
     this.clearingInProgress_ = false;
-    CrA11yAnnouncerElement.getInstance().announce(
-        loadTimeData.getString('clearedData'));
+    getAnnouncerInstance().announce(loadTimeData.getString('clearedData'));
     this.showHistoryDeletionDialog_ = showHistoryNotice;
     // If both the history notice and the passwords notice should be shown, show
     // the history notice first, and then show the passwords notice once the

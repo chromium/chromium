@@ -16,7 +16,7 @@ import '../../settings_vars_css.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 
 /**
@@ -109,8 +109,7 @@ Polymer({
         return;
       }
 
-      CrA11yAnnouncerElement.getInstance().announce(
-          this.i18n('userAddedMessage', userEmail));
+      getAnnouncerInstance().announce(this.i18n('userAddedMessage', userEmail));
 
       this.$.dialog.close();
       this.usersPrivate_.addUser(

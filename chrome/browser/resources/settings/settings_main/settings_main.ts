@@ -19,7 +19,7 @@ import '../search_settings.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -167,7 +167,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
               this.inSearchMode_ && !result.didFindMatches;
 
           if (this.inSearchMode_) {
-            CrA11yAnnouncerElement.getInstance().announce(
+            getAnnouncerInstance().announce(
                 this.showNoResultsFound_ ?
                     loadTimeData.getString('searchNoResults') :
                     loadTimeData.getStringF('searchResults', query));
