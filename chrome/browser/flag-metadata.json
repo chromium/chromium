@@ -5429,6 +5429,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "smart-lock-sign-in-removed",
+    "owners": [ "bhartmire", "better-together-dev@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "smart-lock-ui-revamp",
     "owners": [ "cclem", "better-together-dev@google.com" ],
     "expiry_milestone": 103

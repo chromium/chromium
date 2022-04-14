@@ -54536,6 +54536,7 @@ from previous Chrome versions.
   <int value="-531379517" label="MediaSessionNotification:disabled"/>
   <int value="-530799497" label="MacCoreLocationImplementation:enabled"/>
   <int value="-530480158" label="EnableSuggestedFiles:enabled"/>
+  <int value="-529896675" label="SmartLockSignInRemoved:disabled"/>
   <int value="-528927088" label="AutofillCreditCardPopupLayout:disabled"/>
   <int value="-528441522" label="AppsShortcutDefaultOff:disabled"/>
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
@@ -55468,6 +55469,7 @@ from previous Chrome versions.
   <int value="119185738"
       label="OmniboxUIExperimentMaxAutocompleteMatches:disabled"/>
   <int value="119309423" label="WebAssemblyThreads:disabled"/>
+  <int value="120097846" label="SmartLockSignInRemoved:enabled"/>
   <int value="120429808" label="disable-new-profile-management"/>
   <int value="120519004" label="NavigationPredictor:disabled"/>
   <int value="120880746" label="NtpPhotosModuleSoftOptOut:disabled"/>

@@ -1282,6 +1282,12 @@ const base::Feature kSimLockPolicy{"SimLockPolicy",
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Deprecates Sign in with Smart Lock feature. Hides Smart Lock at the sign in
+// screen, removes the Smart Lock subpage in settings, and shows a one-time
+// notification for users who previously had this feature enabled.
+const base::Feature kSmartLockSignInRemoved{"SmartLockSignInRemoved",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Replaces Smart Lock UI in lock screen password box with new UI similar to
 // fingerprint auth. Adds Smart Lock to "Lock screen and sign-in" section of
 // settings.

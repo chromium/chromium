@@ -5234,6 +5234,12 @@ const char kShowTouchHudDescription[] =
     "Ctrl-Alt-I shows a heads-up display view in the top-left corner. Helps "
     "debug hardware issues that generate spurious touch events.";
 
+const char kSmartLockSignInRemovedName[] = "Remove Sign in with Smart Lock";
+const char kSmartLockSignInRemovedDescription[] =
+    "Deprecates Sign in with Smart Lock feature. Hides Smart Lock on the sign "
+    "in screen, removes the Smart Lock subpage in settings, and shows a "
+    "one-time notification for users who previously had this feature enabled.";
+
 const char kSmartLockUIRevampName[] = "Enable Smart Lock UI Revamp";
 const char kSmartLockUIRevampDescription[] =
     "Replaces the existing Smart Lock UI on the lock screen with a new design "

@@ -3007,6 +3007,9 @@ extern const char kShowTouchHudDescription[];
 extern const char kSimLockPolicyName[];
 extern const char kSimLockPolicyDescription[];
 
+extern const char kSmartLockSignInRemovedName[];
+extern const char kSmartLockSignInRemovedDescription[];
+
 extern const char kSmartLockUIRevampName[];
 extern const char kSmartLockUIRevampDescription[];
 
