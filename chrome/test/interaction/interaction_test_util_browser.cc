@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/user_education_test_util.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 
 #include <memory>
 

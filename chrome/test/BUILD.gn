@@ -380,8 +380,6 @@ static_library("test_support") {
       "base/dialog_test_browser_window.h",
       "base/test_browser_window.cc",
       "base/test_browser_window.h",
-      "interaction/interaction_sequence_browser_util.cc",
-      "interaction/interaction_sequence_browser_util.h",
     ]
     allow_circular_includes_from = [ ":test_support_ui" ]
   }
@@ -8558,8 +8556,6 @@ if (!is_android) {
       "../browser/ui/search/ntp_test_utils.h",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h",
-      "../browser/ui/views/user_education/user_education_test_util.cc",
-      "../browser/ui/views/user_education/user_education_test_util.h",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.cc",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
@@ -8593,6 +8589,10 @@ if (!is_android) {
       "base/web_ui_browser_test.h",
       "base/web_ui_test_data_source.cc",
       "base/web_ui_test_data_source.h",
+      "interaction/interaction_sequence_browser_util.cc",
+      "interaction/interaction_sequence_browser_util.h",
+      "interaction/interaction_test_util_browser.cc",
+      "interaction/interaction_test_util_browser.h",
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
     ]

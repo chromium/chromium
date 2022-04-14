@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_view.h"
-#include "chrome/browser/ui/views/user_education/user_education_test_util.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
