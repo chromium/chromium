@@ -7680,7 +7680,7 @@ crbug.com/1312266 [ Mac10.13 ] external/wpt/css/css-ui/compute-kind-widget-gener
 crbug.com/1312469 [ Mac10.12 ] external/wpt/hr-time/clamped-time-origin-isolated.https.html [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] fast/forms/calendar-picker/date-picker-select-value-with-keyboard.html [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Skip ]
-crbug.com/1312469 [ Mac10.12 ] virtual/threaded-no-composited-antialiasing/animations/interpolation/svg-d-interpolation-001.html [ Skip ]
+crbug.com/1313476 [ Mac10.12 ] virtual/threaded-no-composited-antialiasing/animations/interpolation/svg-d-interpolation-001.html [ Failure Pass ]
 crbug.com/1312469 [ Mac10.12 ] virtual/fledge/http/tests/inspector-protocol/storage/interest-groups.js [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Skip ]
