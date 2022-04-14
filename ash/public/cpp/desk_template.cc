@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
@@ -25,18 +26,20 @@ DeskTemplate::~DeskTemplate() = default;
 
 // static
 bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
-  // For now we'll ignore crostini and lacros windows in desk template. We'll
-  // also ignore ARC apps unless the flag is turned on.
+  // For now we'll ignore crostini windows in desk template. We'll also ignore
+  // lacros windows if it is not the primary browser. We'll also ignore ARC apps
+  // unless the flag is turned on.
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
   switch (app_type) {
     case AppType::NON_APP:
     case AppType::CROSTINI_APP:
       return false;
+    case AppType::LACROS:
+      return crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
     case AppType::ARC_APP:
     case AppType::BROWSER:
     case AppType::CHROME_APP:
-    case AppType::LACROS:
     case AppType::SYSTEM_APP:
       break;
   }
