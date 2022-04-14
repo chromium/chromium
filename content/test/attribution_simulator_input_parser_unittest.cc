@@ -68,11 +68,11 @@ TEST(AttributionSimulatorInputParserTest, EmptyInputParses) {
 TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
   constexpr char kJson[] = R"json({"sources": [
     {
+      "timestamp": 1643235574,
       "source_type": "navigation",
-      "source_time": 1643235574,
       "reporting_origin": "https://a.r.test",
       "source_origin": "https://a.s.test",
-      "registration_config": {
+      "Attribution-Reporting-Register-Source": {
         "source_event_id": "123",
         "destination": "https://a.d.test",
         "expiry": "864000000",
@@ -81,21 +81,21 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       }
     },
     {
+      "timestamp": 1643235573,
       "source_type": "event",
-      "source_time": 1643235573,
       "reporting_origin": "https://b.r.test",
       "source_origin": "https://b.s.test",
-      "registration_config": {
+      "Attribution-Reporting-Register-Source": {
         "source_event_id": "456",
         "destination": "https://b.d.test"
       }
     },
     {
+      "timestamp": 1643235575,
       "source_type": "event",
-      "source_time": 1643235575,
       "reporting_origin": "https://c.r.test",
       "source_origin": "https://c.s.test",
-      "registration_config": {
+      "Attribution-Reporting-Register-Source": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
         "expiry": "864000001",
@@ -106,19 +106,19 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       }
     },
     {
+      "timestamp": 1643235576,
       "source_type": "event",
-      "source_time": 1643235576,
       "reporting_origin": "https://c.r.test",
       "source_origin": "https://c.s.test",
-      "registration_config": {
+      "Attribution-Reporting-Register-Source": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
-        "expiry": "864000001",
-        "aggregatable_source": [{
-          "key_id": "a",
-          "key_piece": "0x1"
-        }]
-      }
+        "expiry": "864000001"
+      },
+      "Attribution-Reporting-Register-Aggregatable-Source": [{
+        "id": "a",
+        "key_piece": "0x1"
+      }]
     }
   ]})json";
 
@@ -205,11 +205,11 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
   constexpr char kJson[] = R"json({
     "sources": [
       {
+        "timestamp": 1643235574,
         "source_type": "navigation",
-        "source_time": 1643235574,
         "reporting_origin": "https://r.test",
         "source_origin": "https://s.test",
-        "registration_config": {
+        "Attribution-Reporting-Register-Source": {
           "source_event_id": "123",
           "destination": "https://d.test",
           "filter_data": {"a": ["b", "c"]},
@@ -221,16 +221,14 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
     ],
     "triggers": [
       {
-        "trigger_time": 1643235576,
+        "timestamp": 1643235576,
         "reporting_origin": "https://a.r.test",
-        "destination": " https://a.d1.test",
-        "registration_config": {
-          "trigger_data": "10",
-          "event_source_trigger_data": "3",
-          "priority": "-5",
-          "deduplication_key": "123",
-          "debug_key": "14"
-        }
+        "destination_origin": " https://a.d1.test",
+        "trigger_data": "10",
+        "event_source_trigger_data": "3",
+        "priority": "-5",
+        "deduplication_key": "123",
+        "debug_key": "14"
       }
     ]})json";
 
@@ -248,50 +246,43 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
 TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   constexpr char kJson[] = R"json({"triggers": [
     {
-      "trigger_time": 1643235576,
+      "timestamp": 1643235576,
       "reporting_origin": "https://a.r.test",
-      "destination": " https://a.d1.test",
-      "registration_config": {
-        "event_triggers": [
-          {
-            "trigger_data": "10",
-            "priority": "-5",
-            "deduplication_key": "123",
-            "filters": {
-              "x": ["y"]
-            },
-            "not_filters": {
-              "z": []
-            }
+      "destination_origin": " https://a.d1.test",
+      "Attribution-Reporting-Register-Event-Trigger": [
+        {
+          "trigger_data": "10",
+          "priority": "-5",
+          "deduplication_key": "123",
+          "filters": {
+            "x": ["y"]
           },
-          {}
-        ],
-        "debug_key": "14",
-        "filters": {
-          "a": ["b", "c"],
-          "d": []
-        }
+          "not_filters": {
+            "z": []
+          }
+        },
+        {}
+      ],
+      "Attribution-Reporting-Trigger-Debug-Key": "14",
+      "Attribution-Reporting-Filters": {
+        "a": ["b", "c"],
+        "d": []
       }
     },
     {
-      "trigger_time": 1643235575,
+      "timestamp": 1643235575,
       "reporting_origin": "https://b.r.test",
-      "destination": " https://a.d2.test",
-      "registration_config": {}
+      "destination_origin": " https://a.d2.test"
     },
     {
-      "trigger_time": 1643235574,
+      "timestamp": 1643235574,
       "reporting_origin": "https://b.r.test",
-      "destination": " https://a.d2.test",
-      "registration_config": {
-        "aggregatable_trigger": {
-          "trigger_data": [{
-            "source_keys": ["a"],
-            "key_piece": "0x1"
-          }],
-          "values": {"a": 1}
-        }
-      }
+      "destination_origin": " https://a.d2.test",
+      "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
+        "source_keys": ["a"],
+        "key_piece": "0x1"
+      }],
+      "Attribution-Reporting-Register-Aggregatable-Values": {"a": 1}
     }
   ]})json";
 
@@ -385,20 +376,19 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
 TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
   constexpr char kJson[] = R"json({
     "sources": [{
+      "timestamp": 1643235573,
       "source_type": "event",
-      "source_time": 1643235573,
       "reporting_origin": "https://b.r.test",
       "source_origin": "https://b.s.test",
-      "registration_config": {
+      "Attribution-Reporting-Register-Source": {
         "source_event_id": "456",
         "destination": "https://b.d.test"
       }
     }],
     "triggers": [{
-      "trigger_time": 1643235575,
+      "timestamp": 1643235575,
       "reporting_origin": "https://b.r.test",
-      "destination": " https://a.d2.test",
-      "registration_config": {}
+      "destination_origin": " https://a.d2.test"
     }]
   })json";
 
@@ -438,128 +428,104 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
-          "source_time": 1643235574,
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["source_time"]: must be an integer number of)",
-        R"json({"sources": [{
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
-        R"json({"sources": [{
-          "source_type": "navigation",
-          "source_time": 1643235574,
-          "source_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
-        R"json({"sources": [{
-          "source_type": "navigation",
-          "source_time": 1643235574,
-          "source_origin": "https://a.s.test",
-          "reporting_origin": "http://r.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["source_origin"]: must be a valid, secure origin)",
-        R"json({"sources": [{
-          "source_type": "navigation",
-          "source_time": 1643235574,
-          "reporting_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["registration_config"]: must be present)",
-        R"json({"sources": [{
-          "source_type": "navigation",
-          "source_time": 1643235574,
+          "timestamp": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test"
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]: must be a dictionary)",
+        R"(["sources"][0]["timestamp"]: must be an integer number of)",
         R"json({"sources": [{
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "registration_config": ""
+          "source_origin": "https://a.s.test"
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["source_event_id"]: must be a uint64 formatted)",
+        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
+          "source_origin": "https://a.s.test"
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
+        R"json({"sources": [{
+          "timestamp": 1643235574,
+          "source_type": "navigation",
+          "source_origin": "https://a.s.test",
+          "reporting_origin": "http://r.test"
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["source_origin"]: must be a valid, secure origin)",
+        R"json({"sources": [{
+          "timestamp": 1643235574,
+          "source_type": "navigation",
+          "reporting_origin": "https://a.s.test"
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: must be present)",
+        R"json({"sources": [{
+          "timestamp": 1643235574,
+          "source_type": "navigation",
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test"
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: must be a dictionary)",
+        R"json({"sources": [{
+          "timestamp": 1643235574,
+          "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": ""
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
+        R"json({"sources": [{
+          "timestamp": 1643235574,
+          "source_type": "navigation",
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "Attribution-Reporting-Register-Source": {
             "destination": "https://a.d.test"
           }
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["destination"]: must be a valid, secure origin)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["destination"]: must be a valid, secure origin)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
+          "Attribution-Reporting-Register-Source": {
+            "source_event_id": "123"
           }
         }]})json",
     },
     {
         R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "NAVIGATION",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "registration_config": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          }
+          "source_origin": "https://a.s.test"
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["expiry"]: must be a positive number of)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["expiry"]: must be a positive number of)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
             "destination": "https://a.d.test",
             "expiry": "-5"
@@ -567,13 +533,13 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["priority"]: must be an int64)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["priority"]: must be an int64)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
             "destination": "https://a.d.test",
             "priority": "x"
@@ -581,26 +547,26 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["source_event_id"]: must be a uint64 formatted)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "x",
-            "destination": "https://a.d.test",
+            "destination": "https://a.d.test"
           }
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["filter_data"]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]: must be a dictionary)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
             "destination": "https://a.d.test",
             "filter_data": ""
@@ -608,13 +574,13 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["filter_data"]["a"]: must be a list)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"]: must be a list)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
             "destination": "https://a.d.test",
             "filter_data": {
@@ -624,13 +590,13 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["filter_data"]["a"][0]: must be a string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"][0]: must be a string)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "navigation",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
             "destination": "https://a.d.test",
             "filter_data": {
@@ -640,61 +606,62 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["aggregatable_source"]: must be a list)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]: must be a list)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "event",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregatable_source": ""
-          }
+            "destination": "https://a.d.test"
+          },
+          "Attribution-Reporting-Register-Aggregatable-Source": ""
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]: must be a dictionary)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "event",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregatable_source": [5]
-          }
+            "destination": "https://a.d.test"
+          },
+          "Attribution-Reporting-Register-Aggregatable-Source": [5]
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]["key_id"]: must be a string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["id"]: must be a string)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "event",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregatable_source": [{"key_id": 5}]
-          }
+            "destination": "https://a.d.test"
+          },
+          "Attribution-Reporting-Register-Aggregatable-Source": [{"id": 5}]
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
         R"json({"sources": [{
+          "timestamp": 1643235574,
           "source_type": "event",
-          "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
-          "registration_config": {
+          "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregatable_source": [{
-              "key_id": "a",
-              "key_piece": "0xG"}]
-          }
+            "destination": "https://a.d.test"
+          },
+          "Attribution-Reporting-Register-Aggregatable-Source": [{
+            "id": "a",
+            "key_piece": "0xG"
+          }]
         }]})json",
     },
     {
@@ -702,44 +669,24 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"sources": ""})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]: must be present)",
+        R"(["triggers"][0]["timestamp"]: must be an integer number of)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
+          "destination_origin": " https://a.d1.test"
         }]})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]: must be a dictionary)",
+        R"(["triggers"][0]["destination_origin"]: must be a valid, secure origin)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": ""
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["trigger_time"]: must be an integer number of)",
-        R"json({"triggers": [{
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {}
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["destination"]: must be a valid, secure origin)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "registration_config": {}
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test"
         }]})json",
     },
     {
         R"(["triggers"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "destination": " https://a.d1.test",
-          "registration_config": {}
+          "timestamp": 1643235576,
+          "destination_origin": " https://a.d1.test"
         }]})json",
     },
     {
@@ -747,165 +694,121 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"triggers": ""})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]["event_triggers"]: must be a list)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Event-Trigger"]: must be a list)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
+          "timestamp": 1643235576,
           "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "event_triggers": 1
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Event-Trigger": 1
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"]: must be a list)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": 5
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]: must be a dictionary)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [ 5 ]
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"]: must be present)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{}]
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"]: must be a list)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
+            "source_keys": "a"
+          }]
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"][0]: must be a string)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
+            "source_keys": [ 5 ]
+          }]
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
+            "source_keys": [ "a" ],
+            "key_piece": "0xG"
+          }]
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]: must be a dictionary)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Values": 5
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]["a"]: must be a positive integer)",
+        R"json({"triggers": [{
+          "timestamp": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Values": {
+            "a": -5
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]: must be a dictionary)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
+        R"(["triggers"][0]["Attribution-Reporting-Register-Event-Trigger"][0]: must be a dictionary)",
+        R"json({"triggers":[{
+          "timestamp": 1643235576,
           "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": 5
-          }
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Event-Trigger":[true]
         }]})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"]: must be present)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"]: must be present)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
+          "timestamp": 1643235576,
           "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {}
-          }
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Values": {}
         }]})json",
     },
     {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"]: must be a list)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]: must be present)",
         R"json({"triggers": [{
-          "trigger_time": 1643235576,
+          "timestamp": 1643235576,
           "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": 5
-            }
-          }
+          "destination_origin": " https://a.d1.test",
+          "Attribution-Reporting-Register-Aggregatable-Trigger-Data": []
         }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]: must be a dictionary)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": [ 5 ]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"]: must be present)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": [{}]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"]: must be a list)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": [{
-                "source_keys": "a"
-              }]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"][0]: must be a string)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": [{
-                "source_keys": [ 5 ]
-              }]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "trigger_data": [{
-                "source_keys": [ "a" ],
-                "key_piece": "0xG"
-              }]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]: must be present)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {}
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]: must be a dictionary)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "values": 5
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]["a"]: must be a positive integer)",
-        R"json({"triggers": [{
-          "trigger_time": 1643235576,
-          "reporting_origin": "https://a.r.test",
-          "destination": " https://a.d1.test",
-          "registration_config": {
-            "aggregatable_trigger": {
-              "values": {
-                "a": -5
-              }
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["registration_config"]["event_triggers"][0]: must be a dictionary)",
-        R"json({"triggers":[{"registration_config":{"event_triggers":[true]}}]})json",
     }};
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,

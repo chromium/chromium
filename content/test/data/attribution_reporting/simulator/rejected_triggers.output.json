@@ -3,58 +3,50 @@
     {
       "event_level_reason": "noMatchingSources",
       "trigger": {
-        "trigger_time": 1643235572,
+        "timestamp": 1643235572,
         "reporting_origin": "https://r.test",
-        "destination": "https://d.test",
-        "registration_config": {
-          "event_triggers": [
-            {
-              "trigger_data": "1"
-            }
-          ]
-        }
+        "destination_origin": "https://d.test",
+        "Attribution-Reporting-Register-Event-Trigger": [
+          {
+            "trigger_data": "1"
+          }
+        ]
       }
     },
     {
       "event_level_reason": "deduplicated",
       "trigger": {
-        "trigger_time": 1643235575,
+        "timestamp": 1643235575,
         "reporting_origin": "https://r.test",
-        "destination": "https://d.test",
-        "registration_config": {
-          "event_triggers": [
-            {
-              "trigger_data": "3",
-              "deduplication_key": "22"
-            }
-          ]
-        }
+        "destination_origin": "https://d.test",
+        "Attribution-Reporting-Register-Event-Trigger": [
+          {
+            "trigger_data": "3",
+            "deduplication_key": "22"
+          }
+        ]
       }
     },
     {
       "aggregatable_reason": "noHistograms",
       "event_level_reason": "priorityTooLow",
       "trigger": {
-        "trigger_time": 1643235578,
+        "timestamp": 1643235578,
         "reporting_origin": "https://r.test",
-        "destination": "https://d.test",
-        "registration_config": {
-          "event_triggers": [
-            {
-              "trigger_data": "6"
-            }
-          ],
-          "aggregatable_trigger": {
-            "trigger_data": [
-              {
-                "source_keys": ["a"],
-                "key_piece": "0x400"
-              }
-            ],
-            "values": {
-              "b": 123
-            }
+        "destination_origin": "https://d.test",
+        "Attribution-Reporting-Register-Event-Trigger": [
+          {
+            "trigger_data": "6"
           }
+        ],
+        "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [
+          {
+            "source_keys": ["a"],
+            "key_piece": "0x400"
+          }
+        ],
+        "Attribution-Reporting-Register-Aggregatable-Values": {
+          "b": 123
         }
       }
     }
