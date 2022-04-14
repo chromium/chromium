@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 78 tests; 73 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 79 tests; 74 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Historical DOM features must be removed: DOMConfiguration
 PASS Historical DOM features must be removed: DOMCursor
 FAIL Historical DOM features must be removed: DOMError assert_false: expected false got true
@@ -60,6 +60,7 @@ PASS Node member must be removed: getUserData
 PASS Node member must be removed: setUserData
 PASS Node member must be removed: rootNode
 PASS Window member must be removed: attachEvent
+PASS Window member must be removed: content
 PASS Event should not have this constant: MOUSEDOWN
 PASS Event should not have this constant: MOUSEUP
 PASS Event should not have this constant: MOUSEOVER

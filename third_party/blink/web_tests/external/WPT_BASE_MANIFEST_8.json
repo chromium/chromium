@@ -2653,7 +2653,14 @@
         {}
        ]
       ]
-     }
+     },
+     "link-writing-mode-dependency-crash.html": [
+      "a8f94713e621159b7d5cb0a0dccddb611b64ec40",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "cssom": {
      "declaration-block-all-crash.html": [
@@ -295450,7 +295457,7 @@
      }
     },
     "historical-expected.txt": [
-     "e31ca4f3c12693d4faa4a336b46edb3df545a09f",
+     "ced850c6e4023a528c72f1f20bc01445553e0342",
      []
     ],
     "idlharness-shadowrealm.window-expected.txt": [
@@ -405859,7 +405866,7 @@
      ]
     },
     "historical.html": [
-     "155dc89556078e629bfb8392ca49c04536dc3c27",
+     "b7dc30a2dc3e715bc1e56b81b13d471880d43fce",
      [
       null,
       {}
