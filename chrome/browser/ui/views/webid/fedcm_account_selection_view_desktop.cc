@@ -48,17 +48,18 @@ void FedCmAccountSelectionView::Show(
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
     Account::SignInMode sign_in_mode) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
+      chrome::FindBrowserWithWebContents(delegate_->GetWebContents()));
   views::View* anchor_view =
-      BrowserView::GetBrowserViewForBrowser(
-          chrome::FindBrowserWithWebContents(delegate_->GetWebContents()))
-          ->toolbar_button_provider()
-          ->GetAppMenuButton();
+      browser_view->toolbar_button_provider()->GetAppMenuButton();
+  TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(
                        new AccountSelectionBubbleView(
                            delegate_, rp_etld_plus_one, idp_etld_plus_one,
                            accounts, idp_metadata, client_data, anchor_view,
                            SystemNetworkContextManager::GetInstance()
-                               ->GetSharedURLLoaderFactory()))
+                               ->GetSharedURLLoaderFactory(),
+                           tab_strip_model))
                        ->GetWeakPtr();
   bubble_widget_->Show();
 }

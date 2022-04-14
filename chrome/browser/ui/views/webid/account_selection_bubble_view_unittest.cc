@@ -21,6 +21,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -60,10 +61,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   AccountSelectionBubbleViewTest() = default;
 
  protected:
-  void CreateSingleAccountViewAndShow() {
+  void CreateSingleAccountViewAndShow(bool exclude_terms_of_service = false) {
     const content::IdentityRequestAccount accounts[] = {
         {"id", "email", "name", "given_name", GURL::EmptyGURL()}};
-    CreateViewAndShow(accounts);
+    CreateViewAndShow(accounts, exclude_terms_of_service);
   }
 
   void CreateMultipleAccountViewAndShow() {
@@ -75,9 +76,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void CreateViewAndShow(
-      const base::span<const content::IdentityRequestAccount>& accounts) {
+      const base::span<const content::IdentityRequestAccount>& accounts,
+      bool exclude_terms_of_service = false) {
     content::IdentityProviderMetadata idp_metadata;
-    content::ClientIdData client_data(GURL::EmptyGURL(), GURL::EmptyGURL());
+    const GURL kPrivacyPolicyURL = GURL("htpps://privacy-policy.com");
+    const GURL kTermsOfServiceURL = GURL("htpps://terms-of-service.com");
+    content::ClientIdData client_data(
+        exclude_terms_of_service ? GURL::EmptyGURL() : kTermsOfServiceURL,
+        kPrivacyPolicyURL);
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -88,7 +94,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     dialog_ = new AccountSelectionBubbleView(
         delegate_.get(), kRpETLDPlusOne, kIdpETLDPlusOne, accounts,
         idp_metadata, client_data, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory());
+        shared_url_loader_factory(), nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
@@ -154,7 +160,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   views::Separator* separator = static_cast<views::Separator*>(children[0]);
   EXPECT_TRUE(separator);
   views::View* single_account_chooser = children[1];
-  ASSERT_GT(single_account_chooser->children().size(), 0u);
+  ASSERT_EQ(single_account_chooser->children().size(), 3u);
   views::View* account_row = single_account_chooser->children()[0];
   std::vector<views::View*> row_children = account_row->children();
   ASSERT_EQ(row_children.size(), 2u);
@@ -177,6 +183,46 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
   ASSERT_TRUE(email_view);
   EXPECT_EQ(email_view->GetText(), u"email");
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+
+  views::StyledLabel* consent_text =
+      static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
+  ASSERT_TRUE(consent_text);
+  EXPECT_EQ(consent_text->GetText(),
+            u"To continue, idp-example.com will share your name, email "
+            u"address, and profile picture with this site. See this site's "
+            u"privacy policy and terms of service.");
+}
+
+TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
+  CreateSingleAccountViewAndShow(true /*=exclude_terms_of_service*/);
+
+  // Check basic structure
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 2u);
+  views::Separator* separator = static_cast<views::Separator*>(children[0]);
+  EXPECT_TRUE(separator);
+  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(single_account_chooser->children().size(), 3u);
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+
+  views::StyledLabel* consent_text =
+      static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
+  ASSERT_TRUE(consent_text);
+  EXPECT_EQ(consent_text->GetText(),
+            u"To continue, idp-example.com will share your name, email "
+            u"address, and profile picture with this site. See this site's "
+            u"privacy policy.");
 }
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
