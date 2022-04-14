@@ -8,7 +8,13 @@ GEN_INCLUDE([
 ]);
 
 /** Test fixture for array_util.js. */
-EventGeneratorTest = class extends SelectToSpeakE2ETest {};
+EventGeneratorTest = class extends SelectToSpeakE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('EventGenerator', '/common/event_generator.js');
+  }
+};
 
 // Fails on ChromeOS - https://crbug.com/1136991
 TEST_F(

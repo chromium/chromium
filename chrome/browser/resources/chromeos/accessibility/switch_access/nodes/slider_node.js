@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventGenerator} from '../../common/event_generator.js';
+
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';

@@ -5,6 +5,8 @@
 /**
  * @fileoverview ChromeVox braille commands.
  */
+import {EventGenerator} from '../../../common/event_generator.js';
+
 import {BrailleCommandData} from '../../common/braille_command_data.js';
 
 import {DesktopAutomationInterface} from '../desktop_automation_interface.js';

@@ -19,7 +19,6 @@ goog.require('ChromeVox');
 goog.require('ChromeVoxState');
 goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');
-goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');

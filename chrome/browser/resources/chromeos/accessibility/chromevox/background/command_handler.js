@@ -5,6 +5,8 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {EventGenerator} from '../../common/event_generator.js';
+
 import {AbstractTts} from '../common/abstract_tts.js';
 import {CommandStore} from '../common/command_store.js';
 import {TypingEcho} from '../common/editable_text_base.js';

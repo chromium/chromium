@@ -5,6 +5,7 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {EventGenerator} from '../../common/event_generator.js';
 
 import {BrailleCommandData} from '../common/braille_command_data.js';
 import {CommandStore} from '../common/command_store.js';

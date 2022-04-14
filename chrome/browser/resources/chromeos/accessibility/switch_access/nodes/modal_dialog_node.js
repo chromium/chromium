@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventGenerator} from '../../common/event_generator.js';
+
 import {BasicNode, BasicRootNode} from './basic_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;

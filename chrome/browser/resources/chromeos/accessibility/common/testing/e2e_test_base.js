@@ -20,6 +20,12 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('EventGenerator', '/common/event_generator.js');
+  }
+
+  /** @override */
   testGenCppIncludes() {
     GEN(`
   #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -162,6 +168,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     if (!this.navigateLacrosWithAutoComplete) {
       // 1. (default), hit enter.
       await this.waitForEvent(addressBar, 'valueChanged');
+      console.log('Sending key press');
       EventGenerator.sendKeyPress(KeyCode.RETURN);
     } else {
       // 2. use the auto completion.

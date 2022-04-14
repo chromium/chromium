@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const PointScanState = chrome.accessibilityPrivate.PointScanState;
+import {EventGenerator} from '../common/event_generator.js';
 
 import {ActionManager} from './action_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {PointNavigatorInterface} from './navigator_interface.js';
-import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
 import {SwitchAccess} from './switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+
+const PointScanState = chrome.accessibilityPrivate.PointScanState;
 
 export class PointScanManager extends PointNavigatorInterface {
   constructor() {
