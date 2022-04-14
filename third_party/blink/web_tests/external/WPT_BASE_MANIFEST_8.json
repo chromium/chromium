@@ -134219,6 +134219,19 @@
          ]
         }
        ]
+      ],
+      "svg-clip-path-fixed-values.html": [
+       "801cfe08d94c5a65450201297fe37c57896fc645",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/svg-clip-path-fixed-values-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "clip-path-svg-content": {
@@ -275673,6 +275686,10 @@
        "75b867ff19322ce393105428f188561965d38c6b",
        []
       ],
+      "svg-clip-path-fixed-values-ref.html": [
+       "537b77d30aca3b138635a7c17a056b3f388d46a1",
+       []
+      ],
       "svg-clipPath.svg": [
        "d31a1df42e0ed94c43c2f9d0999d7dbde9e83130",
        []
@@ -335694,7 +335711,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "a082d35761de063f794b3cf7f31234b5c8efbe33",
+     "59d12b4f9376ff15c0b8abbcc6a956a3ef02ce9e",
      []
     ],
     "js": {
@@ -363074,6 +363091,13 @@
       ]
      ]
     },
+    "http-equiv-accept-ch-iframe.https.html": [
+     "7e1e855784b82ecebe00c78510cdb49a353b3109",
+     [
+      null,
+      {}
+     ]
+    ],
     "http-equiv-accept-ch-malformed-header.https.html": [
      "3576dc9920b6ac20ec5d9db5ba266a080b62910f",
      [
@@ -363090,6 +363114,13 @@
     ],
     "http-equiv-accept-ch-non-secure.http.html": [
      "58a55d44c3475ba48f0698664e97c28532e5493e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-name-accept-ch-iframe.https.html": [
+     "2a239ed0ef31b326bd60b8d97010fd36ac2033ac",
      [
       null,
       {}
@@ -474780,7 +474811,7 @@
        ]
       ],
       "popup-focus.tentative.html": [
-       "26b30b2865b575d7a1f5228fdfefd94972d03f78",
+       "66fd7fbca7acf379f6dd1ed7468dfefc4f1eaa9c",
        [
         null,
         {}
@@ -474801,7 +474832,7 @@
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
-       "0eaf2f9f50b2ffc89c1d9b257ebfce840bf7fa41",
+       "22ffce6b5b5d0023d10559654822a2fa231f0d3e",
        [
         null,
         {
@@ -474817,7 +474848,7 @@
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "00b1029ac3a50f17aae5f0f430988dcf8c5ccf7b",
+       "d6d9793ff5e202b94324ccc0af0a1ec4b9184b3d",
        [
         null,
         {
@@ -474856,7 +474887,7 @@
        ]
       ],
       "popup-stacking.tentative.html": [
-       "12ee9929edca891700dc5e233675a12be126cc2c",
+       "160a4a573b75171a2d09a48efe2916ffcab28d41",
        [
         null,
         {}
@@ -524624,6 +524655,13 @@
        {}
       ]
      ],
+     "duplicate-urls.https.html": [
+      "179bbdfd68d2c900aa51f753aafee25cb09df359",
+      [
+       null,
+       {}
+      ]
+     ],
      "invalid-rules.https.html": [
       "573f3c0b0f91fe001371b54e1c357ec11a815579",
       [
@@ -545043,7 +545081,7 @@
        ]
       ],
       "no-dezippering.html": [
-       "63d4be3bb42101253aef2171ae70f977f0a7fb0d",
+       "79dc27035c7dbd8176f980278bdddab55a76c731",
        [
         null,
         {}
