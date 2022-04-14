@@ -62,7 +62,6 @@ suite('SettingsSecureDnsInput', function() {
     testElement.validate();
     assertEquals('', await testBrowserProxy.whenCalled('isValidConfig'));
     assertFalse(testElement.$.input.invalid);
-    assertFalse(testElement.isInvalid());
   });
 
   test('SecureDnsInputValidFormatAndProbeFail', async function() {
@@ -76,8 +75,7 @@ suite('SettingsSecureDnsInput', function() {
     assertEquals(
         validFailEntry, await testBrowserProxy.whenCalled('probeConfig'));
     assertTrue(testElement.$.input.invalid);
-    assertTrue(testElement.isInvalid());
-    assertEquals(probeFail, testElement.$.input.errorMessage);
+    assertEquals(probeFail, testElement.$.input.firstFooter);
   });
 
   test('SecureDnsInputValidFormatAndProbeSuccess', async function() {
@@ -91,7 +89,6 @@ suite('SettingsSecureDnsInput', function() {
     assertEquals(
         validSuccessEntry, await testBrowserProxy.whenCalled('probeConfig'));
     assertFalse(testElement.$.input.invalid);
-    assertFalse(testElement.isInvalid());
   });
 
   test('SecureDnsInputInvalid', async function() {
@@ -103,13 +100,11 @@ suite('SettingsSecureDnsInput', function() {
         invalidEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(0, testBrowserProxy.getCallCount('probeConfig'));
     assertTrue(testElement.$.input.invalid);
-    assertTrue(testElement.isInvalid());
-    assertEquals(invalidFormat, testElement.$.input.errorMessage);
+    assertEquals(invalidFormat, testElement.$.input.firstFooter);
 
     // Trigger an input event and check that the error clears.
-    testElement.$.input.fire('input');
+    testElement.$.input.dispatchEvent(new CustomEvent('input'));
     assertFalse(testElement.$.input.invalid);
-    assertFalse(testElement.isInvalid());
     assertEquals(invalidEntry, testElement.value);
   });
 });

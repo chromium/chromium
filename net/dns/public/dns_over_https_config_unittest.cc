@@ -36,9 +36,9 @@ TEST(DnsOverHttpsConfigTest, MultiValue) {
   EXPECT_THAT(config.ToStrings(),
               testing::ElementsAre(kServerConfig1.server_template(),
                                    kServerConfig2.server_template()));
-  EXPECT_EQ(
-      kServerConfig1.server_template() + " " + kServerConfig2.server_template(),
-      config.ToString());
+  EXPECT_EQ(kServerConfig1.server_template() + "\n" +
+                kServerConfig2.server_template(),
+            config.ToString());
 
   base::Value expected_value(base::Value::Type::LIST);
   expected_value.Append(kServerConfig1.ToValue());
@@ -78,7 +78,7 @@ TEST(DnsOverHttpsConfigTest, FromStringSingleValue) {
 
 TEST(DnsOverHttpsConfigTest, FromStringMultiValue) {
   auto config =
-      DnsOverHttpsConfig::FromString(kServerConfig1.server_template() + " " +
+      DnsOverHttpsConfig::FromString(kServerConfig1.server_template() + "\n" +
                                      kServerConfig2.server_template());
   EXPECT_THAT(
       config,
@@ -105,9 +105,10 @@ TEST(DnsOverHttpsConfigTest, FromStringExtraWhitespace) {
       config,
       testing::Optional(DnsOverHttpsConfig({kServerConfig1, kServerConfig2})));
 
-  EXPECT_FALSE(
+  auto config2 =
       DnsOverHttpsConfig::FromString(kServerConfig1.server_template() + "\t" +
-                                     kServerConfig2.server_template()));
+                                     kServerConfig2.server_template());
+  EXPECT_EQ(config2, config);
 }
 
 TEST(DnsOverHttpsConfigTest, FromStringEmpty) {

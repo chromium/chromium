@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy.secure_dns;
 import android.content.Context;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -164,6 +165,8 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         mPrivacyPolicy.setMovementMethod(LinkMovementMethod.getInstance());
         mCustomServer = selectionContainer.findViewById(R.id.custom_server);
         mCustomServer.addTextChangedListener(this);
+        // Show an action button instead of a carriage-return key.
+        mCustomServer.setRawInputType(InputType.TYPE_TEXT_VARIATION_URI);
         mCustomServerLayout = selectionContainer.findViewById(R.id.custom_server_layout);
 
         mGroup.attachAccessoryView(selectionContainer, mSecureButton);

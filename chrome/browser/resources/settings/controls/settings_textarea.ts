@@ -137,6 +137,10 @@ export class SettingsTextareaElement extends PolymerElement {
   firstFooter: String;
   secondFooter: String;
 
+  focusInput() {
+    this.$.input.focus();
+  }
+
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
    * This function helps propagate it to host since change events don't

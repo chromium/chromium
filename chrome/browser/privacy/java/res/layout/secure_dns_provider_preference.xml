@@ -73,9 +73,8 @@
                 android:id="@+id/custom_server"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-                android:inputType="textUri"
+                android:inputType="textUri|textMultiLine"
                 android:imeOptions="actionDone"
                 android:hint="@string/settings_secure_dns_custom_placeholder"/>
 

@@ -22,7 +22,7 @@ namespace {
 
 std::vector<std::string> SplitGroup(base::StringPiece group) {
   // Templates in a group are whitespace-separated.
-  return SplitString(group, " ", base::TRIM_WHITESPACE,
+  return SplitString(group, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
                      base::SPLIT_WANT_NONEMPTY);
 }
 
@@ -101,7 +101,7 @@ std::vector<base::StringPiece> DnsOverHttpsConfig::ToStrings() const {
 
 std::string DnsOverHttpsConfig::ToString() const {
   // TODO(crbug.com/1200908): Return JSON for complex configurations.
-  return base::JoinString(ToStrings(), " ");
+  return base::JoinString(ToStrings(), "\n");
 }
 
 base::Value DnsOverHttpsConfig::ToValue() const {

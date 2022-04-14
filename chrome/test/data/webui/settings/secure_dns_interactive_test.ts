@@ -243,7 +243,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(0, dropdownMenu.selectedIndex);
     assertEquals('none', getComputedStyle(testElement.$.privacyPolicy).display);
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
     assertEquals(
@@ -359,7 +359,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         'block', getComputedStyle(testElement.$.secureDnsInput).display);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(validEntry, testElement.$.secureDnsInput.value);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
@@ -372,7 +372,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.blur();
     await testBrowserProxy.whenCalled('isValidConfig');
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertTrue(testElement.$.secureDnsInput.isInvalid());
+    assertTrue(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
     assertEquals(
@@ -390,7 +390,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         'block', getComputedStyle(testElement.$.secureDnsInput).display);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertTrue(testElement.$.secureDnsInput.isInvalid());
+    assertTrue(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(invalidEntry, testElement.$.secureDnsInput.value);
     assertEquals(
         SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
@@ -411,7 +411,7 @@ suite('SettingsSecureDnsInteractive', function() {
       testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
         SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
 
@@ -419,7 +419,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsRadioGroup.querySelectorAll(
                                          'cr-radio-button')[1]!.click();
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
     assertEquals(
@@ -431,7 +431,7 @@ suite('SettingsSecureDnsInteractive', function() {
       testBrowserProxy.whenCalled('probeConfig')
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
     assertEquals(
@@ -452,7 +452,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         'block', getComputedStyle(testElement.$.secureDnsInput).display);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertFalse(testElement.$.secureDnsInput.isInvalid());
+    assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(managedDoubleEntry, testElement.$.secureDnsInput.value);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
@@ -484,7 +484,7 @@ suite('SettingsSecureDnsInteractive', function() {
     await flushTasks();
     assertEquals(1, testBrowserProxy.getCallCount('probeConfig'));
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
-    assertTrue(testElement.$.secureDnsInput.isInvalid());
+    assertTrue(testElement.$.secureDnsInput.$.input.invalid);
 
     // Unreachable templates are accepted and committed anyway.
     assertEquals(

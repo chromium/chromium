@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
                                             &management_mode));
   EXPECT_EQ(good_post_template, doh_config);
 
-  std::string two_templates = good_post_template + " " + good_get_template;
+  std::string two_templates = good_post_template + "\n" + good_get_template;
   local_state->SetString(prefs::kDnsOverHttpsTemplates, two_templates);
   EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
                                             &management_mode));
