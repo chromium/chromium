@@ -37042,7 +37042,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3383" label="LastLetterSpacingAffectsRendering"/>
   <int value="3384" label="V8FontData_GetTables_Method"/>
   <int value="3385" label="V8FontData_Blob_Method"/>
-  <int value="3386" label="V8FontManager_Query_Method"/>
+  <int value="3386" label="OBSOLETE_V8FontManager_Query_Method"/>
   <int value="3387" label="AudioContextBaseLatency"/>
   <int value="3388" label="V8Window_GetScreenDetails_Method"/>
   <int value="3389" label="OBSOLETE_V8Window_IsMultiScreen_Method"/>
@@ -37901,6 +37901,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4208" label="LegacyConstraintGoogSuspendBelowMinBitrate"/>
   <int value="4209" label="LegacyConstraintGoogCpuOveruseDetection"/>
   <int value="4210" label="AudioContextOutputLatency"/>
+  <int value="4211" label="V8Window_QueryLocalFonts_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

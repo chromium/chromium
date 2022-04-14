@@ -13,64 +13,64 @@ font_access_test(async t => {
   const queryInput = {
     postscriptNames: [testFont.postscriptName]
   };
-  const fonts = await navigator.fonts.query(queryInput);
+  const fonts = await self.queryLocalFonts(queryInput);
 
   assert_equals(
       fonts.length, 1, 'The result length should match the test length.');
   assert_font_equals(fonts[0], testFont);
-}, 'query(): valid postscript name in QueryOptions.postscriptNames');
+}, 'queryLocalFonts(): valid postscript name in QueryOptions');
 
 font_access_test(async t => {
   const queryInput = {
     postscriptNames: ['invalid_postscript_name']
   };
-  const fonts = await navigator.fonts.query(queryInput);
+  const fonts = await self.queryLocalFonts(queryInput);
 
   assert_equals(
       fonts.length, 0,
       'Fonts should not be selected for an invalid postscript name.');
-}, 'query(): invalid postscript name in QueryOptions.postscriptNames');
+}, 'queryLocalFonts(): invalid postscript name in QueryOptions');
 
 font_access_test(async t => {
-  const fonts = await navigator.fonts.query({});
+  const fonts = await self.queryLocalFonts({});
 
   assert_greater_than_equal(
       fonts.length, 1,
       'All available fonts should be returned when an empty object is passed.');
-}, 'query(): empty object for QueryOptions.postscriptNames');
+}, 'queryLocalFonts(): empty object for QueryOptions.postscriptNames');
 
 font_access_test(async t => {
   const queryInput = {
     invalidFieldName: []
   };
-  const fonts = await navigator.fonts.query(queryInput);
+  const fonts = await self.queryLocalFonts(queryInput);
 
   assert_greater_than_equal(
       fonts.length, 1,
       'All available fonts should be returned when an invalid field name for ' +
       'QueryOptions is passed.');
-}, 'query(): invalid QueryOptions field');
+}, 'queryLocalFonts(): invalid QueryOptions field');
 
 font_access_test(async t => {
   const queryInput = {
     postscriptNames: []
   };
-  const fonts = await navigator.fonts.query(queryInput);
+  const fonts = await self.queryLocalFonts(queryInput);
 
   assert_equals(
       fonts.length, 0,
       'Fonts should not be selected when an empty list for ' +
       'QueryOptions.postscriptNames is passed.');
-}, 'query(): empty QueryOptions.postscriptNames list');
+}, 'queryLocalFonts(): empty QueryOptions.postscriptNames list');
 
 font_access_test(async t => {
-  const fonts = await navigator.fonts.query(undefined);
+  const fonts = await self.queryLocalFonts(undefined);
 
   assert_greater_than_equal(
       fonts.length, 1,
       'All available fonts should be returned when undefined is passed for ' +
       'input.');
-}, 'query(): undefined QueryOptions');
+}, 'queryLocalFonts(): undefined QueryOptions');
 
 const non_ascii_input = [
   {postscriptNames: ['¥']},
@@ -92,10 +92,10 @@ const non_ascii_input = [
 
 for (const test of non_ascii_input) {
   font_access_test(async t => {
-    const fonts = await navigator.fonts.query(test);
+    const fonts = await self.queryLocalFonts(test);
     assert_equals(
         fonts.length, 0,
         'Fonts should not be selected for non-ASCII character input: ' +
         JSON.stringify(fonts));
-  }, `query(): non-ASCII character input: ${JSON.stringify(test)}`);
+  }, `queryLocalFonts(): non-ASCII character input: ${JSON.stringify(test)}`);
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/font_access/font_manager.h"
+#include "third_party/blink/renderer/modules/font_access/font_access.h"
 
 #include <algorithm>
 
@@ -26,46 +26,83 @@ namespace blink {
 
 using mojom::blink::FontEnumerationStatus;
 
-FontManager::FontManager(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context) {
-  // Only connect if the feature is enabled. Otherwise, there will
-  // be no service to connect to on the end.
-  if (base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        remote_manager_.BindNewPipeAndPassReceiver());
-    remote_manager_.set_disconnect_handler(
-        WTF::Bind(&FontManager::OnDisconnect, WrapWeakPersistent(this)));
-  }
+// static
+const char FontAccess::kSupplementName[] = "FontAccess";
+
+FontAccess::FontAccess(LocalDOMWindow* window)
+    : ExecutionContextLifecycleObserver(window),
+      Supplement<LocalDOMWindow>(*window) {}
+
+void FontAccess::Trace(blink::Visitor* visitor) const {
+  ExecutionContextLifecycleObserver::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
-ScriptPromise FontManager::query(ScriptState* script_state,
-                                 const QueryOptions* options,
-                                 ExceptionState& exception_state) {
-  if (!remote_manager_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "FontAccessManager backend went away");
+void FontAccess::ContextDestroyed() {
+  remote_.reset();
+}
+
+// static
+ScriptPromise FontAccess::queryLocalFonts(ScriptState* script_state,
+                                          LocalDOMWindow& window,
+                                          const QueryOptions* options,
+                                          ExceptionState& exception_state) {
+  DCHECK(ExecutionContext::From(script_state)->IsContextThread());
+  return From(&window)->QueryLocalFontsImpl(script_state, options,
+                                            exception_state);
+}
+
+// static
+FontAccess* FontAccess::From(LocalDOMWindow* window) {
+  auto* supplement = Supplement<LocalDOMWindow>::From<FontAccess>(window);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<FontAccess>(window);
+    Supplement<LocalDOMWindow>::ProvideTo(*window, supplement);
+  }
+  return supplement;
+}
+
+ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
+                                              const QueryOptions* options,
+                                              ExceptionState& exception_state) {
+  if (!base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Font Access feature is not supported.");
     return ScriptPromise();
   }
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromise();
+  }
+
+  // Connect to font access manager remote if not bound already.
+  if (!remote_.is_bound()) {
+    ExecutionContext* context = ExecutionContext::From(script_state);
+    context->GetBrowserInterfaceBroker().GetInterface(
+        remote_.BindNewPipeAndPassReceiver());
+    remote_.set_disconnect_handler(
+        WTF::Bind(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
+  }
+  DCHECK(remote_.is_bound());
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
-  remote_manager_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
-      WTF::Bind(&FontManager::DidGetEnumerationResponse,
+  remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
+      WTF::Bind(&FontAccess::DidGetEnumerationResponse,
                 WrapWeakPersistent(this), WrapPersistent(options))));
 
   return promise;
 }
 
-void FontManager::Trace(blink::Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-}
-
-void FontManager::DidGetEnumerationResponse(
+void FontAccess::DidGetEnumerationResponse(
     const QueryOptions* options,
     ScriptPromiseResolver* resolver,
     FontEnumerationStatus status,
     base::ReadOnlySharedMemoryRegion region) {
+  if (!resolver->GetScriptState()->ContextIsValid())
+    return;
+
   if (RejectPromiseIfNecessary(status, resolver))
     return;
 
@@ -123,8 +160,8 @@ void FontManager::DidGetEnumerationResponse(
   resolver->Resolve(std::move(entries));
 }
 
-bool FontManager::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
-                                           ScriptPromiseResolver* resolver) {
+bool FontAccess::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
+                                          ScriptPromiseResolver* resolver) {
   switch (status) {
     case FontEnumerationStatus::kOk:
     case FontEnumerationStatus::kUnimplemented:
@@ -150,12 +187,8 @@ bool FontManager::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
   return false;
 }
 
-void FontManager::ContextDestroyed() {
-  remote_manager_.reset();
-}
-
-void FontManager::OnDisconnect() {
-  remote_manager_.reset();
+void FontAccess::OnDisconnect() {
+  remote_.reset();
 }
 
 }  // namespace blink

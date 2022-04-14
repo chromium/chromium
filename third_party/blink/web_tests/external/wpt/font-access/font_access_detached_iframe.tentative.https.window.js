@@ -8,32 +8,32 @@ font_access_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
 
-  const iframeFontManager = iframe.contentWindow.navigator.fonts;
+  const frameWindow = iframe.contentWindow;
   const frameDOMException = iframe.contentWindow.DOMException;
   iframe.remove();
 
   await promise_rejects_dom(
-      t, 'InvalidStateError', frameDOMException, iframeFontManager.query());
-}, 'query() must return an error when called from a detached iframe.');
+      t, 'InvalidStateError', frameDOMException, frameWindow.queryLocalFonts());
+}, 'queryLocalFonts() must return an error when called from a detached frame.');
 
 font_access_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
 
-  const iframeFontManager = iframe.contentWindow.navigator.fonts;
-  iframeFontManager.query();
+  iframe.contentWindow.queryLocalFonts;
   iframe.remove();
 
-  // Call query() in the main frame. This should keep the test running long
-  // enough to catch any crash from the query() call in the removed iframe.
-  await navigator.fonts.query();
-}, 'Detaching iframe while query() settles.');
+  // Call queryLocalFonts() in the main frame. This should keep the test running
+  // long enough to catch any crash from the queryLocalFonts() call in the
+  // removed iframe.
+  await self.queryLocalFonts();
+}, 'Detaching iframe while queryLocalFonts() settles.');
 
 font_access_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
 
-  const iframeFonts = await iframe.contentWindow.navigator.fonts.query();
+  const iframeFonts = await iframe.contentWindow.queryLocalFonts();
   assert_greater_than_equal(iframeFonts.length, 1, 'Need a least one font');
   const iframeFontData = iframeFonts[0];
   const frameDOMException = iframe.contentWindow.DOMException;

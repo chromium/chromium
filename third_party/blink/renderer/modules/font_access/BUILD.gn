@@ -6,14 +6,12 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("font_access") {
   sources = [
-    "font_manager.cc",
-    "font_manager.h",
+    "font_access.cc",
+    "font_access.h",
     "font_metadata.cc",
     "font_metadata.h",
     "font_table_map.cc",
     "font_table_map.h",
-    "navigator_fonts.cc",
-    "navigator_fonts.h",
   ]
 
   deps = [

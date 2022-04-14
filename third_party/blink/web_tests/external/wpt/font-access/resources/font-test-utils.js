@@ -91,7 +91,7 @@ function isPlatformSupported() {
 function font_access_test(test_function, name, properties) {
   return promise_test(async (t) => {
     if (!isPlatformSupported()) {
-      const fonts = navigator.fonts.query();
+      const fonts = self.queryLocalFonts();
       assert_equals(
           fonts.length, 0, 'Fonts are not returned on non-supported platform.');
       return;

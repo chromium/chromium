@@ -11,7 +11,7 @@ font_access_test(async t => {
   const testData = getTestData();
 
   // Get the system fonts.
-  const fonts = await navigator.fonts.query();
+  const fonts = await self.queryLocalFonts();
   assert_true(Array.isArray(fonts), 'Result of query() should be an Array');
   assert_greater_than_equal(fonts.length, 1, 'Need a least one font');
 
@@ -36,4 +36,4 @@ font_access_test(async t => {
       assert_font_equals(font, expectedFont);
     }
   });
-}, 'query(): FontData property types and values');
+}, 'queryLocalFonts(): FontData property types and values');

@@ -2689,7 +2689,7 @@ enum WebFeature {
   kLastLetterSpacingAffectsRendering = 3383,
   kV8FontData_GetTables_Method = 3384,
   kV8FontData_Blob_Method = 3385,
-  kV8FontManager_Query_Method = 3386,
+  kOBSOLETE_V8FontManager_Query_Method = 3386,
   kAudioContextBaseLatency = 3387,
   kV8Window_GetScreenDetails_Method = 3388,
   kOBSOLETE_V8Window_IsMultiScreen_Method = 3389,
@@ -3529,6 +3529,7 @@ enum WebFeature {
   kLegacyConstraintGoogSuspendBelowMinBitrate = 4208,
   kLegacyConstraintGoogCpuOveruseDetection = 4209,
   kAudioContextOutputLatency = 4210,
+  kV8Window_QueryLocalFonts_Method = 4211,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

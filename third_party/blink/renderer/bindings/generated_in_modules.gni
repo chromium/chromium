@@ -1733,8 +1733,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_data.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_manager.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_manager.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_table_map.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_table_map.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gain_node.cc",

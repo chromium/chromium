@@ -7,19 +7,17 @@ This directory contains the renderer-side implementation of
 
 [`//content/browser/font_access/`](../../../../../content/browser/font_access/)
 contains the browser-side implementation, and 
-[`blink/public/mojom/font_access`](../../../public/mojom/font_access) contains the
-mojom interface for this API.
+[`blink/public/mojom/font_access`](../../../public/mojom/font_access) contains
+the mojom interface for this API.
 
 ## APIs In this directory
 
 It consists of the following parts:
 
- * `NavigatorFonts`: implements `navigator.fonts`.
-
- * `FontManager`: An object that exposes an operation to access local fonts via
-   `query()` with an optional param `QueryOptions`. `FontManager` maintains a
-    mojo connection with browser-side, and is responsible for handling errors,
-    and optionally applying query filters provided by `QueryOptions`.
+ * `FontAccess`: A supplement to window that exposes an operation to access
+    local fonts. `FontAccess` maintains a mojo connection with browser-side,
+    and is responsible for handling errors, and optionally applying query
+    filters provided by `QueryOptions`.
 
  * `FontData`: Implemented as `FontMetadata.cc`, `FontData` represents data
     about a single font installed on the system. Currently, it provides basic

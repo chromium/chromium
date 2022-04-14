@@ -11,8 +11,8 @@ font_access_test(async t => {
   // See: https://docs.microsoft.com/en-us/typography/opentype/spec/name
   // Should the Postscript name contain characters that are multi-byte, this
   // test may erroneously fail.
-  const fonts = await navigator.fonts.query();
+  const fonts = await self.queryLocalFonts();
   const fontNames = fonts.map(fontData => fontData.postscriptName);
   const expectedFontNames = [...fontNames].sort();
   assert_array_equals(fontNames, expectedFontNames);
-}, 'query(): fonts are sorted');
+}, 'queryLocalFonts(): fonts are sorted');

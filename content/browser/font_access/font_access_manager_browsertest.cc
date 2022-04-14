@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, EnumerationTest) {
 
   EvalJsResult result = EvalJs(shell(),
                                "(async () => {"
-                               "  const fonts = await navigator.fonts.query();"
+                               "  const fonts = await self.queryLocalFonts();"
                                "  return fonts.length;"
                                "})()");
 
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest,
 
   EvalJsResult result = EvalJs(shell(),
                                "(async () => {"
-                               "  const fonts = await navigator.fonts.query({"
+                               "  const fonts = await self.queryLocalFonts({"
                                "      postscriptNames: ['invalid-query']"
                                "  });"
                                "  return fonts.length;"
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, LocaleTest) {
       EvalJs(shell(),
              "(async () => {"
              "  let fullName = '';"
-             "  const fonts = await navigator.fonts.query();"
+             "  const fonts = await self.queryLocalFonts();"
              "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      fullName = item.fullName;"
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, UnlocalizedFamilyTest) {
       EvalJs(shell(),
              "(async () => {"
              "  let family = '';"
-             "  const fonts = await navigator.fonts.query();"
+             "  const fonts = await self.queryLocalFonts();"
              "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      family = item.family;"
