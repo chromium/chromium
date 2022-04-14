@@ -296,7 +296,9 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(reference_box, 1)
+    float zoom = object.StyleRef().EffectiveZoom();
+    return clip_path.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
+        .Transform(AffineTransform::MakeScale(1.f / zoom))
         .Contains(location.TransformedPoint());
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);

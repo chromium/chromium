@@ -164,6 +164,12 @@ class PLATFORM_EXPORT AffineTransform {
   static AffineTransform Translation(double x, double y) {
     return AffineTransform(1, 0, 0, 1, x, y);
   }
+  static AffineTransform MakeScale(double s) {
+    return MakeScaleNonUniform(s, s);
+  }
+  static AffineTransform MakeScaleNonUniform(double sx, double sy) {
+    return AffineTransform(sx, 0, 0, sy, 0, 0);
+  }
 
   // decompose the matrix into its component parts
   typedef struct {

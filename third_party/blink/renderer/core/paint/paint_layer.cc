@@ -2162,10 +2162,10 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation* clip_path =
         To<ShapeClipPathOperation>(clip_path_operation);
-    return !clip_path
-                ->GetPath(reference_box,
-                          GetLayoutObject().StyleRef().EffectiveZoom())
-                .Contains(point);
+    float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
+    DCHECK(!GetLayoutObject().IsSVGChild() ||
+           GetLayoutObject().IsSVGForeignObject());
+    return !clip_path->GetPath(reference_box, zoom).Contains(point);
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper =

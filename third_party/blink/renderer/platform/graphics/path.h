@@ -192,8 +192,8 @@ class PLATFORM_EXPORT Path {
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;
-  void Transform(const AffineTransform&);
-  void Transform(const TransformationMatrix&);
+  Path& Transform(const AffineTransform&);
+  Path& Transform(const TransformationMatrix&);
 
   bool SubtractPath(const Path&);
 

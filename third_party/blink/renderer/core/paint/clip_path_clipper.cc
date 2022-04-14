@@ -127,10 +127,17 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
   if (clip_path.GetType() == ClipPathOperation::kShape) {
-    auto zoom =
-        UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
+    auto zoom = object.StyleRef().EffectiveZoom();
+    gfx::RectF bounding_box;
     auto& shape = To<ShapeClipPathOperation>(clip_path);
-    gfx::RectF bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
+    if (UsesZoomedReferenceBox(object)) {
+      bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
+    } else {
+      bounding_box = gfx::ScaleRect(
+          shape.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
+              .BoundingRect(),
+          1.f / zoom);
+    }
     bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
     return bounding_box;
   }
@@ -193,11 +200,12 @@ static absl::optional<Path> PathBasedClipInternal(
   }
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
+  auto zoom = clip_path_owner.StyleRef().EffectiveZoom();
   auto& shape = To<ShapeClipPathOperation>(clip_path);
-  float zoom = uses_zoomed_reference_box
-                   ? clip_path_owner.StyleRef().EffectiveZoom()
-                   : 1;
-  return shape.GetPath(reference_box, zoom);
+  if (uses_zoomed_reference_box)
+    return shape.GetPath(reference_box, zoom);
+  return shape.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
+      .Transform(AffineTransform::MakeScale(1.f / zoom));
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(

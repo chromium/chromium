@@ -187,12 +187,14 @@ void Path::Apply(void* info, PathApplierFunction function) const {
   }
 }
 
-void Path::Transform(const AffineTransform& xform) {
+Path& Path::Transform(const AffineTransform& xform) {
   path_.transform(AffineTransformToSkMatrix(xform));
+  return *this;
 }
 
-void Path::Transform(const TransformationMatrix& transformation_matrix) {
+Path& Path::Transform(const TransformationMatrix& transformation_matrix) {
   path_.transform(TransformationMatrixToSkMatrix(transformation_matrix));
+  return *this;
 }
 
 float Path::length() const {
