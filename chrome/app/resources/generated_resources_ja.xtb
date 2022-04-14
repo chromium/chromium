@@ -2758,7 +2758,7 @@
       デバッグ機能をいったん有効にすると、企業の管理対象デバイスで Powerwash やデータ消去を実行した後でも、ほとんどのデバッグ機能は有効なまま維持されます。すべてのデバッグ機能を完全に無効にするには、Chrome OS の復元処理を行ってください（https://support.google.com/chromebook/answer/1080595 をご覧ください）。
       <ph name="BR" />
       <ph name="BR" />
-      デバッグ機能について詳しくは以下をご覧ください。<ph name="BR" />
+      デバッグ機能について詳しくは以下をご確認ください。<ph name="BR" />
       https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
       <ph name="BR" />
       <ph name="BR" />
@@ -4341,7 +4341,7 @@
       デバッグ機能をいったん有効にすると、企業の管理対象デバイスで Powerwash やデータ消去を実行した後でも、ほとんどのデバッグ機能は有効なまま維持されます。すべてのデバッグ機能を完全に無効にするには、Chrome OS の復元処理を行ってください（https://support.google.com/chromebook/answer/1080595 をご覧ください）。
       <ph name="BR" />
       <ph name="BR" />
-      デバッグ機能について詳しくは以下をご覧ください。<ph name="BR" />
+      デバッグ機能について詳しくは以下をご確認ください。<ph name="BR" />
       https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
       <ph name="BR" />
       <ph name="BR" />
