@@ -1,11 +1,11 @@
 <html>
-<title>Tests for 'Save-Data' header when Data Saver is enabled.</title>
+<title>Tests for 'Save-Data' header when Data Saver is enabled and the policy is *.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 internals.setSaveDataEnabled(true);
 </script>
-<iframe srcdoc="
+<iframe allow="ch-save-data *;" srcdoc="
 <!DOCTYPE html>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
@@ -22,7 +22,7 @@ window.top.promise_test(t => {
           assert_equals(texts[i], 'Save-Data: on');
         }
       });
-}, 'Save-Data should be sent when enabled.');
+}, 'Save-Data should be sent when enabled if policy is *.');
 </script>
 "></iframe>
 </html>

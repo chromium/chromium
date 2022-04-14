@@ -1,9 +1,9 @@
 <html>
-<title>Tests for 'Save-Data' header when Data Saver is enabled.</title>
+<title>Tests for 'Save-Data' header when Data Saver is disabled.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-internals.setSaveDataEnabled(true);
+internals.setSaveDataEnabled(false);
 </script>
 <iframe srcdoc="
 <!DOCTYPE html>
@@ -19,10 +19,10 @@ window.top.promise_test(t => {
     .then(responses => Promise.all(responses.map(response => response.text())))
     .then(texts => {
         for (var i = 0; i < METHODS.length; ++i) {
-          assert_equals(texts[i], 'Save-Data: on');
+          assert_equals(texts[i], 'No Save-Data');
         }
       });
-}, 'Save-Data should be sent when enabled.');
+}, 'Save-Data should not be sent when disabled.');
 </script>
 "></iframe>
 </html>
