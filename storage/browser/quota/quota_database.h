@@ -25,6 +25,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "storage/browser/quota/storage_directory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -82,8 +83,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     base::Time last_modified;
   };
 
-  // If 'path' is empty, an in memory database will be used.
-  explicit QuotaDatabase(const base::FilePath& path);
+  static constexpr char kDatabaseName[] = "QuotaManager";
+
+  // If `profile_path` is empty, an in-memory database will be used.
+  explicit QuotaDatabase(const base::FilePath& profile_path);
 
   QuotaDatabase(const QuotaDatabase&) = delete;
   QuotaDatabase& operator=(const QuotaDatabase&) = delete;
@@ -208,6 +211,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time begin,
       base::Time end);
 
+  base::FilePath GetStoragePath() const { return storage_directory_->path(); }
+
   // Returns false if SetIsBootstrapped() has never been called before, which
   // means existing storage keys may not have been registered. Bootstrapping
   // ensures that there is a bucket entry in the buckets table for all storage
@@ -276,9 +281,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void ScheduleCommit();
 
   QuotaError EnsureOpened();
+  bool MoveLegacyDatabase();
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
-  bool ResetSchema();
+  bool ResetStorage();
 
   bool CreateSchema();
   bool CreateTable(const TableSchema& table);
@@ -301,7 +307,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const std::unique_ptr<StorageDirectory> storage_directory_;
   const base::FilePath db_file_path_;
+  const base::FilePath legacy_db_file_path_;
 
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::MetaTable> meta_table_

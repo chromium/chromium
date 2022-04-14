@@ -24,7 +24,7 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
 
   // Reset tables for versions lower than 5 since they are unsupported.
   if (quota_database.meta_table_->GetVersionNumber() < 5)
-    return quota_database.ResetSchema();
+    return quota_database.ResetStorage();
 
   if (quota_database.meta_table_->GetVersionNumber() == 5) {
     if (!MigrateFromVersion5ToVersion7(quota_database))

@@ -129,7 +129,18 @@ QuotaDatabase::BucketTableEntry::BucketTableEntry(
       last_modified(last_modified) {}
 
 // QuotaDatabase ------------------------------------------------------------
-QuotaDatabase::QuotaDatabase(const base::FilePath& path) : db_file_path_(path) {
+QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path)
+    : storage_directory_(
+          profile_path.empty()
+              ? nullptr
+              : std::make_unique<StorageDirectory>(profile_path)),
+      db_file_path_(
+          profile_path.empty()
+              ? base::FilePath()
+              : storage_directory_->path().AppendASCII(kDatabaseName)),
+      legacy_db_file_path_(profile_path.empty()
+                               ? base::FilePath()
+                               : profile_path.AppendASCII(kDatabaseName)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -139,6 +150,8 @@ QuotaDatabase::~QuotaDatabase() {
     db_->CommitTransaction();
   }
 }
+
+constexpr char QuotaDatabase::kDatabaseName[];
 
 QuotaErrorOr<int64_t> QuotaDatabase::GetHostQuota(const std::string& host,
                                                   StorageType type) {
@@ -804,9 +817,15 @@ QuotaError QuotaDatabase::EnsureOpened() {
                                       sqlite_error_code);
       }));
 
+  // Migrate an existing database from the old path.
+  if (!db_file_path_.empty()) {
+    if (!MoveLegacyDatabase())
+      return QuotaError::kDatabaseError;
+  }
+
   if (!OpenDatabase() || !EnsureDatabaseVersion()) {
     LOG(ERROR) << "Could not open the quota database, resetting.";
-    if (!ResetSchema()) {
+    if (db_file_path_.empty() || !ResetStorage()) {
       LOG(ERROR) << "Failed to reset the quota database.";
       is_disabled_ = true;
       db_.reset();
@@ -819,6 +838,28 @@ QuotaError QuotaDatabase::EnsureOpened() {
   db_->BeginTransaction();
 
   return QuotaError::kNone;
+}
+
+bool QuotaDatabase::MoveLegacyDatabase() {
+  // Migration was added on 04/2022 (https://crrev.com/c/3513545).
+  // Cleanup after enough time has passed.
+  if (!base::PathExists(legacy_db_file_path_))
+    return true;
+
+  DCHECK(!base::PathExists(db_file_path_));
+  if (!base::CreateDirectory(db_file_path_.DirName()) ||
+      !base::Move(legacy_db_file_path_, db_file_path_)) {
+    return false;
+  }
+
+  base::FilePath legacy_journal_path =
+      sql::Database::JournalPath(legacy_db_file_path_);
+  if (base::PathExists(legacy_journal_path) &&
+      !base::Move(legacy_journal_path,
+                  sql::Database::JournalPath(db_file_path_))) {
+    return false;
+  }
+  return true;
 }
 
 bool QuotaDatabase::OpenDatabase() {
@@ -942,18 +983,21 @@ bool QuotaDatabase::CreateIndex(const IndexSchema& index) {
   return true;
 }
 
-bool QuotaDatabase::ResetSchema() {
+bool QuotaDatabase::ResetStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!db_file_path_.empty());
-  DCHECK(base::PathExists(db_file_path_));
+  DCHECK(storage_directory_);
   DCHECK(!db_ || !db_->transaction_nesting());
   VLOG(1) << "Deleting existing quota data and starting over.";
 
   db_.reset();
   meta_table_.reset();
 
-  if (!sql::Database::Delete(db_file_path_))
-    return false;
+  sql::Database::Delete(legacy_db_file_path_);
+  sql::Database::Delete(db_file_path_);
+
+  storage_directory_->Doom();
+  storage_directory_->ClearDoomed();
 
   // So we can't go recursive.
   if (is_recreating_)

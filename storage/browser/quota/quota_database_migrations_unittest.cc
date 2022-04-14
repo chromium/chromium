@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "components/services/storage/public/cpp/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -31,8 +32,12 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
+  base::FilePath ProfilePath() { return temp_directory_.GetPath(); }
+
   base::FilePath DbPath() {
-    return temp_directory_.GetPath().AppendASCII("quota_manager.db");
+    return ProfilePath()
+        .Append(kWebStorageDirectory)
+        .AppendASCII("QuotaManager");
   }
 
  protected:
@@ -58,14 +63,16 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
       return false;
 
     sql::Database db;
-    if (!db.Open(db_path) || !db.Execute(contents.data()))
+    if (!base::CreateDirectory(db_path.DirName()) || !db.Open(db_path) ||
+        !db.Execute(contents.data()))
       return false;
     return true;
   }
 
   void MigrateDatabase() {
-    QuotaDatabase db(DbPath());
+    QuotaDatabase db(ProfilePath());
     EXPECT_EQ(db.EnsureOpened(), QuotaError::kNone);
+
     DCHECK_CALLED_ON_VALID_SEQUENCE(db.sequence_checker_);
     EXPECT_TRUE(db.db_.get());
   }

@@ -1687,9 +1687,8 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
   }
 
   // Use an empty path to open an in-memory only database for incognito.
-  database_ = std::make_unique<QuotaDatabase>(
-      is_incognito_ ? base::FilePath()
-                    : profile_path_.AppendASCII(kDatabaseName));
+  database_ = std::make_unique<QuotaDatabase>(is_incognito_ ? base::FilePath()
+                                                            : profile_path_);
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
