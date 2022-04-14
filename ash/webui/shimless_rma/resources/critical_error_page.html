@@ -14,10 +14,10 @@
   }
 </style>
 <base-page>
+  <iron-icon slot="optional-icon" icon="shimless-icon:warning"
+      class="warning-icon">
+  </iron-icon>
   <div slot="left-pane">
-    <iron-icon slot="optional-icon" icon="shimless-icon:warning"
-        class="warning-icon">
-    </iron-icon>
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
     <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
     <div id="writeProtectStatus">[[statusString_]]</div>
