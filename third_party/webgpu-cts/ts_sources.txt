@@ -40,6 +40,7 @@ src/common/tools/crawl.ts
 src/common/tools/dev_server.ts
 src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
+src/common/tools/presubmit.ts
 src/common/tools/version.ts
 src/common/util/collect_garbage.ts
 src/common/util/colors.ts
@@ -141,8 +142,8 @@ src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
 src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
-src/webgpu/api/operation/memory_sync/buffer/rw_and_wr.spec.ts
-src/webgpu/api/operation/memory_sync/buffer/ww.spec.ts
+src/webgpu/api/operation/memory_sync/buffer/multiple_buffers.spec.ts
+src/webgpu/api/operation/memory_sync/buffer/single_buffer.spec.ts
 src/webgpu/api/operation/memory_sync/texture/texture_sync_test.ts
 src/webgpu/api/operation/memory_sync/texture/same_subresource.spec.ts
 src/webgpu/api/operation/pipeline/default_layout.spec.ts
