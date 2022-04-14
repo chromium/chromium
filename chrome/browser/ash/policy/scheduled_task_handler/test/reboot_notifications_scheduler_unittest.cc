@@ -36,7 +36,6 @@ class RebootNotificationsSchedulerTest : public testing::Test {
                 task_environment_.GetMockTickClock(),
                 prefs_.get())) {
     RebootNotificationsScheduler::RegisterProfilePrefs(prefs_->registry());
-    session_manager_.AddObserver(notifications_scheduler_.get());
   }
 
   void SetUp() override {
@@ -55,6 +54,9 @@ class RebootNotificationsSchedulerTest : public testing::Test {
         std::make_unique<NotificationDisplayServiceTester>(profile_);
     fake_user_manager_->LoginUser(account_id, true);
     EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
+
+    ASSERT_EQ(RebootNotificationsScheduler::Get(),
+              notifications_scheduler_.get());
   }
 
   ~RebootNotificationsSchedulerTest() override = default;
