@@ -20,6 +20,10 @@ TODO(crbug.com/1035895): Document tagging.
 The metainstaller parses its tag and re-launches itself at high integrity if
 installing an application with `needsadmin=true` or `needsadmin=prefers`.
 
+### Localization
+Metainstaller localization presents the metainstaller UI in the language of
+choice on download. Every string shown in the UI is translated. 
+
 ## Standalone Installer
 TODO(crbug.com/1035895): Document the standalone installer.
 
