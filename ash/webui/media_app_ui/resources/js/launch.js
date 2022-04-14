@@ -400,19 +400,6 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
   return response;
 });
 
-guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
-  const [handle] = await window.showOpenFilePicker({multiple: false});
-  /** @type {!FileDescriptor} */
-  const fileDescriptor = {
-    token: generateToken(handle),
-    file: null,
-    handle: handle,
-    inCurrentDirectory: false
-  };
-  currentFiles.splice(entryIndex + 1, 0, fileDescriptor);
-  advance(1);
-});
-
 guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
   const {startInToken, accept, isSingleFile} =
       /** @type {!OpenFilesWithPickerMessage} */ (m);

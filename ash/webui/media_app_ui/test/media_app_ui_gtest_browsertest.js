@@ -291,10 +291,6 @@ TEST_F('MediaAppUIGtestBrowserTest', 'SaveAsErrorHandling', () => {
   runMediaAppTest('SaveAsErrorHandling');
 });
 
-TEST_F('MediaAppUIGtestBrowserTest', 'OpenFileIPC', () => {
-  runMediaAppTest('OpenFileIPC');
-});
-
 TEST_F('MediaAppUIGtestBrowserTest', 'OpenFilesWithFilePickerIPC', () => {
   runMediaAppTest('OpenFilesWithFilePickerIPC');
 });

@@ -1238,24 +1238,6 @@ MediaAppUIBrowserTest.SaveAsErrorHandling = async () => {
   assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
 };
 
-// Tests the IPC behind the openFile function on receivedFileList.
-MediaAppUIBrowserTest.OpenFileIPC = async () => {
-  const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
-  window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
-  await launchWithFiles(
-      [await createTestImageFile(10, 10, 'original_file.jpg')]);
-
-  await sendTestMessage({openFile: true});
-
-  const lastToken = [...tokenMap.keys()].slice(-1)[0];
-  assertEquals(getEntryIndex(), 1);
-  assertEquals(currentFiles.length, 2);
-  assertEquals(currentFiles[1].handle, pickedFileHandle);
-  assertEquals(currentFiles[1].handle.name, 'picked_file.jpg');
-  assertEquals(currentFiles[1].token, lastToken);
-  assertEquals(tokenMap.get(currentFiles[1].token), currentFiles[1].handle);
-};
-
 // Tests the IPC behind the AbstractFileList.openFilesWithFilePicker function to
 // relaunch the app with a new selection of files from a file picker.
 MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {

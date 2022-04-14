@@ -19,7 +19,6 @@ export const Message = {
   NAVIGATE: 'navigate',
   NOTIFY_CURRENT_FILE: 'notify-current-file',
   OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
-  OPEN_FILE: 'open-file',
   OPEN_FILES_WITH_PICKER: 'open-files-with-picker',
   OVERWRITE_FILE: 'overwrite-file',
   RENAME_FILE: 'rename-file',

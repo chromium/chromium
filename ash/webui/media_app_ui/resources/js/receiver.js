@@ -216,11 +216,6 @@ export class ReceivedFileList {
     this.observers.push(observer);
   }
 
-  /** @override */
-  async openFile() {
-    await parentMessagePipe.sendMessage(Message.OPEN_FILE);
-  }
-
   /**
    * @override
    * @param {!Array<string>} acceptTypeKeys
@@ -304,12 +299,6 @@ const DELEGATE = {
     return new ReceivedFile(response.pickedFileContext);
   },
   /**
-   * @return {!Promise<undefined>}
-   */
-  async openFile() {
-    await parentMessagePipe.sendMessage(Message.OPEN_FILE);
-  },
-  /**
    * @param {string|undefined} name
    * @param {string|undefined} type
    */
@@ -341,6 +330,7 @@ const DELEGATE = {
     parentMessagePipe.sendMessage(
         Message.OPEN_IN_SANDBOXED_VIEWER, {title, blobUuid});
   },
+  // TODO(b/219631600): Implement openUrlInBrowserTab() for LacrOS if needed.
 };
 
 /**

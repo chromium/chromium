@@ -251,9 +251,6 @@ async function runTestQuery(data) {
     }
   } else if (data.getFileErrors) {
     result = assertLastReceivedFileList().files.map(file => file.error).join();
-  } else if (data.openFile) {
-    // Call open file on file list, simulating a user trying to open a new file.
-    await assertLastReceivedFileList().openFile();
   } else if (data.suppressCrashReports) {
     // TODO(b/172981864): Remove this once we stop triggering crash reports for
     // NotAFile errors.

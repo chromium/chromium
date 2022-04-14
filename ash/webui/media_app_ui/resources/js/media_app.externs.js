@@ -149,15 +149,6 @@ mediaApp.AbstractFileList.prototype.loadPrev = function(currentFileToken) {};
  */
 mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
 /**
- * A function that requests for the user to be prompted with an open file
- * picker. Once the user selects a file, the file is inserted into the
- * navigation order after the current file and then navigated to.
- * TODO(b/203466987): Remove the undefined here once we can ensure all file
- * lists implement a openFile function.
- * @type {function(): !Promise<undefined>|undefined}
- */
-mediaApp.AbstractFileList.prototype.openFile = function() {};
-/**
  * Request for the user to be prompted with an open file dialog. Files chosen
  * will be added to the last received file list.
  * TODO(b/203466987): Remove the undefined here once we can ensure all file
@@ -227,6 +218,11 @@ mediaApp.ClientApiDelegate.prototype.extractPreview = function(file) {};
  */
 mediaApp.ClientApiDelegate.prototype.openInSandboxedViewer = function(
     title, blobUuid) {};
+/**
+ * Opens the provided `url` in a browser tab.
+ * @type {function(string)|undefined}
+ */
+mediaApp.ClientApiDelegate.prototype.openUrlInBrowserTab = function(url) {};
 
 /**
  * The client Api for interacting with the media app instance.
