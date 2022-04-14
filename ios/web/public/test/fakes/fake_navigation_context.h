@@ -37,6 +37,7 @@ class FakeNavigationContext : public NavigationContext {
   NSError* GetError() const override;
   net::HttpResponseHeaders* GetResponseHeaders() const override;
   bool IsRendererInitiated() const override;
+  bool IsFailedHTTPSUpgrade() const override;
 
   // Setters for navigation context data members.
   void SetWebState(std::unique_ptr<WebState> web_state);

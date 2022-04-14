@@ -131,6 +131,14 @@ void NavigationContextImpl::SetResponseHeaders(
   response_headers_ = response_headers;
 }
 
+bool NavigationContextImpl::IsFailedHTTPSUpgrade() const {
+  return is_failed_https_upgrade_;
+}
+
+void NavigationContextImpl::SetIsFailedHTTPSUpgrade() {
+  is_failed_https_upgrade_ = true;
+}
+
 int NavigationContextImpl::GetNavigationItemUniqueID() const {
   return navigation_item_unique_id_;
 }

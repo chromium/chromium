@@ -92,6 +92,9 @@ class NavigationContextImpl : public NavigationContext {
   void SetMimeType(NSString* mime_type);
   NSString* GetMimeType() const;
 
+  bool IsFailedHTTPSUpgrade() const override;
+  void SetIsFailedHTTPSUpgrade();
+
   // Returns pending navigation item.
   NavigationItemImpl* GetItem();
 
@@ -129,6 +132,9 @@ class NavigationContextImpl : public NavigationContext {
   bool is_loading_error_page_ = false;
   bool is_loading_html_string_ = false;
   NSString* mime_type_ = nil;
+  // If true, this navigation was an HTTPS upgrade from HTTP and
+  // failed due to an SSL error.
+  bool is_failed_https_upgrade_ = false;
   base::ElapsedTimer elapsed_timer_;
 
   // Holds pending navigation item in this object. Pending item is stored in

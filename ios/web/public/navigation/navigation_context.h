@@ -92,6 +92,11 @@ class NavigationContext {
   //  * using window.history.pushState
   virtual bool IsRendererInitiated() const = 0;
 
+  // Returns true if the current navigation is a failed HTTPS upgrade. This
+  // can happen when an HTTP navigation is upgraded to an HTTPS navigation
+  // by the HTTPS-Only mode feature and the HTTPS URL returns an SSL error.
+  virtual bool IsFailedHTTPSUpgrade() const = 0;
+
   virtual ~NavigationContext() {}
 };
 
