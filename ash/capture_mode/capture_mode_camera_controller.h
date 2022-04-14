@@ -200,6 +200,11 @@ class ASH_EXPORT CaptureModeCameraController
   // `is_camera_preview_collapsed_` when the resize button is pressed.
   void ToggleCameraPreviewSize();
 
+  // Fades in or out the `camera_preview_widget_` and updates its visibility
+  // accordingly.
+  void FadeInCameraPreview();
+  void FadeOutCameraPreview();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 

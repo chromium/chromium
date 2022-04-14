@@ -59,6 +59,13 @@ constexpr base::TimeDelta kDisconnectionGracePeriod = base::Seconds(10);
 constexpr base::TimeDelta kCameraBoundsChangeAnimationDuration =
     base::Milliseconds(150);
 
+// The duration for the camera preview fading out process.
+constexpr base::TimeDelta kCameraPreviewFadeOutDuration =
+    base::Milliseconds(50);
+// The duration for the camera preview fading in process.
+constexpr base::TimeDelta kCameraPreviewFadeInDuration =
+    base::Milliseconds(150);
+
 // Defines a map type to map a camera model ID (or display name) to the number
 // of cameras of that model that are currently connected.
 using ModelIdToCountMap = std::map<std::string, int>;
@@ -481,7 +488,7 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
       builder.Once()
           .SetDuration(kCameraBoundsChangeAnimationDuration)
           .SetBounds(preview_window, target_bounds_in_parent,
-                     gfx::Tween::FAST_OUT_SLOW_IN_3);
+                     gfx::Tween::ACCEL_20_DECEL_100);
     }
   } else {
     camera_preview_widget_->SetBounds(target_bounds);
@@ -553,6 +560,45 @@ void CaptureModeCameraController::ToggleCameraPreviewSize() {
   camera_preview_view_->SetPreferredSize(preferred_size);
 
   MaybeUpdatePreviewWidgetBounds(/*animate=*/true);
+}
+
+void CaptureModeCameraController::FadeInCameraPreview() {
+  DCHECK(camera_preview_widget_);
+  DCHECK(!camera_preview_widget_->GetNativeWindow()->TargetVisibility());
+
+  camera_preview_widget_->Show();
+  auto* layer = camera_preview_widget_->GetLayer();
+  layer->SetOpacity(0.f);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kCameraPreviewFadeInDuration)
+      .SetOpacity(layer, 1.f, gfx::Tween::LINEAR);
+}
+
+void CaptureModeCameraController::FadeOutCameraPreview() {
+  DCHECK(camera_preview_widget_);
+  DCHECK(camera_preview_widget_->GetNativeWindow()->TargetVisibility());
+
+  auto* layer = camera_preview_widget_->GetLayer();
+  DCHECK_EQ(layer->GetTargetOpacity(), 1.f);
+
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<CaptureModeCameraController> controller) {
+            if (!controller || !controller->camera_preview_widget_)
+              return;
+            controller->camera_preview_widget_->Hide();
+            controller->camera_preview_widget_->GetLayer()->SetOpacity(1.f);
+          },
+          weak_ptr_factory_.GetWeakPtr()))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kCameraPreviewFadeOutDuration)
+      .SetOpacity(layer, 0.f, gfx::Tween::LINEAR);
 }
 
 void CaptureModeCameraController::OnDevicesChanged(

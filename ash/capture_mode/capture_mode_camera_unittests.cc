@@ -878,11 +878,8 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWhileUpdatingCaptureRegion) {
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
   auto* preview_window = camera_preview_widget->GetNativeWindow();
-  const auto* unparented_container =
-      preview_window->GetRootWindow()->GetChildById(
-          kShellWindowId_UnparentedContainer);
 
-  const gfx::Rect capture_region(10, 20, 80, 60);
+  const gfx::Rect capture_region(10, 20, 300, 300);
   controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
 
   // After user capture region is set, parent of the preview should be the
@@ -890,14 +887,17 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWhileUpdatingCaptureRegion) {
   const auto* menu_container = preview_window->GetRootWindow()->GetChildById(
       kShellWindowId_MenuContainer);
   ASSERT_EQ(preview_window->parent(), menu_container);
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_TRUE(preview_window->IsVisible());
 
   // Press the bottom right of selection region. Verify preview is hidden and
-  // parent of the preview should be UnparentedContainer.
+  // it's still parented to `menu_container`.
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(capture_region.bottom_right());
   event_generator->PressLeftButton();
   EXPECT_FALSE(camera_preview_widget->IsVisible());
-  EXPECT_EQ(preview_window->parent(), unparented_container);
+  EXPECT_FALSE(preview_window->IsVisible());
+  ASSERT_EQ(preview_window->parent(), menu_container);
 
   // Move mouse to update the selection region. Verify preview is still
   // hidden.
@@ -905,13 +905,15 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWhileUpdatingCaptureRegion) {
   event_generator->MoveMouseTo(capture_region.bottom_right() + delta);
   EXPECT_TRUE(capture_session->is_drag_in_progress());
   EXPECT_FALSE(camera_preview_widget->IsVisible());
-  EXPECT_EQ(preview_window->parent(), unparented_container);
+  EXPECT_FALSE(preview_window->IsVisible());
+  ASSERT_EQ(preview_window->parent(), menu_container);
 
   // Now release the drag to end selection region update. Verify preview is
   // shown and parent of the preview should be MenuContainer.
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(capture_session->is_drag_in_progress());
   EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_TRUE(preview_window->IsVisible());
   EXPECT_EQ(preview_window->parent(), menu_container);
 
   // Press in the selection region to move it around. Since in the

@@ -388,6 +388,10 @@ class ASH_EXPORT CaptureModeSession
   // Called when the parent container of camera preview may need to be updated.
   void MaybeReparentCameraPreviewWidget();
 
+  // Called at the beginning or end of the drag of capture region to update the
+  // camera preview's visibility.
+  void MaybeUpdateCameraPreviewVisibility();
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
