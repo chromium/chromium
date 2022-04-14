@@ -108,11 +108,11 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
       // implementations should return their own failure messages.
-      return ScriptPromise::RejectWithDOMException(
+      return ScriptPromise::Reject(
           script_state,
-          DOMException::Create("Invalid track",
-                               DOMException::GetErrorName(
-                                   DOMExceptionCode::kInvalidStateError)));
+          V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+              "Invalid track"));
     }
   }
 
