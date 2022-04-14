@@ -3632,4 +3632,64 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
   EXPECT_EQ(1ul, desks_controller->desks().size());
 }
 
+TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
+  UpdateDisplay("800x600");
+
+  constexpr char16_t kDeskName[] = u"Save for later";
+
+  // Verify that we have one desk. If there is only a single desk when saving, a
+  // new desk will be created.
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+
+  // Rename the current desk so that we can later verify that we have a new
+  // desk.
+  const_cast<Desk*>(desks_controller->active_desk())
+      ->SetName(kDeskName, /*set_by_user=*/true);
+
+  // Create a test window that we release immediately as it will be closed
+  // automatically by the code under test.
+  CreateAppWindow().release();
+
+  // Open overview and save the desk.
+  OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
+
+  // We should still only have one desk, but it should be a new one (name is
+  // different from before).
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+  EXPECT_NE(kDeskName, desks_controller->active_desk()->name());
+}
+
+TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
+  UpdateDisplay("800x600");
+
+  constexpr char16_t kDeskName[] = u"Save for later";
+
+  DesksController* desks_controller = DesksController::Get();
+  const_cast<Desk*>(desks_controller->active_desk())
+      ->SetName(kDeskName, /*set_by_user=*/true);
+
+  // Create a test window that we release immediately as it will be closed
+  // automatically by the code under test.
+  CreateAppWindow().release();
+
+  // Open overview and save the desk.
+  OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
+
+  // Recall the desk.
+  DesksTemplatesItemView* template_item =
+      GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
+  ASSERT_TRUE(template_item);
+  ClickOnView(template_item);
+  WaitForDesksTemplatesUI();
+
+  // Verify that a new desk has been created and that it has the name of the
+  // saved desk.
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+  EXPECT_EQ(kDeskName, desks_controller->desks()[1]->name());
+
+  // Verify that the saved desk has been deleted.
+  EXPECT_TRUE(GetAllEntries().empty());
+}
+
 }  // namespace ash
