@@ -70,5 +70,9 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     "//ui/android:ui_java_test_support",
   ]
   data = [ "test/data/" ]
+
+  # Tell GN to ignore 'incremental_install' even if the user has it in their GN
+  # args because it's incompatible with 'use_webview_provider'.
+  never_incremental = true
   use_webview_provider = system_webview_apk_target
 }

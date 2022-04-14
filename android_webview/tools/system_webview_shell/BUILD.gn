@@ -162,5 +162,9 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
     "//third_party/blink/web_tests/webexposed/global-interface-listing-platform-specific-expected.txt",
   ]
+
+  # Tell GN to ignore 'incremental_install' even if the user has it in their GN
+  # args because it's incompatible with 'use_webview_provider'.
+  never_incremental = true
   use_webview_provider = system_webview_apk_target
 }
