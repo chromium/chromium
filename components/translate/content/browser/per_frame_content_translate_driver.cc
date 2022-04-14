@@ -152,7 +152,7 @@ void PerFrameContentTranslateDriver::TranslatePage(
   stats_.Clear();
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
-  web_contents()->ForEachFrame(base::BindRepeating(
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       &PerFrameContentTranslateDriver::TranslateFrame, base::Unretained(this),
       translate_script, source_lang, target_lang, translate_seq_no_));
 }
@@ -189,7 +189,7 @@ void PerFrameContentTranslateDriver::RevertTranslation(int page_seq_no) {
   stats_.Clear();
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
-  web_contents()->ForEachFrame(base::BindRepeating(
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       &PerFrameContentTranslateDriver::RevertFrame, base::Unretained(this)));
 }
 
