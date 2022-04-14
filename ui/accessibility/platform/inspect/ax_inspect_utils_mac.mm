@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
@@ -169,8 +170,9 @@ NSArray* AXAttributeNamesOf(const id node) {
 
   if (IsAXUIElement(node)) {
     CFArrayRef attributes_ref;
-    if (AXUIElementCopyAttributeNames(static_cast<AXUIElementRef>(node),
-                                      &attributes_ref) == kAXErrorSuccess)
+    AXError result = AXUIElementCopyAttributeNames(
+        static_cast<AXUIElementRef>(node), &attributes_ref);
+    if (AXSuccess(result, "AXAttributeNamesOf"))
       return static_cast<NSArray*>(attributes_ref);
     return nil;
   }
@@ -186,9 +188,9 @@ NSArray* AXParameterizedAttributeNamesOf(const id node) {
 
   if (IsAXUIElement(node)) {
     CFArrayRef attributes_ref;
-    if (AXUIElementCopyParameterizedAttributeNames(
-            static_cast<AXUIElementRef>(node), &attributes_ref) ==
-        kAXErrorSuccess)
+    AXError result = AXUIElementCopyParameterizedAttributeNames(
+        static_cast<AXUIElementRef>(node), &attributes_ref);
+    if (AXSuccess(result, "AXParameterizedAttributeNamesOf"))
       return static_cast<NSArray*>(attributes_ref);
     return nil;
   }
@@ -204,9 +206,11 @@ id AXAttributeValueOf(const id node, NSString* attribute) {
 
   if (IsAXUIElement(node)) {
     CFTypeRef value_ref;
-    if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
-                                       static_cast<CFStringRef>(attribute),
-                                       &value_ref)) == kAXErrorSuccess)
+    AXError result = AXUIElementCopyAttributeValue(
+        static_cast<AXUIElementRef>(node), static_cast<CFStringRef>(attribute),
+        &value_ref);
+    if (AXSuccess(result, "AXAttributeValueOf(" +
+                              base::SysNSStringToUTF8(attribute) + ")"))
       return static_cast<id>(value_ref);
     return nil;
   }
@@ -224,10 +228,11 @@ id AXParameterizedAttributeValueOf(const id node,
 
   if (IsAXUIElement(node)) {
     CFTypeRef value_ref;
-    if ((AXUIElementCopyParameterizedAttributeValue(
-            static_cast<AXUIElementRef>(node),
-            static_cast<CFStringRef>(attribute),
-            static_cast<CFTypeRef>(parameter), &value_ref)) == kAXErrorSuccess)
+    AXError result = AXUIElementCopyParameterizedAttributeValue(
+        static_cast<AXUIElementRef>(node), static_cast<CFStringRef>(attribute),
+        static_cast<CFTypeRef>(parameter), &value_ref);
+    if (AXSuccess(result, "AXParameterizedAttributeValueOf(" +
+                              base::SysNSStringToUTF8(attribute) + ")"))
       return static_cast<id>(value_ref);
     return nil;
   }
@@ -420,6 +425,42 @@ AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
     return static_cast<AXUIElementRef>(window);
 
   return nil;
+}
+
+AX_EXPORT bool AXSuccess(AXError result, const std::string& message) {
+  if (result == kAXErrorSuccess) {
+    return true;
+  }
+
+  std::string error;
+  switch (result) {
+    case kAXErrorAttributeUnsupported:
+      error = "attribute unsupported";
+      break;
+    case kAXErrorParameterizedAttributeUnsupported:
+      error = "parameterized attribute unsupported";
+      break;
+    case kAXErrorNoValue:
+      error = "no value";
+      break;
+    case kAXErrorIllegalArgument:
+      error = "illegal argument";
+      break;
+    case kAXErrorInvalidUIElement:
+      error = "invalid UIElement";
+      break;
+    case kAXErrorCannotComplete:
+      error = "cannot complete";
+      break;
+    case kAXErrorNotImplemented:
+      error = "not implemented";
+      break;
+    default:
+      error = "unknown error";
+      break;
+  }
+  LOG(WARNING) << message << ": " << error;
+  return false;
 }
 
 }  // namespace ui

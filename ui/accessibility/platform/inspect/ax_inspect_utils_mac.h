@@ -104,6 +104,9 @@ AX_EXPORT std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector&);
 AX_EXPORT AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
                                            const std::string& pattern);
 
+// Returns true on success, otherwise returns false and logs error.
+AX_EXPORT bool AXSuccess(AXError, const std::string& message);
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_UTILS_MAC_H_
