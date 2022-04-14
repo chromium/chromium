@@ -53,9 +53,6 @@ inline T CeilingDivide(T m, T n) {
   return (m + n - 1) / n;
 }
 
-// Loads a string from the resources.
-bool LoadString(int id, std::wstring* s);
-
 // Gets the text corresponding to a control in a dialog box.
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 

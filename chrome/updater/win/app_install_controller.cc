@@ -37,8 +37,9 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
-#include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
@@ -584,17 +585,18 @@ void AppInstallControllerImpl::HandleInstallResult(
     case UpdateService::UpdateState::State::kUpdated:
       VLOG(1) << "Update success.";
       completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-      ui::LoadString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY, &completion_text);
+      completion_text =
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE);
       break;
     case UpdateService::UpdateState::State::kNoUpdate:
       VLOG(1) << "No updates.";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      ui::LoadString(IDS_NO_UPDATE_RESPONSE, &completion_text);
+      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE);
       break;
     case UpdateService::UpdateState::State::kUpdateError:
       VLOG(1) << "Updater error: " << update_state.error_code << ".";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      ui::LoadString(IDS_INSTALL_FAILED, &completion_text);
+      completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
       break;
     default:
       NOTREACHED();
