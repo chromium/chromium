@@ -35,6 +35,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -639,7 +641,20 @@ void AXObject::Init(AXObject* parent) {
 
   UpdateCachedAttributeValuesIfNeeded(false);
 
-  SANITIZER_CHECK(!parent_ ||
+  // The recently introduced CHECK below fails for shadowDOM fenced
+  // frame, so bypass the CHECK below if it's a shadowDOM fenced frame.
+  // TODO(crbug.com/1316348): see if AXNodeObject::AddNodeChildren() needs to
+  // change for fenced frames similar to iframes and whether this change would
+  // then still be necessary.
+  bool is_shadow_dom_fenced_frame = false;
+  if (parent_ && parent_->GetNode()) {
+    is_shadow_dom_fenced_frame =
+        parent_ && blink::features::IsFencedFramesEnabled() &&
+        blink::features::IsFencedFramesShadowDOMBased() &&
+        IsA<HTMLFencedFrameElement>(*parent_->GetNode());
+  }
+
+  SANITIZER_CHECK(!parent_ || is_shadow_dom_fenced_frame ||
                   parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
                   RoleValue() == ax::mojom::blink::Role::kDocument)
       << "An iframe can only have a document child."
