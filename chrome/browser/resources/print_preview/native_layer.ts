@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
-import {PrinterType} from './data/destination_match.js';
+import {PrinterType} from './data/destination.js';
 import {LocalDestinationInfo} from './data/local_parsers.js';
 import {MeasurementSystemUnitType} from './data/measurement_system.js';
 

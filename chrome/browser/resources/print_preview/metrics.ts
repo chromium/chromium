@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {PrinterType} from './data/destination_match.js';
+import {PrinterType} from './data/destination.js';
 import {NativeLayer, NativeLayerImpl} from './native_layer.js';
 
 /**

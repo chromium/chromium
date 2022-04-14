@@ -13,11 +13,11 @@ import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../nat
 
 // </if>
 import {Cdd, MediaSizeOption} from './cdd.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationProvisionalType} from './destination.js';
 // </if>
-import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
+import {DestinationMatch} from './destination_match.js';
 import {ExtensionDestinationInfo, LocalDestinationInfo, parseDestination} from './local_parsers.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {parseExtensionDestination} from './local_parsers.js';
@@ -302,6 +302,27 @@ export class DestinationStore extends EventTarget {
     return !!destination && !!destination.id && !!destination.origin;
   }
 
+  private getPrinterTypeForRecentDestination_(destination: RecentDestination):
+      PrinterType {
+    // <if expr="chromeos_ash or chromeos_lacros">
+    if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+      return PrinterType.PDF_PRINTER;
+    }
+    // </if>
+
+    if (destination.id === GooglePromotedDestinationId.SAVE_AS_PDF) {
+      return PrinterType.PDF_PRINTER;
+    }
+
+    if (destination.origin === DestinationOrigin.LOCAL ||
+        destination.origin === DestinationOrigin.CROS) {
+      return PrinterType.LOCAL_PRINTER;
+    }
+
+    assert(destination.origin === DestinationOrigin.EXTENSION);
+    return PrinterType.EXTENSION_PRINTER;
+  }
+
   /**
    * Initializes the destination store. Sets the initially selected
    * destination. If any inserted destinations match this ID, that destination
@@ -328,27 +349,34 @@ export class DestinationStore extends EventTarget {
       serializedDefaultDestinationSelectionRulesStr: string|null,
       recentDestinations: RecentDestination[]) {
     if (systemDefaultDestinationId) {
+      let systemDefaultVirtual = systemDefaultDestinationId ===
+          GooglePromotedDestinationId.SAVE_AS_PDF;
+      // <if expr="chromeos_ash or chromeos_lacros">
+      systemDefaultVirtual = systemDefaultVirtual ||
+          systemDefaultDestinationId ===
+              GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
+      // </if>
+      const systemDefaultType = systemDefaultVirtual ?
+          PrinterType.PDF_PRINTER :
+          PrinterType.LOCAL_PRINTER;
       const systemDefaultOrigin =
-          this.isDestinationLocal_(systemDefaultDestinationId) ?
-          DestinationOrigin.LOCAL :
-          this.platformOrigin_;
+          systemDefaultVirtual ? DestinationOrigin.LOCAL : this.platformOrigin_;
       this.systemDefaultDestinationKey_ =
           createDestinationKey(systemDefaultDestinationId, systemDefaultOrigin);
-      this.typesToSearch_.add(originToType(systemDefaultOrigin));
+      this.typesToSearch_.add(systemDefaultType);
     }
 
     this.recentDestinationKeys_ = recentDestinations.map(
         destination => createRecentDestinationKey(destination));
     for (const recent of recentDestinations) {
-      this.typesToSearch_.add(getPrinterTypeForDestination(recent));
+      this.typesToSearch_.add(this.getPrinterTypeForRecentDestination_(recent));
     }
 
     this.autoSelectMatchingDestination_ = this.convertToDestinationMatch_(
         serializedDefaultDestinationSelectionRulesStr);
     if (this.autoSelectMatchingDestination_) {
-      for (const type of this.autoSelectMatchingDestination_.getTypes()) {
-        this.typesToSearch_.add(type);
-      }
+      this.typesToSearch_.add(PrinterType.EXTENSION_PRINTER);
+      this.typesToSearch_.add(PrinterType.LOCAL_PRINTER);
     }
 
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
@@ -550,12 +578,6 @@ export class DestinationStore extends EventTarget {
       return null;
     }
 
-    const origins = [
-      DestinationOrigin.LOCAL,
-      DestinationOrigin.EXTENSION,
-      DestinationOrigin.CROS,
-    ];
-
     let idRegExp = null;
     try {
       if (matchRules.idPattern) {
@@ -574,8 +596,7 @@ export class DestinationStore extends EventTarget {
       console.warn('Failed to parse regexp for "name": ' + e);
     }
 
-    return new DestinationMatch(
-        origins, idRegExp, displayNameRegExp, true /*skipVirtualDestinations*/);
+    return new DestinationMatch(idRegExp, displayNameRegExp);
   }
 
   /** @param Key identifying the destination to select */
@@ -610,8 +631,7 @@ export class DestinationStore extends EventTarget {
     // Request destination capabilities from backend, since they are not
     // known yet.
     if (destination.capabilities === null) {
-      const type = getPrinterTypeForDestination(destination);
-      this.nativeLayer_.getPrinterCapabilities(destination.id, type)
+      this.nativeLayer_.getPrinterCapabilities(destination.id, destination.type)
           .then(
               (caps) => this.onCapabilitiesSet_(
                   destination.origin, destination.id, caps),
@@ -805,7 +825,7 @@ export class DestinationStore extends EventTarget {
     assert(destination.constructor !== Array, 'Single printer expected');
     assert(destination.capabilities);
     destination.capabilities = localizeCapabilities(destination.capabilities);
-    if (originToType(destination.origin) !== PrinterType.LOCAL_PRINTER) {
+    if (destination.type !== PrinterType.LOCAL_PRINTER) {
       destination.capabilities = sortMediaSizes(destination.capabilities);
     }
     const existingDestination = this.destinationMap_.get(destination.key);
@@ -907,7 +927,11 @@ export class DestinationStore extends EventTarget {
         return;
       }
       assert(settingsInfo.printer);
-      dest = parseDestination(originToType(origin), settingsInfo.printer);
+      // PDF, CROS, and LOCAL printers all get parsed the same way.
+      const typeToParse = origin === DestinationOrigin.EXTENSION ?
+          PrinterType.EXTENSION_PRINTER :
+          PrinterType.LOCAL_PRINTER;
+      dest = parseDestination(typeToParse, settingsInfo.printer);
     }
     if (dest) {
       if ((origin === DestinationOrigin.LOCAL ||

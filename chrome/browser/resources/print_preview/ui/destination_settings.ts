@@ -30,11 +30,10 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createRecentDestinationKey, Destination, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
+import {createRecentDestinationKey, Destination, GooglePromotedDestinationId, makeRecentDestination, PrinterType, RecentDestination} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
@@ -440,8 +439,7 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationState === DestinationState.UPDATED ||
         (this.destinationState === DestinationState.SET && !!this.destination &&
          (!!this.destination.capabilities ||
-          getPrinterTypeForDestination(this.destination) ===
-              PrinterType.PDF_PRINTER));
+          this.destination.type === PrinterType.PDF_PRINTER));
   }
 
   // <if expr="chromeos_ash or chromeos_lacros">

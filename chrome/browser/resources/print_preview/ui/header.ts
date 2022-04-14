@@ -12,8 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
+import {Destination, PrinterType} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
 
 import {getTemplate} from './header.html.js';
@@ -62,8 +61,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
 
   private isPdf_(): boolean {
     return this.destination &&
-        getPrinterTypeForDestination(this.destination) ===
-        PrinterType.PDF_PRINTER;
+        this.destination.type === PrinterType.PDF_PRINTER;
   }
 
   private updateSummary_() {

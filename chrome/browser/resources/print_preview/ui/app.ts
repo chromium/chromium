@@ -16,11 +16,10 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
+import {Destination, PrinterType} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationOrigin} from '../data/destination.js';
 // </if>
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
 import {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
@@ -404,8 +403,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.remove();
       this.nativeLayer_!.dialogClose(this.cancelled_);
     } else if (this.state === State.HIDDEN) {
-      if (getPrinterTypeForDestination(this.destination_) !==
-          PrinterType.PDF_PRINTER) {
+      if (this.destination_.type !== PrinterType.PDF_PRINTER) {
         // Only hide the preview for local, non PDF destinations.
         this.nativeLayer_!.hidePreview();
       }
@@ -414,8 +412,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.nativeLayer_!.print(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
-      const onError = getPrinterTypeForDestination(this.destination_) ===
-              PrinterType.PDF_PRINTER ?
+      const onError = this.destination_.type === PrinterType.PDF_PRINTER ?
           this.onFileSelectionCancel_.bind(this) :
           this.onPrintFailed_.bind(this);
       whenPrintDone.then(this.close_.bind(this), onError);

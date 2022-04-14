@@ -15,7 +15,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {Destination} from '../data/destination.js';
-import {getPrinterTypeForDestination} from '../data/destination_match.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import {DuplexMode, MediaSizeValue, Ticket} from '../data/model.js';
@@ -625,8 +624,7 @@ export class PrintPreviewPreviewAreaElement extends
     }
 
     // Destination
-    if (getPrinterTypeForDestination(this.destination) !==
-        lastTicket.printerType) {
+    if (this.destination.type !== lastTicket.printerType) {
       return true;
     }
 
@@ -724,7 +722,7 @@ export class PrintPreviewPreviewAreaElement extends
       dpiVertical: this.getDpiForTicket_('vertical_dpi'),
       duplex: this.getSettingValue('duplex') ? DuplexMode.LONG_EDGE :
                                                DuplexMode.SIMPLEX,
-      printerType: getPrinterTypeForDestination(this.destination),
+      printerType: this.destination.type,
       rasterizePDF: this.getSettingValue('rasterize') as boolean,
     };
 

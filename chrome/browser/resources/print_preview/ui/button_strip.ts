@@ -15,8 +15,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 // </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
+import {Destination, PrinterType} from '../data/destination.js';
 import {State} from '../data/state.js';
 
 import {getTemplate} from './button_strip.html.js';
@@ -103,8 +102,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
 
   private isPdf_(): boolean {
     return this.destination &&
-        getPrinterTypeForDestination(this.destination) ===
-        PrinterType.PDF_PRINTER;
+        this.destination.type === PrinterType.PDF_PRINTER;
   }
 
   private updatePrintButtonLabel_() {

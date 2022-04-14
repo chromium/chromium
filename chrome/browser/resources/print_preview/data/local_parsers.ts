@@ -5,11 +5,10 @@
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {Destination, DestinationOptionalParams, DestinationOrigin} from './destination.js';
+import {Destination, DestinationOptionalParams, DestinationOrigin, PrinterType} from './destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationProvisionalType} from './destination.js';
 // </if>
-import {PrinterType} from './destination_match.js';
 
 type ObjectMap = {
   [k: string]: any,
@@ -43,7 +42,7 @@ export type ExtensionDestinationInfo = {
 export function parseDestination(
     type: PrinterType,
     printer: (LocalDestinationInfo|ExtensionDestinationInfo)): Destination {
-  if (type === PrinterType.LOCAL_PRINTER) {
+  if (type === PrinterType.LOCAL_PRINTER || type === PrinterType.PDF_PRINTER) {
     return parseLocalDestination(printer as LocalDestinationInfo);
   }
   if (type === PrinterType.EXTENSION_PRINTER) {
