@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequence_manager/lazy_now.h"

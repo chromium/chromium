@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
 

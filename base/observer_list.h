@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/observer_list_internal.h"

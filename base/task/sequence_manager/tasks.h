@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/pending_task.h"
 #include "base/task/delay_policy.h"

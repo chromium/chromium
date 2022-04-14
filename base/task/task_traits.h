@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/task/task_traits_extension.h"
 #include "base/traits_bag.h"

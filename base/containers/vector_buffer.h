@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/util.h"
 #include "base/numerics/checked_math.h"

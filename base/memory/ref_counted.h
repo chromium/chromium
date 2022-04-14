@@ -11,6 +11,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"

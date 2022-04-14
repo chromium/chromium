@@ -69,6 +69,7 @@
 #include <limits>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"

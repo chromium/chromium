@@ -9,6 +9,7 @@
 
 #include <array>
 
+#include "base/check.h"
 #include "base/check_op.h"
 
 namespace base {

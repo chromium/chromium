@@ -12,6 +12,7 @@
 #include <new>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 

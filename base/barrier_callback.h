@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/synchronization/lock.h"
 #include "base/template_util.h"
 #include "base/thread_annotations.h"

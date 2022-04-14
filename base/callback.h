@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_internal.h"
+#include "base/check.h"
 #include "base/notreached.h"
 
 // -----------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
