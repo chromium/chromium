@@ -9,13 +9,14 @@ proto_library("quic_trace_proto") {
     "//net/third_party/quiche:quic_test_tools_core",
   ]
 
-  sources = [ "src/lib/quic_trace.proto" ]
+  sources = [ "src/quic_trace/quic_trace.proto" ]
   component_build_force_source_set = true
   testonly = true
   cc_generator_options = "lite"
 
-  # The result can be included as third_party/quic_trace/lib/quic_trace.pb.h
-  proto_out_dir = rebase_path(".", "//") + "/lib"
+  # net/third_party/quiche expects quic_trace/quic_trace.pb.h to be in include
+  # paths
+  proto_out_dir = "quic_trace"
 
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
