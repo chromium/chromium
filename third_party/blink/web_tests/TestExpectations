@@ -7710,7 +7710,9 @@ crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox
 # Sheriff 2022-04-07
 crbug.com/1314314 virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Skip ]
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Skip ]
-crbug.com/1095540 [ Mac10.14 ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
+
+# Sheriff 2022-04-14
+crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
 
 # FedCM API test failures
 crbug.com/1314987 external/wpt/credential-management/fedcm-logout.sub.https.html [ Skip ]
