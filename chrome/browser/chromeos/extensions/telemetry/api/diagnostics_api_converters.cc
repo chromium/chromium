@@ -59,6 +59,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kDiskRead:
       *out = RoutineType::ROUTINE_TYPE_DISK_READ;
       return true;
+    case MojoRoutineType::kLanConnectivity:
+      *out = RoutineType::ROUTINE_TYPE_LAN_CONNECTIVITY;
+      return true;
     case MojoRoutineType::kMemory:
       *out = RoutineType::ROUTINE_TYPE_MEMORY;
       return true;

@@ -332,6 +332,20 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
       std::move(cb));
 }
 
+// OsDiagnosticsRunLanConnectivityRoutineFunction ------------------------------
+
+OsDiagnosticsRunLanConnectivityRoutineFunction::
+    OsDiagnosticsRunLanConnectivityRoutineFunction() = default;
+OsDiagnosticsRunLanConnectivityRoutineFunction::
+    ~OsDiagnosticsRunLanConnectivityRoutineFunction() = default;
+
+void OsDiagnosticsRunLanConnectivityRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunLanConnectivityRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
 
 OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =

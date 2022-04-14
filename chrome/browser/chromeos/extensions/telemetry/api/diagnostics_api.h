@@ -263,6 +263,25 @@ class OsDiagnosticsRunDiskReadRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunLanConnectivityRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runLanConnectivityRoutine",
+                             OS_DIAGNOSTICS_RUNLANCONNECTIVITYROUTINE)
+
+  OsDiagnosticsRunLanConnectivityRoutineFunction();
+  OsDiagnosticsRunLanConnectivityRoutineFunction(
+      const OsDiagnosticsRunLanConnectivityRoutineFunction&) = delete;
+  OsDiagnosticsRunLanConnectivityRoutineFunction& operator=(
+      const OsDiagnosticsRunLanConnectivityRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunLanConnectivityRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunMemoryRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

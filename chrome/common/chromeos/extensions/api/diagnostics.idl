@@ -20,7 +20,8 @@ namespace os.diagnostics {
     disk_read,
     memory,
     nvme_wear_level,
-    smartctl_check
+    smartctl_check,
+    lan_connectivity
   };
 
   enum RoutineStatus {
@@ -154,6 +155,9 @@ namespace os.diagnostics {
     // Starts disk read routine.
     [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
                                                       RunRoutineCallback callback);
+
+    // Starts LAN connectivitty routine.
+    [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
 
     // Starts memory routine.
     [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);

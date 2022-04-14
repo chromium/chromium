@@ -207,6 +207,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runLanConnectivityRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runLanConnectivityRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runLanConnectivityRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runMemoryRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runMemoryRoutine(),
