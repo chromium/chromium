@@ -61,7 +61,12 @@ class IncludeFinderPPCallbacks : public clang::PPCallbacks {
                           llvm::StringRef file_name,
                           bool is_angled,
                           clang::CharSourceRange range,
+#if defined(LLVM_FORCE_HEAD_REVISION)
+                          llvm::Optional<clang::FileEntryRef> file,
+#else
+                          // TODO(crbug.com/1316423): Remove after clang roll.
                           const clang::FileEntry* file,
+#endif
                           llvm::StringRef search_path,
                           llvm::StringRef relative_path,
                           const clang::Module* imported,
@@ -158,12 +163,17 @@ void IncludeFinderPPCallbacks::InclusionDirective(
     llvm::StringRef file_name,
     bool is_angled,
     clang::CharSourceRange range,
+#if defined(LLVM_FORCE_HEAD_REVISION)
+    llvm::Optional<clang::FileEntryRef> file,
+#else
+    // TODO(crbug.com/1316423): Remove after clang roll.
     const clang::FileEntry* file,
+#endif
     llvm::StringRef search_path,
     llvm::StringRef relative_path,
     const clang::Module* imported,
     clang::SrcMgr::CharacteristicKind /*file_type*/
-    ) {
+) {
   if (!file)
     return;
 
