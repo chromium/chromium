@@ -5,6 +5,7 @@
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
+#include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
 
 using ::autofill_assistant::Dependencies;
@@ -52,8 +53,7 @@ std::string WebLayerDependencies::GetChromeSignedInEmailAddress(
 
 variations::VariationsService* WebLayerDependencies::GetVariationsService()
     const {
-  // TODO(b/222671580): Implement
-  return nullptr;
+  return FeatureListCreator::GetInstance()->variations_service();
 }
 
 ::autofill_assistant::AnnotateDomModelService*
