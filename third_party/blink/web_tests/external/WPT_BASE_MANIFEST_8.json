@@ -157066,6 +157066,19 @@
         {}
        ]
       ],
+      "replaced-element-035.html": [
+       "88ae2c22dc6546087d15c5f0bf5d16f02da7a37f",
+       [
+        null,
+        [
+         [
+          "/css/css-sizing/aspect-ratio/replaced-element-035-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "replaced-element-dynamic-aspect-ratio.html": [
        "d4b83d3673cbfba940baec1c88f3e6630c760eb4",
        [
@@ -280510,6 +280523,10 @@
         []
        ]
       },
+      "replaced-element-035-ref.html": [
+       "cd8afe16934c5e99607e5821c9f7eaf06a0e4e7b",
+       []
+      ],
       "select-element-001-ref.html": [
        "bdd09f7fb9fc47d322a6216b9c2fdf49c02a87e4",
        []
