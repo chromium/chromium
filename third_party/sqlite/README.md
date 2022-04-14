@@ -83,12 +83,13 @@ to thoroughly review.
     export VERSION=3.33.0
     git checkout -b chromium-version-$VERSION \
         --track origin/chromium-version-$VERSION
+    git rebase
     ```
 
 3. Generate and commit the SQLite amalgamations.
 
     ```sh
-    ../scripts/generate_amalgamation.py
+    ./../scripts/generate_amalgamation.py
     git add amalgamation amalgamation_dev
     git commit -m "Amalgamations for release $VERSION"
     ```
