@@ -121,7 +121,6 @@ EXPORTS
     ??0ByAnyChar@absl@@QEAA@Vstring_view@1@@Z
     ??0ByLength@absl@@QEAA@_J@Z
     ??0ByString@absl@@QEAA@Vstring_view@1@@Z
-    ??0ChunkIterator@Cord@absl@@AEAA@PEAUCordRep@cord_internal@2@@Z
     ??0ChunkIterator@Cord@absl@@AEAA@PEBV12@@Z
     ??0Condition@absl@@AEAA@XZ
     ??0Condition@absl@@QEAA@P6A_NPEAX@Z0@Z
