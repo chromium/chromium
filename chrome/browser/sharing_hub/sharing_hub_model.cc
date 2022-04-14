@@ -188,7 +188,7 @@ void SharingHubModel::PopulateFirstPartyActions() {
 
   first_party_action_list_.push_back(
       {IDC_QRCODE_GENERATOR,
-       l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL),
+       l10n_util::GetStringUTF16(IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL),
        &kQrcodeGeneratorIcon, true, gfx::ImageSkia(),
        "SharingHubDesktop.QRCodeSelected"});
 

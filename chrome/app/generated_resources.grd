@@ -8769,6 +8769,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           desc="Title for the QR Generator dialog.">
         Scan QR Code
       </message>
+      <message name="IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL" desc="The label for the Create QR Code option in the sharing hub menu.">
+        Create QR Code
+      </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME"
           desc="Text to be spoken for the QR Code Generator's URL Textfield.">
         URL
