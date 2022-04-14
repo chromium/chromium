@@ -96,8 +96,6 @@ class DictationBubbleControllerTest : public AshTestBase {
     return GetView()->GetVisibleHintsForTesting();
   }
 
-  int CalculateWidth() { return GetView()->CalculatePreferredSize().width(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -234,26 +232,6 @@ TEST_F(DictationBubbleControllerTest, HideBeforeShow) {
   EXPECT_TRUE(IsBubbleVisible());
 
   HideAndCheckExpectations();
-}
-
-// Verifies that the UI expands as text is shown.
-TEST_F(DictationBubbleControllerTest, ExpandsToMaxWidth) {
-  std::u16string text = u"Test string";
-  int last_width = 0;
-  auto icon = DictationBubbleIconType::kHidden;
-  auto hints = absl::optional<std::vector<DictationBubbleHintType>>();
-
-  auto show_text_and_expect_larger_width = [&]() {
-    Show(icon, absl::optional<std::u16string>(text), hints);
-    EXPECT_TRUE(CalculateWidth() > last_width);
-    last_width = CalculateWidth();
-  };
-
-  show_text_and_expect_larger_width();
-  text += u"Increasing width of the UI";
-  show_text_and_expect_larger_width();
-  text += u"Increasing width again";
-  show_text_and_expect_larger_width();
 }
 
 }  // namespace ash
