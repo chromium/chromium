@@ -205,6 +205,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab"
+    enum="BooleanAvailable" expires_after="2022-10-13">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a threat details job is running on the current tab before
+    sending client safe browsing report. The job can be already deleted if the
+    current tab is closed directly before the report is sent. Only log if the
+    report should be sent.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.{IsAccessTokenIncluded}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-10-11">
