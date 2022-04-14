@@ -6,8 +6,6 @@
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/win/ui/l10n_util.h"
-#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
@@ -92,7 +90,9 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
   if (!OmahaWnd::OnComplete())
     return;
 
-  SetDlgItemText(IDC_CLOSE, GetLocalizedString(IDS_UPDATER_CLOSE_BASE).c_str());
+  std::wstring s;
+  LoadString(IDS_CLOSE, &s);
+  SetDlgItemText(IDC_CLOSE, s.c_str());
 
   DCHECK(!text.empty());
 
@@ -108,8 +108,8 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
 
     if (!help_url.empty()) {
       help_url_ = help_url.c_str();
-      SetDlgItemText(IDC_GET_HELP,
-                     GetLocalizedString(IDS_GET_HELP_TEXT_BASE).c_str());
+      LoadString(IDS_GET_HELP_TEXT, &s);
+      SetDlgItemText(IDC_GET_HELP, s.c_str());
     }
   }
 

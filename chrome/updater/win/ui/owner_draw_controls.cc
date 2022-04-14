@@ -9,8 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chrome/updater/win/ui/l10n_util.h"
-#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui_util.h"
 
 namespace updater {
@@ -157,7 +156,9 @@ void CaptionButton::set_tool_tip_text(const CString& tool_tip_text) {
 }
 
 CloseButton::CloseButton() {
-  set_tool_tip_text(GetLocalizedString(IDS_CLOSE_BUTTON_BASE).c_str());
+  CString tool_tip_text;
+  tool_tip_text.LoadString(IDS_CLOSE_BUTTON);
+  set_tool_tip_text(tool_tip_text);
 }
 
 HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
@@ -184,7 +185,9 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
 }
 
 MinimizeButton::MinimizeButton() {
-  set_tool_tip_text(GetLocalizedString(IDS_MINIMIZE_BUTTON_BASE).c_str());
+  CString tool_tip_text;
+  tool_tip_text.LoadString(IDS_MINIMIZE_BUTTON);
+  set_tool_tip_text(tool_tip_text);
 }
 
 HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
@@ -196,9 +199,9 @@ HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
 }
 
 MaximizeButton::MaximizeButton() {
-  // TODO(crbug.com/1314812) Maximize button is not utilized. Adding a
-  // placeholder for IDS_MAXIMIZE_BUTTON_BASE.
-  set_tool_tip_text(L"");
+  CString tool_tip_text;
+  tool_tip_text.LoadString(IDS_MAXIMIZE_BUTTON);
+  set_tool_tip_text(tool_tip_text);
 }
 
 HRGN MaximizeButton::GetButtonRgn(int rgn_width, int rgn_height) {

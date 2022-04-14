@@ -9,8 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
-#include "chrome/updater/win/ui/l10n_util.h"
-#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {
@@ -112,8 +111,20 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
 std::wstring GetInstallerDisplayName(const std::u16string& bundle_name) {
   std::wstring display_name = base::AsWString(bundle_name);
   if (display_name.empty())
-    display_name = GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE);
-  return GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE, display_name);
+    LoadString(IDS_FRIENDLY_COMPANY_NAME, &display_name);
+  std::wstring installer_name;
+  LoadString(IDS_INSTALLER_DISPLAY_NAME, &installer_name);
+  return base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      base::AsString16(installer_name), base::AsString16(display_name)));
+}
+
+// TODO(sorin): use resource bundles and remove the dependency on ATL::CString.
+// https://crbug.com/1015602
+bool LoadString(int id, std::wstring* s) {
+  CString tmp;
+  auto result = tmp.LoadString(id);
+  *s = tmp;
+  return result;
 }
 
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
