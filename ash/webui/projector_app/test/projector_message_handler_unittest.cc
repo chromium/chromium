@@ -311,8 +311,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {
 TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
   ON_CALL(mock_app_client(), ShouldDownloadSoda())
       .WillByDefault(testing::Return(true));
-  ON_CALL(mock_app_client(), IsSpeechRecognitionAvailable())
-      .WillByDefault(testing::Return(false));
 
   base::ListValue list_args;
   list_args.Append(base::Value(kShouldDownloadSodaCallback));

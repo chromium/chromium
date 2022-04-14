@@ -33,6 +33,14 @@ enum class LocaleNotificationResult {
   kRevert,
 };
 
+class LocaleChangeObserver {
+ public:
+  virtual ~LocaleChangeObserver() = default;
+
+  // Called when locale is changed.
+  virtual void OnLocaleChanged() = 0;
+};
+
 // Used by Chrome to notify locale change events.
 class ASH_PUBLIC_EXPORT LocaleUpdateController {
  public:
@@ -56,6 +64,9 @@ class ASH_PUBLIC_EXPORT LocaleUpdateController {
       const std::string& from_locale,
       const std::string& to_locale,
       LocaleChangeConfirmationCallback callback) = 0;
+
+  virtual void AddObserver(LocaleChangeObserver* observer) = 0;
+  virtual void RemoveObserver(LocaleChangeObserver* observer) = 0;
 
  protected:
   LocaleUpdateController();

@@ -42,7 +42,6 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
       const ash::NewScreencastPrecondition& precondition) override;
   const ash::PendingScreencastSet& GetPendingScreencasts() const override;
   bool ShouldDownloadSoda() override;
-  bool IsSpeechRecognitionAvailable() override;
   void InstallSoda() override;
   void OnSodaInstallProgress(int combined_progress) override;
   void OnSodaInstallError() override;

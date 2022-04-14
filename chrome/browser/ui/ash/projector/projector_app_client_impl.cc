@@ -144,12 +144,6 @@ void ProjectorAppClientImpl::OnSodaInstalled() {
     observer.OnSodaInstalled();
 }
 
-bool ProjectorAppClientImpl::IsSpeechRecognitionAvailable() {
-  return soda_installation_controller_ &&
-         soda_installation_controller_->IsSodaAvailable(
-             GetLocaleLanguageCode());
-}
-
 void ProjectorAppClientImpl::OpenFeedbackDialog() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";

@@ -12,14 +12,6 @@
 
 namespace ash {
 
-class LocaleChangeObserver {
- public:
-  virtual ~LocaleChangeObserver() = default;
-
-  // Called when locale is changed.
-  virtual void OnLocaleChanged() = 0;
-};
-
 // Observes and handles locale change events.
 class LocaleUpdateControllerImpl : public LocaleUpdateController {
  public:
@@ -31,8 +23,9 @@ class LocaleUpdateControllerImpl : public LocaleUpdateController {
 
   ~LocaleUpdateControllerImpl() override;
 
-  void AddObserver(LocaleChangeObserver* observer);
-  void RemoveObserver(LocaleChangeObserver* observer);
+  // LocaleUpdateController:
+  void AddObserver(LocaleChangeObserver* observer) override;
+  void RemoveObserver(LocaleChangeObserver* observer) override;
 
  private:
   // LocaleUpdateController:

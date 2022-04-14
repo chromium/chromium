@@ -46,7 +46,6 @@ class MockAppClient : public ProjectorAppClient {
                void(const NewScreencastPrecondition&));
   MOCK_CONST_METHOD0(GetPendingScreencasts, const PendingScreencastSet&());
   MOCK_METHOD0(ShouldDownloadSoda, bool());
-  MOCK_METHOD0(IsSpeechRecognitionAvailable, bool());
   MOCK_METHOD0(InstallSoda, void());
   MOCK_METHOD1(OnSodaInstallProgress, void(int));
   MOCK_METHOD0(OnSodaInstallError, void());

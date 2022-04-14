@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "ash/public/cpp/locale_update_controller.h"
+#include "base/scoped_observation.h"
 #include "components/soda/soda_installer.h"
 
 namespace ash {
@@ -21,7 +23,8 @@ enum class LanguageCode;
 // Class owned by ProjectorAppClientImpl used to control the installation of
 // SODA and the language pack requested by the user.
 class ProjectorSodaInstallationController
-    : public speech::SodaInstaller::Observer {
+    : public speech::SodaInstaller::Observer,
+      public ash::LocaleChangeObserver {
  public:
   ProjectorSodaInstallationController(ash::ProjectorAppClient* app_client,
                                       ash::ProjectorController* controller);
@@ -51,8 +54,20 @@ class ProjectorSodaInstallationController
   void OnSodaProgress(speech::LanguageCode language_code,
                       int progress) override;
 
+  // ash::LocaleChangeObserver:
+  void OnLocaleChanged() override;
+
   ash::ProjectorAppClient* const app_client_;
   ash::ProjectorController* const projector_controller_;
+
+ private:
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_installer_observation_{this};
+
+  base::ScopedObservation<ash::LocaleUpdateController,
+                          ash::LocaleChangeObserver>
+      locale_change_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_SODA_INSTALLATION_CONTROLLER_H_

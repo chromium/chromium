@@ -126,10 +126,6 @@ class ProjectorAppClient {
   // Checks if device is eligible to trigger SODA installer.
   virtual bool ShouldDownloadSoda() = 0;
 
-  // Returns true if SODA binary is downloaded and the language associated with
-  // the user's locale is installed.
-  virtual bool IsSpeechRecognitionAvailable() = 0;
-
   // Triggers the installation of SODA (Speech On-Device API) binary and the
   // corresponding language pack for projector.
   virtual void InstallSoda() = 0;

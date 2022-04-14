@@ -37,13 +37,8 @@ ProjectorSodaInstallationController::ProjectorSodaInstallationController(
     ash::ProjectorAppClient* client,
     ash::ProjectorController* projector_controller)
     : app_client_(client), projector_controller_(projector_controller) {
-  speech::SodaInstaller::GetInstance()->AddObserver(this);
-
-  if (!IsLanguageSupported(speech::GetLanguageCode(GetLocale()))) {
-    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-        ash::SpeechRecognitionAvailability::kUserLanguageNotSupported);
-    return;
-  }
+  soda_installer_observation_.Observe(speech::SodaInstaller::GetInstance());
+  locale_change_observation_.Observe(ash::LocaleUpdateController::Get());
 
   if (!OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
           GetLocale())) {
@@ -56,11 +51,8 @@ ProjectorSodaInstallationController::ProjectorSodaInstallationController(
       ash::SpeechRecognitionAvailability::kAvailable);
 }
 
-ProjectorSodaInstallationController::~ProjectorSodaInstallationController() {
-  auto* installer = speech::SodaInstaller::GetInstance();
-  if (installer)
-    installer->RemoveObserver(this);
-}
+ProjectorSodaInstallationController::~ProjectorSodaInstallationController() =
+    default;
 
 void ProjectorSodaInstallationController::InstallSoda(
     const std::string& language) {
@@ -123,4 +115,12 @@ void ProjectorSodaInstallationController::OnSodaProgress(
     return;
   }
   app_client_->OnSodaInstallProgress(progress);
+}
+
+// This function is triggered after every sign in.
+void ProjectorSodaInstallationController::OnLocaleChanged() {
+  if (!IsLanguageSupported(speech::GetLanguageCode(GetLocale()))) {
+    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+        ash::SpeechRecognitionAvailability::kUserLanguageNotSupported);
+  }
 }
