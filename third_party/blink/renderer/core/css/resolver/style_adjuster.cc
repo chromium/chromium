@@ -419,10 +419,14 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 
   if (IsA<HTMLFencedFrameElement>(element)) {
-    // Force the effective CSS `zoom` property to 1, so that the CSS `zoom`
-    // property does not leak to fencedframe `window.innerWidth` and
-    // `window.innerHeight`. crbug.com/1285327
-    style.SetEffectiveZoom(1);
+    // Force the CSS style `zoom` property to 1 so that the embedder cannot
+    // communicate into the fenced frame by adjusting it, but still include
+    // the page zoom factor in the effective zoom, which is safe because it
+    // comes from user intervention. crbug.com/1285327
+    style.SetEffectiveZoom(
+        element.GetDocument().GetFrame() && !element.GetDocument().Printing()
+            ? element.GetDocument().GetFrame()->PageZoomFactor()
+            : 1);
 
     if (!features::IsFencedFramesMPArchBased()) {
       // Force the inside-display to `flow`, but honors the outside-display.

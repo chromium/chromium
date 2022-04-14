@@ -12,8 +12,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -99,6 +102,50 @@ bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
   Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
          ancestor_page->FencedFrameMode() != current_mode;
+}
+
+// Returns whether `requested_size` is exactly the same size as `allowed_size`.
+// `requested_size` and `allowed_size` should both be in CSS pixel units.
+bool SizeMatchesExactly(const PhysicalSize& requested_size,
+                        const gfx::Size& allowed_size) {
+  // The comparison must be performed as a `PhysicalSize`, in order to use
+  // its fixed point representation and get exact results.
+  return requested_size == PhysicalSize(allowed_size);
+}
+
+// Returns a loss score (higher is worse) comparing the fit between
+// `requested_size` and `allowed_size`.
+// Both sizes should be in CSS pixel units.
+double ComputeSizeLossFunction(const PhysicalSize& requested_size,
+                               const gfx::Size& allowed_size) {
+  const double requested_width = requested_size.width.ToDouble();
+  const double requested_height = requested_size.height.ToDouble();
+
+  const double allowed_width = allowed_size.width();
+  const double allowed_height = allowed_size.height();
+
+  const double allowed_area = allowed_width * allowed_height;
+  const double requested_area = requested_width * requested_height;
+
+  // Calculate the fraction of the outer container that is wasted when the
+  // allowed inner frame size is scaled to fit inside of it.
+  const double scale_x = allowed_width / requested_width;
+  const double scale_y = allowed_height / requested_height;
+
+  const double wasted_area =
+      scale_x < scale_y
+          ? allowed_width * (allowed_height - (scale_x * requested_height))
+          : allowed_height * (allowed_width - (scale_y * requested_width));
+
+  const double wasted_area_fraction = wasted_area / allowed_area;
+
+  // Calculate a penalty to tie-break between allowed sizes with the same
+  // aspect ratio in favor of resolutions closer to the requested one.
+  const double resolution_penalty =
+      std::abs(1 - std::min(requested_area, allowed_area) /
+                       std::max(requested_area, allowed_area));
+
+  return wasted_area_fraction + resolution_penalty;
 }
 
 }  // namespace
@@ -404,6 +451,123 @@ bool HTMLFencedFrameElement::SupportsFocus() const {
   return features::IsFencedFramesMPArchBased();
 }
 
+PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
+    const PhysicalSize& requested_size) {
+  // Only top-level opaque-ads fenced frames are restricted to a list of sizes.
+  // TODO(crbug.com/1123606): Later, we will change the size restriction design
+  // such that the size is a property bound to opaque URLs, rather than the
+  // mode. When that happens, much of this function will need to change.
+  // Remember to remove the following includes:
+  // #include
+  // "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
+  // #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+  // #include "third_party/blink/renderer/core/frame/screen.h"
+  if (GetMode() != mojom::blink::FencedFrameMode::kOpaqueAds ||
+      GetDocument().GetFrame()->IsInFencedFrameTree()) {
+    return requested_size;
+  }
+
+  // If the requested size is degenerate, return the first allowed ad size.
+  if (requested_size.width.ToDouble() <
+          std::numeric_limits<double>::epsilon() ||
+      requested_size.height.ToDouble() <
+          std::numeric_limits<double>::epsilon()) {
+    return PhysicalSize(kAllowedAdSizes[0]);
+  }
+
+  // If the requested size has an exact match on the allow list, allow it.
+  static_assert(kAllowedAdSizes.size() > 0UL);
+  for (const gfx::Size& allowed_size : kAllowedAdSizes) {
+    if (SizeMatchesExactly(requested_size, allowed_size)) {
+      return requested_size;
+    }
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1123606): For now, only allow screen-width ads on Android.
+  // We will improve this condition in the future, to account for all cases
+  // e.g. split screen, desktop mode, WebView.
+  Document& document = GetDocument();
+  int width_for_scaling = document.domWindow() && document.domWindow()->screen()
+                              ? document.domWindow()->screen()->availWidth()
+                              : 0;
+
+  // If scaling based on screen width is allowed, check for exact matches
+  // with the list of heights and aspect ratios.
+  if (width_for_scaling > 0) {
+    static_assert(kAllowedAdHeights.size() > 0UL);
+    for (const int allowed_height : kAllowedAdHeights) {
+      if (SizeMatchesExactly(requested_size,
+                             {width_for_scaling, allowed_height})) {
+        return requested_size;
+      }
+    }
+
+    static_assert(kAllowedAdAspectRatios.size() > 0UL);
+    for (const gfx::Size& allowed_aspect_ratio : kAllowedAdAspectRatios) {
+      if (SizeMatchesExactly(
+              requested_size,
+              {width_for_scaling,
+               (width_for_scaling * allowed_aspect_ratio.height()) /
+                   allowed_aspect_ratio.width()})) {
+        return requested_size;
+      }
+    }
+  }
+#endif
+
+  // If the requested size isn't allowed, we will freeze the inner frame
+  // element with the nearest available size (the best fit according to our
+  // size loss function).
+  GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "A fenced frame in opaque-ads mode attempted to load with an "
+      "unsupported size, and was therefore rounded to the nearest supported "
+      "size."));
+
+  // The best size so far, and its loss. A lower loss represents
+  // a better fit, so we will find the size that minimizes it, i.e.
+  // the least bad size.
+  gfx::Size best_size = kAllowedAdSizes[0];
+  double best_size_loss = std::numeric_limits<double>::infinity();
+
+  for (const gfx::Size& allowed_size : kAllowedAdSizes) {
+    double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
+    if (size_loss < best_size_loss) {
+      best_size_loss = size_loss;
+      best_size = allowed_size;
+    }
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (width_for_scaling > 0) {
+    for (const int allowed_height : kAllowedAdHeights) {
+      const gfx::Size allowed_size = {width_for_scaling, allowed_height};
+      double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
+      if (size_loss < best_size_loss) {
+        best_size_loss = size_loss;
+        best_size = allowed_size;
+      }
+    }
+
+    for (const gfx::Size& allowed_aspect_ratio : kAllowedAdAspectRatios) {
+      const gfx::Size allowed_size = {
+          width_for_scaling,
+          (width_for_scaling * allowed_aspect_ratio.height()) /
+              allowed_aspect_ratio.width()};
+      double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
+      if (size_loss < best_size_loss) {
+        best_size_loss = size_loss;
+        best_size = allowed_size;
+      }
+    }
+  }
+#endif
+
+  return PhysicalSize(best_size);
+}
+
 const absl::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
     const {
   if (!frozen_frame_size_)
@@ -432,21 +596,26 @@ void HTMLFencedFrameElement::FreezeFrameSize() {
 
 void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
   DCHECK(!frozen_frame_size_);
-  // Store the value divided by the |DevicePixelRatio|, so that it scales with
-  // the browser zoom or when moved to different screens.
-  const float ratio = GetDocument().DevicePixelRatio();
-  frozen_frame_size_ = {LayoutUnit::FromFloatRound(size.width / ratio),
-                        LayoutUnit::FromFloatRound(size.height / ratio)};
+  // TODO(crbug.com/1123606): This will change when we move frame size coercion
+  // from here to during FLEDGE/SharedStorage.
+  frozen_frame_size_ = CoerceFrameSize(size);
 
-  if (!features::IsFencedFramesMPArchBased()) {
+  if (features::IsFencedFramesMPArchBased()) {
+    // With MPArch, mark the layout as stale. Do this unconditionally because
+    // we are rounding the size.
+    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+        "Froze MPArch fenced frame");
+
+    // Stop the `ResizeObserver`. It is needed only to compute the
+    // frozen size in MPArch. ShadowDOM stays subscribed in order to
+    // update the CSS on the inner iframe element as the outer container's
+    // size changes.
+    StopResizeObserver();
+  } else {
     // With Shadow DOM, update the CSS `transform` property whenever
     // |content_rect_| or |frozen_frame_size_| change.
     UpdateInnerStyleOnFrozenInternalFrame();
-    return;
   }
-  // Stop the `ResizeObserver` when frozen. It is needed only to compute the
-  // frozen size.
-  StopResizeObserver();
 }
 
 void HTMLFencedFrameElement::StartResizeObserver() {
@@ -492,11 +661,11 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
   DCHECK(!features::IsFencedFramesMPArchBased());
   DCHECK(content_rect_);
-  const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize();
+  const absl::optional<PhysicalSize> frozen_size = frozen_frame_size_;
   DCHECK(frozen_size);
   const double child_width = frozen_size->width.ToDouble();
   const double child_height = frozen_size->height.ToDouble();
-  // TODO(kojii): Theoritically this `transform` is the same as `object-fit:
+  // TODO(kojii): Theoretically this `transform` is the same as `object-fit:
   // contain`, but `<iframe>` does not support the `object-fit` property today.
   // We can change to use the `object-fit` property and stop the resize-observer
   // once it is supported.

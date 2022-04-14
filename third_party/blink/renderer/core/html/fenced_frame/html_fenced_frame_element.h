@@ -128,6 +128,14 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void FreezeFrameSize();
   void FreezeFrameSize(const PhysicalSize&);
 
+  // Given a size `requested_size`, return the nearest allowed fenced frame
+  // size. Note that size restrictions only apply to top-level opaque-ads
+  // fenced frames.
+  // NB: `requested_size` should be in logical/CSS units, NOT physical units.
+  // The returned size is also in logical/CSS units.
+  // TODO(crbug.com/1123606): remove this once we bind size to opaque URLs.
+  PhysicalSize CoerceFrameSize(const PhysicalSize& requested_size);
+
   void StartResizeObserver();
   void StopResizeObserver();
   void OnResize(const PhysicalRect& content_box);
@@ -160,6 +168,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   friend class ResizeObserverDelegate;
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
                            FreezeSizePageZoomFactor);
+  FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest, CoerceFrameSizeTest);
 };
 
 // Type casting. Custom since adoption could lead to an HTMLFencedFrameElement

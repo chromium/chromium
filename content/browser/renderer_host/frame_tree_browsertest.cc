@@ -2737,6 +2737,213 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, FenceUserActivation) {
                     true /*G*/});
 }
 
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, FencedAdSizes) {
+  // This test exercises restrictions on fenced frame sizes in opaque-ads mode.
+  // See the design document for more details on intended semantics:
+  // https://docs.google.com/document/d/1MVqxc2nzde3cJYIRC8vnXH-a4A6J4GQE-1vBuXhQsPE/edit#
+
+  enum class TestType {
+    kFixed,
+    kScaleWidthConstantHeightExact,
+    kScaleWidthConstantHeightApproximate,
+    kScaleWidthConstantAspectRatioExact,
+    kScaleWidthConstantAspectRatioApproximate,
+  };
+
+  // Test that an opaque-ads mode fenced frame created with size
+  // `input_width` by `input_height` gets snapped to size
+  // `output_width` by `output_height` on desktop.
+  auto TestAdSize = [&](int input_width, int input_height, TestType test_type,
+                        int output_width, int output_height) {
+    // Navigate the top-level page.
+    const GURL kUrl =
+        https_server()->GetURL("a.test", "/fenced_frames/empty.html");
+    EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+    // It is safe to obtain the root frame tree node here, as it doesn't change.
+    auto* nodeA = static_cast<WebContentsImpl*>(shell()->web_contents())
+                      ->GetPrimaryFrameTree()
+                      .root();
+    ASSERT_NE(nullptr, nodeA);
+
+    if (test_type != TestType::kFixed) {
+#if !BUILDFLAG(IS_ANDROID)
+      // Ignore mobile-only tests on platforms other than Android.
+      return;
+#else
+      // Set up tests that scale with screen width.
+      int screen_width = EvalJs(nodeA, "screen.width").ExtractInt();
+
+      // Scale the height to match the aspect ratio, if relevant.
+      if (test_type == TestType::kScaleWidthConstantAspectRatioExact ||
+          test_type == TestType::kScaleWidthConstantAspectRatioApproximate) {
+        output_height = (input_height * screen_width) / input_width;
+        input_height = output_height;
+      }
+
+      // Make the width match the screen width.
+      input_width = screen_width;
+      output_width = screen_width;
+
+      // If we want to test coercion to sizes that scale with constant height,
+      // make the requested width a little wrong.
+      if (test_type == TestType::kScaleWidthConstantHeightApproximate ||
+          test_type == TestType::kScaleWidthConstantAspectRatioApproximate) {
+        input_width++;
+      }
+#endif
+    }
+
+    // Create an opaque-ads fenced frame nodeB with size
+    // `input_width` by `input_height`.
+    EXPECT_TRUE(ExecJs(
+        nodeA,
+        JsReplace(
+            "var nested_fenced_frame = document.createElement('fencedframe');"
+            "nested_fenced_frame.mode = 'opaque-ads';"
+            "nested_fenced_frame.width = $1;"
+            "nested_fenced_frame.height = $2;"
+            "document.body.appendChild(nested_fenced_frame);",
+            input_width, input_height)));
+    EXPECT_EQ(1UL, nodeA->child_count());
+    auto* nodeB = GetFencedFrameRootNode(nodeA->child_at(0));
+    EXPECT_TRUE(nodeB->IsFencedFrameRoot());
+    EXPECT_TRUE(nodeB->IsInFencedFrameTree());
+    ASSERT_NE(nullptr, nodeB);
+
+    // Check the size of the frame before navigating.
+    auto frame_width =
+        EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
+            .ExtractString();
+    auto frame_height =
+        EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).height")
+            .ExtractString();
+
+    // Wait for 2 rAFs to make things deterministic.
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+
+    // Navigate the fenced frame, which should force its inner size to the
+    // nearest allowed one.
+    NavigateNestedFencedFrame(nodeB, kUrl);
+
+    // Check that the outer container size hasn't changed.
+    EXPECT_EQ(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
+                  .ExtractString(),
+              frame_width);
+    EXPECT_EQ(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).height")
+                  .ExtractString(),
+              frame_height);
+
+    // Wait for 2 rAFs to make things deterministic.
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+
+    // Check that the inner size is what we expect.
+    // TODO(kojii|gtanzer): There is a known bug with the size 0,0,
+    // where the fenced frame can be resized once.
+    int inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();
+    int inner_height = EvalJs(nodeB, "innerHeight").ExtractInt();
+    if (input_width == 0 && input_height == 0) {
+      output_width = 0;
+      output_height = 0;
+    }
+    EXPECT_EQ(inner_width, output_width);
+    EXPECT_EQ(inner_height, output_height);
+
+    // Attempt to change the size of the fenced frame from the embedder.
+    const int new_width = 970;
+    const int new_height = 90;
+    EXPECT_TRUE(ExecJs(nodeA, JsReplace("nested_fenced_frame.width = $1;"
+                                        "nested_fenced_frame.height = $2;",
+                                        new_width, new_height)));
+    NavigateNestedFencedFrame(nodeB, kUrl);
+
+    // Force a style recomputation.
+    ASSERT_TRUE(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
+                    .error.empty());
+
+    // Wait for 2 rAFs to make things deterministic.
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+
+    // Check that the inner size hasn't changed.
+    // TODO(kojii|gtanzer): There is still a known bug with the size 0,0.
+    inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();
+    inner_height = EvalJs(nodeB, "innerHeight").ExtractInt();
+    if (input_width == 0 && input_height == 0) {
+      output_width = new_width;
+      output_height = new_height;
+    }
+    EXPECT_EQ(inner_width, output_width);
+    EXPECT_EQ(inner_height, output_height);
+  };
+
+  // Run all the individual test cases we want.
+  // {input_width, input_height, test_type, output_width, output_height}
+  std::vector<std::tuple<int, int, TestType, int, int>> test_cases = {
+
+      // Exact match between requested size and fixed allowed size.
+      {320, 50, TestType::kFixed, 320, 50},
+      {728, 90, TestType::kFixed, 728, 90},
+      {970, 90, TestType::kFixed, 970, 90},
+      {320, 100, TestType::kFixed, 320, 100},
+      {160, 600, TestType::kFixed, 160, 600},
+      {300, 250, TestType::kFixed, 300, 250},
+      {970, 250, TestType::kFixed, 970, 250},
+      {336, 280, TestType::kFixed, 336, 280},
+      {320, 480, TestType::kFixed, 320, 480},
+      {300, 600, TestType::kFixed, 300, 600},
+      {300, 1050, TestType::kFixed, 300, 1050},
+
+      // Approximate match between requested size and fixed allowed size.
+      {320, 49, TestType::kFixed, 320, 50},
+      {319, 50, TestType::kFixed, 320, 50},
+
+      // Edge cases for requested size.
+      {0, 0, TestType::kFixed, 320, 50},
+      {0, 100, TestType::kFixed, 320, 50},
+      {100, 0, TestType::kFixed, 320, 50},
+
+      // Exact match between requested size and allowed size that scales with
+      // constant height.
+      {0, 50, TestType::kScaleWidthConstantHeightExact, 0, 50},
+      {0, 100, TestType::kScaleWidthConstantHeightExact, 0, 100},
+      {0, 250, TestType::kScaleWidthConstantHeightExact, 0, 250},
+
+      // Approximate match between requested size and allowed size that scales
+      // with constant height.
+      {0, 50, TestType::kScaleWidthConstantHeightApproximate, 0, 50},
+      {0, 100, TestType::kScaleWidthConstantHeightApproximate, 0, 100},
+      {0, 250, TestType::kScaleWidthConstantHeightApproximate, 0, 250},
+
+      // Constant height scaling is only supported on sizes where it is
+      // declared (e.g. not 728x90).
+      {0, 90, TestType::kScaleWidthConstantHeightExact, 0, 100},
+
+      // Exact match between requested size and allowed size that scales with
+      // constant aspect ratio.
+      {32, 5, TestType::kScaleWidthConstantAspectRatioExact, 0, 0},
+      {16, 5, TestType::kScaleWidthConstantAspectRatioExact, 0, 0},
+      {6, 5, TestType::kScaleWidthConstantAspectRatioExact, 0, 0},
+      {2, 3, TestType::kScaleWidthConstantAspectRatioExact, 0, 0},
+      {1, 2, TestType::kScaleWidthConstantAspectRatioExact, 0, 0},
+
+      // Approximate match between requested size and allowed size that scales
+      // with constant aspect ratio.
+      {32, 5, TestType::kScaleWidthConstantAspectRatioApproximate, 0, 0},
+      {16, 5, TestType::kScaleWidthConstantAspectRatioApproximate, 0, 0},
+      {6, 5, TestType::kScaleWidthConstantAspectRatioApproximate, 0, 0},
+      {2, 3, TestType::kScaleWidthConstantAspectRatioApproximate, 0, 0},
+      {1, 2, TestType::kScaleWidthConstantAspectRatioApproximate, 0, 0},
+  };
+
+  for (auto& test_case : test_cases) {
+    TestAdSize(std::get<0>(test_case), std::get<1>(test_case),
+               std::get<2>(test_case), std::get<3>(test_case),
+               std::get<4>(test_case));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FencedFrameTreeBrowserTest,

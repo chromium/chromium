@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ResizeObserver loop limit exceeded
+PASS Fenced frame loaded for CSP fenced-frame-src *
+PASS Fenced frame loaded for CSP fenced-frame-src https:
+PASS Fenced frame loaded for CSP fenced-frame-src https://*:*
+PASS Fenced frame blocked for CSP fenced-frame-src 'none'
+PASS Fenced frame blocked for CSP fenced-frame-src 'self'
+PASS Fenced frame blocked for CSP fenced-frame-src data:
+PASS Fenced frame blocked for CSP fenced-frame-src https://*
+PASS Fenced frame blocked for CSP fenced-frame-src https://b.test:*
+Harness: the test ran to completion.
+
