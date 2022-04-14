@@ -226,7 +226,7 @@ class KioskAppManager : public KioskAppManagerBase,
   friend class GlobalManager;
   friend class KioskAppManagerTest;
   friend class KioskAutoLaunchViewsTest;
-  friend class KioskTest;
+  friend class KioskBaseTest;
 
   enum class AutoLoginState {
     kNone = 0,

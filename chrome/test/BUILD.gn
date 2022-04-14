@@ -3453,6 +3453,8 @@ if (!is_android) {
         "../browser/ash/login/accessibility_browsertest.cc",
         "../browser/ash/login/active_directory_login_browsertest.cc",
         "../browser/ash/login/app_mode/auto_launched_kiosk_browsertest.cc",
+        "../browser/ash/login/app_mode/kiosk_base_test.cc",
+        "../browser/ash/login/app_mode/kiosk_base_test.h",
         "../browser/ash/login/app_mode/kiosk_browsertest.cc",
         "../browser/ash/login/app_mode/kiosk_launch_controller_browsertest.cc",
         "../browser/ash/login/app_mode/web_kiosk_browsertest.cc",
