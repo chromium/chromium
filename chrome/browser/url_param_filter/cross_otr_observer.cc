@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
@@ -17,6 +18,15 @@
 #include "ui/base/page_transition_types.h"
 
 namespace url_param_filter {
+namespace {
+constexpr char kInternalRedirectHeaderStatusLine[] =
+    "HTTP/1.1 307 Internal Redirect";
+
+bool IsInternalRedirect(const net::HttpResponseHeaders* headers) {
+  return base::EqualsCaseInsensitiveASCII(headers->GetStatusLine(),
+                                          kInternalRedirectHeaderStatusLine);
+}
+}  // anonymous namespace
 
 constexpr char kCrossOtrResponseCodeMetricName[] =
     "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
@@ -115,7 +125,8 @@ void CrossOtrObserver::DidRedirectNavigation(
   // redirects.
   // Metrics will not be collected for non intervened navigation chains and
   // navigations occurring prior to params filtering.
-  if (protecting_navigations_ && headers && did_filter_params_) {
+  if (protecting_navigations_ && headers && did_filter_params_ &&
+      !IsInternalRedirect(headers)) {
     base::UmaHistogramSparse(
         kCrossOtrResponseCodeMetricName,
         net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));

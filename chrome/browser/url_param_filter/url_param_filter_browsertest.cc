@@ -167,13 +167,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 
   // The response was a 200 (params filtered => metrics collected), and the
-  // navigation went from normal --> OTR browsing. Because we intervened, an
-  // artificial redirect was injected, so we also expect a 307 (post params
-  // filtering => metrics collected).
-  histogram_tester.ExpectBucketCount(
-      kCrossOtrResponseMetricName,
-      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
-  histogram_tester.ExpectBucketCount(
+  // navigation went from normal --> OTR browsing.
+  histogram_tester.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
 }
@@ -227,16 +222,12 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                                   "endsWith('plzblock=1')"));
 
   // The response was a 200, and the navigation went from normal-->OTR
-  // browsing. Because we intervened, an artificial redirect was injected, so
-  // we also expect a 307.
-  histogram_tester.ExpectBucketCount(
-      kCrossOtrResponseMetricName,
-      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
+  // browsing.
   // Ensure we only see the two params on the main navigation being filtered;
   // the other plzblock instances are on js or subframe requests, so should
   // not be filtered.
   EXPECT_EQ(histogram_tester.GetTotalSum(kFilteredParamCountMetricName), 2);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
 }
@@ -334,17 +325,14 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 
   // The response was a 301-->200, and the navigation went from normal-->OTR
-  // browsing. Because we intervened, an artificial redirect was injected, so
-  // we also expect a 307.
+  // browsing.
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(301), 1);
   histogram_tester.ExpectBucketCount(
       kCrossOtrResponseMetricName,
-      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
-  histogram_tester.ExpectBucketCount(
-      kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester.ExpectTotalCount(kCrossOtrResponseMetricName, 2);
 }
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
@@ -396,13 +384,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
 
   // The response was a 200 (pre params filtering => no metrics collected) -->
   // client redirect --> 200 (params filtered => metrics colleted), and the
-  // navigation went from normal --> OTR browsing. Because we intervened, an
-  // artificial redirect was injected, so we also expect a 307 (post params
-  // filtering => metrics collected).
-  histogram_tester.ExpectBucketCount(
-      kCrossOtrResponseMetricName,
-      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
-  histogram_tester.ExpectBucketCount(
+  // navigation went from normal --> OTR browsing.
+  histogram_tester.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
 }
@@ -457,13 +440,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
 
   // The response was a 200 (pre params filtering => no metrics collected) -->
   // client redirect --> 200 (params filtered => metrics collected), and the
-  // navigation went from normal-->OTR browsing. Because we intervened, an
-  // artificial redirect was injected, so we also expect a 307 (post params
-  // filtering => metrics collected).
-  histogram_tester.ExpectBucketCount(
-      kCrossOtrResponseMetricName,
-      net::HttpUtil::MapStatusCodeForHistogram(307), 1);
-  histogram_tester.ExpectBucketCount(
+  // navigation went from normal-->OTR browsing.
+  histogram_tester.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
   histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);

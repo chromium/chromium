@@ -112,18 +112,29 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
   observer->SetDidFilterParams(true);
 
   ASSERT_NE(observer, nullptr);
-  std::unique_ptr<content::MockNavigationHandle> handle =
-      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
 
-  scoped_refptr<net::HttpResponseHeaders> response =
-      base::MakeRefCounted<net::HttpResponseHeaders>(
-          "HTTP/1.1 302 Moved Temporarily");
-  handle->set_response_headers(response);
-  observer->DidRedirectNavigation(handle.get());
-  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
-  histogram_tester.ExpectUniqueSample(
+  std::vector<const std::string> redirect_sequence{
+      "HTTP/1.1 302 Moved Temporarily",
+      "HTTP/1.1 307 Temporary Redirect",  // 2 'external' 307 redirects
+      "HTTP/1.1 307 Temporary Redirect",
+      "HTTP/1.1 307 Internal Redirect"  // 1 internal 307 redirect, is  omitted
+  };
+  for (auto redirect_header : redirect_sequence) {
+    std::unique_ptr<content::MockNavigationHandle> handle =
+        std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+    scoped_refptr<net::HttpResponseHeaders> response =
+        base::MakeRefCounted<net::HttpResponseHeaders>(redirect_header);
+    handle->set_response_headers(response);
+    observer->DidRedirectNavigation(handle.get());
+  }
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 3);
+  histogram_tester.ExpectBucketCount(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(302),
       1);
+  histogram_tester.ExpectBucketCount(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(307),
+      2);
 }
 TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
   base::HistogramTester histogram_tester;
