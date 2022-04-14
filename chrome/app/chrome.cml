@@ -10,6 +10,7 @@
             "--enable-cfv2",
             "--enable-features=Vulkan,CanvasOopRasterization",
         ],
+        lifecycle: { stop_event: "notify" },
 
         // SandboxPolicyFuchsia currently expects stderr & stdout to exist.
         // Route them to the LogSink, to capture any content they emit, for

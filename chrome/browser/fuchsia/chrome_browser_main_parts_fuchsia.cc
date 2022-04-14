@@ -645,9 +645,11 @@ int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
+  const bool enable_cfv2 =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kEnableCFv2);
+
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableCFv2)) {
+    if (enable_cfv2) {
       // Configure Ozone to create top-level Views via GraphicalPresenter.
       element_manager_ = std::make_unique<ElementManagerImpl>(
           base::ComponentContextForProcess()->outgoing().get(),
@@ -673,8 +675,20 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   // teardown. If there is a |ui_task| then this is a browser-test and graceful
   // shutdown is not required.
   if (!parameters().ui_task) {
-    lifecycle_ = std::make_unique<base::ProcessLifecycle>(
-        base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
+    if (enable_cfv2) {
+      // chrome::ExitIgnoreUnloadHandlers() will perform a graceful shutdown,
+      // flushing any pending data.  All Browser windows will then be closed,
+      // removing them from the keep-alive reasons. Finally, the
+      // BROWSER_PROCESS_FUCHSIA keep-alive (see above) must be manually
+      // cleared.
+      auto quit_closure =
+          base::BindOnce(&chrome::ExitIgnoreUnloadHandlers)
+              .Then(base::BindOnce(&std::unique_ptr<ScopedKeepAlive>::reset,
+                                   base::Unretained(&keep_alive_), nullptr));
+
+      lifecycle_ =
+          std::make_unique<base::ProcessLifecycle>(std::move(quit_closure));
+    }
   }
 
   return ChromeBrowserMainParts::PreMainMessageLoopRun();

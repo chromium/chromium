@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/fuchsia/process_lifecycle.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "fuchsia/engine/browser/context_impl.h"
@@ -88,9 +87,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   content::ContentBrowserClient* const browser_client_;
   content::MainFunctionParams parameters_;
-
-  // Used to gracefully teardown in response to requests from the ELF runner.
-  std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 
   std::unique_ptr<display::Screen> screen_;
 

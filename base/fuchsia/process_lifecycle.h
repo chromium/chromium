@@ -6,22 +6,20 @@
 #define BASE_FUCHSIA_PROCESS_LIFECYCLE_H_
 
 #include <fuchsia/process/lifecycle/cpp/fidl.h>
-#include <lib/fidl/cpp/binding_set.h>
+#include <lib/fidl/cpp/binding.h>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 
 namespace base {
 
-// Publishes a fuchsia.process.lifecycle.Lifecycle protocol implementation to
-// receive graceful termination requests from the ELF runner.
+// Registers a fuchsia.process.lifecycle.Lifecycle protocol implementation to
+// receive graceful termination requests from the Component Framework v2
+// ELF executable runner.
 //
-// The implementation supports both Components Framework v1 and v2.
-// Under CFv2 the PA_LIFECYCLE handle will be bound to the implementation.
-// The service will be published to the process' outgoing directory to suppport
-// CFv1.
-//
-// Note that the calling component must opt-in to receiving Lifecycle events.
+// The implementation consumes the PA_LIFECYCLE handle, which the ELF runner
+// will provide only if the Component manifest contains a lifecycle/stop_event
+// registration.
 class BASE_EXPORT ProcessLifecycle final
     : public fuchsia::process::lifecycle::Lifecycle {
  public:
@@ -37,7 +35,7 @@ class BASE_EXPORT ProcessLifecycle final
  private:
   base::OnceClosure on_stop_;
 
-  fidl::BindingSet<fuchsia::process::lifecycle::Lifecycle> bindings_;
+  fidl::Binding<fuchsia::process::lifecycle::Lifecycle> binding_;
 };
 
 }  // namespace base
