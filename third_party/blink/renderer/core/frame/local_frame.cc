@@ -2068,9 +2068,12 @@ bool LocalFrame::ClipsContent() const {
 void LocalFrame::SetViewportIntersectionFromParent(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
   DCHECK(IsLocalRoot());
-  // Notify the render frame observers when the main frame intersection changes.
+  // Notify the render frame observers when the main frame intersection or the
+  // transform changes.
   if (intersection_state_.main_frame_intersection !=
-      intersection_state.main_frame_intersection) {
+          intersection_state.main_frame_intersection ||
+      intersection_state_.main_frame_transform !=
+          intersection_state.main_frame_transform) {
     gfx::RectF transform_rect =
         gfx::RectF(gfx::Rect(intersection_state.main_frame_intersection));
 

@@ -192,6 +192,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
     TransformState child_frame_to_root_frame(
         TransformState::kUnapplyInverseTransformDirection);
+    child_frame_to_root_frame.Move(PhysicalOffset::FromPointFRound(
+        gfx::PointF(frame.GetMainFrameScrollOffset())));
+
     if (owner_layout_object) {
       owner_layout_object->MapAncestorToLocal(
           nullptr, child_frame_to_root_frame,

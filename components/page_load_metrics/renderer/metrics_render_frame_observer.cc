@@ -314,10 +314,8 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
       CreatePageTimingSender(true /* limited_sending_mode */), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
       std::make_unique<PageResourceDataUse>());
-  if (ukm_smoothness_data_.IsValid()) {
-    page_timing_metrics_sender_->SetUpSmoothnessReporting(
-        std::move(ukm_smoothness_data_));
-  }
+
+  OnMetricsSenderCreated();
 }
 
 void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
@@ -342,10 +340,8 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
       CreatePageTimingSender(false /* limited_sending_mode*/), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
       std::move(provisional_frame_resource_data_use_));
-  if (ukm_smoothness_data_.IsValid()) {
-    page_timing_metrics_sender_->SetUpSmoothnessReporting(
-        std::move(ukm_smoothness_data_));
-  }
+
+  OnMetricsSenderCreated();
 }
 
 void MetricsRenderFrameObserver::SetAdResourceTracker(
@@ -367,9 +363,14 @@ void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {
 
 void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
     const gfx::Rect& main_frame_intersection) {
-  if (page_timing_metrics_sender_)
+  if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
         main_frame_intersection);
+    return;
+  }
+
+  main_frame_intersection_before_metrics_sender_created_ =
+      main_frame_intersection;
 }
 
 void MetricsRenderFrameObserver::OnMobileFriendlinessChanged(
@@ -468,6 +469,21 @@ void MetricsRenderFrameObserver::SendMetrics() {
   Timing timing = GetTiming();
   page_timing_metrics_sender_->Update(std::move(timing.relative_timing),
                                       timing.monotonic_timing);
+}
+
+void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
+  if (ukm_smoothness_data_.IsValid()) {
+    page_timing_metrics_sender_->SetUpSmoothnessReporting(
+        std::move(ukm_smoothness_data_));
+  }
+
+  // Send the latest the frame intersection update, as otherwise we may miss
+  // this information for a frame completely if there are no future updates.
+  if (main_frame_intersection_before_metrics_sender_created_) {
+    page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
+        *main_frame_intersection_before_metrics_sender_created_);
+    main_frame_intersection_before_metrics_sender_created_.reset();
+  }
 }
 
 MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()

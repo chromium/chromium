@@ -136,6 +136,7 @@ class MetricsRenderFrameObserver
   void MaybeSetCompletedBeforeFCP(int request_id);
 
   void SendMetrics();
+  void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
@@ -163,6 +164,12 @@ class MetricsRenderFrameObserver
 
   // Handle to the shared memory for transporting smoothness related ukm data.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
+
+  // The main frame intersection rectangle signal received before
+  // `page_timing_metrics_sender_` is created. The signal will be send out right
+  // after `page_timing_metrics_sender_` is created.
+  absl::optional<gfx::Rect>
+      main_frame_intersection_before_metrics_sender_created_;
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;

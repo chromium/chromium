@@ -52,6 +52,12 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     fake_timing_ = timing.Clone();
   }
 
+  void ExpectFrameIntersectionUpdate(
+      const mojom::FrameIntersectionUpdate& intersection) {
+    validator_.UpdateExpectFrameIntersectionUpdate(intersection);
+    validator_.VerifyExpectedFrameIntersectionUpdate();
+  }
+
   Timing GetTiming() const override {
     EXPECT_NE(nullptr, fake_timing_.get());
     return Timing(std::move(fake_timing_),
@@ -97,6 +103,26 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
 
   observer.DidChangePerformanceTiming();
   observer.GetMockTimer()->Fire();
+}
+
+TEST_F(MetricsRenderFrameObserverTest,
+       MainFrameIntersectionUpdateBeforeMetricsSenderCreated) {
+  base::Time nav_start = base::Time::FromDoubleT(10);
+
+  TestMetricsRenderFrameObserver observer;
+  observer.OnMainFrameIntersectionChanged(gfx::Rect(1, 2, 3, 4));
+
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = nav_start;
+  observer.ExpectPageLoadTiming(timing);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
+  observer.ReadyToCommitNavigation(nullptr);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
+  observer.GetMockTimer()->Fire();
+
+  observer.ExpectFrameIntersectionUpdate(
+      mojom::FrameIntersectionUpdate(gfx::Rect(1, 2, 3, 4)));
 }
 
 // Verify that when two CpuTimings come in, they're grouped into a single

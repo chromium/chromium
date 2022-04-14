@@ -76,6 +76,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -544,6 +545,92 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NoPageLoadMetricsRecorded())
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageLoadMetricsBrowserTest,
+    NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/scroll/scrollable_page_with_content.html");
+
+  auto main_frame_intersection_expectation_waiter =
+      CreatePageLoadMetricsTestWaiter();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The intersections returned from the renderer are scaled to the device's
+  // scale factor.
+  gfx::Rect expected_rect = gfx::ScaleToRoundedRect(
+      gfx::Rect(/*x=*/50, /*y=*/5050, /*width=*/1, /*height=*/1),
+      web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+  main_frame_intersection_expectation_waiter
+      ->AddMainFrameIntersectionExpectation(expected_rect);
+
+  ASSERT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5000)"));
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
+
+  GURL subframe_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  std::string create_frame_script = base::StringPrintf(
+      "var new_iframe = document.createElement('iframe');"
+      "new_iframe.src = '%s';"
+      "new_iframe.name = 'frame';"
+      "new_iframe.frameBorder = 0;"
+      "new_iframe.setAttribute('style', 'position:absolute; top:5050px; "
+      "left:50px; width:1px; height:1px;');"
+      "document.body.appendChild(new_iframe);",
+      subframe_url.spec().c_str());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_frame_script));
+
+  main_frame_intersection_expectation_waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageLoadMetricsBrowserTest,
+    NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/scroll/scrollable_page_with_content.html");
+
+  auto main_frame_intersection_expectation_waiter =
+      CreatePageLoadMetricsTestWaiter();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The intersections returned from the renderer are scaled to the device's
+  // scale factor.
+  gfx::Rect expected_rect = gfx::ScaleToRoundedRect(
+      gfx::Rect(/*x=*/50, /*y=*/5050, /*width=*/1, /*height=*/1),
+      web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+  main_frame_intersection_expectation_waiter
+      ->AddMainFrameIntersectionExpectation(expected_rect);
+
+  ASSERT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5000)"));
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
+
+  GURL subframe_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  std::string create_frame_script = base::StringPrintf(
+      "var new_iframe = document.createElement('iframe');"
+      "new_iframe.src = '%s';"
+      "new_iframe.name = 'frame';"
+      "new_iframe.frameBorder = 0;"
+      "new_iframe.setAttribute('style', 'position:absolute; top:5050px; "
+      "left:50px; width:1px; height:1px;');"
+      "document.body.appendChild(new_iframe);",
+      subframe_url.spec().c_str());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_frame_script));
+
+  main_frame_intersection_expectation_waiter->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPage) {
