@@ -141,7 +141,7 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   content::DesktopMediaID source_media_id_;
 
   // The receiver to this mojom::ResourceProvider implementation.
-  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver{this};
+  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
 
   // Connection to the remote mojom::MirroringService implementation.
   mojo::Remote<mojom::MirroringService> mirroring_service_;
