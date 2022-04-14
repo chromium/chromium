@@ -167,8 +167,8 @@ int BrowserMainPartsImpl::PreCreateThreads() {
 #if BUILDFLAG(IS_ANDROID)
   // The ChildExitObserver needs to be created before any child process is
   // created because it needs to be notified during process creation.
-  crash_reporter::ChildExitObserver::Create();
-  crash_reporter::ChildExitObserver::GetInstance()->RegisterClient(
+  child_exit_observer_ = std::make_unique<crash_reporter::ChildExitObserver>();
+  child_exit_observer_->RegisterClient(
       std::make_unique<crash_reporter::ChildProcessCrashObserver>());
 
   crash_reporter::InitializeCrashKeys();

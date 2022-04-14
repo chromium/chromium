@@ -99,8 +99,9 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
 #if BUILDFLAG(IS_ANDROID)
-    crash_reporter::ChildExitObserver::Create();
-    crash_reporter::ChildExitObserver::GetInstance()->RegisterClient(
+    child_exit_observer_ =
+        std::make_unique<crash_reporter::ChildExitObserver>();
+    child_exit_observer_->RegisterClient(
         std::make_unique<crash_reporter::ChildProcessCrashObserver>());
 #endif
 
@@ -119,6 +120,13 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    child_exit_observer_.reset();
+#endif
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   // OutOfMemoryReporter::Observer:
@@ -191,8 +199,9 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   }
 
  protected:
-  base::ShadowingAtExitManager at_exit_;
-
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
+#endif
   absl::optional<GURL> last_oom_url_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 
@@ -215,7 +224,7 @@ TEST_F(OutOfMemoryReporterTest, NormalCrash_NoOOM) {
   NavigateAndCommit(url);
   SimulateRendererCreated();
 #if BUILDFLAG(IS_ANDROID)
-  crash_reporter::ChildExitObserver::GetInstance()->ChildReceivedCrashSignal(
+  child_exit_observer_->ChildReceivedCrashSignal(
       process()->GetProcess().Handle(), SIGSEGV);
 #endif
   RunCrashClosureAndWait(

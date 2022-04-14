@@ -20,6 +20,12 @@ namespace performance_manager {
 class PerformanceManagerLifetime;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+namespace crash_reporter {
+class ChildExitObserver;
+}
+#endif
+
 namespace weblayer {
 class BrowserProcess;
 struct MainParams;
@@ -53,6 +59,7 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
       performance_manager_lifetime_;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<metrics::MemoryMetricsLogger> memory_metrics_logger_;
+  std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // For running weblayer_browsertests.

@@ -530,8 +530,8 @@ void CastBrowserMainParts::ToolkitInitialized() {
 
 int CastBrowserMainParts::PreCreateThreads() {
 #if BUILDFLAG(IS_ANDROID)
-  crash_reporter::ChildExitObserver::Create();
-  crash_reporter::ChildExitObserver::GetInstance()->RegisterClient(
+  child_exit_observer_ = std::make_unique<crash_reporter::ChildExitObserver>();
+  child_exit_observer_->RegisterClient(
       std::make_unique<crash_reporter::ChildProcessCrashObserver>());
 #endif
 

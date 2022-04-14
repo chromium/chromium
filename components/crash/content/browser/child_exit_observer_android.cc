@@ -22,9 +22,6 @@ namespace crash_reporter {
 
 namespace {
 
-base::LazyInstance<ChildExitObserver>::DestructorAtExit g_instance =
-    LAZY_INSTANCE_INITIALIZER;
-
 void PopulateTerminationInfo(
     const content::ChildProcessTerminationInfo& content_info,
     ChildExitObserver::TerminationInfo* info) {
@@ -46,23 +43,8 @@ ChildExitObserver::TerminationInfo::TerminationInfo(
 ChildExitObserver::TerminationInfo& ChildExitObserver::TerminationInfo::
 operator=(const TerminationInfo& other) = default;
 
-// static
-void ChildExitObserver::Create() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If this DCHECK fails in a unit test then a previously executing
-  // test that makes use of ChildExitObserver forgot to create a
-  // ShadowingAtExitManager.
-  DCHECK(!g_instance.IsCreated());
-  g_instance.Get();
-}
-
-// static
-ChildExitObserver* ChildExitObserver::GetInstance() {
-  DCHECK(g_instance.IsCreated());
-  return g_instance.Pointer();
-}
-
 ChildExitObserver::ChildExitObserver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   notification_registrar_.Add(this,
                               content::NOTIFICATION_RENDERER_PROCESS_CREATED,
                               content::NotificationService::AllSources());
@@ -77,6 +59,7 @@ ChildExitObserver::ChildExitObserver() {
 }
 
 ChildExitObserver::~ChildExitObserver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserChildProcessObserver::Remove(this);
 }
 

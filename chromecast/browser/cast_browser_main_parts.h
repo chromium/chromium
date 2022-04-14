@@ -22,6 +22,12 @@
 
 class PrefService;
 
+#if BUILDFLAG(IS_ANDROID)
+namespace crash_reporter {
+class ChildExitObserver;
+}  // namespace crash_reporter
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace extensions {
 class ExtensionsClient;
 class ExtensionsBrowserClient;
@@ -152,6 +158,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   void OnStartPeriodicCrashReportUpload();
   scoped_refptr<base::SequencedTaskRunner> crash_reporter_runner_;
   std::unique_ptr<base::RepeatingTimer> crash_reporter_timer_;
+  std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
 #endif
 
   // Tracks all media pipeline backends.

@@ -5,9 +5,19 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 
-#include "chrome/browser/android/chrome_backup_watcher.h"
+#include <memory>
+
 #include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/profiles/profile_manager_android.h"
+
+namespace android {
+class ChromeBackupWatcher;
+}
+
+namespace crash_reporter {
+class ChildExitObserver;
+}
+
+class ProfileManagerAndroid;
 
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
@@ -31,6 +41,7 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
   void ShowMissingLocaleMessageBox() override;
 
  private:
+  std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
   std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
 };

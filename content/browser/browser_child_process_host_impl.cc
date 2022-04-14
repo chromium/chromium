@@ -163,7 +163,7 @@ void BrowserChildProcessHostImpl::AddObserver(
 // static
 void BrowserChildProcessHostImpl::RemoveObserver(
     BrowserChildProcessObserver* observer) {
-  // TODO(phajdan.jr): Check thread after fixing http://crbug.com/167126.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   g_browser_child_process_observers.Get().RemoveObserver(observer);
 }
 

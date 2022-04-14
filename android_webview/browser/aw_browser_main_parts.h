@@ -13,6 +13,10 @@
 #include "base/task/single_thread_task_executor.h"
 #include "content/public/browser/browser_main_parts.h"
 
+namespace crash_reporter {
+class ChildExitObserver;
+}
+
 namespace metrics {
 class MemoryMetricsLogger;
 }
@@ -50,6 +54,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<metrics::MemoryMetricsLogger> metrics_logger_;
 
   std::unique_ptr<AwBrowserProcess> browser_process_;
+  std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
 };
 
 }  // namespace android_webview

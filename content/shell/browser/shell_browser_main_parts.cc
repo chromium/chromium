@@ -168,9 +168,9 @@ int ShellBrowserMainParts::PreCreateThreads() {
 #if BUILDFLAG(IS_ANDROID)
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  crash_reporter::ChildExitObserver::Create();
+  child_exit_observer_ = std::make_unique<crash_reporter::ChildExitObserver>();
   if (command_line->HasSwitch(switches::kEnableCrashReporter)) {
-    crash_reporter::ChildExitObserver::GetInstance()->RegisterClient(
+    child_exit_observer_->RegisterClient(
         std::make_unique<crash_reporter::ChildProcessCrashObserver>());
   }
 #endif
