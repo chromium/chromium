@@ -21,9 +21,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   async launchAndWaitForTutorial() {
     new PanelCommand(PanelCommandType.TUTORIAL).send();
     await this.waitForTutorial();
-    return new Promise(resolve => {
-      resolve();
-    });
   }
 
   /** Waits for the tutorial to load. */
