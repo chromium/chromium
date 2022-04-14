@@ -45,6 +45,11 @@ void FakePrintRenderFrame::SetPrintingEnabled(bool enabled) {}
 
 void FakePrintRenderFrame::PrintNodeUnderContextMenu() {}
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void FakePrintRenderFrame::SnapshotForContentAnalysis(
+    SnapshotForContentAnalysisCallback callback) {}
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
 void FakePrintRenderFrame::BindPrintRenderFrameReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(

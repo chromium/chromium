@@ -19,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -574,8 +575,9 @@ mojom::PrintParamsPtr CalculatePrintParamsForCss(
   return result_params;
 }
 
-bool CopyMetafileDataToReadOnlySharedMem(const MetafileSkia& metafile,
-                                         mojom::DidPrintContentParams* params) {
+bool CopyMetafileDataToReadOnlySharedMem(
+    const MetafileSkia& metafile,
+    base::ReadOnlySharedMemoryRegion* region) {
   uint32_t buf_size = metafile.GetDataSize();
   if (buf_size == 0)
     return false;
@@ -591,7 +593,18 @@ bool CopyMetafileDataToReadOnlySharedMem(const MetafileSkia& metafile,
   if (!metafile.GetData(region_mapping.mapping.memory(), buf_size))
     return false;
 
-  params->metafile_data_region = std::move(region_mapping.region);
+  *region = std::move(region_mapping.region);
+  return true;
+}
+
+bool CopyMetafileDataToDidPrintContentParams(
+    const MetafileSkia& metafile,
+    mojom::DidPrintContentParams* params) {
+  base::ReadOnlySharedMemoryRegion region;
+  if (!CopyMetafileDataToReadOnlySharedMem(metafile, &region))
+    return false;
+
+  params->metafile_data_region = std::move(region);
   params->subframe_content_info = metafile.GetSubframeContentInfo();
   return true;
 }
@@ -1506,8 +1519,8 @@ void PrintRenderFrameHelper::PrintFrameContent(
   // failure, as DispatchAfterPrintEvent() still need to be called.
   mojom::DidPrintContentParamsPtr printed_frame_params =
       mojom::DidPrintContentParams::New();
-  if (CopyMetafileDataToReadOnlySharedMem(metafile,
-                                          printed_frame_params.get())) {
+  if (CopyMetafileDataToDidPrintContentParams(metafile,
+                                              printed_frame_params.get())) {
     std::move(callback).Run(params->document_cookie,
                             std::move(printed_frame_params));
   } else {
@@ -1535,6 +1548,63 @@ void PrintRenderFrameHelper::PrintNodeUnderContextMenu() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   PrintNode(render_frame()->GetWebFrame()->ContextMenuNode());
 }
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void PrintRenderFrameHelper::SnapshotForContentAnalysis(
+    SnapshotForContentAnalysisCallback callback) {
+  // Use default print params to snapshot the page.
+  mojom::PrintPagesParams print_pages_params;
+  print_pages_params.params = mojom::PrintParams::New();
+  GetPrintManagerHost()->GetDefaultPrintSettings(&print_pages_params.params);
+
+  ContentProxySet typeface_content_info;
+  auto metafile = std::make_unique<MetafileSkia>(
+      print_pages_params.params->printed_doc_type,
+      print_pages_params.params->document_cookie);
+  CHECK(metafile->Init());
+  metafile->UtilizeTypefaceContext(&typeface_content_info);
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  blink::WebNode node = delegate_->GetPdfElement(frame);
+  bool is_pdf = IsPrintingPdfFrame(frame, node);
+  blink::WebPrintParams web_print_params;
+  ComputeWebKitPrintParamsInDesiredDpi(*print_pages_params.params, is_pdf,
+                                       &web_print_params);
+  uint32_t page_count = frame->PrintBegin(web_print_params, node);
+  if (page_count == 0) {
+    frame->PrintEnd();
+    metafile->FinishDocument();
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  for (size_t page_index = 0; page_index < page_count; ++page_index) {
+    PrintPageInternal(
+        *print_pages_params.params, page_index, page_count,
+        GetScaleFactor(print_pages_params.params->scale_factor, is_pdf), frame,
+        metafile.get(), /*page_size_in_dpi=*/nullptr,
+        /*content_area_in_dpi=*/nullptr);
+  }
+  frame->PrintEnd();
+  metafile->FinishDocument();
+
+  mojom::DidPrintDocumentParamsPtr page_params =
+      mojom::DidPrintDocumentParams::New();
+  page_params->content = mojom::DidPrintContentParams::New();
+
+  if (!CopyMetafileDataToDidPrintContentParams(*metafile,
+                                               page_params->content.get())) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  page_params->document_cookie = print_pages_params.params->document_cookie;
+#if BUILDFLAG(IS_WIN)
+  page_params->physical_offsets = printer_printable_area_.origin();
+#endif
+  std::move(callback).Run(std::move(page_params));
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 void PrintRenderFrameHelper::GetPageSizeAndContentAreaFromPageLayout(
     const mojom::PageSizeMargins& page_layout_in_points,
@@ -1636,8 +1706,9 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
     return CREATE_FAIL;
   }
 
-  double scale_factor = GetScaleFactor(print_params.scale_factor,
-                                       !print_preview_context_.IsModifiable());
+  double scale_factor =
+      GetScaleFactor(print_params.scale_factor,
+                     /*is_pdf=*/!print_preview_context_.IsModifiable());
 
   mojom::PageSizeMarginsPtr default_page_layout =
       ComputePageLayoutInPointsForCss(print_preview_context_.prepared_frame(),
@@ -1751,12 +1822,13 @@ bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_number) {
   render_metafile->UtilizeTypefaceContext(
       print_preview_context_.typeface_content_info());
   base::TimeTicks begin_time = base::TimeTicks::Now();
-  double scale_factor = GetScaleFactor(print_params.scale_factor,
-                                       !print_preview_context_.IsModifiable());
-  PrintPageInternal(print_params, page_number,
-                    print_preview_context_.total_page_count(), scale_factor,
-                    print_preview_context_.prepared_frame(), render_metafile,
-                    nullptr, nullptr);
+  double scale_factor =
+      GetScaleFactor(print_params.scale_factor,
+                     /*is_pdf=*/!print_preview_context_.IsModifiable());
+  PrintPageInternal(
+      print_params, page_number, print_preview_context_.total_page_count(),
+      scale_factor, print_preview_context_.prepared_frame(), render_metafile,
+      /*page_size_in_dpi=*/nullptr, /*content_area_in_dpi=*/nullptr);
   print_preview_context_.RenderedPreviewPage(base::TimeTicks::Now() -
                                              begin_time);
 
@@ -1790,9 +1862,9 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
   // separate print renderer (e.g., not print compositor).
   MetafileSkia* metafile = print_preview_context_.metafile();
   if (metafile) {
-    if (!CopyMetafileDataToReadOnlySharedMem(*metafile,
-                                             preview_params->content.get())) {
-      LOG(ERROR) << "CopyMetafileDataToReadOnlySharedMem failed";
+    if (!CopyMetafileDataToDidPrintContentParams(
+            *metafile, preview_params->content.get())) {
+      LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams failed";
       print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
       return false;
     }
@@ -2148,7 +2220,8 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   for (size_t i = 1; i < printed_pages.size(); ++i) {
     PrintPageInternal(print_params, printed_pages[i], page_count,
                       GetScaleFactor(print_params.scale_factor, is_pdf), frame,
-                      &metafile, nullptr, nullptr);
+                      &metafile, /*page_size_in_dpi=*/nullptr,
+                      /*content_area_in_dpi=*/nullptr);
   }
 
   // blink::printEnd() for PDF should be called before metafile is closed.
@@ -2156,8 +2229,8 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
 
   metafile.FinishDocument();
 
-  if (!CopyMetafileDataToReadOnlySharedMem(metafile,
-                                           page_params->content.get())) {
+  if (!CopyMetafileDataToDidPrintContentParams(metafile,
+                                               page_params->content.get())) {
     return false;
   }
 
@@ -2679,9 +2752,9 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
 
   auto preview_page_params = mojom::DidPreviewPageParams::New();
   preview_page_params->content = mojom::DidPrintContentParams::New();
-  if (!CopyMetafileDataToReadOnlySharedMem(
+  if (!CopyMetafileDataToDidPrintContentParams(
           *metafile, preview_page_params->content.get())) {
-    LOG(ERROR) << "CopyMetafileDataToReadOnlySharedMem failed";
+    LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams failed";
     print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
     return false;
   }

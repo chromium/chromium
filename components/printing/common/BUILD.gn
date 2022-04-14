@@ -41,4 +41,7 @@ mojom("mojo_interfaces") {
     public_deps += [ "//ui/accessibility/mojom" ]
     enabled_features += [ "enable_tagged_pdf" ]
   }
+  if (enable_print_content_analysis) {
+    enabled_features += [ "enable_print_content_analysis" ]
+  }
 }

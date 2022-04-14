@@ -270,6 +270,10 @@ class PrintRenderFrameHelper
   void PrintingDone(bool success) override;
   void SetPrintingEnabled(bool enabled) override;
   void PrintNodeUnderContextMenu() override;
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  void SnapshotForContentAnalysis(
+      SnapshotForContentAnalysisCallback callback) override;
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Get |page_size| and |content_area| information from
   // |page_layout_in_points|.
