@@ -540,6 +540,18 @@ TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
   runMochaSuite('PrivacyGuideDialog');
 });
 
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'CardHeaderTestsPrivacyGuide2Enabled',
+    function() {
+      runMochaSuite('CardHeaderTestsPrivacyGuide2Enabled');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'CardHeaderTestsPrivacyGuide2Disabled',
+    function() {
+      runMochaSuite('CardHeaderTestsPrivacyGuide2Disabled');
+    });
+
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

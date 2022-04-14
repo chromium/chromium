@@ -22,6 +22,14 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
  */
 const PRIVACY_GUIDE_STEPS = 4;
 
+const SETTINGS_FRAGMENT_NAMES = [
+  'privacy-guide-msbb-fragment',
+  'privacy-guide-history-sync-fragment',
+  'privacy-guide-safe-browsing-fragment',
+  'privacy-guide-cookies-fragment',
+  'privacy-guide-clear-on-exit-fragment',
+];
+
 /**
  * Equivalent of the user manually navigating to the corresponding step via
  * typing the URL and step parameter in the Omnibox.
@@ -1537,5 +1545,47 @@ suite('PrivacyGuideDialog', function() {
             new CustomEvent('close', {bubbles: true, composed: true}));
 
     assertFalse(page.$.dialog.open);
+  });
+});
+
+// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
+suite('CardHeaderTestsPrivacyGuide2Enabled', function() {
+  test('phase2HeadersVisible', function() {
+    for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
+      document.body.innerHTML = '';
+      const page = document.createElement(fragmentName);
+      document.body.appendChild(page);
+      flush();
+
+      assertFalse(
+          isChildVisible(page, '.header'), fragmentName + ' phase1 header');
+      assertTrue(
+          isChildVisible(page, '.header-phase2'),
+          fragmentName + ' phase2 header');
+    }
+  });
+});
+
+// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
+suite('CardHeaderTestsPrivacyGuide2Disabled', function() {
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacyGuide2Enabled: false,
+    });
+  });
+
+  test('phase1HeadersVisible', function() {
+    for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
+      document.body.innerHTML = '';
+      const page = document.createElement(fragmentName);
+      document.body.appendChild(page);
+      flush();
+
+      assertTrue(
+          isChildVisible(page, '.header'), fragmentName + ' phase1 header');
+      assertFalse(
+          isChildVisible(page, '.header-phase2'),
+          fragmentName + ' phase2 header');
+    }
   });
 });
