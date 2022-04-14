@@ -226,4 +226,11 @@ public interface ExternalNavigationDelegate {
      * shown and Chrome is able to handle the navigation.
      */
     boolean shouldAvoidDisambiguationDialog(Intent intent);
+
+    /**
+     * Whether navigations started by the embedder (i.e. not by the renderer) should stay in the
+     * browser by default. Note that there are many exceptions to this, like redirects off of the
+     * navigation still being allowed to leave the browser.
+     */
+    boolean shouldEmbedderInitiatedNavigationsStayInBrowser();
 }

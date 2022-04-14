@@ -350,4 +350,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public boolean shouldAvoidDisambiguationDialog(Intent intent) {
         return false;
     }
+
+    @Override
+    public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
+        // The initial navigation off of things like typed navigations or bookmarks should stay in
+        // the browser.
+        return true;
+    }
 }

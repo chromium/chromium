@@ -212,4 +212,14 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public boolean maybeSetTargetPackage(Intent intent) {
         return false;
     }
+
+    @Override
+    public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
+        // WebLayer already has APIs that allow the embedder to specify that a navigation shouldn't
+        // result in an external intent (Navigation#disableIntentProcessing() and
+        // NavigateParams#disableIntentProcessing()), and historically embedder-initiated
+        // navigations have been allowed to leave the browser on the initial navigation, so we need
+        // to maintain that behavior.
+        return false;
+    }
 }

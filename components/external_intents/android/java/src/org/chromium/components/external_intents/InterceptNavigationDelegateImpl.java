@@ -21,6 +21,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ConsoleMessageLevel;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * Class that controls navigations and allows to intercept them. It is used on Android to 'convert'
@@ -77,14 +78,19 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         InterceptNavigationDelegateImplJni.get().associateWithWebContents(this, mWebContents);
     }
 
-    public boolean shouldIgnoreNewTab(GURL url, boolean incognito) {
+    public boolean shouldIgnoreNewTab(
+            GURL url, boolean incognito, boolean isRendererInitiated, Origin initiatorOrigin) {
         if (mAuthenticatorHelper != null
                 && mAuthenticatorHelper.handleAuthenticatorUrl(url.getSpec())) {
             return true;
         }
 
-        ExternalNavigationParams params =
-                new ExternalNavigationParams.Builder(url, incognito).setOpenInNewTab(true).build();
+        ExternalNavigationParams params = new ExternalNavigationParams.Builder(url, incognito)
+                                                  .setOpenInNewTab(true)
+                                                  .setIsRendererInitiated(isRendererInitiated)
+                                                  .setInitiatorOrigin(initiatorOrigin)
+                                                  .setIsMainFrame(true)
+                                                  .build();
         mLastOverrideUrlLoadingResultType =
                 mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
         return mLastOverrideUrlLoadingResultType
