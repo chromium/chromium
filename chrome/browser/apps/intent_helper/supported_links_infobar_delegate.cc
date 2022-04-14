@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,9 +50,10 @@ void SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
     return;
   }
 
-  // TODO(crbug.com/1293173): Track the number of times the infobar has been
-  // shown per app, and do not show it once it has been ignored a particular
-  // number of times.
+  auto* prefs_service = SupportedLinksInfoBarPrefsService::Get(profile);
+  if (!prefs_service || prefs_service->ShouldHideInfoBarForApp(app_id)) {
+    return;
+  }
 
   infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(CreateConfirmInfoBar(
@@ -74,6 +76,13 @@ SupportedLinksInfoBarDelegate::SupportedLinksInfoBarDelegate(
     Profile* profile,
     const std::string& app_id)
     : profile_(profile), app_id_(app_id) {}
+
+SupportedLinksInfoBarDelegate::~SupportedLinksInfoBarDelegate() {
+  if (!action_taken_) {
+    SupportedLinksInfoBarPrefsService::Get(profile_)->MarkInfoBarIgnored(
+        app_id_);
+  }
+}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SupportedLinksInfoBarDelegate::GetIdentifier() const {
@@ -107,15 +116,21 @@ const gfx::VectorIcon& SupportedLinksInfoBarDelegate::GetVectorIcon() const {
   return vector_icons::kSettingsIcon;
 }
 
+bool SupportedLinksInfoBarDelegate::IsCloseable() const {
+  return false;
+}
+
 bool SupportedLinksInfoBarDelegate::Accept() {
+  action_taken_ = true;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
   proxy->SetSupportedLinksPreference(app_id_);
   return true;
 }
 
 bool SupportedLinksInfoBarDelegate::Cancel() {
-  // TODO(crbug.com/1293173): Update preference so that the infobar is not shown
-  // again for this app.
+  action_taken_ = true;
+  SupportedLinksInfoBarPrefsService::Get(profile_)->MarkInfoBarDismissed(
+      app_id_);
   return true;
 }
 

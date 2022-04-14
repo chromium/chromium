@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class Profile;
@@ -31,6 +32,7 @@ class SupportedLinksInfoBarDelegate : public ConfirmInfoBarDelegate {
   SupportedLinksInfoBarDelegate(const SupportedLinksInfoBarDelegate&) = delete;
   SupportedLinksInfoBarDelegate& operator=(
       const SupportedLinksInfoBarDelegate&) = delete;
+  ~SupportedLinksInfoBarDelegate() override;
 
   // Creates and shows a supported links infobar for the given |web_contents|.
   // The infobar will only be created if it is suitable for the given |app_id|
@@ -43,16 +45,19 @@ class SupportedLinksInfoBarDelegate : public ConfirmInfoBarDelegate {
   static bool IsSetSupportedLinksPreferenceSupported();
 
  private:
+  // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   std::u16string GetMessageText() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  bool IsCloseable() const override;
 
   bool Accept() override;
   bool Cancel() override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::string app_id_;
+  bool action_taken_ = false;
 };
 
 }  // namespace apps

@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -78,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        AcceptInfoBarChangesSupportedLinks) {
   if (!apps::SupportedLinksInfoBarDelegate::
           IsSetSupportedLinksPreferenceSupported()) {
-    LOG(WARNING) << "Ash version not supported";
-    return;
+    GTEST_SKIP() << "Ash version not supported";
   }
 
   Browser* browser = OpenTestWebApp();
@@ -102,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownForPreferredApp) {
   if (!apps::SupportedLinksInfoBarDelegate::
           IsSetSupportedLinksPreferenceSupported()) {
-    LOG(WARNING) << "Ash version not supported";
-    return;
+    GTEST_SKIP() << "Ash version not supported";
   }
 
   app_service_proxy()->SetSupportedLinksPreference(test_web_app_id());
@@ -115,4 +114,58 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
       contents, test_web_app_id());
 
   ASSERT_FALSE(GetInfoBar(contents));
+}
+
+IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
+                       InfoBarNotShownAfterDismiss) {
+  if (!apps::SupportedLinksInfoBarDelegate::
+          IsSetSupportedLinksPreferenceSupported()) {
+    GTEST_SKIP() << "Ash version not supported";
+  }
+
+  {
+    auto* browser = OpenTestWebApp();
+    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+    apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+        contents, test_web_app_id());
+
+    auto* infobar = GetInfoBar(contents);
+    GetDelegate(infobar)->Cancel();
+  }
+
+  {
+    auto* browser = OpenTestWebApp();
+    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+
+    apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+        contents, test_web_app_id());
+    ASSERT_FALSE(GetInfoBar(contents));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
+                       InfoBarNotShownAfterIgnored) {
+  if (!apps::SupportedLinksInfoBarDelegate::
+          IsSetSupportedLinksPreferenceSupported()) {
+    GTEST_SKIP() << "Ash version not supported";
+  }
+
+  for (int i = 0; i < 3; i++) {
+    auto* browser = OpenTestWebApp();
+    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+    apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+        contents, test_web_app_id());
+
+    ASSERT_TRUE(GetInfoBar(contents));
+    chrome::CloseTab(browser);
+  }
+
+  {
+    auto* browser = OpenTestWebApp();
+    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+
+    apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+        contents, test_web_app_id());
+    ASSERT_FALSE(GetInfoBar(contents));
+  }
 }
