@@ -264,6 +264,7 @@ group("make_modules_generated") {
     ":make_modules_generated_event_target_names",
     ":make_modules_generated_indexed_db_names",
     ":make_modules_generated_media_capabilities_names",
+    "//components/ml/mojom:mojom_blink_headers",
     "//components/payments/mojom:mojom_blink_headers",
     "//components/schema_org/common:mojom_blink_headers",
     "//components/services/filesystem/public/mojom:mojom_blink_headers",
