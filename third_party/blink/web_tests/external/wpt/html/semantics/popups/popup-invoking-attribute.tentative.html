@@ -9,11 +9,15 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<button triggerpopup=p1>Open Popup 1</button>
+<button togglepopup=p1>Toggle Popup 1</button>
 <div popup=popup id=p1>This is popup #1</div>
 
 <style>
-  [popup] { border: 5px solid red; }
+  [popup] {
+    border: 5px solid red;
+    top: 100px;
+    left: 100px;
+  }
 </style>
 
 <script>
@@ -27,14 +31,37 @@
 
   const popup = document.querySelector('[popup]');
   const button = document.querySelector('button');
+  let showCount = 0;
+  let hideCount = 0;
+  popup.addEventListener('show',() => ++showCount);
+  popup.addEventListener('hide',() => ++hideCount);
+
+  async function assertState(expectOpen,expectShow,expectHide) {
+    assert_equals(popup.matches(':popup-open'),expectOpen,'Popup open state is incorrect');
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assert_equals(showCount,expectShow,'Show count is incorrect');
+    assert_equals(hideCount,expectHide,'Hide count is incorrect');
+  }
 
   promise_test(async () => {
-    assert_false(popup.matches(':popup-open'));
+    showCount = hideCount = 0;
+    await assertState(false,0,0);
     await clickOn(button);
-    assert_true(popup.matches(':popup-open'));
+    await assertState(true,1,0);
     popup.hidePopup();
-    assert_false(popup.matches(':popup-open'));
+    await assertState(false,1,1);
     button.click();
-    assert_true(popup.matches(':popup-open'));
-  }, "Basic test of the 'popup' attribute on a button");
+    await assertState(true,2,1);
+    popup.hidePopup();
+    await assertState(false,2,2);
+  }, "Clicking a togglepopup button opens a closed popup");
+
+  promise_test(async () => {
+    showCount = hideCount = 0;
+    await assertState(false,0,0);
+    await clickOn(button);
+    await assertState(true,1,0);
+    await clickOn(button);
+    await assertState(false,1,1);
+  }, "Clicking a togglepopup button closes an open popup");
 </script>

@@ -2505,7 +2505,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
     return nullptr;
   // We need to walk up from the start node to see if there is a parent popup,
   // or the anchor for a popup, or an invoking element (which has the
-  // "triggerpopup" attribute). There can be multiple popups for a single anchor
+  // "togglepopup" attribute). There can be multiple popups for a single anchor
   // element, and an anchor for one popup can also be an invoker for a different
   // popup, but we will stop on any of them. Therefore, just store the popup
   // that is highest (last) on the popup stack for each anchor and/or invoker.

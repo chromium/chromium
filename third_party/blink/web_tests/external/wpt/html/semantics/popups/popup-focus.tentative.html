@@ -129,7 +129,7 @@
         button.remove();
       });
       popup.id = popupId;
-      button.setAttribute('triggerpopup', popupId);
+      button.setAttribute('togglepopup', popupId);
       priorFocus.focus();
       button.click();
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by button.click()`);

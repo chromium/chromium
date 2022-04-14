@@ -61,9 +61,9 @@ class HTMLButtonElement final : public HTMLFormControlElement {
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
 
-  // Retrieves the element pointed to by the 'triggerpopup' content attribute,
+  // Retrieves the element pointed to by the 'togglepopup' content attribute,
   // if that element a) exists, and b) is a valid Popup element.
-  Element* triggerPopupElement() const;
+  Element* togglePopupElement() const;
 
   void AppendToFormData(FormData&) override;
 
