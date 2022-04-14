@@ -22,10 +22,7 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
 
   ~AssistiveSuggesterClientFilter() override;
 
-  // AssistiveSuggesterDelegate overrides
-  bool IsEmojiSuggestionAllowed() override;
-  bool IsMultiWordSuggestionAllowed() override;
-  bool IsPersonalInfoSuggestionAllowed() override;
+  // AssistiveSuggesterSwitch overrides
   void FetchEnabledSuggestionsThen(
       FetchEnabledSuggestionsCallback callback) override;
 

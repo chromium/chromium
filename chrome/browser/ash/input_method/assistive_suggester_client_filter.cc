@@ -278,18 +278,6 @@ AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
 
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
-bool AssistiveSuggesterClientFilter::IsEmojiSuggestionAllowed() {
-  return IsAllowedUrlOrAppForEmojiSuggestion();
-}
-
-bool AssistiveSuggesterClientFilter::IsMultiWordSuggestionAllowed() {
-  return IsAllowedUrlOrAppForMultiWordSuggestion();
-}
-
-bool AssistiveSuggesterClientFilter::IsPersonalInfoSuggestionAllowed() {
-  return IsAllowedUrlOrAppForPersonalInfoSuggestion();
-}
-
 void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
     FetchEnabledSuggestionsCallback callback) {
   get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));

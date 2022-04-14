@@ -86,19 +86,7 @@ class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
       : enabled_suggestions_(enabled_suggestions) {}
   ~FakeSuggesterSwitch() override = default;
 
-  // AssistiveSuggesterDelegate overrides
-  bool IsEmojiSuggestionAllowed() override {
-    return enabled_suggestions_.emoji_suggestions;
-  }
-
-  bool IsMultiWordSuggestionAllowed() override {
-    return enabled_suggestions_.multi_word_suggestions;
-  }
-
-  bool IsPersonalInfoSuggestionAllowed() override {
-    return enabled_suggestions_.personal_info_suggestions;
-  }
-
+  // AssistiveSuggesterSwitch overrides
   void FetchEnabledSuggestionsThen(
       FetchEnabledSuggestionsCallback callback) override {
     std::move(callback).Run(enabled_suggestions_);

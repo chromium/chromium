@@ -29,24 +29,6 @@ class AssistiveSuggesterSwitch {
   AssistiveSuggesterSwitch() = default;
   virtual ~AssistiveSuggesterSwitch() = default;
 
-  // Are emoji suggestions allowed to be surfaced to the user?
-  //
-  // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     FetchEnabledSuggestionsThen.
-  virtual bool IsEmojiSuggestionAllowed() = 0;
-
-  // Are multi word suggestions allowed to be surfaced to the user?
-  //
-  // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     FetchEnabledSuggestionsThen.
-  virtual bool IsMultiWordSuggestionAllowed() = 0;
-
-  // Are personal info suggestions allowed to be surfaced to the user?
-  //
-  // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     FetchEnabledSuggestionsThen.
-  virtual bool IsPersonalInfoSuggestionAllowed() = 0;
-
   using FetchEnabledSuggestionsCallback =
       base::OnceCallback<void(const EnabledSuggestions&)>;
 
