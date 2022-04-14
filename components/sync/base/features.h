@@ -126,6 +126,14 @@ inline constexpr base::Feature kUseSyncInvalidations = {
 inline constexpr base::Feature kUseSyncInvalidationsForWalletAndOffer = {
     "UseSyncInvalidationsForWalletAndOffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, optimization flags (single client and a list of FCM
+// registration tokens) will be disabled if during the current sync cycle
+// DeviceInfo has been updated.
+inline constexpr base::Feature
+    kSkipInvalidationOptimizationsWhenDeviceInfoUpdated = {
+        "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_IOS)
 // Returns whether RPC is enabled.
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();

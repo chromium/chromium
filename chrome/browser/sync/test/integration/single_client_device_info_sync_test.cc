@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -14,10 +15,12 @@
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
+#include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -111,7 +114,10 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
 
 class SingleClientDeviceInfoSyncTest : public SyncTest {
  public:
-  SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitAndEnableFeature(
+        syncer::kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
+  }
 
   SingleClientDeviceInfoSyncTest(const SingleClientDeviceInfoSyncTest&) =
       delete;
@@ -148,6 +154,9 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
             specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
+
+ private:
+  base::test::ScopedFeatureList override_features_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -354,6 +363,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
 
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
+                                       HasCacheGuid(CacheGuidForSuffix(1))))
+                  .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  EXPECT_FALSE(message.commit().config_params().single_client());
+}
+
+// This test verifies that single_client optimization flag is not set after
+// DeviceInfo has been received (even within the same sync cycle).
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldNotPopulateTheOnlyClientWhenDeviceInfoUpdated) {
+  ASSERT_TRUE(SetupSync());
+
+  const std::vector<sync_pb::SyncEntity> server_device_infos =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+  ASSERT_THAT(server_device_infos,
+              ElementsAre(HasCacheGuid(GetLocalCacheGuid())));
+
+  GetClient(0)->StopSyncServiceWithoutClearingData();
+  // Add a DeviceInfo tombstone to cause a commit request within the same sync
+  // cycle (removing local DeviceInfo will cause its reupload).
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::CreateFromEntity(
+          server_device_infos.front()));
+  // Add a new remote device to verify that single_client flag is not set.
+  InjectDeviceInfoEntityToServer(/*suffix=*/1);
+  GetClient(0)->StartSyncService();
+
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
                   GetFakeServer(),
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),

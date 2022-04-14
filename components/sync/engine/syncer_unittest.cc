@@ -23,13 +23,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/mock_debug_info_getter.h"
@@ -57,6 +60,7 @@ namespace syncer {
 
 namespace {
 
+using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
@@ -791,6 +795,64 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
   EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
+}
+
+TEST_F(SyncerTest, ShouldPopulateSingleClientFlag) {
+  GetProcessor(BOOKMARKS)->AppendCommitRequest(
+      ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
+      "id1");
+
+  // No other devices are interested in bookmarks.
+  context_->set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo::Create({}, {PREFERENCES}));
+  ASSERT_TRUE(SyncShareNudge());
+  EXPECT_TRUE(
+      mock_server_->last_request().commit().config_params().single_client());
+}
+
+TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
+  GetProcessor(BOOKMARKS)->AppendCommitRequest(
+      ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
+      "id1");
+
+  context_->set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo::Create({"token"}, {BOOKMARKS}));
+  ASSERT_TRUE(SyncShareNudge());
+  EXPECT_FALSE(
+      mock_server_->last_request().commit().config_params().single_client());
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .devices_fcm_registration_tokens(),
+              ElementsAre("token"));
+}
+
+TEST_F(SyncerTest,
+       ShouldNotPopulateOptimizationFlagsIfDeviceInfoRecentlyUpdated) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
+
+  EnableDatatype(DEVICE_INFO);
+  mock_server_->AddUpdateSpecifics("id", /*parent_id=*/"", "name",
+                                   /*version=*/1, /*sync_ts=*/10,
+                                   /*is_dir=*/false, /*specifics=*/
+                                   MakeSpecifics(DEVICE_INFO));
+  GetProcessor(BOOKMARKS)->AppendCommitRequest(
+      ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
+      "id1");
+
+  // No other devices are interested in bookmarks.
+  context_->set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo::Create({"token"}, {PREFERENCES}));
+  ASSERT_TRUE(SyncShareNudge());
+
+  // All invalidation info should be ignored due to DeviceInfo update.
+  EXPECT_FALSE(
+      mock_server_->last_request().commit().config_params().single_client());
+  EXPECT_TRUE(mock_server_->last_sent_commit()
+                  .config_params()
+                  .devices_fcm_registration_tokens()
+                  .empty());
 }
 
 TEST_F(SyncerTest, ClientTagServerCreatedUpdatesWork) {

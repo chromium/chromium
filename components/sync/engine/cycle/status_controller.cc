@@ -21,6 +21,18 @@ void StatusController::set_get_updates_request_types(ModelTypeSet value) {
   model_neutral_.get_updates_request_types = value;
 }
 
+ModelTypeSet StatusController::get_updated_types() const {
+  return model_neutral_.updated_types;
+}
+
+void StatusController::add_updated_type(ModelType type) {
+  model_neutral_.updated_types.Put(type);
+}
+
+void StatusController::clear_updated_types() {
+  model_neutral_.updated_types.Clear();
+}
+
 void StatusController::increment_num_updates_downloaded_by(int value) {
   model_neutral_.num_updates_downloaded_total += value;
 }

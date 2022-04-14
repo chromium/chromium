@@ -29,6 +29,9 @@ class ActiveDevicesInvalidationInfo {
 
   ~ActiveDevicesInvalidationInfo();
 
+  ActiveDevicesInvalidationInfo(const ActiveDevicesInvalidationInfo&);
+  ActiveDevicesInvalidationInfo& operator=(
+      const ActiveDevicesInvalidationInfo&);
   ActiveDevicesInvalidationInfo(ActiveDevicesInvalidationInfo&&);
   ActiveDevicesInvalidationInfo& operator=(ActiveDevicesInvalidationInfo&&);
 

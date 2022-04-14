@@ -477,6 +477,10 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
     }
   }
 
+  if (HasNonDeletionUpdates()) {
+    status->add_updated_type(type_);
+  }
+
   // Download cycle is done, pass all updates to the processor.
   SendPendingUpdatesToProcessorIfReady();
 }
@@ -880,6 +884,15 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
       });
 
   return removed_keys;
+}
+
+bool ModelTypeWorker::HasNonDeletionUpdates() const {
+  for (const UpdateResponseData& update : pending_updates_) {
+    if (!update.entity.is_deleted()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

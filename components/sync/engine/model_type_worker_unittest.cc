@@ -665,6 +665,8 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
   const ClientTagHash tag_hash = GenerateTagHash(kTag1);
 
   TriggerUpdateFromServer(10, kTag1, kValue1);
+  EXPECT_EQ(status_controller()->get_updated_types(),
+            ModelTypeSet{worker()->GetModelType()});
 
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> updates_list =
@@ -688,6 +690,13 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
       ModelTypeEntityChange::kRemoteNonInitialUpdate, 1);
+}
+
+TEST_F(ModelTypeWorkerTest,
+       ReceiveUpdates_ShouldNotPopulateUpdatedTypesOnTombstone) {
+  NormalInitialize();
+  TriggerTombstoneFromServer(10, kTag1);
+  EXPECT_EQ(status_controller()->get_updated_types(), ModelTypeSet());
 }
 
 TEST_F(ModelTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {

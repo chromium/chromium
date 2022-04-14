@@ -11,6 +11,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit.h"
 #include "components/sync/engine/commit_processor.h"
@@ -24,8 +27,23 @@ namespace syncer {
 
 namespace {
 
+// Returns invalidation info after applying updates. This is used to drop
+// optimization flags if DeviceInfo has been just updated (and new subscriptions
+// might be just received). Without that if a new device with enabled
+// invalidations has been just received, it may be updated only in the next
+// sync cycle due to delay between threads.
+ActiveDevicesInvalidationInfo GetInvalidationInfo(const SyncCycle* cycle) {
+  if (cycle->status_controller().get_updated_types().Has(DEVICE_INFO) &&
+      base::FeatureList::IsEnabled(
+          kSkipInvalidationOptimizationsWhenDeviceInfoUpdated)) {
+    return ActiveDevicesInvalidationInfo::CreateUninitialized();
+  }
+  return cycle->context()->active_devices_invalidation_info();
+}
+
 void HandleCycleBegin(SyncCycle* cycle) {
   cycle->mutable_status_controller()->UpdateStartTime();
+  cycle->mutable_status_controller()->clear_updated_types();
   cycle->SendEventNotification(SyncCycleEvent::SYNC_CYCLE_BEGIN);
 }
 
@@ -142,6 +160,7 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
   CommitProcessor commit_processor(
       request_types,
       cycle->context()->model_type_registry()->commit_contributor_map());
+
   // The ExitRequested() check is unnecessary, since we should start getting
   // errors from the ServerConnectionManager if an exist has been requested.
   // However, it doesn't hurt to check it anyway.
@@ -151,9 +170,8 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
         cycle->context()->proxy_tabs_datatype_enabled(),
         cycle->context()->max_commit_batch_size(),
         cycle->context()->account_name(), cycle->context()->cache_guid(),
-        cycle->context()->cookie_jar_mismatch(),
-        cycle->context()->active_devices_invalidation_info(), &commit_processor,
-        cycle->context()->extensions_activity()));
+        cycle->context()->cookie_jar_mismatch(), GetInvalidationInfo(cycle),
+        &commit_processor, cycle->context()->extensions_activity()));
     if (!commit) {
       break;
     }

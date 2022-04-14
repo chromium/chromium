@@ -30,6 +30,10 @@ ActiveDevicesInvalidationInfo::ActiveDevicesInvalidationInfo(bool initialized)
 ActiveDevicesInvalidationInfo::~ActiveDevicesInvalidationInfo() = default;
 
 ActiveDevicesInvalidationInfo::ActiveDevicesInvalidationInfo(
+    const ActiveDevicesInvalidationInfo&) = default;
+ActiveDevicesInvalidationInfo& ActiveDevicesInvalidationInfo::operator=(
+    const ActiveDevicesInvalidationInfo&) = default;
+ActiveDevicesInvalidationInfo::ActiveDevicesInvalidationInfo(
     ActiveDevicesInvalidationInfo&&) = default;
 ActiveDevicesInvalidationInfo& ActiveDevicesInvalidationInfo::operator=(
     ActiveDevicesInvalidationInfo&&) = default;

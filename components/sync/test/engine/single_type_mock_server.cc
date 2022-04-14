@@ -80,7 +80,7 @@ sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
   entity.set_parent_id_string(type_root_id_);
   entity.set_version(version);
   entity.set_client_defined_unique_tag(tag_hash.value());
-  entity.set_deleted(false);
+  entity.set_deleted(true);
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 
   // Unimportant fields, set for completeness only.

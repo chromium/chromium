@@ -242,6 +242,9 @@ class ModelTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
+  // Returns whether |pending_updates_| contain any non-deletion update.
+  bool HasNonDeletionUpdates() const;
+
   const ModelType type_;
 
   const raw_ptr<Cryptographer> cryptographer_;
