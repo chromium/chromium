@@ -645,6 +645,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.FetchEvents.MaxDistanceBrowsed" units="months"
+    expires_after="2023-04-10">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded when the calendar is closed. The furthest 'distance' (in months)
+    from today's date to which the user browsed while the calendar was open.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.NoCalendarClient" units="instances"
     expires_after="2022-11-10">
   <obsolete>
@@ -678,6 +688,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.FetchEvents.SingleMonthSize" units="bytes"
+    expires_after="2023-04-14">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded when a calendar fetch returns. The total size of the month's
+    events.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.Timeout" enum="Boolean"
     expires_after="2022-11-10">
   <owner>rtinkoff@google.com</owner>
@@ -685,6 +705,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever calendar events are requested, and the request went too
     long without a response.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.FetchEvents.TotalCacheSizeMonths" units="months"
+    expires_after="2023-04-13">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded when the calendar is closed. The total number of months cached for
+    calendar events while it was open.
   </summary>
 </histogram>
 

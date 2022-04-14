@@ -126,6 +126,10 @@ ASH_EXPORT std::u16string GetMonthNameAndYear(const base::Time date);
 // Sets up the `TableLayout` to have 7 columns, which is one week row (7 days).
 void SetUpWeekColumns(views::TableLayout* layout);
 
+// Computes the distance, in months, between `start_date` and `end_date`.
+ASH_EXPORT int GetMonthsBetween(const base::Time& start_date,
+                                const base::Time& end_date);
+
 // Colors.
 SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();

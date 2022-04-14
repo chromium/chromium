@@ -138,6 +138,13 @@ void SetUpWeekColumns(views::TableLayout* layout) {
   }
 }
 
+int GetMonthsBetween(const base::Time& start_date, const base::Time& end_date) {
+  base::Time::Exploded start_exp = calendar_utils::GetExplodedUTC(start_date);
+  base::Time::Exploded end_exp = calendar_utils::GetExplodedUTC(end_date);
+  return (end_exp.year - start_exp.year) * 12 +
+         (end_exp.month - start_exp.month) % 12;
+}
+
 SkColor GetPrimaryTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
   return color_provider->GetContentLayerColor(

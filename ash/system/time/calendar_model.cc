@@ -25,15 +25,24 @@ namespace {
 
 // Methods for debugging and gathering of metrics.
 
-[[maybe_unused]] int GetEventMapSize(
+[[maybe_unused]] size_t GetEventMapSize(
     const ash::CalendarModel::SingleMonthEventMap& event_map) {
-  int total_bytes = 0;
+  size_t total_bytes = 0;
   for (auto& event_list : event_map) {
     total_bytes += sizeof(event_list);
     for (auto& event : event_list.second) {
       total_bytes += event.GetApproximateSizeInBytes();
     }
   }
+
+  return total_bytes;
+}
+
+[[maybe_unused]] size_t GetTotalCacheSize(
+    const ash::CalendarModel::MonthToEventsMap& event_map) {
+  size_t total_bytes = 0;
+  for (auto& month : event_map)
+    total_bytes += sizeof(month) + GetEventMapSize(month.second);
 
   return total_bytes;
 }
@@ -165,6 +174,20 @@ void CalendarModel::ClearAllPrunableEvents() {
   mru_months_.clear();
 }
 
+void CalendarModel::ResetLifetimeMetrics(
+    const base::Time& currently_shown_date) {
+  max_distance_browsed_ = 0;
+  first_on_screen_month_ =
+      calendar_utils::GetFirstDayOfMonth(currently_shown_date);
+}
+
+void CalendarModel::UploadLifetimeMetrics() {
+  base::UmaHistogramCounts100000("Ash.Calendar.FetchEvents.MaxDistanceBrowsed",
+                                 max_distance_browsed_);
+  base::UmaHistogramCounts100000(
+      "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
+}
+
 void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
   for (auto& month : months)
     MaybeFetchMonth(month.UTCMidnight());
@@ -234,6 +257,14 @@ void CalendarModel::OnEventsFetched(
 
   // Request is no longer outstanding, so it can be destroyed.
   pending_fetches_.erase(start_of_month);
+
+  // Record the size of the month, and the total number of months.
+  base::UmaHistogramCounts1M("Ash.Calendar.FetchEvents.SingleMonthSize",
+                             GetEventMapSize(event_months_[start_of_month]));
+
+  // If `start_of_month` is further, in months, from the on-screen month when
+  // the calendar first opened, then update our max distance.
+  UpdateMaxDistanceBrowsed(start_of_month);
 }
 
 void CalendarModel::OnEventFetchFailedInternalError(
@@ -246,6 +277,13 @@ void CalendarModel::OnEventFetchFailedInternalError(
   // TODO: https://crbug.com/1298187 We need to respond further based on the
   // specific error code, retry in some cases, etc.
   pending_fetches_.erase(start_of_month);
+}
+
+void CalendarModel::UpdateMaxDistanceBrowsed(const base::Time& start_of_month) {
+  max_distance_browsed_ =
+      std::max(max_distance_browsed_,
+               static_cast<size_t>(abs(calendar_utils::GetMonthsBetween(
+                   first_on_screen_month_, start_of_month))));
 }
 
 void CalendarModel::InsertEvent(

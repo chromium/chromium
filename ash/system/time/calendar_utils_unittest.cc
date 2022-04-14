@@ -92,4 +92,74 @@ TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
   EXPECT_EQ(u"July 31, 2021", calendar_utils::GetMonthDayYear(date));
 }
 
+TEST_F(CalendarUtilsUnittest, GetMonthsBetween) {
+  base::Time start_date, end_date;
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 0);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Nov 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 1);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Sep 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -1);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2010 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 12);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2008 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -12);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Apr 2010 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 6);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Apr 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -6);
+
+  ASSERT_TRUE(base::Time::FromString("01 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("02 Oct 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 0);
+
+  ASSERT_TRUE(base::Time::FromString("01 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("31 Oct 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 0);
+
+  ASSERT_TRUE(base::Time::FromString("31 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("01 Nov 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 1);
+
+  ASSERT_TRUE(base::Time::FromString("01 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("30 Sep 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -1);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2022 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 13 * 12);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Oct 1996 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -13 * 12);
+
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Dec 2022 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date),
+            (13 * 12) + 2);
+  ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("23 Dec 1996 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date),
+            (-13 * 12) + 2);
+  ASSERT_TRUE(base::Time::FromString("31 Dec 2009 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("01 Jan 2010 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), 1);
+  ASSERT_TRUE(base::Time::FromString("01 Jan 2010 11:00 GMT", &start_date));
+  ASSERT_TRUE(base::Time::FromString("31 Dec 2009 11:00 GMT", &end_date));
+  EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -1);
+}
 }  // namespace ash

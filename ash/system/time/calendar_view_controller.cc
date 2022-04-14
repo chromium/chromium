@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,10 +28,16 @@ CalendarViewController::CalendarViewController()
       month_dwell_time_(base::TimeTicks::Now()) {
   MaybeUpdateTimeDifference(currently_shown_date_);
   InitialFetchEvents();
+  Shell::Get()->system_tray_model()->calendar_model()->ResetLifetimeMetrics(
+      currently_shown_date_);
 }
 
 CalendarViewController::~CalendarViewController() {
-  Shell::Get()->system_tray_model()->calendar_model()->ClearAllPrunableEvents();
+  CalendarModel* calendar_model =
+      Shell::Get()->system_tray_model()->calendar_model();
+  DCHECK(calendar_model);
+  calendar_model->UploadLifetimeMetrics();
+  calendar_model->ClearAllPrunableEvents();
 
   calendar_metrics::RecordMonthDwellTime(base::TimeTicks::Now() -
                                          month_dwell_time_);

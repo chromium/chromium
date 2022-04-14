@@ -67,6 +67,15 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Clears out all events that start in a non-prunable month.
   void ClearAllPrunableEvents();
 
+  // Resets to defaults the values of all event fetch metrics recorded over the
+  // lifetime of a calendar session, i.e. between a single open and close of the
+  // calendar.
+  void ResetLifetimeMetrics(const base::Time& currently_shown_date);
+
+  // Logs to UMA all event fetch metrics recorded over the lifetime of a
+  // calendar session.
+  void UploadLifetimeMetrics();
+
   // Adds `month` to the set of non-prunable months.
   void AddNonPrunableMonth(const base::Time& month);
 
@@ -157,6 +166,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
 
+  // Checks whether `start_of_month` is further than we've gone, so far, from
+  // the on-screen month with which the calendar was opened and, if it has, then
+  // update our max distance.
+  void UpdateMaxDistanceBrowsed(const base::Time& start_of_month);
+
   // Internal storage for fetched events, with each fetched month having a
   // map of days to events.
   MonthToEventsMap event_months_;
@@ -175,6 +189,15 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
 
   // Time difference between the UTC time and the local time in minutes.
   absl::optional<int> time_difference_minutes_;
+
+  // The first on-screen month to have been displayed when the calendar was
+  // opened.
+  base::Time first_on_screen_month_;
+
+  // Maximum distance, in months, from the on-screen month first displayed in
+  // the calendar when it was opened. This is logged as a metric when the
+  // calendar is closed.
+  size_t max_distance_browsed_;
 
   ScopedSessionObserver session_observer_;
 
