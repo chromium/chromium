@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
 #include "base/memory/ptr_util.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -118,12 +119,22 @@ OOPVideoDecoder::OOPVideoDecoder(
       &remote_consumer_handle);
   CHECK(mojo_decoder_buffer_writer_);
 
+  DCHECK(!stable_video_frame_handle_releaser_remote_.is_bound());
+  mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
+      stable_video_frame_handle_releaser_receiver =
+          stable_video_frame_handle_releaser_remote_
+              .BindNewPipeAndPassReceiver();
+
+  // base::Unretained() is safe because `this` owns the `mojo::Remote`.
+  stable_video_frame_handle_releaser_remote_.set_disconnect_handler(
+      base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
+
   CHECK(!has_error_);
   // TODO(b/171813538): plumb the remaining parameters.
   remote_decoder_->Construct(
       client_receiver_.BindNewEndpointAndPassRemote(),
       mojo::PendingRemote<stable::mojom::MediaLog>(),
-      mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>(),
+      std::move(stable_video_frame_handle_releaser_receiver),
       std::move(remote_consumer_handle), gfx::ColorSpace());
 }
 
@@ -320,6 +331,7 @@ void OOPVideoDecoder::Stop() {
   client_receiver_.reset();
   remote_decoder_.reset();
   mojo_decoder_buffer_writer_.reset();
+  stable_video_frame_handle_releaser_remote_.reset();
 
   if (init_cb_)
     std::move(init_cb_).Run(DecoderStatus::Codes::kFailed);
@@ -336,6 +348,16 @@ void OOPVideoDecoder::Stop() {
 
   if (reset_cb_)
     std::move(reset_cb_).Run();
+}
+
+void OOPVideoDecoder::ReleaseVideoFrame(
+    const base::UnguessableToken& release_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!has_error_);
+  CHECK(stable_video_frame_handle_releaser_remote_.is_bound());
+
+  stable_video_frame_handle_releaser_remote_->ReleaseVideoFrame(release_token);
 }
 
 void OOPVideoDecoder::ApplyResolutionChange() {
@@ -383,6 +405,13 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
+
+  // The destruction observer will be called after the client releases the
+  // video frame. BindToCurrentLoop() is used to make sure that the WeakPtr
+  // is dereferenced on the correct sequence.
+  frame->AddDestructionObserver(BindToCurrentLoop(
+      base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
+                     weak_this_factory_.GetWeakPtr(), release_token)));
 
   // TODO(b/220915557): validate |frame|.
   if (output_cb_)

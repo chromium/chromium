@@ -76,6 +76,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
 
   void Stop();
 
+  void ReleaseVideoFrame(const base::UnguessableToken& release_token);
+
   InitCB init_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -97,6 +99,10 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   mojo::Remote<stable::mojom::StableVideoDecoder> remote_decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
+      stable_video_frame_handle_releaser_remote_
+          GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
       GUARDED_BY_CONTEXT(sequence_checker_);
