@@ -33,6 +33,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -43,6 +44,9 @@ namespace {
 
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;
+using Empty = ::attribution_internals::mojom::Empty;
+using ReportStatus = ::attribution_internals::mojom::ReportStatus;
+using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 
 attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
     absl::optional<uint64_t> debug_key) {
@@ -114,8 +118,7 @@ void ForwardSourcesToWebUI(
 attribution_internals::mojom::WebUIReportPtr WebUIReport(
     const AttributionReport& report,
     bool is_debug_report,
-    int http_response_code,
-    attribution_internals::mojom::WebUIReport::Status status) {
+    ReportStatusPtr status) {
   struct Visitor {
     StoredSource::AttributionLogic attribution_logic;
 
@@ -162,7 +165,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
       /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(),
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
-      status, http_response_code, std::move(data));
+      std::move(status), std::move(data));
 }
 
 void ForwardReportsToWebUI(
@@ -171,9 +174,9 @@ void ForwardReportsToWebUI(
   std::vector<attribution_internals::mojom::WebUIReportPtr> web_ui_reports;
   web_ui_reports.reserve(pending_reports.size());
   for (const AttributionReport& report : pending_reports) {
-    web_ui_reports.push_back(WebUIReport(
-        report, /*is_debug_report=*/false, /*http_response_code=*/0,
-        attribution_internals::mojom::WebUIReport::Status::kPending));
+    web_ui_reports.push_back(
+        WebUIReport(report, /*is_debug_report=*/false,
+                    ReportStatus::NewPending(Empty::New())));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
@@ -333,27 +336,25 @@ void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
     bool is_debug_report,
     const SendResult& info) {
-  attribution_internals::mojom::WebUIReport::Status status;
+  ReportStatusPtr status;
   switch (info.status) {
     case SendResult::Status::kSent:
-      status = attribution_internals::mojom::WebUIReport::Status::kSent;
+      status = ReportStatus::NewSent(info.http_response_code);
       break;
     case SendResult::Status::kDropped:
-      status = attribution_internals::mojom::WebUIReport::Status::
-          kProhibitedByBrowserPolicy;
+      status = ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
       break;
     case SendResult::Status::kFailure:
     case SendResult::Status::kTransientFailure:
-      status = attribution_internals::mojom::WebUIReport::Status::kNetworkError;
+      status = ReportStatus::NewNetworkError(
+          net::ErrorToShortString(info.network_error));
       break;
     case SendResult::Status::kFailedToAssemble:
-      status =
-          attribution_internals::mojom::WebUIReport::Status::kFailedToAssemble;
+      status = ReportStatus::NewFailedToAssemble(Empty::New());
       break;
   }
 
-  auto web_report =
-      WebUIReport(report, is_debug_report, info.http_response_code, status);
+  auto web_report = WebUIReport(report, is_debug_report, std::move(status));
 
   for (auto& observer : observers_) {
     observer->OnReportSent(web_report.Clone());
@@ -460,11 +461,9 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
 
-    auto web_ui_report =
-        WebUIReport(*report, /*is_debug_report=*/false,
-                    /*http_response_code=*/0,
-                    attribution_internals::mojom::WebUIReport::Status::
-                        kReplacedByHigherPriorityReport);
+    auto web_ui_report = WebUIReport(
+        *report, /*is_debug_report=*/false,
+        ReportStatus::NewReplacedByHigherPriorityReport(Empty::New()));
 
     for (auto& observer : observers_) {
       observer->OnReportDropped(web_ui_report.Clone());

@@ -663,8 +663,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
       // deleted from storage, etc. This simulates sending the report through a
       // null channel.
       OnReportSent(done, std::move(report),
-                   SendResult(SendResult::Status::kDropped,
-                              /*http_response_code=*/0));
+                   SendResult(SendResult::Status::kDropped));
       continue;
     }
 
@@ -786,8 +785,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAggregationServiceUnavailable);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble,
-                                       /*http_response_code=*/0));
+                            SendResult(SendResult::Status::kFailedToAssemble));
     return;
   }
 
@@ -829,8 +827,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kCreateRequestFailed);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble,
-                                       /*http_response_code=*/0));
+                            SendResult(SendResult::Status::kFailedToAssemble));
     return;
   }
 
@@ -854,8 +851,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
 
   if (!assembled_report.has_value()) {
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble,
-                                       /*http_response_code=*/0));
+                            SendResult(SendResult::Status::kFailedToAssemble));
     return;
   }
 

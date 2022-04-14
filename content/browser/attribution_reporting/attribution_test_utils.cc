@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 
@@ -879,7 +880,8 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
 
 bool operator==(const SendResult& a, const SendResult& b) {
   const auto tie = [](const SendResult& info) {
-    return std::make_tuple(info.status, info.http_response_code);
+    return std::make_tuple(info.status, info.network_error,
+                           info.http_response_code);
   };
   return tie(a) == tie(b);
 }
@@ -1250,6 +1252,7 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
   return out << "{status=" << info.status
+             << ",network_error=" << net::ErrorToShortString(info.network_error)
              << ",http_response_code=" << info.http_response_code << "}";
 }
 

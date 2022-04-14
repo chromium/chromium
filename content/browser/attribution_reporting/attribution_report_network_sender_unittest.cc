@@ -325,8 +325,9 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_RequestAttributesSet) {
 
 TEST_F(AttributionReportNetworkSenderTest, ReportSent_CallbackFired) {
   auto report = DefaultReport();
-  EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kSent,
-                                                net::HttpStatusCode::HTTP_OK)));
+  EXPECT_CALL(callback_,
+              Run(report, SendResult(SendResult::Status::kSent, net::OK,
+                                     net::HttpStatusCode::HTTP_OK)));
 
   network_sender_->SendReport(report, /*is_debug_report=*/false,
                               callback_.Get());
@@ -351,11 +352,9 @@ TEST_F(AttributionReportNetworkSenderTest, ReportRequestHangs_TimesOut) {
   auto report = DefaultReport();
 
   // Verify that the sent callback runs if the request times out.
-  // TODO(apaseltiner): Should we propagate the timeout via the SendResult
-  // instead of just setting |http_response_code = 0|?
   EXPECT_CALL(callback_,
               Run(report, SendResult(SendResult::Status::kTransientFailure,
-                                     /*http_response_code=*/0)));
+                                     net::ERR_TIMED_OUT)));
   network_sender_->SendReport(report, /*is_debug_report=*/false,
                               callback_.Get());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -417,6 +416,7 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   auto report = DefaultReport();
   EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kFailure,
+                                                net::ERR_INTERNET_DISCONNECTED,
                                                 net::HttpStatusCode::HTTP_OK)));
   network_sender_->SendReport(report, /*is_debug_report=*/false,
                               callback_.Get());
@@ -430,6 +430,7 @@ TEST_F(AttributionReportNetworkSenderTest,
   auto report = DefaultReport();
   EXPECT_CALL(callback_,
               Run(report, SendResult(SendResult::Status::kFailure,
+                                     net::ERR_HTTP_RESPONSE_CODE_FAILURE,
                                      net::HttpStatusCode::HTTP_BAD_REQUEST)));
 
   network_sender_->SendReport(report, /*is_debug_report=*/false,
@@ -513,6 +514,7 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(callback_,
                 Run(report, SendResult(SendResult::Status::kFailure,
+                                       net::ERR_HTTP_RESPONSE_CODE_FAILURE,
                                        net::HttpStatusCode::HTTP_BAD_REQUEST)));
   }
 

@@ -59,6 +59,18 @@ union WebUIReportData {
       aggregatable_attribution_data;
 };
 
+struct Empty {};
+
+union ReportStatus {
+  Empty pending;
+  Empty replaced_by_higher_priority_report;
+  Empty prohibited_by_browser_policy;
+  // Contains the HTTP response code.
+  int32 sent;
+  string network_error;
+  Empty failed_to_assemble;
+};
+
 // Struct containing stored data that will be sent in a future attribution
 // report.
 struct WebUIReport {
@@ -69,21 +81,7 @@ struct WebUIReport {
   double trigger_time;
   double report_time;
   string report_body;
-
-  enum Status {
-    kPending,
-    kReplacedByHigherPriorityReport,
-    kProhibitedByBrowserPolicy,
-    kSent,
-    kNetworkError,
-    kFailedToAssemble,
-  };
-
-  Status status;
-
-  // Only valid if `status == kSent`.
-  int32 http_response_code;
-
+  ReportStatus status;
   WebUIReportData data;
 };
 

@@ -34,6 +34,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -403,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetReportTime(now + base::Hours(3))
           .Build(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kSent,
+      SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
   manager_.NotifyReportSent(
       ReportBuilder(
@@ -411,9 +412,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetReportTime(now + base::Hours(4))
           .SetPriority(-1)
           .Build(),
-      /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kDropped,
-                 /*http_response_code=*/0));
+      /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
   manager_.NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -421,8 +420,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(-2)
           .Build(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailure,
-                 /*http_response_code=*/0));
+      SendResult(SendResult::Status::kFailure, net::ERR_METHOD_NOT_SUPPORTED));
   manager_.NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -430,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(-8)
           .Build(),
       /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kTransientFailure,
-                 /*http_response_code=*/0));
+      SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
 
   ON_CALL(manager_, GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback(
@@ -475,7 +472,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[2].children[7].innerText === "no" &&
             table.children[2].children[2].innerText === "Sent: HTTP 200" &&
             table.children[3].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[4].children[2].innerText === "Network error" &&
+            table.children[4].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
@@ -505,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[3].children[7].innerText === "no" &&
             table.children[3].children[2].innerText === "Sent: HTTP 200" &&
             table.children[2].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[1].children[2].innerText === "Network error" &&
+            table.children[1].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[0].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
@@ -537,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[2].children[7].innerText === "no" &&
             table.children[2].children[2].innerText === "Sent: HTTP 200" &&
             table.children[3].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[4].children[2].innerText === "Network error" &&
+            table.children[4].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   report.set_report_time(report.report_time() + base::Hours(1));
   manager_.NotifyReportSent(report,
                             /*is_debug_report=*/false,
-                            SendResult(SendResult::Status::kSent,
+                            SendResult(SendResult::Status::kSent, net::OK,
                                        /*http_response_code=*/200));
 
   EXPECT_CALL(manager_, ClearData)
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kSent,
+      SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
   manager_.NotifyReportSent(
       ReportBuilder(
@@ -777,9 +777,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetReportTime(now + base::Hours(4))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
-      /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kDropped,
-                 /*http_response_code=*/0));
+      /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
   manager_.NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -787,8 +785,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailedToAssemble,
-                 /*http_response_code=*/0));
+      SendResult(SendResult::Status::kFailedToAssemble));
   manager_.NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -796,8 +793,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailure,
-                 /*http_response_code=*/0));
+      SendResult(SendResult::Status::kFailure, net::ERR_INVALID_REDIRECT));
   manager_.NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -806,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/true,
       SendResult(SendResult::Status::kTransientFailure,
-                 /*http_response_code=*/0));
+                 net::ERR_INTERNET_DISCONNECTED));
   ON_CALL(manager_, GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback(
           {ReportBuilder(AttributionInfoBuilder(
@@ -830,7 +826,8 @@ IN_PROC_BROWSER_TEST_F(
             table.children[1].children[2].innerText === "Sent: HTTP 200" &&
             table.children[2].children[2].innerText === "Prohibited by browser policy" &&
             table.children[3].children[2].innerText === "Dropped due to assembly failure" &&
-            table.children[4].children[2].innerText === "Network error" &&
+            table.children[4].children[2].innerText === "Network error: ERR_INVALID_REDIRECT" &&
+            table.children[5].children[2].innerText === "Network error: ERR_INTERNET_DISCONNECTED" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution") {
           document.title = $1;
@@ -1006,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(1)
           .Build(),
       /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kSent,
+      SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
 
   ON_CALL(manager_, GetPendingReportsForInternalUse)
@@ -1050,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(3)
           .Build(),
       /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kSent,
+      SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
 
   // The debug reports, including the newly received one, should be hidden and

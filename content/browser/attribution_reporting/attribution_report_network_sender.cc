@@ -189,7 +189,8 @@ void AttributionReportNetworkSender::OnReportSent(
 
   std::move(sent_callback)
       .Run(std::move(report),
-           SendResult(report_status, headers ? headers->response_code() : 0));
+           SendResult(report_status, net_error,
+                      headers ? headers->response_code() : 0));
 }
 
 }  // namespace content

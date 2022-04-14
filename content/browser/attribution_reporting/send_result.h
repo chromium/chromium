@@ -11,6 +11,9 @@ namespace content {
 
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
+// TODO(apaseltiner): Consider replacing this struct with a single int that
+// contains either HTTP response code, network error, or custom values for
+// `Status::kDropped` and `Status::kFailedToAssemble`.
 struct CONTENT_EXPORT SendResult {
   enum class Status {
     kSent,
@@ -26,17 +29,25 @@ struct CONTENT_EXPORT SendResult {
     kFailedToAssemble,
   };
 
-  SendResult(Status status, int http_response_code)
-      : status(status), http_response_code(http_response_code) {}
-  SendResult(const SendResult& other) = default;
-  SendResult& operator=(const SendResult& other) = default;
-  SendResult(SendResult&& other) = default;
-  SendResult& operator=(SendResult&& other) = default;
+  explicit SendResult(Status status,
+                      int network_error = 0,
+                      int http_response_code = 0)
+      : status(status),
+        network_error(network_error),
+        http_response_code(http_response_code) {}
+
+  SendResult(const SendResult&) = default;
+  SendResult& operator=(const SendResult&) = default;
+
+  SendResult(SendResult&&) = default;
+  SendResult& operator=(SendResult&&) = default;
+
   ~SendResult() = default;
 
   Status status;
 
   // Information on the network request that was sent.
+  int network_error;
   int http_response_code;
 
   // When adding new members, the corresponding `operator==()` definition in
