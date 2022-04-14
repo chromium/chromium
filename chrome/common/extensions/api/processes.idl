@@ -54,8 +54,8 @@ namespace processes {
     long naclDebugPort;
     // Array of TaskInfos representing the tasks running on this process.
     TaskInfo[] tasks;
-    // The most recent measurement of the process’s CPU usage, expressed as the
-    // percentage of a single CPU core used in total, by all of the process’s
+    // The most recent measurement of the process's CPU usage, expressed as the
+    // percentage of a single CPU core used in total, by all of the process's
     // threads. This gives a value from zero to CpuInfo.numOfProcessors*100,
     // which can exceed 100% in multi-threaded processes.
     // Only available when receiving the object as part of a callback from
@@ -77,7 +77,7 @@ namespace processes {
     // bytes. Only available when receiving the object as part of a callback
     // from onUpdated or onUpdatedWithMemory.
     double? jsMemoryUsed;
-    // The most recent measurement of the process’s SQLite memory usage, in
+    // The most recent measurement of the process's SQLite memory usage, in
     // bytes. Only available when receiving the object as part of a callback
     // from onUpdated or onUpdatedWithMemory.
     double? sqliteMemory;

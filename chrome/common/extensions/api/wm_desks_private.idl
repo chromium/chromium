@@ -48,7 +48,7 @@ namespace wmDesksPrivate {
 
     // Launches the desk template with |templateUuid| as a new desk.
     // |templateId| should be the unique id for an existing desk template. If
-    // no such id can be found or a new desk can’t be created, an error will be
+    // no such id can be found or a new desk can't be created, an error will be
     // returned.
     static void launchDeskTemplate(DOMString templateUuid,
                                    DeskTemplateVoidCallback callback);

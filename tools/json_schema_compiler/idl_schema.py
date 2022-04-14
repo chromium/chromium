@@ -604,6 +604,10 @@ def Main():
       print(json.dumps(schema, indent=2))
   else:
     contents = sys.stdin.read()
+    for i, char in enumerate(contents):
+      if not char.isascii():
+        raise Exception('Non-ascii character "%s" (ord %d) found at offset %d.'
+                        % (char, ord(char), i))
     idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
     schema = IDLSchema(idl).process()
     print(json.dumps(schema, indent=2))
