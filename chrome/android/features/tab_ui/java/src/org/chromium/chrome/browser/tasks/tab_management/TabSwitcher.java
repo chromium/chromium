@@ -231,6 +231,11 @@ public interface TabSwitcher {
          */
         @VisibleForTesting
         int getListModeForTesting();
+
+        /**
+         * Request accessibility focus for the currently selected tab.
+         */
+        default void requestFocusOnCurrentTab(){};
     }
 
     /**

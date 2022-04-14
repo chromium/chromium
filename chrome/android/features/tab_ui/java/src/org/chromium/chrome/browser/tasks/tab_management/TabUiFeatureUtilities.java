@@ -137,14 +137,22 @@ public class TabUiFeatureUtilities {
      * @param context The activity context.
      */
     public static boolean isGridTabSwitcherEnabled(Context context) {
-        // Only enable grid tab switcher for tablet if flag is enabled.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+            return isTabletGridTabSwitcherEnabled(context);
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
                 || ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
+    }
+
+    /**
+     * @return Whether the tablet Grid Tab Switcher UI is enabled and available for use.
+     * @param context The activity context.
+     */
+    public static boolean isTabletGridTabSwitcherEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
     }
 
     /**

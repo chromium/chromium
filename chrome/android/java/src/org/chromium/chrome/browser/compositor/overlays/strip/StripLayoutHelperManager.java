@@ -88,6 +88,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private final CompositorButton mModelSelectorButton;
 
     private final StripScrim mStripScrim;
+    private boolean mBrowserScrimShowing;
     private ValueAnimator mScrimFadeAnimation;
 
     private TabStripSceneLayer mTabStripTreeProvider;
@@ -188,6 +189,12 @@ public class StripLayoutHelperManager implements SceneOverlay {
         }
 
         private void updateScrimVisibility(boolean visibility) {
+            // Handled by separate scrim over entire browser in the polished version.
+            if (isGridTabSwitcherPolishEnabled()) {
+                mBrowserScrimShowing = visibility;
+                return;
+            }
+
             if (!isGridTabSwitcherNonPolishEnabled()) return;
 
             if (mScrimFadeAnimation != null) {
@@ -262,6 +269,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
         mStripScrim = new StripScrim(context, mWidth, mHeight);
         mStripScrim.setVisible(false);
+        mBrowserScrimShowing = false;
 
         onContextChanged(context);
     }
@@ -386,7 +394,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (!getStripScrim().isVisible()) getActiveStripLayoutHelper().getVirtualViews(views);
+        if (mBrowserScrimShowing) return;
+
+        if (!mStripScrim.isVisible()) getActiveStripLayoutHelper().getVirtualViews(views);
         if (mModelSelectorButton.isVisible()) views.add(mModelSelectorButton);
     }
 
@@ -674,6 +684,11 @@ public class StripLayoutHelperManager implements SceneOverlay {
             mIncognitoHelper.setEndMargin(endMargin);
             updateStripScrim();
         }
+    }
+
+    private boolean isGridTabSwitcherPolishEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+                && TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 
     private boolean isGridTabSwitcherNonPolishEnabled() {

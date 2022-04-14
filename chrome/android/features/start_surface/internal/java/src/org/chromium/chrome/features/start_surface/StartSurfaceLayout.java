@@ -145,7 +145,10 @@ public class StartSurfaceLayout extends Layout {
             @Override
             public void finishedShowing() {
                 mAndroidViewFinishedShowing = true;
-                doneShowing();
+                if (!TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
+                    doneShowing();
+                }
+
                 // The Tab-to-GTS animation is done, and it's time to renew the thumbnail without
                 // causing janky frames. When animation is off, the thumbnail is already updated
                 // when showing the GTS.
@@ -621,13 +624,15 @@ public class StartSurfaceLayout extends Layout {
             @Override
             public void onAnimationStart(Animator animation) {
                 // Skip fade-in for tab switcher view, since it will translate in instead.
-                mController.showOverview(false);
                 mController.getTabSwitcherContainer().setVisibility(View.VISIBLE);
+                mController.showOverview(false);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabToSwitcherAnimation = null;
+                mController.getTabSwitcherContainer().setY(0);
+                doneShowing();
 
                 reportTabletAnimationPerf(true);
             }

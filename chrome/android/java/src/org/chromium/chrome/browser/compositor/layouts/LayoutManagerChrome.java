@@ -68,6 +68,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
     private final ObserverList<OverviewModeObserver> mOverviewModeObservers;
+    private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
@@ -123,6 +124,18 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(context, this,
                         renderHost, startSurface, jankTracker, startSurfaceScrimAnchor,
                         scrimCoordinator);
+
+                if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(context)) {
+                    mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
+                        @Override
+                        public void onFinishedShowing(int layoutType) {
+                            if (layoutType == LayoutType.TAB_SWITCHER) {
+                                startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
+                            }
+                        }
+                    };
+                    addObserver(mTabSwitcherFocusLayoutStateObserver);
+                }
             }
         }
 
@@ -197,6 +210,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         if (mTabContentManagerSupplier != null) {
             mTabContentManagerSupplier = null;
+        }
+
+        if (mTabSwitcherFocusLayoutStateObserver != null) {
+            removeObserver(mTabSwitcherFocusLayoutStateObserver);
+            mTabSwitcherFocusLayoutStateObserver = null;
         }
 
         if (mOverviewLayout != null) {

@@ -446,6 +446,23 @@ public class TabSwitcherCoordinator
     }
 
     @Override
+    public void requestFocusOnCurrentTab() {
+        if (!mTabModelSelector.isTabStateInitialized()) return;
+
+        int selectedIndex =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index();
+        ViewHolder selectedViewHolder =
+                mTabListCoordinator.getContainerView().findViewHolderForAdapterPosition(
+                        selectedIndex);
+
+        if (selectedViewHolder == null) return;
+
+        View focusView = selectedViewHolder.itemView;
+        focusView.requestFocus();
+        focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    @Override
     public boolean prepareOverview() {
         boolean quick = mMediator.prepareOverview();
         mTabListCoordinator.prepareOverview();
