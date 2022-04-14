@@ -27,13 +27,14 @@ class MockDownloadItemImpl : public DownloadItemImpl {
   explicit MockDownloadItemImpl(DownloadItemImplDelegate* delegate);
   ~MockDownloadItemImpl() override;
 
-  MOCK_METHOD8(OnDownloadTargetDetermined,
+  MOCK_METHOD9(OnDownloadTargetDetermined,
                void(const base::FilePath&,
                     TargetDisposition,
                     DownloadDangerType,
                     MixedContentStatus,
                     const base::FilePath&,
                     const base::FilePath&,
+                    const std::string&,
                     absl::optional<DownloadSchedule>,
                     DownloadInterruptReason));
   MOCK_METHOD1(AddObserver, void(DownloadItem::Observer*));

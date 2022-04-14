@@ -53,6 +53,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
       DownloadItem::MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
+      const std::string& mime_type,
       absl::optional<DownloadSchedule> download_schedule,
       DownloadInterruptReason interrupt_reason)>;
   // Request determination of the download target from the delegate.

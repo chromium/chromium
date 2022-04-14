@@ -94,6 +94,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
 #include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_controller.h"
@@ -203,6 +204,11 @@ void CheckDownloadUrlDone(
 
 // Called asynchronously to determine the MIME type for |path|.
 std::string GetMimeType(const base::FilePath& path) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    return base::GetContentUriMimeType(path);
+  }
+#endif
   std::string mime_type;
   net::GetMimeTypeFromFile(path, &mime_type);
   return mime_type;
@@ -300,7 +306,8 @@ void OnCheckExistingDownloadPathDone(
       target_info->target_path, target_info->target_disposition,
       target_info->danger_type, target_info->mixed_content_status,
       target_info->intermediate_path, target_info->display_name,
-      std::move(target_info->download_schedule), target_info->result);
+      target_info->mime_type, std::move(target_info->download_schedule),
+      target_info->result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -318,7 +325,7 @@ void HandleMixedDownloadInfoBarResult(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         DownloadItem::MixedContentStatus::SILENT_BLOCK,
         target_info->intermediate_path, target_info->display_name,
-        std::move(target_info->download_schedule),
+        target_info->mime_type, std::move(target_info->download_schedule),
         download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
   }

@@ -38,7 +38,8 @@ void DownloadItemImplDelegate::DetermineDownloadTarget(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       DownloadItem::MixedContentStatus::UNKNOWN, target_path, base::FilePath(),
-      absl::nullopt /*download_schedule*/, DOWNLOAD_INTERRUPT_REASON_NONE);
+      std::string(), absl::nullopt /*download_schedule*/,
+      DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
 bool DownloadItemImplDelegate::ShouldCompleteDownload(

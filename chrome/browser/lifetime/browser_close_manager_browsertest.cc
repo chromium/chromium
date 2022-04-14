@@ -231,11 +231,12 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       download::DownloadItem::MixedContentStatus mcs,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
+      const std::string& mime_type,
       absl::optional<download::DownloadSchedule> download_schedule,
       download::DownloadInterruptReason reason) {
     std::move(callback).Run(
         target_path, disp, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,
-        intermediate_path, display_name, download_schedule, reason);
+        intermediate_path, display_name, mime_type, download_schedule, reason);
   }
 };
 

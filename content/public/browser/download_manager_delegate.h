@@ -71,6 +71,7 @@ using DownloadTargetCallback = base::OnceCallback<void(
     download::DownloadItem::MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
+    const std::string& mime_type,
     absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason)>;
 
