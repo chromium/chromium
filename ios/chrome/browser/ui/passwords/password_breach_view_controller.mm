@@ -39,6 +39,8 @@
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
       kPasswordBreachViewAccessibilityIdentifier;
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self);
 }
 
 #pragma mark - PasswordBreachConsumer
