@@ -1529,17 +1529,23 @@ config("default_warnings") {
         "-Wno-ignored-pragma-optimize",
       ]
 
-      if (llvm_force_head_revision && !is_nacl) {
-        cflags += [
-          # TODO(https://crbug.com/1314867): Clean up and enable.
-          "-Wno-deprecated-non-prototype",
-        ]
-      }
-
       if (!is_nacl) {
         # TODO(https://crbug.com/1300731) Clean up and enable.
         cflags += [ "-Wno-unqualified-std-cast-call" ]
+
+        # TODO(https://crbug.com/1314867): Clean up and enable.
+        cflags += [ "-Wno-deprecated-non-prototype" ]
       }
+
+      if (!is_nacl && !(is_chromeos ||
+                        default_toolchain == "//build/toolchain/cros:target")) {
+        # TODO(https://crbug.com/1316298): Re-enable once test failure is figured out
+        cflags += [
+          "-Xclang",
+          "-no-opaque-pointers",
+        ]
+      }
+
 
       if (is_chromeos || default_toolchain == "//build/toolchain/cros:target") {
         # TODO(https://crbug.com/1016945): Re-enable once ChromeOS toolchain is up to date
