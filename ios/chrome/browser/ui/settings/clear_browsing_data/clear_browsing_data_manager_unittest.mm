@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/search_engines/template_url_data_util.h"
