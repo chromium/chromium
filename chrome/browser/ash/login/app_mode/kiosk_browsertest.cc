@@ -10,7 +10,6 @@
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -39,7 +38,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_base_test.h"
-#include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
@@ -119,8 +117,6 @@ namespace {
 
 namespace em = ::enterprise_management;
 
-const test::UIPath kAutolaunchConfirmButton = {"autolaunch", "confirmButton"};
-const test::UIPath kAutolaunchCancelButton = {"autolaunch", "cancelButton"};
 const test::UIPath kErrorMessageContinueButton = {"error-message",
                                                   "continueButton"};
 
@@ -224,15 +220,6 @@ const char kTestAccessToken[] = "fake-access-token";
 const char kTestClientId[] = "fake-client-id";
 const char kTestAppScope[] = "https://www.googleapis.com/auth/userinfo.profile";
 
-// Helper KioskAppManager::EnableKioskModeCallback implementation.
-void ConsumerKioskModeAutoStartLockCheck(bool* out_locked,
-                                         base::OnceClosure runner_quit_task,
-                                         bool in_locked) {
-  LOG(INFO) << "kiosk locked  = " << in_locked;
-  *out_locked = in_locked;
-  std::move(runner_quit_task).Run();
-}
-
 bool IsAppInstalled(const std::string& app_id, const std::string& version) {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(app_profile);
@@ -250,19 +237,6 @@ extensions::Manifest::Type GetAppType(const std::string& app_id) {
           ->GetInstalledExtension(app_id);
   DCHECK(app);
   return app->GetType();
-}
-
-void EnableConsumerKioskMode() {
-  bool locked = false;
-  base::RunLoop loop;
-  KioskAppManager::Get()->EnableConsumerKioskAutoLaunch(base::BindOnce(
-      &ConsumerKioskModeAutoStartLockCheck, &locked, loop.QuitClosure()));
-  loop.Run();
-  EXPECT_TRUE(locked);
-}
-
-void WaitForAutoLaunchWarning(bool visibility) {
-  test::OobeJS().CreateVisibilityWaiter(visibility, {"autolaunch"})->Wait();
 }
 
 class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
@@ -748,77 +722,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
             KioskAppLaunchError::Get());
 }
 
-class KioskConsumerTest : public KioskBaseTest {
- public:
-  KioskConsumerTest() { login_manager_.AppendRegularUsers(1); }
-
-  // KioskBaseTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    KioskBaseTest::SetUpCommandLine(command_line);
-    // Postpone login screen creation.
-    command_line->RemoveSwitch(switches::kForceLoginManagerInTests);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    KioskBaseTest::SetUpInProcessBrowserTestFixture();
-    // Postpone login screen creation.
-    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        switches::kForceLoginManagerInTests);
-  }
-
-  bool ShouldWaitForOobeUI() override { return false; }
-
- private:
-  LoginManagerMixin login_manager_{&mixin_host_};
-};
-
-IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningCancel) {
-  EnableConsumerKioskMode();
-  ReloadAutolaunchKioskApps();
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
-  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
-
-  // Wait for the auto launch warning come up.
-  WaitForAutoLaunchWarning(/*visibility=*/true);
-  test::OobeJS().ClickOnPath(kAutolaunchCancelButton);
-
-  // Wait for the auto launch warning to go away.
-  WaitForAutoLaunchWarning(/*visibility=*/false);
-
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningConfirm) {
-  EnableConsumerKioskMode();
-  ReloadAutolaunchKioskApps();
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
-  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
-
-  // Wait for the auto launch warning come up.
-  WaitForAutoLaunchWarning(/*visibility=*/true);
-
-  test::OobeJS().ClickOnPath(kAutolaunchConfirmButton);
-
-  // Wait for the auto launch warning to go away.
-  WaitForAutoLaunchWarning(/*visibility=*/false);
-
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_TRUE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-
-  WaitForAppLaunchSuccess();
-
-  KioskAppManager::App app;
-  ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
-  EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
 IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableCancel) {
   WizardController::SkipPostLoginScreensForTesting();
   auto* wizard_controller = WizardController::default_controller();
@@ -938,26 +841,6 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, MAYBE_DoNotLaunchWhenUntrusted) {
       "  };"
       "}",
       &ignored));
-}
-
-// Verifies that a consumer device does not auto-launch kiosk mode when cros
-// settings are untrusted.
-IN_PROC_BROWSER_TEST_F(KioskConsumerTest, NoConsumerAutoLaunchWhenUntrusted) {
-  EnableConsumerKioskMode();
-  ReloadAutolaunchKioskApps();
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
-  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
-
-  WaitForAutoLaunchWarning(/*visibility=*/true);
-
-  // Make cros settings untrusted.
-  settings_helper_.SetTrustedStatus(
-      CrosSettingsProvider::PERMANENTLY_UNTRUSTED);
-
-  test::OobeJS().ClickOnPath(kAutolaunchConfirmButton);
-
-  // Check that the attempt to auto-launch a kiosk app fails with an error.
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
 // Verifies available volumes for kiosk apps in kiosk session.
