@@ -3401,6 +3401,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NavigationDataHostStatus"
+    enum="ConversionNavigationDataHostStatus" expires_after="2022-10-13">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records status for navigation data hosts. A single navigation data host may
+    emit two status, one when the navigation started and the data host was
+    registered, and one when the navigation finished or failed.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RedirectInterceptedFrameDetached" enum="Boolean"
     expires_after="M105">
   <obsolete>

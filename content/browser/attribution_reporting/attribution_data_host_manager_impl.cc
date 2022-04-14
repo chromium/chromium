@@ -68,6 +68,21 @@ void RecordTriggerDataHandleStatus(DataHandleStatus status) {
   base::UmaHistogramEnumeration("Conversions.TriggerDataHandleStatus", status);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NavigationDataHostStatus {
+  kRegistered = 0,
+  kNotFound = 1,
+  kNavigationFailed = 2,
+  kProcessed = 3,
+
+  kMaxValue = kProcessed,
+};
+
+void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
+  base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus", event);
+}
+
 const base::FeatureParam<base::TimeDelta> kTriggerDelay{
     &blink::features::kConversionMeasurement, "trigger_delay",
     base::Seconds(5)};
@@ -171,6 +186,8 @@ void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
       NavigationDataHost{.data_host = std::move(data_host),
                          .register_time = base::TimeTicks::Now()});
   data_hosts_in_source_mode_++;
+
+  RecordNavigationDataHostStatus(NavigationDataHostStatus::kRegistered);
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
@@ -185,9 +202,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
-  // TODO(johnidel): Record metrics for how often this occurs.
-  if (it == navigation_data_host_map_.end())
+  if (it == navigation_data_host_map_.end()) {
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
     return;
+  }
 
   receivers_.Add(
       this, std::move(it->second.data_host),
@@ -197,18 +215,20 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
                     .register_time = it->second.register_time});
 
   navigation_data_host_map_.erase(it);
+
+  RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
     const blink::AttributionSrcToken& attribution_src_token) {
-  // TODO(johnidel): Record metrics for how many potential sources are dropped.
-
   auto it = navigation_data_host_map_.find(attribution_src_token);
   DCHECK(it != navigation_data_host_map_.end());
 
   base::TimeTicks register_time = it->second.register_time;
   navigation_data_host_map_.erase(it);
   OnSourceEligibleDataHostFinished(register_time);
+
+  RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(

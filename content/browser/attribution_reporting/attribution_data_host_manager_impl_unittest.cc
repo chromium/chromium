@@ -929,6 +929,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectTimeBucketCount("Conversions.SourceEligibleDataHostLifeTime",
                                    base::Milliseconds(1), 1);
+
+  // kRegistered = 0, kProcessed = 3.
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 0, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 3, 1);
 }
 
 // Ensures correct behavior in
@@ -1167,6 +1171,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectTotalCount("Conversions.TriggerQueueDelay", 0);
   histograms.ExpectTimeBucketCount("Conversions.SourceEligibleDataHostLifeTime",
                                    base::Milliseconds(1), 2);
+
+  // kRegistered = 0, kNavigationFailed = 2.
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 0, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 2, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1463,6 +1471,18 @@ TEST_F(AttributionDataHostManagerImplTest, InsecureNavigationOrigin_Dropped) {
                                                     },
                                             });
   }
+}
+
+TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
+  base::HistogramTester histograms;
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, url::Origin::Create(GURL("https://page.example")),
+      url::Origin::Create(GURL("https://trigger.example")));
+
+  // kNotFound = 1.
+  histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 1, 1);
 }
 
 }  // namespace content

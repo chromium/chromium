@@ -16945,6 +16945,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Invalid data"/>
 </enum>
 
+<enum name="ConversionNavigationDataHostStatus">
+  <int value="0" label="Registered"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Navigation failed"/>
+  <int value="3" label="Processed"/>
+</enum>
+
 <enum name="ConversionPostSendReportDeleteEvent">
   <obsolete>
     The error rate is not high enough to merit monitoring.
