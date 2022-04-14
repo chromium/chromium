@@ -108,6 +108,8 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/chrome/browser/webui",
     "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/public/provider/chrome/browser",
