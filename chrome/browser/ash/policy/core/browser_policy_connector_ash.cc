@@ -370,6 +370,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
 
   device_scheduled_update_checker_.reset();
 
+  device_scheduled_reboot_handler_.reset();
+
   // The policy handler is registered as an observer to BuildState which gets
   // destructed before BrowserPolicyConnectorAsh. So destruct the policy
   // handler here so that it can de-register itself as an observer.
