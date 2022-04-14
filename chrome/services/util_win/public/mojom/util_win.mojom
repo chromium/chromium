@@ -147,8 +147,9 @@ interface UtilWin {
   UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)
     => ();
 
-  // Creates or updates shortcuts.
-  CreateOrUpdateShortcutLink(mojo_base.mojom.FilePath shortcut_path,
+  // Creates or updates shortcuts. Returns true if all operations succeeded,
+  // false if any failed.
+  CreateOrUpdateShortcutLinks(array<mojo_base.mojom.FilePath> shortcut_paths,
                                 ShortcutProperties properties,
                                 ShortcutOperation operation) =>
       (bool succeeded);
