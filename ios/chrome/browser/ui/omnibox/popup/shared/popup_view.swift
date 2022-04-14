@@ -74,13 +74,6 @@ struct PopupView: View {
     static let defaultInset: CGFloat = 16
   }
 
-  /// Custom modifier for the background of the list.
-  struct ListBackgroundModifier: ViewModifier {
-    func body(content: Content) -> some View {
-      content.background(Color.cr_groupedPrimaryBackground.edgesIgnoringSafeArea(.all))
-    }
-  }
-
   /// Custom modifier emulating `.environment(key, value)`.
   struct EnvironmentValueModifier<Value>: ViewModifier {
     let key: WritableKeyPath<SwiftUI.EnvironmentValues, Value>
@@ -179,20 +172,22 @@ struct PopupView: View {
 
   @ViewBuilder
   var listView: some View {
-    let listModifier = AccessibilityIdentifierModifier(
+    let commonListModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
-    .concat(omniboxPaddingModifier)
 
     GeometryReader { geometry in
       if shouldSelfSize {
+        let selfSizingListModifier =
+          commonListModifier
+          .concat(omniboxPaddingModifier)
         ZStack(alignment: .top) {
           listBackground.frame(height: selfSizingListHeight)
           SelfSizingList(
             bottomMargin: Dimensions.selfSizingListBottomMargin,
-            listModifier: listModifier,
+            listModifier: selfSizingListModifier,
             content: {
               listContent
                 .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
@@ -211,7 +206,7 @@ struct PopupView: View {
             .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
         }
         .background(listBackground)
-        .modifier(listModifier)
+        .modifier(commonListModifier)
         .ignoresSafeArea(.keyboard)
         .frame(width: geometry.size.width, height: geometry.size.height)
       }
@@ -257,7 +252,16 @@ struct PopupView: View {
   }
 
   var listBackground: some View {
-    return Color.cr_groupedPrimaryBackground.edgesIgnoringSafeArea(.all)
+    // iOS 14 + SwiftUI has a bug with dark mode colors in high contrast mode.
+    // If no dark mode + high contrast color is provided, they are supposed to
+    // default to the dark mode color. Instead, SwiftUI defaults to the light
+    // mode color. This bug is fixed in iOS 15, but until then, a workaround
+    // color with the dark mode + high contrast color specified is used.
+    if #available(iOS 15, *) {
+      return Color.cr_groupedSecondaryBackground.edgesIgnoringSafeArea(.all)
+    } else {
+      return Color("grouped_primary_background_color_swiftui_ios14").edgesIgnoringSafeArea(.all)
+    }
   }
 
   func onAppear() {

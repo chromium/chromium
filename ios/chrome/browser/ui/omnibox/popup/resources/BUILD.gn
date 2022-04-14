@@ -4,6 +4,12 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+colorset("grouped_primary_background_color_swiftui_ios14") {
+  sources = [
+    "grouped_primary_background_color_swiftui_ios14.colorset/Contents.json",
+  ]
+}
+
 colorset("omnibox_suggestion_answer_icon_color") {
   sources = [ "omnibox_suggestion_answer_icon_color.colorset/Contents.json" ]
 }

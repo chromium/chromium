@@ -135,6 +135,7 @@ source_set("popup_ui") {
   deps = [
     ":popup_accessibility_identifier_constants",
     ":popup_ui_protocols",
+    "resources:grouped_primary_background_color_swiftui_ios14",
     "resources:omnibox_popup_tab_match",
     "resources:omnibox_suggestion_answer_icon_color",
     "resources:omnibox_suggestion_answer_icon_dark_color",
