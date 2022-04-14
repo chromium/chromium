@@ -31,7 +31,8 @@ chrome.test.runTests([
         matches: ['*://asdfasdf.com/*'],
         js: ['/dynamic_1.js'],
         runAt: 'document_end',
-        persistAcrossSessions: false
+        persistAcrossSessions: false,
+        world: chrome.scripting.ExecutionWorld.MAIN
       }
     ];
 
@@ -46,7 +47,8 @@ chrome.test.runTests([
         allFrames: true,
         runAt: 'document_idle',
         matchOriginAsFallback: false,
-        persistAcrossSessions: true
+        persistAcrossSessions: true,
+        world: chrome.scripting.ExecutionWorld.ISOLATED
       },
       {
         id: 'GRS_2',
@@ -55,7 +57,8 @@ chrome.test.runTests([
         allFrames: false,
         runAt: 'document_end',
         matchOriginAsFallback: false,
-        persistAcrossSessions: false
+        persistAcrossSessions: false,
+        world: chrome.scripting.ExecutionWorld.MAIN
       }
     ];
 
@@ -482,7 +485,8 @@ chrome.test.runTests([
       runAt: 'document_end',
       allFrames: false,
       matchOriginAsFallback: false,
-      persistAcrossSessions: false
+      persistAcrossSessions: false,
+      world: chrome.scripting.ExecutionWorld.ISOLATED
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -525,7 +529,8 @@ chrome.test.runTests([
       runAt: 'document_end',
       allFrames: false,
       matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      persistAcrossSessions: true,
+      world: chrome.scripting.ExecutionWorld.ISOLATED
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -575,7 +580,8 @@ chrome.test.runTests([
       runAt: 'document_end',
       allFrames: false,
       matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      persistAcrossSessions: true,
+      world: chrome.scripting.ExecutionWorld.ISOLATED
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -615,7 +621,8 @@ chrome.test.runTests([
       runAt: 'document_end',
       allFrames: false,
       matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      persistAcrossSessions: true,
+      world: chrome.scripting.ExecutionWorld.ISOLATED
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();

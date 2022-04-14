@@ -144,6 +144,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptParameters) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsMainWorld) {
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts_main_world"))
+      << message_;
+}
+
 // Test that if an extension with persistent scripts is quickly unloaded while
 // these scripts are being fetched, requests that wait on that extension's
 // script load will be unblocked. Regression for crbug.com/1250575

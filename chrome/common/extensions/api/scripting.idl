@@ -150,6 +150,9 @@ namespace scripting {
     // Specifies if this content script will persist into future sessions. The
     // default is true.
     boolean? persistAcrossSessions;
+    // The JavaScript "world" to run the script in. Defaults to
+    // <code>ISOLATED</code>.
+    ExecutionWorld? world;
   };
 
   // An object used to filter content scripts for

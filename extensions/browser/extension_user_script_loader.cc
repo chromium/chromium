@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -264,6 +265,7 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       script->set_match_all_frames(*content_script->all_frames);
     script->set_run_location(
         script_parsing::ConvertManifestRunLocation(content_script->run_at));
+    script->set_execution_world(ConvertExecutionWorld(content_script->world));
 
     if (!script_parsing::ParseMatchPatterns(
             content_script->matches, content_script->exclude_matches.get(),
@@ -329,6 +331,7 @@ api::content_scripts::ContentScript CreateContentScriptObject(
 
   content_script.run_at =
       script_parsing::ConvertRunLocationToManifestType(script.run_location());
+  content_script.world = ConvertExecutionWorldForAPI(script.execution_world());
   return content_script;
 }
 

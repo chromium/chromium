@@ -74,6 +74,33 @@ mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
   return css_origin;
 }
 
+mojom::ExecutionWorld ConvertExecutionWorld(
+    api::scripting::ExecutionWorld world) {
+  mojom::ExecutionWorld execution_world = mojom::ExecutionWorld::kIsolated;
+  switch (world) {
+    case api::scripting::EXECUTION_WORLD_NONE:
+    case api::scripting::EXECUTION_WORLD_ISOLATED:
+      break;  // Default to mojom::ExecutionWorld::kIsolated.
+    case api::scripting::EXECUTION_WORLD_MAIN:
+      execution_world = mojom::ExecutionWorld::kMain;
+  }
+
+  return execution_world;
+}
+
+api::scripting::ExecutionWorld ConvertExecutionWorldForAPI(
+    mojom::ExecutionWorld world) {
+  switch (world) {
+    case mojom::ExecutionWorld::kIsolated:
+      return api::scripting::EXECUTION_WORLD_ISOLATED;
+    case mojom::ExecutionWorld::kMain:
+      return api::scripting::EXECUTION_WORLD_MAIN;
+  }
+
+  NOTREACHED();
+  return api::scripting::EXECUTION_WORLD_ISOLATED;
+}
+
 std::string InjectionKeyForCode(const mojom::HostID& host_id,
                                 const std::string& code) {
   return ScriptExecutor::GenerateInjectionKey(host_id, /*script_url=*/GURL(),
@@ -463,6 +490,7 @@ std::unique_ptr<UserScript> ParseUserScript(
 
   result->set_incognito_enabled(
       util::IsIncognitoEnabled(extension.id(), browser_context));
+  result->set_execution_world(ConvertExecutionWorld(content_script.world));
   return result;
 }
 
@@ -522,6 +550,7 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
       std::make_unique<bool>(script.match_origin_as_fallback() ==
                              MatchOriginAsFallbackBehavior::kAlways);
   script_info.run_at = ConvertRunLocationForAPI(script.run_location());
+  script_info.world = ConvertExecutionWorldForAPI(script.execution_world());
 
   return script_info;
 }
@@ -638,14 +667,8 @@ bool ScriptingExecuteScriptFunction::Execute(
     return false;
   }
 
-  mojom::ExecutionWorld execution_world = mojom::ExecutionWorld::kIsolated;
-  switch (injection_.world) {
-    case api::scripting::EXECUTION_WORLD_NONE:
-    case api::scripting::EXECUTION_WORLD_ISOLATED:
-      break;  // mojom::ExecutionWorld::kIsolated is correct.
-    case api::scripting::EXECUTION_WORLD_MAIN:
-      execution_world = mojom::ExecutionWorld::kMain;
-  }
+  mojom::ExecutionWorld execution_world =
+      ConvertExecutionWorld(injection_.world);
 
   // Extensions can specify that the script should be injected "immediately".
   // In this case, we specify kDocumentStart as the injection time. Due to

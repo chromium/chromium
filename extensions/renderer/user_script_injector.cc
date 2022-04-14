@@ -144,7 +144,7 @@ bool UserScriptInjector::IsUserGesture() const {
 }
 
 mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
-  return mojom::ExecutionWorld::kIsolated;
+  return script_->execution_world();
 }
 
 bool UserScriptInjector::ExpectsResults() const {

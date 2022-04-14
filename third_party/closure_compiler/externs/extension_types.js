@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.extensionTypes.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See
+// https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: extensionTypes */
 
@@ -66,3 +67,48 @@ chrome.extensionTypes.CSSOrigin = {
  * @see https://developer.chrome.com/extensions/extensionTypes#type-InjectDetails
  */
 chrome.extensionTypes.InjectDetails;
+
+/**
+ * Details of the CSS to remove. Either the code or the file property must be
+ * set, but both may not be set at the same time.
+ * @typedef {{
+ *   code: (string|undefined),
+ *   file: (string|undefined),
+ *   allFrames: (boolean|undefined),
+ *   frameId: (number|undefined),
+ *   matchAboutBlank: (boolean|undefined),
+ *   cssOrigin: (!chrome.extensionTypes.CSSOrigin|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-DeleteInjectionDetails
+ */
+chrome.extensionTypes.DeleteInjectionDetails;
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-FrameType
+ */
+chrome.extensionTypes.FrameType = {
+  OUTERMOST_FRAME: 'outermost_frame',
+  FENCED_FRAME: 'fenced_frame',
+  SUB_FRAME: 'sub_frame',
+};
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-DocumentLifecycle
+ */
+chrome.extensionTypes.DocumentLifecycle = {
+  PRERENDER: 'prerender',
+  ACTIVE: 'active',
+  CACHED: 'cached',
+  PENDING_DELETION: 'pending_deletion',
+};
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-ExecutionWorld
+ */
+chrome.extensionTypes.ExecutionWorld = {
+  ISOLATED: 'ISOLATED',
+  MAIN: 'MAIN',
+};

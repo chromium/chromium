@@ -114,6 +114,13 @@
         "nodoc": true,
         "enum": ["prerender", "active", "cached", "pending_deletion"],
         "description": "The document lifecycle of the frame."
+      },
+      {
+        "id": "ExecutionWorld",
+        "type": "string",
+        "nodoc": true,
+        "enum": ["ISOLATED", "MAIN"],
+        "description": "The JavaScript world for a script to execute within. Can either be an isolated world, unique to this extension, or the main world of the DOM which is shared with the page's JavaScript."
       }
     ]
   }
