@@ -227,17 +227,15 @@ base::Time GetFileCreationTime(const base::FilePath& filename) {
   return base::Time();
 }
 
-void ReadResourceFilePathAndLastModifiedTime(
+std::pair<base::FilePath, base::Time> ReadResourceFilePathAndLastModifiedTime(
     const extensions::ExtensionResource& resource,
-    const base::FilePath& directory,
-    base::FilePath* file_path,
-    base::Time* last_modified_time) {
+    const base::FilePath& directory) {
   // NOTE: ExtensionResource::GetFilePath() must be called on a sequence which
   // tolerates blocking operations.
-  *file_path = resource.GetFilePath();
-  *last_modified_time = GetFileLastModifiedTime(*file_path);
+  base::FilePath file_path = resource.GetFilePath();
+  base::Time last_modified_time = GetFileLastModifiedTime(file_path);
   base::Time dir_creation_time = GetFileCreationTime(directory);
-  int64_t delta_seconds = (*last_modified_time - dir_creation_time).InSeconds();
+  int64_t delta_seconds = (last_modified_time - dir_creation_time).InSeconds();
   if (delta_seconds >= 0) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedDelta",
                                 delta_seconds, 1, base::Days(30).InSeconds(),
@@ -247,6 +245,7 @@ void ReadResourceFilePathAndLastModifiedTime(
                                 -delta_seconds, 1, base::Days(30).InSeconds(),
                                 50);
   }
+  return std::make_pair(file_path, last_modified_time);
 }
 
 bool ExtensionCanLoadInIncognito(bool is_main_frame,
@@ -675,17 +674,18 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   }
 
   static void OnFilePathAndLastModifiedTimeRead(
-      const base::FilePath* read_file_path,
-      const base::Time* last_modified_time,
       network::ResourceRequest request,
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ContentVerifier> content_verifier,
       const extensions::ExtensionResource& resource,
-      scoped_refptr<net::HttpResponseHeaders> headers) {
-    request.url = net::FilePathToFileURL(*read_file_path);
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      std::pair<base::FilePath, base::Time> file_path_and_time) {
+    const auto& read_file_path = file_path_and_time.first;
+    const auto& last_modified_time = file_path_and_time.second;
+    request.url = net::FilePathToFileURL(read_file_path);
 
-    AddCacheHeaders(*headers, *last_modified_time);
+    AddCacheHeaders(*headers, last_modified_time);
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&StartVerifyJob, std::move(request), std::move(loader),
@@ -856,21 +856,16 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     if (follow_symlinks_anywhere)
       resource.set_follow_symlinks_anywhere();
 
-    base::FilePath* read_file_path = new base::FilePath;
-    base::Time* last_modified_time = new base::Time();
-
     scoped_refptr<ContentVerifier> content_verifier =
         extension_info_map_->content_verifier();
-    base::ThreadPool::PostTaskAndReply(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ReadResourceFilePathAndLastModifiedTime, resource,
-                       directory_path, base::Unretained(read_file_path),
-                       base::Unretained(last_modified_time)),
-        base::BindOnce(
-            &OnFilePathAndLastModifiedTimeRead, base::Owned(read_file_path),
-            base::Owned(last_modified_time), request_, loader_.Unbind(),
-            client_.Unbind(), std::move(content_verifier), resource,
-            std::move(headers)));
+                       directory_path),
+        base::BindOnce(&OnFilePathAndLastModifiedTimeRead, request_,
+                       loader_.Unbind(), client_.Unbind(),
+                       std::move(content_verifier), resource,
+                       std::move(headers)));
     DeleteThis();
   }
 
