@@ -28,9 +28,6 @@ using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
-// Use separate timeout for EG2 tests to accomodate for IPC delays.
-const NSTimeInterval kWaitForARPresentationTimeout = 30.0;
-
 // USDZ landing page and download request handler.
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
@@ -132,37 +129,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [[EarlGrey
       selectElementWithMatcher:grey_kindOfClassName(@"QLPreviewControllerView")]
       assertWithMatcher:grey_nil()];
-}
-
-- (void)testVisibilitychangeEventFired {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:"Good"];
-  [ChromeEarlGrey tapWebStateElementWithID:@"good"];
-
-  [ChromeEarlGrey waitForWebStateContainingText:"hidden"];
-
-  // Verify QLPreviewControllerView is presented.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"QLPreviewControllerView")]
-      assertWithMatcher:grey_notNil()];
-
-  // Close the QuickLook dialog.
-  XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElement* doneButton = app.buttons[@"Done"];
-
-#if !TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 15, *)) {
-    doneButton = app.buttons[@"Close"];
-  }
-#endif
-
-  GREYAssert(
-      [doneButton waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
-      @"Done button not visible");
-  [doneButton tap];
-
-  // Check that the visibilitychange event is triggered.
-  [ChromeEarlGrey waitForWebStateContainingText:"visible"];
 }
 
 @end
