@@ -263,6 +263,65 @@ TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_DE) {
             phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "en-US"));
 }
 
+TEST(PhoneNumberTest, TrunkPrefix) {
+  AutofillProfile profile;
+
+  // Constructs a `PhoneNumber` object from `number` and verifies that the
+  // city-code and city-and-number types with and without trunk prefix are
+  // computed correctly.
+  auto TestNumber = [&](const std::u16string& number,
+                        const std::u16string& city_code_with_trunk,
+                        const std::u16string& city_code_without_trunk,
+                        const std::u16string& city_number_with_trunk,
+                        const std::u16string& city_number_without_trunk) {
+    // Irrelevant, as the `profile` has country information.
+    const std::string locale = "en-US";
+    PhoneNumber phone_number(&profile);
+    phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
+    EXPECT_EQ(
+        city_code_with_trunk,
+        phone_number.GetInfo(PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX, locale));
+    EXPECT_EQ(city_code_without_trunk,
+              phone_number.GetInfo(PHONE_HOME_CITY_CODE, locale));
+    EXPECT_EQ(city_number_with_trunk,
+              phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, locale));
+    EXPECT_EQ(city_number_without_trunk,
+              phone_number.GetInfo(
+                  PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX, locale));
+  };
+
+  // US: No trunk prefixes used.
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+    TestNumber(u"+1 (650) 234-5678", u"650", u"650", u"6502345678",
+               u"6502345678");
+    TestNumber(u"800-555-0199", u"800", u"800", u"8005550199", u"8005550199");
+  }
+
+  // DE: Trunk prefix used in international format.
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+    TestNumber(u"+49 (174) 12 34 567", u"0174", u"174", u"01741234567",
+               u"1741234567");
+    TestNumber(u"0 1578 7912345", u"01578", u"1578", u"015787912345",
+               u"15787912345");
+  }
+
+  // IT: A leading zero, which is not a trunk prefix, is used in national and
+  // international format for landline number. Mobile numbers are never prefixed
+  // with a 0.
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"IT");
+    // Landline.
+    TestNumber(u"+39 06 85870848", u"06", u"06", u"0685870848", u"0685870848");
+    TestNumber(u"06 85870848", u"06", u"06", u"0685870848", u"0685870848");
+    // Mobile.
+    TestNumber(u"+39 338 1234567", u"338", u"338", u"3381234567",
+               u"3381234567");
+    TestNumber(u"338 1234567", u"338", u"338", u"3381234567", u"3381234567");
+  }
+}
+
 // Tests whether the |PHONE_HOME_COUNTRY_CODE| is added to the set of matching
 // types.
 TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {

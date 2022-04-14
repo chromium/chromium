@@ -89,8 +89,10 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                    VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kPhoneHome, AutofillType(type).group());
   if (type != PHONE_HOME_CITY_AND_NUMBER && type != PHONE_HOME_WHOLE_NUMBER) {
-    // Only full phone numbers should be set directly.  The remaining field
-    // field types are read-only.
+    // Only full phone numbers should be set directly. The remaining field types
+    // are read-only. As PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+    // generally doesn't represent a dialable number, it is not accessible
+    // either.
     return;
   }
 
@@ -174,12 +176,23 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
     return std::u16string();
   }
 
+  auto GetTrunkPrefix = [&] {
+    const std::u16string national_number =
+        GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
+    // Everything before the city code in the nationally formatted number.
+    return national_number.substr(
+        0, national_number.find(cached_parsed_phone_.city_code()));
+  };
+
   switch (storable_type) {
     case PHONE_HOME_WHOLE_NUMBER:
       return cached_parsed_phone_.GetWholeNumber();
 
     case PHONE_HOME_NUMBER:
       return cached_parsed_phone_.number();
+
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+      return GetTrunkPrefix() + cached_parsed_phone_.city_code();
 
     case PHONE_HOME_CITY_CODE:
       return cached_parsed_phone_.city_code();
@@ -201,6 +214,15 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
                          [](auto c) { return !std::isdigit(c); }),
           national_number.end());
       return national_number;
+    }
+
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: {
+      // Strip the trunk prefix from the nationally formatted number.
+      const std::u16string national_number =
+          GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
+      const std::size_t trunk_prefix_len = GetTrunkPrefix().length();
+      DCHECK(trunk_prefix_len <= national_number.length());
+      return national_number.substr(trunk_prefix_len);
     }
 
     case PHONE_HOME_EXTENSION:
