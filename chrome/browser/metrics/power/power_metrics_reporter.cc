@@ -440,13 +440,13 @@ void PowerMetricsReporter::ReportBatteryHistograms(
 
   for (const char* suffix : suffixes) {
     base::UmaHistogramEnumeration(
-        base::JoinString({kBatteryDischargeModeHistogramName, suffix}, ""),
+        base::StrCat({kBatteryDischargeModeHistogramName, suffix}),
         battery_discharge.mode);
 
     if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
       DCHECK(battery_discharge.rate.has_value());
       base::UmaHistogramCounts1000(
-          base::JoinString({kBatteryDischargeRateHistogramName, suffix}, ""),
+          base::StrCat({kBatteryDischargeRateHistogramName, suffix}),
           *battery_discharge.rate);
     }
   }
