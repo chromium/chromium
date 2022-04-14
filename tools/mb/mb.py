@@ -1747,15 +1747,10 @@ class MetaBuildWrapper(object):
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
 
-    if isolate_map[target].get('python3', True):
-      extra_files = ['../../.vpython3']
-      vpython_exe = 'vpython3'
-    else:
-      extra_files = ['../../.vpython']
-      vpython_exe = 'vpython'
-
-    extra_files += [
-      '../../testing/test_env.py',
+    vpython_exe = 'vpython3'
+    extra_files = [
+        '../../.vpython3',
+        '../../testing/test_env.py',
     ]
 
     if is_android and test_type != 'script':

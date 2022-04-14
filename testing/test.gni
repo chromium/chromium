@@ -951,8 +951,6 @@ template("test") {
         executable_args += [ "--cfi-diag=true" ]
       }
 
-      data += [ "//.vpython" ]
-
       if (use_rts) {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
