@@ -373,6 +373,17 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/t
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/webgl_canvas/tex-2d-rgb32f-rgb-float.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functional/gles3/readpixel.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
+crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 
 # Metal M1
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
