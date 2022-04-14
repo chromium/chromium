@@ -230,7 +230,7 @@
           75%
         </message>
       </if>
-      <!-- For Chrome OS -->
+      <!-- For ChromeOS -->
       <if expr="chromeos_ash or chromeos_lacros">
         <!-- The font name like: 'Font Name, 12px' -->
         <message name="IDS_UI_FONT_FAMILY_CROS" use_name_for_id="true">

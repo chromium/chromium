@@ -110,8 +110,8 @@ MessageCenterController::MessageCenterController() {
   // the states of all the others.
   DCHECK(!Shell::Get()->hps_notify_controller());
 
-  // Set the system notification source display name ("Chrome OS" or "Chromium
-  // OS").
+  // Set the system notification source display name ("ChromeOS" or
+  // "ChromiumOS").
   message_center::MessageCenter::Get()->SetSystemNotificationAppName(
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME));
 }
