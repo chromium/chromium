@@ -257,7 +257,7 @@
 <translation id="1259152067760398571">La vérification de sécurité s'est exécutée hier</translation>
 <translation id="1260451001046713751">Toujours autoriser les fenêtres contextuelles et les redirections de <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Modérée</translation>
-<translation id="126156426083987769">Un problème avec les licences d'appareils en mode démo est survenu.</translation>
+<translation id="126156426083987769">Un problème avec les licences d'appareils en mode Démo est survenu.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1263490604593716556">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" />. Pour vous déconnecter du compte principal sur cet appareil, cliquez sur l'horloge à l'écran. Dans le menu qui s'affiche, cliquez sur « Déconnexion ».</translation>
 <translation id="1263733306853729545">Utiliser les touches <ph name="MINUS" /> et <ph name="EQUAL" /> pour paginer une liste de choix</translation>
@@ -515,7 +515,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1536754031901697553">Déconnexion en cours…</translation>
 <translation id="1537254971476575106">Loupe en mode plein écran</translation>
 <translation id="15373452373711364">Grand curseur</translation>
-<translation id="1540605929960647700">Activer le mode Démonstration</translation>
+<translation id="1540605929960647700">Activer le mode Démo</translation>
 <translation id="1541346352678737112">Aucun réseau trouvé</translation>
 <translation id="1542514202066550870">Cet onglet présente du contenu RV dans un casque.</translation>
 <translation id="1543284117603151572">Importé à partir d'Edge</translation>
@@ -836,7 +836,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1841705068325380214">L'extension <ph name="EXTENSION_NAME" /> est désactivée</translation>
 <translation id="184183613002882946">Non, conserver un seul commutateur</translation>
 <translation id="184273675144259287">Remplacer vos applications et vos fichiers Linux par une sauvegarde précédente</translation>
-<translation id="1842766183094193446">Voulez-vous vraiment activer le mode Démonstration?</translation>
+<translation id="1842766183094193446">Voulez-vous vraiment activer le mode Démo?</translation>
 <translation id="1845727111305721124">Autorisés à faire jouer des sons</translation>
 <translation id="1846308012215045257">Cliquez en appuyant sur Ctrl pour exécuter le plugiciel <ph name="PLUGIN_NAME" />.</translation>
 <translation id="184862733444771842">Demande de fonctionnalité</translation>
@@ -2316,7 +2316,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} mot de passe est stocké sur cet appareil}one{{COUNT} mot de passe est stocké sur cet appareil}other{{COUNT} mots de passe sont stockés sur cet appareil}}</translation>
 <translation id="3402255108239926910">Choisissez un avatar</translation>
-<translation id="3402585168444815892">Inscription au mode de démonstration en cours…</translation>
+<translation id="3402585168444815892">Inscription au mode Démo en cours…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Aucun mot de passe enregistré pour ce site</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
@@ -2919,7 +2919,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3983764759749072418">Les applications provenant de la boutique Play Store ont accès à cet appareil.</translation>
 <translation id="3983769721878416534">Délai précédant le clic</translation>
 <translation id="3984135167056005094">Ne pas inclure l'adresse de courriel</translation>
-<translation id="3984159763196946143">Impossible de démarrer le mode Démonstration</translation>
+<translation id="3984159763196946143">Impossible de démarrer le mode Démo</translation>
 <translation id="3984431586879874039">Autoriser ce site à voir votre clé de sécurité?</translation>
 <translation id="398477389655464998">Copier le lien vers l'élément en surbrillance</translation>
 <translation id="3984862166739904574">Définitions des réponses rapides</translation>
@@ -3503,7 +3503,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4647697156028544508">Veuillez entrer le NIP pour l'appareil « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4650591383426000695">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode démo.</translation>
+<translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode Démo.</translation>
 <translation id="4652935475563630866">Pour que la modification apportée à la caméra soit appliquée, Parallels Desktop doit être relancé. Relancez Parallels Desktop pour continuer.</translation>
 <translation id="4653405415038586100">Une erreur s'est produite lors de la configuration de Linux</translation>
 <translation id="4654236001025007561">Partagez des fichiers avec des Chromebook et des appareils Android à proximité</translation>
@@ -4107,7 +4107,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="532247166573571973">Le serveur est peut-être inaccessible. Réessayez plus tard.</translation>
 <translation id="5324300749339591280">Liste des applications</translation>
 <translation id="5324780743567488672">Régler automatiquement le fuseau horaire en fonction de votre emplacement</translation>
-<translation id="5327570636534774768">Cet appareil a été inscrit à des fins de gestion par un autre domaine. Supprimez son provisionnement par ce domaine avant de configurer le mode démo.</translation>
+<translation id="5327570636534774768">Cet appareil a été inscrit à des fins de gestion par un autre domaine. Supprimez son provisionnement par ce domaine avant de configurer le mode Démo.</translation>
 <translation id="5327912693242073631">Les fonctionnalités qui ont besoin des notifications ne fonctionneront pas</translation>
 <translation id="532943162177641444">Touchez la notification sur votre <ph name="PHONE_NAME" /> afin de configurer le point d'accès mobile que cet appareil peut utiliser.</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
@@ -4896,7 +4896,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6186394437969115158">Les sites affichent généralement des annonces afin de proposer des contenus ou des services gratuits. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="6195005504600220730">Lire de l'information à propos de votre navigateur, votre appareil et son SE</translation>
-<translation id="6195693561221576702">Cet appareil ne peut pas être configuré en mode démo hors ligne.</translation>
+<translation id="6195693561221576702">Cet appareil ne peut pas être configuré en mode Démo hors ligne.</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6196854373336333322">L'extension « <ph name="EXTENSION_NAME" /> » a pris le contrôle de vos paramètres de mandataire, ce qui signifie qu'elle peut modifier ou espionner tout ce que vous faites en ligne. Si vous ne savez pas pourquoi ce changement s'est produit, vous ne voulez probablement pas l'accepter.</translation>
 <translation id="6197128521826316819">Créer un code QR pour cette page</translation>
@@ -5625,7 +5625,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6972887130317925583">Le mot de passe compromis a été changé. Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Autorisés à afficher des fenêtres contextuelles et à utiliser des redirections</translation>
 <translation id="6973611239564315524">Une mise à jour de Debian 10 (Buster) est offerte</translation>
-<translation id="6974609594866392343">Mode de démonstration hors connexion</translation>
+<translation id="6974609594866392343">Mode Démo hors connexion</translation>
 <translation id="697508444536771064">Éteindre Linux</translation>
 <translation id="6978121630131642226">Moteurs de recherche</translation>
 <translation id="6979044105893951891">Lancer et quitter les sessions d'invité gérées</translation>
@@ -5928,7 +5928,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7299515639584427954">Modifier l'application par défaut pour les liens compatibles?</translation>
 <translation id="7301470816294041580">Vous pourriez demander « Ok Google, quelle est cette chanson? » ou « Ok Google, qu'y a-t-il sur mon écran? »</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Cette application peut empêcher Chrome de fonctionner correctement.}one{Cette application peut empêcher Chrome de fonctionner correctement.}other{Ces applications peuvent empêcher Chrome de fonctionner correctement.}}</translation>
-<translation id="7303281435234579599">Oups! Une erreur s'est produite lors de la configuration du mode démo.</translation>
+<translation id="7303281435234579599">Oups! Une erreur s'est produite lors de la configuration du mode Démo.</translation>
 <translation id="7303900363563182677">Ce site a été bloqué : il ne peut pas voir le texte ni les images copiés dans le presse-papiers</translation>
 <translation id="7304030187361489308">Élevée</translation>
 <translation id="7305123176580523628">Imprimante USB connectée</translation>
@@ -6194,7 +6194,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7573594921350120855">Les sites utilisent généralement votre caméra vidéo pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="7574650250151586813">Pour entrer du texte, mettez à jour l'application du clavier Daydream</translation>
 <translation id="7576690715254076113">Assembler</translation>
-<translation id="7576976045740938453">Un problème avec le compte du mode démo s'est produit.</translation>
+<translation id="7576976045740938453">Un problème avec le compte du mode Démo s'est produit.</translation>
 <translation id="7578137152457315135">Paramètres des empreintes digitales</translation>
 <translation id="7578692661782707876">Veuillez entrer votre code de confirmation.</translation>
 <translation id="7580671184200851182">Diffuser le même son sur tous les haut-parleurs (son mono)</translation>
@@ -7452,7 +7452,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8864458770072227512">L'adresse <ph name="EMAIL" /> a été supprimée de cet appareil</translation>
 <translation id="8865112428068029930">Vous utilisez un ordinateur partagé? Essayez d'ouvrir une fenêtre de navigation privée.</translation>
 <translation id="8867228703146808825">Copier les renseignements de la version dans le presse-papier</translation>
-<translation id="8868333925931032127">Démarrage du mode de démonstration en cours…</translation>
+<translation id="8868333925931032127">Démarrage du mode Démo en cours…</translation>
 <translation id="8868626022555786497">Utilisé</translation>
 <translation id="8868821499058099047">Actualisez la page ou réessayez plus tard</translation>
 <translation id="8868838761037459823">Renseignements sur la connexion cellulaire</translation>
