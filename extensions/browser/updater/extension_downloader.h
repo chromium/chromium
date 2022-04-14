@@ -118,6 +118,12 @@ struct ExtensionDownloaderTask {
 
   // May be used to pass some additional data to the update server.
   std::string update_url_data;
+
+  // Link to the delegate, set by ExtensionDownloader.
+  ExtensionDownloaderDelegate* delegate{nullptr};
+
+  // Notifies delegate about stage change.
+  void OnStageChanged(ExtensionDownloaderDelegate::Stage stage);
 };
 
 // A class that checks for updates of a given list of extensions, and downloads

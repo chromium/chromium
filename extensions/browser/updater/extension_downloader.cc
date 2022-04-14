@@ -295,9 +295,15 @@ ExtensionDownloaderTask& ExtensionDownloaderTask::operator=(
     ExtensionDownloaderTask&&) = default;
 ExtensionDownloaderTask::~ExtensionDownloaderTask() = default;
 
+void ExtensionDownloaderTask::OnStageChanged(
+    ExtensionDownloaderDelegate::Stage stage) {
+  if (delegate)
+    delegate->OnExtensionDownloadStageChanged(id, stage);
+}
+
 bool ExtensionDownloader::AddPendingExtension(ExtensionDownloaderTask task) {
-  delegate_->OnExtensionDownloadStageChanged(
-      task.id, ExtensionDownloaderDelegate::Stage::PENDING);
+  task.delegate = delegate_;
+  task.OnStageChanged(ExtensionDownloaderDelegate::Stage::PENDING);
   return AddExtensionData(std::move(task));
 }
 
@@ -430,8 +436,7 @@ bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
   if (!task.update_url.is_empty() && !task.update_url.is_valid()) {
     DLOG(WARNING) << "Extension " << task.id << " has invalid update url "
                   << task.update_url;
-    delegate_->OnExtensionDownloadStageChanged(
-        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+    task.OnStageChanged(ExtensionDownloaderDelegate::Stage::FINISHED);
     return false;
   }
 
@@ -443,8 +448,7 @@ bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
   // Skip extensions with empty IDs.
   if (task.id.empty()) {
     DLOG(WARNING) << "Found extension with empty ID";
-    delegate_->OnExtensionDownloadStageChanged(
-        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+    task.OnStageChanged(ExtensionDownloaderDelegate::Stage::FINISHED);
     return false;
   }
 
