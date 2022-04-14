@@ -31,6 +31,7 @@ extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId;
 extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;
 extern const base::Feature kAutofillEnableVirtualCard;
+extern const base::Feature kAutofillEnableVirtualCardFidoEnrollment;
 extern const base::Feature
     kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardMetadata;

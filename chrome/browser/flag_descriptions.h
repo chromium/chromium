@@ -209,6 +209,9 @@ extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 
+extern const char kAutofillEnableVirtualCardFidoEnrollmentName[];
+extern const char kAutofillEnableVirtualCardFidoEnrollmentDescription[];
+
 extern const char kAutofillEnableVirtualCardName[];
 extern const char kAutofillEnableVirtualCardDescription[];
 

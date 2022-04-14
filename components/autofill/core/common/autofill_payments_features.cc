@@ -113,6 +113,14 @@ const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
 const base::Feature kAutofillEnableVirtualCard{
     "AutofillEnableVirtualCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, after a successful authentication to autofill a virtual card,
+// the user will be prompted to opt-in to FIDO if the user is not currently
+// opted-in, and if the user is opted-in already and the virtual card is FIDO
+// eligible the user will be prompted to register the virtual card into FIDO.
+const base::Feature kAutofillEnableVirtualCardFidoEnrollment(
+    "AutofillEnableVirtualCardFidoEnrollment",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, in the payments settings page on desktop, virtual card
 // enrollment management will be provided so that the user can enroll/unenroll a
 // card in virtual card.

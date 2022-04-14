@@ -53923,6 +53923,8 @@ from previous Chrome versions.
   <int value="-936652950"
       label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
+  <int value="-934842188"
+      label="AutofillEnableVirtualCardFidoEnrollment:disabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>
@@ -55594,6 +55596,8 @@ from previous Chrome versions.
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
+  <int value="235191586"
+      label="AutofillEnableVirtualCardFidoEnrollment:enabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>
   <int value="237964589"

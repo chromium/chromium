@@ -363,6 +363,15 @@ const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =
     "autofill flows (for example, downstream and upstream), and from the "
     "settings page.";
 
+const char kAutofillEnableVirtualCardFidoEnrollmentName[] =
+    "Enable FIDO enrollment for virtual cards";
+const char kAutofillEnableVirtualCardFidoEnrollmentDescription[] =
+    "When enabled, after a successful authentication to autofill a virtual "
+    "card, the user will be prompted to opt-in to FIDO if the user is not "
+    "currently opted-in, and if the user is opted-in already and the virtual "
+    "card is FIDO eligible the user will be prompted to register the virtual "
+    "card into FIDO.";
+
 const char kAutofillEnableVirtualCardName[] =
     "Offer to use cloud token virtual card in Autofill";
 const char kAutofillEnableVirtualCardDescription[] =
