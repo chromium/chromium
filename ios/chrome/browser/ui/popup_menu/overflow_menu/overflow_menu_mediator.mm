@@ -601,22 +601,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
             BOOL webChannelFollowed = ios::GetChromeBrowserProvider()
                                           .GetFollowProvider()
                                           ->GetFollowStatus(webPageURLs);
-            if (!webChannelFollowed) {
+
               std::string domainName =
                   web::GetMainFrame(self.webState)->GetSecurityOrigin().host();
               domainName = domainName.substr(4, domainName.length());
-              strongSelf.followAction.name = l10n_util::GetNSStringF(
-                  IDS_IOS_TOOLS_MENU_FOLLOW, base::UTF8ToUTF16(domainName));
-              strongSelf.pageActionsGroup.actions =
-                  [@[ strongSelf.followAction ]
-                      arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
-                                                        .actions];
-            } else {
-              strongSelf.pageActionsGroup.actions =
-                  [@[ strongSelf.unfollowAction ]
-                      arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
-                                                        .actions];
-            }
+
+              if (!webChannelFollowed) {
+                strongSelf.followAction.name = l10n_util::GetNSStringF(
+                    IDS_IOS_TOOLS_MENU_FOLLOW, base::UTF8ToUTF16(domainName));
+                strongSelf.pageActionsGroup.actions = [@[
+                  strongSelf.followAction
+                ] arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
+                                                    .actions];
+              } else {
+                strongSelf.unfollowAction.name = l10n_util::GetNSStringF(
+                    IDS_IOS_TOOLS_MENU_UNFOLLOW, base::UTF8ToUTF16(domainName));
+                strongSelf.pageActionsGroup.actions = [@[
+                  strongSelf.unfollowAction
+                ] arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
+                                                    .actions];
+              }
           }
         }));
   }
