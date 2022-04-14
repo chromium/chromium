@@ -4912,6 +4912,27 @@
             ]
         }
     ],
+    "OmniboxLoggingMigration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxReportSearchboxStats"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPedalsBatch1Android": [
         {
             "platforms": [
