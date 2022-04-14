@@ -73,7 +73,8 @@ class LiveCaptionController : public KeyedService,
   // recognition service.
   void OnError(CaptionBubbleContext* caption_bubble_context,
                CaptionBubbleErrorType error_type,
-               OnErrorClickedCallback error_clicked_callback);
+               OnErrorClickedCallback error_clicked_callback,
+               OnDoNotShowAgainClickedCallback error_silenced_callback);
 
   // Alerts the CaptionBubbleController that the audio stream has ended.
   void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -14,11 +15,16 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "url/origin.h"
 
 namespace captions {
 
@@ -45,15 +51,12 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
   context_ = CaptionBubbleContextBrowser::Create(web_contents);
 }
 
-LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() {
-  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  if (live_caption_controller)
-    live_caption_controller->OnAudioStreamEnd(context_.get());
-}
+LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() =
+    default;
 
 void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  if (live_caption_controller) {
+  if (live_caption_controller && ShouldDisplayMediaFoundationRendererError()) {
     // This will trigger the caption bubble to display a message informing the
     // user that Live Caption is unavailable and link them to the settings page
     // where they can disable the media foundation renderer to enable Live
@@ -64,7 +67,11 @@ void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated() {
         CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
         base::BindRepeating(&LiveCaptionUnavailabilityNotifier::
                                 OnMediaFoundationRendererErrorClicked,
-                            weak_factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &LiveCaptionUnavailabilityNotifier::
+                OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked,
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -80,6 +87,48 @@ LiveCaptionUnavailabilityNotifier::GetLiveCaptionController() {
     return nullptr;
 
   return LiveCaptionControllerFactory::GetForProfile(profile);
+}
+
+bool LiveCaptionUnavailabilityNotifier::
+    ShouldDisplayMediaFoundationRendererError() {
+  PrefService* prefs =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
+          ->GetPrefs();
+
+  const base::Value* silenced_sites_pref =
+      prefs->GetList(prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
+
+  if (!silenced_sites_pref)
+    return true;
+
+  const auto& silenced_sites_list = silenced_sites_pref->GetList();
+  const auto it = std::find_if(
+      silenced_sites_list.begin(), silenced_sites_list.end(),
+      [&](const base::Value& value) {
+        return value.GetString() ==
+               render_frame_host()->GetLastCommittedOrigin().Serialize();
+      });
+
+  return it == silenced_sites_list.end();
+}
+
+void LiveCaptionUnavailabilityNotifier::
+    OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(
+        CaptionBubbleErrorType error_type,
+        bool checked) {
+  PrefService* prefs =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
+          ->GetPrefs();
+  ListPrefUpdate update(
+      prefs, prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
+  if (checked) {
+    update->Append(render_frame_host()->GetLastCommittedOrigin().Serialize());
+  } else {
+    update->EraseListValueIf([&](const base::Value& value) {
+      return value.GetString() ==
+             render_frame_host()->GetLastCommittedOrigin().Serialize();
+    });
+  }
 }
 
 void LiveCaptionUnavailabilityNotifier::

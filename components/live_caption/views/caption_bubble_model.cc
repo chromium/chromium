@@ -32,8 +32,10 @@ void CaptionBubbleModel::SetObserver(CaptionBubble* observer) {
   observer_ = observer;
   if (observer_) {
     observer_->OnTextChanged();
-    observer_->OnErrorChanged(CaptionBubbleErrorType::GENERIC,
-                              base::RepeatingClosure());
+    observer_->OnErrorChanged(
+        CaptionBubbleErrorType::GENERIC, base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 }
 
@@ -52,8 +54,10 @@ void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
   if (has_error_) {
     has_error_ = false;
     if (observer_)
-      observer_->OnErrorChanged(CaptionBubbleErrorType::GENERIC,
-                                base::RepeatingClosure());
+      observer_->OnErrorChanged(
+          CaptionBubbleErrorType::GENERIC, base::RepeatingClosure(),
+          base::BindRepeating(
+              [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 }
 
@@ -69,10 +73,13 @@ void CaptionBubbleModel::Open() {
 
 void CaptionBubbleModel::OnError(
     CaptionBubbleErrorType error_type,
-    OnErrorClickedCallback error_clicked_callback) {
+    OnErrorClickedCallback error_clicked_callback,
+    OnDoNotShowAgainClickedCallback error_silenced_callback) {
   has_error_ = true;
+  error_type_ = error_type;
   if (observer_)
-    observer_->OnErrorChanged(error_type, std::move(error_clicked_callback));
+    observer_->OnErrorChanged(error_type, std::move(error_clicked_callback),
+                              std::move(error_silenced_callback));
 }
 
 void CaptionBubbleModel::ClearText() {

@@ -38,17 +38,20 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -524,14 +527,17 @@ void CaptionBubble::Init() {
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
           kErrorMessageBetweenChildSpacingDip))
-      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
   media_foundation_renderer_error_message->SetVisible(false);
   auto media_foundation_renderer_error_icon =
       std::make_unique<views::ImageView>();
   auto media_foundation_renderer_error_text =
       std::make_unique<MediaFoundationRendererErrorMessageView>(this);
   media_foundation_renderer_error_text->SetAutoColorReadabilityEnabled(false);
+  media_foundation_renderer_error_text->SetSubpixelRenderingEnabled(false);
   media_foundation_renderer_error_text->SetFocusBehavior(FocusBehavior::ALWAYS);
+  media_foundation_renderer_error_text->SetTextContext(
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   // Make the whole text view behave as a link for accessibility.
   media_foundation_renderer_error_text->GetViewAccessibility().OverrideRole(
@@ -539,12 +545,14 @@ void CaptionBubble::Init() {
 
   const std::u16string link =
       l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
-  auto custom_view = std::make_unique<views::Link>(link);
-  custom_view->SetCallback(base::BindRepeating(
-      &CaptionBubble::OnContentSettingsLinkClicked, base::Unretained(this)));
-  custom_view->SetFontList(GetFontList());
-  custom_view_ = custom_view.get();
-  media_foundation_renderer_error_text->AddCustomView(std::move(custom_view));
+
+  auto media_foundation_renderer_error_checkbox =
+      std::make_unique<views::Checkbox>(
+          l10n_util::GetStringUTF16(
+              IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR_CHECKBOX),
+          base::BindRepeating(
+              &CaptionBubble::MediaFoundationErrorCheckboxPressed,
+              base::Unretained(this)));
 #endif
 
   views::Button::PressedCallback expand_or_collapse_callback =
@@ -587,9 +595,18 @@ void CaptionBubble::Init() {
   media_foundation_renderer_error_icon_ =
       media_foundation_renderer_error_message->AddChildView(
           std::move(media_foundation_renderer_error_icon));
-  media_foundation_renderer_error_text_ =
-      media_foundation_renderer_error_message->AddChildView(
-          std::move(media_foundation_renderer_error_text));
+
+  auto inner_box_layout = std::make_unique<views::BoxLayoutView>();
+  inner_box_layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  inner_box_layout->SetBetweenChildSpacing(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  media_foundation_renderer_error_text_ = inner_box_layout->AddChildView(
+      std::move(media_foundation_renderer_error_text));
+  media_foundation_renderer_error_checkbox_ = inner_box_layout->AddChildView(
+      std::move(media_foundation_renderer_error_checkbox));
+  media_foundation_renderer_error_message->AddChildView(
+      std::move(inner_box_layout));
   media_foundation_renderer_error_message_ = content_container->AddChildView(
       std::move(media_foundation_renderer_error_message));
 #endif
@@ -722,10 +739,13 @@ void CaptionBubble::OnTextChanged() {
     inactivity_timer_->Reset();
 }
 
-void CaptionBubble::OnErrorChanged(CaptionBubbleErrorType error_type,
-                                   OnErrorClickedCallback callback) {
+void CaptionBubble::OnErrorChanged(
+    CaptionBubbleErrorType error_type,
+    OnErrorClickedCallback callback,
+    OnDoNotShowAgainClickedCallback error_silenced_callback) {
   DCHECK(model_);
   error_clicked_callback_ = std::move(callback);
+  error_silenced_callback_ = std::move(error_silenced_callback);
   bool has_error = model_->HasError();
   label_->SetVisible(!has_error);
   expand_button_->SetVisible(!has_error && !is_expanded_);
@@ -875,20 +895,16 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
 
 #if BUILDFLAG(IS_WIN)
   media_foundation_renderer_error_icon_->SetImageSize(
-      gfx::Size(kErrorImageSizeDip * textScaleFactor,
-                kErrorImageSizeDip * textScaleFactor));
+      gfx::Size(kErrorImageSizeDip, kErrorImageSizeDip));
   media_foundation_renderer_error_text_->SizeToFit(
       kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
-  media_foundation_renderer_error_text_->SetLineHeight(kLineHeightDip *
-                                                       textScaleFactor);
 #endif
 }
 
 void CaptionBubble::SetTextColor() {
   const auto* const color_provider = GetColorProvider();
-  SkColor default_text_color =
+  SkColor text_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
-  SkColor text_color = default_text_color;
   SkColor icon_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIcon);
   SkColor icon_disabled_color =
@@ -904,8 +920,6 @@ void CaptionBubble::SetTextColor() {
   generic_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
 #if BUILDFLAG(IS_WIN)
-  custom_view_->SetEnabledColor(
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleLink));
 
   const std::u16string link =
       l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
@@ -916,21 +930,28 @@ void CaptionBubble::SetTextColor() {
 
   media_foundation_renderer_error_text_->ClearStyleRanges();
   views::StyledLabel::RangeStyleInfo error_message_style;
-  error_message_style.override_color = default_text_color;
-  error_message_style.custom_font = GetFontList();
+  error_message_style.override_color = text_color;
   media_foundation_renderer_error_text_->AddStyleRange(gfx::Range(0, offset),
                                                        error_message_style);
 
-  views::StyledLabel::RangeStyleInfo link_style = error_message_style;
-  link_style.custom_view = custom_view_;
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&CaptionBubble::OnContentSettingsLinkClicked,
+                              base::Unretained(this)));
+  link_style.override_color =
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleLink);
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset, offset + link.length()), link_style);
 
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset + link.length(), text.length()), error_message_style);
-
   media_foundation_renderer_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+  media_foundation_renderer_error_checkbox_->SetEnabledTextColors(text_color);
+  media_foundation_renderer_error_checkbox_->SetTextSubpixelRenderingEnabled(
+      false);
+  media_foundation_renderer_error_checkbox_->SetCheckedIconImageColor(
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox));
 #endif
   views::SetImageFromVectorIconWithColor(back_to_tab_button_,
                                          vector_icons::kLaunchIcon, kButtonDip,
@@ -969,6 +990,19 @@ void CaptionBubble::UpdateContentSize() {
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
   label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
+
+#if BUILDFLAG(IS_WIN)
+  // The Media Foundation renderer error message should not scale with the
+  // user's caption style preference.
+  if (model_ && model_->HasError() &&
+      model_->ErrorType() ==
+          CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED) {
+    width = kMaxWidthDip;
+    content_height =
+        media_foundation_renderer_error_message_->GetPreferredSize().height();
+  }
+#endif
+
   // The header height is the same as the close button height. The footer height
   // is the same as the expand button height.
   SetPreferredSize(gfx::Size(
@@ -1048,6 +1082,14 @@ void CaptionBubble::OnInactivityTimeout() {
   // contain text cleared by the UI.
   if (model_)
     model_->ClearText();
+}
+
+void CaptionBubble::MediaFoundationErrorCheckboxPressed() {
+#if BUILDFLAG(IS_WIN)
+  error_silenced_callback_.Run(
+      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
+      media_foundation_renderer_error_checkbox_->GetChecked());
+#endif
 }
 
 bool CaptionBubble::HasActivity() {

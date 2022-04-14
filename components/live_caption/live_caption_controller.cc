@@ -64,6 +64,10 @@ void LiveCaptionController::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode,
                                speech::kUsEnglishLocale,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterListPref(
+      prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void LiveCaptionController::Init() {
@@ -222,11 +226,13 @@ bool LiveCaptionController::DispatchTranscription(
 void LiveCaptionController::OnError(
     CaptionBubbleContext* caption_bubble_context,
     CaptionBubbleErrorType error_type,
-    OnErrorClickedCallback error_clicked_callback) {
+    OnErrorClickedCallback error_clicked_callback,
+    OnDoNotShowAgainClickedCallback error_silenced_callback) {
   if (!caption_bubble_controller_)
     return;
   caption_bubble_controller_->OnError(caption_bubble_context, error_type,
-                                      std::move(error_clicked_callback));
+                                      std::move(error_clicked_callback),
+                                      std::move(error_silenced_callback));
 }
 
 void LiveCaptionController::OnAudioStreamEnd(

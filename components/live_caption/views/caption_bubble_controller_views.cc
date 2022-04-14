@@ -66,13 +66,15 @@ bool CaptionBubbleControllerViews::OnTranscription(
 void CaptionBubbleControllerViews::OnError(
     CaptionBubbleContext* caption_bubble_context,
     CaptionBubbleErrorType error_type,
-    OnErrorClickedCallback error_clicked_callback) {
+    OnErrorClickedCallback error_clicked_callback,
+    OnDoNotShowAgainClickedCallback error_silenced_callback) {
   if (!caption_bubble_)
     return;
   SetActiveModel(caption_bubble_context);
   if (active_model_->IsClosed())
     return;
-  active_model_->OnError(error_type, std::move(error_clicked_callback));
+  active_model_->OnError(error_type, std::move(error_clicked_callback),
+                         std::move(error_silenced_callback));
 }
 
 void CaptionBubbleControllerViews::OnAudioStreamEnd(

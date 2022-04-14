@@ -168,9 +168,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void OnError() { OnError(GetCaptionBubbleContext()); }
 
   void OnError(CaptionBubbleContext* caption_bubble_context) {
-    GetController()->OnError(caption_bubble_context,
-                             CaptionBubbleErrorType::GENERIC,
-                             base::RepeatingClosure());
+    GetController()->OnError(
+        caption_bubble_context, CaptionBubbleErrorType::GENERIC,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 
   void OnAudioStreamEnd() {

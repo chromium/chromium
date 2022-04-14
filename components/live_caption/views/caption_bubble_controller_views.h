@@ -42,9 +42,11 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
                        const media::SpeechRecognitionResult& result) override;
 
   // Called when the speech service has an error.
-  void OnError(CaptionBubbleContext* caption_bubble_context,
-               CaptionBubbleErrorType error_type,
-               OnErrorClickedCallback error_clicked_callback) override;
+  void OnError(
+      CaptionBubbleContext* caption_bubble_context,
+      CaptionBubbleErrorType error_type,
+      OnErrorClickedCallback error_clicked_callback,
+      OnDoNotShowAgainClickedCallback error_silenced_callback) override;
 
   // Called when the audio stream has ended.
   void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context) override;

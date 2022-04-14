@@ -22,6 +22,7 @@ namespace prefs {
 #if !defined(ANDROID)
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
+extern const char kLiveCaptionMediaFoundationRendererErrorSilenced[];
 
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
 bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,

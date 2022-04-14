@@ -147,9 +147,11 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
   void OnError() { OnErrorOnProfile(browser()->profile()); }
 
   void OnErrorOnProfile(Profile* profile) {
-    GetControllerForProfile(profile)->OnError(GetCaptionBubbleContextBrowser(),
-                                              CaptionBubbleErrorType::GENERIC,
-                                              base::RepeatingClosure());
+    GetControllerForProfile(profile)->OnError(
+        GetCaptionBubbleContextBrowser(), CaptionBubbleErrorType::GENERIC,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 
   void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->profile()); }

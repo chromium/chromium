@@ -26,6 +26,12 @@ const char kLiveCaptionEnabled[] =
 const char kLiveCaptionLanguageCode[] =
     "accessibility.captions.live_caption_language";
 
+// The list of origins that should not display an error message when using the
+// Media Foundation renderer.
+const char kLiveCaptionMediaFoundationRendererErrorSilenced[] =
+    "accessibility.captions.live_caption_media_foundation_renderer_error_"
+    "silenced";
+
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs) {
   if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
     return profile_prefs->GetString(prefs::kLiveCaptionLanguageCode);

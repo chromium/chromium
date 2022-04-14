@@ -74,9 +74,11 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnError(context_.get(),
-                                     CaptionBubbleErrorType::GENERIC,
-                                     base::RepeatingClosure());
+    live_caption_controller->OnError(
+        context_.get(), CaptionBubbleErrorType::GENERIC,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionStopped() {

@@ -47,9 +47,11 @@ class CaptionBubbleController {
       const media::SpeechRecognitionResult& result) = 0;
 
   // Called when the speech service has an error.
-  virtual void OnError(CaptionBubbleContext* caption_bubble_context,
-                       CaptionBubbleErrorType error_type,
-                       OnErrorClickedCallback error_clicked_callback) = 0;
+  virtual void OnError(
+      CaptionBubbleContext* caption_bubble_context,
+      CaptionBubbleErrorType error_type,
+      OnErrorClickedCallback error_clicked_callback,
+      OnDoNotShowAgainClickedCallback error_silenced_callback) = 0;
 
   // Called when the audio stream has ended.
   virtual void OnAudioStreamEnd(

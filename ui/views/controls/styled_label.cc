@@ -188,6 +188,18 @@ void StyledLabel::SetAutoColorReadabilityEnabled(bool auto_color_readability) {
   OnPropertyChanged(&auto_color_readability_enabled_, kPropertyEffectsPaint);
 }
 
+bool StyledLabel::GetSubpixelRenderingEnabled() const {
+  return subpixel_rendering_enabled_;
+}
+
+void StyledLabel::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
+  if (subpixel_rendering_enabled_ == subpixel_rendering_enabled)
+    return;
+
+  subpixel_rendering_enabled_ = subpixel_rendering_enabled;
+  OnPropertyChanged(&subpixel_rendering_enabled_, kPropertyEffectsPaint);
+}
+
 const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(
     int w) const {
   CalculateLayout(w);
@@ -547,7 +559,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
   if (displayed_on_background_color_)
     result->SetBackgroundColor(displayed_on_background_color_.value());
   result->SetAutoColorReadabilityEnabled(auto_color_readability_enabled_);
-
+  result->SetSubpixelRenderingEnabled(subpixel_rendering_enabled_);
   return result;
 }
 

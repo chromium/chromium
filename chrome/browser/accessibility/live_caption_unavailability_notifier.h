@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -47,12 +48,17 @@ class LiveCaptionUnavailabilityNotifier
   void MediaFoundationRendererCreated() override;
 
  private:
+  friend class LiveCaptionUnavailabilityNotifierTest;
   content::WebContents* GetWebContents();
 
   // Returns the LiveCaptionController for frame_host_. Returns nullptr if it
   // does not exist.
   LiveCaptionController* GetLiveCaptionController();
 
+  bool ShouldDisplayMediaFoundationRendererError();
+  void OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(
+      CaptionBubbleErrorType error_type,
+      bool checked);
   void OnMediaFoundationRendererErrorClicked();
 
   std::unique_ptr<CaptionBubbleContextBrowser> context_;

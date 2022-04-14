@@ -9,6 +9,7 @@
 #include <string>
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/view_factory.h"
@@ -50,6 +51,8 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   // an accessible name can be used, e.g. a Label, StyledLabel or Link.
   void SetAssociatedLabel(View* labelling_view);
 
+  void SetCheckedIconImageColor(SkColor color);
+
   // LabelButton:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
@@ -82,6 +85,8 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // True if the checkbox is checked.
   bool checked_ = false;
+
+  absl::optional<SkColor> checked_icon_image_color_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Checkbox, LabelButton)
