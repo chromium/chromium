@@ -24,6 +24,12 @@ public interface TabModelDelegate {
      */
     boolean isReparentingInProgress();
 
+    /**
+     * Request to the native TabRestoreService to restore the most recently closed tab.
+     * @param tabModel The model requesting the restore.
+     */
+    default void openMostRecentlyClosedEntry(TabModel model){};
+
     // TODO(aurimas): clean these methods up.
     TabModel getCurrentModel();
     TabModel getModel(boolean incognito);

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -63,6 +64,7 @@ public class HistoricalTabSaverImplTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private ChromeTabbedActivity mActivity;
+    private TabModelSelector mTabModelSelector;
     private TabModel mTabModel;
     private Tab mTab;
     private HistoricalTabSaverImpl mHistoricalTabSaver;
@@ -71,8 +73,9 @@ public class HistoricalTabSaverImplTest {
     public void setUp() {
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         mActivity = sActivityTestRule.getActivity();
-        mTabModel = mActivity.getTabModelSelector().getModel(false);
-        TabRestoreServiceUtils.clearEntries(mTabModel);
+        mTabModelSelector = mActivity.getTabModelSelector();
+        mTabModel = mTabModelSelector.getModel(false);
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
         mTab = mActivity.getActivityTab();
         ChromeTabUtils.waitForInteractable(mTab);
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
@@ -80,7 +83,7 @@ public class HistoricalTabSaverImplTest {
 
     @After
     public void tearDown() {
-        TabRestoreServiceUtils.clearEntries(mTabModel);
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
     }
 
     /**
@@ -108,7 +111,7 @@ public class HistoricalTabSaverImplTest {
         final Tab tab = sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
         final Tab frozenTab = freezeTab(tab);
         // Clear the entry created by freezing the tab.
-        TabRestoreServiceUtils.clearEntries(mTabModel);
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
         TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
 
@@ -252,7 +255,8 @@ public class HistoricalTabSaverImplTest {
      *                        TabRestoreService.
      */
     private void assertEntriesAre(List<List<HistoricalEntry>> expectedEntries) {
-        List<RecentlyClosedEntry> actualEntries = TabRestoreServiceUtils.getEntries(mTabModel);
+        List<RecentlyClosedEntry> actualEntries =
+                TabRestoreServiceUtils.getEntries(mTabModelSelector);
 
         // Reverse actual entries as it is sorted by most recent.
         Collections.reverse(actualEntries);

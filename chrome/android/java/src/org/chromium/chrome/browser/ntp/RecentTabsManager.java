@@ -95,7 +95,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mFaviconHelper = new FaviconHelper();
         mRecentlyClosedTabManager = sRecentlyClosedTabManagerForTests != null
                 ? sRecentlyClosedTabManagerForTests
-                : new RecentlyClosedBridge(profile);
+                : new RecentlyClosedBridge(profile, tabModelSelector);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);

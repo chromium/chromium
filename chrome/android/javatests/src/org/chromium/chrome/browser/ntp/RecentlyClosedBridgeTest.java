@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -77,8 +78,10 @@ public class RecentlyClosedBridgeTest {
         // Disable snackbars from the {@link UndoBarController} which can break this test.
         sActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
 
+        mActivity = sActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRecentlyClosedBridge = new RecentlyClosedBridge(Profile.getLastUsedRegularProfile());
+            mRecentlyClosedBridge = new RecentlyClosedBridge(Profile.getLastUsedRegularProfile(),
+                    mActivity.getTabModelSelectorSupplier().get());
             mRecentlyClosedBridge.clearRecentlyClosedEntries();
             Assert.assertEquals(
                     0, mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT).size());
@@ -347,6 +350,9 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(2, tabs.size());
         Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+        });
     }
 
     /**
@@ -391,6 +397,25 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(1, tabs.size());
         Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(0)));
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(0)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(0)));
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mRecentlyClosedBridge.openRecentlyClosedTab(
+                    mTabModel, group.getTabs().get(0), WindowOpenDisposition.NEW_BACKGROUND_TAB);
+        });
+
+        // 1. tabA restored over blank tab.
+        // 2. tabB restored.
+        tabs.clear();
+        tabs.addAll(getAllTabs());
+        Assert.assertEquals(2, tabs.size());
+        Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
+        Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+        });
     }
 
     /**
@@ -436,6 +461,25 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(2, tabs.size());
         Assert.assertEquals(titleB[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
         Assert.assertEquals(urlB[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mRecentlyClosedBridge.openRecentlyClosedEntry(mTabModel, recentEntries.get(0));
+        });
+
+        // 1. Blank tab
+        // 2. tabB restored in new tab.
+        // 3. tabA restored in new tab.
+        tabs.clear();
+        tabs.addAll(getAllTabs());
+        Assert.assertEquals(3, tabs.size());
+        Assert.assertEquals(titleA[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
+        Assert.assertEquals(urlA[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
+        });
     }
 
     /**
@@ -484,6 +528,9 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(2, tabs.size());
         Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+        });
     }
 
     /**
@@ -505,6 +552,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[2];
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
+            TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
             titles[1] = tabA.getTitle();
             titles[0] = tabB.getTitle();
             mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), false);
@@ -514,8 +562,8 @@ public class RecentlyClosedBridgeTest {
         final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
         Assert.assertEquals(1, tabCount);
         Assert.assertEquals(1, recentEntries.size());
-        assertEntryIs(
-                recentEntries.get(0), RecentlyClosedGroup.class, new String[] {""}, titles, urls);
+        assertEntryIs(recentEntries.get(0), RecentlyClosedGroup.class, new String[] {"Bar"}, titles,
+                urls);
 
         final RecentlyClosedGroup group = (RecentlyClosedGroup) recentEntries.get(0);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -530,6 +578,12 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+        });
     }
 
     /**
@@ -603,6 +657,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[3];
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
+            TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Foo");
             titles[2] = tabA.getTitle();
             titles[1] = tabB.getTitle();
             titles[0] = tabC.getTitle();
@@ -614,7 +669,7 @@ public class RecentlyClosedBridgeTest {
         final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
         Assert.assertEquals(1, tabCount);
         Assert.assertEquals(1, recentEntries.size());
-        assertEntryIs(recentEntries.get(0), RecentlyClosedBulkEvent.class, new String[] {""},
+        assertEntryIs(recentEntries.get(0), RecentlyClosedBulkEvent.class, new String[] {"Foo"},
                 titles, urls);
 
         final RecentlyClosedBulkEvent event = (RecentlyClosedBulkEvent) recentEntries.get(0);
@@ -633,6 +688,12 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
         Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(3)));
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Foo", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+        });
     }
 
     /**
@@ -681,12 +742,18 @@ public class RecentlyClosedBridgeTest {
         // 1. Blank tab
         // 2. Restored tabB
         // 3. Restored tabC
-        List<Tab> tabs = getAllTabs();
+        final List<Tab> tabs = getAllTabs();
         Assert.assertEquals(3, tabs.size());
         Assert.assertEquals(groupTitles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
         Assert.assertEquals(groupUrls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         Assert.assertEquals(groupTitles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
         Assert.assertEquals(groupUrls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull(TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+        });
 
         tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
         Assert.assertEquals(3, tabCount);
@@ -699,10 +766,14 @@ public class RecentlyClosedBridgeTest {
         // 2. Restored tabB
         // 3. Restored tabC
         // 4. Restored tabA
-        tabs = getAllTabs();
+        tabs.clear();
+        tabs.addAll(getAllTabs());
         Assert.assertEquals(4, tabs.size());
         Assert.assertEquals(title[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(3)));
         Assert.assertEquals(url[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+        });
     }
 
     /**
@@ -754,13 +825,17 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
         Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(3)));
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+            Assert.assertNull(TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+            Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+        });
     }
 
     // TODO(crbug.com/1307345): Add a test a case where bulk closures remain in the native service,
     // but the flag state is flipped.
-    //
-    // TODO(crbug.com/1307345): Add and modify tests for group & title restoration. Functionality
-    // not yet added.
 
     private Tab findTabWithUrlAndTitle(TabList list, String url, String title) {
         Tab targetTab = null;

@@ -12,6 +12,10 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -23,6 +27,7 @@ import java.util.List;
 @JNINamespace("recent_tabs")
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private long mNativeBridge;
+    private final TabModelSelector mTabModelSelector;
 
     @Nullable
     private Runnable mEntriesUpdatedRunnable;
@@ -81,12 +86,37 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         entries.add(event);
     }
 
+    @CalledByNative
+    private void restoreTabGroup(TabModel tabModel, int groupId, String title, int[] tabIds) {
+        // Can't restore empty or size 1 group. Note groupId is a tab in the group.
+        if (tabIds.length < 1) return;
+
+        assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
+        TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                tabModel.isIncognito());
+        if (!(filter instanceof TabGroupModelFilter)) return;
+
+        TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
+        for (int id : tabIds) {
+            // This shouldn't happen, but as a precaution skip.
+            if (id == groupId) continue;
+
+            groupFilter.mergeTabsToGroup(id, groupId);
+        }
+
+        if (title == null || title.isEmpty()) return;
+
+        TabGroupTitleUtils.storeTabGroupTitle(groupId, title);
+    }
+
     /**
      * Initializes this class with the given profile.
-     * @param profile The Profile whose recently closed tabs will be queried.
+     * @param profile The {@link Profile} whose recently closed tabs will be queried.
+     * @param tabModelSelector The {@link TabModelSelector} to use to get {@link TabModelFilter}s.
      */
-    public RecentlyClosedBridge(Profile profile) {
+    public RecentlyClosedBridge(Profile profile, TabModelSelector tabModelSelector) {
         mNativeBridge = RecentlyClosedBridgeJni.get().init(RecentlyClosedBridge.this, profile);
+        mTabModelSelector = tabModelSelector;
     }
 
     @Override
@@ -121,18 +151,21 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
+        assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         return RecentlyClosedBridgeJni.get().openRecentlyClosedTab(
                 mNativeBridge, tabModel, recentTab.getSessionId(), windowOpenDisposition);
     }
 
     @Override
     public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
+        assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         return RecentlyClosedBridgeJni.get().openRecentlyClosedEntry(
                 mNativeBridge, tabModel, recentEntry.getSessionId());
     }
 
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
+        assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         RecentlyClosedBridgeJni.get().openMostRecentlyClosedEntry(mNativeBridge, tabModel);
     }
 

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.tab_restore.HistoricalEntry;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaver;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaverImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
@@ -26,10 +27,12 @@ public class TabRestoreServiceUtils {
     /**
      * Clears all TabRestoreService entries.
      */
-    public static void clearEntries(TabModel tabModel) {
+    public static void clearEntries(TabModelSelector tabModelSelector) {
         int[] tabCount = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final RecentlyClosedBridge bridge = new RecentlyClosedBridge(tabModel.getProfile());
+            final TabModel tabModel = tabModelSelector.getModel(false);
+            final RecentlyClosedBridge bridge =
+                    new RecentlyClosedBridge(tabModel.getProfile(), tabModelSelector);
             bridge.clearRecentlyClosedEntries();
             tabCount[0] = bridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT).size();
             bridge.destroy();
@@ -40,9 +43,11 @@ public class TabRestoreServiceUtils {
     /**
      * Fetches entries from the TabRestoreService::entries().
      */
-    public static List<RecentlyClosedEntry> getEntries(TabModel tabModel) {
+    public static List<RecentlyClosedEntry> getEntries(TabModelSelector tabModelSelector) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            final RecentlyClosedBridge bridge = new RecentlyClosedBridge(tabModel.getProfile());
+            final TabModel tabModel = tabModelSelector.getModel(false);
+            final RecentlyClosedBridge bridge =
+                    new RecentlyClosedBridge(tabModel.getProfile(), tabModelSelector);
             List<RecentlyClosedEntry> entries = bridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT);
             bridge.destroy();
             return entries;
