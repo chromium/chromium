@@ -89,6 +89,12 @@ struct StorageInterestGroupDescByPriority {
                   const StorageInterestGroup& b) {
     return a.interest_group.priority > b.interest_group.priority;
   }
+  bool operator()(const StorageInterestGroup& a, double b_priority) {
+    return a.interest_group.priority > b_priority;
+  }
+  bool operator()(double a_priority, const StorageInterestGroup& b) {
+    return a_priority > b.interest_group.priority;
+  }
 };
 
 }  // namespace
@@ -565,8 +571,18 @@ void AuctionRunner::Auction::OnInterestGroupRead(
                           ->per_buyer_group_limits.cend()) {
       size_limit = static_cast<size_t>(limit_iter->second);
     }
-    std::sort(interest_groups.begin(), interest_groups.end(),
-              StorageInterestGroupDescByPriority());
+    StorageInterestGroupDescByPriority cmp;
+    std::sort(interest_groups.begin(), interest_groups.end(), cmp);
+    // Randomize order of interest groups with lowest allowed priority. This
+    // effectively performs a random sample among interest groups with the same
+    // priority.
+    double min_priority =
+        interest_groups.back().interest_group.priority.value();
+    auto rand_begin = std::lower_bound(
+        interest_groups.begin(), interest_groups.end(), min_priority, cmp);
+    auto rand_end =
+        std::upper_bound(rand_begin, interest_groups.end(), min_priority, cmp);
+    base::RandomShuffle(rand_begin, rand_end);
     interest_groups.resize(std::min(interest_groups.size(), size_limit));
 
     for (auto bidder = std::make_move_iterator(interest_groups.begin());
