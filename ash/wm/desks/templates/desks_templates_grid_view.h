@@ -79,6 +79,7 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   void Layout() override;
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnThemeChanged() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

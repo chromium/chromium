@@ -200,6 +200,11 @@ void ExpandedDesksBarButton::Layout() {
       gfx::Size(label_size.width(), label_height)));
 }
 
+void ExpandedDesksBarButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateBorderColor();
+}
+
 BEGIN_METADATA(ExpandedDesksBarButton, views::View)
 END_METADATA
 

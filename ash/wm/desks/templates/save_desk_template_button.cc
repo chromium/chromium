@@ -23,8 +23,6 @@ SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
       callback_(callback),
       button_type_(button_type) {
   SetBorder(std::make_unique<WmHighlightItemBorder>(kCornerRadius));
-  SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 SaveDeskTemplateButton::~SaveDeskTemplateButton() = default;
@@ -47,6 +45,12 @@ void SaveDeskTemplateButton::OnViewHighlighted() {
 
 void SaveDeskTemplateButton::OnViewUnhighlighted() {
   UpdateBorderState();
+}
+
+void SaveDeskTemplateButton::OnThemeChanged() {
+  PillButton::OnThemeChanged();
+  SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 void SaveDeskTemplateButton::UpdateBorderState() {

@@ -44,6 +44,9 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 
+  // PillButton:
+  void OnThemeChanged() override;
+
   void UpdateBorderState();
 
   base::RepeatingClosure callback_;

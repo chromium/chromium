@@ -57,6 +57,7 @@ class ExpandedDesksBarButton : public views::View {
 
   // views::View:
   void Layout() override;
+  void OnThemeChanged() override;
 
  private:
   DesksBarView* const bar_view_;  // Not owned.

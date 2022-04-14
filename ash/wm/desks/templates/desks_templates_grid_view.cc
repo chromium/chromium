@@ -190,9 +190,6 @@ void DesksTemplatesGridView::PopulateGridUI(
         l10n_util::GetStringUTF16(
             IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
         PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
-    feedback_button_->SetBackgroundColor(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80));
   }
 
   GetWidget()->SetBounds(grid_bounds);
@@ -367,6 +364,15 @@ void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // progress.
   if (bounds_animator_.IsAnimating())
     bounds_animator_.Cancel();
+}
+
+void DesksTemplatesGridView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (feedback_button_) {
+    feedback_button_->SetBackgroundColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80));
+  }
 }
 
 void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
