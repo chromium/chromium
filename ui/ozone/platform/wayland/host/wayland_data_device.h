@@ -83,8 +83,10 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
 
   void ReadDragDataFromFD(base::ScopedFD fd, RequestDataCallback callback);
+  void ResetDragDelegateIfNeeded();
 
   // wl_data_device_listener callbacks
   static void OnOffer(void* data,

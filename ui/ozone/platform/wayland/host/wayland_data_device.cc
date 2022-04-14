@@ -88,6 +88,14 @@ void WaylandDataDevice::ReadDragDataFromFD(base::ScopedFD fd,
       base::RefCountedBytes::TakeVector(&contents)));
 }
 
+void WaylandDataDevice::ResetDragDelegateIfNeeded() {
+  // When in an active drag-and-drop session initiated by an external Wayland
+  // client, |drag_delegate_| is set at OnEnter, and must be reset upon
+  // OnLeave/OnDrop in order to avoid potential memory corruption issues.
+  if (drag_delegate_ && !drag_delegate_->IsDragSource())
+    ResetDragDelegate();
+}
+
 // static
 void WaylandDataDevice::OnOffer(void* data,
                                 wl_data_device* data_device,
@@ -151,6 +159,15 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
     self->drag_delegate_->OnDragDrop();
     self->connection()->ScheduleFlush();
   }
+
+  // There are buggy Exo versions, which send 'drop' event (even for
+  // unsuccessful drops) without a subsequent 'leave'. In order to mitigate
+  // potential leaks and/or UAFs, forcibly call corresponding delegate callback
+  // here, in Lacros. TODO(crbug.com/1293415): Remove once Exo bug is fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  self->drag_delegate_->OnDragLeave();
+  self->ResetDragDelegateIfNeeded();
+#endif
 }
 
 void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
@@ -159,15 +176,7 @@ void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
     self->drag_delegate_->OnDragLeave();
     self->connection()->ScheduleFlush();
   }
-
-  // When in a DND session initiated by an external application,
-  // |drag_delegate_| is set at OnEnter, and must be reset here to avoid
-  // potential use-after-free.
-  //
-  // NOTE: Above call to OnDragLeave() may result in |drag_delegate_| being
-  // reset, so it must be checked here as well.
-  if (self->drag_delegate_ && !self->drag_delegate_->IsDragSource())
-    self->ResetDragDelegate();
+  self->ResetDragDelegateIfNeeded();
 }
 
 void WaylandDataDevice::OnSelection(void* data,

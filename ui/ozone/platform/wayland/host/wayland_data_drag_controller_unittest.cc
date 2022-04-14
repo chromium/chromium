@@ -50,6 +50,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::AtMost;
 using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::Values;
@@ -440,6 +441,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
       wl_fixed_from_int(entered_point.y()), data_offer);
 
   Sync();
+  ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
 
   // In 2x window scale, we expect received coordinates to be multiplied.
   EXPECT_CALL(*drop_handler_,
@@ -463,6 +465,8 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   Sync();
 
   data_device_manager_->data_device()->OnLeave();
+  Sync();
+  ASSERT_FALSE(data_device()->drag_delegate_);
 }
 
 TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
@@ -605,7 +609,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
         EXPECT_EQ(kCase.expected_uris.count(filename.path.AsUTF8Unsafe()), 1U);
     }
 
-    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));
     data_device_manager_->data_device()->OnLeave();
     Sync();
     Mock::VerifyAndClearExpectations(drop_handler_.get());
@@ -661,7 +665,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
       EXPECT_EQ(title, kCase.expected_title);
     }
 
-    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));
     data_device_manager_->data_device()->OnLeave();
     Sync();
     Mock::VerifyAndClearExpectations(drop_handler_.get());
