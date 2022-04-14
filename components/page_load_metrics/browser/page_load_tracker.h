@@ -503,7 +503,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
 
-  base::WeakPtr<PageLoadTracker> parent_tracker_;
+  const base::WeakPtr<PageLoadTracker> parent_tracker_;
 
   base::WeakPtrFactory<PageLoadTracker> weak_factory_{this};
 };

@@ -25,6 +25,8 @@ struct PageLoadMetricsObserverEvents final {
   bool was_fenced_frames_started = false;
   bool was_prerender_started = false;
   bool was_committed = false;
+  bool was_sub_frame_deleted = false;
+  size_t sub_frame_navigation_count = 0;
 };
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
@@ -61,6 +63,13 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle) override {
     events_->was_committed = true;
     return CONTINUE_OBSERVING;
+  }
+  void OnDidFinishSubFrameNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    events_->sub_frame_navigation_count++;
+  }
+  void OnSubFrameDeleted(int frame_tree_node_id) override {
+    events_->was_sub_frame_deleted = true;
   }
 
   bool stop_on_prerender_ = false;
@@ -105,13 +114,16 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
     if (tracker->GetUrl() != target_url_)
       return;
 
+    DCHECK(!is_observer_passed_);
     tracker->AddObserver(std::unique_ptr<PageLoadMetricsObserver>(observer_));
+    is_observer_passed_ = true;
   }
 
   base::flat_map<std::string, ukm::SourceId> ukm_source_ids_;
 
   PageLoadMetricsObserverEvents events_;
   raw_ptr<TestPageLoadMetricsObserver> observer_;
+  bool is_observer_passed_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   GURL target_url_;
@@ -140,6 +152,53 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
 
   // Check observer behaviors.
   EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
+}
+
+TEST_F(PageLoadTrackerTest, EventForwarding) {
+  // Target URL to monitor the tracker via the test observer.
+  SetTargetUrl(kTestUrl);
+  StopObservingOnFencedFrames();
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Add a fenced frame.
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          ->AppendFencedFrame();
+  {
+    const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
+    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+        GURL(kFencedFramesUrl), fenced_frame_root);
+    ASSERT_NE(nullptr, simulator);
+    simulator->Commit();
+  }
+
+  // Check observer behaviors.
+  // The navigation and frame deletion in the FencedFrames should be observed as
+  // sub-frame events.
+  EXPECT_TRUE(GetEvents().was_started);
+  EXPECT_FALSE(GetEvents().was_fenced_frames_started);
+  EXPECT_FALSE(GetEvents().was_prerender_started);
+  EXPECT_TRUE(GetEvents().was_committed);
+  EXPECT_FALSE(GetEvents().was_sub_frame_deleted);
+  EXPECT_EQ(1u, GetEvents().sub_frame_navigation_count);
+
+  // Navigate out.
+  {
+    const char kFencedFramesNavigationUrl[] = "https://b.test/fenced_frames";
+    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+        GURL(kFencedFramesNavigationUrl), fenced_frame_root);
+    ASSERT_NE(nullptr, simulator);
+    simulator->Commit();
+  }
+
+  // Check observer behaviors again after the render frame's deletion.
+  // TODO(https://crbug.com/1301880): RenderFrameDeleted() doesn't seem called
+  // and following check fails. Revisit this issue later to clarify the
+  // expectations.
+  // EXPECT_TRUE(GetEvents().was_sub_frame_deleted);
+  EXPECT_EQ(2u, GetEvents().sub_frame_navigation_count);
 }
 
 // TODO(https://crbug.com/1312096): Enable the test on Android.

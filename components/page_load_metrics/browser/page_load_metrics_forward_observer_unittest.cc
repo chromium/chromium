@@ -23,7 +23,7 @@ const char kTestUrl[] = "https://a.test/";
 struct PageLoadMetricsObserverEvents final {
   bool was_started = false;
   bool was_fenced_frames_started = false;
-  size_t commit_count = 0;
+  size_t event_count = 0;
 };
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
@@ -57,16 +57,16 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
     return FORWARD_OBSERVING;
   }
 
-  ObservePolicy OnCommit(
-      content::NavigationHandle* navigation_handle) override {
-    // TestPageLoadMetricsObserver will be instantiated for the Primary page
-    // and a FencedFrames page. As instance for a FencedFrames page will be
-    // destructed after `OnFencedFramesStart` and `OnCommit` will not be
-    // invoked for the instance. Instead, PageLoadMetricsForwardObserver routes
-    // the event to the Primary page's observer.
+  ObservePolicy ShouldObserveMimeType(
+      const std::string& mime_type) const override {
+    // TestPageLoadMetricsObserver will be instantiated for the Primary page and
+    // a FencedFrames page. As instance for a FencedFrames page will be
+    // destructed after `OnFencedFramesStart` and `ShouldObserverMimeType` will
+    // not be invoked for the instance. Instead, PageLoadMetricsForwardObserver
+    // routes the event to the Primary page's observer.
     EXPECT_FALSE(is_in_fenced_frames_);
     if (!is_in_fenced_frames_)
-      events_->commit_count++;
+      events_->event_count++;
     return CONTINUE_OBSERVING;
   }
 
@@ -122,10 +122,9 @@ TEST_F(PageLoadMetricsForwardObserverTest, Basic) {
   // Check observer behaviors.
   EXPECT_TRUE(GetEvents().was_started);
   EXPECT_TRUE(GetEvents().was_fenced_frames_started);
-  // OnCommit will be invoked twice in the primary page observer, once is for
-  // its own navigation, the other is forwarded one for the navigation in the
-  // FencedFrames' root.
-  EXPECT_EQ(2u, GetEvents().commit_count);
+  // The event will be invoked twice in the primary page observer, once is for
+  // its own, the other is forwarded one from the FencedFrames' page.
+  EXPECT_EQ(2u, GetEvents().event_count);
 
   // Check metrics.
   tester()->histogram_tester().ExpectBucketCount(

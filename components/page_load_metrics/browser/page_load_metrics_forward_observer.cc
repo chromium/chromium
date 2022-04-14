@@ -73,42 +73,32 @@ PageLoadMetricsForwardObserver::OnRedirect(
   return CONTINUE_OBSERVING;
 }
 
+// OnCommit and OnDidInternalNavigationAbort are handled at PageLoadTracker
+// to forward events as a sub-frame navigation regardless of each observer's
+// policy.
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsForwardObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  if (!parent_observer_ ||
-      parent_observer_->OnCommit(navigation_handle) == STOP_OBSERVING) {
-    return STOP_OBSERVING;
-  }
   return CONTINUE_OBSERVING;
 }
 
 void PageLoadMetricsForwardObserver::OnDidInternalNavigationAbort(
-    content::NavigationHandle* navigation_handle) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnDidInternalNavigationAbort(navigation_handle);
-}
+    content::NavigationHandle* navigation_handle) {}
 
+// ReadyToCommitNextNavigation is an event only for main frames. As main
+// frame events are converted to sub-frames events on forwarding, this event
+// is just masked here.
 void PageLoadMetricsForwardObserver::ReadyToCommitNextNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->ReadyToCommitNextNavigation(navigation_handle);
-}
+    content::NavigationHandle* navigation_handle) {}
 
+// OnDidFinishSubFrameNavigation is handled at PageLoadTracker to forward
+// events regardless of each observer's policy.
 void PageLoadMetricsForwardObserver::OnDidFinishSubFrameNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnDidFinishSubFrameNavigation(navigation_handle);
-}
+    content::NavigationHandle* navigation_handle) {}
 
+// OnCommitSameDocumentNavigation is handled at PageLoadTracker to forward
+// events as a sub-frame navigation regardless of each observer's policy.
 void PageLoadMetricsForwardObserver::OnCommitSameDocumentNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnCommitSameDocumentNavigation(navigation_handle);
-}
+    content::NavigationHandle* navigation_handle) {}
 
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsForwardObserver::OnHidden(
     const mojom::PageLoadTiming& timing) {
@@ -401,17 +391,13 @@ void PageLoadMetricsForwardObserver::FrameSizeChanged(
   parent_observer_->FrameSizeChanged(render_frame_host, frame_size);
 }
 
+// OnRenderFrameDeleted and OnSubFrameDeleted are handled at PageLoadTracker
+// to forward events as sub-frames deletion regardless of each observer's
+// policy.
 void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnRenderFrameDeleted(render_frame_host);
-}
+    content::RenderFrameHost* render_frame_host) {}
 
 void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnSubFrameDeleted(frame_tree_node_id);
 }
 
 void PageLoadMetricsForwardObserver::OnCookiesRead(

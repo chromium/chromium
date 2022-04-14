@@ -280,6 +280,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
 
   // Prepare ukm::SourceId that is based on outermost page's navigation ID.
   ukm::SourceId source_id = ukm::kInvalidSourceId;
+  base::WeakPtr<PageLoadTracker> parent_tracker;
   if (navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsInPrerenderedMainFrame()) {
     // Primary and Prerender pages use own page's navigation ID.
@@ -289,8 +290,10 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
              content::FrameType::kFencedFrameRoot) {
     // For FencedFrames, use the primary page's ukm::SourceId. `primary_page_`
     // can be nullptr if the main frame is in data URL or so.
-    if (primary_page_)
+    if (primary_page_) {
       source_id = primary_page_->GetPageUkmSourceId();
+      parent_tracker = primary_page_->GetWeakPtr();
+    }
   } else {
     NOTREACHED();
   }
@@ -304,9 +307,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       std::make_unique<PageLoadTracker>(
           in_foreground, embedder_interface_.get(), currently_committed_url,
           !has_navigated_, navigation_handle, user_initiated_info, source_id,
-          (navigation_handle->IsInPrimaryMainFrame() || !primary_page_)
-              ? nullptr
-              : primary_page_->GetWeakPtr())));
+          parent_tracker)));
   DCHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : lifecycle_observers_)

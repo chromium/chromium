@@ -372,6 +372,10 @@ void PageLoadTracker::PageShown() {
 }
 
 void PageLoadTracker::SubFrameDeleted(int frame_tree_node_id) {
+  if (parent_tracker_) {
+    // Notify the parent of inner subframe deletions.
+    parent_tracker_->SubFrameDeleted(frame_tree_node_id);
+  }
   metrics_update_dispatcher_.OnSubFrameDeleted(frame_tree_node_id);
   largest_contentful_paint_handler_.OnSubFrameDeleted(frame_tree_node_id);
   for (const auto& observer : observers_) {
@@ -380,6 +384,12 @@ void PageLoadTracker::SubFrameDeleted(int frame_tree_node_id) {
 }
 
 void PageLoadTracker::RenderFrameDeleted(content::RenderFrameHost* rfh) {
+  if (parent_tracker_) {
+    // Notify the parent of the inner main frame deletion as a sub-frame
+    // deletion.
+    parent_tracker_->SubFrameDeleted(rfh->GetFrameTreeNodeId());
+  }
+
   for (const auto& observer : observers_) {
     observer->OnRenderFrameDeleted(rfh);
   }
@@ -392,6 +402,12 @@ void PageLoadTracker::WillProcessNavigationResponse(
 }
 
 void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
+  if (parent_tracker_) {
+    // Notify the parent of the inner main frame navigation as a sub-frame
+    // navigation.
+    parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  }
+
   did_commit_ = true;
   url_ = navigation_handle->GetURL();
   // Some transitions (like CLIENT_REDIRECT) are only known at commit time.
@@ -430,6 +446,12 @@ void PageLoadTracker::DidActivatePrerenderedPage(
 
 void PageLoadTracker::DidCommitSameDocumentNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (parent_tracker_) {
+    // Notify the parent of the inner main frame navigation as a sub-frame
+    // navigation.
+    parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  }
+
   for (const auto& observer : observers_) {
     observer->OnCommitSameDocumentNavigation(navigation_handle);
   }
@@ -437,6 +459,12 @@ void PageLoadTracker::DidCommitSameDocumentNavigation(
 
 void PageLoadTracker::DidInternalNavigationAbort(
     content::NavigationHandle* navigation_handle) {
+  if (parent_tracker_) {
+    // Notify the parent of the inner main frame navigation as a sub-frame
+    // navigation.
+    parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  }
+
   for (const auto& observer : observers_) {
     observer->OnDidInternalNavigationAbort(navigation_handle);
   }
@@ -444,6 +472,10 @@ void PageLoadTracker::DidInternalNavigationAbort(
 
 void PageLoadTracker::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Don't notify the parent as inner main frame's events are converted to
+  // sub-frames events for the parent, but this event is only for the main
+  // frame.
+
   for (const auto& observer : observers_) {
     observer->ReadyToCommitNextNavigation(navigation_handle);
   }
@@ -451,6 +483,10 @@ void PageLoadTracker::ReadyToCommitNavigation(
 
 void PageLoadTracker::DidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (parent_tracker_) {
+    // Notify the parent of inner frame navigations.
+    parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  }
   metrics_update_dispatcher_.DidFinishSubFrameNavigation(navigation_handle);
   largest_contentful_paint_handler_.OnDidFinishSubFrameNavigation(
       navigation_handle, navigation_start_);
