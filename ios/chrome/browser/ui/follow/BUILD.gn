@@ -11,7 +11,7 @@ source_set("follow") {
     "followed_web_channel.h",
     "followed_web_channel.mm",
   ]
-  deps = []
+  deps = [ "//ios/chrome/browser/net:crurl" ]
 }
 
 source_set("first_follow") {

@@ -139,11 +139,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - FollowManagementUIUpdater
 
 - (void)removeFollowedWebChannel:(FollowedWebChannel*)channel {
-  // TODO(crbug.com/1264872):implementation.
+  for (id cell in self.tableView.visibleCells) {
+    FollowedWebChannelCell* followedWebChannelCell =
+        base::mac::ObjCCastStrict<FollowedWebChannelCell>(cell);
+
+    if ([followedWebChannelCell.followedWebChannel isEqual:channel]) {
+      NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+      self.lastUnfollowedWebChannelItem =
+          base::mac::ObjCCastStrict<FollowedWebChannelItem>(
+              [self.tableViewModel itemAtIndexPath:indexPath]);
+      self.indexPathOfLastUnfollowAttempt = indexPath;
+      [self deleteItemAtIndexPath:indexPath];
+      return;
+    }
+  }
 }
 
 - (void)addFollowedWebChannel:(FollowedWebChannel*)channel {
-  // TODO(crbug.com/1264872):implementation.
+  DCHECK(
+      [self.lastUnfollowedWebChannelItem.followedWebChannel isEqual:channel]);
+  [self addItem:self.lastUnfollowedWebChannelItem
+      AtIndexPath:self.indexPathOfLastUnfollowAttempt];
 }
 
 #pragma mark - Helpers
@@ -245,6 +261,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         atIndex:index];
   [self.tableView deleteRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self showOrHideEmptyTableViewBackground];
+}
+
+- (void)addItem:(FollowedWebChannelItem*)item
+    AtIndexPath:(NSIndexPath*)indexPath {
+  TableViewModel* model = self.tableViewModel;
+
+  NSInteger section =
+      [model sectionForSectionIdentifier:DefaultSectionIdentifier];
+  NSInteger itemCount = [model numberOfItemsInSection:section];
+  if (itemCount == 0) {
+    [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
+    [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    NSInteger sectionID =
+        [model sectionIdentifierForSectionIndex:indexPath.section];
+    NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
+
+    [model insertItem:item inSectionWithIdentifier:sectionID atIndex:index];
+    [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
+  self.lastUnfollowedWebChannelItem = nil;
+  self.indexPathOfLastUnfollowAttempt = nil;
   [self showOrHideEmptyTableViewBackground];
 }
 
