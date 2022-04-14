@@ -48,14 +48,21 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Interest group periodic update fetcher"
           description:
-            "Fetches periodic updates of interest groups previously joined by "
-            "navigator.joinAdInterestGroup(). JavaScript running in the "
-            "context of a frame cannot read interest groups, but it can "
-            "request that all interest groups owned by the current frame's "
-            "origin be updated by fetching JSON from the registered update URL."
-            "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md"
+            "Fetches periodic updates of FLEDGE interest groups previously "
+            "joined by navigator.joinAdInterestGroup(). FLEDGE allow sites to "
+            "store persistent interest groups that are only accessible to "
+            "special on-device ad auction worklets run via "
+            "navigator.runAdAuction(). JavaScript running in the context of a "
+            "frame cannot read interest groups, but it can request that all "
+            "interest groups owned by the current frame's origin be updated by "
+            "fetching JSON from the registered update URL for each interest "
+            "group."
+            "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md and "
+            "https://developer.chrome.com/docs/privacy-sandbox/fledge/"
           trigger:
-            "Fetched upon a navigator.updateAdInterestGroups() call."
+            "Fetched upon a navigator.updateAdInterestGroups() call. Also "
+            "triggered upon navigator.runAdAuction() completion for interest "
+            "groups that participated in the auction."
           data: "URL registered for updating this interest group."
           destination: WEBSITE
         }
