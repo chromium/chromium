@@ -240,9 +240,9 @@ EulaLoader.instances = {};
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
- const EulaScreenBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-  Polymer.Element);
+const EulaScreenBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    Polymer.Element);
 
 
 // TODO(crbug.com/1184731) - Replace PolymerElement with OobeTextButton
@@ -262,8 +262,9 @@ EulaLoader.instances = {};
 EulaScreenBase.$;
 
 class EulaScreen extends EulaScreenBase {
-
-  static get is() { return 'oobe-eula-element'; }
+  static get is() {
+    return 'oobe-eula-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -294,6 +295,20 @@ class EulaScreen extends EulaScreenBase {
       initialized_: {
         type: Boolean,
       },
+
+      /**
+       * Flag that enabled security settings button to be shown.
+       */
+      securitySettingsInfoHidden_: {
+        type: Boolean,
+      },
+
+      /**
+       * Flag that hides back button.
+       */
+      backButtonHidden_: {
+        type: Boolean,
+      }
     };
   }
 
@@ -304,21 +319,30 @@ class EulaScreen extends EulaScreenBase {
     this.usageStatsChecked = false;
     this.tpmDescription_ = '';
     this.initialized_ = false;
+    this.securitySettingsInfoHidden_ = false;
+    this.backButtonHidden_ = false;
   }
 
   get EXTERNAL_API() {
-    return ['setUsageStats',
-            'showAdditionalTosDialog',
-            'showSecuritySettingsDialog',
-            'setTpmDesc'];
+    return [
+      'setUsageStats', 'showAdditionalTosDialog', 'showSecuritySettingsDialog',
+      'setTpmDesc'
+    ];
   }
 
   defaultUIStep() {
     return EulaScreenState.LOADING;
   }
 
-  /** Called just before the dialog is shown */
-  onBeforeShow() {
+  /**
+   * Called just before the dialog is shown
+   * @param {Object} data
+   */
+  onBeforeShow(data) {
+    if (data && 'backButtonHidden' in data)
+      this.backButtonHidden_ = data['backButtonHidden'];
+    if (data && 'securitySettingsShown' in data)
+      this.securitySettingsInfoHidden_ = data['securitySettingsShown'];
     window.setTimeout(this.initializeScreen_.bind(this), 0);
     this.loadEula();
   }

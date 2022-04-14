@@ -15,7 +15,6 @@ group("polymer3_elements") {
     ":enable_debugging_module",
     ":enterprise_enrollment_module",
     ":hid_detection_module",
-    ":oobe_eula_module",
     ":oobe_network_module",
     ":packaged_license_module",
     ":quick_start_module",
@@ -35,7 +34,6 @@ js_type_check("closure_compile") {
     ":enable_debugging.m",
     ":enterprise_enrollment.m",
     ":hid_detection.m",
-    ":oobe_eula.m",
     ":oobe_network.m",
     ":packaged_license.m",
     ":quick_start.m",
@@ -144,26 +142,6 @@ js_library("quick_start.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":quick_start_module" ]
-}
-
-js_library("oobe_eula.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_eula.m.js" ]
-  deps = [
-    "../../:display_manager.m",
-    "../../components:web_view_helper.m",
-    "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
-    "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components/dialogs:oobe_modal_dialog.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-  extra_deps = [ ":oobe_eula_module" ]
 }
 
 js_library("oobe_network.m") {
@@ -293,14 +271,6 @@ polymer_modulizer("hid_detection") {
 polymer_modulizer("quick_start") {
   js_file = "quick_start.js"
   html_file = "quick_start.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
-polymer_modulizer("oobe_eula") {
-  js_file = "oobe_eula.js"
-  html_file = "oobe_eula.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

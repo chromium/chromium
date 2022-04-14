@@ -24,7 +24,7 @@ constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 // TODO(crbug.com/1261902): Decrease |kOobeScreensCount| and
 // |kLoginScreensCount| by 1.
 constexpr int kOobeScreensCount = 45;
-constexpr int kLoginScreensCount = 40;
+constexpr int kLoginScreensCount = 41;
 constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {

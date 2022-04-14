@@ -122,7 +122,8 @@
             [[i18nDynamic(locale, 'oobeEulaAditionalTerms')]]
           </a>
           <a id="securitySettings" class="oobe-local-link" is="action-link"
-              on-click="onSecuritySettingsClicked_">
+              on-click="onSecuritySettingsClicked_"
+              hidden="[[securitySettingsInfoHidden_]]">
             [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
           </a>
           <div id="logging" class="layout horizontal">
@@ -143,7 +144,7 @@
         </div>
       </div>
       <div slot="back-navigation">
-        <oobe-back-button
+        <oobe-back-button hidden="[[backButtonHidden_]]"
             on-click="onEulaBackButtonPressed_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
