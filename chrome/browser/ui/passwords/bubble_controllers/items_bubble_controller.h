@@ -20,6 +20,7 @@ struct FaviconImageResult;
 
 namespace password_manager {
 struct PasswordForm;
+enum class SyncState;
 }  // namespace password_manager
 
 // This controller provides data and actions for the PasswordItemsView.
@@ -42,6 +43,16 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // controller.
   void RequestFavicon(
       base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
+
+  password_manager::SyncState GetPasswordSyncState();
+
+  // Returns the email of current primary account. Returns empty string if no
+  // account is signed in.
+  std::u16string GetPrimaryAccountEmail();
+
+  // Called by the view code when the "Google Password Manager" link in the
+  // bubble footer in clicked by the user.
+  void OnGooglePasswordManagerLinkClicked();
 
   // Returns the available credentials which match the current site.
   const std::vector<password_manager::PasswordForm>& local_credentials() const {

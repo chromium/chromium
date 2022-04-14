@@ -18,8 +18,11 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
@@ -43,6 +46,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -272,6 +276,11 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON)));
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    SetFootnoteView(CreateFooterView());
+  }
+
   auto& local_credentials = controller_.local_credentials();
 
   if (local_credentials.empty()) {
@@ -338,6 +347,48 @@ void PasswordItemsView::RecreateLayout() {
   PreferredSizeChanged();
   if (GetBubbleFrameView())
     SizeToContents();
+}
+
+std::unique_ptr<views::View> PasswordItemsView::CreateFooterView() {
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerDesktop));
+
+  base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
+      [](PasswordItemsView* dialog) {
+        dialog->controller_.OnGooglePasswordManagerLinkClicked();
+      },
+      base::Unretained(this));
+
+  switch (controller_.GetPasswordSyncState()) {
+    case password_manager::SyncState::kNotSyncing:
+      return CreateGooglePasswordManagerFooterView(
+          /*email=*/u"", /*synced_to_account=*/false,
+          open_password_manager_closure);
+    case password_manager::SyncState::kSyncingNormalEncryption:
+    case password_manager::SyncState::kSyncingWithCustomPassphrase:
+      return CreateGooglePasswordManagerFooterView(
+          controller_.GetPrimaryAccountEmail(), /*synced_to_account=*/true,
+          open_password_manager_closure);
+    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+      // Account store users have a special footer in the management bubble
+      // since they might have a mix of synced and non-synced passwords.
+      const std::u16string link = l10n_util::GetStringUTF16(
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT);
+      size_t link_offset;
+      std::u16string text = l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS, link,
+          &link_offset);
+      auto label = std::make_unique<views::StyledLabel>();
+      label->SetText(text);
+      label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+      label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+      label->AddStyleRange(gfx::Range(link_offset, link_offset + link.length()),
+                           views::StyledLabel::RangeStyleInfo::CreateForLink(
+                               open_password_manager_closure));
+      return label;
+  }
 }
 
 void PasswordItemsView::NotifyPasswordFormAction(

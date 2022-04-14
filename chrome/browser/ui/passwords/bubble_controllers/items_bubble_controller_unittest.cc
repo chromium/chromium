@@ -9,10 +9,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -35,8 +42,10 @@ constexpr char kSiteOrigin[] = "http://example.com/login/";
 class ItemsBubbleControllerTest : public ::testing::Test {
  public:
   ItemsBubbleControllerTest() {
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
+    test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
@@ -48,6 +57,14 @@ class ItemsBubbleControllerTest : public ::testing::Test {
                            content::BrowserContext,
                            testing::StrictMock<
                                password_manager::MockPasswordStoreInterface>>));
+
+    test_sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<syncer::TestSyncService>();
+                })));
   }
 
   ~ItemsBubbleControllerTest() override = default;
@@ -57,7 +74,8 @@ class ItemsBubbleControllerTest : public ::testing::Test {
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   ItemsBubbleController* controller() { return controller_.get(); }
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
+  syncer::TestSyncService* sync_service() { return test_sync_service_; }
 
   password_manager::MockPasswordStoreInterface* GetStore() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
@@ -72,7 +90,8 @@ class ItemsBubbleControllerTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
+  syncer::TestSyncService* test_sync_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<ItemsBubbleController> controller_;
@@ -183,4 +202,45 @@ TEST_F(ItemsBubbleControllerTest, ShouldReturnLocalCredentials) {
   for (size_t i = 0; i < local_credentials.size(); i++) {
     EXPECT_EQ(local_credentials[i], *expected_local_credentials[i]);
   }
+}
+
+TEST_F(ItemsBubbleControllerTest, ShouldReturnPasswordSyncState) {
+  Init();
+  CoreAccountInfo account;
+  account.email = "account@gmail.com";
+  account.gaia = "account";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  sync_service()->SetAccountInfo(account);
+  sync_service()->SetHasSyncConsent(false);
+  sync_service()->SetDisableReasons({});
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  sync_service()->SetActiveDataTypes({});
+
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            password_manager::SyncState::kNotSyncing);
+
+  sync_service()->SetActiveDataTypes({syncer::ModelTypeSet(syncer::PASSWORDS)});
+  EXPECT_EQ(
+      controller()->GetPasswordSyncState(),
+      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+
+  sync_service()->SetHasSyncConsent(true);
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            password_manager::SyncState::kSyncingNormalEncryption);
+
+  sync_service()->SetIsUsingExplicitPassphrase(true);
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            password_manager::SyncState::kSyncingWithCustomPassphrase);
+}
+
+TEST_F(ItemsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
+  Init();
+  // Simulate sign-in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com",
+                                      signin::ConsentLevel::kSync);
+  EXPECT_EQ(controller()->GetPrimaryAccountEmail(), u"test@email.com");
 }
