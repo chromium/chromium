@@ -139,6 +139,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1323433172918577554">Mostra'n més</translation>
 <translation id="132390688737681464">Desa i emplena les adreces</translation>
 <translation id="1330449323196174374">Plegat amb finestra a l'esquerra</translation>
+<translation id="1333745675627230582">Juga al joc El dinosaure de Chrome</translation>
 <translation id="1333989956347591814">És possible que la teva activitat <ph name="BEGIN_EMPHASIS" />continuï sent visible<ph name="END_EMPHASIS" /> per a:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />els llocs web que visitis
@@ -742,6 +743,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2972581237482394796">&amp;Refés</translation>
 <translation id="2977665033722899841">S'ha seleccionat <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Òpera</translation>
+<translation id="2983666748527428214">Obre una pestanya d'incògnit</translation>
 <translation id="2985306909656435243">Si s'activa aquesta opció, Chromium desa una còpia de la vostra targeta en aquest dispositiu per agilitzar l'emplenament de formularis.</translation>
 <translation id="2985398929374701810">Introdueix una adreça vàlida</translation>
 <translation id="2986368408720340940">Aquest mètode de recollida no està disponible. Prova'n un altre.</translation>
@@ -1503,6 +1505,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5097099694988056070">Estadístiques del dispositiu, com ara l'ús de CPU o RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">El lloc web no és segur</translation>
+<translation id="5109892411553231226">Gestiona les formes de pagament</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Safata 18</translation>
 <translation id="5114987907971894280">realitat virtual</translation>
@@ -1750,6 +1753,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5808435672482059465">Mostra l'historial de Chrome</translation>
 <translation id="5808542072418270309">Jocs de simulació</translation>
 <translation id="5810442152076338065">La connexió a <ph name="DOMAIN" /> s'ha encriptat amb un sistema de xifratge obsolet.</translation>
 <translation id="5812947184178430888">Quan Chrome marca esdeveniments de seguretat, se n'envien les dades rellevants a l'administrador. Per exemple, URL de pàgines que visites a Chrome, noms o metadades de fitxers i el nom d'usuari que fas servir per iniciar la sessió en aplicacions web, al dispositiu i a Chrome.</translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Гэйтвэй</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
+<translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Дэлгэцийн зураг солих</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3606583719724308068">HTTPS вебсайтууд руу өндөр хоцролттой</translation>
+<translation id="3621202678540785336">Оролт</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
+<translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 зураг</translation>
 <translation id="7175037578838465313"><ph name="NAME" />-г тохируулах</translation>

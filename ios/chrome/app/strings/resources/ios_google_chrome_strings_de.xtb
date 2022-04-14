@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1968388653333775699">Mit Chrome mehr erledigen</translation>
 <translation id="2009224836393115614">Chrome konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
+<translation id="2056123005618757196">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="2147651015520127414">Chrome hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="2199719347983604670">Daten aus der Chrome-Synchronisierung</translation>
 <translation id="2313070403598893276">Google Chrome ist jetzt noch intuitiver, sicherer und schneller als je zuvor</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
 <translation id="5030102366287574140">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="5108659628347594808">Chrome verbessern</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager von Google für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="8969290730818637510">Wenn aktiviert:
+<ph name="BEGIN_INDENT" />  • Du hilfst, Chrome für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" />  • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
+  • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
+  • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 </translationbundle>

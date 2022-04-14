@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="4654936625574199632">Chromium šalje podatke o korišćenju i otkazivanju Google-u radi poboljšanja aplikacije. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
 <translation id="4736424910885271643">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chromium podaci obrisati sa ovog uređaja</translation>
 <translation id="4806326830773390517">Pomozite nam da poboljšamo Chromium slanjem statistike korišćenja i izveštaja o otkazivanju Google-u</translation>
 <translation id="4828317641996116749">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="4985291216379576555">Oflajn ste. Chromium ne može da traži ažuriranja.</translation>
+<translation id="4996471330284142407">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Chromium-a.</translation>
 <translation id="4999538639245140991">Odjavljujete se sa naloga kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, što će izbrisati Chromium podatke sa ovog uređaja. Podaci će ostati na Google nalogu.</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može da proverava lozinke kada ih sačuvate.</translation>
@@ -111,6 +113,13 @@
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="865600487977764604">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
+<translation id="8747378496147986285">Kada je ovo uključeno:
+<ph name="BEGIN_INDENT" />  • Pomozite da poboljšamo Chromium za ljude koji ga koriste kao vi.<ph name="END_INDENT" />
+
+Šta treba da imate na umu:
+<ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chromium-a se šalju Google-u, ali nisu povezane sa vama.
+  • Ako Chromium otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
+  • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
 <translation id="894437814105052438">Kada se odjavite, Chromium ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>

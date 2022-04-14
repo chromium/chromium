@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1177863135347784049">Personalitzat</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
+<translation id="1193729455103054076">Vols utilitzar una contrasenya segura?</translation>
 <translation id="1197267115302279827">Mou les adreces d'interès</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
@@ -89,6 +90,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1409879593029778104">No s'ha baixat el fitxer <ph name="FILE_NAME" /> perquè ja existeix.</translation>
 <translation id="1414981605391750300">S'està contactant amb Google. Aquest procés pot trigar una estona…</translation>
 <translation id="1416550906796893042">Versió de l'aplicació</translation>
+<translation id="1428770807407000502">Vols desactivar la sincronització?</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1448440926884431741">Organitza els productes que segueixes a Adreces d'interès</translation>

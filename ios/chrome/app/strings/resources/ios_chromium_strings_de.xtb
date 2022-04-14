@@ -48,11 +48,13 @@
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Du kannst jetzt Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="4654936625574199632">Chromium sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4736424910885271643">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chromium-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="4806326830773390517">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chromium an Google senden</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
+<translation id="4996471330284142407">Jetzt mit dem neuen ultraschnellen Chromium ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="4999538639245140991">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
@@ -110,6 +112,13 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
+<translation id="8747378496147986285">Wenn aktiviert:
+<ph name="BEGIN_INDENT" />  • Du hilfst, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" />  • Daten zu deiner Chromium-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
+  • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
+  • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
 <translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">网关</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
+<translation id="1367951781824006909">选择文件</translation>
 <translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
+<translation id="3621202678540785336">输入</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
+<translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7172721935181587524">1 张图片</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>

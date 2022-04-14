@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="132390688737681464">住所の保存と入力</translation>
 <translation id="1330449323196174374">左観音折り</translation>
+<translation id="1333745675627230582">Chrome Dino ゲームをプレイ</translation>
 <translation id="1333989956347591814">ただし、次の相手に<ph name="BEGIN_EMPHASIS" />あなたのアクティビティが知られる<ph name="END_EMPHASIS" />可能性はあります。
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />訪問先のウェブサイト
@@ -742,6 +743,7 @@
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">オペラ</translation>
+<translation id="2983666748527428214">シークレット タブを開く</translation>
 <translation id="2985306909656435243">有効にすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
 <translation id="2985398929374701810">有効な住所を入力してください</translation>
 <translation id="2986368408720340940">この受け取り方法はご利用いただけません。別の方法を選択してください。</translation>
@@ -1503,6 +1505,7 @@
 <translation id="5097099694988056070">CPU や RAM の使用率などのデバイスの統計情報</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">サイトは安全ではありません</translation>
+<translation id="5109892411553231226">お支払い方法を管理</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">トレイ 18</translation>
 <translation id="5114987907971894280">バーチャル リアリティ</translation>
@@ -1750,6 +1753,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
+<translation id="5808435672482059465">Chrome 履歴を表示</translation>
 <translation id="5808542072418270309">シミュレーション ゲーム</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> への接続は古い暗号スイートにより暗号化されています。</translation>
 <translation id="5812947184178430888">セキュリティ イベントが Chrome によって報告されると、そのイベントに関するデータが管理者に送信されます。送信されるデータには、Chrome でアクセスしたページの URL、ファイルの名前やメタデータ、ウェブベースのアプリケーション、デバイス、Chrome へのログインに使用したユーザー名が含まれる可能性があります。</translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Puerta de enlace</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar al área de escaneo</translation>
+<translation id="1367951781824006909">Selecciona un archivo</translation>
 <translation id="1387854245479784695">Este valor es una combinación de todos los núcleos</translation>
 <translation id="1394661041439318933">Nivel de batería de la funda <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Se puede hacer ping a la puerta de enlace</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Exactitud del punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2491955442992294626">Cuando usas otra ventana no se prueban las teclas.</translation>
 <translation id="2493126929778606526">Tus mejores fotos seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
@@ -154,6 +156,7 @@
 <translation id="2640549051766135490">Se seleccionó el álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Ingresa el código de desbloqueo de 8 caracteres</translation>
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
+<translation id="2717139507051041123">Habilitar el modo de color oscuro</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2783010256799387990">APROBADO</translation>
@@ -220,6 +223,7 @@
 <translation id="3604713164406837697">Cambiar el fondo de pantalla</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3606583719724308068">Alta latencia de los sitios web HTTPS</translation>
+<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar la Pantalla de privacidad</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -376,6 +380,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5252456968953390977">Itinerancia:</translation>
+<translation id="5257811368506016604">Habilitar el modo de color claro</translation>
 <translation id="5264277876637023664">Ejecutar prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
@@ -486,6 +491,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6423239382391657905">VPN abierto</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
 <translation id="6456394469623773452">Regular</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{¿Deseas volver a escanear la página?}=1{¿Deseas volver a escanear la página {PAGE_NUMBER}?}other{¿Deseas volver a escanear la página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -548,6 +554,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
+<translation id="7155171745945906037">Foto existente de la cámara o archivo</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imagen</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
@@ -569,6 +576,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Cambiar el protector de pantalla</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +599,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7656388927906093505">El dispositivo es un mouse.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7665800271478495366">Cambiar avatar</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +627,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8031884997696620457">HSPA+</translation>
+<translation id="80398733265834479">Habilitar el modo de color automático</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>

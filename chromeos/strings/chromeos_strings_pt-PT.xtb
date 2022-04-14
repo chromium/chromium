@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
+<translation id="1367951781824006909">Selecione um ficheiro</translation>
 <translation id="1387854245479784695">Isto é uma agregação de todos os núcleos.</translation>
 <translation id="1394661041439318933">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria na caixa.</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
+<translation id="2491955442992294626">As teclas não são testadas quando está a usar outra janela</translation>
 <translation id="2493126929778606526">As suas melhores fotos selecionadas automaticamente.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Atualizar a imagem de fundo atual</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
+<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -551,6 +554,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
+<translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imagem</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">このアカウントと保存されていないデータは、Chrome やこのデバイスの他の Google アプリから削除されます。</translation>
 <translation id="1968388653333775699">Chrome でもっと便利に</translation>
 <translation id="2009224836393115614">Chrome でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
+<translation id="2056123005618757196">シンプル、安全で、さらに高速になった Google Chrome をご活用ください。</translation>
 <translation id="2147651015520127414">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
 <translation id="2199719347983604670">Chrome 同期のデータ</translation>
 <translation id="2313070403598893276">Google Chrome がさらにシンプル、安全、高速になりました</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>
 <translation id="4698415050768537821">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
+<translation id="4819268619367838612">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
 <translation id="5030102366287574140">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
 <translation id="5108659628347594808">Chrome の品質を向上</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Google Chrome でいつでも安全にブラウジング</translation>
 <translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
 <translation id="8788269841521769222">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
+<translation id="8969290730818637510">オンにした場合:
+<ph name="BEGIN_INDENT" />  • 同じように Chrome を使用する他のユーザーの利便性向上に役立てられます。<ph name="END_INDENT" />
+
+留意事項:
+<ph name="BEGIN_INDENT" />  • Chrome の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません。
+
+  • Chrome がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります。
+
+  • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 <translation id="9122931302567044771">Chrome は毎回 PC 版サイトをリクエストします。</translation>
 </translationbundle>

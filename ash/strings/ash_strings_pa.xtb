@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux ਐਪਾਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="108486256082349153">ਸੈਲਿਊਲਰ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ। ਆਪਣੀਆਂ ਐਪਾਂ ਵਿੱਚ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ।</translation>
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
@@ -86,6 +87,7 @@
 <translation id="1351937230027495976">ਮੀਨੂ ਸਮੇਟੋ</translation>
 <translation id="1364382257761975320">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="1364618750746929654">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
+<translation id="1372545819342940910">ਬਾਅਦ ਵਿੱਚ ਦੇਖਣ ਲਈ ਡੈਸਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1383597849754832576">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1391102559483454063">ਚਾਲੂ</translation>
@@ -179,6 +181,7 @@
 <translation id="1990046457226896323">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1993072747612765854">ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="1998100899771863792">ਮੌਜੂਦਾ ਡੈਸਕ</translation>
+<translation id="2001444736072756133">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ।</translation>
 <translation id="2016340657076538683">ਕੋਈ ਸੁਨੇਹਾ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2018630726571919839">ਮੈਨੂੰ ਕੋਈ ਚੁਟਕਲਾ ਸੁਣਾਓ</translation>
 <translation id="2021864487439853900">ਅਣਲਾਕ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -264,6 +267,7 @@
 <translation id="2595239820337756193">ਮੀਲ ਵਿੱਚ 5K</translation>
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="2607678425161541573">ਆਨਲਾਈਨ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="2620016719323068571">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ...</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
@@ -621,6 +625,9 @@
 <translation id="4633185660152240791">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ਐਪ ਸਿਫ਼ਾਰਸ਼</translation>
+<translation id="4657775630156561295">ਅੱਗੇ ਦਿੱਤੇ ਸੁਝਾਅ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸੁਝਾਅ ਇਤਿਹਾਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="4665114317261903604">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -944,6 +951,7 @@
 <translation id="6751052314767925245">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6751826523481687655">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="6752912906630585008">ਡੈਸਕ <ph name="REMOVED_DESK" /> ਨੂੰ ਹਟਾ ਕੇ ਡੈਸਕ <ph name="RECEIVE_DESK" /> ਵਿੱਚ ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="6753390234084146956">ਟੈਬਾਂ</translation>
 <translation id="6754441615189976839">ਸ਼</translation>
 <translation id="6757237461819837179">ਕੋਈ ਮੀਡੀਆ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6777216307882431711">ਕਨੈਕਟ ਕੀਤੇ USB-C ਡੀਵਾਈਸਾਂ ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -1049,6 +1057,7 @@
 <translation id="743058460480092004">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹਨ।</translation>
 <translation id="7434543979546293336">ਮੁੱਖ ਵਿਚਾਰ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="7452560014878697800">ਐਪਲੀਕੇਸ਼ਨ ਵੱਲੋਂ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="7453330308669753048">ਖੋਜ ਇਤਿਹਾਸ ਦਾ ਨਤੀਜਾ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਮੋਡ</translation>
 <translation id="7466449121337984263">ਕਿਰਪਾ ਕਰਕੇ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
@@ -1105,6 +1114,7 @@
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
 <translation id="7749640678855296659">ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਫਿਲਹਾਲ ਬੰਦ ਹੈ</translation>
 <translation id="776344839111254542">ਅੱਪਡੇਟ ਵੇਰਵਿਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="7780094051999721182">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7780159184141939021">ਸਕ੍ਰੀਨ ਘੁਮਾਓ</translation>
 <translation id="7796353162336583443">ਕੋਈ ਨੋਟ-ਕਥਨ ਬਣਾਉਣ, ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ, Google Assistant ਦੀ ਵਰਤੋਂ ਕਰਨ, ਲੇਜ਼ਰ ਪੁਆਇੰਟਰ ਜਾਂ ਵੱਡਦਰਸ਼ੀ ਸ਼ੀਸ਼ੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸ਼ੈਲਫ਼ ਉੱਤੇ ਸਟਾਈਲਸ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="7796735576426975947">ਨਵੀਂ ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8120151603115102514">ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਲਾਕ ਸਕ੍ਰੀਨ ਨਹੀਂ ਹੈ। ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="8131994907636310308">ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਵਾਲਾ ਟੋਸਟ ਬੰਦ ਕਰੋ</translation>
 <translation id="8132487352815776550">ਬੰਦ ਸੁਰਖੀਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="813913629614996137">ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>

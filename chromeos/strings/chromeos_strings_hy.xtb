@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Անցուղի</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
+<translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1387854245479784695">Սա բոլոր միջուկների միավորումն է</translation>
 <translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
 <translation id="2695514675076754339">Մուտքագրեք ապակողպման 8 նիշանոց կոդը</translation>
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
+<translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
+<translation id="3621202678540785336">Ներածում</translation>
 <translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
 <translation id="370665806235115550">Բեռնում…</translation>
@@ -377,6 +380,7 @@
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>
+<translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
 <translation id="5264277876637023664">Փորձարկել CPU-ն</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Նորից գործարկել ծրագրերը</translation>
@@ -487,6 +491,7 @@
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Թույլ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>
 <translation id="6456394469623773452">Լավ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Նորից սկանավորե՞լ էջը}=1{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}one{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}other{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -549,6 +554,7 @@
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
+<translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7172721935181587524">1 պատկեր</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ցանցի կարգավորում</translation>
@@ -570,6 +576,7 @@
 <translation id="7343649194310845056">Ցանցային սարքեր</translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Փոխել էկրանապահը</translation>
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -592,6 +599,7 @@
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
 <translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7665800271478495366">Փոխել ավատարը</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -619,6 +627,7 @@
 <translation id="7994702968232966508">EAP եղանակ</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>

@@ -139,6 +139,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1323433172918577554">Rodyti daugiau</translation>
 <translation id="132390688737681464">Išsaugoti ir užpildyti adresus</translation>
 <translation id="1330449323196174374">Atvartas kairėje</translation>
+<translation id="1333745675627230582">„Chrome“ dinozauro žaidimas</translation>
 <translation id="1333989956347591814">Veiklą <ph name="BEGIN_EMPHASIS" />vis tiek gali peržiūrėti<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />lankomos svetainės;
@@ -746,6 +747,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2972581237482394796">&amp;Atlikti iš naujo</translation>
 <translation id="2977665033722899841">„<ph name="ROW_NAME" />“, šiuo metu pasirinkta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Inkognito skirtuko atidarymas</translation>
 <translation id="2985306909656435243">Jei šis nustatymas įgalintas, „Chromium“ išsaugos kortelės kopiją įrenginyje, kad galėtumėte greičiau užpildyti formas.</translation>
 <translation id="2985398929374701810">Įveskite tinkamą adresą</translation>
 <translation id="2986368408720340940">Šis paėmimo metodas nepasiekiamas. Išbandykite kitą metodą.</translation>
@@ -1513,6 +1515,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5097099694988056070">Įrenginio statistika, pvz., centrinio procesoriaus / laisvosios prieigos atminties naudojimas</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Svetainė nėra saugi</translation>
+<translation id="5109892411553231226">Mokėjimo metodų tvarkymas</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Aštuonioliktas dėklas</translation>
 <translation id="5114987907971894280">virtualioji realybė</translation>
@@ -1760,6 +1763,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Ar norite, kad būtų įvesta <ph name="CARD_DETAIL" /> informacija?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
+<translation id="5808435672482059465">„Chrome“ istorijos peržiūra</translation>
 <translation id="5808542072418270309">Simuliaciniai žaidimai</translation>
 <translation id="5810442152076338065">Ryšys su <ph name="DOMAIN" /> užšifruotas naudojant pasenusį šifravimo paketą.</translation>
 <translation id="5812947184178430888">Kai saugos įvykius pažymi „Chrome“, atitinkami įvykių duomenys išsiunčiami administratoriui. Tai gali būti naršyklėje „Chrome“ lankomų puslapių URL, failų pavadinimai ar metaduomenys ir naudotojo vardas, kurį naudodami prisijungiate prie žiniatinklio programų, įrenginio ir „Chrome“.</translation>

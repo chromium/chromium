@@ -13,6 +13,7 @@
         
 <ph name="DSE_NAME" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="1054045277222934172">Gallwch newid y wedd gwefan ddiofyn i fwrdd gwaith yn y Gosodiadau yna Gosodiadau Cynnwys.</translation>
+<translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Defnyddio Cyfrinair Arall...</translation>
 <translation id="1066060668811609597">Rheoli Cysoni</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
@@ -494,6 +495,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5339316356165661760">Troi Cysoni Ymlaen</translation>
 <translation id="5360976571138293719">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, ewch i <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Byddwch yn gweld eich gwefannau a ddilynir yma</translation>
 <translation id="5388358297987318779">Agor Llun</translation>
 <translation id="5407969256130905701">Cael Gwared ar Newidiadau?</translation>
 <translation id="5416022985862681400">Y 7 diwrnod diwethaf</translation>
@@ -611,6 +613,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6344783595350022745">Clirio'r Testun</translation>
 <translation id="6346549652287021269">Dechrau Lawrlwythiad Newydd?</translation>
 <translation id="634878792104344809">Cysoni eich cyfrineiriau, eich hanes, a rhagor ar eich holl ddyfeisiau</translation>
+<translation id="6361848730467328243">Dilyn <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Nid oes unrhyw dabiau anhysbys</translation>
 <translation id="6363526231572697780">Dim Enw Defnyddiwr</translation>
 <translation id="6366190659675876144">Amddiffyniad Safonol</translation>
@@ -648,6 +651,7 @@ Ceisiwch ddefnyddio cyfrinair unigryw ar gyfer pob gwefan.</translation>
 <translation id="6524918542306337007">Nid yw'r Mood Anhysbys ar gael</translation>
 <translation id="6530992499366869131">Yn Eich Rhybuddio os yw Cyfrineiriau'n Cael eu Datgelu Mewn Tor Data</translation>
 <translation id="6537746030088321027">enghraifft.com</translation>
+<translation id="6540120577248033958">Ewch i wefan a chliciwch ar Dilyn yn newislen Chrome</translation>
 <translation id="6561262006871132942">Chwyddo</translation>
 <translation id="6583087784430677195">I'w ddiffodd, agorwch y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /> ac ewch i Awtolenwi Cyfrineiriau.</translation>
 <translation id="6585618849026997638">Gallwch fynd yn ôl i dudalen sy'n bwysig i chi drwy ychwanegu nod tudalen</translation>

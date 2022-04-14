@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">ተጨማሪ አሳይ</translation>
 <translation id="132390688737681464">አድራሻዎችን አስቀምጥ እና ሙላ</translation>
 <translation id="1330449323196174374">ግራ በር እጠፍ</translation>
+<translation id="1333745675627230582">የChrome Dino ጨዋታን አጫውት</translation>
 <translation id="1333989956347591814">የእርስዎ እንቅስቃሴ ለሚከተሉት <ph name="BEGIN_EMPHASIS" />አሁንም የሚታይ ሊሆን ይችላል<ph name="END_EMPHASIS" />፦
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />እርስዎ የሚጎበኟቸው ድር ጣቢያዎች
@@ -742,6 +743,7 @@
 <translation id="2972581237482394796">&amp;ድገም</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />፣ አሁን ላይ ተመርጧል። <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">ማንነት የማያሳውቅ ትርን ክፈት</translation>
 <translation id="2985306909656435243">ከነቃ Chromium ለተሻለ የቅጽ አሞላል ፍጥነት ሲባል በዚህ መሣሪያ ላይ ያለው የካርድዎን ቅጂ ያከማቻል።</translation>
 <translation id="2985398929374701810">የሚሰራ አድራሻ ያስገቡ</translation>
 <translation id="2986368408720340940">ይህ የመውሰጃ ዘዴ አይደገፍም። የተለየ ዘዴ ይምረጡ።</translation>
@@ -1504,6 +1506,7 @@
 <translation id="5097099694988056070">እንደ የሲፒዩ/ራም አጠቃቀም ያለ የመሣሪያ ስታቲስቲክስ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">የጣቢያ ደህንነት የተጠበቀ አይደለም</translation>
+<translation id="5109892411553231226">የመክፈያ ዘዴዎችን ያቀናብሩ</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">መሳቢያ 18</translation>
 <translation id="5114987907971894280">ምናባዊ እውነታ</translation>
@@ -1751,6 +1754,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">የእርስዎን <ph name="CARD_DETAIL" /> መሙላት ይፈልጋሉ?</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5808435672482059465">የChrome ታሪክዎን ይመልከቱ</translation>
 <translation id="5808542072418270309">የማስመሰያ ጨዋታዎች</translation>
 <translation id="5810442152076338065">ወደ <ph name="DOMAIN" /> ግንኙነትዎ ፍጹማዊ ስነ መሰውር ጥቅል በመጠቀም የተመሳጠረ ነው።</translation>
 <translation id="5812947184178430888">የደህንነት ክስተቶች በChrome በሚጠቆሙ ጊዜ፣ ስለ ክስተቶቹ አግባብነት ያለው ውሂብ ለአስተዳዳሪዎ ይላካል። ይህ እርስዎ በChrome ውስጥ የጎበኟቸውን የገጾች ዩአርኤሎች፣ የፋይል ስሞችን ወይም ዲበ ውሂብን እና ወደ በድር ላይ የሚሰሩ መተግበሪያዎች፣ የእርስዎ መሣሪያ እና Chrome ለመግባት የሚጠቀሙበትን የተጠቃሚ ስም ሊያካትት ይችላል።</translation>

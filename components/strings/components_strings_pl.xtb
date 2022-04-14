@@ -139,6 +139,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1323433172918577554">Pokaż więcej</translation>
 <translation id="132390688737681464">Zapisuj i automatycznie uzupełniaj adresy</translation>
 <translation id="1330449323196174374">Składanie od góry do środka</translation>
+<translation id="1333745675627230582">Zagraj w grę z dinozaurem w Chrome</translation>
 <translation id="1333989956347591814">Twoja aktywność <ph name="BEGIN_EMPHASIS" />może być nadal widoczna<ph name="END_EMPHASIS" /> dla:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />stron internetowych, które odwiedzasz;
@@ -742,6 +743,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2972581237482394796">&amp;Ponów</translation>
 <translation id="2977665033722899841">Obecnie wybrany wiersz to <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Otwórz kartę incognito</translation>
 <translation id="2985306909656435243">Jeśli włączysz tę opcję, Chromium zapisze kopię Twojej karty na tym urządzeniu, by umożliwić Ci szybsze wypełnianie formularzy.</translation>
 <translation id="2985398929374701810">Wpisz prawidłowy adres</translation>
 <translation id="2986368408720340940">Ta metoda odbioru jest niedostępna. Wybierz inną.</translation>
@@ -1503,6 +1505,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5097099694988056070">Statystyki na temat sprzętu, np. użycie procesora czy pamięci RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Strona nie jest bezpieczna</translation>
+<translation id="5109892411553231226">Zarządzaj formami płatności</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Taca 18</translation>
 <translation id="5114987907971894280">rzeczywistość wirtualna</translation>
@@ -1750,6 +1753,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Chcesz wpisać dane swojej karty (<ph name="CARD_DETAIL" />)?</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
+<translation id="5808435672482059465">Wyświetl historię Chrome</translation>
 <translation id="5808542072418270309">Gry symulacyjne</translation>
 <translation id="5810442152076338065">Połączenie z <ph name="DOMAIN" /> jest szyfrowane przy użyciu przestarzałego zestawu szyfrów.</translation>
 <translation id="5812947184178430888">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na swoim urządzeniu i w Chrome.</translation>

@@ -90,6 +90,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3349211344363550267">Chromium rekomandon që të mos e shkarkosh apo hapësh këtë skedar</translation>
 <translation id="3350761136195634146">Ekziston tashmë një profil i Chromium me këtë llogari</translation>
 <translation id="3406848076815591792">Të kalohet te profili ekzistues i Chromium?</translation>
+<translation id="3412460710772753638">Në "Menaxherin e fjalëkalimeve" në këtë pajisje</translation>
 <translation id="3430503420100763906">Me profilet e Chromium mund t'i mbash të ndara të gjitha gjërat e tua të Chromium. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="347328004046849135">Chromium do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
 <translation id="3474745554856756813">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
@@ -112,6 +113,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3889543394854987837">Kliko emrin tënd për të hapur Chromium dhe fillo shfletimin.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chromium. Për ta mbajtur shfletimin tënd të ndarë, Chromium mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="3945058413678539331">Chromium po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
+<translation id="3962623956404948996">Chromium rekomandon ta skanosh këtë skedar, sepse ai mund të jetë i rrezikshëm</translation>
 <translation id="4036079820698952681">Ndihmo në përmirësimin e Chromium duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chromium</translation>
@@ -130,6 +132,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4544142686420020088">Chromium nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chromium dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Të vazhdohet te një profil i ri i Chromium?</translation>
 <translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
+<translation id="4594305310729380060">Te "Menaxheri i Fjalëkalimeve" në këtë pajisje</translation>
 <translation id="459535195905078186">Aplikacionet Chromium</translation>
 <translation id="4621240073146040695">Pothuajse i përditësuar! Hape përsëri Chromium për të përfunduar përditësimin.</translation>
 <translation id="4665829708273112819">Paralajmërim: Chromium nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për të çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>

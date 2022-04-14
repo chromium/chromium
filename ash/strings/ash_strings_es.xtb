@@ -22,6 +22,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1081015718268701546">Por el momento no se admiten aplicaciones de Linux. Se guardarán las demás aplicaciones.</translation>
 <translation id="108486256082349153">Móvil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buenas tardes, <ph name="GIVEN_NAME" /></translation>
+<translation id="1088231044944504242">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más. Usa las teclas de flecha para desplazarte por tus aplicaciones.</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Muestra configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan aún mejor juntos</translation>
@@ -179,6 +180,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1990046457226896323">Archivos de voz descargados</translation>
 <translation id="1993072747612765854">Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Escritorio actual</translation>
+<translation id="2001444736072756133">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más.</translation>
 <translation id="2016340657076538683">Escribe un mensaje</translation>
 <translation id="2018630726571919839">Cuéntame un chiste</translation>
 <translation id="2021864487439853900">Haz clic para desbloquear</translation>
@@ -224,6 +226,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2302092602801625023">Esta cuenta se gestiona con Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
 <translation id="2318576281648121272">Hoy <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, categoría de resultados de búsqueda</translation>
 <translation id="2322173485024759474">Retroceder por carácter</translation>
 <translation id="2339073806695260576">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Bloqueada en vertical</translation>
@@ -263,6 +266,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere inicio de sesión online</translation>
+<translation id="2620016719323068571">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más...</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="263399434338050016">"Seleccionar todo"</translation>
@@ -621,6 +625,9 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 día}other{Cambia el dispositivo a la versión anterior en un plazo de # días}}</translation>
 <translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, aplicación recomendada</translation>
+<translation id="4657775630156561295">La siguiente sugerencia se eliminará permanentemente del historial de sugerencias de tu cuenta:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox habilitado</translation>
 <translation id="4665114317261903604">Activa o desactiva el modo No molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
@@ -922,6 +929,7 @@ Nueva instalación</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quiere usar el micrófono</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/Desactivar Subtítulos automáticos. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Deshacer order por nombre</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="6650933572246256093">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Introduce la clave de contraseña <ph name="PASSKEY" /> en el dispositivo</translation>
 <translation id="6657585470893396449">Contraseña</translation>
@@ -942,6 +950,7 @@ Nueva instalación</translation>
 <translation id="6751052314767925245">Esta función la gestiona tu administrador</translation>
 <translation id="6751826523481687655">El control del rendimiento está activado</translation>
 <translation id="6752912906630585008">Se ha quitado el escritorio <ph name="REMOVED_DESK" /> y se ha combinado con el escritorio <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">pestañas</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">No se está reproduciendo nada</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
@@ -1047,6 +1056,7 @@ Nueva instalación</translation>
 <translation id="743058460480092004">La cámara y el micrófono se están utilizando.</translation>
 <translation id="7434543979546293336">Marcada como idea clave</translation>
 <translation id="7452560014878697800">Una aplicación está usando tu cámara</translation>
+<translation id="7453330308669753048">Resultado del historial de búsqueda eliminado</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
@@ -1103,6 +1113,7 @@ Nueva instalación</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="7749640678855296659">Tu micrófono está apagado en este momento</translation>
 <translation id="776344839111254542">Haz clic para ver los detalles de la actualización</translation>
+<translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el Asistente de Google, el puntero láser o la lupa.</translation>
 <translation id="7796735576426975947">Nueva notificación oculta</translation>
@@ -1165,6 +1176,7 @@ Nueva instalación</translation>
 <translation id="8120151603115102514">Tu teléfono no tiene pantalla de bloqueo. Para desbloquear tu Chromebook, escribe la contraseña.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8131994907636310308">Cerrar la notificación del sistema para ordenar</translation>
 <translation id="8132487352815776550">Detener subtítulos</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
 <translation id="813913629614996137">Inicializando…</translation>
@@ -1228,6 +1240,8 @@ Nueva instalación</translation>
 <translation id="8513108775083588393">Giro automático</translation>
 <translation id="851458219935658693">Mostrar ventanas del escritorio actual, botón seleccionado</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
+<translation id="8535393432370007982">Deshacer orden por color</translation>
+<translation id="8546059259582788728">Orden deshecho correctamente</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553395910833293175">Ya está asignado a todos los escritorios.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> te recomienda que actualices tu <ph name="DEVICE_TYPE" /></translation>

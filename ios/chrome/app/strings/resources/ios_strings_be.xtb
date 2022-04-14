@@ -13,6 +13,7 @@
         
 Ваша пошукавая сістэма – <ph name="DSE_NAME" />. Каб выдаліць гісторыю пошуку, выканайце інструкцыі гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="1054045277222934172">Зрабіць рэжым для ПК стандартным рэжымам паказу сайтаў можна праз меню "Налады &gt; Налады змесціва"</translation>
+<translation id="1054745118061919935">Працягваючы, вы прымаеце <ph name="BEGIN_LINK" />Умовы выкарыстання<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Выкарыстаць стары пароль...</translation>
 <translation id="1066060668811609597">Кіраванне сінхранізацыяй</translation>
 <translation id="1076421457278169141">Код сканіраваны</translation>
@@ -494,6 +495,7 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5339316356165661760">Уключыць сінхранізацыю</translation>
 <translation id="5360976571138293719">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце на старонцы <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Тут будуць пералічаны сайты, на якія вы падпісаліся</translation>
 <translation id="5388358297987318779">Адкрыць відарыс</translation>
 <translation id="5407969256130905701">Адхіліць змяненні</translation>
 <translation id="5416022985862681400">За апошнія 7 дзён</translation>
@@ -611,6 +613,7 @@
 <translation id="6344783595350022745">Ачысціць тэкст</translation>
 <translation id="6346549652287021269">Пачаць новае спампоўванне?</translation>
 <translation id="634878792104344809">Сінхранізацыя пароляў, гісторыі і іншых даных на ўсіх вашых прыладах</translation>
+<translation id="6361848730467328243">Падпісацца на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма ўкладак інкогніта</translation>
 <translation id="6363526231572697780">Адсутнічае імя карыстальніка</translation>
 <translation id="6366190659675876144">Стандартная абарона</translation>
@@ -648,6 +651,7 @@
 <translation id="6524918542306337007">Рэжым інкогніта недаступны</translation>
 <translation id="6530992499366869131">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Наведайце сайт і націсніце "Падпісацца" ў меню Chrome</translation>
 <translation id="6561262006871132942">Павялічыць</translation>
 <translation id="6583087784430677195">Для выключэння адкрыйце <ph name="BEGIN_LINK" />Налады<ph name="END_LINK" /> і перайдзіце ў раздзел "Аўтазапаўненне пароляў".</translation>
 <translation id="6585618849026997638">Каб мець магчымасць вярнуцца да важнай для вас старонкі пазней, можна дадаць закладку</translation>

@@ -22,6 +22,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1081015718268701546">Les applications Linux ne sont pas actuellement prises en charge. D'autres applications seront enregistrées.</translation>
 <translation id="108486256082349153">Cellulaire : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bon après-midi <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus Utilisez les touches fléchées pour parcourir vos applications.</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
@@ -179,6 +180,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Bureau actuel</translation>
+<translation id="2001444736072756133">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
 <translation id="2016340657076538683">Rédiger un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
@@ -224,6 +226,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2318576281648121272">Aujourd'hui le <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, catégorie de résultats de recherche</translation>
 <translation id="2322173485024759474">Déplacer une lettre vers l'arrière</translation>
 <translation id="2339073806695260576">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran, ou pour utiliser le pointeur laser ou la loupe.</translation>
 <translation id="2341729377289034582">Verrouillée à la verticale</translation>
@@ -263,6 +266,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2595239820337756193">Combien y a-t-il de milles dans 5 km?</translation>
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
+<translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">« Tout sélectionner »</translation>
@@ -620,6 +624,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4633185660152240791">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai d'un jour}one{Restaurez la version antérieure de l'appareil dans un délai de # jour}other{Restaurez la version antérieure de l'appareil dans un délai de # jours}}</translation>
 <translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
+<translation id="4657775630156561295">La suggestion suivante sera supprimée de l'historique des suggestions de votre compte :
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4665114317261903604">Basculer le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours…</translation>
@@ -921,6 +928,7 @@ Nouvelle installation</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> demande l'autorisation d'utiliser le microphone</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Basculer la transcription instantanée. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Annuler l'ordre de tri par nom</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="6650933572246256093">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer. Veuillez entrer cette phrase de passe sur cet appareil : <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -941,6 +949,7 @@ Nouvelle installation</translation>
 <translation id="6751052314767925245">Fonctionnalité imposée par votre administrateur</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>
 <translation id="6752912906630585008">Le bureau <ph name="REMOVED_DESK" /> a été supprimé et fusionné avec le bureau <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">onglets</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
@@ -1046,6 +1055,7 @@ Nouvelle installation</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
 <translation id="7434543979546293336">Indiquée comme idée clé</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
+<translation id="7453330308669753048">Résultat de l'historique de recherche retiré</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -1102,6 +1112,7 @@ Nouvelle installation</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749640678855296659">Votre microphone est présentement désactivé</translation>
 <translation id="776344839111254542">Cliquez pour afficher les détails de la mise à jour</translation>
+<translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796353162336583443">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran ou pour utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
@@ -1164,6 +1175,7 @@ Nouvelle installation</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Pour déverrouiller votre Chromebook, entrez votre mot de passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8131994907636310308">Fermer le message de tri</translation>
 <translation id="8132487352815776550">Fermer les sous-titres</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
@@ -1227,6 +1239,8 @@ Nouvelle installation</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, bouton radio sélectionné</translation>
 <translation id="8517041960877371778">Il est possible que votre <ph name="DEVICE_TYPE" /> ne se charge pas lorsqu’il est allumé.</translation>
+<translation id="8535393432370007982">Annuler l'ordre de tri par couleur</translation>
+<translation id="8546059259582788728">Le tri a bien été annulé</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> vous recommande de mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
@@ -1336,7 +1350,7 @@ Nouvelle installation</translation>
 <translation id="9210037371811586452">Fermeture du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Il reste <ph name="TIME_REMAINING" /> avant que la pile soit complètement rechargée.</translation>
-<translation id="9215934040295798075">Sélectionner un fond d'écran</translation>
+<translation id="9215934040295798075">Définir le fond d'écran</translation>
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>
 <translation id="9220525904950070496">Supprimer le compte</translation>
 <translation id="923686485342484400">Appuyez deux fois sur Contrôle + Maj + Q pour vous déconnecter.</translation>

@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Nie op Chromium Beta gesteun nie</translation>
 <translation id="4555020257205549924">Wanneer hierdie kenmerk aangeskakel is, sal Chromium aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
+<translation id="4654936625574199632">Chromium stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Skakel Chromium-skandeerder aan</translation>
 <translation id="4736424910885271643">Jou rekening word deur <ph name="HOSTED_DOMAIN" /> bestuur, en daarom sal jou Chromium-data van hierdie toestel af uitgevee word</translation>
 <translation id="4806326830773390517">Help om Chromium beter te maak deur gebruikstatistieke en omvalverslae na Google toe te stuur</translation>
 <translation id="4828317641996116749">Chromium kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="4985291216379576555">Chromium kan nie vanlyn vir opdaterings kyk nie</translation>
+<translation id="4996471330284142407">Kry meer gedoen met 'n eenvoudige, veiliger Chromium wat vinniger as ooit vantevore is.</translation>
 <translation id="4999538639245140991">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chromium-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
 <translation id="5171868502429358653">Meld by Chromium aan</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
@@ -111,6 +113,15 @@
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="865600487977764604">Hou jou veilig op Chromium en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
+<translation id="8747378496147986285">Wanneer dit aan is:
+<ph name="BEGIN_INDENT" />  • Help dit om Chromium beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
+
+Dinge om in ag te neem:
+<ph name="BEGIN_INDENT" />  • Inligting oor jou gebruik van Chromium word na Google toe gestuur, maar dit word nie met jou verbind nie.
+
+  • As Chromium omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
+
+  • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="894437814105052438">Chromium sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>

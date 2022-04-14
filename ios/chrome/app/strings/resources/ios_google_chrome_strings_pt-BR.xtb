@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1968388653333775699">Use o Chrome e seja ainda mais eficiente</translation>
 <translation id="2009224836393115614">Não foi possível verificar suas senhas com o Chrome. Verifique sua conexão de Internet.</translation>
+<translation id="2056123005618757196">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
 <translation id="2199719347983604670">Dados da "Sincronização do Chrome"</translation>
 <translation id="2313070403598893276">O Google Chrome é simples, seguro e está mais rápido do que nunca</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4698415050768537821">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="5108659628347594808">Melhorar o Chrome</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
+<translation id="8969290730818637510">Quando ativada, essa configuração:
+<ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chrome para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
+
+Considerações:
+<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.
+
+  • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
+
+  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 </translationbundle>

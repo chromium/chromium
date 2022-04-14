@@ -90,6 +90,7 @@
 <translation id="3349211344363550267">Chromium સુઝાવ આપે છે કે તમે આ ફાઇલને ડાઉનલોડ કરશો નહીં કે ખોલશો નહીં</translation>
 <translation id="3350761136195634146">આ એકાઉન્ટ સાથેની Chromium પ્રોફાઇલ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="3406848076815591792">વર્તમાન Chromium પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
+<translation id="3412460710772753638">આ ડિવાઇસ પર Password Managerમાં</translation>
 <translation id="3430503420100763906">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
 <translation id="347328004046849135">જ્યારે તમે ચેડાં કરવામાં આવેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chromium તમને સૂચિત કરશે</translation>
 <translation id="3474745554856756813">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromium માં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -112,6 +113,7 @@
 <translation id="3889543394854987837">Chromium ને ખોલવા માટે તમારા નામને ક્લિક કરો અને બ્રાઉઝ કરવાનું પ્રારંભ કરો.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chromium તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="3945058413678539331">Chromium પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
+<translation id="3962623956404948996">Chromium આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chromium</translation>
@@ -130,6 +132,7 @@
 <translation id="4544142686420020088">કંઈક ખોટુ થયું હોવાને કારણે Chromium અપડેટ થયું નથી. <ph name="BEGIN_LINK" />Chromium અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">નવી Chromium પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>
 <translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને અન્ય સેટિંગને ઍક્સેસ કરી શકો છો.</translation>
+<translation id="4594305310729380060">આ ડિવાઇસ પર Password Managerમાં</translation>
 <translation id="459535195905078186">Chromium ઍપ્લિકેશનો</translation>
 <translation id="4621240073146040695">અપ ટૂ ડેટ થવામાં છે! અપડેટ સમાપ્ત કરવા માટે Chromium ને ફરીથી લોંચ કરો.</translation>
 <translation id="4665829708273112819">ચેતવણી: એક્સ્ટેન્શનને તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી Chromium અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગી નાપસંદ કરો.</translation>

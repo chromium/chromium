@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora você poderá usar o Chromium sempre que tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
 <translation id="4736424910885271643">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo</translation>
 <translation id="4806326830773390517">Envie estatísticas de uso e relatórios de erros ao Google para ajudar a melhorar o Chromium</translation>
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
+<translation id="4996471330284142407">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
@@ -111,6 +113,15 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
+<translation id="8747378496147986285">Quando ativada, essa configuração:
+<ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chromium para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
+
+Considerações:
+<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chromium, mas elas não são vinculadas a você.
+
+  • Se o Chromium falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
+
+  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>

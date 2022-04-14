@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux アプリは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="108486256082349153">携帯電話: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">こんにちは、<ph name="GIVEN_NAME" /> さん</translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />、ファイル、アプリなどを検索できます。アプリを切り替えるには、矢印キーを使用します。</translation>
 <translation id="109942774857561566">退屈だな</translation>
 <translation id="1104084341931202936">ユーザー補助機能の設定を表示</translation>
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
@@ -86,6 +87,7 @@
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
 <translation id="1364618750746929654">音声文字変換を生成できません</translation>
+<translation id="1372545819342940910">後で使用するためにデスクを保存</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
@@ -179,6 +181,7 @@
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください</translation>
 <translation id="1998100899771863792">現在のデスク</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />、ファイル、アプリなどを検索できます。</translation>
 <translation id="2016340657076538683">メッセージを入力</translation>
 <translation id="2018630726571919839">面白いこと言って</translation>
 <translation id="2021864487439853900">クリックしてロックを解除</translation>
@@ -264,6 +267,7 @@
 <translation id="2595239820337756193">5 km は何マイル</translation>
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2607678425161541573">オンライン ログインが必要です</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />、ファイル、アプリなどを検索...</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
@@ -621,6 +625,9 @@
 <translation id="4633185660152240791">{0,plural, =1{1 日以内にデバイスを以前のバージョンに戻してください}other{# 日以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />、おすすめのアプリ</translation>
+<translation id="4657775630156561295">次の候補はアカウントの候補履歴から完全に削除されます。
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
 <translation id="4665114317261903604">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
@@ -943,6 +950,7 @@
 <translation id="6751052314767925245">管理者によって適用</translation>
 <translation id="6751826523481687655">パフォーマンス追跡機能が有効になっています</translation>
 <translation id="6752912906630585008">デスク <ph name="REMOVED_DESK" /> が削除されデスク <ph name="RECEIVE_DESK" /> に統合されました</translation>
+<translation id="6753390234084146956">タブ</translation>
 <translation id="6754441615189976839">土</translation>
 <translation id="6757237461819837179">再生中のメディアはありません</translation>
 <translation id="6777216307882431711">接続された USB-C デバイスを充電中</translation>
@@ -1049,6 +1057,7 @@
 <translation id="743058460480092004">カメラとマイクが使用中です。</translation>
 <translation id="7434543979546293336">要点としてマークしました</translation>
 <translation id="7452560014878697800">アプリケーションがカメラを使用しています</translation>
+<translation id="7453330308669753048">検索履歴の結果が削除されました</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
@@ -1105,6 +1114,7 @@
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749640678855296659">マイクは現在オフになっています</translation>
 <translation id="776344839111254542">クリックしてアップデートの詳細を表示する</translation>
+<translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7796353162336583443">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、Google アシスタント、レーザー ポインタ、虫メガネを使用したりすることができます。</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。パスワードを入力してChromebookのロックを解除してください</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8131994907636310308">並べ替えのトーストを閉じます</translation>
 <translation id="8132487352815776550">字幕を停止</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> に接続しました</translation>
 <translation id="813913629614996137">初期化しています...</translation>

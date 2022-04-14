@@ -495,6 +495,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5317780077021120954">저장</translation>
 <translation id="5339316356165661760">동기화 사용</translation>
 <translation id="5360976571138293719">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
+<translation id="5386314158584363703">여기에 내가 팔로우한 사이트가 표시됩니다</translation>
 <translation id="5388358297987318779">이미지 열기</translation>
 <translation id="5407969256130905701">변경사항 취소</translation>
 <translation id="5416022985862681400">지난 7일</translation>
@@ -612,6 +613,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6344783595350022745">텍스트 삭제</translation>
 <translation id="6346549652287021269">다운로드를 새로 시작하시겠습니까?</translation>
 <translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
+<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> 팔로우</translation>
 <translation id="6362362396625799311">시크릿 탭 없음</translation>
 <translation id="6363526231572697780">사용자 이름 없음</translation>
 <translation id="6366190659675876144">표준 보호 모드</translation>
@@ -649,6 +651,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6524918542306337007">시크릿 모드를 사용할 수 없음</translation>
 <translation id="6530992499366869131">정보 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">사이트를 방문한 다음 Chrome 메뉴에서 '팔로우'를 클릭하세요.</translation>
 <translation id="6561262006871132942">확대</translation>
 <translation id="6583087784430677195">사용 중지하려면 <ph name="BEGIN_LINK" />Settings(설정)<ph name="END_LINK" />를 열고 AutoFill Passwords(비밀번호 자동 완성)로 이동합니다.</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>

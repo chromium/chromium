@@ -13,6 +13,7 @@
         
 Търсещата ви машина е <ph name="DSE_NAME" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="1054045277222934172">Можете да зададете настолния сайт като основен от „Настройки“ и след това „Настройки за съдържанието“</translation>
+<translation id="1054745118061919935">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Използване на друга парола...</translation>
 <translation id="1066060668811609597">Управление на синхронизирането</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
@@ -494,6 +495,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
 <translation id="5360976571138293719">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Тук ще намерите сайтовете, които следите</translation>
 <translation id="5388358297987318779">Отваряне на изображението</translation>
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
 <translation id="5416022985862681400">Последните 7 дни</translation>
@@ -611,6 +613,7 @@
 <translation id="6344783595350022745">Изчистване на текста</translation>
 <translation id="6346549652287021269">Да се стартира ли ново изтегляне?</translation>
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
+<translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
 <translation id="6363526231572697780">Няма потребителско име</translation>
 <translation id="6366190659675876144">Стандартна защита</translation>
@@ -648,6 +651,7 @@
 <translation id="6524918542306337007">Режимът „инкогнито“ не е налице</translation>
 <translation id="6530992499366869131">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Посетете сайт и кликнете върху „Следване“ в менюто на Chrome</translation>
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>

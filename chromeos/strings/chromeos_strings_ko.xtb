@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">게이트웨이</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
+<translation id="1367951781824006909">파일 선택</translation>
 <translation id="1387854245479784695">모든 코어에서 집계한 값입니다.</translation>
 <translation id="1394661041439318933">기기의 케이스 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
 <translation id="2695514675076754339">8자리 잠금 해제 코드 입력</translation>
 <translation id="2712812801627182647">TLS 인증 키</translation>
+<translation id="2717139507051041123">어두운 색상 모드 사용</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2783010256799387990">통과</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
+<translation id="3621202678540785336">입력</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -377,6 +380,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5252456968953390977">로밍</translation>
+<translation id="5257811368506016604">가벼운 색상 모드 사용</translation>
 <translation id="5264277876637023664">CPU 테스트 실행</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">루틴 다시 실행</translation>
@@ -487,6 +491,7 @@
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">계정 설정으로 이동</translation>
 <translation id="6456394469623773452">좋음</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{페이지를 다시 스캔하시겠습니까?}=1{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}other{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -549,6 +554,7 @@
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
+<translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7172721935181587524">이미지 1개</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
@@ -570,6 +576,7 @@
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">화면 보호기 변경</translation>
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -592,6 +599,7 @@
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7665800271478495366">아바타 변경</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -619,6 +627,7 @@
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">색상 자동조절 사용</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>

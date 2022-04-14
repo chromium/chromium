@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChrome እና በዚህ መሣሪያ ላይ ካሉት ከሌሎች የGoogle መተግበሪያዎች ይወገዳል።</translation>
 <translation id="1968388653333775699">በChrome አማካኝነት እንዲሁም ተጨማሪ ነገሮችን ያድርጉ።</translation>
 <translation id="2009224836393115614">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አልችለም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
+<translation id="2056123005618757196">ከመቼውም ጊዜ በበለጠ ቀላል፣ ደህንነቱ በተጠበቀ እና ፈጣን በሆነ Google Chrome አማካኝነት ተጨማሪ ነገሮችን ያከናውኑ።</translation>
 <translation id="2147651015520127414">Chrome የዚህ ድር ጣቢያ እውቅና ማረጋገጫ ያወጣው <ph name="ISSUER" /> መሆኑን አረጋግጧል።</translation>
 <translation id="2199719347983604670">ውሂብ ከChrome ስምረት</translation>
 <translation id="2313070403598893276">Google Chrome ቀላል፣ ደህንነቱ የተጠበቀ እና ከመቼውም ጊዜ ይልቅ ይበልጥ ፈጣን ነው</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">አንዳንድ ተጨማሪዎች Chrome እንዲበላሽ ያደርጋሉ። እባክዎ የሚከተለውን ያራግፉ፦</translation>
 <translation id="4633328489441962921">Chrome ዝማኔዎች ካሉ መፈተሽ አይችልም</translation>
 <translation id="4698415050768537821">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />የGoogle መለያዎን ይለፍ ቃላት ይፈትሹ።<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">መተግበሪያውን ለማሻሻል ለማገዝ Chrome የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_LINK" />አቀናብር<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">በChrome ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
 <translation id="5030102366287574140">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
 <translation id="5108659628347594808">Chromeን የተሻለ ያድርጉት</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">በGoogle Chrome አማካኝነት ደህንነትዎን ይጠብቁ</translation>
 <translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>
 <translation id="8788269841521769222">ይህን የይለፍ ቃል ማስታወስ አያስፈልገዎትም። ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል</translation>
+<translation id="8969290730818637510">ሲበራ፦
+<ph name="BEGIN_INDENT" />  • Chrome እርስዎ በሚጠቀሙበት መንገድ ለሚጠቀሙ ሰዎች የተሻለ እንዲሆን ያግዙ።<ph name="END_INDENT" />
+
+ከግምት ውስጥ መግባት የሚገቡ ነገሮች፡-
+<ph name="BEGIN_INDENT" />  • ስለ Chrome አጠቃቀምዎ መረጃ ወደ Google ተልኳል፣ ነገር ግን ከእርስዎ ጋር አልተያያዘም።
+  • Chrome ከተበላሸ፣ ስለ ብልሽቱ ዝርዝሮች አንዳንድ የግል መረጃዎችን ሊያካትቱ ይችላሉ።
+  • ማስመርን ካበሩት፣ መለኪያዎች እርስዎ ስለሚጎበኟቸው ዩአርኤሎች መረጃንም ሊያካትቱ ይችላሉ።<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome እንደ ነባሪ ይቀናበር?</translation>
 <translation id="9122931302567044771">ይህ ማለት Chrome የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 </translationbundle>

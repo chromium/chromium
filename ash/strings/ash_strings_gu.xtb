@@ -226,6 +226,7 @@
 <translation id="2302092602801625023">આ એકાઉન્ટ Family Link દ્વારા મેનેજ થાય છે</translation>
 <translation id="2303600792989757991">ટોગલ વિન્ડો વિહંગાવલોકન</translation>
 <translation id="2318576281648121272">આજે <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" /> , શોધ પરિણામની કૅટેગરી</translation>
 <translation id="2322173485024759474">એક અક્ષર પાછળ જાઓ</translation>
 <translation id="2339073806695260576">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, લેઝર પૉઇન્ટર અથવા મૅગ્નિફાયિંગ ગ્લાસનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટન પર ટૅપ કરો.</translation>
 <translation id="2341729377289034582">ઊભી સ્થિતિ પર લૉક કરેલું છે</translation>
@@ -927,6 +928,7 @@
 <translation id="6629480180092995136"><ph name="APP_NAME" /> માઇક્રોફોનનો ઉપયોગ કરવા ઇચ્છે છે</translation>
 <translation id="6637729079642709226">સમય બદલો</translation>
 <translation id="6641720045729354415">લાઇવ કૅપ્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">નામ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="6650933572246256093">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ પાસકીને દાખલ કરો: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
@@ -1237,6 +1239,8 @@
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
+<translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="8546059259582788728">સૉર્ટ કરવાનો છેલ્લો ફેરફાર રદ કરવાનું સફળ થયું</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>
 <translation id="856298576161209842">તમે તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો તેવો <ph name="MANAGER" />નો સુઝાવ છે</translation>

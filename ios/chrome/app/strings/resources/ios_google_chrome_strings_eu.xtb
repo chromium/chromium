@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko Google-ren beste aplikazio batzuetatik.</translation>
 <translation id="1968388653333775699">Egin gauza gehiago Chrome-rekin</translation>
 <translation id="2009224836393115614">Chrome-k ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
+<translation id="2056123005618757196">Egin gauza gehiago Google Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="2147651015520127414">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chrome-k.</translation>
 <translation id="2199719347983604670">Chrome-ren sinkronizazioaren datuak</translation>
 <translation id="2313070403598893276">Sinplea, segurua eta inoiz baino bizkorragoa da Google Chrome</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Gehigarri batzuek Chrome huts egitea eragiten dute. Desinstala itzazu.</translation>
 <translation id="4633328489441962921">Chrome-k ezin ditu bilatu eguneratzeak</translation>
 <translation id="4698415050768537821">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Aplikazioa hobetzeko, erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ez da bateragarria Chrome Beta-rekin</translation>
 <translation id="5030102366287574140">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
 <translation id="5108659628347594808">Hobetu Chrome</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">Egon babestuta Google Chrome-rekin</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea atalean gordeko da.</translation>
+<translation id="8969290730818637510">Aktibatuta dagoenean:
+<ph name="BEGIN_INDENT" />  • Chrome zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
+
+Kontuan hartu beharrekoak:
+<ph name="BEGIN_INDENT" />  • Chrome-ren erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
+  • Chrome-k huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
+  • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 <translation id="9122931302567044771">Ondorioz, Chrome-k beti eskatuko du ordenagailuetarako webgunea.</translation>
 </translationbundle>

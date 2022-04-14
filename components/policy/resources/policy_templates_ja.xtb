@@ -94,6 +94,7 @@
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
 <translation id="1105572260329131950">安全な接続にデフォルトのアイコンを使用する</translation>
+<translation id="1107538157073168076">分析情報の拡張機能を無効にする</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
 <translation id="1111781754511998498">プロジェクター</translation>
 <translation id="1117535567637097036">このポリシーで設定したプロトコル ハンドラは、Android インテントの処理には使用されません。</translation>
@@ -378,6 +379,17 @@
       このポリシーを Fast（高速）に設定した場合、<ph name="PRODUCT_NAME" /> では可能であればラスタライズせず、ラスタライズの処理量を減らします。これにより、印刷ジョブのサイズを減らして印刷速度を上げることができます。
 
       このポリシーを設定しない場合、<ph name="PRODUCT_NAME" /> は Full モードになります。</translation>
+<translation id="1455351936334569779">拒否リストで指定したプリンタタイプを送信先として選択したり、機能を取得したりできないようにします。
+
+      拒否リストですべてのプリンタタイプを指定すると、印刷するドキュメントの送信先として何も選択できなくなるため、印刷は実質的に無効化されます。
+
+      102 より前のバージョンでは、拒否リストで「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」を指定すると、「<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />」ポリシーを false に設定した場合と同じ結果になります。<ph name="CLOUD_PRINT_NAME" /> を送信先として選択できるようにするには、「<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />」ポリシーを true に設定し、拒否リストで「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」を指定しないようにします。バージョン 102 以降、<ph name="CLOUD_PRINT_NAME" /> は送信先としてサポートされていないため、ポリシーの値に関係なく表示されません。
+
+      このポリシーを未設定のままにするか空のリストに設定した場合、すべてのプリンタタイプが選択可能になります。
+
+      拡張機能プリンタは、印刷プロバイダの送信先のことで、<ph name="PRODUCT_NAME" /> の拡張機能で利用できる送信先が該当します。
+
+      ローカル プリンタは、ネイティブ印刷の送信先のことで、ローカルマシンや共有ネットワークのプリンタで利用できる送信先が該当します。</translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" /> クライアント）:</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> デバイス上のマルチプロフィール セッションでのユーザーの行動を制御します。
 
@@ -1231,6 +1243,7 @@
 
       このポリシーを未設定のままにした場合、サードパーティ Cookie は有効になりますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="2386362615870139244">ウェイクアップ画面のロックを許可する</translation>
+<translation id="2387469539700985783">このポリシーは Android によるレポートには適用されません。</translation>
 <translation id="238885588439957890">デバイスで交流電流を使用してバッテリーを充電する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="2393862222659066027">URL を開き、最後のセッションを復元する</translation>
 <translation id="2394674739523870144">このポリシーを文字列のリストに設定すると、文字列がスペースで結合され、コマンドライン パラメータとして <ph name="IE_PRODUCT_NAME" /> から <ph name="PRODUCT_NAME" /> に渡されます。パラメータに <ph name="URL_PLACEHOLDER" /> が含まれる場合、<ph name="URL_PLACEHOLDER" /> は開くページの URL に置き換えられます。パラメータに <ph name="URL_PLACEHOLDER" /> が含まれない場合、URL はコマンドラインの末尾に追加されます。
@@ -1526,6 +1539,11 @@
 <translation id="2721185634942265347">検索候補を無効にする</translation>
 <translation id="2721582713721006926">クイック アンサーの定義を無効にする</translation>
 <translation id="2722076884688932437">このポリシーを True に設定した場合、登録済みデバイスは接続されている周辺機器に関する情報を報告します。このポリシーを False に設定するか、未設定のままにした場合、登録済みデバイスは周辺機器に関する情報を報告しません。</translation>
+<translation id="2723281094174141470">分析情報の拡張機能では、ユーザーのインターネットのダウンロード速度とアップロード速度、ユーザーのアイドル時間、アプリの分析情報が報告されます。
+
+      このポリシーを有効に設定した場合は、分析情報の拡張機能がインストールされ、指標が報告されます。
+
+      このポリシーを未設定のままにするか無効に設定した場合は、分析情報の拡張機能はインストールされず、指標も報告されません。</translation>
 <translation id="2723692978495226412">このポリシーを有効に設定した場合、ユーザーが他のデバイスで以前インストールしたアプリのおすすめが表示されます。このおすすめは、検索テキストが入力されていない場合に、ランチャー内のローカルアプリのおすすめの後に表示されます。
 
       このポリシーを無効に設定するか未設定のままにした場合、このおすすめは表示されません。
@@ -2119,6 +2137,7 @@
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> を有効または無効にします。</translation>
+<translation id="3301698868852716692">分析情報の拡張機能を有効にする</translation>
 <translation id="3302829897293005699">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはアプリの ID やバージョンなどのアクティブなキオスク セッション情報を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはキオスク セッション情報を報告しません。</translation>
@@ -3243,6 +3262,7 @@
 
       このポリシーを無効に設定するか未設定のままにした場合、証明書は生成されず、<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> の呼び出しは失敗します。</translation>
 <translation id="4742973303930120836">背景のグラフィックの印刷モードを制限する</translation>
+<translation id="4745232963710538589">分析情報の拡張機能を有効にすると使用状況の指標が報告されます</translation>
 <translation id="4752880493649142945">RemoteAccessHostTokenValidationUrl への接続用のクライアント証明書</translation>
 <translation id="475479145997699293">このポリシーを <ph name="ASK_FILE_HANDLING" /> に設定した場合、ウェブアプリは File Handling API を通じたファイル形式へのアクセスを求めることができます。このポリシーを <ph name="BLOCK_FILE_HANDLING" /> に設定した場合、ファイル形式へのアクセスは許可されません。
 
@@ -6060,6 +6080,7 @@
       </translation>
 <translation id="8035570672225663428">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留する</translation>
 <translation id="8044493735196713914">デバイス起動モードを報告する</translation>
+<translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" /> と「Google ドライブに保存」の送信先（非推奨）</translation>
 <translation id="80453040817068401"><ph name="LACROS_NAME" /> ブラウザを使用可能にする</translation>
 <translation id="804619600634661088">リモート デバッグの使用を許可する</translation>
 <translation id="8049769137921877885">このポリシーでは、ポリシーデータとポリシーの取得日時について、レポートを作成するかどうかを管理します。

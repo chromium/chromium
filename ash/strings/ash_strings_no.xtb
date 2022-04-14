@@ -87,6 +87,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1364382257761975320">For å låse opp Chromebooken, bruk fingeravtrykket</translation>
 <translation id="1364618750746929654">Kan ikke generere transkripsjon</translation>
+<translation id="1372545819342940910">Lagre skrivebordet til senere</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv igjen senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1391102559483454063">På</translation>
@@ -226,6 +227,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2302092602801625023">Denne kontoen er administrert av Family Link</translation>
 <translation id="2303600792989757991">Vis eller skjul vindusoversikten</translation>
 <translation id="2318576281648121272">I dag, <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" /> – kategori for søkeresultat</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
 <translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta en skjermdump, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
@@ -927,6 +929,7 @@ Nylig installert</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vil bruke mikrofonen</translation>
 <translation id="6637729079642709226">Endre tiden</translation>
 <translation id="6641720045729354415">Slå av/på Direkteteksting. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Angre sortering etter navn</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="6650933572246256093">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne tilgangskoden på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Passord</translation>
@@ -1237,6 +1240,8 @@ Nylig installert</translation>
 <translation id="8513108775083588393">Autorotasjon</translation>
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
+<translation id="8535393432370007982">Angre sortering etter farge</translation>
+<translation id="8546059259582788728">Sorteringen ble angret</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
 <translation id="8553395910833293175">Allerede tilordnet til alle skrivebord.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> anbefaler at du oppdaterer <ph name="DEVICE_TYPE" /></translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ഗേറ്റ്‌വേ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
+<translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">വാൾപേപ്പർ മാറ്റുക</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
+<translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> പരിശോധന</translation>
 <translation id="370665806235115550">ലോഡ്ചെയ്യുന്നു...</translation>
@@ -551,6 +553,7 @@
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
+<translation id="7155171745945906037">ക്യാമറയിൽ നിന്നോ ഫയലിൽ നിന്നോ ഉള്ള നിലവിലെ ഫോട്ടോ</translation>
 <translation id="7162487448488904999">ഗാലറി</translation>
 <translation id="7172721935181587524">ഒരു ചിത്രം</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> കോൺഫിഗർ ചെയ്യുക</translation>

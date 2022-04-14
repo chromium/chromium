@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Πύλη</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
+<translation id="1367951781824006909">Επιλογή αρχείου</translation>
 <translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
 <translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
+<translation id="3621202678540785336">Είσοδος</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
+<translation id="7155171745945906037">Υπάρχουσα φωτογραφία από την κάμερα ή το αρχείο</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 εικόνα</translation>
 <translation id="7175037578838465313">Διαμόρφωση <ph name="NAME" /></translation>

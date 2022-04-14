@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Додатки Linux наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="108486256082349153">Мобільний пристрій: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Доброго дня, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Шукайте <ph name="CATEGORY" />, файли, додатки тощо. Натискайте клавіші зі стрілками, щоб переходити між додатками.</translation>
 <translation id="109942774857561566">Мені нудно</translation>
 <translation id="1104084341931202936">Показати налаштування спеціальних можливостей</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
@@ -180,6 +181,7 @@
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Поточний робочий стіл</translation>
+<translation id="2001444736072756133">Шукайте <ph name="CATEGORY" />, файли, додатки тощо.</translation>
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
@@ -265,6 +267,7 @@
 <translation id="2595239820337756193">Скільки миль у 5 км</translation>
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
 <translation id="2607678425161541573">Необхідно ввійти в режимі онлайн</translation>
+<translation id="2620016719323068571">Шукайте <ph name="CATEGORY" />, файли, додатки тощо…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">Захищено</translation>
 <translation id="263399434338050016">"Вибрати все"</translation>
@@ -622,6 +625,9 @@
 <translation id="4633185660152240791">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом дня}one{Поверніться до попередньої версії на пристрої протягом # дня}few{Поверніться до попередньої версії на пристрої протягом # днів}many{Поверніться до попередньої версії на пристрої протягом # днів}other{Поверніться до попередньої версії на пристрої протягом # дня}}</translation>
 <translation id="4642092649622328492">Зробити частковий знімок екрана</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендований додаток</translation>
+<translation id="4657775630156561295">Наведену нижче підказку буде назавжди вилучено з історії у вашому обліковому записі:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
 <translation id="4665114317261903604">Увімкнути/вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
@@ -944,6 +950,7 @@
 <translation id="6751052314767925245">Застосовується адміністратором</translation>
 <translation id="6751826523481687655">Відстеження ефективності ввімкнено</translation>
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>
+<translation id="6753390234084146956">вкладки</translation>
 <translation id="6754441615189976839">Сб</translation>
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
@@ -1049,6 +1056,7 @@
 <translation id="743058460480092004">Камера та мікрофон використовуються.</translation>
 <translation id="7434543979546293336">Позначено як ключову ідею</translation>
 <translation id="7452560014878697800">Додаток використовує вашу камеру</translation>
+<translation id="7453330308669753048">Вилучено з результатів історії пошуку</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746232733191930409">Режим запису екрана</translation>
 <translation id="7466449121337984263">Торкніться сканера</translation>
@@ -1105,6 +1113,7 @@
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="7749640678855296659">Мікрофон наразі вимкнено</translation>
 <translation id="776344839111254542">Натисніть, щоб переглянути деталі оновлення</translation>
+<translation id="7780094051999721182">комбінації клавіш</translation>
 <translation id="7780159184141939021">Обернути екран</translation>
 <translation id="7796353162336583443">Щоб додавати примітки та знімки екрана, користуватися Google Асистентом або використовувати стилус як лазерний вказівник чи лупу, торкніться кнопки стилуса на полиці.</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
@@ -1167,6 +1176,7 @@
 <translation id="8120151603115102514">На телефоні немає екрана блокування. Щоб розблокувати Chromebook, введіть пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
+<translation id="8131994907636310308">Закрити підказку сортування</translation>
 <translation id="8132487352815776550">Вимкнути субтитри</translation>
 <translation id="8132793192354020517">З'єднано з <ph name="NAME" /></translation>
 <translation id="813913629614996137">Ініціалізація...</translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
+<translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Achtergrond wijzigen</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
+<translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
@@ -552,6 +554,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
+<translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7172721935181587524">1 afbeelding</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> configureren</translation>

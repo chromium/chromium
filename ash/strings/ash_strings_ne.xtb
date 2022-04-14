@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux एपहरू हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">नमस्ते <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्। आफ्ना एपहरूमा नेभिगेट गर्न एरो कीहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="109942774857561566">मलाई दिक्क लागिसक्यो</translation>
 <translation id="1104084341931202936">पहुँचसम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1104621072296271835">तपाईंका यन्त्रहरूलाई सँगै प्रयोग गरेमा तिनले अझ राम्रो काम गर्छन्</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्</translation>
 <translation id="1998100899771863792">हालको डेस्क</translation>
+<translation id="2001444736072756133">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्।</translation>
 <translation id="2016340657076538683">एउटा सन्देश टाइप गर्नुहोस्</translation>
 <translation id="2018630726571919839">मलाई एउटा चुट्किला सुनाउनुहोस्</translation>
 <translation id="2021864487439853900">अनलक गर्न क्लिक गर्नुहोस्</translation>
@@ -264,6 +266,7 @@
 <translation id="2595239820337756193">५ किलोमिटर बराबर कति माइल हुन्छ</translation>
 <translation id="2596078834055697711">विन्डोको स्क्रिनसट लिनुहोस्‌</translation>
 <translation id="2607678425161541573">अनलाइन मार्फत साइन इन गर्नु पर्ने हुन्छ</translation>
+<translation id="2620016719323068571">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित पारियो</translation>
 <translation id="263399434338050016">"सबै चयन गर"</translation>
@@ -621,6 +624,9 @@
 <translation id="4633185660152240791">{0,plural, =1{एक दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, एपको सिफारिस</translation>
+<translation id="4657775630156561295">तपाईंको खाताको सुझावको इतिहासबाट निम्न सुझाव सदाका लागि हटाइने छ:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox सक्षम पारियो</translation>
 <translation id="4665114317261903604">बाधा नपुर्‍याउनुहोस् नामक मोड टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड गरिँदै छ</translation>
@@ -943,6 +949,7 @@
 <translation id="6751052314767925245">तपाईंका प्रशासकले लागू गर्नुभएको</translation>
 <translation id="6751826523481687655">प्रदर्शन ट्रेस गरिँदै छ</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
+<translation id="6753390234084146956">ट्याब</translation>
 <translation id="6754441615189976839">शनि</translation>
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
@@ -1048,6 +1055,7 @@
 <translation id="743058460480092004">क्यामेरा र माइक्रोफोन प्रयोगमा छ।</translation>
 <translation id="7434543979546293336">यो मुख्य विचारका रूपमा चिन्ह लगाइएको छ</translation>
 <translation id="7452560014878697800">कुनै एपले तपाईंको डिभाइसको क्यामेरा प्रयोग गरिरहेको छ</translation>
+<translation id="7453330308669753048">सर्च हिस्ट्रको परिणाम हटाइयो</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746232733191930409">स्क्रिन रेकर्डिङ मोड</translation>
 <translation id="7466449121337984263">कृपया फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
@@ -1104,6 +1112,7 @@
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749640678855296659">तपाईंको माइक्रोफोन अहिले अफ छ</translation>
 <translation id="776344839111254542">अद्यावधिकसम्बन्धी विवरणहरू हेर्न क्लिक गर्नुहोस्</translation>
+<translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7796353162336583443">कुनै टिपोट, स्क्रिनसट लिन, Google सहायक, लेजर पोइन्टर वा म्याग्निफाइङ ग्लास प्रयोग गर्न सेल्फमा रहेको स्टाइलस बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="7796735576426975947">नयाँ सूचना लुकाइएको छ</translation>
@@ -1166,6 +1175,7 @@
 <translation id="8120151603115102514">तपाईंको फोनमा लक स्क्रिन छैन। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>
+<translation id="8131994907636310308">एप क्रमबद्ध गर्ने टोस्ट बन्द गर्नुहोस्</translation>
 <translation id="8132487352815776550">क्लोज्ड क्याप्सन अफ गर्नुहोस्</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> मा जडित</translation>
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>

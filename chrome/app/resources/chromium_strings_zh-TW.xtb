@@ -88,6 +88,7 @@
 <translation id="3349211344363550267">Chromium 建議你不要下載或開啟這個檔案</translation>
 <translation id="3350761136195634146">該帳戶已有相關聯的 Chromium 設定檔</translation>
 <translation id="3406848076815591792">要切換至現有的 Chromium 設定檔嗎？</translation>
+<translation id="3412460710772753638">在這部裝置的密碼管理工具中更新</translation>
 <translation id="3430503420100763906">你可以運用 Chromium 設定檔區隔各種 Chromium 資料，例如建立親朋好友的專屬設定檔，或是依工作和娛樂需要建立不同設定檔。</translation>
 <translation id="347328004046849135">如果你使用遭外洩的密碼登入帳戶，Chromium 會通知你</translation>
 <translation id="3474745554856756813">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
@@ -110,6 +111,7 @@
 <translation id="3889543394854987837">按一下你的名稱即可開啟 Chromium 並開始瀏覽。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入這個 Chromium 設定檔。如要分開保存你的瀏覽資料，建議在 Chromium 中建立專屬設定檔。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
+<translation id="3962623956404948996">這個檔案可能含有危險內容，因此 Chromium 建議掃描檔案</translation>
 <translation id="4036079820698952681">只要回報<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網路登入 - Chromium</translation>
@@ -128,6 +130,7 @@
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">要繼續使用新的 Chromium 設定檔嗎？</translation>
 <translation id="4567424176335768812">你已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用你的書籤、記錄和其他設定。</translation>
+<translation id="4594305310729380060">儲存至這部裝置的密碼管理工具中</translation>
 <translation id="459535195905078186">Chromium 應用程式</translation>
 <translation id="4621240073146040695">即將更新為最新版本！重新啟動 Chromium 即可完成更新程序。</translation>
 <translation id="4665829708273112819">警告：Chromium 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>

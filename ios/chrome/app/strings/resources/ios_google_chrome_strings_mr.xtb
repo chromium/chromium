@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
 <translation id="1968388653333775699">Chrome वापरून आणखी बरेच काही करा</translation>
 <translation id="2009224836393115614">Chrome ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
+<translation id="2056123005618757196">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा.</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chrome ने पडताळले.</translation>
 <translation id="2199719347983604670">Chrome सिंक मधील डेटा</translation>
 <translation id="2313070403598893276">Google Chrome हे सोपे, सुरक्षित आणि नेहमीपेक्षा जलद आहे</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Chrome क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
 <translation id="4633328489441962921">Chrome ला अपडेट तपासता आले नाहीत</translation>
 <translation id="4698415050768537821">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome बीटा वर सपोर्ट नाही</translation>
 <translation id="5030102366287574140">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
 <translation id="5108659628347594808">Chrome मध्ये सुधारणा करा</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>
 <translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="8788269841521769222">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
+<translation id="8969290730818637510">सुरू असल्यास:
+<ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chrome वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />
+
+लक्षात घ्याव्यात अशा गोष्टी:
+<ph name="BEGIN_INDENT" />  • Google ला तुमच्या Chrome वापरासंबंधित माहिती पाठवली जाते, पण यामध्ये तुमच्याशी संबंधित माहितीचा समावेश नसतो.
+
+  • Chrome क्रॅश झाल्यास, क्रॅशसंबंधित तपशिलांमध्ये कदाचित काही वैयक्तिक माहितीचा समावेश असू शकतो.
+
+  • तुम्ही सिंक सुरू केल्यास, मेट्रिकमध्ये कदाचित तुम्ही भेट दिलेल्या URLs संबंधित माहितीचादेखील समावेश असू शकतो.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 <translation id="9122931302567044771">याचा अर्थ असा, की Chrome हे प्रत्येक वेळी साइटच्या डेस्कटॉप आवृत्तीची विनंती करेल.</translation>
 </translationbundle>

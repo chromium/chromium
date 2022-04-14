@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gerbang</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sesuaikan dengan area pindai</translation>
+<translation id="1367951781824006909">Pilih file</translation>
 <translation id="1387854245479784695">Ini merupakan gabungan dari semua core</translation>
 <translation id="1394661041439318933">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai casing.</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="3621202678540785336">Masukan</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -552,6 +554,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
+<translation id="7155171745945906037">Foto yang sudah ada dari kamera atau file</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Gambar</translation>
 <translation id="7175037578838465313">Konfigurasi <ph name="NAME" /></translation>

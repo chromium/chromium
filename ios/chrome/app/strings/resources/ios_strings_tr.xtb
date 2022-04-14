@@ -13,6 +13,7 @@
         
 Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama motorunuzun talimatlarını (varsa) inceleyin.</translation>
 <translation id="1054045277222934172">Varsayılan site görünümünü Ayarlar'daki İçerik Ayarları bölümünden masaüstü olarak değiştirebilirsiniz</translation>
+<translation id="1054745118061919935">Devam ederek <ph name="BEGIN_LINK" />Hizmet Şartları<ph name="END_LINK" />'nı kabul etmiş olursunuz.</translation>
 <translation id="1063454504051558093">Diğer Şifreyi Kullan...</translation>
 <translation id="1066060668811609597">Senkronizasyonu yönetin</translation>
 <translation id="1076421457278169141">Kod tarandı</translation>
@@ -494,6 +495,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5339316356165661760">Senkronizasyonu Aç</translation>
 <translation id="5360976571138293719">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" /> konusuna bakın</translation>
+<translation id="5386314158584363703">Takip ettiğiniz siteleri burada görebilirsiniz</translation>
 <translation id="5388358297987318779">Resmi Aç</translation>
 <translation id="5407969256130905701">Değişiklikleri Sil</translation>
 <translation id="5416022985862681400">Son 7 Gün</translation>
@@ -611,6 +613,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6344783595350022745">Metni Temizle</translation>
 <translation id="6346549652287021269">Yeni İndirme İşlemi Başlatılsın mı?</translation>
 <translation id="634878792104344809">Şifreleriniz, geçmişiniz ve daha fazlasını tüm cihazlarınızda senkronize edin</translation>
+<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> sitesini takip et</translation>
 <translation id="6362362396625799311">Gizli Sekme Yok</translation>
 <translation id="6363526231572697780">Kullanıcı Adı Yok</translation>
 <translation id="6366190659675876144">Standart Koruma</translation>
@@ -648,6 +651,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6524918542306337007">Gizli Mod Kullanılamıyor</translation>
 <translation id="6530992499366869131">Şifreleriniz Bir Veri İhlalinde İfşa Olursa Uyarı Alın</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Bir siteyi ziyaret edip Chrome menüsündeki Takip Et seçeneğini tıklayın</translation>
 <translation id="6561262006871132942">Yakınlaştır</translation>
 <translation id="6583087784430677195">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Parolaları Otomatik Doldur'a gidin.</translation>
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>

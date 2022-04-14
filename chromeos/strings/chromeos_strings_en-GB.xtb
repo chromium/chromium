@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
+<translation id="1367951781824006909">Choose a file</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
 <translation id="1397738625398125236">Gateway can be pinged</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
+<translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
@@ -552,6 +554,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
+<translation id="7155171745945906037">Existing photo from camera or file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7175037578838465313">Configure <ph name="NAME" /></translation>

@@ -22,6 +22,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1081015718268701546">Linux-appar stöds inte för närvarande. Andra appar sparas.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Hej <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Sök efter <ph name="CATEGORY" />, filer, appar med mera. Navigera mellan appar med piltangenterna.</translation>
 <translation id="109942774857561566">Jag har tråkigt</translation>
 <translation id="1104084341931202936">Visa tillgänglighetsinställningar</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
@@ -179,6 +180,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Aktuellt skrivbord</translation>
+<translation id="2001444736072756133">Sök efter <ph name="CATEGORY" />, filer, appar med mera.</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
 <translation id="2021864487439853900">Klicka för att låsa upp</translation>
@@ -224,6 +226,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2318576281648121272">I dag <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, resultatkategori</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
 <translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
@@ -263,6 +266,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
+<translation id="2620016719323068571">Sök efter <ph name="CATEGORY" />, filer, appar med mera …</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="263399434338050016">”Markera allt”</translation>
@@ -620,6 +624,9 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Byt till en tidigare version av enheten inom en dag}other{Byt till en tidigare version av enheten inom # dagar}}</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, apprekommendation</translation>
+<translation id="4657775630156561295">Följande förslag tas bort permanent från förslagshistoriken i kontot:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
@@ -921,6 +928,7 @@ Nyligen installerad</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vill använda mikrofonen</translation>
 <translation id="6637729079642709226">Ändra tid</translation>
 <translation id="6641720045729354415">Aktivera och inaktivera Live Caption. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Ångra sortering efter namn</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="6650933572246256093">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange denna lösenordsnyckel på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
@@ -941,6 +949,7 @@ Nyligen installerad</translation>
 <translation id="6751052314767925245">Har ställts in som obligatorisk av administratören</translation>
 <translation id="6751826523481687655">Prestandaspårning har aktiverats</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">flikar</translation>
 <translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
@@ -1046,6 +1055,7 @@ Nyligen installerad</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
 <translation id="7434543979546293336">Markerat som nyckelbegrepp</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
+<translation id="7453330308669753048">Sökresultat från sökhistoriken borttaget</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
@@ -1102,6 +1112,7 @@ Nyligen installerad</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749640678855296659">Mikrofonen är för närvarande inaktiverad</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
+<translation id="7780094051999721182">genvägar</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>
@@ -1164,6 +1175,7 @@ Nyligen installerad</translation>
 <translation id="8120151603115102514">Telefonen saknar låsskärm. Lås upp Chromebook med lösenordet.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
+<translation id="8131994907636310308">Stäng sorteringspopup</translation>
 <translation id="8132487352815776550">Stoppa textning</translation>
 <translation id="8132793192354020517">Ansluten till <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initierar …</translation>
@@ -1227,6 +1239,8 @@ Nyligen installerad</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
+<translation id="8535393432370007982">Ångra sortering efter färg</translation>
+<translation id="8546059259582788728">Sorteringen har ångrats.</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>
 <translation id="8553395910833293175">Detta har redan tilldelats alla skrivbord.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> rekommenderar att du uppdaterar din <ph name="DEVICE_TYPE" /></translation>

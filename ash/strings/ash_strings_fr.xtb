@@ -22,6 +22,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1081015718268701546">Les applis Linux ne sont pas compatibles pour le moment. D'autres applis seront enregistrées.</translation>
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bonjour <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc. Utilisez les touches fléchées pour naviguer dans vos applis.</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
@@ -179,6 +180,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1990046457226896323">Fichiers vocaux téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Bureau actuel</translation>
+<translation id="2001444736072756133">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc.</translation>
 <translation id="2016340657076538683">Saisissez un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
@@ -224,6 +226,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2318576281648121272">Aujourd'hui (<ph name="TODAY_DATE" />)</translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, catégorie de résultats de recherche</translation>
 <translation id="2322173485024759474">Reculer par lettre</translation>
 <translation id="2339073806695260576">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran, et utiliser le pointeur laser ou la loupe.</translation>
 <translation id="2341729377289034582">Verrouillée en position verticale</translation>
@@ -263,6 +266,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
+<translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">"Tout sélectionner"</translation>
@@ -620,6 +624,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4633185660152240791">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 jour}one{Rétablir une version antérieure de l'appareil d'ici # jour}other{Rétablir une version antérieure de l'appareil d'ici # jours}}</translation>
 <translation id="4642092649622328492">Faire une capture d'écran partielle</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
+<translation id="4657775630156561295">Les suggestions suivantes seront définitivement supprimées de l'historique des suggestions de votre compte :
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4665114317261903604">Activer/Désactiver le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours</translation>
@@ -921,6 +928,7 @@ Nouvelle installation</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> souhaite utiliser le micro</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Activer/Désactiver les Sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Annuler le tri par nom</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="6650933572246256093">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code d'authentification suivant sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -941,6 +949,7 @@ Nouvelle installation</translation>
 <translation id="6751052314767925245">Cette fonctionnalité est appliquée par votre administrateur</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>
 <translation id="6752912906630585008">Bureau <ph name="REMOVED_DESK" /> supprimé et fusionné avec le Bureau <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">onglets</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Aucun contenu multimédia en cours lecture</translation>
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
@@ -1046,6 +1055,7 @@ Nouvelle installation</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
 <translation id="7434543979546293336">Indiquée comme idée principale</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
+<translation id="7453330308669753048">Résultat de l'historique des recherches supprimé</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -1102,6 +1112,7 @@ Nouvelle installation</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749640678855296659">Votre micro est actuellement désactivé</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
+<translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Rotation d'écran</translation>
 <translation id="7796353162336583443">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran et utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
@@ -1164,6 +1175,7 @@ Nouvelle installation</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8131994907636310308">Fermer le toast de tri</translation>
 <translation id="8132487352815776550">Fermer les sous-titres</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialisation…</translation>
@@ -1227,6 +1239,8 @@ Nouvelle installation</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
+<translation id="8535393432370007982">Annuler le tri par couleur</translation>
+<translation id="8546059259582788728">Le tri a bien été annulé</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> vous recommande de mettre à jour votre <ph name="DEVICE_TYPE" /></translation>

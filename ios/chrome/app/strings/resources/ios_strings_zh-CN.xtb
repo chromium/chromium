@@ -116,6 +116,7 @@
 <translation id="1923342640370224680">过去 1 小时</translation>
 <translation id="1930989359703290198">根据贵单位的要求，您只能使用特定帐号登录。不允许使用的帐号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
+<translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
 <translation id="196896377990863006">显示链接预览</translation>
@@ -143,6 +144,7 @@
 <translation id="2218443599109088993">缩小</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
+<translation id="2251686759395008410">菜单 → 历史记录</translation>
 <translation id="2256933947031277845">贵单位要求您只能使用特定帐号登录。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
@@ -198,10 +200,12 @@
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2747003861858887689">上一个字段</translation>
+<translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2764831210418622012">刚刚</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
 <translation id="277771892408211951">选择语言</translation>
 <translation id="2780046210906776326">没有电子邮件帐号</translation>
+<translation id="2781325423985810933">撤消</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">无法创建链接</translation>
@@ -239,6 +243,7 @@
 <translation id="298306318844797842">添加付款方式…</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
+<translation id="3039722182465315531">不登录</translation>
 <translation id="3076846064362030967">您不会因此而退出自己的 Google 帐号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 帐号中。您可以随时删除这些记录。
 
 
@@ -340,6 +345,7 @@
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密码</translation>
+<translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
 <translation id="3989635538409502728">退出</translation>
@@ -604,6 +610,7 @@
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
+<translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
 <translation id="6321526113093607004">添加到“书签”</translation>
 <translation id="6324669097367352121">登录设置</translation>
@@ -774,6 +781,7 @@
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7607521702806708809">删除密码</translation>
 <translation id="7638584964844754484">密码不正确</translation>
+<translation id="7646263789464975852">菜单 → 设置 → 安全检查</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -782,6 +790,7 @@
 <translation id="7720410380936703141">重试</translation>
 <translation id="7726702057919861819">菜单 → 历史 → 清除浏览数据</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
+<translation id="7756478488453921771">菜单 → 设置 → 付款方式</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7781011649027948662">翻译网页？</translation>
@@ -789,6 +798,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="778855399387580014">在新的 Chrome 标签页中发起搜索。</translation>
 <translation id="7791543448312431591">添加</translation>
+<translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7839985698273989086">离线网页</translation>
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7853202427316060426">活动</translation>
@@ -802,6 +812,7 @@
 <translation id="7939128259257418052">导出密码…</translation>
 <translation id="794799177247607889">停止生成日志</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{没有密码已遭泄露}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
+<translation id="7959441099968534758">前往 Feed</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7966516440812255683">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
@@ -925,6 +936,7 @@
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039373489628511875">带宽</translation>
 <translation id="9055772144595778347">无法登录</translation>
+<translation id="9057972802061533987">无法关注。出了点问题。</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
@@ -932,6 +944,7 @@
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
 <translation id="9087108903408689779">Chrome 建议的密码：</translation>
 <translation id="9094033019050270033">更新密码</translation>
+<translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>

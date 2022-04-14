@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">ပိုပြပါ</translation>
 <translation id="132390688737681464">လိပ်စာများကို သိမ်းပြီး ဖြည့်ခြင်း</translation>
 <translation id="1330449323196174374">ဘယ်တံခါးရွက်ပုံစံ ခေါက်ရန်</translation>
+<translation id="1333745675627230582">Chrome Dino ဂိမ်းကစားရန်</translation>
 <translation id="1333989956347591814">သင်၏လုပ်ဆောင်ချက်ကို အောက်ပါတို့က <ph name="BEGIN_EMPHASIS" />မြင်ကောင်းမြင်ရနိုင်ပါသေးသည်<ph name="END_EMPHASIS" />−
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များ
@@ -751,6 +752,7 @@
 <translation id="2972581237482394796">&amp;ပြန်လုပ်ရန်</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> ကို လက်ရှိရွေးထားသည်။ <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">အော်ပရာ</translation>
+<translation id="2983666748527428214">ရုပ်ဖျက်တဘ်ဖွင့်ရန်</translation>
 <translation id="2985306909656435243">ဖွင့်ထားလျှင်၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome က သင့်ကဒ်၏ မိတ္ထူကို ဤကိရိယာထဲတွင် သိမ်းထားပါမည်။</translation>
 <translation id="2985398929374701810">မှန်ကန်သည့် လိပ်စာကို ထည့်ပါ</translation>
 <translation id="2986368408720340940">ဤပစ္စည်းထုတ်ယူရန် နည်းလမ်းသည် မရနိုင်ပါ။ အခြားနည်းလမ်းတစ်ခုကို ရွေးပါ။</translation>
@@ -1513,6 +1515,7 @@
 <translation id="5097099694988056070">CPU/RAM အသုံးပြုမှုကဲ့သို့ စက်ပစ္စည်း၏ ကိန်းဂဏန်း အချက်အလက်များ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">ဝဘ်ဆိုက်သည် မလုံခြုံပါ</translation>
+<translation id="5109892411553231226">ငွေပေးချေနည်းလမ်းများကို စီမံရန်</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">ဗန်း ၁၈</translation>
 <translation id="5114987907971894280">ပကတိအသွင်</translation>
@@ -1760,6 +1763,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">သင့် <ph name="CARD_DETAIL" /> ကို ဖြည့်သွင်းလိုပါသလား။</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
+<translation id="5808435672482059465">သင့် ‘Chrome မှတ်တမ်း’ ကို ကြည့်ရန်</translation>
 <translation id="5808542072418270309">အသွင်တူ ဂိမ်းများ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> သို့ ချိတ်ဆက်မှုအား obsolete cipher suite တစ်ခု သုံး၍ လျှို့ဝှက်အသွင်ပြောင်းခဲ့၏။</translation>
 <translation id="5812947184178430888">လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်များကို Chrome က အလံပြသည့်အခါ ဖြစ်ရပ်နှင့်ပတ်သက်သော သက်ဆိုင်ရာဒေတာကို သင့်စီမံခန့်ခွဲသူထံ ပို့သည်။ ၎င်း၌ Chrome တွင် သင်ဝင်ကြည့်သော စာမျက်နှာများ၏ URL များ၊ ဖိုင်အမည်များ (သို့) မက်တာဒေတာအပြင် ဝဘ် အခြေပြုအပလီကေးရှင်းများ၊ သင့်စက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်သည့် အသုံးပြုသူအမည်တို့ ပါဝင်နိုင်သည်။</translation>

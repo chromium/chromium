@@ -13,6 +13,7 @@
         
 Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="1054045277222934172">Selleks et määrata saidi vaikevaateks lauaarvuti versioon, tehke valikud Seaded &gt; Sisu seaded</translation>
+<translation id="1054745118061919935">Jätkates kinnitate, et nõustute <ph name="BEGIN_LINK" />teenusetingimustega<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Kasuta muud parooli …</translation>
 <translation id="1066060668811609597">Sünkroonimise haldamine</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
@@ -494,6 +495,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5339316356165661760">Lülita sünkroonimine sisse</translation>
 <translation id="5360976571138293719">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotist <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Leiate oma jälgitavad saidid siit</translation>
 <translation id="5388358297987318779">Ava kujutis</translation>
 <translation id="5407969256130905701">Loobu muudatustest</translation>
 <translation id="5416022985862681400">Viimased 7 päeva</translation>
@@ -611,6 +613,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6344783595350022745">Lihttekst</translation>
 <translation id="6346549652287021269">Kas alustada uut allalaadimist?</translation>
 <translation id="634878792104344809">Paroolide, ajaloo ja muu sünkroonimine kõigis teie seadmetes</translation>
+<translation id="6361848730467328243">Jälgi domeeni <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Inkognito vahelehti ei ole</translation>
 <translation id="6363526231572697780">Kasutajanimi puudub</translation>
 <translation id="6366190659675876144">Standardne kaitse</translation>
@@ -648,6 +651,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6524918542306337007">Inkognito režiim pole saadaval</translation>
 <translation id="6530992499366869131">Hoiata mind, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Külastage saiti ja klõpsake Chrome'i menüüs nupul Jälgi</translation>
 <translation id="6561262006871132942">Suumi sisse</translation>
 <translation id="6583087784430677195">Väljalülitamiseks avage rakendus <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> ja jaotis Paroolide automaattäide.</translation>
 <translation id="6585618849026997638">Saate enda jaoks olulisele lehele naasta, lisades järjehoidja</translation>

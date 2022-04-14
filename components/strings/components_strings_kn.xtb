@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">ಇನ್ನಷ್ಟು ತೋರಿಸಿ</translation>
 <translation id="132390688737681464">ವಿಳಾಸಗಳನ್ನು ಉಳಿಸಿ ಮತ್ತು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="1330449323196174374">ಎಡಭಾಗದ ಗೇಟ್ ಅನ್ನು ಮಡಿಸಿ</translation>
+<translation id="1333745675627230582">Chrome Dino ಗೇಮ್ ಆಡಿರಿ</translation>
 <translation id="1333989956347591814">ನಿಮ್ಮ ಚಟುವಟಿಕೆಗಳನ್ನು ಈಗಲೂ ಇವರೆಲ್ಲಾ <ph name="BEGIN_EMPHASIS" />ನೋಡಬಹುದು<ph name="END_EMPHASIS" /> :
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />ನೀವು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಸೈಟ್‌ಗಳು
@@ -744,6 +745,7 @@
 <translation id="2972581237482394796">&amp;ಮತ್ತೆಮಾಡು</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ಪ್ರಸ್ತುತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಿರುವುದು. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ಓಪೆರಾ</translation>
+<translation id="2983666748527428214">ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2985306909656435243">ಸಕ್ರಿಯಗೊಳಿಸಿದ್ದರೆ, ವೇಗವಾಗಿ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಲು Chromium ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಪ್ರತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.</translation>
 <translation id="2985398929374701810">ಮಾನ್ಯ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2986368408720340940">ಈ ಪಿಕಪ್ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1502,6 +1504,7 @@
 <translation id="5097099694988056070">CPU/RAM ಬಳಕೆ ರೀತಿಯ ಸಾಧನದ ಅಂಕಿಅಂಶಗಳು</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">ಸೈಟ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
+<translation id="5109892411553231226">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">ಟ್ರೇ 18</translation>
 <translation id="5114987907971894280">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ</translation>
@@ -1749,6 +1752,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">ನಿಮ್ಮ <ph name="CARD_DETAIL" /> ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
+<translation id="5808435672482059465">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="5808542072418270309">ಸಿಮ್ಯುಲೇಶನ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="5810442152076338065">ಬಳಕೆಯಲ್ಲಿಲ್ಲದ ಸೈಫರ್ ಸೂಟ್ ಬಳಸುವ ಮೂಲಕ <ph name="DOMAIN" /> ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5812947184178430888">Chrome ಮೂಲಕ ಭದ್ರತೆಗೆ ಸಂಬಂಧಿಸಿದ ಈವೆಂಟ್‌ಗಳ ಕುರಿತು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದಾಗ, ಆ ಈವೆಂಟ್‌ಗಳ ಕುರಿತ ಸಂಬಂಧಿತ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಇದು ನೀವು Chrome ನಲ್ಲಿ ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳು, ಫೈಲ್ ಹೆಸರುಗಳು ಅಥವಾ ಮೆಟಾಡೇಟಾ ಮತ್ತು ವೆಬ್ ಆಧಾರಿತ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಬಳಸುವ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಒಳಗೊಂಡಿರಬಹುದು.</translation>

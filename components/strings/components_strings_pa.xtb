@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">ਹੋਰ ਦਿਖਾਓ</translation>
 <translation id="132390688737681464">ਪਤੇ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="1330449323196174374">ਖੱਬੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
+<translation id="1333745675627230582">Chrome Dino ਗੇਮ ਖੇਡੋ</translation>
 <translation id="1333989956347591814">ਤੁਹਾਡੀ ਸਰਗਰਮੀ <ph name="BEGIN_EMPHASIS" />ਸ਼ਾਇਦ ਹਾਲੇ ਵੀ ਇਹਨਾਂ ਨੂੰ ਵਿਖਾਈ ਦੇਵੇਗੀ<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />ਤੁਹਾਡੇ ਵੱਲੋਂ ਵੇਖੀਆਂ ਗਈਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ
@@ -742,6 +743,7 @@
 <translation id="2972581237482394796">&amp;ਰੀਡੂ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ਵਰਤਮਾਨ ਵਿੱਚ ਚੁਣਿਆ ਗਿਆ। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ਓਪੇਰਾ</translation>
+<translation id="2983666748527428214">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="2985306909656435243">ਜੇਕਰ ਚਾਲੂ ਹੈ, ਤਾਂ Chromium ਤੇਜ਼ੀ ਨਾਲ ਫ਼ਾਰਮ ਭਰਨ ਲਈ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁੁਹਾਡੇ ਕਾਰਡ ਦੀ ਇੱਕ ਕਾਪੀ ਸਟੋਰ ਕਰੇਗਾ।</translation>
 <translation id="2985398929374701810">ਕੋਈ ਵੈਧ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2986368408720340940">ਇਹ ਪਿਕਅੱਪ ਵਿਧੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕੋਈ ਵੱਖਰੀ ਵਿਧੀ ਅਜ਼ਮਾਓ।</translation>
@@ -1500,6 +1502,7 @@
 <translation id="5097099694988056070">CPU/RAM ਵਰਤੋਂ ਵਰਗੇ ਡੀਵਾਈਸ ਅੰਕੜੇ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">ਸਾਈਟ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="5109892411553231226">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5112422516732747637">A</translation>
 <translation id="5114288597538800140">ਟ੍ਰੇਅ 18</translation>
 <translation id="5114987907971894280">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ</translation>
@@ -1747,6 +1750,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">ਕੀ ਤੁਸੀਂ ਆਪਣਾ <ph name="CARD_DETAIL" /> ਭਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
+<translation id="5808435672482059465">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
 <translation id="5808542072418270309">ਸਿਮੂਲੇਸ਼ਨ ਗੇਮਾਂ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ਵਿੱਚ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਕਿਸੇ ਪੁਰਾਣਾ ਸਿਫ਼ਰ ਸੂਟ ਦਾ ਉਪਯੋਗ ਕਰਕੇ ਏਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5812947184178430888">Chrome ਵੱਲੋਂ ਸੁਰੱਖਿਆ ਇਵੈਂਟਾਂ ਨੂੰ ਫਲੈਗ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਇਵੈਂਟਾਂ ਸੰਬੰਧੀ ਢੁਕਵਾਂ ਡਾਟਾ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਇਸ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome 'ਚ ਦੇਖੇ ਜਾਂਦੇ ਪੰਨਿਆਂ ਦੇ URL, ਫ਼ਾਈਲਾਂ ਦੇ ਨਾਮ ਜਾਂ ਮੈਟਾਡਾਟਾ, ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ Chrome ਵਿੱਚ ਵੈੱਬ-ਆਧਾਰਿਤ ਐਪਲੀਕੇਸ਼ਨਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।</translation>

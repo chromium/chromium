@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ગેટવે</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">સ્કૅન કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
+<translation id="1367951781824006909">એક ફાઇલ પસંદ કરો</translation>
 <translation id="1387854245479784695">આ બધા કોરનો સરવાળો હોય છે</translation>
 <translation id="1394661041439318933">ડિવાઇસના કેસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="1397738625398125236">ગેટવેને પિંગ કરી શકાય છે</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">આલ્બમ <ph name="TITLE" /> <ph name="DESC" />ની પસંદગી કરી</translation>
 <translation id="2695514675076754339">8 અક્ષરનો અનલૉક કોડ દાખલ કરો</translation>
 <translation id="2712812801627182647">TLS પ્રમાણીકરણ કી</translation>
+<translation id="2717139507051041123">ઘેરા રંગવાળો મોડ ચાલુ કરો</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
 <translation id="2783010256799387990">પરીક્ષણ પાસ કર્યુ</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
+<translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
@@ -376,6 +379,7 @@
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5252456968953390977">રોમિંગ</translation>
+<translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
 <translation id="5264277876637023664">CPUનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">રૂટિન ફરીથી ચલાવો</translation>
@@ -486,6 +490,7 @@
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">નબળું (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">એકાઉન્ટ સેટિંગ પર જાઓ</translation>
 <translation id="6456394469623773452">સરસ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{પેજ ફરીથી સ્કૅન કરીએ?}=1{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}one{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}other{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -548,6 +553,7 @@
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
+<translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 છબી</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ગોઠવો</translation>
@@ -569,6 +575,7 @@
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">સ્ક્રીનસેવર બદલો</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
 <translation id="7415801143053185905">HTTPની અતિ ઉચ્ચ વિલંબતા</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +598,7 @@
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
 <translation id="7656388927906093505">ડિવાઇસ એક માઉસ છે.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7665800271478495366">અવતાર બદલો</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +626,7 @@
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>

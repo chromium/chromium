@@ -13,6 +13,7 @@
         
 Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="1054045277222934172">Du kan ändra till datorvyn som standardvy för webbplatsen under Inställningar och sedan under Innehållsinställningar</translation>
+<translation id="1054745118061919935">Genom att fortsätta godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Använd ett annat lösenord …</translation>
 <translation id="1066060668811609597">Hantera synkronisering</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
@@ -494,6 +495,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5339316356165661760">Aktivera synkronisering</translation>
 <translation id="5360976571138293719">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Webbplatser du följer visas här</translation>
 <translation id="5388358297987318779">Öppna bild</translation>
 <translation id="5407969256130905701">Ignorera ändringar</translation>
 <translation id="5416022985862681400">Senaste 7 dagarna</translation>
@@ -611,6 +613,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6344783595350022745">Rensa text</translation>
 <translation id="6346549652287021269">Starta ny nedladdning?</translation>
 <translation id="634878792104344809">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
+<translation id="6361848730467328243">Följ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Inga inkognitoflikar</translation>
 <translation id="6363526231572697780">Inget användarnamn</translation>
 <translation id="6366190659675876144">Standardskydd</translation>
@@ -648,6 +651,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
 <translation id="6530992499366869131">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Besök en webbplats och klicka på Följ i Chrome-menyn</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>

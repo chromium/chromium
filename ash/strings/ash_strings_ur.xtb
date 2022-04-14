@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
 <translation id="108486256082349153">سیلولر: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">سہ پہر بخیر <ph name="GIVEN_NAME" />،</translation>
+<translation id="1088231044944504242">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں۔ اپنی ایپس کو نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدیں استعمال کریں۔</translation>
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
@@ -86,6 +87,7 @@
 <translation id="1351937230027495976">مینو کو سکیڑیں</translation>
 <translation id="1364382257761975320">‏اپنے Chromebook کو غیر مقفل کرنے کے لیے، اپنے فنگر پرنٹ کا استعمال کریں</translation>
 <translation id="1364618750746929654">ٹرانسکرپشن تخلیق نہیں کر سکتے</translation>
+<translation id="1372545819342940910">بعد کے لیے ڈیسک کو محفوظ کریں</translation>
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1391102559483454063">آن</translation>
@@ -179,6 +181,7 @@
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
 <translation id="1993072747612765854">تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں</translation>
 <translation id="1998100899771863792">موجودہ ڈیسک</translation>
+<translation id="2001444736072756133">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں۔</translation>
 <translation id="2016340657076538683">پیغام ٹائپ کریں</translation>
 <translation id="2018630726571919839">مجھے کوئی لطیفہ سنائيں</translation>
 <translation id="2021864487439853900">غیر مقفل کرنے کے لیے کلک کریں</translation>
@@ -264,6 +267,7 @@
 <translation id="2595239820337756193">میل میں 5 ہزار</translation>
 <translation id="2596078834055697711">ونڈو اسکرین شاٹ لیں</translation>
 <translation id="2607678425161541573">آن لائن سائن ان کی ضرورت ہے</translation>
+<translation id="2620016719323068571">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں...</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="263399434338050016">"تمام منتخب کریں"</translation>
@@ -621,6 +625,9 @@
 <translation id="4633185660152240791">{0,plural, =1{ایک دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، ایپ کی تجویز</translation>
+<translation id="4657775630156561295">درج ذیل تجویز آپ کے اکاؤنٹ کی تجویز کی سرگزشت سے مستقل طور پر ہٹا دی جائے گی:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
 <translation id="4665114317261903604">ڈسٹرب نہ کریں کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
@@ -942,6 +949,7 @@
 <translation id="6751052314767925245">آپ کے منتظم کے ذریعے نافذ کیا گیا</translation>
 <translation id="6751826523481687655">کارکردگی کا پتا لگانا آن ہے</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ڈیسک ہٹا دیے گئے اور <ph name="RECEIVE_DESK" /> ڈیسک کے ساتھ ضم ہو گئے</translation>
+<translation id="6753390234084146956">ٹیبز</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">کوئی میڈیا نہیں چل رہا ہے</translation>
 <translation id="6777216307882431711">‏منسلک USB-C آلات کو پاور دی جا رہی ہے</translation>
@@ -1047,6 +1055,7 @@
 <translation id="743058460480092004">کیمرا اور مائیکروفون زیر استعمال ہیں۔</translation>
 <translation id="7434543979546293336">اہم تصور کے طور پر نشان زد کیا گیا ہے</translation>
 <translation id="7452560014878697800">ایک ایپلیکیشن آپ کا کیمرا استعمال کر رہی ہے</translation>
+<translation id="7453330308669753048">تلاش کی سرگزشت کا نتیجہ ہٹا دیا گیا</translation>
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="746232733191930409">اسکرین ریکارڈنگ کی وضع</translation>
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
@@ -1103,6 +1112,7 @@
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749640678855296659">آپ کا مائیکروفون فی الحال آف ہے</translation>
 <translation id="776344839111254542">اپ ڈیٹ کی تفصیلات ملاحظہ کرنے کیلئے کلک کریں</translation>
+<translation id="7780094051999721182">شارٹ کٹس</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
 <translation id="7796353162336583443">‏نوٹ لینے، اسکرین شاٹ لینے، Google اسسٹنٹ، لیزر پوائنٹر یا میگنیفائنگ گلاس استعمال کرنے کے لیے شیلف پر موجود اسٹائلس بٹن کو تھپتھپائیں۔</translation>
 <translation id="7796735576426975947">نئی اطلاع پوشیدہ ہے</translation>
@@ -1165,6 +1175,7 @@
 <translation id="8120151603115102514">‏آپ کے فون میں لاک اسکرین نہیں ہے۔ اپنے Chromebook کو غیر مقفل کرنے کے لیے، پاس ورڈ درج کریں۔</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
+<translation id="8131994907636310308">ترتیب دینے والے ٹوسٹ کو بند کریں</translation>
 <translation id="8132487352815776550">سب ٹائٹلز بند کریں</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> سے منسلک ہو گیا</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>

@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
+<translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1387854245479784695">Alle Kerne zusammengerechnet</translation>
 <translation id="1394661041439318933">Der Akkustand des Case liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Hintergrund ändern</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
+<translation id="3621202678540785336">Eingang</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
@@ -552,6 +554,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
+<translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 Bild</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> konfigurieren</translation>

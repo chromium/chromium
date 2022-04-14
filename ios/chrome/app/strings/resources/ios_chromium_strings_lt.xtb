@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="4654936625574199632">Kad padėtų tobulinti programą, „Chromium“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Įjunkite „Chromium“ skaitytuvą</translation>
 <translation id="4736424910885271643">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chromium“ duomenys bus išvalyti iš šio įrenginio</translation>
 <translation id="4806326830773390517">Padėkite tobulinti „Chromium“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas</translation>
 <translation id="4828317641996116749">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
+<translation id="4996471330284142407">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“.</translation>
 <translation id="4999538639245140991">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chromium“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
 <translation id="5171868502429358653">Prisijunkite prie „Chromium“</translation>
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
@@ -111,6 +113,15 @@
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="865600487977764604">Apsaugo jus naršyklėje „Chromium“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="8663480472502753423">Atnaujinkite „Chromium“</translation>
+<translation id="8747378496147986285">Kai įjungta
+<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chromium“ žmonėms, naudojantiems jį kaip jūs.<ph name="END_INDENT" />
+
+Į ką reikėtų atsižvelgti
+<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chromium“ naudojimą, bet ji su jumis nesusiejama.
+
+  • Jei „Chromium“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
+
+  • Jei įjungsite sinchronizavimą, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chromium“.</translation>
 <translation id="894437814105052438">Kai atsijungsite, „Chromium“ nesinchronizuos jokių naujų duomenų su jūsų „Google“ paskyra. Anksčiau sinchronizuoti duomenys lieka paskyroje.</translation>
 <translation id="9022552996538154597">Prisijungti prie „Chromium“</translation>

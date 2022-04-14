@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Mrežni prolaz</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi oblasti za skeniranje</translation>
+<translation id="1367951781824006909">Izaberi datoteku</translation>
 <translation id="1387854245479784695">Ovo je zbir svih jezgara</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije futrole.</translation>
 <translation id="1397738625398125236">Mrežni prolaz može da se pinguje</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Promenite pozadinu</translation>
 <translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Veliko kašnjenje do HTTPS veb-sajtova</translation>
+<translation id="3621202678540785336">Ulaz</translation>
 <translation id="3632579075709132555">Uključite/isključite ekran za privatnost</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitava se...</translation>
@@ -552,6 +554,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
+<translation id="7155171745945906037">Postojeća fotografija iz kamere ili datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7175037578838465313">Konfigurišite <ph name="NAME" /></translation>

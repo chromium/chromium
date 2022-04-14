@@ -139,6 +139,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1323433172918577554">Vis mer</translation>
 <translation id="132390688737681464">Lagre og fyll inn adresser</translation>
 <translation id="1330449323196174374">Venstre vindusfals</translation>
+<translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
 <translation id="1333989956347591814">Aktiviteten din <ph name="BEGIN_EMPHASIS" />kan fortsatt være synlig<ph name="END_EMPHASIS" /> for
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />nettsteder du besøker
@@ -746,6 +747,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2972581237482394796">Gjø&amp;r om</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, for øyeblikket valgt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Åpne en inkognitofane</translation>
 <translation id="2985306909656435243">Hvis du slår på dette alternativet, lagrer Chromium en kopi av kortet ditt på denne enheten, slik at det går raskere å fylle ut skjemaer.</translation>
 <translation id="2985398929374701810">Angi en gyldig adresse</translation>
 <translation id="2986368408720340940">Denne hentemetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
@@ -1512,6 +1514,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5097099694988056070">enhetsstatistikk, som prosessor- og minnebruk</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Nettstedet er ikke sikkert</translation>
+<translation id="5109892411553231226">Administrer betalingsmåter</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Skuff 18</translation>
 <translation id="5114987907971894280">virtuell virkelighet</translation>
@@ -1759,6 +1762,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Vil du fylle ut informasjonen knyttet til <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
+<translation id="5808435672482059465">Se Chrome-loggen din</translation>
 <translation id="5808542072418270309">Simulatorspill</translation>
 <translation id="5810442152076338065">Tilkoblingen til <ph name="DOMAIN" /> er kryptert med en foreldet chifferserie.</translation>
 <translation id="5812947184178430888">Når Chrome flagger sikkerhetshendelser, sendes relevante data om hendelsen til administratoren din. Dette kan omfatte nettadressene til sider du besøker i Chrome, filnavn, metadata og brukernavnet du bruker når du logger på nettbaserte programmer, enheten din og Chrome.</translation>

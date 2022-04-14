@@ -98,6 +98,7 @@
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
 <translation id="1105572260329131950">Usar los íconos predeterminados para conexiones seguras</translation>
+<translation id="1107538157073168076">Inhabilitar la extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
@@ -382,6 +383,17 @@
       Cuando estableces esta política como "Fast", <ph name="PRODUCT_NAME" /> evitará la rasterización si es posible. Reducir la rasterización permite disminuir los tamaños de los trabajos de impresión y, por lo tanto, los acelera.
 
       Si no configuras esta política, <ph name="PRODUCT_NAME" /> estará en modo "Full".</translation>
+<translation id="1455351936334569779">Si la lista de rechazo incluye un tipo de impresora, no se podrán visualizar estas impresoras ni obtener sus capacidades.
+
+      Si se incluyen todos los tipos de impresora en la lista de rechazo, no se podrán realizar impresiones, dado que no habrá destinos disponibles para enviar un documento a imprimir.
+
+      En versiones anteriores a 102, si se incluye <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la lista de rechazo, el efecto es el mismo que si se establece la política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> como falsa. Para que se puedan visualizar los destinos de <ph name="CLOUD_PRINT_NAME" />, debe establecerse como verdadera la política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> y no debe incluirse <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la lista de rechazo. A partir de la versión 102, no se admiten los destinos de <ph name="CLOUD_PRINT_NAME" /> y estos no aparecerán sin importar los valores indicados en la política.
+
+      Si no se establece la política o se establece como una lista vacía, podrán visualizarse todos los tipos de impresora.
+
+      Las impresoras de extensiones, también conocidas como destinos del proveedor de impresión, incluyen los destinos que pertenecen a las extensiones de <ph name="PRODUCT_NAME" />.
+
+      Las impresoras locales, también conocidas como destinos nativos de impresión, incluyen los destinos disponibles en la máquina local y las impresoras de redes compartidas.</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario durante una sesión de perfiles múltiples en dispositivos con <ph name="PRODUCT_OS_NAME" />.
 
@@ -1296,6 +1308,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
+<translation id="2387469539700985783">Esta política no afecta el informe que crea Android.</translation>
 <translation id="238885588439957890">La hora a la que el dispositivo usará corriente alterna para cargar la batería (según la zona horaria local del dispositivo).</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restablecer la última sesión</translation>
 <translation id="2394674739523870144">Si estableces la política como una lista de strings, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la dirección URL al final de la línea de comandos.
@@ -1615,6 +1628,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2722076884688932437">Si estableces la política como verdadera, los dispositivos inscriptos informarán datos relacionados con los periféricos que están conectados al dispositivo.
 
       Si estableces la política como falsa o no la estableces, los dispositivos inscriptos no informarán datos sobre los periféricos.</translation>
+<translation id="2723281094174141470">La extensión de estadísticas informa la velocidad de carga y descarga de Internet, el tiempo de inactividad de un usuario y las estadísticas de apps.
+
+      Si habilitas la política, se instalará la extensión de estadísticas y se informarán las métricas.
+
+      Si la inhabilitas o no la estableces, la extensión de estadísticas no se instalará y no informarán las métricas.</translation>
 <translation id="2723692978495226412">Si habilitas esta política, se mostrarán recomendaciones de apps que el usuario haya instalado anteriormente en otros dispositivos. Se mostrarán estas recomendaciones en el Selector después de las recomendaciones locales de apps (en caso de que no se haya ingresado texto de búsqueda).
 
       Si inhabilitas esta política o no la estableces, no se mostrarán estas recomendaciones.
@@ -2230,6 +2248,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Esta política dejó de estar disponible; usa <ph name="PRINTERS_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3300784749135986828">Habilitar o inhabilitar la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /></translation>
+<translation id="3301698868852716692">Habilitar la extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre la sesión de kiosco activa, como el ID de aplicación y la versión.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán sobre la sesión de kiosco.</translation>
@@ -3383,6 +3402,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si la inhabilitas o no la estableces, no se generará ningún certificado y las llamadas a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> fallarán.</translation>
 <translation id="4742973303930120836">Restringe el modo de impresión con gráficos de fondo</translation>
+<translation id="4745232963710538589">Habilitar la extensión de estadísticas para métricas de informes de uso</translation>
 <translation id="4752880493649142945">Certificado de cliente para conectarse a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Si estableces la política como <ph name="ASK_FILE_HANDLING" />, las aplicaciones web podrán solicitar acceso a determinados tipos de archivos a través de la API de File Handling. Si estableces la política como <ph name="BLOCK_FILE_HANDLING" />, las aplicaciones web no podrán acceder a determinados tipos de archivos.
 
@@ -6357,6 +6377,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       </translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
+<translation id="8044720778481009876">Destinos: <ph name="CLOUD_PRINT_NAME" /> y "Guardar en Google Drive" (obsoleta)</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>
 <translation id="8049769137921877885">Esta política controla el envío de los datos sobre la política y su marca de tiempo de recuperación.

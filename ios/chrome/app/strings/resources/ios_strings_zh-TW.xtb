@@ -13,6 +13,7 @@
         
 你的搜尋引擎是「<ph name="DSE_NAME" />」。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="1054045277222934172">如要將預設的網站檢視畫面變更為電腦模式，請依序前往「設定」&gt;「內容設定」</translation>
+<translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="1063454504051558093">使用其他密碼...</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
@@ -494,6 +495,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
 <translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
+<translation id="5386314158584363703">此處會顯示你已追蹤的網站</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5416022985862681400">過去 7 天</translation>
@@ -611,6 +613,7 @@
 <translation id="6344783595350022745">清除文字</translation>
 <translation id="6346549652287021269">要開始進行新的下載作業嗎？</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、歷史記錄及其他設定保持同步</translation>
+<translation id="6361848730467328243">追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">沒有已開啟的無痕式分頁</translation>
 <translation id="6363526231572697780">沒有使用者名稱</translation>
 <translation id="6366190659675876144">標準防護</translation>
@@ -648,6 +651,7 @@
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6530992499366869131">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">造訪網站並按一下 Chrome 選單中的「追蹤」</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」部分。</translation>
 <translation id="6585618849026997638">你可以將重要網頁加入書籤，以便再次造訪</translation>

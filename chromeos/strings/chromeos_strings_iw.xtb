@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">שער</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
+<translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1387854245479784695">המדד הזה נצבר מכל הליבות</translation>
 <translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">החלפת הטפט</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
+<translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
+<translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7172721935181587524">תמונה אחת</translation>
 <translation id="7175037578838465313">הגדרה של <ph name="NAME" /></translation>

@@ -226,6 +226,7 @@
 <translation id="2302092602801625023">Այս հաշիվը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="2303600792989757991">Փոխարկել պատուհանի համատեսքը</translation>
 <translation id="2318576281648121272">Այսօր՝ <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060">Որոնման արդյունքների կատեգորիա՝ <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Մեկ տառով հետ</translation>
 <translation id="2339073806695260576">Հպեք դարակի վրայի ստիլուսի կոճակին՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու համար, ինչպես նաև լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
 <translation id="2341729377289034582">Միայն ուղղաձիգ</translation>
@@ -927,6 +928,7 @@
 <translation id="6629480180092995136"><ph name="APP_NAME" /> հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="6637729079642709226">Փոխել ժամանակը</translation>
 <translation id="6641720045729354415">Միացնել/անջատել Կենդանի ենթագրերը։ <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Ըստ անվանման դասավորումը հետարկվեց</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="6650933572246256093">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Մուտքագրեք այս անցակոդն այդ սարքում՝ <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -1237,6 +1239,8 @@
 <translation id="8513108775083588393">Ինքնապտտում</translation>
 <translation id="851458219935658693">Ընթացիկ աշխատասեղանի պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
 <translation id="8517041960877371778">Որպեսզի ձեր <ph name="DEVICE_TYPE" /> սարքը լիցքավորվի, անհրաժեշտ է անջատել այն:</translation>
+<translation id="8535393432370007982">Ըստ գույնի դասավորումը հետարկվեց</translation>
+<translation id="8546059259582788728">Դասավորումը հետարկվեց</translation>
 <translation id="8551588720239073785">Ամսաթվի և ժամի կարգավորումներ</translation>
 <translation id="8553395910833293175">Արդեն հասանելի է բոլոր աշխատասեղաններին։</translation>
 <translation id="856298576161209842">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>

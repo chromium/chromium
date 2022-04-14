@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">نمایش موارد بیشتر</translation>
 <translation id="132390688737681464">ذخیره و تکمیل نشانی</translation>
 <translation id="1330449323196174374">سمت چپ تاخوردگی دروازه‌ای</translation>
+<translation id="1333745675627230582">‏بازی کردن بازی «دایناسور Chrome»</translation>
 <translation id="1333989956347591814">فعالیت شما <ph name="BEGIN_EMPHASIS" />ممکن است در موارد زیر قابل‌رؤیت باشد<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />در وب‌سایت‌هایی که بازدید می‌کنید
@@ -746,6 +747,7 @@
 <translation id="2972581237482394796">انجام مجدد</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، درحال‌حاضر انتخاب شده است. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">اپرا</translation>
+<translation id="2983666748527428214">باز کردن «برگه ناشناس»</translation>
 <translation id="2985306909656435243">‏اگر فعال شود، Chromium برای پر کردن سریع‌تر فرم، یک کپی از کارت شما در این دستگاه ذخیره می‌کند.</translation>
 <translation id="2985398929374701810">نشانی معتبری وارد کنید</translation>
 <translation id="2986368408720340940">این روش تحویل گرفتن در دسترس نیست. روش دیگری را امتحان کنید.</translation>
@@ -1512,6 +1514,7 @@
 <translation id="5097099694988056070">‏آمار دستگاه مانند استفاده از CPU یا RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">سایت امن نیست</translation>
+<translation id="5109892411553231226">مدیریت «روش‌های پرداخت»</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">سینی ۱۸</translation>
 <translation id="5114987907971894280">واقعیت مجازی</translation>
@@ -1759,6 +1762,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">می‌خواهید <ph name="CARD_DETAIL" /> خود را وارد کنید؟</translation>
 <translation id="5804241973901381774">مجوزها</translation>
+<translation id="5808435672482059465">‏مشاهده «سابقه Chrome»</translation>
 <translation id="5808542072418270309">بازی شبیه‌سازی</translation>
 <translation id="5810442152076338065">اتصال شما به <ph name="DOMAIN" /> با استفاده از یک مجموعه رمز منسوخ، رمزگذاری شده است.</translation>
 <translation id="5812947184178430888">‏وقتی Chrome رویدادهای امنیتی را پرچم‌گذاری می‌کند، داده‌های مرتبط درباره این رویدادها به سرپرستتان ارسال می‌شود. این داده‌ها می‌تواند شامل موارد زیر باشد: نشانی وب صفحه‌هایی که در Chrome بازدید می‌کنید، نام فایل‌ها یا فراداده‌ها، و نام کاربری‌ای که برای ورود به سیستم برنامه‌های تحت وب، دستگاه، و Chrome از آن استفاده می‌کنید.</translation>

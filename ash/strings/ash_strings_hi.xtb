@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">फ़िलहाल, Linux ऐप्लिकेशन काम नहीं कर रहे हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="108486256082349153">मोबाइल (सेल्युलर): <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">गुड आफ़्टरनून <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें. ऐप्लिकेशन को नेविगेट करने के लिए, ऐरो वाले बटनों का इस्तेमाल करें.</translation>
 <translation id="109942774857561566">मुझे बोरियत हो रही है</translation>
 <translation id="1104084341931202936">सुलभता सेटिंग दिखाएं</translation>
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">स्पीच फ़ाइलें डाउनलोड हो गईं</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें</translation>
 <translation id="1998100899771863792">मौजूदा डेस्क</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें.</translation>
 <translation id="2016340657076538683">कोई मैसेज लिखें</translation>
 <translation id="2018630726571919839">मुझे कोई चुटकुला सुनाओ</translation>
 <translation id="2021864487439853900">क्लिक करके अनलॉक करें</translation>
@@ -264,6 +266,7 @@
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="263399434338050016">"सभी को चुनें"</translation>
@@ -622,6 +625,9 @@
 <translation id="4633185660152240791">{0,plural, =1{डिवाइस को एक दिन के अंदर पिछले वर्शन पर ले जाएं}one{डिवाइस को # दिन के अंदर पिछले वर्शन पर ले जाएं}other{डिवाइस को # दिनों के अंदर पिछले वर्शन पर ले जाएं}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रीनशॉट लें</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ऐप्लिकेशन का सुझाव</translation>
+<translation id="4657775630156561295">नीचे दिया गया सुझाव, आपके खाते के सुझाव के इतिहास से हमेशा के लिए हटा दिया जाएगा:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox सक्षम है</translation>
 <translation id="4665114317261903604">'परेशान न करें' को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड हो रही है</translation>
@@ -944,6 +950,7 @@
 <translation id="6751052314767925245">यह सुविधा आपके एडमिन ने लागू की है</translation>
 <translation id="6751826523481687655">'परफ़ॉर्मेंस ट्रेसिंग' चालू कर दी गई है</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> को हटा दिया गया है और इसे डेस्क<ph name="RECEIVE_DESK" /> के साथ मिला दिया गया है</translation>
+<translation id="6753390234084146956">टैब</translation>
 <translation id="6754441615189976839">शनि</translation>
 <translation id="6757237461819837179">कोई मीडिया नहीं चल रहा है</translation>
 <translation id="6777216307882431711">कनेक्ट किए गए यूएसबी-सी डिवाइस चार्ज कर रहा है</translation>
@@ -1049,6 +1056,7 @@
 <translation id="743058460480092004">कैमरे और माइक्रोफ़ोन का उपयोग हो रहा है.</translation>
 <translation id="7434543979546293336">इसे मुख्य विचार के तौर पर मार्क किया गया है</translation>
 <translation id="7452560014878697800">एक ऐप्लिकेशन आपके कैमरे का इस्तेमाल कर रहा है</translation>
+<translation id="7453330308669753048">खोज इतिहास का नतीजा हटा दिया गया</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746232733191930409">स्क्रीन रिकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेंसर को छुएं</translation>
@@ -1105,6 +1113,7 @@
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
 <translation id="7749640678855296659">आपका माइक्रोफ़ोन अभी बंद है</translation>
 <translation id="776344839111254542">अपडेट के विवरण देखने के लिए क्लिक करें</translation>
+<translation id="7780094051999721182">शॉर्टकट</translation>
 <translation id="7780159184141939021">स्क्रीन घुमाएं</translation>
 <translation id="7796353162336583443">नोट लेने, स्क्रीनशॉट लेने और Google Assistant, लेज़र पॉइंटर या आवर्धक ग्लास का इस्तेमाल करने के लिए अलमारी में मौजूद स्टाइलस बटन पर टैप करें.</translation>
 <translation id="7796735576426975947">नई सूचना छिपाई गई</translation>
@@ -1167,6 +1176,7 @@
 <translation id="8120151603115102514">आपके फ़ोन में लॉक स्क्रीन की सुविधा चालू नहीं है. अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
+<translation id="8131994907636310308">ऐप्लिकेशन को क्रम से लगाने से जुड़ा टोस्ट बंद करें</translation>
 <translation id="8132487352815776550">सबटाइटल बंद करें</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> से कनेक्ट है</translation>
 <translation id="813913629614996137">शुरू हो रहा है...</translation>

@@ -22,6 +22,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1081015718268701546">Aplicațiile Linux nu sunt acceptate momentan. Alte aplicații se vor salva.</translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bună ziua, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele. Folosește tastele săgeți ca să navighezi prin aplicații.</translation>
 <translation id="109942774857561566">M-am plictisit</translation>
 <translation id="1104084341931202936">Afișează setările de accesibilitate</translation>
 <translation id="1104621072296271835">Dispozitivele funcționează și mai bine împreună</translation>
@@ -179,6 +180,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1990046457226896323">Fișierele de redare în scris a vorbirii s-au descărcat</translation>
 <translation id="1993072747612765854">Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Desktopul actual</translation>
+<translation id="2001444736072756133">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele.</translation>
 <translation id="2016340657076538683">Scrie un mesaj</translation>
 <translation id="2018630726571919839">Spune-mi o glumă</translation>
 <translation id="2021864487439853900">Dă clic pentru deblocare</translation>
@@ -264,6 +266,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2595239820337756193">5 km în mile</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
+<translation id="2620016719323068571">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele…</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="263399434338050016">Selectează tot.</translation>
@@ -621,6 +624,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o zi}few{Treci la versiunea anterioară a dispozitivului în # zile}other{Treci la versiunea anterioară a dispozitivului în # de zile}}</translation>
 <translation id="4642092649622328492">Realizează o captură de ecran parțială</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, aplicație recomandată</translation>
+<translation id="4657775630156561295">Următoarea sugestie va fi eliminată definitiv din istoricul de sugestii al contului:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
 <translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
@@ -943,6 +949,7 @@ Instalare nouă</translation>
 <translation id="6751052314767925245">Impusă de administrator</translation>
 <translation id="6751826523481687655">Urmărirea performanțelor este activată</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">file</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
@@ -1048,6 +1055,7 @@ Instalare nouă</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
 <translation id="7434543979546293336">Marcată ca idee importantă</translation>
 <translation id="7452560014878697800">O aplicație folosește camera</translation>
+<translation id="7453330308669753048">S-a eliminat rezultatul din istoricul căutărilor</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746232733191930409">Modul de înregistrare a ecranului</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
@@ -1104,6 +1112,7 @@ Instalare nouă</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749640678855296659">Microfonul este dezactivat</translation>
 <translation id="776344839111254542">Dă clic pentru a vedea detaliile actualizării</translation>
+<translation id="7780094051999721182">comenzi rapide</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7796353162336583443">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești Asistentul Google, indicatorul laser sau lupa.</translation>
 <translation id="7796735576426975947">Notificare nouă ascunsă</translation>
@@ -1166,6 +1175,7 @@ Instalare nouă</translation>
 <translation id="8120151603115102514">Telefonul nu are ecran de blocare. Pentru a debloca Chromebookul, introdu parola.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>
+<translation id="8131994907636310308">Închide notificarea toast de sortare</translation>
 <translation id="8132487352815776550">Oprește subtitrările</translation>
 <translation id="8132793192354020517">Conectat la <ph name="NAME" /></translation>
 <translation id="813913629614996137">Se inițializează...</translation>

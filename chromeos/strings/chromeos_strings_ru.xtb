@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">По области сканирования</translation>
+<translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1387854245479784695">Использование ЦП всеми ядрами</translation>
 <translation id="1394661041439318933">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Запрос ping к шлюзу</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Изменить обои</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
+<translation id="3621202678540785336">Вход</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
 <translation id="370665806235115550">Загрузка...</translation>
@@ -265,6 +267,7 @@
 <translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4176463684765177261">Отключено</translation>
+<translation id="4176659219503619100">Панель управления</translation>
 <translation id="4213104098953699324">Клавиатура USB</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
@@ -551,6 +554,7 @@
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
+<translation id="7155171745945906037">Фото с камеры или из галереи</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7172721935181587524">Изображений: 1</translation>
 <translation id="7175037578838465313">Настроить сеть "<ph name="NAME" />"</translation>

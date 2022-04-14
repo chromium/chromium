@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्क्यान गर्ने क्षेत्रमा मिलाउनुहोस्</translation>
+<translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
 <translation id="1387854245479784695">यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
 <translation id="1394661041439318933">यो डिभाइसको केसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="1397738625398125236">गेटवे पिङ गर्न सकिन्छ</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">हालको</translation>
+<translation id="2491955442992294626">तपाईंले अर्को विन्डो प्रयोग गरिरहेका बेला कीहरू परीक्षण गरिँदैन</translation>
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
+<translation id="3621202678540785336">आगत</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
@@ -550,6 +553,7 @@
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
+<translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">एउटा फोटो छ</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> कन्फिगर गर्नुहोस्</translation>

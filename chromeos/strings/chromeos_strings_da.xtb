@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
+<translation id="1367951781824006909">Vælg en fil</translation>
 <translation id="1387854245479784695">Dette er den samlede værdi for alle kerner</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">Albummet <ph name="TITLE" /> <ph name="DESC" /> er valgt</translation>
 <translation id="2695514675076754339">Angiv den ottecifrede oplåsningskode</translation>
 <translation id="2712812801627182647">TLS-godkendelsesnøgle</translation>
+<translation id="2717139507051041123">Aktivér tilstanden med mørke farver</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
+<translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -376,6 +379,7 @@
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Aktivér tilstanden med lyse farver</translation>
 <translation id="5264277876637023664">Kør CPU-test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kør rutiner igen</translation>
@@ -486,6 +490,7 @@
 <translation id="641081527798843608">Emnematch</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svagt (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Gå til kontoindstillinger</translation>
 <translation id="6456394469623773452">God</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du scanne siden igen?}=1{Vil du scanne side {PAGE_NUMBER} igen?}one{Rescan page {PAGE_NUMBER}?}other{Vil du scanne side {PAGE_NUMBER} igen?}}</translation>
 <translation id="6472207088655375767">Engangskode</translation>
@@ -548,6 +553,7 @@
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>
+<translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7172721935181587524">1 billede</translation>
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
@@ -569,6 +575,7 @@
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Skift pauseskærm</translation>
 <translation id="741244894080940828">konvertering</translation>
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +598,7 @@
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7656388927906093505">Enheden er en mus.</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7665800271478495366">Skift avatar</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +626,7 @@
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Aktivér tilstanden med automatisk farve</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>

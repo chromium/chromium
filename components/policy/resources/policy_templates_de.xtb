@@ -6030,6 +6030,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Wenn du diese Richtlinie konfigurierst, können die Nutzer sie nicht ändern oder außer Kraft setzen.
 
       Hinweis: Automatische Neustarts sind derzeit nur aktiviert, wenn die Anmeldeseite angezeigt wird oder eine Kiosk-App-Sitzung läuft. Dies wird zukünftig geändert, sodass die Richtlinie immer gilt, unabhängig davon, ob und welche Sitzung aktiv ist.</translation>
+<translation id="7696412993033202071">Starten von externen Authentifizierungs-Apps bei Aufruf von URLs</translation>
 <translation id="7701341006446125684">Cache-Größe für Apps und Erweiterungen in Byte festlegen</translation>
 <translation id="770339941914297201">Neues Verhalten: Kiosk-Chrome-Apps werden nur anhand der von der Richtlinie stammenden Update-URL aktualisiert</translation>
 <translation id="7703737669292992839">Dialogfelder zur Dateiauswahl verhindern</translation>

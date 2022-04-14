@@ -13,6 +13,7 @@
         
 Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="1054045277222934172">Unaweza kubadilisha mwonekano chaguomsingi wa tovuti kuwa wa kompyuta katika Mipangilio kisha Mipangilio ya Maudhui</translation>
+<translation id="1054745118061919935">Kwa kuendelea, unakubali <ph name="BEGIN_LINK" />Sheria na Masharti<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Tumia Nenosiri Jingine...</translation>
 <translation id="1066060668811609597">Dhibiti Usawazishaji</translation>
 <translation id="1076421457278169141">Msimbo umechanganuliwa</translation>
@@ -494,6 +495,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5339316356165661760">Washa Kipengele cha Kusawazisha</translation>
 <translation id="5360976571138293719">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Utaona tovuti zako unazofuatilia hapa</translation>
 <translation id="5388358297987318779">Fungua Picha</translation>
 <translation id="5407969256130905701">Futa Mabadiliko</translation>
 <translation id="5416022985862681400">Siku 7 Zilizopita</translation>
@@ -611,6 +613,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6344783595350022745">Futa Matini</translation>
 <translation id="6346549652287021269">Ungependa Kuanza Kupakua?</translation>
 <translation id="634878792104344809">Sawazisha manenosiri, historia na mipangilio yako mingine kwenye vifaa vyako vyote</translation>
+<translation id="6361848730467328243">Fuata <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Hakuna Vichupo Fiche</translation>
 <translation id="6363526231572697780">Hakuna Jina la Mtumiaji</translation>
 <translation id="6366190659675876144">Ulinzi wa Kawaida</translation>
@@ -648,6 +651,7 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6524918542306337007">Hali Fiche Haipatikani</translation>
 <translation id="6530992499366869131">Nionye ikiwa Manenosiri Yamefichuliwa katika Tukio la Ufichuzi Haramu wa Data</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Tembelea tovuti na ubofye kitufe cha Fuatilia kwenye menyu ya Chrome</translation>
 <translation id="6561262006871132942">Vuta karibu</translation>
 <translation id="6583087784430677195">Ili uzime, fungua <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" /> kisha uende kwenye sehemu ya Kujaza Manenosiri Kiotomatiki.</translation>
 <translation id="6585618849026997638">Unaweza kurudi kwenye ukurasa ambao ni muhimu kwako kwa kuuweka alamisho.</translation>

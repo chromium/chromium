@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ဂိတ်ဝ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
+<translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
 <translation id="1387854245479784695">၎င်းသည် core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
 <translation id="1394661041439318933">ဘူးတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
+<translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
@@ -551,6 +553,7 @@
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
+<translation id="7155171745945906037">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိပုံ</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7172721935181587524">1 ပုံ</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ကို စီစဉ်သတ်မှတ်ရန်</translation>

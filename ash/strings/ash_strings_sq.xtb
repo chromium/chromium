@@ -22,6 +22,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1081015718268701546">Aplikacionet e Linux nuk mbështeten për momentin. Aplikacionet e tjera do të ruhen.</translation>
 <translation id="108486256082349153">Celulare: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Mirëdita <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera. Përdor tastet e shigjetave për të naviguar nëpër aplikacionet e tua.</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
 <translation id="1104084341931202936">Shfaq cilësimet e qasshmërisë</translation>
 <translation id="1104621072296271835">Pajisjet e tua punojnë edhe më mirë së bashku</translation>
@@ -179,6 +180,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1990046457226896323">Skedarët e ligjërimit u shkarkuan</translation>
 <translation id="1993072747612765854">Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Tavolina aktuale e punës</translation>
+<translation id="2001444736072756133">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera.</translation>
 <translation id="2016340657076538683">Shkruaj një mesazh</translation>
 <translation id="2018630726571919839">Më trego një barsoletë</translation>
 <translation id="2021864487439853900">Kliko për ta shkyçur</translation>
@@ -224,6 +226,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
 <translation id="2318576281648121272">Sot <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060">Kategoria e rezultateve të kërkimit: <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Një shkronjë pas</translation>
 <translation id="2339073806695260576">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="2341729377289034582">U kyç vertikalisht</translation>
@@ -263,6 +266,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2595239820337756193">Sa milje janë 5 km</translation>
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2607678425161541573">Kërkohet identifikim në linjë</translation>
+<translation id="2620016719323068571">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera...</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="263399434338050016">"Zgjidh të gjitha"</translation>
@@ -620,6 +624,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda një dite}other{Kalo pajisjen në versionin e mëparshëm brenda # ditësh}}</translation>
 <translation id="4642092649622328492">Nxirr një pamje të pjesshme të ekranit</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomandim për aplikacione</translation>
+<translation id="4657775630156561295">Sugjerimi i mëposhtëm do të hiqet përgjithmonë nga historiku i sugjerimeve i llogarisë sate:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
 <translation id="4665114317261903604">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
@@ -921,6 +928,7 @@ Instalim i ri</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> dëshiron të përdorë mikrofonin</translation>
 <translation id="6637729079642709226">Ndrysho kohën</translation>
 <translation id="6641720045729354415">Aktivizo/çaktivizo "Titrat në çast". <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Zhbëj mënyrën e renditjes sipas emrit</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="6650933572246256093">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Fut çelësin e kalimit në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -941,6 +949,7 @@ Instalim i ri</translation>
 <translation id="6751052314767925245">E zbatuar nga administratori yt</translation>
 <translation id="6751826523481687655">Gjurmimi i cilësisë së funksionimit është aktivizuar</translation>
 <translation id="6752912906630585008">Tavolina e punës <ph name="REMOVED_DESK" /> u hoq dhe u shkri me tavolinën e punës <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">skedat</translation>
 <translation id="6754441615189976839">Sh</translation>
 <translation id="6757237461819837179">Nuk po luhet asnjë media</translation>
 <translation id="6777216307882431711">Po furnizon me energji pajisjet e lidhura USB-C</translation>
@@ -1046,6 +1055,7 @@ Instalim i ri</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>
 <translation id="7434543979546293336">Shënuar si ide kyçe</translation>
 <translation id="7452560014878697800">Kamerën tënde po e përdor një aplikacion</translation>
+<translation id="7453330308669753048">Rezultati i historikut të kërkimeve u hoq</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="746232733191930409">Modaliteti i regjistrimit të ekranit</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
@@ -1102,6 +1112,7 @@ Instalim i ri</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749640678855296659">Mikrofoni yt është aktualisht i fikur</translation>
 <translation id="776344839111254542">Kliko për të parë detajet e përditësimit</translation>
+<translation id="7780094051999721182">shkurtoret</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="7796735576426975947">Njoftimi i ri është fshehur</translation>
@@ -1164,6 +1175,7 @@ Instalim i ri</translation>
 <translation id="8120151603115102514">Telefoni yt nuk ka një ekran kyçjeje. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
+<translation id="8131994907636310308">Mbyll njoftimin e renditjes</translation>
 <translation id="8132487352815776550">Ndalo titrat</translation>
 <translation id="8132793192354020517">Lidhur me <ph name="NAME" /></translation>
 <translation id="813913629614996137">Po fillon...</translation>
@@ -1227,6 +1239,8 @@ Instalim i ri</translation>
 <translation id="8513108775083588393">Autorrotullim</translation>
 <translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
+<translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
+<translation id="8546059259582788728">Mënyra e renditjes u zhbë me sukses</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8553395910833293175">Është caktuar tashmë te të gjitha tavolinat e punës.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> rekomandon që të përditësosh pajisjen tënde <ph name="DEVICE_TYPE" /></translation>

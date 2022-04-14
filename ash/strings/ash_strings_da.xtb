@@ -226,6 +226,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2302092602801625023">Denne konto administreres af Family Link</translation>
 <translation id="2303600792989757991">Skift vinduesoversigt</translation>
 <translation id="2318576281648121272">I dag <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" /> , kategori af søgeresultater</translation>
 <translation id="2322173485024759474">Et bogstav tilbage</translation>
 <translation id="2339073806695260576">Tryk på knappen for styluspen på hylden for at skrive en note, tage et screenshot eller bruge lasermarkøren og luppen.</translation>
 <translation id="2341729377289034582">Altid lodret</translation>
@@ -927,6 +928,7 @@ Installeret for nylig</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> anmoder om at anvende mikrofonen</translation>
 <translation id="6637729079642709226">Skift tidspunkt</translation>
 <translation id="6641720045729354415">Slå Livetekstning til/fra. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Fortryd sortering efter navn</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="6650933572246256093">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv din adgangsnøgle på enheden: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Adgangskode</translation>
@@ -1237,6 +1239,8 @@ Installeret for nylig</translation>
 <translation id="8513108775083588393">Autoroter</translation>
 <translation id="851458219935658693">Vis vinduer fra det aktuelle skrivebord. Alternativknappen er valgt.</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> kan muligvis ikke oplades, mens den er tændt.</translation>
+<translation id="8535393432370007982">Fortryd sortering efter farve</translation>
+<translation id="8546059259582788728">Sorteringen blev fortrudt</translation>
 <translation id="8551588720239073785">Indstillinger for dato og tid</translation>
 <translation id="8553395910833293175">Allerede tildelt til alle skriveborde.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> anbefaler, at du opdaterer din <ph name="DEVICE_TYPE" /></translation>

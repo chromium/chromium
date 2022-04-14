@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Овај налог и сви несачувани подаци уклониће се из Chrome-а и других Google апликација на овом уређају.</translation>
 <translation id="1968388653333775699">Будите ефикаснији помоћу Chrome-а</translation>
 <translation id="2009224836393115614">Chrome није успео да вам провери лозинке. Проверите интернет везу.</translation>
+<translation id="2056123005618757196">Урадите више помоћу још једноставнијег, безбеднијег и бржег Google Chrome-а.</translation>
 <translation id="2147651015520127414">Chrome је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="2199719347983604670">Подаци из Chrome синхронизације</translation>
 <translation id="2313070403598893276">Google Chrome је једноставан, безбедан и бржи него икад пре</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Неки програмски додаци изазивају отказивање Chrome-а. Деинсталирајте:</translation>
 <translation id="4633328489441962921">Chrome не може да тражи ажурирања</translation>
 <translation id="4698415050768537821">Chrome није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Chrome шаље Google-у податке о коришћењу и отказивању ради побољшања апликације. <ph name="BEGIN_LINK" />Управљајте<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Није подржано у верзији Chrome бета</translation>
 <translation id="5030102366287574140">Chrome може да вас штити од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
 <translation id="5108659628347594808">Побољшајте Chrome</translation>
@@ -118,6 +120,13 @@
 <translation id="8736550665979974340">Останите безбедни уз Google Chrome</translation>
 <translation id="8772179140489533211">Приказује упите за пријављивање у Chrome.</translation>
 <translation id="8788269841521769222">Не морате да запамтите ову лозинку. Чува се у Google менаџеру лозинки за <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Када је ово укључено:
+<ph name="BEGIN_INDENT" />  • Помозите да побољшамо Chrome за људе који га користе као ви.<ph name="END_INDENT" />
+
+Шта треба да имате на уму:
+<ph name="BEGIN_INDENT" />  • Информације о вашем коришћењу Chrome-а се шаљу Google-у, али нису повезане са вама.
+  • Ако Chrome откаже, детаљи о отказивању могу да садрже неке личне податке.
+  • Ако укључите синхронизацију, показатељи могу да обухватају информације о URL-овима које посећујете.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Желите да подесите Chrome као подразумевани?</translation>
 <translation id="9122931302567044771">То значи да ће Chrome сваки пут захтевати сајт за рачунар.</translation>
 </translationbundle>

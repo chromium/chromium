@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">Развернуть</translation>
 <translation id="132390688737681464">Сохранять и автоматически подставлять адреса</translation>
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
+<translation id="1333745675627230582">Играть в Chrome Dino</translation>
 <translation id="1333989956347591814">Ваши действия <ph name="BEGIN_EMPHASIS" />будут видны<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />сайтам, которые вы посещаете;
@@ -742,6 +743,7 @@
 <translation id="2972581237482394796">&amp;Повторить</translation>
 <translation id="2977665033722899841">Сейчас выбрано – <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" />.</translation>
 <translation id="2978824962390592855">Опера</translation>
+<translation id="2983666748527428214">Открыть вкладку инкогнито</translation>
 <translation id="2985306909656435243">Если функция включена, Chromium будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="2985398929374701810">Укажите действительный адрес.</translation>
 <translation id="2986368408720340940">Этот способ выдачи недоступен. Выберите другой.</translation>
@@ -1502,6 +1504,7 @@
 <translation id="5097099694988056070">статистические данные устройства, например об использовании процессора или оперативной памяти;</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайт не защищен</translation>
+<translation id="5109892411553231226">Настроить способы оплаты</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Лоток 18</translation>
 <translation id="5114987907971894280">Виртуальная реальность</translation>
@@ -1749,6 +1752,7 @@
 <translation id="5789643057113097023">:</translation>
 <translation id="5803412860119678065">Заполнить данные банковской карты <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
+<translation id="5808435672482059465">Посмотреть историю Chrome</translation>
 <translation id="5808542072418270309">Игры-симуляторы</translation>
 <translation id="5810442152076338065">Соединение с <ph name="DOMAIN" /> зашифровано с помощью устаревшего набора шифров.</translation>
 <translation id="5812947184178430888">Когда Chrome сообщает о событиях безопасности, вашему администратору отправляется информация о них, в частности URL страниц, которые вы открывали в браузере Chrome, названия файлов или метаданные, а также ваше имя пользователя для входа в веб-приложения, систему на устройстве и в Chrome.</translation>

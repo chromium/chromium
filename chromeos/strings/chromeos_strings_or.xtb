@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
+<translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
 <translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
+<translation id="2491955442992294626">ଆପଣ ଅନ୍ୟ ୱିଣ୍ଡୋ ବ୍ୟବହାର କରିବା ବେଳେ କୀ'ଗୁଡ଼ିକୁ ପରୀକ୍ଷା କରାଯାଏ ନାହିଁ</translation>
 <translation id="2493126929778606526">ସ୍ୱଚାଳିତ ଭାବେ ଚୟନିତ, ଆପଣଙ୍କର ଶ୍ରେଷ୍ଠ ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
+<translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
@@ -551,6 +554,7 @@
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
+<translation id="7155171745945906037">କ୍ୟାମେରା କିମ୍ବା ଫାଇଲ୍‍‍ରେ ବିଦ୍ୟମାନ ଥିବା ଫଟୋ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7172721935181587524">1ଟି ଛବି</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>

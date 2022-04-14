@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gátt</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
+<translation id="1367951781824006909">Velja skrá</translation>
 <translation id="1387854245479784695">Þetta er samansafn allra kjarna</translation>
 <translation id="1394661041439318933">Rafhleðsla hulsturs er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2461822463642141190">Núna</translation>
+<translation id="2491955442992294626">Lyklar eru ekki prófaðir þegar þú notar annan glugga</translation>
 <translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Endurnýja núverandi veggfóðursmynd</translation>
@@ -154,6 +156,7 @@
 <translation id="2640549051766135490">Albúmið <ph name="TITLE" /> <ph name="DESC" /> valið</translation>
 <translation id="2695514675076754339">Sláðu inn átta stafa kóðann til að taka úr lás</translation>
 <translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
+<translation id="2717139507051041123">Kveikja á dökkri litastillingu</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
 <translation id="2783010256799387990">STÓÐST</translation>
@@ -220,6 +223,7 @@
 <translation id="3604713164406837697">Skipta um veggfóður</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
+<translation id="3621202678540785336">Inntak</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
 <translation id="370665806235115550">Hleður...</translation>
@@ -376,6 +380,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5252456968953390977">Í reiki</translation>
+<translation id="5257811368506016604">Kveikja á ljósri litastillingu</translation>
 <translation id="5264277876637023664">Keyra örgjörvapróf</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Keyra rútínur aftur</translation>
@@ -486,6 +491,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lítill (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Fara í reikningsstillingar</translation>
 <translation id="6456394469623773452">Í lagi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skanna aftur síðu?}=1{Skanna aftur síðu {PAGE_NUMBER}?}one{Skanna aftur síðu {PAGE_NUMBER}?}other{Skanna aftur síðu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
@@ -548,6 +554,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
+<translation id="7155171745945906037">Fyrirliggjandi mynd úr myndavél eða skrá</translation>
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7172721935181587524">1 mynd</translation>
 <translation id="7175037578838465313">Stilla <ph name="NAME" /></translation>
@@ -569,6 +576,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7359657277149375382">Skráargerð</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Breyta skjávara</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +599,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
 <translation id="7656388927906093505">Tækið er mús.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
+<translation id="7665800271478495366">Breyta notandamynd</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +627,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7994702968232966508">EAP-aðferð</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Kveikja á sjálfvirkri litastillingu</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>

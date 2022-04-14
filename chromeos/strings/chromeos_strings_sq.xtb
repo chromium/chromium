@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Porta e kalimit</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
+<translation id="1367951781824006909">Zgjidh një skedar</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2461822463642141190">Rryma</translation>
+<translation id="2491955442992294626">Çelësat nuk testohen kur ti je duke përdorur një dritare tjetër</translation>
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
@@ -154,6 +156,7 @@
 <translation id="2640549051766135490">Është zgjedhur albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Fut kodin 8-shifror të shkyçjes</translation>
 <translation id="2712812801627182647">Çelësi i vërtetimit për TLS</translation>
+<translation id="2717139507051041123">Aktivizo modalitetin e ngjyrave të errëta</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
 <translation id="2783010256799387990">KALOI</translation>
@@ -220,6 +223,7 @@
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
+<translation id="3621202678540785336">Hyrje</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
@@ -375,6 +379,7 @@
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5252456968953390977">Në roaming</translation>
+<translation id="5257811368506016604">Aktivizo modalitetin e ngjyrave të çelura</translation>
 <translation id="5264277876637023664">Ekzekuto testin e njësisë CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Riekzekuto rutinat</translation>
@@ -485,6 +490,7 @@
 <translation id="641081527798843608">Përputhja e subjektit</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
 <translation id="6456394469623773452">I mirë</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Të skanohet përsëri faqja?}=1{Të skanohet përsëri faqja {PAGE_NUMBER}?}other{Të skanohet përsëri faqja {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -547,6 +553,7 @@
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
+<translation id="7155171745945906037">Fotografi ekzistuese nga kamera ose skedari</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imazh</translation>
 <translation id="7175037578838465313">Konfiguro <ph name="NAME" /></translation>
@@ -568,6 +575,7 @@
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="741244894080940828">konvertimi</translation>
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -590,6 +598,7 @@
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
+<translation id="7665800271478495366">Ndrysho simbolin</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -617,6 +626,7 @@
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>

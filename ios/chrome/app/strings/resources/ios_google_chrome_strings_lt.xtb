@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chrome“ bei kitų šiame įrenginyje įdiegtų „Google“ programų.</translation>
 <translation id="1968388653333775699">Nuveikite daugiau naudodami „Chrome“</translation>
 <translation id="2009224836393115614">„Chrome“ nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
+<translation id="2056123005618757196">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Google Chrome“.</translation>
 <translation id="2147651015520127414">„Chrome“ patvirtino, kad „<ph name="ISSUER" />“ išdavė šį svetainės sertifikatą.</translation>
 <translation id="2199719347983604670">„Chrome“ sinchronizavimo duomenys</translation>
 <translation id="2313070403598893276">„Google Chrome“ veikia paprasčiau, saugiau ir sparčiau nei bet kada anksčiau</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Dėl tam tikrų priedų „Chrome“ užstringa . Pašalinkite:</translation>
 <translation id="4633328489441962921">„Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4698415050768537821">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
 <translation id="5030102366287574140">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
 <translation id="5108659628347594808">„Chrome“ tobulinimas</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="8788269841521769222">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Kai įjungta
+<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />
+
+Į ką reikėtų atsižvelgti
+<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chrome“ naudojimą, bet ji su jumis nesusiejama.
+
+  • Jei „Chrome“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
+
+  • Jei įjungsite sinchronizavimą, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Nustatyti „Chrome“ kaip numatytąją?</translation>
 <translation id="9122931302567044771">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
 </translationbundle>

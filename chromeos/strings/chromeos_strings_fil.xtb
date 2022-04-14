@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
+<translation id="1367951781824006909">Pumili ng isang file</translation>
 <translation id="1387854245479784695">Isa itong pagsasama-sama ng lahat ng core</translation>
 <translation id="1394661041439318933">May <ph name="BATTERY_PERCENTAGE" />% baterya ang case ng device.</translation>
 <translation id="1397738625398125236">Puwedeng I-ping ang Gateway</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Palitan ang wallpaper</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
+<translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
@@ -552,6 +554,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
+<translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 Larawan</translation>
 <translation id="7175037578838465313">I-configure ang <ph name="NAME" /></translation>

@@ -495,6 +495,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Her finder du de websites, du følger</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
@@ -612,6 +613,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6344783595350022745">Ryd tekst</translation>
 <translation id="6346549652287021269">Vil du starte en ny download?</translation>
 <translation id="634878792104344809">Synkroniser dine adgangskoder, din historik og meget mere på alle dine enheder</translation>
+<translation id="6361848730467328243">Følg <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Ingen inkognitofaner</translation>
 <translation id="6363526231572697780">Der er intet brugernavn</translation>
 <translation id="6366190659675876144">Standardbeskyttelse</translation>
@@ -649,6 +651,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
 <translation id="6530992499366869131">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="6537746030088321027">eksempel.dk</translation>
+<translation id="6540120577248033958">Besøg et website, og klik på Følg i Chrome-menuen</translation>
 <translation id="6561262006871132942">Zoom ind</translation>
 <translation id="6583087784430677195">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Autoudfyld adgangskoder.</translation>
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>

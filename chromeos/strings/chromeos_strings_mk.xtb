@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Портал</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Приспособи на скенираната област</translation>
+<translation id="1367951781824006909">Избери датотека</translation>
 <translation id="1387854245479784695">Ова е збир од сите јадра</translation>
 <translation id="1394661041439318933">Нивото на батерија на футролата е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Може да се испрати пинг до порталот</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Менување тапет</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Висока латенција кон веб-сајтовите со HTTPS</translation>
+<translation id="3621202678540785336">Внесување</translation>
 <translation id="3632579075709132555">Вклучи/исклучи заштита на приватноста</translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
+<translation id="7155171745945906037">Постојна фотографија од камера или датотека</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7172721935181587524">1 слика</translation>
 <translation id="7175037578838465313">Конфигурирање на <ph name="NAME" /></translation>

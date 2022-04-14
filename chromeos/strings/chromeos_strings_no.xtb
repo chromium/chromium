@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
+<translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1387854245479784695">Dette er en sammenstilling av alle kjernene</translation>
 <translation id="1394661041439318933">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
 <translation id="2695514675076754339">Oppgi den 8-sifrede opplåsingskoden</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnøkkel</translation>
+<translation id="2717139507051041123">Slå på modus for mørke farger</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fase 2-autentisering av EAP</translation>
 <translation id="2783010256799387990">BESTÅTT</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
+<translation id="3621202678540785336">Inndata</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
@@ -377,6 +380,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5252456968953390977">Datastreifing</translation>
+<translation id="5257811368506016604">Slå på modus for lyse farger</translation>
 <translation id="5264277876637023664">Kjør prosessortest</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
@@ -487,6 +491,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="641081527798843608">Emnetreff</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svak (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
 <translation id="6456394469623773452">Grei</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du skanne siden på nytt?}=1{Vil du skanne side {PAGE_NUMBER} på nytt?}other{Vil du skanne side {PAGE_NUMBER} på nytt?}}</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
@@ -549,6 +554,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
+<translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7172721935181587524">1 bilde</translation>
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
@@ -570,6 +576,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Bytt skjermsparer</translation>
 <translation id="741244894080940828">omregning</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -592,6 +599,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7656388927906093505">Enheten er en mus.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7665800271478495366">Bytt brukerbilde</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -619,6 +627,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>

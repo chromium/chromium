@@ -98,6 +98,7 @@
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
 <translation id="1105572260329131950">Usar iconos predeterminados en el caso de las conexiones seguras</translation>
+<translation id="1107538157073168076">Inhabilitar extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111781754511998498">Proyector</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
@@ -382,6 +383,17 @@
       Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
 
       Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo "full".</translation>
+<translation id="1455351936334569779">Las impresoras de los tipos incluidos en la lista de denegación no serán visibles, y sus funciones no se podrán utilizar.
+
+      Si se incluyen todos los tipos de impresora en la lista de denegación, en la práctica se inhabilitará la impresión, ya que no habrá ninguna impresora disponible a la que enviar los documentos para imprimirlos.
+
+      En las versiones anteriores a la 102, incluir <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la lista de denegación dará el mismo resultado que asignarle el valor false a la política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" />. Para que los destinos de <ph name="CLOUD_PRINT_NAME" /> sigan siendo visibles, a la política <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> se le debe asignar el valor true y no se debe incluir <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la lista de denegación. A partir de la versión 102, los destinos de <ph name="CLOUD_PRINT_NAME" /> no estarán disponibles ni se mostrarán, independientemente de los valores de la política.
+
+      Si la política no se establece o se le asigna una lista vacía, todos los tipos de impresora serán visibles.
+
+      Las impresoras de extensión, también llamadas "destinos de proveedor de impresión", incluyen cualquier destino que pertenezca a una extensión de <ph name="PRODUCT_NAME" />.
+
+      Las impresoras locales, que también se denominan "destinos de impresión nativos", incluyen los destinos que están disponibles para los equipos locales y las impresoras compartidas de la red.</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario en una sesión de varios perfiles en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
@@ -1299,6 +1311,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
+<translation id="2387469539700985783">Esta política no afecta a los informes realizados por Android.</translation>
 <translation id="238885588439957890">Hora a la que el dispositivo usará corriente alterna para cargar la batería, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restaurar la última sesión</translation>
 <translation id="2394674739523870144">Si se define esta política como una lista de cadenas, dichas cadenas se unirán mediante espacios y pasarán de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de línea de comandos. Si un parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> se sustituirá por la URL de la página que se vaya a abrir. Si ningún parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, la URL se añadirá al final de la línea de comandos.
@@ -1620,6 +1633,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2722076884688932437">Si se le asigna el valor True a esta política, los dispositivos registrados proporcionarán información relacionada con los periféricos conectados al dispositivo.
 
       Si se le asigna el valor False o no se establece, los dispositivos registrados no proporcionarán información sobre periféricos.</translation>
+<translation id="2723281094174141470">La extensión de estadísticas informa sobre la velocidad de descarga y subida de Internet de los usuarios, sobre el tiempo de inactividad y sobre las estadísticas de las aplicaciones.
+
+      Si la política se habilita, la extensión de estadísticas se instalará e informará sobre las métricas.
+
+      Si la política no se establece o se inhabilita, la extensión de estadísticas no se instalará ni informará sobre las métricas.</translation>
 <translation id="2723692978495226412">Si se habilita esta política, se mostrarán recomendaciones de aplicaciones instaladas anteriormente por el usuario en otros dispositivos. Si no se ha introducido ningún texto de búsqueda, estas recomendaciones se mostrarán en el menú de aplicaciones después de las recomendaciones de aplicaciones locales.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se mostrarán estas recomendaciones.
@@ -2235,6 +2253,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política está obsoleta. Usa <ph name="PRINTERS_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
+<translation id="3301698868852716692">Habilitar extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
@@ -3393,6 +3412,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se generará ningún certificado y se producirán errores en las llamadas a la <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="4742973303930120836">Restringir el modo de impresión con gráficos de fondo</translation>
+<translation id="4745232963710538589">Habilitar la extensión de estadísticas para informar sobre métricas de uso</translation>
 <translation id="4752880493649142945">Certificado del cliente para establecer conexión con RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Si se le asigna el valor <ph name="ASK_FILE_HANDLING" /> a la política, las aplicaciones web podrán solicitar acceso a ciertos tipos de archivo a través de la API File Handling. Si se le asigna el valor <ph name="BLOCK_FILE_HANDLING" />, se denegará el acceso a ciertos tipos de archivo.
 
@@ -6380,6 +6400,7 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
       </translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>
+<translation id="8044720778481009876">Destinos de <ph name="CLOUD_PRINT_NAME" /> y Guardar en Google Drive (obsoleta)</translation>
 <translation id="80453040817068401">Habilitar la disponibilidad del navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>
 <translation id="8049769137921877885">Esta política determina si se recogen datos de políticas y la hora de su obtención.

@@ -226,6 +226,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2302092602801625023">Tento účet spravuje služba Family Link</translation>
 <translation id="2303600792989757991">Přepnutí přehledu okna</translation>
 <translation id="2318576281648121272">Dnes <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, kategorie výsledků vyhledávání</translation>
 <translation id="2322173485024759474">Zpět o písmeno</translation>
 <translation id="2339073806695260576">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít laserové ukazovátko nebo lupu.</translation>
 <translation id="2341729377289034582">Uzamknuto na výšku</translation>
@@ -927,6 +928,7 @@ Nová instalace</translation>
 <translation id="6629480180092995136">Aplikace <ph name="APP_NAME" /> chce používat mikrofon</translation>
 <translation id="6637729079642709226">Změnit čas</translation>
 <translation id="6641720045729354415">Přepínání živého přepisu. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Zrušit řazení podle názvu</translation>
 <translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="6650933572246256093">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. V zařízení prosím zadejte následující přístupový klíč: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Heslo</translation>
@@ -1237,6 +1239,8 @@ Nová instalace</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
+<translation id="8535393432370007982">Zrušit řazení podle barvy</translation>
+<translation id="8546059259582788728">Vrácení řazení zpět bylo úspěšné</translation>
 <translation id="8551588720239073785">Nastavení data a času</translation>
 <translation id="8553395910833293175">Již přiřazeno ke všem plochám.</translation>
 <translation id="856298576161209842">Organizace <ph name="MANAGER" /> vám doporučuje, abyste toto zařízení <ph name="DEVICE_TYPE" /> aktualizovali</translation>

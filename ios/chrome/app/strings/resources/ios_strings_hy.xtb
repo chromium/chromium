@@ -495,6 +495,7 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5339316356165661760">Միացնել համաժամացումը</translation>
 <translation id="5360976571138293719">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում։</translation>
+<translation id="5386314158584363703">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
 <translation id="5388358297987318779">Բացել պատկերը</translation>
 <translation id="5407969256130905701">Չեղարկել փոփոխությունները</translation>
 <translation id="5416022985862681400">Վերջին 7 օրը</translation>
@@ -612,6 +613,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6344783595350022745">Մաքրել տեքստը</translation>
 <translation id="6346549652287021269">Սկսե՞լ ներբեռնումը զրոյից</translation>
 <translation id="634878792104344809">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունը և մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
+<translation id="6361848730467328243">Հետևել <ph name="DOMAIN_NAME" /> կայքին</translation>
 <translation id="6362362396625799311">Ինկոգնիտո ներդիրներ չկան</translation>
 <translation id="6363526231572697780">Օգտանունը նշված չէ</translation>
 <translation id="6366190659675876144">Սովորական պաշտպանություն</translation>
@@ -649,6 +651,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6524918542306337007">Ինկոգնիտո ռեժիմը հասանելի չէ</translation>
 <translation id="6530992499366869131">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Բացեք կայքը և Chrome-ի ընտրացանկում սեղմեք «Հետևել»</translation>
 <translation id="6561262006871132942">Մեծացնել</translation>
 <translation id="6583087784430677195">Անջատելու համար բացեք <ph name="BEGIN_LINK" />Կարգավորումները<ph name="END_LINK" /> և անցեք «Գաղտնաբառերի ինքնալրացում»։</translation>
 <translation id="6585618849026997638">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>

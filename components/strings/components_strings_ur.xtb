@@ -140,6 +140,7 @@
 <translation id="1323433172918577554">مزید دکھائیں</translation>
 <translation id="132390688737681464">پتوں کو محفوظ کریں اور بھریں</translation>
 <translation id="1330449323196174374">بایاں گیٹ فولڈ</translation>
+<translation id="1333745675627230582">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="1333989956347591814">ممکن ہے آپ کی سرگرمی مندرجہ ذیل کو <ph name="BEGIN_EMPHASIS" />اب بھی دکھائی دے<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />آپ کی ملاحظہ کردہ ویب سائٹس
@@ -747,6 +748,7 @@
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، فی الحال منتخب کردہ۔ <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">اوپیرا</translation>
+<translation id="2983666748527428214">پوشیدگی ٹیب کھولیں</translation>
 <translation id="2985306909656435243">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chromium آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="2985398929374701810">ایک درست پتہ درج کریں</translation>
 <translation id="2986368408720340940">پِک اپ کا یہ طریقہ دستیاب نہیں ہے۔ کوئی دوسرا طریقہ آزمائیں۔</translation>
@@ -1514,6 +1516,7 @@
 <translation id="5097099694988056070">‏CPU/RAM کے استعمال جیسے آلے کے اعداد و شمار</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">سائٹ محفوظ نہیں ہے</translation>
+<translation id="5109892411553231226">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">ٹرے 18</translation>
 <translation id="5114987907971894280">ورچوئل رئیلٹی</translation>
@@ -1761,6 +1764,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">کیا آپ اپنے <ph name="CARD_DETAIL" /> کو پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
+<translation id="5808435672482059465">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="5808542072418270309">سیمولیشن گیمز</translation>
 <translation id="5810442152076338065">ایک فرسودہ سائفر سوئٹ کا استعمال کر کے <ph name="DOMAIN" /> کا آپ کا کنکشن مرموز کیا گیا ہے۔</translation>
 <translation id="5812947184178430888">‏جب سیکیورٹی ایونٹس پر Chrome پرچم لگاتا ہے تو ان ایونٹس سے متعلقہ ڈیٹا آپ کے منتظم کو بھیجا جاتا ہے۔ اس میں Chrome میں آپ کے ذریعے ملاحظہ کیے جانے والے صفحات کے URLs، فائل کے نام یا میٹا ڈیٹا اور وہ صارف نام جس کا استعمال آپ ویب پر مبنی ایپلیکیشنز میں سائن ان کرنے کے لیے استعمال کرتے ہیں، شامل ہو سکتے ہیں۔</translation>

@@ -88,6 +88,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3349211344363550267">Chromium anbefaler, at du ikke downloader eller åbner denne fil</translation>
 <translation id="3350761136195634146">Der findes allerede en Chromium-profil med denne konto</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
+<translation id="3412460710772753638">I Adgangskodeadministrator på denne enhed</translation>
 <translation id="3430503420100763906">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="347328004046849135">Chromium giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
@@ -110,6 +111,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3889543394854987837">Klik på dit navn for at åbne Chromium og gå i gang med at browse.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chromium-profil. Hvis du vil holde din browsing adskilt, kan Chromium oprette en ny profil til dig.</translation>
 <translation id="3945058413678539331">Chromium forsøger at kopiere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
+<translation id="3962623956404948996">Chromium anbefaler, at du scanner denne fil, da den kan være skadelig</translation>
 <translation id="4036079820698952681">Hjælp med at gøre Chromium bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Login på netværk – Chromium</translation>
@@ -128,6 +130,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4544142686420020088">Chromium kunne ikke opdateres, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chromium og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vil du fortsætte på en ny Chromium-profil?</translation>
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
+<translation id="4594305310729380060">I Adgangskodeadministrator på denne enhed</translation>
 <translation id="459535195905078186">Chromium-apps</translation>
 <translation id="4621240073146040695">Næsten opdateret. Genstart Chromium for at afslutte opdateringen.</translation>
 <translation id="4665829708273112819">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>

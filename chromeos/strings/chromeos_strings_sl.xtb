@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Prehod</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ustrezanje velikosti območja za optično branje</translation>
+<translation id="1367951781824006909">Izberite datoteko</translation>
 <translation id="1387854245479784695">To so združeni podatki za vsa jedra</translation>
 <translation id="1394661041439318933">Raven napolnjenosti baterije škatlice: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Prehod je mogoče preveriti</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Sprememba ozadja</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka zakasnitev do spletnih mest HTTPS.</translation>
+<translation id="3621202678540785336">Vhod</translation>
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -552,6 +554,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
+<translation id="7155171745945906037">Obstoječa fotografija iz fotoaparata ali datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7175037578838465313">Konfiguriranje omrežja <ph name="NAME" /></translation>

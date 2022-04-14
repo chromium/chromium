@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">За розміром області сканування</translation>
+<translation id="1367951781824006909">Вибрати файл</translation>
 <translation id="1387854245479784695">Це зведені дані для всіх ядер</translation>
 <translation id="1394661041439318933">Рівень заряду акумулятора чохла – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
+<translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
+<translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
@@ -551,6 +554,7 @@
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
+<translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7172721935181587524">1 зображення</translation>
 <translation id="7175037578838465313">Налаштувати мережу "<ph name="NAME" />"</translation>

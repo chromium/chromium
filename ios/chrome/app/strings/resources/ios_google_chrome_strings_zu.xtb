@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Le akhawunti kanye nanoma iyiphi idatha engalondolozwanga izosuswa ku-Chrome nakwezinye izinhlelo zokusebenza ezikule divayisi.</translation>
 <translation id="1968388653333775699">Yenza okuningi nge-Chrome</translation>
 <translation id="2009224836393115614">I-Chrome ayikwazanga ukuhlola amaphasiwedi akho. Zama ukuhlola ukuxhumeka kwakho ku-inthanethi.</translation>
+<translation id="2056123005618757196">Yenza okuningi nge-Google Chrome elula, evikelekile, nesheshayo kunangaphambilini.</translation>
 <translation id="2147651015520127414">I-Chrome iqinisekise ukuthi i-<ph name="ISSUER" /> ikhiphe isitifiketi sale webhusayithi.</translation>
 <translation id="2199719347983604670">Idatha esuka ekuvumelaniseni kwe-Chrome</translation>
 <translation id="2313070403598893276">I-Google Chrome ilula, ivikelekile, futhi ishesha kunaphambili</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Ezinye izengezo zidale ukuthi i-Chrome isaphazeke. Sicela ukhiphe:</translation>
 <translation id="4633328489441962921">I-Chrome ayikwazi ukuhlola izibuyekezo</translation>
 <translation id="4698415050768537821">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa noma <ph name="BEGIN_LINK" />hlola amaphasiwedi ku-Akhawunti yakho ye-Google<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Ukusiza ekuthuthukiseni i-app, i-Chrome ithumela idatha yokusetshenziswa neyokuphahlazeka ku-Google. <ph name="BEGIN_LINK" />Phatha<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ayisekelwe ku-Chrome Beta</translation>
 <translation id="5030102366287574140">I-Chrome ingakusiza ukukugcina uphephile ekuphulweni kwesivumelwano sedatha, kumawebhusayithi angaphephile nokuningi.</translation>
 <translation id="5108659628347594808">Yenza i-Chrome ibe ngcono</translation>
@@ -118,6 +120,14 @@
 <translation id="8736550665979974340">Hlala Uphephile nge-Google Chrome</translation>
 <translation id="8772179140489533211">Ibonisa isiqondiso sokungena ngemvume ku-Chrome.</translation>
 <translation id="8788269841521769222">Ngeke kudingeke ukuthi ukhumbule le phasiwedi. Izolondolozwa Kusiphathi Sephasiwedi se-Google se-<ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Uma ivuliwe:
+<ph name="BEGIN_INDENT" />  • Siza ukwenza i-Chrome ibe ngcono kubantu abayisebenzisa ngendlela owenza ngayo.<ph name="END_INDENT" />
+
+Izinto okufanele uzicabangele:
+<ph name="BEGIN_INDENT" />  • Ulwazi luthunyelwa ku-Google mayelana nokusebenzisa kwakho i-Chrome, kodwa ayiboshelwanga kuwe.
+
+  • Uma i-Chrome iphahlazeka, imininingwane mayelana nokuphahlazeka ingase ihlanganise ulwazi lomuntu siqu.
+  • Uma uvula ukuvumelanisa, ama-metric angase futhi afake ulwazi olumayelana nama-URL owavakashelayo.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Setha i-Chrome Njengokuzenzakalelayo?</translation>
 <translation id="9122931302567044771">Lokhu kusho ukuthi i-Chrome izocela isayithi yedeskithophu ngaso sonke isikhathi.</translation>
 </translationbundle>

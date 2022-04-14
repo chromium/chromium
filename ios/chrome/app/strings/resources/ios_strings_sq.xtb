@@ -13,6 +13,7 @@
         
 Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimeve, nëse është e vlefshme.</translation>
 <translation id="1054045277222934172">Mund të ndryshosh pamjen e parazgjedhur të sajtit në desktop te "Cilësimet" dhe më pas te "Cilësimet e përmbajtjes"</translation>
+<translation id="1054745118061919935">Duke vazhduar, ti pranon <ph name="BEGIN_LINK" />Kushtet e shërbimit<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Përdor një fjalëkalim tjetër...</translation>
 <translation id="1066060668811609597">Menaxho sinkronizimin</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
@@ -494,6 +495,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5339316356165661760">Aktivizo sinkronizimin</translation>
 <translation id="5360976571138293719">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Këtu do të gjesh sajtet që ndjek</translation>
 <translation id="5388358297987318779">Hape imazhin</translation>
 <translation id="5407969256130905701">Hiq ndryshimet</translation>
 <translation id="5416022985862681400">7 ditët e fundit</translation>
@@ -611,6 +613,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6344783595350022745">Pastro tekstin</translation>
 <translation id="6346549652287021269">Të niset shkarkim i ri?</translation>
 <translation id="634878792104344809">Sinkronizo fjalëkalimet, historikun tënd etj. në të gjitha pajisjet e tua</translation>
+<translation id="6361848730467328243">Ndiq <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Asnjë skedë "e fshehtë"</translation>
 <translation id="6363526231572697780">Nuk ka emër përdoruesi</translation>
 <translation id="6366190659675876144">Mbrojtja standarde</translation>
@@ -648,6 +651,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6524918542306337007">Modaliteti "i fshehtë" nuk ofrohet</translation>
 <translation id="6530992499366869131">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Vizito një sajt dhe kliko "Ndiq" në "Menynë e Chrome"</translation>
 <translation id="6561262006871132942">Zmadho</translation>
 <translation id="6583087784430677195">Për ta fikur, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Plotësimi automatik i fjalëkalimeve".</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>

@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">目前並未支援 Linux 應用程式。系統將會儲存其他應用程式。</translation>
 <translation id="108486256082349153">流動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，午安：</translation>
+<translation id="1088231044944504242">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容，可使用方向鍵瀏覽應用程式。</translation>
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
 <translation id="1998100899771863792">目前的桌面</translation>
+<translation id="2001444736072756133">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容。</translation>
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講笑話</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
@@ -224,6 +226,7 @@
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />，搜尋結果類別</translation>
 <translation id="2322173485024759474">往後一個字母</translation>
 <translation id="2339073806695260576">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直</translation>
@@ -263,6 +266,7 @@
 <translation id="2595239820337756193">5 公里等於幾多英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2607678425161541573">需要網上登入</translation>
+<translation id="2620016719323068571">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容…</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2621713457727696555">已受保護</translation>
 <translation id="263399434338050016">「全選」</translation>
@@ -620,6 +624,9 @@
 <translation id="4633185660152240791">{0,plural, =1{在 1 天內將裝置回復為先前的版本}other{在 # 天內將裝置回復為先前的版本}}</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推薦應用程式</translation>
+<translation id="4657775630156561295">以下建議會從帳戶的建議記錄中永久移除：
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4665114317261903604">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
@@ -919,6 +926,7 @@
 <translation id="6629480180092995136"><ph name="APP_NAME" /> 要求使用麥克風</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換「即時字幕」。<ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">根據名稱復原排列次序</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
 <translation id="6650933572246256093">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入這個密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -939,6 +947,7 @@
 <translation id="6751052314767925245">由管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
+<translation id="6753390234084146956">分頁</translation>
 <translation id="6754441615189976839">六</translation>
 <translation id="6757237461819837179">目前沒有播放任何媒體</translation>
 <translation id="6777216307882431711">正在為已連接的 USB-C 裝置充電</translation>
@@ -1044,6 +1053,7 @@
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
 <translation id="7434543979546293336">已標記為重要想法</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
+<translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">螢幕錄影模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
@@ -1100,6 +1110,7 @@
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749640678855296659">麥克風目前已關閉</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
+<translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
@@ -1162,6 +1173,7 @@
 <translation id="8120151603115102514">您的手機沒有上鎖畫面。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8131994907636310308">閂排序資訊框</translation>
 <translation id="8132487352815776550">停用字幕</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
 <translation id="813913629614996137">正在初始化…</translation>
@@ -1225,6 +1237,8 @@
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
+<translation id="8535393432370007982">根據顏色復原排列次序</translation>
+<translation id="8546059259582788728">成功復原排序</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> 建議您更新 <ph name="DEVICE_TYPE" /></translation>

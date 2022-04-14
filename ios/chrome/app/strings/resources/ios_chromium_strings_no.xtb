@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="4654936625574199632">For å bidra til å gjøre appen bedre sender Chrome bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4806326830773390517">Bidra til å gjøre Chromium bedre ved å sende bruksstatistikk og programstopprapporter til Google</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
+<translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="5171868502429358653">Logg på Chromium</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
@@ -109,7 +111,17 @@
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
+<translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
+<translation id="8747378496147986285">Når du gir samtykke
+<ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />
+
+Dette bør du tenke over:
+<ph name="BEGIN_INDENT" />  • Google mottar informasjon om hvordan du bruker Chromium, men informasjonen er ikke knyttet til deg.
+
+  • Hvis Chromium krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
+
+  • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
 <translation id="894437814105052438">Når du logger av, synkroniserer ikke Chromium nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>

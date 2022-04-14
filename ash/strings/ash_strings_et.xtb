@@ -22,6 +22,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1081015718268701546">Linuxi rakendusi praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="108486256082349153">Mobiilseade: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Tere päevast, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud. Kasutage rakenduste vahel navigeerimiseks nooleklahve.</translation>
 <translation id="109942774857561566">Mul on igav</translation>
 <translation id="1104084341931202936">Kuvab juurdepääsetavuse seaded</translation>
 <translation id="1104621072296271835">Teie seadmed töötavad koos veelgi paremini</translation>
@@ -179,6 +180,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1990046457226896323">Kõnefailid laaditi alla</translation>
 <translation id="1993072747612765854">Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta</translation>
 <translation id="1998100899771863792">Praegune töölaud</translation>
+<translation id="2001444736072756133">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud.</translation>
 <translation id="2016340657076538683">Sisestage sõnum</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
 <translation id="2021864487439853900">Klõpsake avamiseks</translation>
@@ -224,6 +226,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2302092602801625023">Kontot haldab Family Link</translation>
 <translation id="2303600792989757991">Akna ülevaate sisse- ja väljalülitamine</translation>
 <translation id="2318576281648121272">Täna, <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, otsingutulemuse kategooria</translation>
 <translation id="2322173485024759474">Tähe võrra tagasi</translation>
 <translation id="2339073806695260576">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilt, kasutada laserkursorit või suurendusklaasi.</translation>
 <translation id="2341729377289034582">Lukustatud vertikaalasendisse</translation>
@@ -263,6 +266,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
 <translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2607678425161541573">Veebis sisselogimine on nõutav</translation>
+<translation id="2620016719323068571">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud …</translation>
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
 <translation id="263399434338050016">„Vali kõik“</translation>
@@ -621,6 +625,9 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks päev}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # päeva}}</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rakenduse soovitus</translation>
+<translation id="4657775630156561295">Järgmised soovitused eemaldatakse teie konto soovituste ajaloost jäädavalt.
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
 <translation id="4665114317261903604">Lülitab režiimi Mitte segada sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
@@ -922,6 +929,7 @@ Uus installimine</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> soovib mikrofoni kasutada</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
 <translation id="6650933572246256093">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmesse see parool: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parool</translation>
@@ -942,6 +950,7 @@ Uus installimine</translation>
 <translation id="6751052314767925245">Jõustas administraator</translation>
 <translation id="6751826523481687655">Toimivuse jälgimine on sisse lülitatud</translation>
 <translation id="6752912906630585008">Töölaud <ph name="REMOVED_DESK" /> eemaldati ja liideti töölauaga <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">vahelehti</translation>
 <translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Meediat ei esitata</translation>
 <translation id="6777216307882431711">Ühendatud USB-C-tüüpi seadmete toitega varustamine</translation>
@@ -1047,6 +1056,7 @@ Uus installimine</translation>
 <translation id="743058460480092004">Kaamera ja mikrofon on kasutusel.</translation>
 <translation id="7434543979546293336">Märgitud oluliseks ideeks</translation>
 <translation id="7452560014878697800">Rakendus kasutab teie kaamerat</translation>
+<translation id="7453330308669753048">Otsinguajaloo tulemus eemaldati</translation>
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
@@ -1103,6 +1113,7 @@ Uus installimine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749640678855296659">Teie mikrofon on praegu välja lülitatud</translation>
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
+<translation id="7780094051999721182">otseteid</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796353162336583443">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilti, kasutada Google'i assistenti, laserkursorit või suurendusklaasi.</translation>
 <translation id="7796735576426975947">Uus märguanne on peidetud</translation>
@@ -1165,6 +1176,7 @@ Uus installimine</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Kinnita</translation>
+<translation id="8131994907636310308">Sulge sortimise teatis</translation>
 <translation id="8132487352815776550">Peata subtiitrid</translation>
 <translation id="8132793192354020517">Ühendus <ph name="NAME" />iga</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
@@ -1228,6 +1240,8 @@ Uus installimine</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
+<translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
+<translation id="8546059259582788728">Sortimise tagasivõtmine õnnestus</translation>
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8553395910833293175">Juba määratud kõigile töölaudadele.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> soovitab seadet <ph name="DEVICE_TYPE" /> värskendada</translation>

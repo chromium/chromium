@@ -13,6 +13,7 @@
         
 Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="1054045277222934172">Možete promijeniti zadani prikaz web lokacije na prikaz za računar u Postavkama, a potom Postavke sadržaja</translation>
+<translation id="1054745118061919935">Ako nastavite, pristajete na <ph name="BEGIN_LINK" />Uslove korištenja usluge<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Koristi druge lozinke…</translation>
 <translation id="1066060668811609597">Upravljanje sinhronizacijom</translation>
 <translation id="1076421457278169141">Kôd je skeniran</translation>
@@ -500,7 +501,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5339316356165661760">Uključi sinhronizaciju</translation>
 <translation id="5360976571138293719">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka možete pronaći u <ph name="BEGIN_LINK" />Googleovim uslugama<ph name="END_LINK" />.</translation>
-<translation id="5386314158584363703">Ovdje ćete pronaći praćene web-lokacije</translation>
+<translation id="5386314158584363703">Web lokacije koje pratite ćete pronaći ovdje</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5407969256130905701">Odbaci izmjene</translation>
 <translation id="5416022985862681400">Posljednjih 7 dana</translation>
@@ -619,7 +620,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6344783595350022745">Izbriši tekst</translation>
 <translation id="6346549652287021269">Pokrenuti novo preuzimanje?</translation>
 <translation id="634878792104344809">Sinhronizirajte lozinke, historiju i drugo na svim svojim uređajima</translation>
-<translation id="6361848730467328243">Prati web-lokaciju <ph name="DOMAIN_NAME" /></translation>
+<translation id="6361848730467328243">Prati <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Ne postoje anonimne kartice</translation>
 <translation id="6363526231572697780">Nema korisničkog imena</translation>
 <translation id="6366190659675876144">Standardna zaštita</translation>
@@ -657,7 +658,7 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="6524918542306337007">Anonimni način rada je nedostupan</translation>
 <translation id="6530992499366869131">Upozori ako su lozinke izložene prilikom narušavanja podataka</translation>
 <translation id="6537746030088321027">primjeri.hr</translation>
-<translation id="6540120577248033958">Posjetite web-lokaciju i kliknite Prati u izborniku preglednika Chrome</translation>
+<translation id="6540120577248033958">Posjetite web lokaciju i u Chrome meniju kliknite na Prati</translation>
 <translation id="6561262006871132942">Uvećaj</translation>
 <translation id="6583087784430677195">Da isključite, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> i idite u Automatsko popunjavanje lozinki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>

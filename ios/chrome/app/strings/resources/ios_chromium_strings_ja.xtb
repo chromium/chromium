@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Chromium ベータ版ではサポートされていません</translation>
 <translation id="4555020257205549924">この機能を有効にすると、外国語のページを開いたときに翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chromium で開かれるようになります。</translation>
+<translation id="4654936625574199632">アプリを改善するため、Chromium では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium のスキャナをオンにしてください</translation>
 <translation id="4736424910885271643">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chromium データはこのデバイスから削除されます</translation>
 <translation id="4806326830773390517">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる</translation>
 <translation id="4828317641996116749">Chromium ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="4985291216379576555">オフラインのため Chromium でアップデートを確認できません</translation>
+<translation id="4996471330284142407">シンプル、安全で、さらに高速になった Chromium をご活用ください。</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chromium データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="5171868502429358653">Chromium にログイン</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
@@ -111,6 +113,15 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">ログイン時に、Chromium を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="8663480472502753423">Chromium を最新の状態に維持します</translation>
+<translation id="8747378496147986285">オンにした場合:
+<ph name="BEGIN_INDENT" />  • 同じように Chromium を使用する他のユーザーの利便性向上に役立てられます。<ph name="END_INDENT" />
+
+留意事項:
+<ph name="BEGIN_INDENT" />  • Chromium の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません。
+
+  • Chromium がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります。
+
+  • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">このアカウントと保存されていないデータは Chromium から削除されます。</translation>
 <translation id="894437814105052438">ログアウトすると、Chromium で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>

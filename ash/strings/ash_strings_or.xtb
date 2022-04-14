@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux ଆପଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="108486256082349153">ସେଲ୍ୟୁଲାର୍: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ଶୁଭ ଅପରାହ୍ନ <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ। ଆପଣଙ୍କ ଆପ୍ସକୁ ନାଭିଗେଟ କରିବା ପାଇଁ ତୀର କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="109942774857561566">ମୁଁ ବିରକ୍ତ ହୋଇଗଲିଣି</translation>
 <translation id="1104084341931202936">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="1104621072296271835">ଏକାଠି ହୋ‍ଇ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆହୁରି ଭଲ କାର୍ଯ୍ୟ କରନ୍ତି</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="1993072747612765854">ନବୀନତମ <ph name="SYSTEM_APP_NAME" /> ଅପ୍‌ଡେଟ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="1998100899771863792">ବର୍ତ୍ତମାନର ଡେସ୍କ</translation>
+<translation id="2001444736072756133">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="2016340657076538683">ଏକ ମେସେଜ୍ ଟାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2018630726571919839">ମୋତେ ଏକ ଜୋକ୍ କୁହନ୍ତୁ</translation>
 <translation id="2021864487439853900">ଅନଲକ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -264,6 +266,7 @@
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
 <translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="2607678425161541573">ଅନଲାଇନ୍ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
+<translation id="2620016719323068571">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ...</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
 <translation id="263399434338050016">"ସମସ୍ତ ଚୟନ କରନ୍ତୁ"</translation>
@@ -621,6 +624,9 @@
 <translation id="4633185660152240791">{0,plural, =1{ଡିଭାଇସକୁ ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="4642092649622328492">ଆଶିଂକ ସ୍କ୍ରିନ୍‌ସଟ୍‍ ନିଅନ୍ତୁ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ଆପ୍‍ର ସୁପାରିଶ</translation>
+<translation id="4657775630156561295">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ପରାମର୍ଶ ଇତିହାସରୁ ନିମ୍ନୋକ୍ତ ପରାମର୍ଶକୁ ସ୍ଥାୟୀ ଭାବେ କାଢ଼ି ଦିଆଯିବ:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4665114317261903604">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ଡାଉନଲୋଡ ହେଉଛି</translation>
@@ -942,6 +948,7 @@
 <translation id="6751052314767925245">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି</translation>
 <translation id="6751826523481687655">କାର୍ଯ୍ୟ-ସମ୍ପାଦନ ଟ୍ରେସିଂ ଚାଲୁ କରାଯାଇଛି</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ଡେସ୍କ କାଢ଼ି ଦିଆଯାଇଛି ଏବଂ <ph name="RECEIVE_DESK" /> ଡେସ୍କ ସହ ମିଶାଇ ଦିଆଯାଇଛି</translation>
+<translation id="6753390234084146956">ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6754441615189976839">ଶ</translation>
 <translation id="6757237461819837179">କୌଣସି ମିଡିଆ ଚାଲୁନାହିଁ</translation>
 <translation id="6777216307882431711">ସଂଯୁକ୍ତ ଥିବା USB-C ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଚାଲୁ କରୁଛି</translation>
@@ -1047,6 +1054,7 @@
 <translation id="743058460480092004">କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="7434543979546293336">ମୁଖ୍ୟ ଆଇଡିଆ ଭାବରେ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7452560014878697800">ଏକ ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରୁଛି</translation>
+<translation id="7453330308669753048">ସନ୍ଧାନ ଇତିହାସ ଫଳାଫଳକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="746232733191930409">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡ୍</translation>
 <translation id="7466449121337984263">ଦୟାକରି ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
@@ -1103,6 +1111,7 @@
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="7749640678855296659">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବର୍ତ୍ତମାନ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="776344839111254542">ଅପ୍‍‍ଡେଟ୍ ବିବରଣୀ ଦେଖିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="7780094051999721182">ସର୍ଟକଟଗୁଡ଼ିକ</translation>
 <translation id="7780159184141939021">ସ୍କ୍ରିନ୍‌କୁ ଘୂରାନ୍ତୁ</translation>
 <translation id="7796353162336583443">ଏକ ନୋଟ୍ ବା ସ୍କ୍ରିନ୍‌ସଟ୍ ନେବାକୁ ଏବଂ Google ଆସିଷ୍ଟାଣ୍ଟ, ଲେଜର୍ ପଏଣ୍ଟର୍ କିମ୍ବା ମ୍ୟାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍ ବ୍ୟବହାର କରିବାକୁ ସେଲ୍ଫରେ ଥିବା ଷ୍ଟାଇଲସ୍ ବଟନ୍ ଉପରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="7796735576426975947">ନୂଆ ବିଜ୍ଞପ୍ତି ଲୁକ୍କାୟିତ ଅଛି</translation>
@@ -1165,6 +1174,7 @@
 <translation id="8120151603115102514">ଆପଣଙ୍କ ଫୋନରେ ଏକ ଲକ ସ୍କ୍ରିନ ନାହିଁ। ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ କରିବା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="8131994907636310308">ସର୍ଟ କରିବାର ଟୋଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8132487352815776550">କ୍ଲୋଜ୍ଡ କ୍ୟାପସନଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ସହ ସଂଯୋଗ ହେଲା</translation>
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>

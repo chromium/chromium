@@ -88,6 +88,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3349211344363550267">Chromium soovitab, et te ei laadiks seda faili alla ega avaks seda</translation>
 <translation id="3350761136195634146">Selle kontoga Chromiumi profiil on juba olemas</translation>
 <translation id="3406848076815591792">Kas lülituda olemasolevale Chromiumi profiilile?</translation>
+<translation id="3412460710772753638">Selle seadme paroolihalduris</translation>
 <translation id="3430503420100763906">Chromiumi profiilidega saate eraldada kogu oma Chromiumi sisu. Looge profiile sõprade või pereliikmete jaoks või eraldage nende abil töö ja lõbu.</translation>
 <translation id="347328004046849135">Chromium teavitab teid, kui logite sisse ohustatud parooliga</translation>
 <translation id="3474745554856756813">See kustutab seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -110,6 +111,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3889543394854987837">Chromiumi avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> on juba sellele Chromiumi profiilile sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chromium teile luua oma profiili.</translation>
 <translation id="3945058413678539331">Chromium püüab kopeerida paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
+<translation id="3962623956404948996">Chromium soovitab seda faili skannida, kuna see võib olla ohtlik</translation>
 <translation id="4036079820698952681">Aidake Chromiumi paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Uusimas versioonis on saadaval olulised turvatäiendused ja uued funktsioonid.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chromium</translation>
@@ -128,6 +130,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4544142686420020088">Chromiumit ei värskendatud, midagi läks valesti. <ph name="BEGIN_LINK" />Lahendage Chromiumi värskendamisprobleemid ja parandage ebaõnnestunud värskendused.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Kas jätkata uuel Chromiumi profiilil?</translation>
 <translation id="4567424176335768812">Olete sisse logitud aadressiga <ph name="USER_EMAIL_ADDRESS" />. Nüüd on teil juurdepääs oma järjehoidjatele, ajaloole ja muudele seadetele kõigis seadmetes, kuhu olete sisse logitud.</translation>
+<translation id="4594305310729380060">Selle seadme paroolihaldurisse</translation>
 <translation id="459535195905078186">Chromiumi rakendused</translation>
 <translation id="4621240073146040695">Rakendus on peaaegu ajakohane! Värskenduse lõpuleviimiseks taaskäivitage Chromium.</translation>
 <translation id="4665829708273112819">Hoiatus. Chromium ei saa takistada laiendustel teie sirvimisajalugu salvestada. Kui soovite laienduse inkognito režiimis keelata, siis tühistage see valik.</translation>

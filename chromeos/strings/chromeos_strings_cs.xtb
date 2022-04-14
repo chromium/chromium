@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Brána</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
+<translation id="1367951781824006909">Vybrat soubor</translation>
 <translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
 <translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
@@ -155,6 +156,7 @@
 <translation id="2640549051766135490">Je vybráno album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Zadejte osmiznakový odemykací kód</translation>
 <translation id="2712812801627182647">Ověřovací klíč TLS</translation>
+<translation id="2717139507051041123">Zapnout režim tmavých barev</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Ověření EAP Phase 2</translation>
 <translation id="2783010256799387990">V POŘÁDKU</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Změnit tapetu</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
+<translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
@@ -377,6 +380,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5257811368506016604">Zapnout režim světlých barev</translation>
 <translation id="5264277876637023664">Spustit test procesoru</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Znovu spustit sledy činností</translation>
@@ -487,6 +491,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="641081527798843608">Shoda předmětu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Přejít na nastavení účtu</translation>
 <translation id="6456394469623773452">Průměrný</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}many{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Jednorázové heslo</translation>
@@ -549,6 +554,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
+<translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 obrázek</translation>
 <translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
@@ -570,6 +576,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">Změnit spořič obrazovky</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -592,6 +599,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7656388927906093505">Zařízení je myš.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7665800271478495366">Změnit avatara</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -619,6 +627,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Zapnout režim automatických barev</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>

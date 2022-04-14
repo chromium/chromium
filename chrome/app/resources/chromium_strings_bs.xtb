@@ -90,7 +90,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3349211344363550267">Chromium preporučuje da ne preuzimate niti otvarate ovaj fajl</translation>
 <translation id="3350761136195634146">Chromium profil s ovim računom već postoji</translation>
 <translation id="3406848076815591792">Želite li se prebaciti na Chromium profil?</translation>
-<translation id="3412460710772753638">U Upravitelju zaporki na ovom uređaju</translation>
+<translation id="3412460710772753638">U Upravitelju lozinki na ovom uređaju</translation>
 <translation id="3430503420100763906">S Chromium profilima možete odvojiti sve svoje Chromium stvari. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
 <translation id="347328004046849135">Chromium će vas obavijestiti kada se prijavite s ugroženom lozinkom</translation>
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -113,7 +113,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3889543394854987837">Kliknite na svoje ime da otvorite Chromium i počnete pretraživati.</translation>
 <translation id="390528597099634151">Račun <ph name="EXISTING_USER" /> je već prijavljen na ovom Chromium profilu. Da vaše pregledanje ostane odvojeno, Chromium vam može kreirati vaš lični profil.</translation>
 <translation id="3945058413678539331">Chromium pokušava kopirati lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
-<translation id="3962623956404948996">Chromium preporučuje skeniranje datoteke jer je možda opasna</translation>
+<translation id="3962623956404948996">Chromium preporučuje da skenirate ovaj fajl jer bi mogao biti opasan</translation>
 <translation id="4036079820698952681">Pomozite nam da poboljšamo Chromium tako što ćete nam prijaviti <ph name="BEGIN_LINK" />trenutne postavke<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">U najnovijoj verziji su dostupna važna poboljšanja sigurnosti i nove funkcije.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chromium</translation>
@@ -132,7 +132,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4544142686420020088">Ažuriranje Chromiuma nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromiuma i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Želite li nastaviti na novom Chromium profilu?</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, povijesti i drugim postavkama na svim uređajima na kojima se prijavljujete.</translation>
-<translation id="4594305310729380060">U Upravitelj zaporki na ovom uređaju</translation>
+<translation id="4594305310729380060">U Upravitelju lozinki na ovom uređaju</translation>
 <translation id="459535195905078186">Chromium aplikacije</translation>
 <translation id="4621240073146040695">Još malo pa je ažurirano! Ponovo pokrenite Chromium da završite ažuriranje.</translation>
 <translation id="4665829708273112819">Upozorenje: Chromium ne može spriječiti da ekstenzije snimaju vašu historiju pregledanja. Da onemogućite ovu ekstenziju u anonimnom načinu rada, poništite odabir ove opcije.</translation>

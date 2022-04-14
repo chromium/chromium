@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
 <translation id="1364618750746929654">Не удается создать расшифровку.</translation>
+<translation id="1372545819342940910">Сохранить рабочий стол</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1391102559483454063">Включено</translation>
@@ -301,6 +302,7 @@
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полка</translation>
+<translation id="2831035692318564937">Вкл. до рассвета</translation>
 <translation id="2834813915651407382">Недавно открыто</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
@@ -1151,6 +1153,7 @@
 <translation id="7977927628060636163">Поиск мобильных сетей...</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7984197416080286869">Вы сделали слишком много попыток</translation>
+<translation id="798779949890829624">Этим параметром управляет администратор</translation>
 <translation id="7994370417837006925">Множественный вход</translation>
 <translation id="7995804128062002838">Ошибка записи экрана</translation>
 <translation id="8000066093800657092">Нет сети</translation>
@@ -1312,6 +1315,7 @@
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
+<translation id="9030319654231318877">Выкл. до заката</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9059834730836941392">Свернуть уведомление</translation>
@@ -1331,6 +1335,7 @@
 <translation id="9099154003160514616">Доступно обновление Lacros</translation>
 <translation id="9100887602489003640">Профиль добавляется. Подождите несколько минут.</translation>
 <translation id="9105450214093926548">Во время работы Lacros не поддерживается вход в несколько аккаунтов. Вы можете использовать второй профиль браузера или закрыть Lacros и повторить попытку.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не удается записать видео с экрана из-за защищенного контента</translation>
 <translation id="9161053988251441839">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="9166331175924255663">Включить или отключить широкий доступ для Обмена с окружением</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此帐号以及所有未保存的数据。</translation>
 <translation id="1968388653333775699">Chrome 助您事半功倍</translation>
 <translation id="2009224836393115614">Chrome 无法检查您的密码。请尝试检查您的互联网连接。</translation>
+<translation id="2056123005618757196">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="2199719347983604670">Chrome 同步的数据</translation>
 <translation id="2313070403598893276">Google Chrome 不仅简便安全，而且速度更胜从前</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4698415050768537821">Chrome 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
+<translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="5030102366287574140">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Google Chrome 可确保您始终处于保护之下</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
+<translation id="8969290730818637510">处于开启状态时：
+<ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
+
+注意事项：
+<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chrome 使用情况相关的信息，但这些信息未关联到您。
+
+  • 如果 Chrome 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
+
+  • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 </translationbundle>

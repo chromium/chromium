@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Esta conta e os datos que estean sen gardar quitaranse de Chrome e das aplicacións de Google deste dispositivo.</translation>
 <translation id="1968388653333775699">Desfruta de aínda máis posibilidades con Chrome</translation>
 <translation id="2009224836393115614">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
+<translation id="2056123005618757196">Realiza máis tarefas cunha versión de Google Chrome sinxela, segura e máis rápida que nunca.</translation>
 <translation id="2147651015520127414">Chrome verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="2199719347983604670">Datos procedentes da Sincronización de Chrome</translation>
 <translation id="2313070403598893276">Google Chrome é sinxelo, seguro e máis rápido que nunca</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Algúns complementos fan que Chrome falle. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome non puido buscar actualizacións</translation>
 <translation id="4698415050768537821">Chrome non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Non compatible na versión beta de Chrome</translation>
 <translation id="5030102366287574140">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="5108659628347594808">Mellora Chrome</translation>
@@ -118,6 +120,15 @@
 <translation id="8736550665979974340">Protexe a túa seguranza con Google Chrome</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Cando esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chrome para as persoas que o usan igual ca ti.<ph name="END_INDENT" />
+
+Cuestións que se deben ter en conta:
+<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chrome, pero estes datos non están vinculados contigo.
+
+  • Se se produce un erro en Chrome, entre os datos sobre o fallo podería incluírse algunha información persoal.
+
+  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">En consecuencia, Chrome sempre solicitará abrir o sitio para ordenadores.</translation>
 </translationbundle>

@@ -98,6 +98,7 @@
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
+<translation id="1107538157073168076">停用数据洞见扩展程序</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1111781754511998498">投影仪</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
@@ -380,6 +381,17 @@
       当此政策设为 Fast 时，<ph name="PRODUCT_NAME" /> 会尽量避免执行光栅化。减少光栅化操作有助于缩小打印任务的规模并提高打印速度。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将处于 Full 模式。</translation>
+<translation id="1455351936334569779">已在拒绝列表中的各类打印机将被停用，因此用户将无法发现或使用它们。
+
+      将所有打印机类型都添加到拒绝列表中相当于停用打印功能，因为没有任何可用来接收要打印的文档的目的地。
+
+      在 102 之前的版本中，在拒绝列表中添加“<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />”与将 <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> 政策设为 false 具有同样的效果。若要使 <ph name="CLOUD_PRINT_NAME" />目的地能被用户发现，则必须确保 <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> 政策设为 true 且拒绝列表中不含“<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />”。从版本 102 开始，<ph name="CLOUD_PRINT_NAME" />目的地将不再受支持，而且无论政策值为多少都不会显示。
+
+      如果此政策未设置或设为一个空列表，那么所有打印机类型都将能被用户发现。
+
+      基于扩展程序的打印机也称为打印提供程序目的地，包括 <ph name="PRODUCT_NAME" /> 扩展程序名下的所有目的地。
+
+      本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" />客户端）：</translation>
 <translation id="1464848559468748897">控制<ph name="PRODUCT_OS_NAME" />设备上多个人资料会话中的用户行为。
 
@@ -1261,6 +1273,7 @@
 
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
 <translation id="2386362615870139244">允许使用屏幕唤醒锁定</translation>
+<translation id="2387469539700985783">此政策对 Android 完成的报告没有任何影响。</translation>
 <translation id="238885588439957890">设备将于何时（以设备的本地时区表示）使用交流电为电池充电。</translation>
 <translation id="2393862222659066027">打开一系列网址并恢复上次的会话</translation>
 <translation id="2394674739523870144">如果此政策设为一系列字符串，这些字符串会以空格连接，并作为命令行参数从 <ph name="IE_PRODUCT_NAME" /> 传递到 <ph name="PRODUCT_NAME" />。如果有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将 <ph name="URL_PLACEHOLDER" /> 替换成要打开的网页对应的网址。如果没有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将网址附加到命令行的末尾。
@@ -1577,6 +1590,11 @@
 <translation id="2722076884688932437">如果此政策设为 True，已注册的设备便会报告其插接的外围设备的相关信息。
 
       如果此政策设为 False 或未设置，已注册的设备将不会报告外围设备信息。</translation>
+<translation id="2723281094174141470">数据洞见扩展程序会报告用户互联网的下载速度和上传速度、用户空闲时长以及应用数据洞见。
+
+      如果此政策已启用，系统将会安装数据洞见扩展程序并报告指标。
+
+      如果此政策未设置或已停用，系统将不会安装数据洞见扩展程序，也不会报告指标。</translation>
 <translation id="2723692978495226412">如果此政策已启用，系统便会推荐用户曾在其他设备上安装的应用。如果用户未输入任何搜索文字，系统将在启动器中显示推荐应用（位于推荐的本地应用后面）。
 
       如果此政策已停用或未设置，系统便不会显示推荐应用。
@@ -2187,6 +2205,7 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_POLICY_NAME" />。</translation>
 <translation id="3300784749135986828">启用或停用“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能。</translation>
+<translation id="3301698868852716692">启用数据洞见扩展程序</translation>
 <translation id="3302829897293005699">如果此政策已启用或未设置，已注册的设备将会报告当前自助服务终端会话的相关信息（例如应用 ID 和版本）。
 
       如果此政策已停用，已注册的设备将不会报告自助服务终端会话信息。</translation>
@@ -3322,6 +3341,7 @@
 
       如果此政策已停用或未设置，系统将不会生成任何证书，并且无法调用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />。</translation>
 <translation id="4742973303930120836">限制背景图片打印模式</translation>
+<translation id="4745232963710538589">启用数据洞见扩展程序以报告使用情况指标</translation>
 <translation id="4752880493649142945">连接到 RemoteAccessHostTokenValidationUrl 时使用的客户端证书</translation>
 <translation id="475479145997699293">如果此政策设为 <ph name="ASK_FILE_HANDLING" />，系统会允许 Web 应用通过 File Handling API 请求访问各类文件。如果此政策设为 <ph name="BLOCK_FILE_HANDLING" />，系统会禁止 Web 应用访问各类文件。
 
@@ -6259,6 +6279,7 @@
       </translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
+<translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地（已弃用）</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="804619600634661088">允许进行远程调试</translation>
 <translation id="8049769137921877885">此政策旨在控制是否报告政策数据和政策提取时间。

@@ -13,6 +13,7 @@
         
 Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="1054045277222934172">Sadaļā Iestatījumi &gt; Satura iestatījumi varat mainīt noklusējuma vietnes skatu uz datoriem paredzēto skatu.</translation>
+<translation id="1054745118061919935">Turpinot jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Izmantot citu paroli</translation>
 <translation id="1066060668811609597">Sinhronizācijas pārvaldība</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
@@ -494,6 +495,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5339316356165661760">Ieslēgt sinhronizāciju</translation>
 <translation id="5360976571138293719">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļā <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Šeit būs atrodamas vietnes, kam jūs sekosiet</translation>
 <translation id="5388358297987318779">Atvērt attēlu</translation>
 <translation id="5407969256130905701">Atmest izmaiņas</translation>
 <translation id="5416022985862681400">Pēdējās 7 dienas</translation>
@@ -611,6 +613,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6344783595350022745">Notīrīt tekstu</translation>
 <translation id="6346549652287021269">Vai sākt jaunu lejupielādi?</translation>
 <translation id="634878792104344809">Sinhronizējiet paroles, vēsturi un citu saturu visās savās ierīcēs.</translation>
+<translation id="6361848730467328243">Sekot vietnei <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Nav inkognito ciļņu</translation>
 <translation id="6363526231572697780">Nav lietotājvārda</translation>
 <translation id="6366190659675876144">Standarta aizsardzība</translation>
@@ -648,6 +651,7 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6524918542306337007">Inkognito režīms nav pieejams</translation>
 <translation id="6530992499366869131">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Apmeklējiet kādu vietni un Chrome izvēlnē noklikšķiniet uz Sekot</translation>
 <translation id="6561262006871132942">Tuvināt</translation>
 <translation id="6583087784430677195">Atveriet sadaļu <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Iestatījumi) un pārejiet uz iestatījumu “AutoFill Passwords” (Automātiska paroļu aizpilde), lai to izslēgtu.</translation>
 <translation id="6585618849026997638">Varat pievienot grāmatzīmi, lai varētu atgriezties vajadzīgajā lapā</translation>

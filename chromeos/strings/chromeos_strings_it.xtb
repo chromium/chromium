@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
+<translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1387854245479784695">Si tratta di un valore aggregato di tutti i core</translation>
 <translation id="1394661041439318933">Percentuale di batteria della custodia del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">È possibile inviare un ping al gateway</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">Cambiare sfondo</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3606583719724308068">Alta latenza a siti web HTTPS</translation>
+<translation id="3621202678540785336">Ingresso</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
@@ -552,6 +554,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
+<translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7172721935181587524">1 immagine</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>

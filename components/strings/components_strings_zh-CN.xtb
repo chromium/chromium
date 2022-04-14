@@ -139,6 +139,7 @@
 <translation id="1323433172918577554">展开</translation>
 <translation id="132390688737681464">保存并填写地址</translation>
 <translation id="1330449323196174374">关门折（左侧）</translation>
+<translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1333989956347591814">以下各方<ph name="BEGIN_EMPHASIS" />可能仍会看到<ph name="END_EMPHASIS" />您的活动：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />您访问的网站
@@ -742,6 +743,7 @@
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌剧</translation>
+<translation id="2983666748527428214">打开无痕式标签页</translation>
 <translation id="2985306909656435243">启用后，Chromium 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="2985398929374701810">请输入有效的送货地址</translation>
 <translation id="2986368408720340940">该取货方式不可用。请另选一种方式。</translation>
@@ -1499,6 +1501,7 @@
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">网站不安全</translation>
+<translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">纸匣 18</translation>
 <translation id="5114987907971894280">虚拟实境</translation>
@@ -1746,6 +1749,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
+<translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
 <translation id="5808542072418270309">模拟游戏</translation>
 <translation id="5810442152076338065">您与 <ph name="DOMAIN" /> 之间的连接采用过时的加密套件进行了加密。</translation>
 <translation id="5812947184178430888">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与相应事件有关的数据。这些数据可能包括您在 Chrome 中访问的网页的网址、文件名或元数据，以及您在登录基于网络的应用、您的设备和 Chrome 时使用的用户名。</translation>

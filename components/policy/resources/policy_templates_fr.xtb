@@ -98,6 +98,7 @@
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
 <translation id="1105572260329131950">Utiliser les icônes par défaut pour les connexions sécurisées</translation>
+<translation id="1107538157073168076">Désactiver l'extension des insights</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
@@ -382,6 +383,17 @@
       Si elle est définie sur "Fast", <ph name="PRODUCT_NAME" /> évite la rastérisation autant que possible, ce qui permet de réduire la taille des tâches d'impression et d'augmenter la vitesse d'impression.
 
       Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> fonctionne en mode "Full".</translation>
+<translation id="1455351936334569779">Si vous ajoutez des types d'imprimantes à la liste de blocage, vous ne pourrez plus les voir ni récupérer leurs fonctionnalités.
+
+      Lorsque vous placez tous les types d'imprimantes sur la liste de blocage, vous désactivez l'impression. En effet, plus aucune destination n'est alors disponible lorsque vous envoyez un document pour impression.
+
+      Dans les versions antérieures à la version 102, inclure le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" dans la liste de blocage revient à définir la règle "<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />" sur "False". Pour que les destinations <ph name="CLOUD_PRINT_NAME" /> restent visibles, la règle "<ph name="POLICY_CLOUDPRINTSUBMITENABLED" />" doit être définie sur "True", et le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" ne doit pas figurer sur la liste de blocage. À partir de la version 102, les destinations <ph name="CLOUD_PRINT_NAME" /> ne sont pas disponibles et n'apparaîtront pas, quelle que soit la valeur de la règle.
+
+      Si cette règle n'est pas configurée ou si elle est définie sur une liste vide, tous les types d'imprimantes seront visibles.
+
+      Les extensions permettant d'imprimer depuis un navigateur, ou destinations des fournisseurs d'impression, englobent toutes les destinations appartenant à une extension <ph name="PRODUCT_NAME" />.
+
+      Les imprimantes locales, ou destinations d'impression native, englobent les destinations disponibles sur l'ordinateur local et les imprimantes réseau partagées.</translation>
 <translation id="1456822151187621582">Windows (clients <ph name="PRODUCT_OS_NAME" />) :</translation>
 <translation id="1464848559468748897">Contrôle le comportement des utilisateurs dans une session multiprofil sur des appareils <ph name="PRODUCT_OS_NAME" />.
 
@@ -1297,6 +1309,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si cette règle n'est pas configurée, les cookies tiers sont activés. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2386362615870139244">Autoriser les WakeLock forçant l'activation de l'écran</translation>
+<translation id="2387469539700985783">Cette règle n'a aucun effet sur les rapports effectués par Android.</translation>
 <translation id="238885588439957890">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil rechargera la batterie sur secteur.</translation>
 <translation id="2393862222659066027">Ouvrir une liste d'URL et restaurer la dernière session</translation>
 <translation id="2394674739523870144">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, elle est ajoutée à la fin de la ligne de commande.
@@ -1613,6 +1626,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2722076884688932437">Si cette règle est définie sur "True", les appareils enregistrés signalent des informations sur les périphériques qui y sont branchés.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les appareils enregistrés ne signalent aucune information sur les périphériques.</translation>
+<translation id="2723281094174141470">L'extension des insights fournit des informations sur les débits Internet descendant et ascendant de l'utilisateur, son temps d'inactivité et les applis.
+
+      Si la règle est activée, l'extension des insights sera installée et transmettra des métriques.
+
+      Si la règle est désactivée ou non définie, l'extension des insights ne sera pas installée et ne transmettra pas de métriques.</translation>
 <translation id="2723692978495226412">Si cette règle est activée, les applications précédemment installées par l'utilisateur sur d'autres appareils sont recommandées. Si aucun texte de recherche n'a été saisi, ces recommandations sont affichées dans le lanceur d'applications après les recommandations d'applications locales.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ces recommandations ne sont pas affichées.
@@ -2226,6 +2244,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Cette règle étant obsolète, veuillez utiliser <ph name="PRINTERS_POLICY_NAME" /> à la place.</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
+<translation id="3301698868852716692">Activer l'extension des insights</translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>
@@ -3365,6 +3384,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
+<translation id="4745232963710538589">Activer l'extension des insights pour transmettre des statistiques d'utilisation</translation>
 <translation id="4752880493649142945">Certificat client pour se connecter à RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Si la règle est définie sur <ph name="ASK_FILE_HANDLING" />, les applications Web peuvent demander l'accès à ces types de fichiers via l'API File Handling. Si la règle est définie sur <ph name="BLOCK_FILE_HANDLING" />, l'accès à ces types de fichiers est refusé.
 
@@ -6325,6 +6345,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
       </translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
+<translation id="8044720778481009876">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive" (obsolète)</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
 <translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
 <translation id="8049769137921877885">Cette règle détermine si les données de la règle et l'heure de récupération de la règle doivent être enregistrées.

@@ -13,6 +13,7 @@
         
 Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="1054045277222934172">Voit vaihtaa sivuston oletusnäkymän tietokonenäkymään kohdasta Asetukset &gt; Sisältöasetukset</translation>
+<translation id="1054745118061919935">Jatkamalla hyväksyt <ph name="BEGIN_LINK" />käyttöehdot<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Käytä toista salasanaa…</translation>
 <translation id="1066060668811609597">Synkronointiasetusten määritys</translation>
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
@@ -494,6 +495,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5339316356165661760">Laita synkronointi päälle</translation>
 <translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
+<translation id="5386314158584363703">Näet seuraamasi sivustot täällä</translation>
 <translation id="5388358297987318779">Avaa kuva</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
@@ -611,6 +613,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6344783595350022745">Tyhjennä teksti</translation>
 <translation id="6346549652287021269">Aloitetaanko uusi lataus?</translation>
 <translation id="634878792104344809">Synkronoi esim. salasanat ja historia kaikilla laitteillasi</translation>
+<translation id="6361848730467328243">Lisää <ph name="DOMAIN_NAME" /> seurattaviin</translation>
 <translation id="6362362396625799311">Ei incognito-välilehtiä</translation>
 <translation id="6363526231572697780">Ei käyttäjänimeä</translation>
 <translation id="6366190659675876144">Perustason suojaus</translation>
@@ -648,6 +651,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
 <translation id="6530992499366869131">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Siirry sivustolle ja valitse Chromen valikosta Seuraa</translation>
 <translation id="6561262006871132942">Lähennä</translation>
 <translation id="6583087784430677195">Jos haluat laittaa ominaisuuden pois päältä, avaa <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" /> ja siirry Täytä salasanat automaattisesti ‑kohtaan.</translation>
 <translation id="6585618849026997638">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>

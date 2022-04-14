@@ -13,6 +13,7 @@
         
 El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="1054045277222934172">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors anant a Configuració i, després, a Configuració del contingut</translation>
+<translation id="1054745118061919935">En continuar, acceptes les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Utilitza una altra contrasenya...</translation>
 <translation id="1066060668811609597">Gestiona la sincronització</translation>
 <translation id="1076421457278169141">S'ha escanejat el codi</translation>
@@ -115,6 +116,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1923342640370224680">Darrera hora</translation>
 <translation id="1930989359703290198">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Feu doble toc per copiar-ho.</translation>
+<translation id="1943478190258551035">Menú → Configuració</translation>
 <translation id="1952172573699511566">Quan sigui possible, els llocs web mostraran el text en el teu idioma preferit.</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
 <translation id="196896377990863006">Mostra la previsualització de l'enllaç</translation>
@@ -142,6 +144,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2218443599109088993">Redueix</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2239626343334228536">S'estan esborrant les dades de navegació...</translation>
+<translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2256933947031277845">La teva organització només et permet iniciar la sessió amb determinats comptes.</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>
@@ -197,10 +200,12 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2712127207578915686">No es pot obrir el fitxer</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
 <translation id="2747003861858887689">Camp anterior</translation>
+<translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">ara mateix</translation>
 <translation id="2773292004659987824">Cerca d'incògnit</translation>
 <translation id="277771892408211951">Selecciona l'idioma</translation>
 <translation id="2780046210906776326">Cap compte de correu</translation>
+<translation id="2781325423985810933">DESFÉS</translation>
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">No es pot crear l'enllaç</translation>
@@ -238,6 +243,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="3037605927509011580">Vaja!</translation>
+<translation id="3039722182465315531">No iniciïs la sessió</translation>
 <translation id="3076846064362030967">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
 
 
@@ -339,6 +345,7 @@ Segueix aquests passos:</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
 <translation id="3929457972718048006">Adreces</translation>
 <translation id="3943492037546055397">Contrasenyes</translation>
+<translation id="3959736869653157332">Menú → Nova pestanya d'incògnit</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3968505803272650567">Gestiona els interessos</translation>
 <translation id="3989635538409502728">Tanca la sessió</translation>
@@ -494,6 +501,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
 <translation id="5360976571138293719">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Aquí trobaràs els llocs web que segueixes</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
 <translation id="5407969256130905701">Descarta els canvis</translation>
 <translation id="5416022985862681400">7 darrers dies</translation>
@@ -602,6 +610,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6254066287920239840">Obre els enllaços a l'aplicació en comptes del navegador.</translation>
 <translation id="6255097610484507482">Edita la targeta de crèdit</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Has deixat de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>
 <translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
 <translation id="6324669097367352121">Configuració d'inici de sessió</translation>
@@ -611,6 +620,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6344783595350022745">Esborra el text</translation>
 <translation id="6346549652287021269">Vols iniciar una baixada nova?</translation>
 <translation id="634878792104344809">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
+<translation id="6361848730467328243">Segueix <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">No hi ha cap pestanya d'incògnit</translation>
 <translation id="6363526231572697780">Sense nom d'usuari</translation>
 <translation id="6366190659675876144">Protecció estàndard</translation>
@@ -648,6 +658,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
 <translation id="6530992499366869131">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="6537746030088321027">exemple.cat</translation>
+<translation id="6540120577248033958">Visita un lloc web i fes clic a Segueix al menú de Chrome</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6583087784430677195">Per desactivar aquesta funció, obre <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /> i ves a Emplenament automàtic de contrasenyes.</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
@@ -770,6 +781,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7603852183842204213">Finestres emergents bloquejades (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Suprimeix la contrasenya</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
+<translation id="7646263789464975852">Menú → Configuració → Comprovació de seguretat</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
@@ -778,6 +790,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7726702057919861819">Menú → Historial → Esborra les dades de navegació</translation>
 <translation id="7741325291586284254">Pàgina de pestanya d'incògnit nova</translation>
+<translation id="7756478488453921771">Menú → Configuració → Formes de pagament</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
 <translation id="7781011649027948662">Vols traduir la pàgina?</translation>
@@ -785,6 +798,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="778855399387580014">Inicia una cerca en una pestanya nova de Chrome.</translation>
 <translation id="7791543448312431591">Afegeix</translation>
+<translation id="7807060072011926525">Proporcionat per Google</translation>
 <translation id="7839985698273989086">Pàgina sense connexió</translation>
 <translation id="7840771868269352570">Els elements seleccionats se suprimiran.</translation>
 <translation id="7853202427316060426">Activitat</translation>
@@ -798,6 +812,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7939128259257418052">Exporta les contrasenyes</translation>
 <translation id="794799177247607889">Atura el registre</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No hi ha cap contrasenya en perill}=1{Hi ha {COUNT} contrasenya en perill}other{Hi ha {COUNT} contrasenyes en perill}}</translation>
+<translation id="7959441099968534758">VES AL FEED</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966516440812255683">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic.
 
@@ -921,6 +936,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
 <translation id="9055772144595778347">No es pot iniciar la sessió</translation>
+<translation id="9057972802061533987">No es pot seguir. S'ha produït un error.</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
@@ -928,6 +944,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
 <translation id="9087108903408689779">Contrasenya suggerida per Chrome:</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
+<translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="9107664647686727385">Comprova que no hi hagi contrasenyes en perill</translation>
 <translation id="9124387962554796433">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google.</translation>

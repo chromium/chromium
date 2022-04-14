@@ -13,6 +13,7 @@
         
 ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE_NAME" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="1054045277222934172">ທ່ານສາມາດປ່ຽນມຸມມອງເວັບໄຊເລີ່ມຕົ້ນໄປເປັນເດັສທັອບໄດ້ໃນການຕັ້ງຄ່າ ຈາກນັ້ນເລືອກການຕັ້ງຄ່າເນື້ອຫາ</translation>
+<translation id="1054745118061919935">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">ໃຊ້ລະຫັດຜ່ານອື່ນ...</translation>
 <translation id="1066060668811609597">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="1076421457278169141">ສະແກນລະຫັດແລ້ວ</translation>
@@ -494,6 +495,7 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5339316356165661760">ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5360976571138293719">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການບໍລິການຂອງ Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">ທ່ານຈະພົບເວັບໄຊທີ່ທ່ານຕິດຕາມຢູ່ບ່ອນນີ້</translation>
 <translation id="5388358297987318779">ຮູບເປີດ</translation>
 <translation id="5407969256130905701">ຍົກເລີກການປ່ຽນແປງ</translation>
 <translation id="5416022985862681400">7 ມື້ຫຼ້າສຸດ</translation>
@@ -611,6 +613,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6344783595350022745">ລຶບຂໍ້​ຄວາມ​</translation>
 <translation id="6346549652287021269">ເລີ່ມການດາວໂຫຼດໃໝ່ບໍ?</translation>
 <translation id="634878792104344809">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງທ່ານ, ປະຫວັດ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
+<translation id="6361848730467328243">ຕິດຕາມ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">ບໍ່​ມີ​ແຖບທີ່ບໍ່​ເຜີຍ​​ຕົວຕົນ</translation>
 <translation id="6363526231572697780">ບໍ່ມີຊື່ຜູ້ໃຊ້</translation>
 <translation id="6366190659675876144">ການປົກປ້ອງມາດຕະຖານ</translation>
@@ -648,6 +651,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6524918542306337007">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="6530992499366869131">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">ເຂົ້າເບິ່ງເວັບໄຊໃດໜຶ່ງແລ້ວຄລິກຕິດຕາມໃນເມ​ນູ Chrome</translation>
 <translation id="6561262006871132942">ຊຸມເຂົ້າ</translation>
 <translation id="6583087784430677195">ເພື່ອປິດໄວ້, ໃຫ້ເປີດ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /> ແລ້ວໄປຫາການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ.</translation>
 <translation id="6585618849026997638">ທ່ານສາມາດກັບໄປຫາໜ້າທີ່ສຳຄັນຕໍ່ກັບທ່ານໂດຍການເພີ່ມບຸກມາກໄດ້</translation>

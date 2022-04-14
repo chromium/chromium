@@ -22,6 +22,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1081015718268701546">Linux uygulamaları şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">İyi günler <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />, dosyalar, uygulamalar genelinde ve daha fazla yerde arama yapın. Uygulamalarınız arasında gezinmek için ok tuşlarını kullanın.</translation>
 <translation id="109942774857561566">Canım sıkıldı</translation>
 <translation id="1104084341931202936">Erişilebilirlik ayarlarını göster</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
@@ -179,6 +180,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1993072747612765854">En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin</translation>
 <translation id="1998100899771863792">Geçerli masaüstü</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />, dosyalar, uygulamalar genelinde ve daha fazla yerde arama yapın.</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Bana bir fıkra anlat</translation>
 <translation id="2021864487439853900">Kilidi açmak için tıklayın</translation>
@@ -224,6 +226,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
 <translation id="2318576281648121272">Bugün <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, arama sonucu kategorisi</translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
 <translation id="2339073806695260576">Not veya ekran görüntüsü almak, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="2341729377289034582">Dikey olarak kilitlendi</translation>
@@ -263,6 +266,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2595239820337756193">5 km kaç mildir</translation>
 <translation id="2596078834055697711">Pencerenin ekran görüntüsünü alır</translation>
 <translation id="2607678425161541573">Online oturum açma gerekli</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />, dosyalar, uygulamalar genelinde ve daha fazla yerde arama yapın...</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="263399434338050016">"Tümünü seç"</translation>
@@ -620,6 +624,9 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Cihazı bir gün içinde önceki sürüme geçirin}other{Cihazı # gün içinde önceki sürüme geçirin}}</translation>
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Uygulama önerisi</translation>
+<translation id="4657775630156561295">Aşağıdaki öneri, hesabınızın öneri geçmişinden kalıcı olarak kaldırılacak:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox etkinleştirildi</translation>
 <translation id="4665114317261903604">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
@@ -921,6 +928,7 @@ Yeni yüklenmiş</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" />, mikrofonu kullanmak istiyor</translation>
 <translation id="6637729079642709226">Saati değiştir</translation>
 <translation id="6641720045729354415">Canlı Altyazı'yı açın/kapatın. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Ada göre sıralama ölçütünü geri al</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda bu parolayı girin: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Şifre</translation>
@@ -941,6 +949,7 @@ Yeni yüklenmiş</translation>
 <translation id="6751052314767925245">Yöneticiniz tarafınızdan zorunlu tutuldu</translation>
 <translation id="6751826523481687655">Performans izleme açık</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> kaldırılarak Masa <ph name="RECEIVE_DESK" /> ile birleştirildi</translation>
+<translation id="6753390234084146956">Sekmeler</translation>
 <translation id="6754441615189976839">C</translation>
 <translation id="6757237461819837179">Medya oynatılmıyor</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
@@ -1046,6 +1055,7 @@ Yeni yüklenmiş</translation>
 <translation id="743058460480092004">Kamera ve mikrofon kullanımda.</translation>
 <translation id="7434543979546293336">Temel fikir olarak işaretlendi</translation>
 <translation id="7452560014878697800">Bir uygulama kameranızı kullanıyor</translation>
+<translation id="7453330308669753048">Arama geçmişi sonucu kaldırıldı</translation>
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
@@ -1102,6 +1112,7 @@ Yeni yüklenmiş</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749640678855296659">Mikrofonunuz şu anda kapalı</translation>
 <translation id="776344839111254542">Güncelleme ayrıntılarını görüntülemek için tıklayın</translation>
+<translation id="7780094051999721182">Kısayollar</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796353162336583443">Not veya ekran görüntüsü almak, Google Asistan, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="7796735576426975947">Yeni bildirim gösterilmiyor</translation>
@@ -1164,6 +1175,7 @@ Yeni yüklenmiş</translation>
 <translation id="8120151603115102514">Telefonunuzda kilit ekranı yok. Chromebook'un kilidini açmak için şifreyi girin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>
+<translation id="8131994907636310308">Sıralama kısa iletisini kapat</translation>
 <translation id="8132487352815776550">Altyazıları durdur</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ağına bağlanıldı</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
@@ -1227,6 +1239,8 @@ Yeni yüklenmiş</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
+<translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
+<translation id="8546059259582788728">Sıralama işlemi başarıyla geri alındı</translation>
 <translation id="8551588720239073785">Tarih ve zaman ayarları</translation>
 <translation id="8553395910833293175">Zaten tüm masalara atandı.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi öneriyor</translation>

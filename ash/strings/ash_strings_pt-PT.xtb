@@ -22,6 +22,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1081015718268701546">De momento, as apps para Linux não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Boa tarde, <ph name="GIVEN_NAME" />,</translation>
+<translation id="1088231044944504242">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais. Use as teclas de seta para navegar nas suas apps.</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
 <translation id="1104084341931202936">Mostrar definições de acessibilidade</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
@@ -180,6 +181,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1990046457226896323">Ficheiros de voz transferidos.</translation>
 <translation id="1993072747612765854">Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
+<translation id="2001444736072756133">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais.</translation>
 <translation id="2016340657076538683">Escrever uma mensagem</translation>
 <translation id="2018630726571919839">Conta-me uma anedota</translation>
 <translation id="2021864487439853900">Clicar para desbloquear</translation>
@@ -265,6 +267,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2607678425161541573">É necessário iniciar sessão online</translation>
+<translation id="2620016719323068571">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protegida</translation>
 <translation id="263399434338050016">"Selecionar tudo"</translation>
@@ -480,7 +483,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="383058930331066723">O modo de Poupança de bateria está ativado.</translation>
 <translation id="3835880383832568924">Para ver as atualizações, abra a app Atalhos</translation>
 <translation id="383629559565718788">Mostrar definições do teclado</translation>
-<translation id="384082539148746321">Pretende eliminar o modelo?</translation>
+<translation id="384082539148746321">Eliminar o modelo?</translation>
 <translation id="3842239759367498783">Continuar a ler no dispositivo móvel <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Não existem informações de rede disponíveis</translation>
 <translation id="385051799172605136">Anterior</translation>
@@ -622,6 +625,9 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de um dia}other{Altere o dispositivo para uma versão anterior dentro de # dias}}</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
+<translation id="4657775630156561295">A sugestão seguinte irá ser removida permanentemente do histórico de sugestões da sua conta:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ativado</translation>
 <translation id="4665114317261903604">Ative/desative o modo Não incomodar. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">A transferir <ph name="FILENAME" /></translation>
@@ -944,6 +950,7 @@ Nova instalação</translation>
 <translation id="6751052314767925245">Aplicada pelo seu administrador.</translation>
 <translation id="6751826523481687655">O rastreio do desempenho está ativado.</translation>
 <translation id="6752912906630585008">O espaço de trabalho <ph name="REMOVED_DESK" /> foi removido e unido ao espaço de trabalho <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">separadores</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Sem multimédia em reprodução</translation>
 <translation id="6777216307882431711">Ligar os dispositivos USB-C ligados</translation>
@@ -1049,6 +1056,7 @@ Nova instalação</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
 <translation id="7434543979546293336">Marcado como uma ideia-chave.</translation>
 <translation id="7452560014878697800">Uma aplicação está a utilizar a sua câmara.</translation>
+<translation id="7453330308669753048">Resultado do histórico de pesquisas removido</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
@@ -1105,6 +1113,7 @@ Nova instalação</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749640678855296659">O seu microfone está atualmente desativado</translation>
 <translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
+<translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
@@ -1167,6 +1176,7 @@ Nova instalação</translation>
 <translation id="8120151603115102514">O telemóvel não tem ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8131994907636310308">Alerta Fechar ordenação</translation>
 <translation id="8132487352815776550">Parar legendas</translation>
 <translation id="8132793192354020517">Ligado a <ph name="NAME" /></translation>
 <translation id="813913629614996137">A inicializar...</translation>

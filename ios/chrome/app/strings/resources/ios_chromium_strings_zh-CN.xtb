@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
+<translation id="4654936625574199632">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
 <translation id="4736424910885271643">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
 <translation id="4806326830773390517">将使用情况统计信息和崩溃报告发送给 Google，帮助我们改进 Chromium</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
+<translation id="4996471330284142407">借助比以前更简单、更安全、更快速的 Chromium 提高工作效率。</translation>
 <translation id="4999538639245140991">由于您要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
@@ -111,6 +113,15 @@
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="865600487977764604">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
+<translation id="8747378496147986285">处于开启状态时：
+<ph name="BEGIN_INDENT" />  • 可协助改进 Chromium，让所有像您这样使用 Chromium 的用户都能获享更好的体验。<ph name="END_INDENT" />
+
+注意事项：
+<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chromium 使用情况相关的信息，但这些信息未关联到您。
+
+  • 如果 Chromium 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
+
+  • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
 <translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 帐号。先前已同步的数据将会保留在帐号中。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>

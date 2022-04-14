@@ -22,6 +22,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1081015718268701546">Neste momento non están dispoñibles as aplicacións de Linux; gardaranse outras.</translation>
 <translation id="108486256082349153">Móbil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Boas tardes, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis. Usa as teclas das frechas para moverte polas aplicacións.</translation>
 <translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
@@ -86,6 +87,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
 <translation id="1364618750746929654">Non se puido xerar a transcrición</translation>
+<translation id="1372545819342940910">Gardar escritorio para máis tarde</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
@@ -179,6 +181,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1990046457226896323">Descargáronse os ficheiros de voz</translation>
 <translation id="1993072747612765854">Máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Este escritorio</translation>
+<translation id="2001444736072756133">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis.</translation>
 <translation id="2016340657076538683">Escribe unha mensaxe</translation>
 <translation id="2018630726571919839">Cóntame un chiste</translation>
 <translation id="2021864487439853900">Para desbloqueala, fai clic</translation>
@@ -224,6 +227,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2302092602801625023">Esta conta está xestionada por Family Link</translation>
 <translation id="2303600792989757991">Alternar vista xeral da ventá</translation>
 <translation id="2318576281648121272">Hoxe (<ph name="TODAY_DATE" />)</translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, categoría de resultados de busca</translation>
 <translation id="2322173485024759474">Retroceder unha letra</translation>
 <translation id="2339073806695260576">Toca o botón do lapis óptico no estante para crear unha nota, facer unha captura de pantalla, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="2341729377289034582">Pantalla bloqueada en posición vertical</translation>
@@ -263,6 +267,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
+<translation id="2620016719323068571">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="263399434338050016">"Selecciona todo"</translation>
@@ -621,6 +626,9 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 día}other{Cambia o dispositivo a unha versión anterior no prazo de # días}}</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendación de aplicación</translation>
+<translation id="4657775630156561295">A seguinte suxestión quitarase permanentemente do historial de suxestións da túa conta:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Activouse ChromeVox</translation>
 <translation id="4665114317261903604">Activar/desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
@@ -922,6 +930,7 @@ Nova instalación</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quere usar o micrófono</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/desactivar función Subtítulos instantáneos. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Desfacer orde de clasificación por nome</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="6650933572246256093">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Introduce esta clave de acceso nese dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Contrasinal</translation>
@@ -942,6 +951,7 @@ Nova instalación</translation>
 <translation id="6751052314767925245">Función aplicada polo teu administrador</translation>
 <translation id="6751826523481687655">O rastrexo do rendemento está activado</translation>
 <translation id="6752912906630585008">Quitouse o escritorio <ph name="REMOVED_DESK" /> e combinouse co escritorio <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">pestanas</translation>
 <translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Non se está reproducindo contido multimedia</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
@@ -1047,6 +1057,7 @@ Nova instalación</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
 <translation id="7434543979546293336">Marcouse como idea clave</translation>
 <translation id="7452560014878697800">Unha aplicación está utilizando a túa cámara</translation>
+<translation id="7453330308669753048">Quitouse un resultado do historial de busca</translation>
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
 <translation id="746232733191930409">Modo de gravación da pantalla</translation>
 <translation id="7466449121337984263">Toca o sensor</translation>
@@ -1103,6 +1114,7 @@ Nova instalación</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749640678855296659">Tes o micrófono desactivado</translation>
 <translation id="776344839111254542">Fai clic para ver os detalles da actualización</translation>
+<translation id="7780094051999721182">atallos</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7796353162336583443">Toca o botón do lapis óptico no estante para escribir unha nota, facer unha captura de pantalla, usar o Asistente de Google, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
@@ -1165,6 +1177,7 @@ Nova instalación</translation>
 <translation id="8120151603115102514">O teu teléfono non ten unha pantalla de bloqueo. Para desbloquear o Chromebook, escribe o contrasinal.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8131994907636310308">Pechar notificación de ordenar</translation>
 <translation id="8132487352815776550">Deter subtítulos</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
 <translation id="813913629614996137">Iniciando...</translation>
@@ -1228,6 +1241,8 @@ Nova instalación</translation>
 <translation id="8513108775083588393">Xirar autom.</translation>
 <translation id="851458219935658693">Seleccionouse o botón de opción para mostrar as ventás do escritorio actual</translation>
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>
+<translation id="8535393432370007982">Desfacer orde de clasificación por cor</translation>
+<translation id="8546059259582788728">A orde desfíxose correctamente</translation>
 <translation id="8551588720239073785">Configuración de data e hora</translation>
 <translation id="8553395910833293175">Xa se asignou a todos os escritorios.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recoméndache actualizar o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>

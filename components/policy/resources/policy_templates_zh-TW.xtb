@@ -98,6 +98,7 @@
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
 <translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
+<translation id="1107538157073168076">停用深入分析擴充功能</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
@@ -378,6 +379,17 @@
       如果將這項政策設為 Fast，<ph name="PRODUCT_NAME" /> 會盡可能避免執行點陣化。減少點陣化作業量有助於降低列印工作大小及提升列印速度。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會採用 Full 模式。</translation>
+<translation id="1455351936334569779">系統不會搜尋拒絕清單上列出的印表機類型，也不會擷取這類印表機可支援的列印功能。
+
+      在拒絕清單上列出所有印表機類型的效果與停用列印功能相同，因為這樣一來，系統傳送文件進行列印時就沒有可用的目的地。
+
+      在 102 之前的版本中，在拒絕清單上加入「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」的作用等同於將 <ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> 政策設定為 False。如要讓系統搜尋到 <ph name="CLOUD_PRINT_NAME" />目的地，<ph name="POLICY_CLOUDPRINTSUBMITENABLED" /> 政策必須設為 True，且拒絕清單中不得包含「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」。從版本 102 開始，系統將不再支援 <ph name="CLOUD_PRINT_NAME" />目的地，且無論政策值的設定為何，也不會顯示這個目的地。
+
+      如果不設定這項政策或將其設為空白，系統將可搜尋到所有印表機類型。
+
+      擴充印表機也稱為列印服務提供者目的地，其中包含所有屬於 <ph name="PRODUCT_NAME" /> 擴充功能的目的地。
+
+      本機印表機也稱為原生列印目的地，其中包含可供本機電腦和共用網路印表機使用的目的地。</translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />用戶端)：</translation>
 <translation id="1464848559468748897">針對使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置多重設定檔工作階段中的行為進行控制。
 
@@ -1266,6 +1278,7 @@
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
 <translation id="2386362615870139244">允許使用螢幕喚醒鎖</translation>
+<translation id="2387469539700985783">這項政策對 Android 應用程式製作的報表沒有影響。</translation>
 <translation id="238885588439957890">裝置使用交流電源為電池充電的時間 (根據裝置當地時區)。</translation>
 <translation id="2393862222659066027">開啟網址清單並還原前次的工作階段</translation>
 <translation id="2394674739523870144">如果將這項政策設為字串清單，系統會使用空格連接字串，並將字串以指令列參數的形式從 <ph name="IE_PRODUCT_NAME" /> 傳送至 <ph name="PRODUCT_NAME" />。如果有參數包含 <ph name="URL_PLACEHOLDER" />，系統會將 <ph name="URL_PLACEHOLDER" /> 替換成要開啟的網頁網址。如果沒有參數包含 <ph name="URL_PLACEHOLDER" />，則網址會附加在指令列結尾。
@@ -1582,6 +1595,11 @@
 <translation id="2722076884688932437">如果將這項政策設為 True，已註冊的裝置會回報所連結周邊裝置的相關資訊。
 
       如果將這項政策設為 False 或不設定，已註冊的裝置就不會回報周邊裝置資訊。</translation>
+<translation id="2723281094174141470">深入分析擴充功能會提供使用者的網際網路下載/上傳速度、使用者閒置時間和應用程式深入分析資料。
+
+      如果將這項政策設為啟用，系統會安裝深入分析擴充功能，然後由這項功能回報指標。
+
+      如果不設定這項政策或設為停用，則系統不會安裝深入分析擴充功能，這項功能也不會回報指標。</translation>
 <translation id="2723692978495226412">如果將這項政策設為啟用，系統會根據使用者先前在其他裝置上安裝的應用程式，提供應用程式建議。如果未輸入任何搜尋文字，這類建議會顯示在啟動器中的本機應用程式建議之後。
 
       如果將這項政策設為停用或不設定，這類建議不會顯示。
@@ -2189,6 +2207,7 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_POLICY_NAME" />。</translation>
 <translation id="3300784749135986828">啟用或停用「<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />」。</translation>
+<translation id="3301698868852716692">啟用深入分析擴充功能</translation>
 <translation id="3302829897293005699">如果將這項政策設為啟用或不設定，已註冊的裝置會回報運作中資訊站工作階段相關資訊，例如應用程式 ID 和版本。
 
       如果將這項政策設為停用，已註冊的裝置不會回報資訊站工作階段相關資訊。</translation>
@@ -3322,6 +3341,7 @@
 
       如果將這項政策設為停用或不設定，則系統不會產生憑證，對 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的呼叫也會失敗。</translation>
 <translation id="4742973303930120836">限制背景圖形列印模式</translation>
+<translation id="4745232963710538589">啟用深入分析擴充功能以回報用量指標</translation>
 <translation id="4752880493649142945">用於連線至 RemoteAccessHostTokenValidationUrl 的用戶端憑證</translation>
 <translation id="475479145997699293">如果將這項政策設為 <ph name="ASK_FILE_HANDLING" />，網頁應用程式就能要求透過 File Handling API 存取特定類型的檔案。如果將這項政策設為 <ph name="BLOCK_FILE_HANDLING" />，系統會禁止網頁應用程式存取特定類型的檔案。
 
@@ -6233,6 +6253,7 @@
       </translation>
 <translation id="8035570672225663428">啟用自動調節充電模式，調整充電速度以延長電池壽命</translation>
 <translation id="8044493735196713914">回報裝置啟動模式</translation>
+<translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />與「儲存至 Google 雲端硬碟」目的地 (已淘汰)</translation>
 <translation id="80453040817068401">將 <ph name="LACROS_NAME" /> 設為可用瀏覽器</translation>
 <translation id="804619600634661088">允許使用遠端偵錯功能</translation>
 <translation id="8049769137921877885">這項政策可控管系統是否要回報政策資料和擷取政策的時間。

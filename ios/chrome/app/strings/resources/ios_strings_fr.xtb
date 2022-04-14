@@ -13,6 +13,7 @@
         
 Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="1054045277222934172">Vous pouvez remplacer le mode d'affichage par défaut du site par le mode ordinateur de bureau dans Paramètres &gt; Paramètres de contenu.</translation>
+<translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Utiliser un autre mot de passe…</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code scanné</translation>
@@ -494,6 +495,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la page <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Vos sites suivis s'afficheront ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
@@ -611,6 +613,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6344783595350022745">Effacer le texte</translation>
 <translation id="6346549652287021269">Lancer un nouveau téléchargement ?</translation>
 <translation id="634878792104344809">Synchronisez vos mots de passe, votre historique et plus sur tous vos appareils</translation>
+<translation id="6361848730467328243">Suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Aucun onglet de navigation privée</translation>
 <translation id="6363526231572697780">Aucun nom d'utilisateur</translation>
 <translation id="6366190659675876144">Protection standard</translation>
@@ -648,6 +651,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6530992499366869131">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6540120577248033958">Consultez un site et cliquez sur "Suivre" dans le menu Chrome</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>

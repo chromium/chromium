@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chromium erabili ahalko duzu.</translation>
+<translation id="4654936625574199632">Aplikazioa hobetzeko, Chromium-ek erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktibatu Chromium-en eskanerra</translation>
 <translation id="4736424910885271643">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chromium-eko datuak garbitu egingo dira gailu honetatik</translation>
 <translation id="4806326830773390517">Lagundu Chromium hobetzen erabilera-estatistikak eta hutsegite-txostenak bidalita Google-ri</translation>
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
+<translation id="4996471330284142407">Egin gauza gehiago Chromium-ekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
@@ -111,6 +113,13 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="865600487977764604">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna areagotzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
+<translation id="8747378496147986285">Aktibatuta dagoenean:
+<ph name="BEGIN_INDENT" />  • Chromium zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
+
+Kontuan hartu beharrekoak:
+<ph name="BEGIN_INDENT" />  • Chromium-en erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
+  • Chromium-ek huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
+  • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
 <translation id="894437814105052438">Saioa amaitzen duzunean, Chromium-ek ez du datu berririk sinkronizatuko Google-ko kontuarekin. Lehendik sinkronizatuta dauden datuak kontuan geratuko dira.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>

@@ -139,6 +139,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1323433172918577554">Prikaži više</translation>
 <translation id="132390688737681464">Čuvaj i unosi adrese</translation>
 <translation id="1330449323196174374">Presavijanje na levoj strani u obliku prozora</translation>
+<translation id="1333745675627230582">Igrajte igru Chrome dinosaurus</translation>
 <translation id="1333989956347591814">Aktivnosti će <ph name="BEGIN_EMPHASIS" />možda ipak biti vidljive<ph name="END_EMPHASIS" /> za:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />veb-sajtove koje posećujete
@@ -746,6 +747,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2972581237482394796">&amp;Ponovi radnju</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutno izabrano. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Otvori karticu bez arhiviranja</translation>
 <translation id="2985306909656435243">Ako omogućite ovu opciju, Chromium će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
 <translation id="2986368408720340940">Ovaj način preuzimanja nije dostupan. Isprobajte neki drugi način.</translation>
@@ -1512,6 +1514,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5097099694988056070">Statistički podaci o uređaju, poput iskorišćenosti procesora/RAM memorije</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Sajt nije bezbedan</translation>
+<translation id="5109892411553231226">Upravljajte načinima plaćanja</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">18. fioka</translation>
 <translation id="5114987907971894280">virtuelna realnost</translation>
@@ -1759,6 +1762,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5789643057113097023">,</translation>
 <translation id="5803412860119678065">Želite li da popunite podacima <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Dozvole</translation>
+<translation id="5808435672482059465">Pregledajte istoriju Chrome-a</translation>
 <translation id="5808542072418270309">Igre simulacije</translation>
 <translation id="5810442152076338065">Veza sa domenom <ph name="DOMAIN" /> je šifrovana pomoću zastarelog paketa za šifrovanje.</translation>
 <translation id="5812947184178430888">Kada Chrome obeleži bezbednosne događaje, relevantni podaci o događajima se šalju administratoru. To može da obuhvata URL-ove stranica koje posećujete u Chrome-u, nazive fajlova ili metapodatke i korisničko ime pomoću kog se prijavljujete u aplikacije na vebu, na uređaj i u Chrome.</translation>

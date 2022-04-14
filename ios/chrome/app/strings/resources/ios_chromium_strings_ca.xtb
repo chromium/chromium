@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="4654936625574199632">Per ajudar a millorar l'aplicació, Chromium envia dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
 <translation id="4736424910885271643">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu</translation>
 <translation id="4806326830773390517">Ajuda a millorar Chromium enviant les estadístiques d'ús i els informes d'error a Google</translation>
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
+<translation id="4996471330284142407">Augmenta la teva productivitat amb un Chromium senzill, segur i més ràpid que mai.</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
@@ -109,7 +111,15 @@
 <translation id="8240981428553046115">Chromium no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="858114650497379505">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
+<translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
+<translation id="8747378496147986285">Quan aquesta opció està activada:
+<ph name="BEGIN_INDENT" />  • Ajuda a millorar Chromium per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
+
+Aspectes que cal tenir en compte:
+<ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chromium, però no es relaciona amb tu.
+  • Si Chromium falla, els detalls sobre el bloqueig poden incloure informació personal.
+  • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>

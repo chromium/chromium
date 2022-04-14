@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ਗੇਟਵੇ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
+<translation id="1367951781824006909">ਇੱਕ ਫਾਈਲ ਚੁਣੋ</translation>
 <translation id="1387854245479784695">ਇਹ ਸਾਰੇ ਕੋਰ ਅੰਕੜਿਆਂ ਦਾ ਇਕੱਤਰੀਕਰਨ ਹੈ</translation>
 <translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">ਫ਼ਲੋਟਿੰਗ ਪੁਆਇੰਟ ਸਟੀਕਤਾ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2461822463642141190">ਮੌਜੂਦਾ</translation>
+<translation id="2491955442992294626">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋਵੋ, ਤਾਂ ਕੁੰਜੀਆਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="2493126929778606526">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚੁਣੀਆਂ ਗਈਆਂ, ਤੁਹਾਡੀਆਂ ਬਿਹਤਰੀਨ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">ਮੌਜੂਦਾ ਵਾਲਪੇਪਰ ਚਿੱਤਰ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">ਵਾਲਪੇਪਰ ਬਦਲੋ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="3606583719724308068">HTTPS ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਉੱਚ ਵਿਲੰਬਤਾ</translation>
+<translation id="3621202678540785336">ਇਨਪੁਟ</translation>
 <translation id="3632579075709132555">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
 <translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -550,6 +553,7 @@
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="714876143603641390">LAN ਕਨੈਕਟੀਵਿਟੀ</translation>
+<translation id="7155171745945906037">ਕੈਮਰੇ ਜਾਂ ਫ਼ਾਈਲ ਤੋਂ ਮੌਜੂਦਾ ਫ਼ੋਟੋ</translation>
 <translation id="7162487448488904999">ਗੈਲਰੀ</translation>
 <translation id="7172721935181587524">1 ਚਿੱਤਰ</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ਨੂੰ ਸੰਰੂਪਿਤ ਕਰੋ</translation>

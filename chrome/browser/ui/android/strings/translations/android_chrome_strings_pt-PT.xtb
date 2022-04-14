@@ -45,7 +45,7 @@
 <translation id="1208340532756947324">Para sincronizar e personalizar entre dispositivos, ative a sincronização.</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
 <translation id="1227058898775614466">Histórico de navegação</translation>
-<translation id="1231733316453485619">Pretende ativar a sincronização?</translation>
+<translation id="1231733316453485619">Ativar a sincronização?</translation>
 <translation id="123724288017357924">Atualizar página atual e ignorar conteúdo em cache</translation>
 <translation id="1239792311949352652">Partilhe esta página rapidamente. Para editar este atalho, aceda às Definições.</translation>
 <translation id="1240190568154816272">Sugestões do Chrome</translation>
@@ -90,6 +90,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1409879593029778104">A transferência de <ph name="FILE_NAME" /> foi impedida porque o ficheiro já existe.</translation>
 <translation id="1414981605391750300">A contactar a Google… Isto pode demorar um pouco…</translation>
 <translation id="1416550906796893042">Versão da aplicação</translation>
+<translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -555,7 +556,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4062305924942672200">Informações legais</translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fornecido pela Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="4095146165863963773">Pretende eliminar os dados da aplicação?</translation>
+<translation id="4095146165863963773">Eliminar os dados da aplicação?</translation>
 <translation id="4096227151372679484">Fluxo de armazenamento de marcadores aberto a meia altura</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="410351446219883937">Reprodução automática</translation>
@@ -914,7 +915,7 @@ As avaliações da Privacy Sandbox ainda estão em desenvolvimento e estão disp
 <translation id="6095578583683628124">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>
 <translation id="6108923351542677676">Configuração em curso…</translation>
 <translation id="6112702117600201073">A atualizar a página</translation>
-<translation id="6122831415929794347">Pretende desativar a Navegação segura?</translation>
+<translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6137022273846704445">Idioma da app <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Altere as definições do site aqui.</translation>
@@ -1065,7 +1066,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6850409657436465440">A transferência ainda está em curso.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> separadores fechados</translation>
 <translation id="685850645784703949">Discover da Google – desativado</translation>
-<translation id="686366188661646310">Pretende eliminar a palavra-passe?</translation>
+<translation id="686366188661646310">Eliminar a palavra-passe?</translation>
 <translation id="6864459304226931083">Transferir imagem</translation>
 <translation id="6865313869410766144">Dados de formulário de Preenchimento automático</translation>
 <translation id="6867400383614725881">Novo separador de navegação anónima</translation>

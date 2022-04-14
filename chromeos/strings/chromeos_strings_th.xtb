@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">เกตเวย์</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
+<translation id="1367951781824006909">เลือกไฟล์</translation>
 <translation id="1387854245479784695">นี่เป็นการรวม Core ทั้งหมด</translation>
 <translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
@@ -222,6 +223,7 @@
 <translation id="3604713164406837697">เปลี่ยนวอลเปเปอร์</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
+<translation id="3621202678540785336">อินพุต</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">กำลังโหลด ...</translation>
@@ -552,6 +554,7 @@
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
+<translation id="7155171745945906037">รูปภาพที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7172721935181587524">1 ภาพ</translation>
 <translation id="7175037578838465313">กำหนดค่า <ph name="NAME" /></translation>

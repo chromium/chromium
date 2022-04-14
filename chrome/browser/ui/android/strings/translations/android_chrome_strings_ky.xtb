@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1177863135347784049">Өзгөчөлөштүрүлгөн</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
+<translation id="1193729455103054076">Татаал сырсөздү колдоносузбу?</translation>
 <translation id="1197267115302279827">Кыстармаларды жылдыруу</translation>
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1202892408424955784">Көз салынган товарлар</translation>
@@ -500,7 +501,7 @@
 <translation id="3716182511346448902">Бул барак өтө көп эстутум колдонгондуктан Chrome аны тындырды.</translation>
 <translation id="3721119614952978349">Сиз жана Google</translation>
 <translation id="3737319253362202215">Которуу жөндөөлөрү</translation>
-<translation id="3737402728074743863">Бул түзмөктү коопсуздук ачкычы катары колдонуу үчүн экранды кулпулоо функциясын жөндөңүз</translation>
+<translation id="3737402728074743863">Бул түзмөктү коопсуздук ачкычы катары колдонуу үчүн экранды кулпулоону иштетиңиз</translation>
 <translation id="3738139272394829648">Издөө үчүн Басуу</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
@@ -848,7 +849,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5765780083710877561">Сүрөттөлүшү:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> калыбына келтирилди, өтмөк</translation>
 <translation id="5776970333778123608">Маанилүү эмес маалымат</translation>
-<translation id="5780792035410621042">Сырсөздөрдү көчүрүү үчүн түзмөгүңүздө экранды кулпулоо функциясын жөндөңүз</translation>
+<translation id="5780792035410621042">Сырсөздөрдү көчүрүү үчүн түзмөгүңүздө экранды кулпулоону иштетиңиз</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> ичинен <ph name="SPACE_USED" /> колдонулууда</translation>
 <translation id="5795872532621730126">Издөө жана серептөө</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# саат мурун}other{# саат мурун}}</translation>

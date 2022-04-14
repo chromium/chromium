@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Linux қолданбаларына қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="108486256082349153">Ұялы құрылғының MAC мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Қайырлы күн, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеңіз. Бір қолданбадан екіншісіне өту үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">Автоматты субтитр файлдары жүктеп алынды.</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> қолданбасының ең соңғы жаңартылған нұсқасы туралы толығырақ</translation>
 <translation id="1998100899771863792">Қазіргі жұмыс үстелі</translation>
+<translation id="2001444736072756133"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеңіз.</translation>
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
 <translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
@@ -264,6 +266,7 @@
 <translation id="2595239820337756193">5 км неше мильге тең</translation>
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2607678425161541573">Онлайн кіру қажет</translation>
+<translation id="2620016719323068571"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеу…</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="263399434338050016">"Барлығын таңдау"</translation>
@@ -621,6 +624,9 @@
 <translation id="4633185660152240791">{0,plural, =1{Құрылғыны бір күн ішінде алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # күн ішінде алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, қолданба ұсынысы</translation>
+<translation id="4657775630156561295">Келесі ұсыныс аккаунтыңыздың ұсыныс тарихынан біржола өшіріледі:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
 <translation id="4665114317261903604">Мазаламау режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
@@ -943,6 +949,7 @@
 <translation id="6751052314767925245">Әкімші қосқан.</translation>
 <translation id="6751826523481687655">Жұмыс өнімділігін қадағалау функциясы қосылды</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> үстелі өшіріліп, <ph name="RECEIVE_DESK" /> үстелімен біріктірілді.</translation>
+<translation id="6753390234084146956">қойындылар</translation>
 <translation id="6754441615189976839">С</translation>
 <translation id="6757237461819837179">Ешқандай медиамазмұн ойнатылып жатқан жоқ.</translation>
 <translation id="6777216307882431711">Жалғанған USB-C құрылғыларына қуат берілуде</translation>
@@ -1048,6 +1055,7 @@
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
 <translation id="7434543979546293336">Басты идея ретінде белгіленді.</translation>
 <translation id="7452560014878697800">Қолданба камераңызды пайдаланып жатыр.</translation>
+<translation id="7453330308669753048">Іздеу тарихы нәтижесі өшірілді.</translation>
 <translation id="7461924472993315131">Бекіту</translation>
 <translation id="746232733191930409">Экран жазу режимі</translation>
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
@@ -1104,6 +1112,7 @@
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="7749640678855296659">Микрофон өшірулі.</translation>
 <translation id="776344839111254542">Жаңарту мәліметтерін қарау үшін басыңыз</translation>
+<translation id="7780094051999721182">таңбашалар</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7796353162336583443">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Google көмекшісін, лазер меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="7796735576426975947">Жаңа хабарландыру жасырылған</translation>
@@ -1166,6 +1175,7 @@
 <translation id="8120151603115102514">Телефоныңызда құлып экраны жоқ. Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Растау</translation>
+<translation id="8131994907636310308">Сұрыптау қалқымалы терезесін жабу</translation>
 <translation id="8132487352815776550">Субтитрді өшіру</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> желісіне қосылған</translation>
 <translation id="813913629614996137">Дайындауда…</translation>

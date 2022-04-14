@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">ゲートウェイ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
+<translation id="1367951781824006909">ファイルを選択</translation>
 <translation id="1387854245479784695">すべてのコアの合計値です</translation>
 <translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2461822463642141190">現在</translation>
+<translation id="2491955442992294626">別のウィンドウを使用している場合、キーはテストされません。</translation>
 <translation id="2493126929778606526">自動的に選択されたベストショットです</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">現在の壁紙画像を更新する</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
+<translation id="3621202678540785336">入力</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
@@ -551,6 +554,7 @@
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="714876143603641390">LAN 接続</translation>
+<translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7172721935181587524">1 件の画像</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>

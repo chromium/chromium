@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
+<translation id="1367951781824006909">Alege un fișier</translation>
 <translation id="1387854245479784695">Aceasta este o valoare cumulată pentru toate nucleele</translation>
 <translation id="1394661041439318933">Nivelul bateriei carcasei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
+<translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -551,6 +554,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
+<translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">O imagine</translation>
 <translation id="7175037578838465313">Configurează <ph name="NAME" /></translation>

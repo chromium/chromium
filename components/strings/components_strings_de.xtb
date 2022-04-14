@@ -139,6 +139,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1323433172918577554">Mehr anzeigen</translation>
 <translation id="132390688737681464">Adressen speichern und ausfüllen</translation>
 <translation id="1330449323196174374">Linksseitige Fensterfaltung</translation>
+<translation id="1333745675627230582">Chrome Dino spielen</translation>
 <translation id="1333989956347591814">Deine Aktivität <ph name="BEGIN_EMPHASIS" />bleibt eventuell sichtbar<ph name="END_EMPHASIS" /> für:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Von dir besuchte Websites
@@ -742,6 +743,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuell ausgewählt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Oper</translation>
+<translation id="2983666748527428214">Inkognitotab öffnen</translation>
 <translation id="2985306909656435243">Wenn du diese Option auswählst, speichert Chromium eine Kopie deiner Karte auf diesem Gerät, damit Formulare schneller ausgefüllt werden können.</translation>
 <translation id="2985398929374701810">Gültige Adresse eingeben</translation>
 <translation id="2986368408720340940">Diese Abholoption ist nicht verfügbar. Bitte wähle eine andere Option aus.</translation>
@@ -1501,6 +1503,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5097099694988056070">Gerätestatistiken, z. B. CPU/RAM-Nutzung</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Website ist nicht sicher</translation>
+<translation id="5109892411553231226">Zahlungsmethoden verwalten</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Fach 18</translation>
 <translation id="5114987907971894280">Virtual Reality</translation>
@@ -1748,6 +1751,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Möchtest du die Daten deiner <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
+<translation id="5808435672482059465">Chrome-Verlauf anzeigen</translation>
 <translation id="5808542072418270309">Simulationsspiele</translation>
 <translation id="5810442152076338065">Deine Verbindung zu <ph name="DOMAIN" /> ist mit einer veralteten Codier-Suite verschlüsselt.</translation>
 <translation id="5812947184178430888">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs der von dir in Chrome besuchten Seiten, Dateinamen oder Metadaten sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>

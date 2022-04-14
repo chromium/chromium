@@ -6094,6 +6094,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Se você definir esta política, os usuários não poderão alterá-la ou substituí-la.
 
       Observação: atualmente, as reinicializações automáticas ficam ativadas apenas enquanto a tela de login é exibida ou uma sessão de aplicativo de quiosque está em andamento. Isso mudará no futuro, quando a política será sempre aplicada, independentemente de qualquer tipo específico de sessão estar ou não em andamento.</translation>
+<translation id="7696412993033202071">URLs de inicialização de apps para autenticação externa</translation>
 <translation id="7701341006446125684">Definir o tamanho do cache de aplicativos e extensões (em bytes)</translation>
 <translation id="770339941914297201">Novo comportamento: apps do Chrome para quiosque só serão atualizados usando o URL definido na política</translation>
 <translation id="7703737669292992839">Impedir caixas de diálogo para seleção de arquivo</translation>

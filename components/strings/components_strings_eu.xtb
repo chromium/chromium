@@ -139,6 +139,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1323433172918577554">Erakutsi gehiago</translation>
 <translation id="132390688737681464">Gorde eta bete helbideak</translation>
 <translation id="1330449323196174374">Leiho-erako tolestura ezkerrean</translation>
+<translation id="1333745675627230582">Aritu Chrome-ko Dino jokoan</translation>
 <translation id="1333989956347591814">Hauek jarduera <ph name="BEGIN_EMPHASIS" />ikusteko gai izan litezke oraindik<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Irekitzen dituzun webguneak
@@ -742,6 +743,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2972581237482394796">&amp;Berregin</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> dago hautatuta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="2985306909656435243">Gaituta badago, Chromium-ek txartelaren kopia bat gordeko du gailuan, inprimakiak bizkorrago betetzeko.</translation>
 <translation id="2985398929374701810">Idatzi balio duen helbide bat</translation>
 <translation id="2986368408720340940">Ez dago erabilgarri jasotze-metodo hori. Saiatu beste metodo batekin.</translation>
@@ -1499,6 +1501,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5097099694988056070">Gailuaren estatistikak, hala nola CPU/RAM erabilera</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Webgunea ez da segurua</translation>
+<translation id="5109892411553231226">Kudeatu ordainketa-metodoak</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">18. erretilua</translation>
 <translation id="5114987907971894280">errealitate birtuala</translation>
@@ -1746,6 +1749,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> txartelaren datuak betetzea nahi duzu?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
+<translation id="5808435672482059465">Ikusi Chrome-ko historia</translation>
 <translation id="5808542072418270309">Simulazio-jokoak</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> domeinurako konexioa enkriptatze multzo zaharkitu bat erabilita enkriptatu da.</translation>
 <translation id="5812947184178430888">Chrome-k segurtasun-gertaeren berri ematen badu, gertaerei buruzko datu garrantzitsuak bidaliko zaizkio administratzaileari. Datu horien artean baliteke hauek agertzea: Chrome-n bisitatzen dituzun orrien URLak, fitxategien izenak edo metadatuak, eta sarean oinarritutako aplikazioetan, gailuan eta Chrome-n saioa hasteko erabiltzen duzun erabiltzaile-izena.</translation>

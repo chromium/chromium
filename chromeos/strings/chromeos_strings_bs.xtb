@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Pristupnik</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
+<translation id="1367951781824006909">Odaberite fajl</translation>
 <translation id="1387854245479784695">Ovo je agregacija svih jezgara</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije kućišta.</translation>
 <translation id="1397738625398125236">Pristupnik se može provjeriti pingom</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
+<translation id="2491955442992294626">Ključevi se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Vaše najbolje fotografije, automatski odabrane</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Osvježavanje trenutne pozadinske slike</translation>
@@ -154,7 +156,7 @@
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Unesite kôd za otključavanje od 8 znakova</translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
-<translation id="2717139507051041123">Omogućite način tamne boje</translation>
+<translation id="2717139507051041123">Omogućavanje načina rada u tamnoj boji</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2751739896257479635">EAP faza 2 autentifikacije</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Promijenite pozadinsku sliku</translation>
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latentnost za HTTPS web lokacije</translation>
+<translation id="3621202678540785336">Ulaz</translation>
 <translation id="3632579075709132555">Uključivanje/isključivanje Ekrana privatnosti</translation>
 <translation id="3689839747745352263">Test: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitavanje...</translation>
@@ -377,7 +380,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5252456968953390977">Roaming</translation>
-<translation id="5257811368506016604">Omogućite način svijetle boje</translation>
+<translation id="5257811368506016604">Omogućavanje načina rada u svijetloj boji</translation>
 <translation id="5264277876637023664">Pokreni test CPU-a</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
@@ -488,7 +491,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
-<translation id="6447630859861661624">Idi na postavke računa</translation>
+<translation id="6447630859861661624">Odlazak u postavke računa</translation>
 <translation id="6456394469623773452">Solidan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -551,6 +554,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
 <translation id="714876143603641390">Povezivost LAN-a</translation>
+<translation id="7155171745945906037">Postojeća fotografija sa kamere ili fajl</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7175037578838465313">Konfigurirajte <ph name="NAME" /></translation>
@@ -572,7 +576,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378886533986123738">Promjena čuvara zaslona</translation>
+<translation id="7378886533986123738">Promjena čuvara ekrana</translation>
 <translation id="741244894080940828">pretvaranje</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -623,7 +627,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
-<translation id="80398733265834479">Omogućite način automatske boje</translation>
+<translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>

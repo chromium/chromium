@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">Brama</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
+<translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Brama reaguje na ping</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
+<translation id="2491955442992294626">Gdy używasz innego okna, klucze nie są testowane</translation>
 <translation id="2493126929778606526">Twoje najlepsze zdjęcia wybrane automatycznie</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
@@ -221,6 +223,7 @@
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
+<translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
 <translation id="370665806235115550">Ładuję...</translation>
@@ -551,6 +554,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
+<translation id="7155171745945906037">Istniejące zdjęcie z kamery lub pliku</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 obraz</translation>
 <translation id="7175037578838465313">Skonfiguruj: <ph name="NAME" /></translation>

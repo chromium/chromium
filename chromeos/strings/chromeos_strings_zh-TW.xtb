@@ -37,6 +37,7 @@
 <translation id="1327977588028644528">閘道</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">符合掃描區大小</translation>
+<translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1387854245479784695">這是所有核心的匯總值</translation>
 <translation id="1394661041439318933">裝置的充電盒電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可連線偵測到閘道</translation>
@@ -140,6 +141,7 @@
 <translation id="2446553403094072641">浮點精確度</translation>
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
+<translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動精選最佳相片</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
@@ -154,6 +156,7 @@
 <translation id="2640549051766135490">已選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="2695514675076754339">輸入 8 位數解鎖碼</translation>
 <translation id="2712812801627182647">傳輸層安全標準 (TLS) 驗證金鑰</translation>
+<translation id="2717139507051041123">啟用深色模式</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
 <translation id="2783010256799387990">已通過</translation>
@@ -220,6 +223,7 @@
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站時延遲時間過長</translation>
+<translation id="3621202678540785336">輸入</translation>
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -376,6 +380,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5252456968953390977">漫遊中</translation>
+<translation id="5257811368506016604">啟用淺色模式</translation>
 <translation id="5264277876637023664">執行 CPU 測試</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">返回日常診斷</translation>
@@ -486,6 +491,7 @@
 <translation id="641081527798843608">主題比對</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">前往帳戶設定</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃描頁面嗎？}=1{要重新掃描第 {PAGE_NUMBER} 頁嗎？}other{要重新掃描第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">動態密碼</translation>
@@ -548,6 +554,7 @@
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連線狀態</translation>
+<translation id="7155171745945906037">現有的相機相片或圖庫相片</translation>
 <translation id="7162487448488904999">相片庫</translation>
 <translation id="7172721935181587524">1 張圖片</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
@@ -569,6 +576,7 @@
 <translation id="7343649194310845056">網路裝置</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378886533986123738">變更螢幕保護程式</translation>
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +599,7 @@
 <translation id="7648838807254605802">高 HTTPS 延遲</translation>
 <translation id="7656388927906093505">裝置類型為滑鼠。</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7665800271478495366">變更顯示圖片</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -618,6 +627,7 @@
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">啟用自動色彩模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>

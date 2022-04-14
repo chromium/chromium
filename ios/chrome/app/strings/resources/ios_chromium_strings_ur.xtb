@@ -49,11 +49,13 @@
 <translation id="4099085513035183040">‏Chromium بی ٹا پر تعاون یافتہ نہیں ہے</translation>
 <translation id="4555020257205549924">‏یہ خصوصیت آن کیے جانے پر، Chromium دوسری زبانوں میں لکھے ہوئے صفحات کا Google ترجمہ استعمال کر کے ترجمہ کرنے کی پیشکش کرے گا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chromium استعمال کر سکتے ہیں۔</translation>
+<translation id="4654936625574199632">‏ایپ کو بہتر بنانے میں مدد کے لیے، Chromium استعمال اور کریش کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏Chromium اسکینر آن کریں</translation>
 <translation id="4736424910885271643">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے، اسلئے آپ کا Chromium ڈیٹا اس آلے سے صاف کر دیا جائے گا</translation>
 <translation id="4806326830773390517">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4828317641996116749">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4985291216379576555">‏آف لائن، Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
+<translation id="4996471330284142407">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chromium کے ساتھ مزید کام کریں۔</translation>
 <translation id="4999538639245140991">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chromium ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="5171868502429358653">‏Chromium میں سائن ان کریں</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
@@ -111,6 +113,13 @@
 <translation id="8586442755830160949">‏کاپی رائٹ ‎<ph name="YEAR" /> The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="865600487977764604">‏آپ کے سائن ان ہونے پر آپ کو Chromium پر محفوظ رکھتا ہے اور دیگر Google ایپس میں آپ کی سیکیورٹی کو بہتر بنانے کے لیے استعمال کیا جا سکتا ہے</translation>
 <translation id="8663480472502753423">‏Chromium کو اپ ٹو ڈیٹ رکھیں</translation>
+<translation id="8747378496147986285">‏آن ہونے پر:
+<ph name="BEGIN_INDENT" />  • Chromium کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کے طریقے سے استعمال کرتے ہیں۔<ph name="END_INDENT" />
+
+غور کرنے کی چیزیں:
+<ph name="BEGIN_INDENT" />  • آپ کے Chromium کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے۔
+  • اگر Chromium کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں۔
+  • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو Chromium سے ہٹا دیا جائے گا۔</translation>
 <translation id="894437814105052438">‏آپ کے سائن آؤٹ کرنے پر، Chromium کوئی بھی نیا ڈیٹا آپ کے Google اکاؤنٹ کے ساتھ سِنک نہیں کرے گا۔ پہلے کا سِنک کردہ ڈیٹا اکاؤنٹ میں باقی رہے گا۔</translation>
 <translation id="9022552996538154597">‏Chromium میں سائن ان کریں</translation>

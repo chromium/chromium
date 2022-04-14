@@ -13,6 +13,7 @@
         
 Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="1054045277222934172">Puedes cambiar la vista predeterminada de sitios a la versión de escritorio en Configuración y, luego, en Configuración de contenido</translation>
+<translation id="1054745118061919935">Si continúas, aceptas las <ph name="BEGIN_LINK" />Condiciones del Servicio<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Usar otra contraseña…</translation>
 <translation id="1066060668811609597">Administrar la sincronización</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
@@ -494,6 +495,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
+<translation id="5386314158584363703">Puedes encontrar los sitios que sigues aquí</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
@@ -611,6 +613,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6344783595350022745">Borrar texto</translation>
 <translation id="6346549652287021269">¿Comenzar una descarga nueva?</translation>
 <translation id="634878792104344809">Sincroniza tus contraseñas, historial y mucho más en todos tus dispositivos</translation>
+<translation id="6361848730467328243">Seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">No hay pestañas de incógnito</translation>
 <translation id="6363526231572697780">Sin nombre de usuario</translation>
 <translation id="6366190659675876144">Protección estándar</translation>
@@ -648,6 +651,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
 <translation id="6530992499366869131">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="6537746030088321027">ejemplo.com</translation>
+<translation id="6540120577248033958">Ve a un sitio y haz clic en Seguir en el Menú de Chrome</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>

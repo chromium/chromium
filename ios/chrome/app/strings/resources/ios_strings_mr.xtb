@@ -116,6 +116,7 @@
 <translation id="1923342640370224680">शेवटचा तास</translation>
 <translation id="1930989359703290198">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
+<translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
 <translation id="196896377990863006">लिंक पूर्वावलोकन दाखवा</translation>
@@ -143,6 +144,7 @@
 <translation id="2218443599109088993">झूम आउट करा</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
 <translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
+<translation id="2251686759395008410">मेनू → इतिहास</translation>
 <translation id="2256933947031277845">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते.</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
@@ -198,10 +200,12 @@
 <translation id="2712127207578915686">फाईल उघडण्यात अक्षम</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
+<translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2764831210418622012">आत्ताच</translation>
 <translation id="2773292004659987824">गुप्त शोध</translation>
 <translation id="277771892408211951">भाषा निवडा</translation>
 <translation id="2780046210906776326">ईमेल खाती नाहीत</translation>
+<translation id="2781325423985810933">पहिल्यासारखे करा</translation>
 <translation id="2781331604911854368">सुरू</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">लिंक तयार करता आली नाही</translation>
@@ -239,6 +243,7 @@
 <translation id="298306318844797842">पेमेंट पद्धत जोडा…</translation>
 <translation id="2989805286512600854">नवीन टॅबमध्ये उघडा</translation>
 <translation id="3037605927509011580">च्चक!</translation>
+<translation id="3039722182465315531">साइन इन करू नका</translation>
 <translation id="3076846064362030967">तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.
 
 
@@ -340,6 +345,7 @@
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3929457972718048006">पत्ते</translation>
 <translation id="3943492037546055397">पासवर्ड</translation>
+<translation id="3959736869653157332">मेनू → नवीन गुप्त टॅब</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3968505803272650567">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="3989635538409502728">साइन आउट</translation>
@@ -605,6 +611,7 @@
 <translation id="6254066287920239840">ब्राउझर ऐवजी ॲपमध्ये लिंक उघडा.</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
+<translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> ला अनफॉलो करा</translation>
 <translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप
 करा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
@@ -776,6 +783,7 @@
 <translation id="7603852183842204213">पॉप-अप अवरोधित (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड हटवा</translation>
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
+<translation id="7646263789464975852">मेनू → सेटिंग्ज → सुरक्षितता तपासणी</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
@@ -784,6 +792,7 @@
 <translation id="7720410380936703141">पुन्हा प्रयत्न करा</translation>
 <translation id="7726702057919861819">मेनू → इतिहास → ब्राउझिंग डेटा साफ करा</translation>
 <translation id="7741325291586284254">नवीन गुप्त टॅब पेज</translation>
+<translation id="7756478488453921771">मेनू → सेटिंग्ज → पेमेंट पद्धती</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7781011649027948662">पेजचे भाषांतर करायचे?</translation>
@@ -791,6 +800,7 @@
 <translation id="7781829728241885113">काल</translation>
 <translation id="778855399387580014">एका नवीन Chrome टॅबमध्ये शोध सुरू करा.</translation>
 <translation id="7791543448312431591">जोडा</translation>
+<translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
 <translation id="7839985698273989086">ऑफलाइन पेज</translation>
 <translation id="7840771868269352570">तुम्ही निवडलेले आयटम काढून टाकले जातील.</translation>
 <translation id="7853202427316060426">गतिविधी</translation>
@@ -804,6 +814,7 @@
 <translation id="7939128259257418052">पासवर्ड एक्सपोर्ट करा...</translation>
 <translation id="794799177247607889">लॉग इन करणे थांबवा</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{एकही पासवर्ड धोक्यात नाही}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
+<translation id="7959441099968534758">फीडवर जा</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
 <translation id="7966516440812255683">तुमच्या ब्राउझिंग अनुभवात सुधारणा करण्यासाठी, उदाहरणार्थ, तुम्हाला साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम लक्षात ठेवण्यासाठी साइट कुकी वापरू शकतात.
 
@@ -927,6 +938,7 @@
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>
 <translation id="9055772144595778347">साइन इन करणे शक्य नाही</translation>
+<translation id="9057972802061533987">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="9065203028668620118">संपादन</translation>
 <translation id="9079935439869366234">सर्व न वाचलेले चिन्हांकित करा</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> साठी पासवर्ड अपडेट करायचा?</translation>
@@ -934,6 +946,7 @@
 <translation id="9083838294503912307">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="9087108903408689779">Chrome ने सुचवलेला पासवर्ड:</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करा</translation>
+<translation id="9097506547406246598">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
 <translation id="9107664647686727385">धोक्यात असलेले पासवर्ड तपासा</translation>
 <translation id="9124387962554796433">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा इतिहास वापरू शकते.</translation>

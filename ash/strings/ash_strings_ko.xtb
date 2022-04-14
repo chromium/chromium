@@ -226,6 +226,7 @@
 <translation id="2302092602801625023">Family Link에서 관리되는 계정입니다.</translation>
 <translation id="2303600792989757991">창 전환 개요</translation>
 <translation id="2318576281648121272">오늘 <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, 검색결과 카테고리</translation>
 <translation id="2322173485024759474">한 글자 뒤로 이동</translation>
 <translation id="2339073806695260576">실행기에서 스타일러스 버튼을 탭하여 메모를 작성하거나, 스크린샷을 찍거나, 레이저 포인터 또는 돋보기를 활용할 수 있습니다.</translation>
 <translation id="2341729377289034582">세로로 잠김</translation>
@@ -927,6 +928,7 @@
 <translation id="6629480180092995136"><ph name="APP_NAME" /> 앱에서 마이크를 사용하려고 합니다</translation>
 <translation id="6637729079642709226">시간 변경</translation>
 <translation id="6641720045729354415">실시간 자막을 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">이름별 정렬 순서 실행취소</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다.</translation>
 <translation id="6650933572246256093">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 해당 기기에서 다음 패스키를 입력하세요. <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">비밀번호</translation>
@@ -1237,6 +1239,8 @@
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
+<translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
+<translation id="8546059259582788728">정렬이 실행취소됨</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553395910833293175">이미 모든 데스크에 할당되어 있습니다.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기의 업데이트를 권장합니다.</translation>

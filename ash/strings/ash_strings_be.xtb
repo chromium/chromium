@@ -22,6 +22,7 @@
 <translation id="1081015718268701546">Праграмы Linux цяпер не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="108486256082349153">Сотавая прылада: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добры дзень, <ph name="GIVEN_NAME" />!</translation>
+<translation id="1088231044944504242">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі. Для пераходу паміж праграмамі выкарыстоўвайце клавішы са стрэлкамі.</translation>
 <translation id="109942774857561566">Мне надакучыла</translation>
 <translation id="1104084341931202936">Паказаць налады спецыяльных магчымасцей</translation>
 <translation id="1104621072296271835">Разам вашы прылады працуюць яшчэ лепей</translation>
@@ -179,6 +180,7 @@
 <translation id="1990046457226896323">Файлы для ператварэння маўлення ў тэкст спампаваны</translation>
 <translation id="1993072747612765854">Даведацца больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Бягучы працоўны стол</translation>
+<translation id="2001444736072756133">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі.</translation>
 <translation id="2016340657076538683">Напішыце паведамленне</translation>
 <translation id="2018630726571919839">Раскажы мне жарт</translation>
 <translation id="2021864487439853900">Націсніце, каб разблакіраваць</translation>
@@ -224,6 +226,7 @@
 <translation id="2302092602801625023">Гэты ўліковы запіс кіруецца праз Family Link</translation>
 <translation id="2303600792989757991">Уключэнне агляду вокнаў</translation>
 <translation id="2318576281648121272">Сёння <ph name="TODAY_DATE" /></translation>
+<translation id="2322065293366551060"><ph name="CATEGORY" />, катэгорыя вынікаў пошуку</translation>
 <translation id="2322173485024759474">Назад на адну літару</translation>
 <translation id="2339073806695260576">Націсніце кнопку стыла на паліцы, каб зрабіць нататку, здымак экрана, выкарыстаць лазерную ўказку або павелічальнае шкло.</translation>
 <translation id="2341729377289034582">Зафіксаваны вертыкальны фармат</translation>
@@ -263,6 +266,7 @@
 <translation id="2595239820337756193">5 кіламетраў у мілях</translation>
 <translation id="2596078834055697711">Зрабіць здымак акна</translation>
 <translation id="2607678425161541573">Неабходна выканаць уваход праз інтэрнэт</translation>
+<translation id="2620016719323068571">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі...</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2621713457727696555">Абаронена</translation>
 <translation id="263399434338050016">"Выбраць усё"</translation>
@@ -620,6 +624,9 @@
 <translation id="4633185660152240791">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу дня}one{Вярніцеся да ранейшай версіі АС на працягу # дня}few{Вярніцеся да ранейшай версіі АС на працягу # дзён}many{Вярніцеся да ранейшай версіі АС на працягу # дзён}other{Вярніцеся да ранейшай версіі АС на працягу # дня}}</translation>
 <translation id="4642092649622328492">Зрабіць здымак часткі экрана</translation>
 <translation id="4648249871170053485">Рэкамендаваная праграма (<ph name="APP_NAME" />)</translation>
+<translation id="4657775630156561295">Наступная прапанова будзе назаўсёды выдалена з гісторыі прапаноў уліковага запісу:
+
+<ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox уключаны</translation>
 <translation id="4665114317261903604">Уключэнне рэжыму "Не турбаваць". <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081">Ідзе спампоўванне файла "<ph name="FILENAME" />"</translation>
@@ -921,6 +928,7 @@
 <translation id="6629480180092995136">Праграма "<ph name="APP_NAME" />" запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="6637729079642709226">Змена часу</translation>
 <translation id="6641720045729354415">Уключыць або выключыць Імгненныя субцітры. <ph name="STATE_TEXT" /></translation>
+<translation id="6643169293433369663">Адрабіць сартаванне па назве</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
 <translation id="6650933572246256093">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазволу на спалучэнне. Увядзіце на прыладзе наступны ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
@@ -941,6 +949,7 @@
 <translation id="6751052314767925245">Гэтай функцыяй кіруе адміністратар</translation>
 <translation id="6751826523481687655">Трасіроўка прадукцыйнасці ўключана</translation>
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб'яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
+<translation id="6753390234084146956">укладкі</translation>
 <translation id="6754441615189976839">Сб</translation>
 <translation id="6757237461819837179">Медыяфайлы не прайграюцца</translation>
 <translation id="6777216307882431711">Сілкуе падключаныя прылады USB-C</translation>
@@ -1046,6 +1055,7 @@
 <translation id="743058460480092004">Камера і мікрафон выкарыстоўваюцца.</translation>
 <translation id="7434543979546293336">Месца пазначана як ключавая ідэя</translation>
 <translation id="7452560014878697800">Камера выкарыстоўваецца адной з праграм</translation>
+<translation id="7453330308669753048">Вынік выдалены з гісторыі пошуку</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746232733191930409">Рэжым запісу экрана</translation>
 <translation id="7466449121337984263">Дакраніцеся да сканера</translation>
@@ -1102,6 +1112,7 @@
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="7749640678855296659">Ваш мікрафон зараз выключаны</translation>
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
+<translation id="7780094051999721182">ярлыкі</translation>
 <translation id="7780159184141939021">Паварот экрана</translation>
 <translation id="7796353162336583443">Націсніце кнопку стыла на паліцы, каб зрабіць нататку, здымак экрана, выкарыстаць Памочніка Google, лазерную ўказку або павелічальнае шкло.</translation>
 <translation id="7796735576426975947">Новае апавяшчэнне схавана</translation>
@@ -1164,6 +1175,7 @@
 <translation id="8120151603115102514">На тэлефоне не выкарыстоўваецца функцыя экрана блакіроўкі. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
+<translation id="8131994907636310308">Закрыць усплывальнае паведамленне аб сартаванні</translation>
 <translation id="8132487352815776550">Схаваць субцітры</translation>
 <translation id="8132793192354020517">Падключана да сеткі "<ph name="NAME" />"</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
@@ -1227,6 +1239,8 @@
 <translation id="8513108775083588393">Аўтапаварот</translation>
 <translation id="851458219935658693">Паказ вокнаў бягучага працоўнага стала, выбраны пераключальнік</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>
+<translation id="8535393432370007982">Адрабіць сартаванне па колеры</translation>
+<translation id="8546059259582788728">Сартаванне адроблена</translation>
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8553395910833293175">Акно ўжо даступнае на ўсіх працоўных сталах.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> рэкамендуе вам абнавіць прыладу <ph name="DEVICE_TYPE" /></translation>
