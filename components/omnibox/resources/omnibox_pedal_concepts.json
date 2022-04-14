@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2022-03-29T16:50:39.212Z",
+  "time_generated": "2022-04-13T16:48:14.988Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -9706,7 +9706,8 @@
                 "launch",
                 "enter",
                 "start",
-                "open"
+                "open",
+                "new"
               ]
             },
             {
@@ -10914,7 +10915,7 @@
           "id": 31,
           "groups": [
             {
-              "required": true,
+              "required": false,
               "single": true,
               "synonyms": [
                 "control",
@@ -11007,6 +11008,7 @@
                 "visit",
                 "find",
                 "view",
+                "show",
                 "see"
               ]
             },
