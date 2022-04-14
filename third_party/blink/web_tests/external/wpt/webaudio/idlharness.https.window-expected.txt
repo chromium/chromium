@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1124 tests; 1113 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1124 tests; 1115 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -49,7 +49,7 @@ PASS AudioContext interface: existence and properties of interface prototype obj
 PASS AudioContext interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS AudioContext interface: attribute baseLatency
-FAIL AudioContext interface: attribute outputLatency assert_true: The prototype object must have a property "outputLatency" expected true got false
+PASS AudioContext interface: attribute outputLatency
 PASS AudioContext interface: operation getOutputTimestamp()
 PASS AudioContext interface: operation resume()
 PASS AudioContext interface: operation suspend()
@@ -61,7 +61,7 @@ PASS AudioContext interface: operation createMediaStreamDestination()
 PASS AudioContext must be primary interface of context
 PASS Stringification of context
 PASS AudioContext interface: context must inherit property "baseLatency" with the proper type
-FAIL AudioContext interface: context must inherit property "outputLatency" with the proper type assert_inherits: property "outputLatency" not found in prototype chain
+PASS AudioContext interface: context must inherit property "outputLatency" with the proper type
 PASS AudioContext interface: context must inherit property "getOutputTimestamp()" with the proper type
 PASS AudioContext interface: context must inherit property "resume()" with the proper type
 PASS AudioContext interface: context must inherit property "suspend()" with the proper type

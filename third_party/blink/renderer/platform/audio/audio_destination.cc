@@ -278,6 +278,7 @@ void AudioDestination::RequestRender(size_t frames_requested,
       frames_elapsed_ / static_cast<double>(web_audio_device_->SampleRate()) -
       delay;
   output_position_.timestamp = delay_timestamp;
+  output_position_.hardware_output_latency = delay;
   base::TimeTicks callback_request = base::TimeTicks::Now();
 
   for (size_t pushed_frames = 0; pushed_frames < frames_to_render;

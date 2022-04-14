@@ -3528,6 +3528,7 @@ enum WebFeature {
   kLegacyConstraintGoogIPv6 = 4207,
   kLegacyConstraintGoogSuspendBelowMinBitrate = 4208,
   kLegacyConstraintGoogCpuOveruseDetection = 4209,
+  kAudioContextOutputLatency = 4210,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

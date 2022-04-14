@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
@@ -55,6 +56,14 @@ static unsigned g_hardware_context_count = 0;
 static unsigned g_context_id = 0;
 
 namespace {
+
+// When the client does not have enough permission, the outputLatency property
+// is quantized by 8ms to reduce the precision for privacy concerns.
+constexpr double kOutputLatencyQuatizingFactor = 0.008;
+
+// When the client has enough permission, the outputLatency property gets
+// 1ms precision.
+constexpr double kOutputLatencyMaxPrecisionFactor = 0.001;
 
 const char* LatencyCategoryToString(
     WebAudioLatencyHint::AudioContextLatencyCategory category) {
@@ -183,7 +192,9 @@ AudioContext::AudioContext(Document& document,
                            absl::optional<float> sample_rate)
     : BaseAudioContext(&document, kRealtimeContext),
       context_id_(g_context_id++),
-      audio_context_manager_(document.GetExecutionContext()) {
+      audio_context_manager_(document.GetExecutionContext()),
+      permission_service_(document.GetExecutionContext()),
+      permission_receiver_(this, document.GetExecutionContext()) {
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
   destination_node_ =
       RealtimeAudioDestinationNode::Create(this, latency_hint, sample_rate);
@@ -223,6 +234,18 @@ AudioContext::AudioContext(Document& document,
                   static_cast<double>(sampleRate());
   SendLogMessage(String::Format("%s => (base latency=%.3f seconds))", __func__,
                                 base_latency_));
+
+  // Perform the initial permission check for the output latency precision.
+  ExecutionContext* execution_context = document.GetExecutionContext();
+  auto microphone_permission_name = mojom::blink::PermissionName::AUDIO_CAPTURE;
+  ConnectToPermissionService(
+      execution_context,
+      permission_service_.BindNewPipeAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kPermission)));
+  permission_service_->HasPermission(
+      CreatePermissionDescriptor(microphone_permission_name),
+      WTF::Bind(&AudioContext::DidInitialPermissionCheck, WrapPersistent(this),
+                CreatePermissionDescriptor(microphone_permission_name)));
 }
 
 void AudioContext::Uninitialize() {
@@ -252,6 +275,8 @@ AudioContext::~AudioContext() {
 void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(close_resolver_);
   visitor->Trace(audio_context_manager_);
+  visitor->Trace(permission_service_);
+  visitor->Trace(permission_receiver_);
   BaseAudioContext::Trace(visitor);
 }
 
@@ -465,6 +490,16 @@ double AudioContext::baseLatency() const {
   return base_latency_;
 }
 
+double AudioContext::outputLatency() const {
+  DCHECK(IsMainThread());
+  DCHECK(destination());
+
+  GraphAutoLocker locker(this);
+
+  double factor = GetOutputLatencyQuantizingFactor();
+  return std::round(output_position_.hardware_output_latency / factor) * factor;
+}
+
 MediaElementAudioSourceNode* AudioContext::createMediaElementSource(
     HTMLMediaElement* media_element,
     ExceptionState& exception_state) {
@@ -635,6 +670,7 @@ void AudioContext::RecordAutoplayMetrics() {
 }
 
 void AudioContext::ContextDestroyed() {
+  permission_receiver_.reset();
   Uninitialize();
 }
 
@@ -643,7 +679,9 @@ bool AudioContext::HasPendingActivity() const {
   // as having activity even though they are basically idle with nothing going
   // on.  However, they can be resumed at any time, so we don't want contexts
   // going away prematurely.
-  return (ContextState() != kClosed) && BaseAudioContext::HasPendingActivity();
+  return
+      ((ContextState() != kClosed) && BaseAudioContext::HasPendingActivity()) ||
+      permission_receiver_.is_bound();
 }
 
 bool AudioContext::HandlePreRenderTasks(const AudioIOPosition* output_position,
@@ -810,6 +848,45 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   // creating a copy is acceptable here.
   GraphAutoLocker locker(this);
   return callback_metric_;
+}
+
+void AudioContext::OnPermissionStatusChange(
+    mojom::blink::PermissionStatus status) {
+  microphone_permission_status_ = status;
+}
+
+void AudioContext::DidInitialPermissionCheck(
+    mojom::blink::PermissionDescriptorPtr descriptor,
+    mojom::blink::PermissionStatus status) {
+  if (descriptor->name == mojom::blink::PermissionName::AUDIO_CAPTURE &&
+      status == mojom::blink::PermissionStatus::GRANTED) {
+    // If the initial permission check is successful, the current implementation
+    // avoids listening the future permission change in this AudioContext's
+    // lifetime. This is acceptable because the current UI pattern asks to
+    // reload the page when the permission is taken away.
+    microphone_permission_status_ = status;
+    permission_receiver_.reset();
+    return;
+  }
+
+  // The initial permission check failed, start listening the future permission
+  // change.
+  DCHECK(permission_service_.is_bound());
+  mojo::PendingRemote<mojom::blink::PermissionObserver> observer;
+  permission_receiver_.Bind(
+      observer.InitWithNewPipeAndPassReceiver(),
+      GetExecutionContext()->GetTaskRunner(TaskType::kPermission));
+  permission_service_->AddPermissionObserver(
+      CreatePermissionDescriptor(mojom::blink::PermissionName::AUDIO_CAPTURE),
+      microphone_permission_status_,
+      std::move(observer));
+}
+
+double AudioContext::GetOutputLatencyQuantizingFactor() const {
+  return microphone_permission_status_ ==
+      mojom::blink::PermissionStatus::GRANTED
+      ? kOutputLatencyMaxPrecisionFactor
+      : kOutputLatencyQuatizingFactor;
 }
 
 }  // namespace blink

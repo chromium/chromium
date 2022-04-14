@@ -146,6 +146,7 @@ interface AudioBufferSourceNode : AudioScheduledSourceNode
 interface AudioContext : BaseAudioContext
     attribute @@toStringTag
     getter baseLatency
+    getter outputLatency
     method close
     method constructor
     method createMediaElementSource

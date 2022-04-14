@@ -37879,6 +37879,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4207" label="LegacyConstraintGoogIPv6"/>
   <int value="4208" label="LegacyConstraintGoogSuspendBelowMinBitrate"/>
   <int value="4209" label="LegacyConstraintGoogCpuOveruseDetection"/>
+  <int value="4210" label="AudioContextOutputLatency"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

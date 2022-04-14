@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -33,7 +35,8 @@ class WebAudioLatencyHint;
 
 // This is an BaseAudioContext which actually plays sound, unlike an
 // OfflineAudioContext which renders sound into a buffer.
-class MODULES_EXPORT AudioContext : public BaseAudioContext {
+class MODULES_EXPORT AudioContext : public BaseAudioContext,
+                                    public mojom::blink::PermissionObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -63,6 +66,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
 
   AudioTimestamp* getOutputTimestamp(ScriptState*) const;
   double baseLatency() const;
+  double outputLatency() const;
 
   MediaElementAudioSourceNode* createMediaElementSource(HTMLMediaElement*,
                                                         ExceptionState&);
@@ -87,6 +91,9 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   void HandleAudibility(AudioBus* destination_bus);
 
   AudioCallbackMetric GetCallbackMetric() const;
+
+  // mojom::blink::PermissionObserver
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
 
  protected:
   void Uninitialize() final;
@@ -167,6 +174,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
 
   void SendLogMessage(const String& message);
 
+  void DidInitialPermissionCheck(mojom::blink::PermissionDescriptorPtr,
+                                 mojom::blink::PermissionStatus);
+  double GetOutputLatencyQuantizingFactor() const;
+
   unsigned context_id_;
   Member<ScriptPromiseResolver> close_resolver_;
 
@@ -208,6 +219,15 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   size_t total_audible_renders_ = 0;
 
   SelfKeepAlive<AudioContext> keep_alive_{this};
+
+  // Initially, we assume that the microphone permission is denied. But this
+  // will be corrected after the actual construction.
+  mojom::blink::PermissionStatus
+      microphone_permission_status_ = mojom::blink::PermissionStatus::DENIED;
+
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+  HeapMojoReceiver<mojom::blink::PermissionObserver, AudioContext>
+      permission_receiver_;
 };
 
 }  // namespace blink
