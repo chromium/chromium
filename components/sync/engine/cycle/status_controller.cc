@@ -63,10 +63,6 @@ void StatusController::increment_num_successful_commits() {
   model_neutral_.num_successful_commits++;
 }
 
-void StatusController::increment_num_updates_applied_by(int value) {
-  model_neutral_.num_updates_applied += value;
-}
-
 void StatusController::increment_num_encryption_conflicts_by(int value) {
   model_neutral_.num_encryption_conflicts += value;
 }
@@ -102,10 +98,6 @@ void StatusController::set_commit_result(const SyncerError result) {
 
 SyncerError StatusController::last_get_key_result() const {
   return model_neutral_.last_get_key_result;
-}
-
-int StatusController::num_updates_applied() const {
-  return model_neutral_.num_updates_applied;
 }
 
 int StatusController::num_server_overwrites() const {

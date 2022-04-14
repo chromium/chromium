@@ -37,7 +37,6 @@ struct ModelNeutralState {
   int num_reflected_updates_downloaded_total;
 
   // Update application and conflicts.
-  int num_updates_applied;
   int num_encryption_conflicts;
   int num_server_conflicts;
   int num_hierarchy_conflicts;

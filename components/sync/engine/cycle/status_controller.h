@@ -48,9 +48,6 @@ class StatusController {
   // Aggregate sum of all conflicting items over all conflict types.
   int TotalNumConflictingItems() const;
 
-  // Number of successfully applied updates.
-  int num_updates_applied() const;
-
   int num_server_overwrites() const;
   int num_local_overwrites() const;
 
@@ -73,7 +70,6 @@ class StatusController {
   void increment_num_reflected_updates_downloaded_by(int value);
 
   // Update application and conflict resolution counters.
-  void increment_num_updates_applied_by(int value);
   void increment_num_encryption_conflicts_by(int value);
   void increment_num_hierarchy_conflicts_by(int value);
   void increment_num_server_conflicts();
