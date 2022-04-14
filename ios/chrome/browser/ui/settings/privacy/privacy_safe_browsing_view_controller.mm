@@ -40,6 +40,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 @implementation PrivacySafeBrowsingViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:YES];
+  [self.modelDelegate selectItem];
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kPrivacySafeBrowsingTableViewId;
@@ -59,21 +64,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - PrivacySafeBrowsingConsumer
 
-- (void)reloadSection {
+- (void)reconfigureItems {
   if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
+    // No need to reconfigure since the model has not been loaded yet.
     return;
   }
-  TableViewModel* model = self.tableViewModel;
-  NSUInteger sectionIndex =
-      [model sectionForSectionIdentifier:SectionIdentifierPrivacySafeBrowsing];
-  NSIndexSet* sections = [NSIndexSet indexSetWithIndex:sectionIndex];
-  [self.tableView reloadSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
+  [self reconfigureCellsForItems:self.safeBrowsingItems];
 }
 
 - (void)setSafeBrowsingItems:(ItemArray)safeBrowsingItems {
   _safeBrowsingItems = safeBrowsingItems;
+}
+
+- (void)selectItem:(TableViewItem*)item {
+  NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
+  [self.tableView selectRowAtIndexPath:indexPath
+                              animated:YES
+                        scrollPosition:UITableViewScrollPositionNone];
 }
 
 #pragma mark - CollectionViewController
@@ -112,8 +119,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
   TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
   [self.modelDelegate didSelectItem:selectedItem];
-
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)tableView:(UITableView*)tableView

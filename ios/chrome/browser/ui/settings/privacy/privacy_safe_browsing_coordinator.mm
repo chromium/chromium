@@ -22,9 +22,11 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_coordinator.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -73,6 +75,8 @@
 - (void)start {
   self.viewController = [[PrivacySafeBrowsingViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  self.viewController.styler.cellHighlightColor =
+      [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
   self.viewController.presentationDelegate = self;
   self.mediator = [[PrivacySafeBrowsingMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()

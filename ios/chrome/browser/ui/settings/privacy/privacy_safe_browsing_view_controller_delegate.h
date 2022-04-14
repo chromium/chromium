@@ -18,6 +18,10 @@
 // Handles navigation related to an accessory view being clicked.
 - (void)didTapAccessoryView:(TableViewItem*)item;
 
+// Selects the item based on the most recent preference values
+// changes.
+- (void)selectItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_SAFE_BROWSING_VIEW_CONTROLLER_DELEGATE_H_

@@ -103,6 +103,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // don't do anything and keep the current selected choice.
   ItemType type = static_cast<ItemType>(item.type);
   if (item == nil || [self shouldItemTypeHaveCheckmark:type]) {
+    [self updatePrivacySafeBrowsingSectionAndNotifyConsumer:YES];
     return;
   }
 
@@ -223,7 +224,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (notifyConsumer) {
-    [self.consumer reloadSection];
+    [self selectItem];
+    [self.consumer reconfigureItems];
   }
 }
 
@@ -268,6 +270,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)selectItem {
+  for (TableViewItem* item in self.safeBrowsingItems) {
+    ItemType type = static_cast<ItemType>(item.type);
+    if ([self shouldItemTypeHaveCheckmark:type]) {
+      [self.consumer selectItem:item];
+      break;
+    }
+  }
+}
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {

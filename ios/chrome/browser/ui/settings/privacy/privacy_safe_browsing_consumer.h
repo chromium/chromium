@@ -14,11 +14,14 @@
 // Consumer protocol for Safe Browsing Privacy setting.
 @protocol PrivacySafeBrowsingConsumer <ChromeTableViewConsumer>
 
-// Reloads sections. Does nothing if the model is not loaded yet.
-- (void)reloadSection;
+// Reconfigure items. Does nothing if the model is not loaded yet.
+- (void)reconfigureItems;
 
 // Initializes item array for |safeBrowsingItems|.
 - (void)setSafeBrowsingItems:(NSArray<TableViewItem*>*)safeBrowsingItems;
+
+// Select |item|.
+- (void)selectItem:(TableViewItem*)item;
 
 @end
 
