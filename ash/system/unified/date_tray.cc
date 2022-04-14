@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -68,5 +69,8 @@ void DateTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
   time_view_->UpdateAlignmentForShelf(shelf());
 }
+
+BEGIN_METADATA(DateTray, ActionableView)
+END_METADATA
 
 }  // namespace ash

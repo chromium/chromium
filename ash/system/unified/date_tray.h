@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -20,6 +21,8 @@ class TimeTrayItemView;
 // tray doesn't not have its own bubble.
 class ASH_EXPORT DateTray : public TrayBackgroundView {
  public:
+  METADATA_HEADER(DateTray);
+
   DateTray(Shelf* shelf, UnifiedSystemTray* tray);
   DateTray(const DateTray&) = delete;
   DateTray& operator=(const DateTray&) = delete;

@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -32,6 +33,7 @@ namespace ash {
 namespace {
 
 constexpr int kPaddingBetweenItems = 8;
+constexpr int kPaddingOffsetBetweenDateAndSystemTray = -4;
 
 class StatusAreaWidgetDelegateAnimationSettings
     : public ui::ScopedLayerAnimationSettings {
@@ -257,6 +259,13 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // items also takes care of padding at the edge of the shelf (unless hotseat
   // is enabled).
   int right_edge = kPaddingBetweenItems;
+
+  // If this view is `DateTray`, apply the offset
+  // `kPaddingOffsetBetweenDateAndSystemTray` between it and
+  // `UnifiedSystemTray`.
+  if (child->GetClassName() == DateTray::kViewClassName) {
+    right_edge += kPaddingOffsetBetweenDateAndSystemTray;
+  }
 
   if (is_child_on_edge) {
     right_edge = ShelfConfig::Get()->control_button_edge_spacing(
