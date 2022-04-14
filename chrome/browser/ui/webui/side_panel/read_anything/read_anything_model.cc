@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_model.h"
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"

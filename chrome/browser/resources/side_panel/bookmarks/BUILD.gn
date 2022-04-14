@@ -19,10 +19,10 @@ preprocess_if_expr("preprocess") {
 
 preprocess_if_expr("preprocess_mojo") {
   deps = [
-    "//chrome/browser/ui/webui/read_later/side_panel:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_webui_js",
   ]
   in_folder =
-      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later/side_panel/"
+      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/bookmarks"
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/preprocessed_mojo_manifest.json"
   in_files = [ "bookmarks.mojom-webui.js" ]

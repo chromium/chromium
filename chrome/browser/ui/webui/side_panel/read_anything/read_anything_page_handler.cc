@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 
 #include <string>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_coordinator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"

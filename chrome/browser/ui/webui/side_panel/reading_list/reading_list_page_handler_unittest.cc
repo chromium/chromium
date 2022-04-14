@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
 
 #include <memory>
 #include <string>
@@ -36,43 +36,43 @@ constexpr char kTabName2[] = "Tab 2";
 constexpr char kTabName3[] = "Tab 3";
 constexpr char kTabName4[] = "Tab 4";
 
-class MockPage : public read_later::mojom::Page {
+class MockPage : public reading_list::mojom::Page {
  public:
   MockPage() = default;
   ~MockPage() override = default;
 
-  mojo::PendingRemote<read_later::mojom::Page> BindAndGetRemote() {
+  mojo::PendingRemote<reading_list::mojom::Page> BindAndGetRemote() {
     DCHECK(!receiver_.is_bound());
     return receiver_.BindNewPipeAndPassRemote();
   }
-  mojo::Receiver<read_later::mojom::Page> receiver_{this};
+  mojo::Receiver<reading_list::mojom::Page> receiver_{this};
 
   MOCK_METHOD1(ItemsChanged,
-               void(read_later::mojom::ReadLaterEntriesByStatusPtr));
+               void(reading_list::mojom::ReadLaterEntriesByStatusPtr));
   MOCK_METHOD1(CurrentPageActionButtonStateChanged,
-               void(read_later::mojom::CurrentPageActionButtonState));
+               void(reading_list::mojom::CurrentPageActionButtonState));
 };
 
-void ExpectNewReadLaterEntry(const read_later::mojom::ReadLaterEntry* entry,
+void ExpectNewReadLaterEntry(const reading_list::mojom::ReadLaterEntry* entry,
                              const GURL& url,
                              const std::string& title) {
   EXPECT_EQ(title, entry->title);
   EXPECT_EQ(url.spec(), entry->url.spec());
 }
 
-class TestReadLaterPageHandler : public ReadLaterPageHandler {
+class TestReadingListPageHandler : public ReadingListPageHandler {
  public:
-  explicit TestReadLaterPageHandler(
-      mojo::PendingRemote<read_later::mojom::Page> page,
+  explicit TestReadingListPageHandler(
+      mojo::PendingRemote<reading_list::mojom::Page> page,
       content::WebUI* test_web_ui)
-      : ReadLaterPageHandler(
-            mojo::PendingReceiver<read_later::mojom::PageHandler>(),
+      : ReadingListPageHandler(
+            mojo::PendingReceiver<reading_list::mojom::PageHandler>(),
             std::move(page),
             nullptr,
             test_web_ui) {}
 };
 
-class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
+class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -83,7 +83,7 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
 
-    handler_ = std::make_unique<TestReadLaterPageHandler>(
+    handler_ = std::make_unique<TestReadingListPageHandler>(
         page_.BindAndGetRemote(), test_web_ui_.get());
     model_ =
         ReadingListModelFactory::GetForBrowserContext(browser()->profile());
@@ -114,7 +114,7 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   ReadingListModel* model() { return model_; }
-  TestReadLaterPageHandler* handler() { return handler_.get(); }
+  TestReadingListPageHandler* handler() { return handler_.get(); }
 
  protected:
   void AddTabWithTitle(Browser* browser,
@@ -131,9 +131,9 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
       const std::vector<std::pair<GURL, std::string>>& expected_unread_data,
       const std::vector<std::pair<GURL, std::string>>& expected_read_data) {
     EXPECT_EQ(unread_size, expected_unread_data.size());
-    read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback =
+    reading_list::mojom::PageHandler::GetReadLaterEntriesCallback callback =
         base::BindLambdaForTesting(
-            [&](read_later::mojom::ReadLaterEntriesByStatusPtr
+            [&](reading_list::mojom::ReadLaterEntriesByStatusPtr
                     entries_by_status) {
               ASSERT_EQ(unread_size, entries_by_status->unread_entries.size());
               ASSERT_EQ(read_size, entries_by_status->read_entries.size());
@@ -170,11 +170,11 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
-  std::unique_ptr<TestReadLaterPageHandler> handler_;
+  std::unique_ptr<TestReadingListPageHandler> handler_;
   raw_ptr<ReadingListModel> model_;
 };
 
-TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
+TEST_F(TestReadingListPageHandlerTest, GetReadLaterEntries) {
   // Expect ItemsChanged to be called four times from the two AddEntry calls in
   // SetUp() each AddEntry call while the reading list is open triggers items to
   // be marked as read which triggers an ItemsChanged call.
@@ -190,7 +190,7 @@ TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
+TEST_F(TestReadingListPageHandlerTest, OpenURLOnNTP) {
   // Open and navigate to NTP.
   AddTabWithTitle(browser(), GURL(chrome::kChromeUINewTabURL), "NTP");
 
@@ -214,7 +214,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
+TEST_F(TestReadingListPageHandlerTest, OpenURLNotOnNTP) {
   // Check that OpenURL opens in the same tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
@@ -235,7 +235,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
+TEST_F(TestReadingListPageHandlerTest, UpdateReadStatus) {
   handler()->UpdateReadStatus(GURL(kTabUrl3), true);
 
   // Expect ItemsChanged to be called 5 times.
@@ -253,7 +253,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
       /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
+TEST_F(TestReadingListPageHandlerTest, RemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
 
   // Expect ItemsChanged to be called 5 times.
@@ -271,7 +271,7 @@ TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
+TEST_F(TestReadingListPageHandlerTest, UpdateAndRemoveEntry) {
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
   handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
@@ -292,7 +292,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
+TEST_F(TestReadingListPageHandlerTest, PostBatchUpdate) {
   auto token = model()->BeginBatchUpdates();
   EXPECT_TRUE(model()->IsPerformingBatchUpdates());
   handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
@@ -315,7 +315,7 @@ TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
+TEST_F(TestReadingListPageHandlerTest, NoUpdateWhenHidden) {
   // Set WebContents to be hidden.
   content::WebContents::CreateParams params =
       content::WebContents::CreateParams(profile());
@@ -342,7 +342,7 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
+TEST_F(TestReadingListPageHandlerTest, OpenURLAndReadd) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
@@ -366,14 +366,14 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest,
+TEST_F(TestReadingListPageHandlerTest,
        CurrentPageActionButtonStateChangedOnActiveTabChange) {
   handler()->SetActiveTabURL(GURL("http://google.com"));
   EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
-            read_later::mojom::CurrentPageActionButtonState::kAdd);
+            reading_list::mojom::CurrentPageActionButtonState::kAdd);
   handler()->SetActiveTabURL(GURL("google.com"));
   EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
-            read_later::mojom::CurrentPageActionButtonState::kDisabled);
+            reading_list::mojom::CurrentPageActionButtonState::kDisabled);
   // Expect ItemsChanged to be called four times from the two AddEntry calls in
   // SetUp() each AddEntry call while the reading list is open triggers items to
   // be marked as read which triggers an ItemsChanged call.

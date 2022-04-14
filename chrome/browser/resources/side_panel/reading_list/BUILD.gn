@@ -14,11 +14,13 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later/"
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_webui_js",
+  ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/reading_list/"
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/preprocessed_mojo_manifest.json"
-  in_files = [ "read_later.mojom-webui.js" ]
+  in_files = [ "reading_list.mojom-webui.js" ]
 }
 
 preprocess_if_expr("preprocess_web_components") {

@@ -26,7 +26,7 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
               &ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab,
               base::Unretained(this)),
           close_cb,
-          std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
+          std::make_unique<BubbleContentsWrapperT<ReadingListUI>>(
               GURL(chrome::kChromeUIReadLaterURL),
               browser->profile(),
               IDS_READ_LATER_TITLE,
@@ -67,7 +67,7 @@ void ReadLaterSidePanelWebView::UpdateActiveURL(
   if (!controller || !contents)
     return;
 
-  controller->GetAs<ReadLaterUI>()->SetActiveTabURL(
+  controller->GetAs<ReadingListUI>()->SetActiveTabURL(
       chrome::GetURLToBookmark(contents));
 }
 

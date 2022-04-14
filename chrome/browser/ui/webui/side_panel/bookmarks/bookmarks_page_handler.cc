@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -119,8 +119,8 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::BookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
-    ReadLaterUI* read_later_ui)
-    : receiver_(this, std::move(receiver)), read_later_ui_(read_later_ui) {}
+    ReadingListUI* reading_list_ui)
+    : receiver_(this, std::move(receiver)), reading_list_ui_(reading_list_ui) {}
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
@@ -164,7 +164,7 @@ void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
     return;
 
   auto embedder =
-      bookmarks_ui_ ? bookmarks_ui_->embedder() : read_later_ui_->embedder();
+      bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   if (embedder) {
     embedder->ShowContextMenu(point, std::make_unique<BookmarkContextMenu>(
                                          browser, embedder, bookmark));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
 
 #include <algorithm>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -42,8 +42,8 @@
 namespace {
 
 // Sorter function that orders ReadingListEntries by their update time.
-bool EntrySorter(const read_later::mojom::ReadLaterEntryPtr& rhs,
-                 const read_later::mojom::ReadLaterEntryPtr& lhs) {
+bool EntrySorter(const reading_list::mojom::ReadLaterEntryPtr& rhs,
+                 const reading_list::mojom::ReadLaterEntryPtr& lhs) {
   return rhs->update_time > lhs->update_time;
 }
 
@@ -138,14 +138,14 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
 
 }  // namespace
 
-ReadLaterPageHandler::ReadLaterPageHandler(
-    mojo::PendingReceiver<read_later::mojom::PageHandler> receiver,
-    mojo::PendingRemote<read_later::mojom::Page> page,
-    ReadLaterUI* read_later_ui,
+ReadingListPageHandler::ReadingListPageHandler(
+    mojo::PendingReceiver<reading_list::mojom::PageHandler> receiver,
+    mojo::PendingRemote<reading_list::mojom::Page> page,
+    ReadingListUI* reading_list_ui,
     content::WebUI* web_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      read_later_ui_(read_later_ui),
+      reading_list_ui_(reading_list_ui),
       web_ui_(web_ui),
       web_contents_(web_ui->GetWebContents()),
       clock_(base::DefaultClock::GetInstance()) {
@@ -156,14 +156,14 @@ ReadLaterPageHandler::ReadLaterPageHandler(
   reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
 }
 
-ReadLaterPageHandler::~ReadLaterPageHandler() = default;
+ReadingListPageHandler::~ReadingListPageHandler() = default;
 
-void ReadLaterPageHandler::GetReadLaterEntries(
+void ReadingListPageHandler::GetReadLaterEntries(
     GetReadLaterEntriesCallback callback) {
   std::move(callback).Run(CreateReadLaterEntriesByStatusData());
 }
 
-void ReadLaterPageHandler::OpenURL(
+void ReadingListPageHandler::OpenURL(
     const GURL& url,
     bool mark_as_read,
     ui::mojom::ClickModifiersPtr click_modifiers) {
@@ -195,14 +195,14 @@ void ReadLaterPageHandler::OpenURL(
       profile_metrics::GetBrowserProfileType(Profile::FromWebUI(web_ui_)));
 }
 
-void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
+void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
   reading_list_model_->SetReadStatus(url, read);
   base::RecordAction(
       base::UserMetricsAction(read ? "DesktopReadingList.MarkAsRead"
                                    : "DesktopReadingList.MarkAsUnread"));
 }
 
-void ReadLaterPageHandler::AddCurrentTab() {
+void ReadingListPageHandler::AddCurrentTab() {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -214,15 +214,15 @@ void ReadLaterPageHandler::AddCurrentTab() {
       base::UserMetricsAction("SidePanel.ReadingList.AddCurrentPage"));
 }
 
-void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
+void ReadingListPageHandler::RemoveEntry(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
   base::RecordAction(base::UserMetricsAction("DesktopReadingList.RemoveItem"));
 }
 
-void ReadLaterPageHandler::ShowContextMenuForURL(const GURL& url,
-                                                 int32_t x,
-                                                 int32_t y) {
-  auto embedder = read_later_ui_->embedder();
+void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
+                                                   int32_t x,
+                                                   int32_t y) {
+  auto embedder = reading_list_ui_->embedder();
   Browser* browser = chrome::FindLastActive();
   if (embedder)
     embedder->ShowContextMenu(gfx::Point(x, y),
@@ -230,24 +230,24 @@ void ReadLaterPageHandler::ShowContextMenuForURL(const GURL& url,
                                   browser, reading_list_model_, url));
 }
 
-void ReadLaterPageHandler::UpdateCurrentPageActionButtonState() {
+void ReadingListPageHandler::UpdateCurrentPageActionButtonState() {
   page_->CurrentPageActionButtonStateChanged(current_page_action_button_state_);
 }
 
-void ReadLaterPageHandler::ShowUI() {
-  auto embedder = read_later_ui_->embedder();
+void ReadingListPageHandler::ShowUI() {
+  auto embedder = reading_list_ui_->embedder();
   if (embedder) {
     embedder->ShowUI();
   }
 }
 
-void ReadLaterPageHandler::CloseUI() {
-  auto embedder = read_later_ui_->embedder();
+void ReadingListPageHandler::CloseUI() {
+  auto embedder = reading_list_ui_->embedder();
   if (embedder)
     embedder->CloseUI();
 }
 
-void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(
+void ReadingListPageHandler::ReadingListModelCompletedBatchUpdates(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   if (web_contents_->GetVisibility() == content::Visibility::HIDDEN)
@@ -257,7 +257,7 @@ void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(
   reading_list_model_->MarkAllSeen();
 }
 
-void ReadLaterPageHandler::ReadingListModelBeingDeleted(
+void ReadingListPageHandler::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
@@ -266,7 +266,8 @@ void ReadLaterPageHandler::ReadingListModelBeingDeleted(
   reading_list_model_ = nullptr;
 }
 
-void ReadLaterPageHandler::ReadingListDidApplyChanges(ReadingListModel* model) {
+void ReadingListPageHandler::ReadingListDidApplyChanges(
+    ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
       reading_list_model_->IsPerformingBatchUpdates()) {
@@ -277,7 +278,7 @@ void ReadLaterPageHandler::ReadingListDidApplyChanges(ReadingListModel* model) {
   reading_list_model_->MarkAllSeen();
 }
 
-const absl::optional<GURL> ReadLaterPageHandler::GetActiveTabURL() {
+const absl::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
   if (active_tab_url_)
     return active_tab_url_.value();
   Browser* browser = chrome::FindLastActive();
@@ -288,7 +289,7 @@ const absl::optional<GURL> ReadLaterPageHandler::GetActiveTabURL() {
   return absl::nullopt;
 }
 
-void ReadLaterPageHandler::SetActiveTabURL(const GURL& url) {
+void ReadingListPageHandler::SetActiveTabURL(const GURL& url) {
   if (active_tab_url_ && active_tab_url_.value() == url)
     return;
 
@@ -296,9 +297,9 @@ void ReadLaterPageHandler::SetActiveTabURL(const GURL& url) {
   UpdateCurrentPageActionButton();
 }
 
-read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
+reading_list::mojom::ReadLaterEntryPtr ReadingListPageHandler::GetEntryData(
     const ReadingListEntry* entry) {
-  auto entry_data = read_later::mojom::ReadLaterEntry::New();
+  auto entry_data = reading_list::mojom::ReadLaterEntry::New();
 
   entry_data->title = entry->Title();
   entry_data->url = entry->URL();
@@ -317,9 +318,9 @@ read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
   return entry_data;
 }
 
-read_later::mojom::ReadLaterEntriesByStatusPtr
-ReadLaterPageHandler::CreateReadLaterEntriesByStatusData() {
-  auto entries = read_later::mojom::ReadLaterEntriesByStatus::New();
+reading_list::mojom::ReadLaterEntriesByStatusPtr
+ReadingListPageHandler::CreateReadLaterEntriesByStatusData() {
+  auto entries = reading_list::mojom::ReadLaterEntriesByStatus::New();
 
   for (const auto& url : reading_list_model_->Keys()) {
     const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
@@ -339,7 +340,7 @@ ReadLaterPageHandler::CreateReadLaterEntriesByStatusData() {
   return entries;
 }
 
-std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
+std::string ReadingListPageHandler::GetTimeSinceLastUpdate(
     int64_t last_update_time) {
   const int64_t now = TimeToUS(clock_->Now());
   if (last_update_time > now)
@@ -351,7 +352,7 @@ std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
                              ui::TimeFormat::LENGTH_SHORT, elapsed_time));
 }
 
-void ReadLaterPageHandler::UpdateCurrentPageActionButton() {
+void ReadingListPageHandler::UpdateCurrentPageActionButton() {
   if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
       Profile::FromWebUI(web_ui_)->IsGuestSession())
     return;
@@ -360,13 +361,13 @@ void ReadLaterPageHandler::UpdateCurrentPageActionButton() {
   if (!url.has_value())
     return;
 
-  read_later::mojom::CurrentPageActionButtonState new_state;
+  reading_list::mojom::CurrentPageActionButtonState new_state;
   if (!reading_list_model_->IsUrlSupported(url.value()) ||
       (reading_list_model_->GetEntryByURL(url.value()) &&
        !reading_list_model_->GetEntryByURL(url.value())->IsRead())) {
-    new_state = read_later::mojom::CurrentPageActionButtonState::kDisabled;
+    new_state = reading_list::mojom::CurrentPageActionButtonState::kDisabled;
   } else {
-    new_state = read_later::mojom::CurrentPageActionButtonState::kAdd;
+    new_state = reading_list::mojom::CurrentPageActionButtonState::kAdd;
   }
   if (current_page_action_button_state_ != new_state) {
     current_page_action_button_state_ = new_state;

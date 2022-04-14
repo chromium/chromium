@@ -19,7 +19,7 @@ import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './read_later.mojom-webui.js';
+import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
 import {ReadingListItemElement} from './reading_list_item.js';
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 
 #include <string>
 #include <utility>
 
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

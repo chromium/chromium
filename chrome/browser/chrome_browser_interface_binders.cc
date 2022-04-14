@@ -158,11 +158,11 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
-#include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
-#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
@@ -861,8 +861,8 @@ void PopulateChromeWebUIFrameBinders(
         task_module::mojom::TaskModuleHandler, NewTabPageUI>(map);
   }
 
-  RegisterWebUIControllerInterfaceBinder<read_later::mojom::PageHandlerFactory,
-                                         ReadLaterUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      reading_list::mojom::PageHandlerFactory, ReadingListUI>(map);
 
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
     RegisterWebUIControllerInterfaceBinder<
@@ -870,7 +870,7 @@ void PopulateChromeWebUIFrameBinders(
         map);
   } else {
     RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
+        side_panel::mojom::BookmarksPageHandlerFactory, ReadingListUI>(map);
   }
 
   if (features::IsReadAnythingEnabled()) {
@@ -879,7 +879,7 @@ void PopulateChromeWebUIFrameBinders(
           read_anything::mojom::PageHandlerFactory, ReadAnythingUI>(map);
     } else {
       RegisterWebUIControllerInterfaceBinder<
-          read_anything::mojom::PageHandlerFactory, ReadLaterUI>(map);
+          read_anything::mojom::PageHandlerFactory, ReadingListUI>(map);
     }
   }
 

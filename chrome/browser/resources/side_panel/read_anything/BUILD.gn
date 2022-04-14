@@ -14,8 +14,10 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/read_later/side_panel/read_anything:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later/side_panel/read_anything"
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/read_anything:mojo_bindings_webui_js",
+  ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/read_anything"
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/preprocessed_mojo_manifest.json"
   in_files = [ "read_anything.mojom-webui.js" ]

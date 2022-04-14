@@ -74,7 +74,7 @@ ts_library("build_ts") {
     "reading_list/icons.ts",
     "reading_list/reading_list_api_proxy.ts",
     "reading_list/reading_list_item.ts",
-    "reading_list/read_later.mojom-webui.js",
+    "reading_list/reading_list.mojom-webui.js",
   ]
   definitions = [
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 
 #include <string>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

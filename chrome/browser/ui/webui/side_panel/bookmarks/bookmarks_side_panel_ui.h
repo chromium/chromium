@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_SIDE_PANEL_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_SIDE_PANEL_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_BOOKMARKS_BOOKMARKS_SIDE_PANEL_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_BOOKMARKS_BOOKMARKS_SIDE_PANEL_UI_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,4 +44,4 @@ class BookmarksSidePanelUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_SIDE_PANEL_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_BOOKMARKS_BOOKMARKS_SIDE_PANEL_UI_H_

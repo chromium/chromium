@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module read_later.mojom;
+module reading_list.mojom;
 
 import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";

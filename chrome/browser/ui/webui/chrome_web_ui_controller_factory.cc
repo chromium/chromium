@@ -151,11 +151,11 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
-#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
@@ -865,7 +865,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<FeedbackUI>;
   }
     if (url.host_piece() == chrome::kChromeUIReadLaterHost)
-      return &NewWebUI<ReadLaterUI>;
+      return &NewWebUI<ReadingListUI>;
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
     return &NewWebUI<BookmarksSidePanelUI>;
   if (features::IsReadAnythingEnabled()) {

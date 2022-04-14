@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READING_LIST_READING_LIST_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READING_LIST_READING_LIST_UI_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -18,22 +18,22 @@
 
 class BookmarksPageHandler;
 class ReadAnythingPageHandler;
-class ReadLaterPageHandler;
+class ReadingListPageHandler;
 
-class ReadLaterUI : public ui::MojoBubbleWebUIController,
-                    public read_later::mojom::PageHandlerFactory,
-                    public side_panel::mojom::BookmarksPageHandlerFactory,
-                    public read_anything::mojom::PageHandlerFactory {
+class ReadingListUI : public ui::MojoBubbleWebUIController,
+                      public reading_list::mojom::PageHandlerFactory,
+                      public side_panel::mojom::BookmarksPageHandlerFactory,
+                      public read_anything::mojom::PageHandlerFactory {
  public:
-  explicit ReadLaterUI(content::WebUI* web_ui);
-  ReadLaterUI(const ReadLaterUI&) = delete;
-  ReadLaterUI& operator=(const ReadLaterUI&) = delete;
-  ~ReadLaterUI() override;
+  explicit ReadingListUI(content::WebUI* web_ui);
+  ReadingListUI(const ReadingListUI&) = delete;
+  ReadingListUI& operator=(const ReadingListUI&) = delete;
+  ~ReadingListUI() override;
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<read_later::mojom::PageHandlerFactory> receiver);
+      mojo::PendingReceiver<reading_list::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
@@ -45,10 +45,10 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
   void SetActiveTabURL(const GURL& url);
 
  private:
-  // read_later::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<read_later::mojom::Page> page,
-      mojo::PendingReceiver<read_later::mojom::PageHandler> receiver) override;
+  // reading_list::mojom::PageHandlerFactory:
+  void CreatePageHandler(mojo::PendingRemote<reading_list::mojom::Page> page,
+                         mojo::PendingReceiver<reading_list::mojom::PageHandler>
+                             receiver) override;
 
   // side_panel::mojom::BookmarksPageHandlerFactory
   void CreateBookmarksPageHandler(
@@ -61,9 +61,9 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
       override;
 
-  std::unique_ptr<ReadLaterPageHandler> page_handler_;
-  mojo::Receiver<read_later::mojom::PageHandlerFactory> page_factory_receiver_{
-      this};
+  std::unique_ptr<ReadingListPageHandler> page_handler_;
+  mojo::Receiver<reading_list::mojom::PageHandlerFactory>
+      page_factory_receiver_{this};
 
   std::unique_ptr<BookmarksPageHandler> bookmarks_page_handler_;
   mojo::Receiver<side_panel::mojom::BookmarksPageHandlerFactory>
@@ -78,4 +78,4 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READING_LIST_READING_LIST_UI_H_

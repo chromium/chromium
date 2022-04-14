@@ -15,7 +15,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadLaterEntry} from './read_later.mojom-webui.js';
+import {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
 
 const navigationKeys: Set<string> =

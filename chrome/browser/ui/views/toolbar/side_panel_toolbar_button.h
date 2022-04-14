@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ui/views/controls/dot_indicator.h"
